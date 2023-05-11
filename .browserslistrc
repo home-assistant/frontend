@@ -1,23 +1,20 @@
 [modern]
-# Support for dynamic import is the main litmus test for serving modern builds.
-# Although officially a ES2020 feature, browsers implemented it early, so this
-# enables all of ES2017 and some features in ES2018.
-supports es6-module-dynamic-import
-
-# Exclude Safari 11-12 because of a bug in tagged template literals
-# https://bugs.webkit.org/show_bug.cgi?id=190756
-# Note: Dropping version 11 also enables several more ES2018 features
-not Safari < 13
-not iOS < 13
-
-# Exclude KaiOS, QQ, and UC browsers due to lack of sufficient feature support data
-# Babel ignores these automatically, but we need here for Webpack to output ESM with dynamic imports
+# Modern builds target recent browsers supporting the latest features to minimize transpilation, polyfills,etc.
+# It is served to browsers meeting the following requirements:
+# - last 2 released + current alpha/beta versionss of all major browsers
+# - Firefox extended support release (ESR)
+# - browsers with global utilization above 0.5%
+# - must support dynamic import of ES modules
+# - exclude browsers no longer being maintained
+# - exclude KaiOS, QQ, and UC browsers due to lack of sufficient feature support data
+unreleased versions
+last 2 versions
+Firefox ESR
+> 0.5% and supports es6-module-dynamic-import
+not dead
 not KaiOS > 0
 not QQAndroid > 0
 not UCAndroid > 0
-
-# Exclude unsupported browsers
-not dead
 
 [legacy]
 # Legacy builds are served when modern requirements are not met and support browsers:

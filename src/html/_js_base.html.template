@@ -16,8 +16,5 @@
   ) {
     _ls("/static/polyfills/webcomponents-bundle.js", true);
   }
-  var isS11_12 =
-    /(?:.*(?:iPhone|iPad).*OS (?:11|12)_\d)|(?:.*Version\/(?:11|12)(?:\.\d+)*.*Safari\/)/.test(
-      navigator.userAgent
-    );
+  var isModern = <%= modernRegex %>.test(navigator.userAgent);
 </script>

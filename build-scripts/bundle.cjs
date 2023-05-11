@@ -140,8 +140,13 @@ module.exports.babelOptions = ({
       "@babel/plugin-transform-runtime",
       { version: dependencies["@babel/runtime"] },
     ],
-    // Support  some proposals still in TC39 process
-    ["@babel/plugin-proposal-decorators", { decoratorsBeforeExport: true }],
+    // Transpile decorators (still in TC39 process)
+    // Modern browsers support class fields, but transform is required with the older decorator version dictated by Lit
+    [
+      "@babel/plugin-proposal-decorators",
+      { version: "2018-09", decoratorsBeforeExport: true },
+    ],
+    "@babel/plugin-proposal-class-properties",
   ].filter(Boolean),
   exclude: [
     // \\ for Windows, / for Mac OS and Linux
