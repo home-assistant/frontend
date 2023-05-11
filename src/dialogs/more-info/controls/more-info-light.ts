@@ -285,6 +285,9 @@ class MoreInfoLight extends LitElement {
           background-size: cover;
           --md-sys-color-outline: transparent;
         }
+        .color-mode[disabled] {
+          filter: grayscale(1) oapcity(0.5);
+        }
       `,
     ];
   }
