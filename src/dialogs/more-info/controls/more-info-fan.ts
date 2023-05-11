@@ -334,6 +334,7 @@ class MoreInfoFan extends LitElement {
         md-outlined-button {
           --ha-icon-display: block;
           --md-sys-color-primary: var(--primary-text-color);
+          --md-sys-color-outline: var(--divider-color);
         }
       `,
     ];
