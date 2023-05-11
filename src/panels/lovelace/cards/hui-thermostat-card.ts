@@ -93,9 +93,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   @state() private resyncSetpoint = false;
 
-  private previousMode?: string;
+  @state() private previousStateObj?: ClimateEntity;
 
-  private validatePreviousMode?: CallableFunction;
+  private resetPreviousStateObj?: CallableFunction;
 
   public getCardSize(): number {
     return 7;
@@ -123,7 +123,12 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const mode = stateObj.state in modeIcons ? stateObj.state : "unknown-mode";
+    this.previousStateObj = this.previousStateObj || stateObj;
+    const modeStateObj =
+      stateObj === this.previousStateObj ? stateObj : this.previousStateObj;
+    const mode =
+      modeStateObj.state in modeIcons ? modeStateObj.state : "unknown-mode";
+
     const name =
       this._config!.name ||
       computeStateName(this.hass!.states[this._config!.entity]);
@@ -273,7 +278,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         style=${styleMap({
-          "--mode-color": stateColorCss(stateObj),
+          "--mode-color": stateColorCss(this.previousStateObj),
         })}
       >
         <ha-icon-button
@@ -500,20 +505,13 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   protected firstUpdated(): void {
-    if (!this.validatePreviousMode) {
-      this.validatePreviousMode = debounce(
-        (previousStateObj: ClimateEntity) => {
-          const stateObj = this.hass!.states[
-            this._config!.entity
-          ] as ClimateEntity;
-          if (previousStateObj === stateObj && this.previousMode) {
-            stateObj.state = this.previousMode;
-            this.previousMode = undefined;
-            this.requestUpdate();
-          }
-        },
-        2000
-      );
+    if (!this.resetPreviousStateObj) {
+      this.resetPreviousStateObj = debounce(() => {
+        const stateObj = this.hass!.states[
+          this._config!.entity
+        ] as ClimateEntity;
+        this.previousStateObj = stateObj;
+      }, 2000);
     }
   }
 
@@ -521,15 +519,18 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
     const selectedMode = (e.currentTarget as any).mode;
 
-    this.previousMode = this.previousMode || stateObj.state;
-    stateObj.state = selectedMode;
-    this.requestUpdate();
+    this.previousStateObj = JSON.parse(JSON.stringify(stateObj));
+
+    if (this.previousStateObj !== undefined) {
+      this.previousStateObj.state = selectedMode;
+    }
+
     this.hass!.callService("climate", "set_hvac_mode", {
       entity_id: this._config!.entity,
       hvac_mode: selectedMode,
     });
 
-    this.validatePreviousMode?.(stateObj);
+    this.resetPreviousStateObj?.();
   }
 
   private async _callServiceHelper(
