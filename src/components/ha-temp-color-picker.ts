@@ -237,17 +237,15 @@ class HaTempColorPicker extends LitElement {
         <svg id="interaction" viewBox="0 0 ${size} ${size}" overflow="visible">
           <defs>${this.renderSVGFilter()}</defs>
           <g transform="translate(${cx} ${cy})">
-            <g>
-              <circle
-                style=${styleMap({
-                  fill: rgb2hex(rgb),
-                })}
-                cx="0"
-                cy="0"
-                r="10"
-                transform="translate(${markerOffset}) scale(${markerScale})"
-              ></circle>
-            </g>
+            <circle
+              style=${styleMap({
+                fill: rgb2hex(rgb),
+              })}
+              cx="0"
+              cy="0"
+              r="10"
+              transform="translate(${markerOffset}) scale(${markerScale})"
+            ></circle>
           </g>
         </svg>
       </div>
