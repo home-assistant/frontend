@@ -149,6 +149,7 @@ class HaTempColorPicker extends LitElement {
         new Pan({
           direction: DIRECTION_ALL,
           enable: true,
+          threshold: 0,
         })
       );
 
@@ -229,7 +230,8 @@ class HaTempColorPicker extends LitElement {
     const cy = ((y + 1) * size) / 2;
 
     const markerScale = this.pressed ? "2" : "1";
-    const markerOffset = this.pressed === "touch" ? `0 -${size / 8}` : "0 0";
+    const markerOffset =
+      this.pressed === "touch" ? `0px, -${size / 8}px` : "0px, 0px";
 
     return html`
       <div class="container">
@@ -238,13 +240,13 @@ class HaTempColorPicker extends LitElement {
           <defs>${this.renderSVGFilter()}</defs>
           <g transform="translate(${cx} ${cy})">
             <circle
-              style=${styleMap({
-                fill: rgb2hex(rgb),
-              })}
               cx="0"
               cy="0"
               r="10"
-              transform="translate(${markerOffset}) scale(${markerScale})"
+              style=${styleMap({
+                fill: rgb2hex(rgb),
+                transform: `translate(${markerOffset}) scale(${markerScale})`,
+              })}
             ></circle>
           </g>
         </svg>
