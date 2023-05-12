@@ -1,10 +1,9 @@
-import { isSameDay } from "date-fns";
+import { addDays, differenceInMilliseconds, startOfDay } from "date-fns";
 import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { absoluteTime } from "../common/datetime/absolute_time";
 import type { HomeAssistant } from "../types";
 
-const ONE_HOUR = 60 * 60 * 1000;
 const SAFE_MARGIN = 5 * 1000;
 
 @customElement("ha-absolute-time")
@@ -13,22 +12,17 @@ class HaAbsoluteTime extends ReactiveElement {
 
   @property({ attribute: false }) public datetime?: string | Date;
 
-  private _lastUpdate?: Date;
-
   private _timeout?: number;
-
-  private _interval?: number;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._clearTimeout();
-    this._clearInterval();
   }
 
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.datetime) {
-      this._startTimeout();
+      this._updateNextDay();
     }
   }
 
@@ -47,46 +41,26 @@ class HaAbsoluteTime extends ReactiveElement {
   }
 
   private _clearTimeout(): void {
-    if (this._interval) {
+    if (this._timeout) {
       window.clearTimeout(this._timeout);
       this._timeout = undefined;
     }
   }
 
-  private _startTimeout(): void {
-    this._clearInterval();
+  private _updateNextDay(): void {
     this._clearTimeout();
 
-    const msToNextHour =
-      ONE_HOUR - (new Date().getTime() % ONE_HOUR) + SAFE_MARGIN;
+    const now = new Date();
+    const nextDay = addDays(startOfDay(now), 1);
+    const ms = differenceInMilliseconds(nextDay, now) + SAFE_MARGIN;
 
     this._timeout = window.setTimeout(() => {
+      this._updateNextDay();
       this._updateAbsolute();
-      this._startInterval();
-    }, msToNextHour);
-  }
-
-  private _clearInterval(): void {
-    if (this._interval) {
-      window.clearInterval(this._interval);
-      this._interval = undefined;
-    }
-  }
-
-  private _startInterval(): void {
-    this._clearInterval();
-
-    // update every hour
-    this._interval = window.setInterval(() => {
-      if (this._lastUpdate && isSameDay(this._lastUpdate, new Date())) {
-        return;
-      }
-      this._updateAbsolute();
-    }, ONE_HOUR);
+    }, ms);
   }
 
   private _updateAbsolute(): void {
-    this._lastUpdate = new Date();
     if (!this.datetime) {
       this.innerHTML = this.hass.localize("ui.components.absolute_time.never");
     } else {
