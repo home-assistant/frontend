@@ -8,8 +8,8 @@ import {
   mdiPlay,
   mdiPlayCircleOutline,
   mdiRenameBox,
-  mdiStopCircleOutline,
   mdiSort,
+  mdiStopCircleOutline,
 } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
@@ -25,7 +25,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import { ACTION_TYPES } from "../../../../data/action";
+import { ACTION_TYPES, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
 import { validateConfig } from "../../../../data/config";
 import {
   EntityRegistryEntry,
@@ -134,7 +134,9 @@ export default class HaAutomationActionRow extends LitElement {
     if (!changedProperties.has("action")) {
       return;
     }
-    this._uiModeAvailable = getType(this.action) !== undefined;
+    const type = getType(this.action);
+    this._uiModeAvailable =
+      type !== undefined && !YAML_ONLY_ACTION_TYPES.has(type as any);
     if (!this._uiModeAvailable && !this._yamlMode) {
       this._yamlMode = true;
     }

@@ -30,7 +30,7 @@ export const moreInfoControlStyle = css`
   }
 
   .buttons > * {
-    margin: 4px;
+    margin: 8px;
   }
 
   ha-attributes {

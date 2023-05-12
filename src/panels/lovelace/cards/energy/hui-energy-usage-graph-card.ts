@@ -478,16 +478,11 @@ export class HuiEnergyUsageGraphCard
         }
 
         const set = {};
-        let prevValue: number;
         stats.forEach((stat) => {
-          if (stat.sum === null || stat.sum === undefined) {
+          if (stat.change === null || stat.change === undefined) {
             return;
           }
-          if (prevValue === undefined) {
-            prevValue = stat.sum;
-            return;
-          }
-          const val = stat.sum - prevValue;
+          const val = stat.change;
           // Get total of solar and to grid to calculate the solar energy used
           if (sum) {
             totalStats[stat.start] =
@@ -496,7 +491,6 @@ export class HuiEnergyUsageGraphCard
           if (add && !(stat.start in set)) {
             set[stat.start] = val;
           }
-          prevValue = stat.sum;
         });
         sets[id] = set;
       });

@@ -140,7 +140,12 @@ class HassioAddonConfig extends LitElement {
           ? {
               name: entry.name,
               required: entry.required,
-              selector: { number: { mode: "box" } },
+              selector: {
+                number: {
+                  mode: "box",
+                  step: entry.type === "float" ? "any" : undefined,
+                },
+              },
             }
           : entry
       )

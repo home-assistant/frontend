@@ -1,11 +1,11 @@
 import "@material/mwc-list/mwc-list-item";
+import "@material/web/button/outlined-button";
 import "@material/web/iconbutton/outlined-icon-button";
 import {
   mdiCreation,
   mdiFileWordBox,
   mdiLightbulb,
   mdiLightbulbOff,
-  mdiPalette,
   mdiPower,
 } from "@mdi/js";
 import {
@@ -17,7 +17,9 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-attributes";
@@ -46,6 +48,8 @@ class MoreInfoLight extends LitElement {
 
   @property({ attribute: false }) public stateObj?: LightEntity;
 
+  @state() private _effect?: string;
+
   @state() private _selectedBrightness?: number;
 
   private _brightnessChanged(ev) {
@@ -59,6 +63,7 @@ class MoreInfoLight extends LitElement {
       this._selectedBrightness = this.stateObj?.attributes.brightness
         ? Math.round((this.stateObj.attributes.brightness * 100) / 255)
         : undefined;
+      this._effect = this.stateObj?.attributes.effect;
     }
   }
 
@@ -141,6 +146,10 @@ class MoreInfoLight extends LitElement {
                 ${supportsColorTemp || supportsColor
                   ? html`
                       <md-outlined-icon-button
+                        class=${classMap({
+                          "color-rgb-mode": supportsColor,
+                          "color-temp-mode": !supportsColor,
+                        })}
                         .disabled=${this.stateObj.state === UNAVAILABLE}
                         .title=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.change_color"
@@ -150,7 +159,6 @@ class MoreInfoLight extends LitElement {
                         )}
                         @click=${this._showLightColorPickerView}
                       >
-                        <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
                       </md-outlined-icon-button>
                     `
                   : nothing}
@@ -170,41 +178,41 @@ class MoreInfoLight extends LitElement {
                       </md-outlined-icon-button>
                     `
                   : nothing}
-                ${supportsEffects && this.stateObj.attributes.effect_list
-                  ? html`
-                      <ha-button-menu
-                        @action=${this._handleEffectButton}
-                        @closed=${stopPropagation}
-                        fixed
-                        .disabled=${this.stateObj.state === UNAVAILABLE}
-                      >
-                        <md-outlined-icon-button
-                          .disabled=${this.stateObj.state === UNAVAILABLE}
-                          slot="trigger"
-                          .title=${this.hass.localize(
-                            "ui.dialogs.more_info_control.light.select_effect"
-                          )}
-                          .ariaLabel=${this.hass.localize(
-                            "ui.dialogs.more_info_control.light.select_effect"
-                          )}
-                        >
-                          <ha-svg-icon .path=${mdiCreation}></ha-svg-icon>
-                        </md-outlined-icon-button>
-                        ${this.stateObj.attributes.effect_list.map(
-                          (effect: string) => html`
-                            <mwc-list-item
-                              .value=${effect}
-                              .activated=${this.stateObj!.attributes.effect ===
-                              effect}
-                            >
-                              ${effect}
-                            </mwc-list-item>
-                          `
-                        )}
-                      </ha-button-menu>
-                    `
-                  : nothing}
               </div>
+            `
+          : nothing}
+        ${supportsEffects && this.stateObj.attributes.effect_list
+          ? html`
+              <ha-button-menu
+                @action=${this._handleEffectButton}
+                @closed=${stopPropagation}
+                fixed
+                .disabled=${this.stateObj.state === UNAVAILABLE}
+              >
+                <md-outlined-button
+                  slot="trigger"
+                  .disabled=${this.stateObj.state === UNAVAILABLE}
+                >
+                  <ha-svg-icon slot="icon" path=${mdiCreation}></ha-svg-icon>
+                  ${this._effect ||
+                  computeAttributeNameDisplay(
+                    this.hass.localize,
+                    this.stateObj,
+                    this.hass.entities,
+                    "effect"
+                  )}
+                </md-outlined-button>
+                ${this.stateObj.attributes.effect_list.map(
+                  (effect: string) => html`
+                    <ha-list-item
+                      .value=${effect}
+                      .activated=${this.stateObj!.attributes.effect === effect}
+                    >
+                      ${effect}
+                    </ha-list-item>
+                  `
+                )}
+              </ha-button-menu>
             `
           : nothing}
       </div>
@@ -249,15 +257,14 @@ class MoreInfoLight extends LitElement {
     ev.preventDefault();
 
     const index = ev.detail.index;
-    const effect = this.stateObj!.attributes.effect_list![index];
+    const newVal = this.stateObj!.attributes.effect_list![index];
+    const oldVal = this._effect;
 
-    if (!effect || this.stateObj!.attributes.effect === effect) {
-      return;
-    }
+    if (!newVal || oldVal === newVal) return;
 
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
-      effect,
+      effect: newVal,
     });
   }
 
@@ -270,7 +277,31 @@ class MoreInfoLight extends LitElement {
           --md-sys-color-on-surface: var(--secondary-text-color);
           --md-sys-color-on-surface-variant: var(--secondary-text-color);
           --md-sys-color-on-surface-rgb: var(--rgb-secondary-text-color);
-          --md-sys-color-outline: var(--secondary-text-color);
+        }
+        md-outlined-button {
+          --ha-icon-display: block;
+          --md-sys-color-primary: var(--primary-text-color);
+          --md-sys-color-outline: var(--divider-color);
+        }
+        .color-rgb-mode {
+          background-image: url("/static/images/color_wheel.png");
+          background-size: cover;
+          border-radius: 20px;
+          --md-sys-color-outline: var(--divider-color);
+        }
+        .color-temp-mode {
+          background: linear-gradient(
+            0,
+            rgb(255, 160, 0) 0%,
+            white 50%,
+            rgb(166, 209, 255) 100%
+          );
+          border-radius: 20px;
+          --md-sys-color-outline: var(--divider-color);
+        }
+        .color-rgb-mode[disabled],
+        .color-temp-mode[disabled] {
+          filter: grayscale(1) opacity(0.5);
         }
       `,
     ];

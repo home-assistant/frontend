@@ -102,6 +102,9 @@ export class HaEntityPicker extends LitElement {
 
   @property({ type: Boolean }) public hideClearIcon = false;
 
+  @property({ attribute: "item-label-path" }) public itemLabelPath =
+    "friendly_name";
+
   @state() private _opened = false;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
@@ -300,7 +303,7 @@ export class HaEntityPicker extends LitElement {
     return html`
       <ha-combo-box
         item-value-path="entity_id"
-        item-label-path="friendly_name"
+        .itemLabelPath=${this.itemLabelPath}
         .hass=${this.hass}
         .value=${this._value}
         .label=${this.label === undefined
