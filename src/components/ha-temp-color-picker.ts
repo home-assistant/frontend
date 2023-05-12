@@ -2,22 +2,23 @@ import { DIRECTION_ALL, Manager, Pan, Tap } from "@egjs/hammerjs";
 import { css, html, LitElement, PropertyValues, svg } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { hsv2rgb, rgb2hex } from "../common/color/convert-color";
+import { rgb2hex } from "../common/color/convert-color";
 
 function xy2polar(x: number, y: number) {
   const r = Math.sqrt(x * x + y * y);
-  const phi = Math.atan2(y, -x);
+  const phi = Math.atan2(y, x);
   return [r, phi];
 }
 
-function polar2xy(a: number, r: number) {
-  const x = Math.cos((a * Math.PI) / 180) * r;
-  const y = -Math.sin((a * Math.PI) / 180) * r;
+function polar2xy(r: number, phi: number) {
+  const x = Math.cos(phi) * r;
+  const y = Math.sin(phi) * r;
   return [x, y];
 }
 
-function rad2deg(rad: number) {
-  return ((rad + Math.PI) / (2 * Math.PI)) * 360;
+function temperature2rgb(temperature: number): [number, number, number] {
+  const value = temperature / 100;
+  return [getRed(value), getGreen(value), getBlue(value)];
 }
 
 function getRed(temperature: number): number {
@@ -80,13 +81,14 @@ function drawColorWheel(
       const index = (adjustedX + adjustedY * rowLength) * pixelWidth;
 
       const fraction = (y / radius + 1) / 2;
-      const temperature = (min + fraction * (max - min)) / 100;
-
       const alpha = 255;
 
-      data[index] = getRed(temperature);
-      data[index + 1] = getGreen(temperature);
-      data[index + 2] = getBlue(temperature);
+      const temperature = min + fraction * (max - min);
+
+      const rgb = temperature2rgb(temperature);
+      data[index] = rgb[0];
+      data[index + 1] = rgb[1];
+      data[index + 2] = rgb[2];
       data[index + 3] = alpha;
     }
   }
@@ -105,15 +107,19 @@ class HaTempColorPicker extends LitElement {
   @property({ type: Number, attribute: false })
   public renderSize?: number;
 
-  @property({ type: Number })
-  public value?: number;
+  @property() min = 2000;
+
+  @property() max = 10000;
 
   @query("#canvas") private _canvas!: HTMLCanvasElement;
 
   private _mc?: HammerManager;
 
   @state()
-  private _coord?: [number, number];
+  private _position?: [number, number];
+
+  @state()
+  private _value?: number;
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
@@ -123,7 +129,7 @@ class HaTempColorPicker extends LitElement {
 
   private _generateColorWheel() {
     const ctx = this._canvas.getContext("2d")!;
-    drawColorWheel(ctx, 1700, 6535);
+    drawColorWheel(ctx, this.min, this.max);
   }
 
   connectedCallback(): void {
@@ -152,31 +158,34 @@ class HaTempColorPicker extends LitElement {
       this._mc.on("panstart", (e) => {
         if (this.disabled) return;
         this.pressed = e.pointerType;
-        savedPosition = this._coord;
+        savedPosition = this._position;
       });
       this._mc.on("pancancel", () => {
         if (this.disabled) return;
         this.pressed = undefined;
-        this._coord = savedPosition;
+        this._position = savedPosition;
       });
       this._mc.on("panmove", (e) => {
         if (this.disabled) return;
-        this._coord = this._getCoordFromEvent(e);
+        this._position = this._getPositionFromEvent(e);
+        this._value = this._getValueFromCoord(...this._position);
       });
       this._mc.on("panend", (e) => {
         if (this.disabled) return;
         this.pressed = undefined;
-        this._coord = this._getCoordFromEvent(e);
+        this._position = this._getPositionFromEvent(e);
+        this._value = this._getValueFromCoord(...this._position);
       });
 
       this._mc.on("singletap", (e) => {
         if (this.disabled) return;
-        this._coord = this._getCoordFromEvent(e);
+        this._position = this._getPositionFromEvent(e);
+        this._value = this._getValueFromCoord(...this._position);
       });
     }
   }
 
-  private _getCoordFromEvent = (e: HammerInput): [number, number] => {
+  private _getPositionFromEvent = (e: HammerInput): [number, number] => {
     const x = e.center.x;
     const y = e.center.y;
     const boundingRect = e.target.getBoundingClientRect();
@@ -189,13 +198,14 @@ class HaTempColorPicker extends LitElement {
     const _y = (2 * (y - offsetY)) / maxY - 1;
 
     const [r, phi] = xy2polar(_x, _y);
+    const [__x, __y] = polar2xy(Math.min(1, r), phi);
+    return [__x, __y];
+  };
 
-    const deg = rad2deg(phi);
-
-    const hue = deg;
-    const saturation = Math.min(r, 1);
-
-    return [hue, saturation];
+  private _getValueFromCoord = (_x: number, y: number): number => {
+    const fraction = (y + 1) / 2;
+    const temperature = this.min + fraction * (this.max - this.min);
+    return temperature;
   };
 
   _destroyListeners() {
@@ -209,12 +219,11 @@ class HaTempColorPicker extends LitElement {
     const size = this.renderSize || 400;
     const canvasSize = size * window.devicePixelRatio;
 
-    const h = this._coord?.[0];
-    const s = this._coord?.[1];
+    const rgb = this._value
+      ? temperature2rgb(this._value)
+      : ([255, 255, 255] as [number, number, number]);
 
-    const rgb = hsv2rgb([h ?? 0, s ?? 0, 255]);
-
-    const [x, y] = this._coord ? polar2xy(...this._coord) : [0, 0];
+    const [x, y] = this._position ?? [0, 0];
 
     const cx = ((x + 1) * size) / 2;
     const cy = ((y + 1) * size) / 2;
