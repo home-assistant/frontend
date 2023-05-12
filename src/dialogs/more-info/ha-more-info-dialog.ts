@@ -36,7 +36,6 @@ import { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
   computeShowLogBookComponent,
-  computeShowNewMoreInfo,
   DOMAINS_WITH_MORE_INFO,
   EDITABLE_DOMAINS_WITH_ID,
   EDITABLE_DOMAINS_WITH_UNIQUE_ID,
@@ -240,7 +239,6 @@ export class MoreInfoDialog extends LitElement {
     const title = this._childView?.viewTitle ?? name;
 
     const isInfoView = this._currView === "info" && !this._childView;
-    const isNewMoreInfo = stateObj && computeShowNewMoreInfo(stateObj);
 
     return html`
       <ha-dialog open @closed=${this.closeDialog} .heading=${title} hideActions>
@@ -265,13 +263,9 @@ export class MoreInfoDialog extends LitElement {
                   )}
                 ></ha-icon-button-prev>
               `}
-          ${!isInfoView || !isNewMoreInfo
-            ? html`
-                <span slot="title" .title=${title} @click=${this._enlarge}>
-                  ${title}
-                </span>
-              `
-            : nothing}
+          <span slot="title" .title=${title} @click=${this._enlarge}>
+            ${title}
+          </span>
           ${isInfoView
             ? html`
                 ${this.shouldShowHistory(domain)
