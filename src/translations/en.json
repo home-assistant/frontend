@@ -513,7 +513,8 @@
         "history_disabled": "History integration disabled",
         "loading_history": "Loading state history…",
         "no_history_found": "No state history found.",
-        "error": "Unable to load history"
+        "error": "Unable to load history",
+        "duration": "Duration"
       },
       "map": {
         "error": "Unable to load map"
