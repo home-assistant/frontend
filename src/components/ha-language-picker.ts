@@ -6,6 +6,7 @@ import { stopPropagation } from "../common/dom/stop_propagation";
 import { formatLanguageCode } from "../common/language/format_language";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { FrontendLocaleData } from "../data/translation";
+import "../resources/intl-polyfill";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
