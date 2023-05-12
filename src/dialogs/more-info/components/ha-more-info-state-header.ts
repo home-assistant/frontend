@@ -1,7 +1,9 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, TemplateResult, css, CSSResultGroup } from "lit";
-import { customElement, property } from "lit/decorators";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import "../../../components/ha-absolute-time";
+import "../../../components/ha-relative-time";
 import { isUnavailableState } from "../../../data/entity";
 import { LightEntity } from "../../../data/light";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
@@ -15,6 +17,8 @@ export class HaMoreInfoStateHeader extends LitElement {
   @property({ attribute: false }) public stateObj!: LightEntity;
 
   @property({ attribute: false }) public stateOverride?: string;
+
+  @state() private _absoluteTime = false;
 
   private _computeStateDisplay(stateObj: HassEntity): TemplateResult | string {
     if (
@@ -41,15 +45,32 @@ export class HaMoreInfoStateHeader extends LitElement {
     return stateDisplay;
   }
 
-  protected render(): TemplateResult {
-    const name = this.stateObj.attributes.friendly_name;
+  private _toggleAbsolute() {
+    this._absoluteTime = !this._absoluteTime;
+  }
 
+  protected render(): TemplateResult {
     const stateDisplay =
       this.stateOverride ?? this._computeStateDisplay(this.stateObj);
 
     return html`
-      <p class="name">${name}</p>
       <p class="state">${stateDisplay}</p>
+      <p class="last-changed" @click=${this._toggleAbsolute}>
+        ${this._absoluteTime
+          ? html`
+              <ha-absolute-time
+                .hass=${this.hass}
+                .datetime=${this.stateObj.last_changed}
+              ></ha-absolute-time>
+            `
+          : html`
+              <ha-relative-time
+                .hass=${this.hass}
+                .datetime=${this.stateObj.last_changed}
+                capitalize
+              ></ha-relative-time>
+            `}
+      </p>
     `;
   }
 
@@ -59,20 +80,24 @@ export class HaMoreInfoStateHeader extends LitElement {
         text-align: center;
         margin: 0;
       }
-      .name {
+      .state {
         font-style: normal;
         font-weight: 400;
-        font-size: 28px;
-        line-height: 36px;
-        margin-bottom: 4px;
+        font-size: 36px;
+        line-height: 44px;
       }
-      .state {
+      .last-changed {
         font-style: normal;
         font-weight: 500;
         font-size: 16px;
         line-height: 24px;
         letter-spacing: 0.1px;
-        margin-bottom: 24px;
+        padding: 4px 0;
+        margin-bottom: 20px;
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
       }
     `;
   }
