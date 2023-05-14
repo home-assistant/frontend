@@ -545,60 +545,48 @@ export const getWeatherConvertibleUnits = (
     type: "weather/convertible_units",
   });
 
-export const Forecast_type = (
+export const getForecast = (
   forecast?: ForecastAttribute[],
-  forecast_daily?: ForecastAttribute[],
-  forecast_hourly?: ForecastAttribute[],
-  forecast_twice_daily?: ForecastAttribute[],
-  forecast_type?: string
+  forecastDaily?: ForecastAttribute[],
+  forecastHourly?: ForecastAttribute[],
+  forecastTwiceDaily?: ForecastAttribute[],
+  forecastType?: string | undefined
 ): ForecastAttribute[] | undefined => {
   if (
-    forecast_type === "daily" &&
-    forecast_daily?.length &&
-    forecast_daily?.length > 2
+    forecastType === "daily" &&
+    forecastDaily?.length &&
+    forecastDaily?.length > 2
   ) {
-    return forecast_daily;
+    return forecastDaily;
   }
   if (
-    forecast_type === "hourly" &&
-    forecast_hourly?.length &&
-    forecast_hourly?.length > 2
+    forecastType === "hourly" &&
+    forecastHourly?.length &&
+    forecastHourly?.length > 2
   ) {
-    return forecast_hourly;
+    return forecastHourly;
   }
   if (
-    forecast_type === "twice_daily" &&
-    forecast_twice_daily?.length &&
-    forecast_twice_daily?.length > 2
+    forecastType === "twice_daily" &&
+    forecastTwiceDaily?.length &&
+    forecastTwiceDaily?.length > 2
   ) {
-    return forecast_twice_daily;
+    return forecastTwiceDaily;
   }
-  if (
-    (forecast_type === "legacy" || forecast_type === undefined) &&
-    forecast?.length &&
-    forecast?.length > 2
-  ) {
+  if (forecastType === "legacy" && forecast?.length && forecast?.length > 2) {
     return forecast;
+  }
+  if (forecastType === undefined) {
+    if (forecastDaily?.length && forecastDaily?.length > 2) {
+      return forecastDaily;
+    }
+    if (forecastHourly?.length && forecastHourly?.length > 2) {
+      return forecastHourly;
+    }
+    if (forecastTwiceDaily?.length && forecastTwiceDaily?.length > 2) {
+      return forecastTwiceDaily;
+    }
   }
 
   return undefined;
-};
-
-export const Forecast_type_undefined = (
-  forecast?: ForecastAttribute[],
-  forecast_daily?: ForecastAttribute[],
-  forecast_hourly?: ForecastAttribute[],
-  forecast_twice_daily?: ForecastAttribute[]
-): ForecastAttribute[] | undefined => {
-  if (forecast_daily?.length && forecast_daily?.length > 2) {
-    return forecast_daily;
-  }
-  if (forecast_hourly?.length && forecast_hourly?.length > 2) {
-    return forecast_hourly;
-  }
-  if (forecast_twice_daily?.length && forecast_twice_daily?.length > 2) {
-    return forecast_twice_daily;
-  }
-
-  return forecast;
 };

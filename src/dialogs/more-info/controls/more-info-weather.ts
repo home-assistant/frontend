@@ -19,6 +19,7 @@ import { formatTimeWeekday } from "../../../common/datetime/format_time";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-svg-icon";
 import {
+  getForecast,
   getWeatherUnit,
   getWind,
   isForecastHourly,
@@ -55,7 +56,14 @@ class MoreInfoWeather extends LitElement {
       return nothing;
     }
 
-    const hourly = isForecastHourly(this.stateObj.attributes.forecast);
+    const forecast = getForecast(
+      this.stateObj.attributes.forecast,
+      this.stateObj.attributes.forecast_daily,
+      this.stateObj.attributes.forecast_hourly,
+      this.stateObj.attributes.forecast_twice_daily
+    );
+
+    const hourly = isForecastHourly(forecast);
 
     return html`
       ${this._showValue(this.stateObj.attributes.temperature)
@@ -144,12 +152,12 @@ class MoreInfoWeather extends LitElement {
             </div>
           `
         : ""}
-      ${this.stateObj.attributes.forecast
+      ${forecast
         ? html`
             <div class="section">
               ${this.hass.localize("ui.card.weather.forecast")}:
             </div>
-            ${this.stateObj.attributes.forecast.map((item) =>
+            ${forecast.map((item) =>
               this._showValue(item.templow) || this._showValue(item.temperature)
                 ? html`<div class="flex">
                     ${item.condition
@@ -176,151 +184,11 @@ class MoreInfoWeather extends LitElement {
                               this.hass.locale,
                               this.hass.config
                             )}
-                          </div>
-                        `}
-                    <div class="templow">
-                      ${this._showValue(item.templow)
-                        ? `${formatNumber(item.templow!, this.hass.locale)}
-                          ${getWeatherUnit(
-                            this.hass,
-                            this.stateObj!,
-                            "temperature"
-                          )}`
-                        : hourly
-                        ? ""
-                        : "—"}
-                    </div>
-                    <div class="temp">
-                      ${this._showValue(item.temperature)
-                        ? `${formatNumber(item.temperature!, this.hass.locale)}
-                        ${getWeatherUnit(
-                          this.hass,
-                          this.stateObj!,
-                          "temperature"
-                        )}`
-                        : "—"}
-                    </div>
-                  </div>`
-                : ""
-            )}
-          `
-        : ""}
-      ${this.stateObj.attributes.forecast_daily
-        ? html`
-            <div class="section">
-              ${this.hass.localize("ui.card.weather.forecast_daily")}:
-            </div>
-            ${this.stateObj.attributes.forecast_daily.map((item) =>
-              this._showValue(item.templow) || this._showValue(item.temperature)
-                ? html`<div class="flex">
-                    ${item.condition
-                      ? html`
-                          <ha-svg-icon
-                            .path=${weatherIcons[item.condition]}
-                          ></ha-svg-icon>
-                          <div class="main">
-                            ${formatDateWeekdayDay(
-                              new Date(item.datetime),
-                              this.hass.locale
-                            )}
-                          </div>
-                        `
-                      : ""}
-                    <div class="templow">
-                      ${this._showValue(item.templow)
-                        ? `${formatNumber(item.templow!, this.hass.locale)}
-                          ${getWeatherUnit(
-                            this.hass,
-                            this.stateObj!,
-                            "temperature"
-                          )}`
-                        : "—"}
-                    </div>
-                    <div class="temp">
-                      ${this._showValue(item.temperature)
-                        ? `${formatNumber(item.temperature!, this.hass.locale)}
-                        ${getWeatherUnit(
-                          this.hass,
-                          this.stateObj!,
-                          "temperature"
-                        )}`
-                        : "—"}
-                    </div>
-                  </div>`
-                : ""
-            )}
-          `
-        : ""}
-      ${this.stateObj.attributes.forecast_hourly
-        ? html`
-            <div class="section">
-              ${this.hass.localize("ui.card.weather.forecast_hourly")}:
-            </div>
-            ${this.stateObj.attributes.forecast_hourly.map((item) =>
-              this._showValue(item.templow) || this._showValue(item.temperature)
-                ? html`<div class="flex">
-                    ${item.condition
-                      ? html`
-                          <ha-svg-icon
-                            .path=${weatherIcons[item.condition]}
-                          ></ha-svg-icon>
-                          <div class="main">
-                            ${formatTimeWeekday(
-                              new Date(item.datetime),
-                              this.hass.locale
-                            )}
-                          </div>
-                        `
-                      : ""}
-                    <div class="templow">
-                      ${this._showValue(item.templow)
-                        ? `${formatNumber(item.templow!, this.hass.locale)}
-                          ${getWeatherUnit(
-                            this.hass,
-                            this.stateObj!,
-                            "temperature"
-                          )}`
-                        : ""}
-                    </div>
-                    <div class="temp">
-                      ${this._showValue(item.temperature)
-                        ? `${formatNumber(item.temperature!, this.hass.locale)}
-                        ${getWeatherUnit(
-                          this.hass,
-                          this.stateObj!,
-                          "temperature"
-                        )}`
-                        : "—"}
-                    </div>
-                  </div>`
-                : ""
-            )}
-          `
-        : ""}
-      ${this.stateObj.attributes.forecast_twice_daily
-        ? html`
-            <div class="section">
-              ${this.hass.localize("ui.card.weather.forecast_twice_daily")}:
-            </div>
-            ${this.stateObj.attributes.forecast_twice_daily.map((item) =>
-              this._showValue(item.templow) || this._showValue(item.temperature)
-                ? html`<div class="flex">
-                    ${item.condition
-                      ? html`
-                          <ha-svg-icon
-                            .path=${weatherIcons[item.condition]}
-                          ></ha-svg-icon>
-                          <div class="main">
-                            ${formatDateWeekdayDay(
-                              new Date(item.datetime),
-                              this.hass.locale
-                            )}
                             ${item.is_daytime === undefined || item.is_daytime
                               ? this.hass!.localize("ui.card.weather.day")
                               : this.hass!.localize("ui.card.weather.night")}
                           </div>
-                        `
-                      : ""}
+                        `}
                     <div class="templow">
                       ${this._showValue(item.templow)
                         ? `${formatNumber(item.templow!, this.hass.locale)}

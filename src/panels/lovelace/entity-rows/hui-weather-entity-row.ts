@@ -16,7 +16,7 @@ import "../../../components/entity/state-badge";
 import { isUnavailableState } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import {
-  Forecast_type_undefined,
+  getForecast,
   getSecondaryWeatherAttribute,
   getWeatherStateIcon,
   getWeatherUnit,
@@ -73,7 +73,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     const hasSecondary = this._config.secondary_info;
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
 
-    const forecast = Forecast_type_undefined(
+    const forecast = getForecast(
       stateObj.attributes.forecast,
       stateObj.attributes.forecast_daily,
       stateObj.attributes.forecast_hourly,

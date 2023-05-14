@@ -20,7 +20,7 @@ import "../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import {
-  Forecast_type,
+  getForecast,
   getSecondaryWeatherAttribute,
   getWeatherStateIcon,
   getWeatherUnit,
@@ -173,7 +173,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const forecast_type = Forecast_type(
+    const forecastType = getForecast(
       stateObj.attributes.forecast,
       stateObj.attributes.forecast_daily,
       stateObj.attributes.forecast_hourly,
@@ -181,8 +181,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       this._config?.forecast_type
     );
     const forecast =
-      this._config?.show_forecast !== false && forecast_type?.length
-        ? forecast_type.slice(0, this._veryVeryNarrow ? 3 : 5)
+      this._config?.show_forecast !== false && forecastType?.length
+        ? forecastType.slice(0, this._veryVeryNarrow ? 3 : 5)
         : undefined;
     const weather = !forecast || this._config?.show_current !== false;
 
@@ -198,7 +198,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     }
 
     const twice_daily =
-      this._config?.forecast_type === "twice_daily" ? true : undefined;
+      this._config?.forecastType === "twice_daily" ? true : undefined;
     if (twice_daily) {
       dayNight = true;
     }
