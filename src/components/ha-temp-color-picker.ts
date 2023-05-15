@@ -1,8 +1,16 @@
 import { DIRECTION_ALL, Manager, Pan, Tap } from "@egjs/hammerjs";
 import { css, html, LitElement, PropertyValues, svg } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { rgb2hex } from "../common/color/convert-color";
+import { fireEvent } from "../common/dom/fire_event";
+
+declare global {
+  interface HASSDomEvents {
+    "cursor-moved": { value?: number };
+  }
+}
 
 function xy2polar(x: number, y: number) {
   const r = Math.sqrt(x * x + y * y);
@@ -101,11 +109,11 @@ class HaTempColorPicker extends LitElement {
   @property({ type: Boolean, reflect: true })
   public disabled = false;
 
-  @state()
-  public pressed?: string;
-
   @property({ type: Number, attribute: false })
   public renderSize?: number;
+
+  @property({ type: Number })
+  public value?: number;
 
   @property() min = 2000;
 
@@ -116,10 +124,13 @@ class HaTempColorPicker extends LitElement {
   private _mc?: HammerManager;
 
   @state()
-  private _position?: [number, number];
+  public _pressed?: string;
 
   @state()
-  private _value?: number;
+  private _cursorPosition?: [number, number];
+
+  @state()
+  private _localValue?: number;
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
@@ -142,6 +153,19 @@ class HaTempColorPicker extends LitElement {
     this._destroyListeners();
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("min") || changedProps.has("max")) {
+      this._generateColorWheel();
+      this._resetPosition();
+    }
+    if (changedProps.has("value")) {
+      if (this.value !== undefined && this._localValue !== this.value) {
+        this._resetPosition();
+      }
+    }
+  }
+
   _setupListeners() {
     if (this._canvas && !this._mc) {
       this._mc = new Manager(this._canvas);
@@ -158,33 +182,55 @@ class HaTempColorPicker extends LitElement {
       let savedPosition;
       this._mc.on("panstart", (e) => {
         if (this.disabled) return;
-        this.pressed = e.pointerType;
-        savedPosition = this._position;
+        this._pressed = e.pointerType;
+        savedPosition = this._cursorPosition;
       });
       this._mc.on("pancancel", () => {
         if (this.disabled) return;
-        this.pressed = undefined;
-        this._position = savedPosition;
+        this._pressed = undefined;
+        this._cursorPosition = savedPosition;
       });
       this._mc.on("panmove", (e) => {
         if (this.disabled) return;
-        this._position = this._getPositionFromEvent(e);
-        this._value = this._getValueFromCoord(...this._position);
+        this._cursorPosition = this._getPositionFromEvent(e);
+        this._localValue = this._getValueFromCoord(...this._cursorPosition);
+        fireEvent(this, "cursor-moved", { value: this._localValue });
       });
       this._mc.on("panend", (e) => {
         if (this.disabled) return;
-        this.pressed = undefined;
-        this._position = this._getPositionFromEvent(e);
-        this._value = this._getValueFromCoord(...this._position);
+        this._pressed = undefined;
+        this._cursorPosition = this._getPositionFromEvent(e);
+        this._localValue = this._getValueFromCoord(...this._cursorPosition);
+        fireEvent(this, "cursor-moved", { value: undefined });
+        fireEvent(this, "value-changed", { value: this._localValue });
       });
 
       this._mc.on("singletap", (e) => {
         if (this.disabled) return;
-        this._position = this._getPositionFromEvent(e);
-        this._value = this._getValueFromCoord(...this._position);
+        this._cursorPosition = this._getPositionFromEvent(e);
+        this._localValue = this._getValueFromCoord(...this._cursorPosition);
+        fireEvent(this, "value-changed", { value: this._localValue });
       });
     }
   }
+
+  private _resetPosition() {
+    if (this.value === undefined) return;
+    this._cursorPosition = this._getCoordsFromValue(this.value);
+    this._localValue = this.value;
+  }
+
+  private _getCoordsFromValue = (temperature: number): [number, number] => {
+    const fraction = (temperature - this.min) / (this.max - this.min);
+    const y = 2 * fraction - 1;
+    return [0, y];
+  };
+
+  private _getValueFromCoord = (_x: number, y: number): number => {
+    const fraction = (y + 1) / 2;
+    const temperature = this.min + fraction * (this.max - this.min);
+    return Math.round(temperature);
+  };
 
   private _getPositionFromEvent = (e: HammerInput): [number, number] => {
     const x = e.center.x;
@@ -203,12 +249,6 @@ class HaTempColorPicker extends LitElement {
     return [__x, __y];
   };
 
-  private _getValueFromCoord = (_x: number, y: number): number => {
-    const fraction = (y + 1) / 2;
-    const temperature = this.min + fraction * (this.max - this.min);
-    return temperature;
-  };
-
   _destroyListeners() {
     if (this._mc) {
       this._mc.destroy();
@@ -220,29 +260,36 @@ class HaTempColorPicker extends LitElement {
     const size = this.renderSize || 400;
     const canvasSize = size * window.devicePixelRatio;
 
-    const rgb = this._value
-      ? temperature2rgb(this._value)
+    const rgb = this._localValue
+      ? temperature2rgb(this._localValue)
       : ([255, 255, 255] as [number, number, number]);
 
-    const [x, y] = this._position ?? [0, 0];
+    const [x, y] = this._cursorPosition ?? [0, 0];
 
     const cx = ((x + 1) * size) / 2;
     const cy = ((y + 1) * size) / 2;
 
-    const markerScale = this.pressed ? "2" : "1";
+    const markerPosition = `${cx}px, ${cy}px`;
+    const markerScale = this._pressed ? "2" : "1";
     const markerOffset =
-      this.pressed === "touch" ? `0px, -${size / 8}px` : "0px, 0px";
+      this._pressed === "touch" ? `0px, -${size / 8}px` : "0px, 0px";
 
     return html`
-      <div class="container">
+      <div class="container ${classMap({ pressed: Boolean(this._pressed) })}">
         <canvas id="canvas" .width=${canvasSize} .height=${canvasSize}></canvas>
         <svg id="interaction" viewBox="0 0 ${size} ${size}" overflow="visible">
           <defs>${this.renderSVGFilter()}</defs>
-          <g transform="translate(${cx} ${cy})">
+          <g
+            style=${styleMap({
+              fill: rgb2hex(rgb),
+              transform: `translate(${markerPosition})`,
+            })}
+            class="cursor"
+          >
             <circle
               cx="0"
               cy="0"
-              r="10"
+              r="12"
               style=${styleMap({
                 fill: rgb2hex(rgb),
                 transform: `translate(${markerOffset}) scale(${markerScale})`,
@@ -296,6 +343,7 @@ class HaTempColorPicker extends LitElement {
         position: relative;
         width: 100%;
         height: 100%;
+        cursor: pointer;
       }
       canvas {
         width: 100%;
@@ -314,7 +362,10 @@ class HaTempColorPicker extends LitElement {
         stroke: var(--ha-color-picker-marker-bordercolor, white);
         stroke-width: var(--ha-color-picker-marker-borderwidth, 2);
         filter: url(#marker-shadow);
-        transition: transform 100ms ease-in-out;
+        transition: transform 100ms ease-in-out, fill 100ms ease-in-out;
+      }
+      .container:not(.pressed) .cursor {
+        transition: transform 200ms ease-in-out;
       }
     `;
   }
