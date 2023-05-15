@@ -367,6 +367,12 @@ class HaTempColorPicker extends LitElement {
       .container:not(.pressed) .cursor {
         transition: transform 200ms ease-in-out;
       }
+      .container:not(.pressed) .cursor {
+        transition: transform 200ms ease-in-out;
+      }
+      .container:not(.pressed) .cursor circle {
+        transition: transform 100ms ease-in-out, fill 100ms ease-in-out;
+      }
     `;
   }
 }
