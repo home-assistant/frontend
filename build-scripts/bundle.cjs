@@ -76,7 +76,7 @@ module.exports.htmlMinifierOptions = {
 
 module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
   safari10: !latestBuild,
-  ecma: latestBuild ? undefined : 5,
+  ecma: latestBuild ? 2015 : 5,
   format: { comments: false },
   sourceMap: !isTestBuild,
 });
