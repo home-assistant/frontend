@@ -8,7 +8,7 @@ import { fireEvent } from "../common/dom/fire_event";
 
 declare global {
   interface HASSDomEvents {
-    "cursor-moved": { value?: number };
+    "cursor-moved": { value?: any };
   }
 }
 
@@ -124,7 +124,7 @@ class HaTempColorPicker extends LitElement {
   private _mc?: HammerManager;
 
   @state()
-  public _pressed?: string;
+  private _pressed?: string;
 
   @state()
   private _cursorPosition?: [number, number];
@@ -260,9 +260,10 @@ class HaTempColorPicker extends LitElement {
     const size = this.renderSize || 400;
     const canvasSize = size * window.devicePixelRatio;
 
-    const rgb = this._localValue
-      ? temperature2rgb(this._localValue)
-      : ([255, 255, 255] as [number, number, number]);
+    const rgb =
+      this._localValue !== undefined
+        ? temperature2rgb(this._localValue)
+        : ([255, 255, 255] as [number, number, number]);
 
     const [x, y] = this._cursorPosition ?? [0, 0];
 
@@ -359,19 +360,15 @@ class HaTempColorPicker extends LitElement {
       }
       circle {
         fill: black;
-        stroke: var(--ha-color-picker-marker-bordercolor, white);
-        stroke-width: var(--ha-color-picker-marker-borderwidth, 2);
+        stroke: white;
+        stroke-width: 2;
         filter: url(#marker-shadow);
+      }
+      .container:not(.pressed) circle {
         transition: transform 100ms ease-in-out, fill 100ms ease-in-out;
       }
       .container:not(.pressed) .cursor {
         transition: transform 200ms ease-in-out;
-      }
-      .container:not(.pressed) .cursor {
-        transition: transform 200ms ease-in-out;
-      }
-      .container:not(.pressed) .cursor circle {
-        transition: transform 100ms ease-in-out, fill 100ms ease-in-out;
       }
     `;
   }

@@ -18,7 +18,7 @@ export class DemoHaTempColorPicker extends LitElement {
   value = 4000;
 
   @state()
-  liveValue? = 4000;
+  liveValue?: number;
 
   private _minChanged(ev) {
     this.min = Number(ev.target.value);
@@ -104,6 +104,7 @@ export class DemoHaTempColorPicker extends LitElement {
       .value {
         font-size: 22px;
         font-weight: bold;
+        margin: 0 0 12px 0;
       }
     `;
   }
@@ -111,6 +112,6 @@ export class DemoHaTempColorPicker extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-components-ha-label-badge": DemoHaTempColorPicker;
+    "demo-components-ha-temp-color-picker": DemoHaTempColorPicker;
   }
 }
