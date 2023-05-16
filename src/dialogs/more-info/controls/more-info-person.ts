@@ -50,7 +50,7 @@ class MoreInfoPerson extends LitElement {
       <ha-attributes
         .hass=${this.hass}
         .stateObj=${this.stateObj}
-        extra-filters="id,user_id,editable"
+        extra-filters="id,user_id,editable,device_trackers"
       ></ha-attributes>
     `;
   }
