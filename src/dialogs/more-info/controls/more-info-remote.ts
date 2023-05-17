@@ -2,6 +2,7 @@ import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
@@ -38,7 +39,16 @@ class MoreInfoRemote extends LitElement {
             >
               ${stateObj.attributes.activity_list!.map(
                 (activity) => html`
-                  <mwc-list-item .value=${activity}>${activity}</mwc-list-item>
+                  <mwc-list-item .value=${activity}>
+                    ${computeAttributeValueDisplay(
+                      this.hass.localize,
+                      stateObj,
+                      this.hass.locale,
+                      this.hass.entities,
+                      "activity",
+                      activity
+                    )}
+                  </mwc-list-item>
                 `
               )}
             </mwc-list>
