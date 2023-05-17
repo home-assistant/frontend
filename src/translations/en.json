@@ -463,6 +463,19 @@
           }
         }
       },
+      "mount-picker": {
+        "mount": "Location",
+        "error": {
+          "no_supervisor": {
+            "title": "No Supervisor",
+            "description": "Storage is not supported."
+          },
+          "fetch_mounts": {
+            "title": "Error loading locations",
+            "description": "There was an error loading the locations."
+          }
+        }
+      },
       "stt-picker": {
         "stt": "Speech-to-text",
         "none": "None"

@@ -33,6 +33,7 @@ const LOAD_ELEMENTS = {
   object: () => import("./ha-selector-object"),
   select: () => import("./ha-selector-select"),
   state: () => import("./ha-selector-state"),
+  storage_location: () => import("./ha-selector-storage-location"),
   stt: () => import("./ha-selector-stt"),
   target: () => import("./ha-selector-target"),
   template: () => import("./ha-selector-template"),

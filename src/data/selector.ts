@@ -300,6 +300,12 @@ export interface StateSelector {
   } | null;
 }
 
+export interface StorageLocationSelector {
+  storage_location: {
+    usage?: "backup" | "media";
+  } | null;
+}
+
 export interface StringSelector {
   text: {
     multiline?: boolean;
