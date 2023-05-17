@@ -793,7 +793,7 @@ class HUIRoot extends LitElement {
   }
 
   private _showVoiceCommandDialog(): void {
-    showVoiceCommandDialog(this);
+    showVoiceCommandDialog(this, this.hass);
   }
 
   private _handleEnableEditMode(ev: CustomEvent<RequestSelectedDetail>): void {
