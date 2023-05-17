@@ -21,21 +21,6 @@
       "unavailable": "Unavailable"
     }
   },
-  "state_attributes": {
-    "humidifier": {
-      "mode": {
-        "normal": "Normal",
-        "eco": "Eco",
-        "away": "Away",
-        "boost": "Boost",
-        "comfort": "Comfort",
-        "home": "Home",
-        "sleep": "Sleep",
-        "auto": "Auto",
-        "baby": "Baby"
-      }
-    }
-  },
   "state_badge": {
     "default": {
       "unknown": "Unk",
