@@ -1,4 +1,4 @@
-import { mdiBackupRestore, mdiPlayBox } from "@mdi/js";
+import { mdiBackupRestore, mdiHarddisk, mdiPlayBox } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -17,13 +17,15 @@ import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
 
+const __DATA_DISK__ = "<local>";
+
 @customElement("ha-mount-picker")
 class HaMountPicker extends LitElement {
   public hass!: HomeAssistant;
 
   @property() public label?: string;
 
-  @property() public value = "";
+  @property() public value?: string;
 
   @property() public helper?: string;
 
@@ -57,6 +59,14 @@ class HaMountPicker extends LitElement {
         fixedMenuPosition
         naturalMenuWidth
       >
+        <ha-list-item graphic="icon" .value=${__DATA_DISK__}>
+          <span
+            >${this.hass.localize(
+              "ui.components.mount-picker.use_datadisk"
+            )}</span
+          >
+          <ha-svg-icon slot="graphic" .path=${mdiHarddisk}></ha-svg-icon>
+        </ha-list-item>
         ${this._filterMounts(this._mounts, this.usage).map(
           (mount) => html`<ha-list-item
             twoline

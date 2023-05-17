@@ -465,6 +465,7 @@
       },
       "mount-picker": {
         "mount": "Location",
+        "use_datadisk": "Use data disk",
         "error": {
           "no_supervisor": {
             "title": "No Supervisor",
