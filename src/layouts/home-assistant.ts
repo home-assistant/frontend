@@ -154,6 +154,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       if (this.render !== this.renderHass) {
         this._renderInitInfo(false);
       } else if (this._databaseMigration) {
+        // we already removed the launch screen, so we refresh to add it again to show the migration screen
         location.reload();
       }
     }
@@ -205,6 +206,10 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       const info = await getRecorderInfo(this.hass);
       this._databaseMigration =
         info.migration_in_progress && !info.migration_is_live;
+      if (this._databaseMigration) {
+        // check every 5 seconds if the migration is done
+        setTimeout(() => this.checkDataBaseMigration(), 5000);
+      }
     } else {
       this._databaseMigration = false;
     }
