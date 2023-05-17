@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import { mdiBackupRestore, mdiPlayBox } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -14,6 +13,7 @@ import {
 } from "../data/supervisor/mounts";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../types";
+import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
 
@@ -58,7 +58,11 @@ class HaMountPicker extends LitElement {
         naturalMenuWidth
       >
         ${this._filterMounts(this._mounts, this.usage).map(
-          (mount) => html`<mwc-list-item twoline graphic="icon">
+          (mount) => html`<ha-list-item
+            twoline
+            graphic="icon"
+            .value=${mount.name}
+          >
             <span>${mount.name}</span>
             <span slot="secondary"
               >${mount.server}${mount.port
@@ -73,7 +77,7 @@ class HaMountPicker extends LitElement {
                 ? mdiPlayBox
                 : mdiBackupRestore}
             ></ha-svg-icon>
-          </mwc-list-item>`
+          </ha-list-item>`
         )}</ha-select
       >
     `;
