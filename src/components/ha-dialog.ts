@@ -72,7 +72,7 @@ export class HaDialog extends DialogBase {
           --dialog-scroll-divider-color,
           var(--divider-color)
         );
-        z-index: var(--dialog-z-index, 7);
+        z-index: var(--dialog-z-index, 8);
         -webkit-backdrop-filter: var(--dialog-backdrop-filter, none);
         backdrop-filter: var(--dialog-backdrop-filter, none);
         --mdc-dialog-box-shadow: var(--dialog-box-shadow, none);
