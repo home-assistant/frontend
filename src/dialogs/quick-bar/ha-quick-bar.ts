@@ -775,7 +775,7 @@ export class QuickBar extends LitElement {
         }
 
         ha-dialog {
-          --dialog-z-index: 8;
+          --dialog-z-index: 9;
           --dialog-content-padding: 0;
         }
 
