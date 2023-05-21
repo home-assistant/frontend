@@ -9692,7 +9692,7 @@ __metadata:
     superstruct: 1.0.3
     systemjs: 6.14.1
     tar: 6.1.15
-    terser-webpack-plugin: 5.3.8
+    terser-webpack-plugin: 5.3.9
     tinykeys: 1.4.0
     ts-lit-plugin: 1.2.1
     tsparticles-engine: 2.9.3
@@ -14947,9 +14947,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:5.3.8, terser-webpack-plugin@npm:^5.3.7":
-  version: 5.3.8
-  resolution: "terser-webpack-plugin@npm:5.3.8"
+"terser-webpack-plugin@npm:5.3.9, terser-webpack-plugin@npm:^5.3.7":
+  version: 5.3.9
+  resolution: "terser-webpack-plugin@npm:5.3.9"
   dependencies:
     "@jridgewell/trace-mapping": ^0.3.17
     jest-worker: ^27.4.5
@@ -14965,7 +14965,7 @@ __metadata:
       optional: true
     uglify-js:
       optional: true
-  checksum: 0ffc2a1949b1fd60ef9c815c4629b9817656db612bb58c5db96e3b04204c86afd142b115392e48733364edc7bf95131f54c10174c05f046ba8f2adead6b06c3c
+  checksum: 41705713d6f9cb83287936b21e27c658891c78c4392159f5148b5623f0e8c48559869779619b058382a4c9758e7820ea034695e57dc7c474b4962b79f553bc5f
   languageName: node
   linkType: hard
 
