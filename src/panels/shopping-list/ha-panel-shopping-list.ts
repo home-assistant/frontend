@@ -76,7 +76,7 @@ class PanelShoppingList extends LitElement {
   }
 
   private _showVoiceCommandDialog(): void {
-    showVoiceCommandDialog(this);
+    showVoiceCommandDialog(this, this.hass);
   }
 
   static get styles(): CSSResultGroup {
