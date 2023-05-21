@@ -12,6 +12,7 @@ import {
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-icon-button";
@@ -157,7 +158,16 @@ class MoreInfoMediaPlayer extends LitElement {
                 ${stateObj.attributes.source_list!.map(
                   (source) =>
                     html`
-                      <mwc-list-item .value=${source}>${source}</mwc-list-item>
+                      <mwc-list-item .value=${source}
+                        >${computeAttributeValueDisplay(
+                          this.hass.localize,
+                          stateObj,
+                          this.hass.locale,
+                          this.hass.entities,
+                          "source",
+                          source
+                        )}</mwc-list-item
+                      >
                     `
                 )}
                 <ha-svg-icon .path=${mdiLoginVariant} slot="icon"></ha-svg-icon>
@@ -181,7 +191,16 @@ class MoreInfoMediaPlayer extends LitElement {
               >
                 ${stateObj.attributes.sound_mode_list.map(
                   (mode) => html`
-                    <mwc-list-item .value=${mode}>${mode}</mwc-list-item>
+                    <mwc-list-item .value=${mode}
+                      >${computeAttributeValueDisplay(
+                        this.hass.localize,
+                        stateObj,
+                        this.hass.locale,
+                        this.hass.entities,
+                        "sound_mode",
+                        mode
+                      )}</mwc-list-item
+                    >
                   `
                 )}
                 <ha-svg-icon .path=${mdiMusicNote} slot="icon"></ha-svg-icon>
