@@ -3833,7 +3833,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-node-resolve@npm:15.0.2":
+"@rollup/plugin-node-resolve@npm:15.0.2, @rollup/plugin-node-resolve@npm:^15.0.1":
   version: 15.0.2
   resolution: "@rollup/plugin-node-resolve@npm:15.0.2"
   dependencies:
@@ -5031,6 +5031,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@web/dev-server-core@npm:^0.5.0":
+  version: 0.5.1
+  resolution: "@web/dev-server-core@npm:0.5.1"
+  dependencies:
+    "@types/koa": ^2.11.6
+    "@types/ws": ^7.4.0
+    "@web/parse5-utils": ^2.0.0
+    chokidar: ^3.4.3
+    clone: ^2.1.2
+    es-module-lexer: ^1.0.0
+    get-stream: ^6.0.0
+    is-stream: ^2.0.0
+    isbinaryfile: ^5.0.0
+    koa: ^2.13.0
+    koa-etag: ^4.0.0
+    koa-send: ^5.0.1
+    koa-static: ^5.0.0
+    lru-cache: ^8.0.4
+    mime-types: ^2.1.27
+    parse5: ^6.0.1
+    picomatch: ^2.2.2
+    ws: ^7.4.2
+  checksum: 95eab93dcad632733f3e16270a2723967f190b16fc31000cf221d4b68e9277a2f95bd31f12798ccbe3ce1642d5d6295f2518f732219a0bc4af6674a79ea686d5
+  languageName: node
+  linkType: hard
+
 "@web/dev-server-hmr@npm:^0.1.11":
   version: 0.1.12
   resolution: "@web/dev-server-hmr@npm:0.1.12"
@@ -5040,7 +5066,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server-rollup@npm:0.4.1, @web/dev-server-rollup@npm:^0.4.1":
+"@web/dev-server-rollup@npm:0.5.0":
+  version: 0.5.0
+  resolution: "@web/dev-server-rollup@npm:0.5.0"
+  dependencies:
+    "@rollup/plugin-node-resolve": ^15.0.1
+    "@web/dev-server-core": ^0.5.0
+    nanocolors: ^0.2.1
+    parse5: ^6.0.1
+    rollup: ^3.15.0
+    whatwg-url: ^11.0.0
+  checksum: c86623c9675b7d44c6ca00297e8706ab16703f66cd6ab80c1d8430d424972e4a7e24226f59ad247fa5b21c073230c6662792bd949c42983a78dbec67085ab91f
+  languageName: node
+  linkType: hard
+
+"@web/dev-server-rollup@npm:^0.4.1":
   version: 0.4.1
   resolution: "@web/dev-server-rollup@npm:0.4.1"
   dependencies:
@@ -5086,6 +5126,16 @@ __metadata:
     "@types/parse5": ^6.0.1
     parse5: ^6.0.1
   checksum: 3320b2c4ea1e6a2ff1e57086b0c697a71dac7a6e54da86b2fb8e6c1d5a673bf9b911a743a10daa8cd62a571719edf3e66c9b17e87d79cc982f234bf141e2e178
+  languageName: node
+  linkType: hard
+
+"@web/parse5-utils@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@web/parse5-utils@npm:2.0.0"
+  dependencies:
+    "@types/parse5": ^6.0.1
+    parse5: ^6.0.1
+  checksum: 3f8d67380aa335e8b4ad9bc447780cc5c068cb749feb2e5adc1dabe51445483c3ead598c75d58e619bed1944fe2c92b55fdbf19212939cc3aebca143d3a7fa70
   languageName: node
   linkType: hard
 
@@ -9643,7 +9693,7 @@ __metadata:
     "@vibrant/quantizer-mmcq": 3.2.1-alpha.1
     "@vue/web-component-wrapper": 1.3.0
     "@web/dev-server": 0.1.38
-    "@web/dev-server-rollup": 0.4.1
+    "@web/dev-server-rollup": 0.5.0
     "@webcomponents/scoped-custom-element-registry": 0.0.9
     "@webcomponents/webcomponentsjs": 2.8.0
     app-datepicker: 5.1.1
@@ -11626,6 +11676,13 @@ __metadata:
   version: 7.18.3
   resolution: "lru-cache@npm:7.18.3"
   checksum: e550d772384709deea3f141af34b6d4fa392e2e418c1498c078de0ee63670f1f46f5eee746e8ef7e69e1c895af0d4224e62ee33e66a543a14763b0f2e74c1356
+  languageName: node
+  linkType: hard
+
+"lru-cache@npm:^8.0.4":
+  version: 8.0.5
+  resolution: "lru-cache@npm:8.0.5"
+  checksum: 87d72196d8f46e8299c4ab576ed2ec8a07e3cbef517dc9874399c0b2470bd9bf62aacec3b67f84ed6d74aaa1ef31636d048edf996f76248fd17db72bfb631609
   languageName: node
   linkType: hard
 
@@ -13908,6 +13965,20 @@ __metadata:
   bin:
     rollup: dist/bin/rollup
   checksum: 6a2bf167b3587d4df709b37d149ad0300692cc5deb510f89ac7bdc77c8738c9546ae3de9322b0968e1ed2b0e984571f5f55aae28fa7de4cfcb1bc5402a4e2be6
+  languageName: node
+  linkType: hard
+
+"rollup@npm:^3.15.0":
+  version: 3.22.0
+  resolution: "rollup@npm:3.22.0"
+  dependencies:
+    fsevents: ~2.3.2
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    rollup: dist/bin/rollup
+  checksum: 6da2bfe1eb16714ccd4bf56ca92430309dc71b4492a3c38502f68f645433dcc789fb79f3761fc2269aa0cf20ece7821c4d7c95b860b7343c2ed52ed1c36c9a90
   languageName: node
   linkType: hard
 
