@@ -277,7 +277,7 @@ class DialogMediaManage extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
-          --dialog-z-index: 8;
+          --dialog-z-index: 9;
           --dialog-content-padding: 0;
         }
 

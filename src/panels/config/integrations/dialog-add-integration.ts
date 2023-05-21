@@ -44,6 +44,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
+import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
 import "./ha-domain-integrations";
 import "./ha-integration-list-item";
@@ -127,6 +128,11 @@ class AddIntegrationDialog extends LitElement {
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
+
     if (this._filter === undefined && this._initialFilter !== undefined) {
       this._filter = this._initialFilter;
     }
@@ -234,10 +240,10 @@ class AddIntegrationDialog extends LitElement {
       if (filter) {
         const options: Fuse.IFuseOptions<IntegrationListItem> = {
           keys: [
-            "name",
-            "domain",
+            { name: "name", weight: 5 },
+            { name: "domain", weight: 5 },
+            { name: "integrations", weight: 2 },
             "supported_by",
-            "integrations",
             "iot_standards",
           ],
           isCaseSensitive: false,

@@ -567,7 +567,7 @@ class HUIRoot extends LitElement {
     if (searchParams.edit === "1") {
       this.lovelace!.setEditMode(true);
     } else if (searchParams.conversation === "1") {
-      showVoiceCommandDialog(this);
+      showVoiceCommandDialog(this, this.hass);
       window.history.replaceState(
         null,
         "",
@@ -793,7 +793,7 @@ class HUIRoot extends LitElement {
   }
 
   private _showVoiceCommandDialog(): void {
-    showVoiceCommandDialog(this);
+    showVoiceCommandDialog(this, this.hass);
   }
 
   private _handleEnableEditMode(ev: CustomEvent<RequestSelectedDetail>): void {
