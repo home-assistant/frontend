@@ -5,7 +5,7 @@
     "context": ".."
   },
   "appPort": "8124:8123",
-  "postCreateCommand": "script/bootstrap",
+  "postStartCommand": "script/bootstrap",
   "containerEnv": {
     "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}"
   },
