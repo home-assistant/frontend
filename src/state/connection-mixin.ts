@@ -249,6 +249,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       // @ts-ignore
       this.hass!.callWS({ type: "get_config" }).then((config: HassConfig) => {
         this._updateHass({ config });
+        this.checkDataBaseMigration();
       });
     }
 
