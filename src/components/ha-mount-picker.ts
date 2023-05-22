@@ -11,8 +11,8 @@ import {
   SupervisorMountType,
   SupervisorMountUsage,
 } from "../data/supervisor/mounts";
-import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../types";
+import "./ha-alert";
 import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
@@ -37,6 +37,8 @@ class HaMountPicker extends LitElement {
 
   @state() private _mounts?: SupervisorMount[];
 
+  @state() private _error?: string;
+
   protected firstUpdated() {
     this._getMounts();
   }
@@ -44,6 +46,9 @@ class HaMountPicker extends LitElement {
   protected render() {
     if (!this._mounts) {
       return nothing;
+    }
+    if (this._error) {
+      return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
     return html`
       <ha-select
@@ -113,24 +118,14 @@ class HaMountPicker extends LitElement {
           )
         );
       } else {
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.components.mount-picker.error.no_supervisor.title"
-          ),
-          text: this.hass.localize(
-            "ui.components.mount-picker.error.no_supervisor.description"
-          ),
-        });
+        this._error = this.hass.localize(
+          "ui.components.mount-picker.error.no_supervisor"
+        );
       }
     } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.components.mount-picker.error.fetch_mounts.title"
-        ),
-        text: this.hass.localize(
-          "ui.components.mount-picker.error.fetch_mounts.description"
-        ),
-      });
+      this._error = this.hass.localize(
+        "ui.components.mount-picker.error.fetch_mounts"
+      );
     }
   }
 

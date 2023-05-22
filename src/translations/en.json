@@ -453,28 +453,16 @@
       "addon-picker": {
         "addon": "Add-on",
         "error": {
-          "no_supervisor": {
-            "title": "No Supervisor",
-            "description": "Add-ons are not supported."
-          },
-          "fetch_addons": {
-            "title": "Error loading add-ons",
-            "description": "There was an error loading add-ons."
-          }
+          "no_supervisor": "Add-ons are not supported on your installation.",
+          "fetch_addons": "There was an error loading add-ons."
         }
       },
       "mount-picker": {
         "mount": "Location",
         "use_datadisk": "Use data disk",
         "error": {
-          "no_supervisor": {
-            "title": "No Supervisor",
-            "description": "Storage is not supported."
-          },
-          "fetch_mounts": {
-            "title": "Error loading locations",
-            "description": "There was an error loading the locations."
-          }
+          "no_supervisor": "Storage is not supported on your installation.",
+          "fetch_mounts": "There was an error loading the locations."
         }
       },
       "stt-picker": {
