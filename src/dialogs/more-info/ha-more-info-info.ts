@@ -2,6 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { ExtEntityRegistryEntry } from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
@@ -19,6 +20,8 @@ export class MoreInfoInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public entityId!: string;
+
+  @property() public entry?: ExtEntityRegistryEntry | null;
 
   protected render() {
     const entityId = this.entityId;
@@ -74,6 +77,7 @@ export class MoreInfoInfo extends LitElement {
             ?full-height=${isNewMoreInfo}
             .stateObj=${stateObj}
             .hass=${this.hass}
+            .entry=${this.entry}
           ></more-info-content>
           <div class="toto"></div>
         </div>

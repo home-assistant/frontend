@@ -1,4 +1,5 @@
 import { expandHex } from "./hex";
+import { clamp } from "../number/clamp";
 
 const rgb_hex = (component: number): string => {
   const hex = Math.round(Math.min(Math.max(component, 0), 255)).toString(16);
@@ -126,3 +127,43 @@ export const rgb2hs = (rgb: [number, number, number]): [number, number] =>
 
 export const hs2rgb = (hs: [number, number]): [number, number, number] =>
   hsv2rgb([hs[0], hs[1], 255]);
+
+export const temperature2rgb = (
+  temperature: number
+): [number, number, number] => {
+  const value = temperature / 100;
+  return [
+    temperatureRed(value),
+    temperatureGreen(value),
+    temperatureBlue(value),
+  ];
+};
+
+const temperatureRed = (temperature: number): number => {
+  if (temperature <= 66) {
+    return 255;
+  }
+  const red = 329.698727446 * (temperature - 60) ** -0.1332047592;
+  return clamp(red, 0, 255);
+};
+
+const temperatureGreen = (temperature: number): number => {
+  let green: number;
+  if (temperature <= 66) {
+    green = 99.4708025861 * Math.log(temperature) - 161.1195681661;
+  } else {
+    green = 288.1221695283 * (temperature - 60) ** -0.0755148492;
+  }
+  return clamp(green, 0, 255);
+};
+
+const temperatureBlue = (temperature: number): number => {
+  if (temperature >= 66) {
+    return 255;
+  }
+  if (temperature <= 19) {
+    return 0;
+  }
+  const blue = 138.5177312231 * Math.log(temperature - 10) - 305.0447927307;
+  return clamp(blue, 0, 255);
+};

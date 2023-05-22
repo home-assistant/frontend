@@ -377,6 +377,7 @@ export class MoreInfoDialog extends LitElement {
                         dialogInitialFocus
                         .hass=${this.hass}
                         .entityId=${this._entityId}
+                        .entry=${this._entry}
                       ></ha-more-info-info>
                     `
                   : this._currView === "history"

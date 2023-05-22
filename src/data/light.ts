@@ -2,6 +2,7 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+import { hs2rgb } from "../common/color/convert-color";
 
 export const enum LightEntityFeature {
   EFFECT = 4,
@@ -88,3 +89,65 @@ interface LightEntityAttributes extends HassEntityAttributeBase {
 export interface LightEntity extends HassEntityBase {
   attributes: LightEntityAttributes;
 }
+
+export type FavoriteColor =
+  | {
+      rgb_color: [number, number, number];
+    }
+  | {
+      color_temp_kelvin: number;
+    }
+  | {
+      white: true;
+    };
+
+const FAVORITE_COLOR_COUNT = 6;
+
+export const computeDefaultFavoriteColors = (
+  stateObj: LightEntity
+): FavoriteColor[] => {
+  const colors: FavoriteColor[] = [];
+
+  const supportsColorTemp = lightSupportsColorMode(
+    stateObj,
+    LightColorMode.COLOR_TEMP
+  );
+
+  const supportsWhite = lightSupportsColorMode(stateObj, LightColorMode.WHITE);
+
+  const supportsColor = lightSupportsColor(stateObj);
+
+  const colorPerMode =
+    supportsColorTemp && supportsColor
+      ? FAVORITE_COLOR_COUNT / 2
+      : FAVORITE_COLOR_COUNT;
+
+  if (supportsColorTemp) {
+    const min = stateObj.attributes.min_color_temp_kelvin!;
+    const max = stateObj.attributes.max_color_temp_kelvin!;
+    const step = (max - min) / (colorPerMode - 1);
+
+    for (let i = 0; i < colorPerMode; i++) {
+      colors.push({
+        color_temp_kelvin: Math.round(min + step * i),
+      });
+    }
+  }
+
+  if (supportsColor) {
+    const step = 360 / colorPerMode;
+    for (let i = 0; i < colorPerMode; i++) {
+      colors.push({
+        rgb_color: hs2rgb([step * i, 1]),
+      });
+    }
+  }
+
+  // Replace last color by white mode if supported
+  if (supportsWhite) {
+    colors[FAVORITE_COLOR_COUNT - 1] = {
+      white: true,
+    };
+  }
+  return colors;
+};
