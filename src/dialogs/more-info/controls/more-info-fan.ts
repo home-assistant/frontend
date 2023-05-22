@@ -282,14 +282,14 @@ class MoreInfoFan extends LitElement {
                     <md-outlined-button
                       slot="trigger"
                       .disabled=${this.stateObj.state === UNAVAILABLE}
-                      .label=${this._presetMode ||
+                    >
+                      ${this._presetMode ||
                       computeAttributeNameDisplay(
                         this.hass.localize,
                         this.stateObj,
                         this.hass.entities,
                         "preset_mode"
                       )}
-                    >
                       <ha-svg-icon
                         slot="icon"
                         path=${mdiCreation}
@@ -334,6 +334,7 @@ class MoreInfoFan extends LitElement {
         md-outlined-button {
           --ha-icon-display: block;
           --md-sys-color-primary: var(--primary-text-color);
+          --md-sys-color-outline: var(--divider-color);
         }
       `,
     ];

@@ -21,21 +21,6 @@
       "unavailable": "Unavailable"
     }
   },
-  "state_attributes": {
-    "humidifier": {
-      "mode": {
-        "normal": "Normal",
-        "eco": "Eco",
-        "away": "Away",
-        "boost": "Boost",
-        "comfort": "Comfort",
-        "home": "Home",
-        "sleep": "Sleep",
-        "auto": "Auto",
-        "baby": "Baby"
-      }
-    }
-  },
   "state_badge": {
     "default": {
       "unknown": "Unk",
@@ -478,7 +463,10 @@
           }
         }
       },
-      "stt-picker": { "stt": "Speech-to-text", "none": "None" },
+      "stt-picker": {
+        "stt": "Speech-to-text",
+        "none": "None"
+      },
       "related-filter-menu": {
         "filter": "Filter",
         "filter_by_entity": "Filter by entity",
@@ -506,11 +494,15 @@
       "relative_time": {
         "never": "Never"
       },
+      "absolute_time": {
+        "never": "[%key:ui::components::relative_time::never%]"
+      },
       "history_charts": {
         "history_disabled": "History integration disabled",
         "loading_history": "Loading state history…",
         "no_history_found": "No state history found.",
-        "error": "Unable to load history"
+        "error": "Unable to load history",
+        "duration": "Duration"
       },
       "map": {
         "error": "Unable to load map"
@@ -839,7 +831,7 @@
         "send_text": "Send text",
         "start_listening": "Start listening",
         "manage_assistants": "Manage assistants",
-        "not_supported_microphone": "Microphone is not supported. You need to access Home Assistant from a secure URL (HTTPS) to use it.",
+        "not_supported_microphone_browser": "Your connection to Home Assistant is not secured using HTTPS. This causes browsers to block Home Assistant from accessing the microphone.",
         "not_supported_microphone_documentation": "Visit {documentation_link} to learn how to use a secure URL",
         "not_supported_microphone_documentation_link": "the documentation"
       },
@@ -980,6 +972,8 @@
           "name": "Name",
           "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
+          "default_code": "Default code",
+          "default_code_error": "Code does not match code format",
           "entity_id": "Entity ID",
           "unit_of_measurement": "Unit of Measurement",
           "precipitation_unit": "Precipitation unit",
@@ -2561,6 +2555,9 @@
                 },
                 "parallel": {
                   "label": "Run in parallel"
+                },
+                "variables": {
+                  "label": "Define variables"
                 }
               }
             }
@@ -3463,7 +3460,8 @@
             "update_button": "Update Configuration",
             "download_backup": "Download Backup",
             "migrate_radio": "Migrate Radio",
-            "network_settings_title": "Network Settings"
+            "network_settings_title": "Network Settings",
+            "change_channel": "Change channel"
           },
           "add_device_page": {
             "spinner": "Searching for Zigbee devices…",
@@ -3557,6 +3555,14 @@
             "lqi": "LQI",
             "relationship": "Relationship",
             "depth": "Depth"
+          },
+          "change_channel_dialog": {
+            "title": "Change network channel",
+            "new_channel": "New channel",
+            "change_channel": "Change channel",
+            "migration_warning": "Zigbee channel migration is an experimental feature and relies on devices on your network to support it. Device support for this feature varies and only a portion of your network may end up migrating!",
+            "channel_has_been_changed": "Network channel has been changed",
+            "devices_will_rejoin": "Devices will re-join the network over time. This may take a few minutes."
           }
         },
         "zwave_js": {
@@ -3961,6 +3967,7 @@
           "description": "{percent_used} used - {free_space} free",
           "used_space": "Used Space",
           "emmc_lifetime_used": "eMMC Lifetime Used",
+          "disk_metrics": "Disk metrics",
           "datadisk": {
             "title": "Move data disk",
             "description": "You are currently using ''{current_path}'' as data disk. Moving the data disk will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
@@ -3974,6 +3981,60 @@
             "cancel": "[%key:ui::common::cancel%]",
             "failed_to_move": "Failed to move data disk",
             "move": "Move"
+          },
+          "network_mounts": {
+            "title": "Network storage",
+            "add_title": "Add network storage",
+            "update_title": "Update network storage",
+            "no_mounts": "No connected network storage",
+            "mount_usage": {
+              "backup": "Backup",
+              "media": "Media"
+            },
+            "mount_type": {
+              "nfs": "Network File Share (NFS)",
+              "cifs": "Samba/Windows (CIFS)"
+            },
+            "options": {
+              "name": {
+                "title": "Name",
+                "description": "This name will be shown to you in the UI, and will also be the name of the folder created on your system"
+              },
+              "share": {
+                "title": "Remote share",
+                "description": "This is the name of the share you created on your storage server"
+              },
+              "server": {
+                "title": "Server",
+                "description": "This is the domain name (FQDN) or IP address of the storage server you want to connect to"
+              },
+              "path": {
+                "title": "Remote share path",
+                "description": "This is the path of the remote share on your storage server"
+              },
+              "type": {
+                "title": "Protocol",
+                "description": "This determines how to communicate with the storage server"
+              },
+              "usage": {
+                "title": "Usage",
+                "description": "This determines how the share is intended to be used"
+              },
+              "username": {
+                "title": "Username",
+                "description": "This is your username for the samba share"
+              },
+              "password": {
+                "title": "Password",
+                "description": "This is your password for the samba share"
+              }
+            },
+            "connect": "Connect",
+            "update": "Update",
+            "errors": {
+              "reload": "Could not reload mount {mount}",
+              "invalid_name": "Invalid name, can only contain alphanumeric characters and underscores"
+            }
           }
         },
         "system_health": {
@@ -5528,7 +5589,8 @@
       "addon_running": "Add-on is running",
       "addon_stopped": "Add-on is stopped",
       "addons": "Installed add-ons",
-      "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!"
+      "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!",
+      "search_addons": "Search add-ons"
     },
     "store": {
       "missing_addons": "Missing add-ons? Enable advanced mode in your user profile page",

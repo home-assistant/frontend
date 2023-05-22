@@ -755,52 +755,52 @@ export class HaConfigDevicePage extends LitElement {
                                     )}
                                     .path=${mdiDotsVertical}
                                   ></ha-icon-button>
-                                  ${actions.map(
-                                    (deviceAction) => html`
-                                      <a
-                                        href=${ifDefined(deviceAction.href)}
-                                        target=${ifDefined(deviceAction.target)}
-                                        rel=${ifDefined(
-                                          deviceAction.target
-                                            ? "noreferrer"
-                                            : undefined
-                                        )}
-                                      >
-                                        <mwc-list-item
-                                          class=${ifDefined(
-                                            deviceAction.classes
+                                  ${actions.map((deviceAction) => {
+                                    const listItem = html`<mwc-list-item
+                                      class=${ifDefined(deviceAction.classes)}
+                                      .action=${deviceAction.action}
+                                      @click=${this._deviceActionClicked}
+                                      graphic="icon"
+                                      .hasMeta=${Boolean(
+                                        deviceAction.trailingIcon
+                                      )}
+                                    >
+                                      ${deviceAction.label}
+                                      ${deviceAction.icon
+                                        ? html`
+                                            <ha-svg-icon
+                                              class=${ifDefined(
+                                                deviceAction.classes
+                                              )}
+                                              .path=${deviceAction.icon}
+                                              slot="graphic"
+                                            ></ha-svg-icon>
+                                          `
+                                        : ""}
+                                      ${deviceAction.trailingIcon
+                                        ? html`
+                                            <ha-svg-icon
+                                              slot="meta"
+                                              .path=${deviceAction.trailingIcon}
+                                            ></ha-svg-icon>
+                                          `
+                                        : ""}
+                                    </mwc-list-item>`;
+                                    return deviceAction.href
+                                      ? html`<a
+                                          href=${deviceAction.href}
+                                          target=${ifDefined(
+                                            deviceAction.target
                                           )}
-                                          .action=${deviceAction.action}
-                                          @click=${this._deviceActionClicked}
-                                          graphic="icon"
-                                          .hasMeta=${Boolean(
-                                            deviceAction.trailingIcon
+                                          rel=${ifDefined(
+                                            deviceAction.target
+                                              ? "noreferrer"
+                                              : undefined
                                           )}
-                                        >
-                                          ${deviceAction.label}
-                                          ${deviceAction.icon
-                                            ? html`
-                                                <ha-svg-icon
-                                                  class=${ifDefined(
-                                                    deviceAction.classes
-                                                  )}
-                                                  .path=${deviceAction.icon}
-                                                  slot="graphic"
-                                                ></ha-svg-icon>
-                                              `
-                                            : ""}
-                                          ${deviceAction.trailingIcon
-                                            ? html`
-                                                <ha-svg-icon
-                                                  slot="meta"
-                                                  .path=${deviceAction.trailingIcon}
-                                                ></ha-svg-icon>
-                                              `
-                                            : ""}
-                                        </mwc-list-item>
-                                      </a>
-                                    `
-                                  )}
+                                          >${listItem}
+                                        </a>`
+                                      : listItem;
+                                  })}
                                 </ha-button-menu>
                               `
                             : ""}

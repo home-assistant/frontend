@@ -67,12 +67,10 @@ class MoreInfoAlarmControlPanel extends LitElement {
                     .path=${domainIcon("alarm_control_panel", this.stateObj)}
                   ></ha-svg-icon>
                 </div>
-                <md-outlined-button
-                  .label=${this.hass.localize(
+                <md-outlined-button @click=${this._disarm}>
+                  ${this.hass.localize(
                     "ui.dialogs.more_info_control.alarm_control_panel.disarm_action"
                   )}
-                  @click=${this._disarm}
-                >
                   <ha-svg-icon slot="icon" .path=${mdiShieldOff}></ha-svg-icon>
                 </md-outlined-button>
               </div>
@@ -99,6 +97,7 @@ class MoreInfoAlarmControlPanel extends LitElement {
         md-outlined-button {
           --ha-icon-display: block;
           --md-sys-color-primary: var(--primary-text-color);
+          --md-sys-color-outline: var(--divider-color);
         }
         @keyframes pulse {
           0% {

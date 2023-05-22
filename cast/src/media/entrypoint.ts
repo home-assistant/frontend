@@ -1,3 +1,5 @@
+export {}; // for Babel to treat as a module
+
 const castContext = cast.framework.CastReceiverContext.getInstance();
 
 const playerManager = castContext.getPlayerManager();

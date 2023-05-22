@@ -1,8 +1,8 @@
-import { shouldPolyfill as shouldPolyfillDateTime } from "@formatjs/intl-datetimeformat/lib/should-polyfill";
-import { shouldPolyfill as shouldPolyfillDisplayName } from "@formatjs/intl-displaynames/lib/should-polyfill";
-import { shouldPolyfill as shouldPolyfillLocale } from "@formatjs/intl-locale/lib/should-polyfill";
-import { shouldPolyfill as shouldPolyfillPluralRules } from "@formatjs/intl-pluralrules/lib/should-polyfill";
-import { shouldPolyfill as shouldPolyfillRelativeTime } from "@formatjs/intl-relativetimeformat/lib/should-polyfill";
+import { shouldPolyfill as shouldPolyfillDateTime } from "@formatjs/intl-datetimeformat/should-polyfill";
+import { shouldPolyfill as shouldPolyfillDisplayName } from "@formatjs/intl-displaynames/should-polyfill";
+import { shouldPolyfill as shouldPolyfillLocale } from "@formatjs/intl-locale/should-polyfill";
+import { shouldPolyfill as shouldPolyfillPluralRules } from "@formatjs/intl-pluralrules/should-polyfill";
+import { shouldPolyfill as shouldPolyfillRelativeTime } from "@formatjs/intl-relativetimeformat/should-polyfill";
 import { getLocalLanguage } from "../util/common-translation";
 import { polyfillLocaleData } from "./locale-data-polyfill";
 
@@ -14,11 +14,7 @@ const polyfillIntl = async () => {
     await import("@formatjs/intl-locale/polyfill-force");
   }
   if (shouldPolyfillPluralRules(locale)) {
-    polyfills.push(
-      import("@formatjs/intl-pluralrules/polyfill-force").then(
-        () => import("@formatjs/intl-pluralrules/locale-data/en")
-      )
-    );
+    polyfills.push(import("@formatjs/intl-pluralrules/polyfill-force"));
   }
   if (shouldPolyfillRelativeTime(locale)) {
     polyfills.push(import("@formatjs/intl-relativetimeformat/polyfill-force"));
@@ -31,11 +27,10 @@ const polyfillIntl = async () => {
     );
   }
   if (shouldPolyfillDisplayName(locale)) {
-    polyfills.push(
-      import("@formatjs/intl-displaynames/polyfill-force").then(
-        () => import("@formatjs/intl-displaynames/locale-data/en")
-      )
-    );
+    polyfills.push(import("@formatjs/intl-displaynames/polyfill-force"));
+  }
+  if (polyfills.length === 0) {
+    return;
   }
   await Promise.all(polyfills).then(() =>
     // Load the default language

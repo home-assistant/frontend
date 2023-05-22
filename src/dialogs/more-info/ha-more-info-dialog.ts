@@ -20,7 +20,7 @@ import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-reques
 import { navigate } from "../../common/navigate";
 import "../../components/ha-button-menu";
 import "../../components/ha-dialog";
-import "../../components/ha-header-bar";
+import "../../components/ha-dialog-header";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-list-item";
@@ -36,7 +36,6 @@ import { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
   computeShowLogBookComponent,
-  computeShowNewMoreInfo,
   DOMAINS_WITH_MORE_INFO,
   EDITABLE_DOMAINS_WITH_ID,
   EDITABLE_DOMAINS_WITH_UNIQUE_ID,
@@ -240,130 +239,120 @@ export class MoreInfoDialog extends LitElement {
     const title = this._childView?.viewTitle ?? name;
 
     const isInfoView = this._currView === "info" && !this._childView;
-    const isNewMoreInfo = stateObj && computeShowNewMoreInfo(stateObj);
 
     return html`
       <ha-dialog open @closed=${this.closeDialog} .heading=${title} hideActions>
-        <div slot="heading" class="heading">
-          <ha-header-bar>
-            ${isInfoView
-              ? html`
-                  <ha-icon-button
-                    slot="navigationIcon"
-                    dialogAction="cancel"
-                    .label=${this.hass.localize(
-                      "ui.dialogs.more_info_control.dismiss"
-                    )}
-                    .path=${mdiClose}
-                  ></ha-icon-button>
-                `
-              : html`
-                  <ha-icon-button-prev
-                    slot="navigationIcon"
-                    @click=${this._goBack}
-                    .label=${this.hass.localize(
-                      "ui.dialogs.more_info_control.back_to_info"
-                    )}
-                  ></ha-icon-button-prev>
-                `}
-            ${!isInfoView || !isNewMoreInfo
-              ? html`<div
-                  slot="title"
-                  class="main-title"
-                  .title=${title}
-                  @click=${this._enlarge}
-                >
-                  ${title}
-                </div>`
-              : nothing}
-            ${isInfoView
-              ? html`
-                  ${this.shouldShowHistory(domain)
-                    ? html`
+        <ha-dialog-header slot="heading">
+          ${isInfoView
+            ? html`
+                <ha-icon-button
+                  slot="navigationIcon"
+                  dialogAction="cancel"
+                  .label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.dismiss"
+                  )}
+                  .path=${mdiClose}
+                ></ha-icon-button>
+              `
+            : html`
+                <ha-icon-button-prev
+                  slot="navigationIcon"
+                  @click=${this._goBack}
+                  .label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.back_to_info"
+                  )}
+                ></ha-icon-button-prev>
+              `}
+          <span slot="title" .title=${title} @click=${this._enlarge}>
+            ${title}
+          </span>
+          ${isInfoView
+            ? html`
+                ${this.shouldShowHistory(domain)
+                  ? html`
+                      <ha-icon-button
+                        slot="actionItems"
+                        .label=${this.hass.localize(
+                          "ui.dialogs.more_info_control.history"
+                        )}
+                        .path=${mdiChartBoxOutline}
+                        @click=${this._goToHistory}
+                      ></ha-icon-button>
+                    `
+                  : nothing}
+                ${isAdmin
+                  ? html`
+                      <ha-icon-button
+                        slot="actionItems"
+                        .label=${this.hass.localize(
+                          "ui.dialogs.more_info_control.settings"
+                        )}
+                        .path=${mdiCogOutline}
+                        @click=${this._goToSettings}
+                      ></ha-icon-button>
+                      <ha-button-menu
+                        corner="BOTTOM_END"
+                        menuCorner="END"
+                        slot="actionItems"
+                        @closed=${stopPropagation}
+                        fixed
+                      >
                         <ha-icon-button
-                          slot="actionItems"
-                          .label=${this.hass.localize(
-                            "ui.dialogs.more_info_control.history"
-                          )}
-                          .path=${mdiChartBoxOutline}
-                          @click=${this._goToHistory}
+                          slot="trigger"
+                          .label=${this.hass.localize("ui.common.menu")}
+                          .path=${mdiDotsVertical}
                         ></ha-icon-button>
-                      `
-                    : nothing}
-                  ${isAdmin
-                    ? html`
-                        <ha-icon-button
-                          slot="actionItems"
-                          .label=${this.hass.localize(
-                            "ui.dialogs.more_info_control.settings"
-                          )}
-                          .path=${mdiCogOutline}
-                          @click=${this._goToSettings}
-                        ></ha-icon-button>
-                        <ha-button-menu
-                          corner="BOTTOM_END"
-                          menuCorner="END"
-                          slot="actionItems"
-                          @closed=${stopPropagation}
-                          fixed
-                        >
-                          <ha-icon-button
-                            slot="trigger"
-                            .label=${this.hass.localize("ui.common.menu")}
-                            .path=${mdiDotsVertical}
-                          ></ha-icon-button>
 
-                          ${deviceId
-                            ? html`
-                                <ha-list-item
-                                  graphic="icon"
-                                  @request-selected=${this._goToDevice}
-                                >
-                                  ${this.hass.localize(
-                                    "ui.dialogs.more_info_control.device_info"
-                                  )}
-                                  <ha-svg-icon
-                                    slot="graphic"
-                                    .path=${mdiDevices}
-                                  ></ha-svg-icon>
-                                </ha-list-item>
-                              `
-                            : nothing}
-                          ${this.shouldShowEditIcon(domain, stateObj)
-                            ? html`
-                                <ha-list-item
-                                  graphic="icon"
-                                  @request-selected=${this._goToEdit}
-                                >
-                                  ${this.hass.localize(
-                                    "ui.dialogs.more_info_control.edit"
-                                  )}
-                                  <ha-svg-icon
-                                    slot="graphic"
-                                    .path=${mdiPencilOutline}
-                                  ></ha-svg-icon>
-                                </ha-list-item>
-                              `
-                            : nothing}
-                          <ha-list-item
-                            graphic="icon"
-                            @request-selected=${this._goToRelated}
-                          >
-                            ${this.hass.localize(
-                              "ui.dialogs.more_info_control.related"
-                            )}
-                            <ha-svg-icon
-                              slot="graphic"
-                              .path=${mdiInformationOutline}
-                            ></ha-svg-icon>
-                          </ha-list-item>
-                        </ha-button-menu>
-                      `
-                    : nothing}
-                `
-              : nothing}
-          </ha-header-bar>
-        </div>
+                        ${deviceId
+                          ? html`
+                              <ha-list-item
+                                graphic="icon"
+                                @request-selected=${this._goToDevice}
+                              >
+                                ${this.hass.localize(
+                                  "ui.dialogs.more_info_control.device_info"
+                                )}
+                                <ha-svg-icon
+                                  slot="graphic"
+                                  .path=${mdiDevices}
+                                ></ha-svg-icon>
+                              </ha-list-item>
+                            `
+                          : nothing}
+                        ${this.shouldShowEditIcon(domain, stateObj)
+                          ? html`
+                              <ha-list-item
+                                graphic="icon"
+                                @request-selected=${this._goToEdit}
+                              >
+                                ${this.hass.localize(
+                                  "ui.dialogs.more_info_control.edit"
+                                )}
+                                <ha-svg-icon
+                                  slot="graphic"
+                                  .path=${mdiPencilOutline}
+                                ></ha-svg-icon>
+                              </ha-list-item>
+                            `
+                          : nothing}
+                        <ha-list-item
+                          graphic="icon"
+                          @request-selected=${this._goToRelated}
+                        >
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.related"
+                          )}
+                          <ha-svg-icon
+                            slot="graphic"
+                            .path=${mdiInformationOutline}
+                          ></ha-svg-icon>
+                        </ha-list-item>
+                      </ha-button-menu>
+                    `
+                  : nothing}
+              `
+            : nothing}
+        </ha-dialog-header>
         <div
           class="content"
           tabindex="-1"
@@ -455,21 +444,8 @@ export class MoreInfoDialog extends LitElement {
           --chart-base-position: static;
         }
 
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          flex-shrink: 0;
-          display: block;
-          border-bottom: none;
-        }
-
         .content {
           outline: none;
-        }
-
-        ha-dialog[scrolled] .heading {
-          border-bottom: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
         ha-related-items,
@@ -482,11 +458,6 @@ export class MoreInfoDialog extends LitElement {
           .child-view > * {
             min-height: calc(100vh - var(--header-height));
           }
-        }
-
-        .main-title {
-          overflow: hidden;
-          text-overflow: ellipsis;
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {

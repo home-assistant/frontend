@@ -32,26 +32,12 @@ import {
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 
-export type ExtendedStatisticType = StatisticType | "change";
-
-export const supportedStatTypeMap: Record<
-  ExtendedStatisticType,
-  StatisticType
-> = {
+export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
   min: "min",
   max: "max",
   sum: "sum",
   state: "sum",
-  change: "sum",
-};
-
-export const statTypeMap: Record<ExtendedStatisticType, StatisticType> = {
-  mean: "mean",
-  min: "min",
-  max: "max",
-  sum: "sum",
-  state: "state",
   change: "sum",
 };
 
@@ -72,7 +58,7 @@ class StatisticsChart extends LitElement {
 
   @property({ attribute: false }) public endTime?: Date;
 
-  @property({ type: Array }) public statTypes: Array<ExtendedStatisticType> = [
+  @property({ type: Array }) public statTypes: Array<StatisticType> = [
     "sum",
     "min",
     "mean",
@@ -358,7 +344,7 @@ class StatisticsChart extends LitElement {
         : this.statTypes;
 
       sortedTypes.forEach((type) => {
-        if (statisticsHaveType(stats, statTypeMap[type])) {
+        if (statisticsHaveType(stats, type)) {
           const band = drawBands && (type === "min" || type === "max");
           statTypes.push(type);
           statDataSets.push({
@@ -391,7 +377,6 @@ class StatisticsChart extends LitElement {
       let prevDate: Date | null = null;
       // Process chart data.
       let firstSum: number | null | undefined = null;
-      let prevSum: number | null | undefined = null;
       stats.forEach((stat) => {
         const startDate = new Date(stat.start);
         if (prevDate === startDate) {
@@ -408,13 +393,6 @@ class StatisticsChart extends LitElement {
             } else {
               val = (stat.sum || 0) - firstSum;
             }
-          } else if (type === "change") {
-            if (prevSum === null || prevSum === undefined) {
-              prevSum = stat.sum;
-              return;
-            }
-            val = (stat.sum || 0) - prevSum;
-            prevSum = stat.sum;
           } else {
             val = stat[type];
           }
