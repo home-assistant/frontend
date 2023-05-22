@@ -459,7 +459,7 @@
       },
       "mount-picker": {
         "mount": "Location",
-        "use_datadisk": "Use data disk",
+        "use_datadisk": "Use data disk for backup",
         "error": {
           "no_supervisor": "Storage is not supported on your installation.",
           "fetch_mounts": "There was an error loading the locations."
