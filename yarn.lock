@@ -9691,7 +9691,7 @@ __metadata:
     intl-messageformat: 10.3.5
     js-yaml: 4.1.0
     jszip: 3.10.1
-    leaflet: 1.9.3
+    leaflet: 1.9.4
     leaflet-draw: 1.0.4
     lint-staged: 13.2.2
     lit: 2.7.4
@@ -11261,10 +11261,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"leaflet@npm:1.9.3":
-  version: 1.9.3
-  resolution: "leaflet@npm:1.9.3"
-  checksum: f8bc33215e6aed8488cb3d32511b943ff093c1747bcda8a39116e24fe714e12525f1a6843b6a79940ece4cf8d2a86e2cb1d7b80fc550344b3182659b19231a04
+"leaflet@npm:1.9.4":
+  version: 1.9.4
+  resolution: "leaflet@npm:1.9.4"
+  checksum: bfc79f17a247b37b92d84b3c78702501603392d6589fde606de4a825d11f1609d90225388834f2e0709dac327e52dcd4b4b9cc9fd3d590060c5b1e53b84fa6c6
   languageName: node
   linkType: hard
 
