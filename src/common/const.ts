@@ -160,6 +160,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   temperature: mdiThermometer,
   timestamp: mdiClock,
   volatile_organic_compounds: mdiMolecule,
+  volatile_organic_compounds_parts: mdiMolecule,
   voltage: mdiSineWave,
   volume: mdiCarCoolantLevel,
   water: mdiWater,
