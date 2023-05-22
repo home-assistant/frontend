@@ -84,9 +84,9 @@ class MoreInfoLight extends LitElement {
       if (this.entry.options?.light?.favorites_colors) {
         return this.entry.options.light.favorites_colors;
       }
-    }
-    if (this.stateObj) {
-      return computeDefaultFavoriteColors(this.stateObj);
+      if (this.stateObj) {
+        return computeDefaultFavoriteColors(this.stateObj);
+      }
     }
     return [];
   }
