@@ -33,7 +33,7 @@ class HaMountPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @property() public usage?: "backup" | "media";
+  @property() public usage?: SupervisorMountUsage;
 
   @state() private _mounts?: SupervisorMount[];
 

@@ -302,7 +302,7 @@ export interface StateSelector {
 
 export interface StorageLocationSelector {
   storage_location: {
-    usage?: "backup" | "media";
+    usage?: SupervisorMountUsage;
   } | null;
 }
 
