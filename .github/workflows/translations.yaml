@@ -7,9 +7,6 @@ on:
     paths:
       - src/translations/en.json
 
-env:
-  NODE_VERSION: 16
-
 jobs:
   upload:
     name: Upload
@@ -21,5 +18,4 @@ jobs:
       - name: Upload Translations
         run: |
           export LOKALISE_TOKEN="${{ secrets.LOKALISE_TOKEN }}"
-
           ./script/translations_upload_base

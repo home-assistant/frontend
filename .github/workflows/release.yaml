@@ -7,7 +7,6 @@ on:
 
 env:
   PYTHON_VERSION: "3.10"
-  NODE_VERSION: 16
   NODE_OPTIONS: --max_old_space_size=6144
 
 # Set default workflow permissions
@@ -34,10 +33,10 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Set up Node ${{ env.NODE_VERSION }}
+      - name: Setup Node
         uses: actions/setup-node@v3.6.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: ".nvmrc"
           cache: yarn
 
       - name: Install dependencies

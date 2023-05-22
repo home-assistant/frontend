@@ -10,7 +10,6 @@ on:
       - master
 
 env:
-  NODE_VERSION: 16
   NODE_OPTIONS: --max_old_space_size=6144
 
 jobs:
@@ -27,10 +26,10 @@ jobs:
         with:
           ref: dev
 
-      - name: Set up Node ${{ env.NODE_VERSION }}
+      - name: Setup Node
         uses: actions/setup-node@v3.6.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: ".nvmrc"
           cache: yarn
 
       - name: Install dependencies
@@ -63,10 +62,10 @@ jobs:
         with:
           ref: master
 
-      - name: Set up Node ${{ env.NODE_VERSION }}
+      - name: Setup Node
         uses: actions/setup-node@v3.6.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: ".nvmrc"
           cache: yarn
 
       - name: Install dependencies
