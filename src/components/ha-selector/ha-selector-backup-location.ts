@@ -1,14 +1,14 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { StorageLocationSelector } from "../../data/selector";
+import { BackupLocationSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
 import "../ha-mount-picker";
 
-@customElement("ha-selector-storage_location")
-export class HaStorageLocationSelector extends LitElement {
+@customElement("ha-selector-backup_location")
+export class HaBackupLocationSelector extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property() public selector!: StorageLocationSelector;
+  @property() public selector!: BackupLocationSelector;
 
   @property() public value?: any;
 
@@ -28,7 +28,7 @@ export class HaStorageLocationSelector extends LitElement {
       .helper=${this.helper}
       .disabled=${this.disabled}
       .required=${this.required}
-      .usage=${this.selector.storage_location?.usage}
+      usage="backup"
     ></ha-mount-picker>`;
   }
 
@@ -41,6 +41,6 @@ export class HaStorageLocationSelector extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-storage-location": HaStorageLocationSelector;
+    "ha-selector-backup-location": HaBackupLocationSelector;
   }
 }

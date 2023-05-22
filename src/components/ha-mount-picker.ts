@@ -17,7 +17,7 @@ import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
 
-const __DATA_DISK__ = "<local>";
+const __BACKUP_DATA_DISK__ = "/backup";
 
 @customElement("ha-mount-picker")
 class HaMountPicker extends LitElement {
@@ -58,15 +58,16 @@ class HaMountPicker extends LitElement {
         @closed=${stopPropagation}
         fixedMenuPosition
         naturalMenuWidth
-      >
-        <ha-list-item graphic="icon" .value=${__DATA_DISK__}>
-          <span
-            >${this.hass.localize(
-              "ui.components.mount-picker.use_datadisk"
-            )}</span
-          >
-          <ha-svg-icon slot="graphic" .path=${mdiHarddisk}></ha-svg-icon>
-        </ha-list-item>
+        >${this.usage !== SupervisorMountUsage.MEDIA
+          ? html`<ha-list-item graphic="icon" .value=${__BACKUP_DATA_DISK__}>
+              <span
+                >${this.hass.localize(
+                  "ui.components.mount-picker.use_datadisk"
+                )}</span
+              >
+              <ha-svg-icon slot="graphic" .path=${mdiHarddisk}></ha-svg-icon>
+            </ha-list-item>`
+          : ""}
         ${this._filterMounts(this._mounts, this.usage).map(
           (mount) => html`<ha-list-item
             twoline
