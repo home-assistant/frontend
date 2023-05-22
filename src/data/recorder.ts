@@ -2,6 +2,15 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import { HaDurationData } from "../components/ha-duration-input";
 import { HomeAssistant } from "../types";
 
+export interface RecorderInfo {
+  backlog: number | null;
+  max_backlog: number;
+  migration_in_progress: boolean;
+  migration_is_live: boolean;
+  recording: boolean;
+  thread_running: boolean;
+}
+
 export type StatisticType = "change" | "state" | "sum" | "min" | "max" | "mean";
 
 export interface Statistics {
@@ -105,6 +114,11 @@ export type StatisticsTypes = (typeof statisticTypes)[number][];
 export interface StatisticsValidationResults {
   [statisticId: string]: StatisticsValidationResult[];
 }
+
+export const getRecorderInfo = (hass: HomeAssistant) =>
+  hass.callWS<RecorderInfo>({
+    type: "recorder/info",
+  });
 
 export const getStatisticIds = (
   hass: HomeAssistant,

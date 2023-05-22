@@ -3,6 +3,7 @@ import { customElement, state } from "lit/decorators";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
+import { getRecorderInfo } from "../data/recorder";
 import "../resources/custom-card-support";
 import { HassElement } from "../state/hass-element";
 import QuickBarMixin from "../state/quick-bar-mixin";
@@ -31,6 +32,8 @@ const panelUrl = (path: string) => {
 @customElement("home-assistant")
 export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   @state() private _route: Route;
+
+  @state() private _databaseMigration?: boolean;
 
   private _panelUrl: string;
 
@@ -65,8 +68,24 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     `;
   }
 
+  willUpdate(changedProps: PropertyValues<this>) {
+    if (
+      this._databaseMigration === undefined &&
+      changedProps.has("hass") &&
+      this.hass?.config &&
+      changedProps.get("hass")?.config !== this.hass?.config
+    ) {
+      this.checkDataBaseMigration();
+    }
+  }
+
   update(changedProps: PropertyValues<this>) {
-    if (this.hass?.states && this.hass.config && this.hass.services) {
+    if (
+      this.hass?.states &&
+      this.hass.config &&
+      this.hass.services &&
+      this._databaseMigration === false
+    ) {
       this.render = this.renderHass;
       this.update = super.update;
       removeLaunchScreen();
@@ -131,6 +150,14 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
         changedProps.get("hass") as HomeAssistant | undefined
       );
     }
+    if (changedProps.has("_databaseMigration")) {
+      if (this.render !== this.renderHass) {
+        this._renderInitInfo(false);
+      } else if (this._databaseMigration) {
+        // we already removed the launch screen, so we refresh to add it again to show the migration screen
+        location.reload();
+      }
+    }
   }
 
   protected hassConnected() {
@@ -171,6 +198,20 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
         // @ts-ignore Firefox supports forceGet
         location.reload(true);
       }
+    }
+  }
+
+  protected async checkDataBaseMigration() {
+    if (this.hass?.config?.components.includes("recorder")) {
+      const info = await getRecorderInfo(this.hass);
+      this._databaseMigration =
+        info.migration_in_progress && !info.migration_is_live;
+      if (this._databaseMigration) {
+        // check every 5 seconds if the migration is done
+        setTimeout(() => this.checkDataBaseMigration(), 5000);
+      }
+    } else {
+      this._databaseMigration = false;
     }
   }
 
@@ -250,7 +291,10 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   private _renderInitInfo(error: boolean) {
     renderLaunchScreenInfoBox(
-      html`<ha-init-page .error=${error}></ha-init-page>`
+      html`<ha-init-page
+        .error=${error}
+        .migration=${this._databaseMigration}
+      ></ha-init-page>`
     );
   }
 }

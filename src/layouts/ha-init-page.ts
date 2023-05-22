@@ -4,11 +4,13 @@ import { property, state } from "lit/decorators";
 class HaInitPage extends LitElement {
   @property({ type: Boolean }) public error = false;
 
+  @property({ type: Boolean }) public migration = false;
+
   @state() private _retryInSeconds = 60;
 
-  private _showProgressIndicatorTimeout?: NodeJS.Timeout;
+  private _showProgressIndicatorTimeout?: number;
 
-  private _retryInterval?: NodeJS.Timeout;
+  private _retryInterval?: number;
 
   protected render() {
     return this.error
@@ -35,7 +37,11 @@ class HaInitPage extends LitElement {
           <div id="progress-indicator-wrapper">
             <ha-circular-progress active></ha-circular-progress>
           </div>
-          <div id="loading-text">Loading data</div>
+          <div id="loading-text">
+            ${this.migration
+              ? "Database migration in progress, please wait this might take some time"
+              : "Loading data"}
+          </div>
         `;
   }
 
@@ -56,11 +62,11 @@ class HaInitPage extends LitElement {
   }
 
   protected firstUpdated() {
-    this._showProgressIndicatorTimeout = setTimeout(() => {
+    this._showProgressIndicatorTimeout = window.setTimeout(() => {
       import("../components/ha-circular-progress");
     }, 5000);
 
-    this._retryInterval = setInterval(() => {
+    this._retryInterval = window.setInterval(() => {
       const remainingSeconds = this._retryInSeconds--;
       if (remainingSeconds <= 0) {
         this._retry();
@@ -96,6 +102,7 @@ class HaInitPage extends LitElement {
       #loading-text {
         max-width: 350px;
         color: var(--primary-text-color);
+        text-align: center;
       }
     `;
   }
