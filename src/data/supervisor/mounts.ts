@@ -17,6 +17,10 @@ export enum SupervisorMountState {
   UNKNOWN = "unknown",
 }
 
+interface MountOptions {
+  default_backup_mount?: string | null;
+}
+
 interface SupervisorMountBase {
   name: string;
   usage: SupervisorMountUsage;
@@ -53,6 +57,7 @@ export type SupervisorMountRequestParams =
   | SupervisorCIFSMountRequestParams;
 
 export interface SupervisorMounts {
+  default_backup_mount: string | null;
   mounts: SupervisorMount[];
 }
 
@@ -110,4 +115,16 @@ export const reloadSupervisorMount = async (
     endpoint: `/mounts/${data.name}/reload`,
     method: "post",
     timeout: null,
+  });
+
+export const changeMountOptions = async (
+  hass: HomeAssistant,
+  data: MountOptions
+): Promise<void> =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: `/mounts/options`,
+    method: "post",
+    timeout: null,
+    data,
   });

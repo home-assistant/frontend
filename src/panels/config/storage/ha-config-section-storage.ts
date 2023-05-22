@@ -1,5 +1,11 @@
 import "@material/mwc-list";
-import { mdiBackupRestore, mdiNas, mdiPlayBox, mdiReload } from "@mdi/js";
+import {
+  mdiBackupRestore,
+  mdiNas,
+  mdiPlayBox,
+  mdiReload,
+  mdiStar,
+} from "@mdi/js";
 import {
   LitElement,
   PropertyValues,
@@ -15,6 +21,7 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-metric";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-next";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import { HassioHostInfo, fetchHassioHostInfo } from "../../../data/hassio/host";
 import {
@@ -22,6 +29,7 @@ import {
   SupervisorMountState,
   SupervisorMountType,
   SupervisorMountUsage,
+  SupervisorMounts,
   fetchSupervisorMounts,
   reloadSupervisorMount,
 } from "../../../data/supervisor/mounts";
@@ -35,6 +43,7 @@ import {
 import "../core/ha-config-analytics";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
 import { showMountViewDialog } from "./show-dialog-view-mount";
+import { navigate } from "../../../common/navigate";
 
 @customElement("ha-config-section-storage")
 class HaConfigSectionStorage extends LitElement {
@@ -48,7 +57,7 @@ class HaConfigSectionStorage extends LitElement {
 
   @state() private _hostInfo?: HassioHostInfo;
 
-  @state() private _mounts?: SupervisorMount[];
+  @state() private _mountsInfo?: SupervisorMounts | null;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -57,7 +66,14 @@ class HaConfigSectionStorage extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | typeof nothing {
+    if (this._mountsInfo === undefined) {
+      return nothing;
+    }
+    const validMounts = this._mountsInfo?.mounts.filter((mount) =>
+      [SupervisorMountType.CIFS, SupervisorMountType.NFS].includes(mount.type)
+    );
+    const isHAOS = this._hostInfo?.features.includes("haos");
     return html`
       <hass-subpage
         back-path="/config/system"
@@ -121,21 +137,46 @@ class HaConfigSectionStorage extends LitElement {
                 </ha-card>
               `
             : ""}
+
           <ha-card
             outlined
             .header=${this.hass.localize(
               "ui.panel.config.storage.network_mounts.title"
             )}
           >
-            ${this._mounts?.length
+            ${this._mountsInfo === null
+              ? html`<ha-alert
+                  class="mounts-not-supported"
+                  alert-type="warning"
+                  .title=${this.hass.localize(
+                    "ui.panel.config.storage.network_mounts.not_supported.title"
+                  )}
+                >
+                  ${isHAOS
+                    ? html`${this.hass.localize(
+                          "ui.panel.config.storage.network_mounts.not_supported.haos"
+                        )}
+                        <mwc-button
+                          slot="action"
+                          @click=${this._navigateToUpdates}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.storage.network_mounts.not_supported.navigate_to_updates"
+                          )}
+                        </mwc-button>`
+                    : this.hass.localize(
+                        "ui.panel.config.storage.network_mounts.not_supported.supervised"
+                      )}
+                </ha-alert>`
+              : validMounts?.length
               ? html`<mwc-list>
-                  ${this._mounts.map(
+                  ${validMounts.map(
                     (mount) => html`
                       <ha-list-item
                         graphic="avatar"
                         .mount=${mount}
                         twoline
-                        .hasMeta=${mount.state !== SupervisorMountState.ACTIVE}
+                        hasMeta
                         @click=${this._changeMount}
                       >
                         <div slot="graphic">
@@ -155,18 +196,29 @@ class HaConfigSectionStorage extends LitElement {
                             ? mount.path
                             : ` :${mount.share}`}
                         </span>
-                        <ha-icon-button
-                          class="reload-btn"
-                          slot="meta"
-                          .mount=${mount}
-                          @click=${this._reloadMount}
-                          .path=${mdiReload}
-                        ></ha-icon-button>
+                        ${mount.state !== SupervisorMountState.ACTIVE
+                          ? html`<ha-icon-button
+                              class="reload-btn"
+                              slot="meta"
+                              .mount=${mount}
+                              @click=${this._reloadMount}
+                              .path=${mdiReload}
+                            ></ha-icon-button>`
+                          : html`${mount.usage ===
+                                SupervisorMountUsage.BACKUP &&
+                              mount.name !==
+                                this._mountsInfo?.default_backup_mount
+                                ? html`<ha-svg-icon
+                                    slot="meta"
+                                    .path=${mdiStar}
+                                  ></ha-svg-icon>`
+                                : ""}
+                              <ha-icon-next slot="meta"></ha-icon-next>`}
                       </ha-list-item>
                     `
                   )}
                 </mwc-list>`
-              : html` <div class="no-mounts">
+              : html`<div class="no-mounts">
                   <ha-svg-icon .path=${mdiNas}></ha-svg-icon>
                   <p>
                     ${this.hass.localize(
@@ -174,14 +226,15 @@ class HaConfigSectionStorage extends LitElement {
                     )}
                   </p>
                 </div>`}
-
-            <div class="card-actions">
-              <mwc-button @click=${this._addMount}>
-                ${this.hass.localize(
-                  "ui.panel.config.storage.network_mounts.add_title"
-                )}
-              </mwc-button>
-            </div>
+            ${this._mountsInfo !== null
+              ? html`<div class="card-actions">
+                  <mwc-button @click=${this._addMount}>
+                    ${this.hass.localize(
+                      "ui.panel.config.storage.network_mounts.add_title"
+                    )}
+                  </mwc-button>
+                </div>`
+              : nothing}
           </ha-card>
         </div>
       </hass-subpage>
@@ -190,12 +243,14 @@ class HaConfigSectionStorage extends LitElement {
 
   private async _load() {
     try {
-      [this._hostInfo] = await Promise.all([
-        fetchHassioHostInfo(this.hass),
-        this._reloadMounts(),
-      ]);
+      this._hostInfo = await fetchHassioHostInfo(this.hass);
     } catch (err: any) {
       this._error = err.message || err;
+    }
+    if (this._hostInfo?.features.includes("mount")) {
+      await this._reloadMounts();
+    } else {
+      this._mountsInfo = null;
     }
   }
 
@@ -203,6 +258,10 @@ class HaConfigSectionStorage extends LitElement {
     showMoveDatadiskDialog(this, {
       hostInfo: this._hostInfo!,
     });
+  }
+
+  private async _navigateToUpdates(): Promise<void> {
+    navigate("/config/updates");
   }
 
   private async _reloadMount(ev: Event): Promise<void> {
@@ -224,25 +283,27 @@ class HaConfigSectionStorage extends LitElement {
   }
 
   private _addMount(): void {
-    showMountViewDialog(this, { reloadMounts: this._reloadMounts });
+    showMountViewDialog(this, {
+      reloadMounts: this._reloadMounts,
+      defaultBackupMount: this._mountsInfo!.default_backup_mount,
+    });
   }
 
   private _changeMount(ev: Event): void {
     ev.stopPropagation();
     showMountViewDialog(this, {
       mount: (ev.currentTarget as any).mount,
+      defaultBackupMount: this._mountsInfo!.default_backup_mount,
       reloadMounts: this._reloadMounts,
     });
   }
 
   private async _reloadMounts(): Promise<void> {
     try {
-      const allMounts = await fetchSupervisorMounts(this.hass);
-      this._mounts = allMounts.mounts.filter((mount) =>
-        [SupervisorMountType.CIFS, SupervisorMountType.NFS].includes(mount.type)
-      );
+      this._mountsInfo = await fetchSupervisorMounts(this.hass);
     } catch (err: any) {
       this._error = err.message || err;
+      this._mountsInfo = null;
     }
   }
 
@@ -274,6 +335,10 @@ class HaConfigSectionStorage extends LitElement {
       color: var(--warning-color);
     }
 
+    .mounts-not-supported {
+      padding: 0 16px 16px;
+    }
+
     .reload-btn {
       float: right;
       position: relative;
@@ -294,6 +359,14 @@ class HaConfigSectionStorage extends LitElement {
       padding: 16px;
       border-radius: 50%;
       margin-bottom: 8px;
+    }
+    ha-list-item {
+      --mdc-list-item-meta-size: auto;
+      --mdc-list-item-meta-display: flex;
+    }
+    ha-svg-icon,
+    ha-icon-next {
+      width: 24px;
     }
   `;
 }

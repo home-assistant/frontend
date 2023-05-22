@@ -5,6 +5,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-form/ha-form";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
+  changeMountOptions,
   createSupervisorMount,
   removeSupervisorMount,
   SupervisorMountRequestParams,
@@ -22,7 +23,8 @@ const mountSchema = memoizeOne(
   (
     localize: LocalizeFunc,
     existing?: boolean,
-    mountType?: SupervisorMountType
+    mountType?: SupervisorMountType,
+    mountUsage?: SupervisorMountUsage
   ) =>
     [
       {
@@ -50,6 +52,15 @@ const mountSchema = memoizeOne(
           ],
         ] as const,
       },
+      ...(mountUsage === SupervisorMountUsage.BACKUP
+        ? ([
+            {
+              name: "default_backup_mount",
+              required: false,
+              selector: { boolean: {} },
+            },
+          ] as const)
+        : ([] as const)),
       {
         name: "server",
         required: true,
@@ -100,11 +111,15 @@ const mountSchema = memoizeOne(
     ] as const
 );
 
+type MountData = SupervisorMountRequestParams & {
+  default_backup_mount?: boolean;
+};
+
 @customElement("dialog-mount-view")
 class ViewMountDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _data?: SupervisorMountRequestParams;
+  @state() private _data?: MountData;
 
   @state() private _waiting?: boolean;
 
@@ -114,13 +129,25 @@ class ViewMountDialog extends LitElement {
 
   @state() private _existing?: boolean;
 
+  @state() private _defaultBackupMount?: string | null;
+
   @state() private _reloadMounts?: () => void;
 
   public async showDialog(
     dialogParams: MountViewDialogParams
   ): Promise<Promise<void>> {
-    this._data = dialogParams.mount;
+    this._data =
+      dialogParams.mount !== undefined
+        ? {
+            ...dialogParams.mount,
+            default_backup_mount:
+              dialogParams.defaultBackupMount !== null
+                ? dialogParams.mount.name === dialogParams.defaultBackupMount
+                : undefined,
+          }
+        : undefined;
     this._existing = dialogParams.mount !== undefined;
+    this._defaultBackupMount = dialogParams.defaultBackupMount;
     this._reloadMounts = dialogParams.reloadMounts;
   }
 
@@ -130,6 +157,7 @@ class ViewMountDialog extends LitElement {
     this._error = undefined;
     this._validationError = undefined;
     this._existing = undefined;
+    this._defaultBackupMount = undefined;
     this._reloadMounts = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -160,7 +188,8 @@ class ViewMountDialog extends LitElement {
           .schema=${mountSchema(
             this.hass.localize,
             this._existing,
-            this._data?.type
+            this._data?.type,
+            this._data?.usage
           )}
           .error=${this._validationError}
           .computeLabel=${this._computeLabelCallback}
@@ -225,16 +254,40 @@ class ViewMountDialog extends LitElement {
     if (this._data?.name && !/^\w+$/.test(this._data.name)) {
       this._validationError.name = "invalid_name";
     }
+    if (
+      this._defaultBackupMount === null &&
+      this._data!.usage === SupervisorMountUsage.BACKUP &&
+      this._data!.default_backup_mount === undefined
+    ) {
+      this._data!.default_backup_mount = true;
+    }
   }
 
   private async _connectMount() {
     this._error = undefined;
     this._waiting = true;
+    const updateDefaultBackupMount = this._data!.default_backup_mount;
+    delete this._data!.default_backup_mount;
     try {
       if (this._existing) {
         await updateSupervisorMount(this.hass, this._data!);
       } else {
         await createSupervisorMount(this.hass, this._data!);
+      }
+      if (
+        this._defaultBackupMount === this._data?.name &&
+        updateDefaultBackupMount === false
+      ) {
+        await changeMountOptions(this.hass, {
+          default_backup_mount: null,
+        });
+      } else if (
+        this._defaultBackupMount !== this._data?.name &&
+        updateDefaultBackupMount === true
+      ) {
+        await changeMountOptions(this.hass, {
+          default_backup_mount: this._data?.name,
+        });
       }
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);

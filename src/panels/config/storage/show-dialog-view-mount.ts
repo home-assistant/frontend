@@ -3,6 +3,7 @@ import { SupervisorMount } from "../../../data/supervisor/mounts";
 
 export interface MountViewDialogParams {
   mount?: SupervisorMount;
+  defaultBackupMount: string | null;
   reloadMounts: () => void;
 }
 
