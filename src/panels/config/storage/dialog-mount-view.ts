@@ -100,15 +100,11 @@ const mountSchema = memoizeOne(
     ] as const
 );
 
-type MountData = SupervisorMountRequestParams & {
-  default_backup_mount?: boolean;
-};
-
 @customElement("dialog-mount-view")
 class ViewMountDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _data?: MountData;
+  @state() private _data?: SupervisorMountRequestParams;
 
   @state() private _waiting?: boolean;
 
