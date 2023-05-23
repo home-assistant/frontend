@@ -5,13 +5,15 @@ import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import { fetchHassioAddonsInfo, HassioAddonInfo } from "../data/hassio/addon";
-import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
-import { ValueChangedEvent, HomeAssistant } from "../types";
-import { HaComboBox } from "./ha-combo-box";
+import { HomeAssistant, ValueChangedEvent } from "../types";
+import "./ha-alert";
+import "./ha-combo-box";
+import type { HaComboBox } from "./ha-combo-box";
+import "./ha-list-item";
 
 const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (
   item
-) => html`<mwc-list-item twoline graphic="icon">
+) => html`<ha-list-item twoline graphic="icon">
   <span>${item.name}</span>
   <span slot="secondary">${item.slug}</span>
   ${item.icon
@@ -21,7 +23,7 @@ const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (
         .src="/api/hassio/addons/${item.slug}/icon"
       />`
     : ""}
-</mwc-list-item>`;
+</ha-list-item>`;
 
 @customElement("ha-addon-picker")
 class HaAddonPicker extends LitElement {
@@ -41,6 +43,8 @@ class HaAddonPicker extends LitElement {
 
   @query("ha-combo-box") private _comboBox!: HaComboBox;
 
+  @state() private _error?: string;
+
   public open() {
     this._comboBox?.open();
   }
@@ -56,6 +60,9 @@ class HaAddonPicker extends LitElement {
   protected render() {
     if (!this._addons) {
       return nothing;
+    }
+    if (this._error) {
+      return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
     return html`
       <ha-combo-box
@@ -87,24 +94,14 @@ class HaAddonPicker extends LitElement {
             stringCompare(a.name, b.name, this.hass.locale.language)
           );
       } else {
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.components.addon-picker.error.no_supervisor.title"
-          ),
-          text: this.hass.localize(
-            "ui.components.addon-picker.error.no_supervisor.description"
-          ),
-        });
+        this._error = this.hass.localize(
+          "ui.components.addon-picker.error.no_supervisor"
+        );
       }
     } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.components.addon-picker.error.fetch_addons.title"
-        ),
-        text: this.hass.localize(
-          "ui.components.addon-picker.error.fetch_addons.description"
-        ),
-      });
+      this._error = this.hass.localize(
+        "ui.components.addon-picker.error.fetch_addons"
+      );
     }
   }
 
