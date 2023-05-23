@@ -300,6 +300,11 @@ export interface StateSelector {
   } | null;
 }
 
+export interface BackupLocationSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  backup_location: {} | null;
+}
+
 export interface StringSelector {
   text: {
     multiline?: boolean;
