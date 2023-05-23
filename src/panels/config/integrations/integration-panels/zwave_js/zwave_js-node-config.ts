@@ -36,6 +36,7 @@ import {
   fetchZwaveNodeConfigParameters,
   fetchZwaveNodeMetadata,
   setZwaveNodeConfigParameter,
+  ZWaveJSNodeConfigParam,
   ZWaveJSNodeConfigParams,
   ZwaveJSNodeMetadata,
   ZWaveJSSetConfigParamResult,
@@ -204,7 +205,10 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _generateConfigBox(id, item): TemplateResult {
+  private _generateConfigBox(
+    id: string,
+    item: ZWaveJSNodeConfigParam
+  ): TemplateResult {
     const result = this._results[id];
     const labelAndDescription = html`
       <span slot="prefix" class="prefix">
@@ -323,7 +327,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       <p>${item.value}</p>`;
   }
 
-  private _isEnumeratedBool(item): boolean {
+  private _isEnumeratedBool(item: ZWaveJSNodeConfigParam): boolean {
     // Some Z-Wave config values use a states list with two options where index 0 = Disabled and 1 = Enabled
     // We want those to be considered boolean and show a toggle switch
     const disabledStates = ["disable", "disabled"];
