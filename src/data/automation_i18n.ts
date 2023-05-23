@@ -28,6 +28,23 @@ const describeDuration = (forTime: number | string | ForDict) => {
   return duration;
 };
 
+const ordinalSuffix = (n: number) => {
+  n %= 100;
+  if ([11, 12, 13].includes(n)) {
+    return "th";
+  }
+  if (n % 10 === 1) {
+    return "st";
+  }
+  if (n % 10 === 2) {
+    return "nd";
+  }
+  if (n % 10 === 3) {
+    return "rd";
+  }
+  return "th";
+};
+
 export const describeTrigger = (
   trigger: Trigger,
   hass: HomeAssistant,
@@ -312,9 +329,116 @@ export const describeTrigger = (
     }${last}`;
   }
 
-  // Time Patter Trigger
-  if (trigger.platform === "time_pattern") {
-    return "Time pattern trigger";
+  // Time Pattern Trigger
+  if (
+    trigger.platform === "time_pattern" &&
+    (trigger.seconds !== undefined ||
+      trigger.minutes !== undefined ||
+      trigger.hours !== undefined)
+  ) {
+    let result = "Trigger ";
+    if (trigger.seconds !== undefined) {
+      const seconds_all = trigger.seconds === "*";
+      const seconds_interval =
+        typeof trigger.seconds === "string" && trigger.seconds.startsWith("/");
+      const seconds = seconds_all
+        ? 0
+        : typeof trigger.seconds === "number"
+        ? trigger.seconds
+        : seconds_interval
+        ? parseInt(trigger.seconds.substring(1))
+        : parseInt(trigger.seconds);
+
+      if (
+        isNaN(seconds) ||
+        seconds > 59 ||
+        seconds < 0 ||
+        (seconds_interval && seconds === 0)
+      ) {
+        return "Invalid Time Pattern Seconds";
+      }
+
+      if (seconds_all) {
+        result += "every second of ";
+      } else if (seconds_interval) {
+        result += `every ${seconds} seconds of `;
+      } else {
+        result += `on the ${seconds}${ordinalSuffix(seconds)} second of `;
+      }
+    }
+    if (trigger.minutes !== undefined) {
+      const minutes_all = trigger.minutes === "*";
+      const minutes_interval =
+        typeof trigger.minutes === "string" && trigger.minutes.startsWith("/");
+      const minutes = minutes_all
+        ? 0
+        : typeof trigger.minutes === "number"
+        ? trigger.minutes
+        : minutes_interval
+        ? parseInt(trigger.minutes.substring(1))
+        : parseInt(trigger.minutes);
+
+      if (
+        isNaN(minutes) ||
+        minutes > 59 ||
+        minutes < 0 ||
+        (minutes_interval && minutes === 0)
+      ) {
+        return "Invalid Time Pattern Minutes";
+      }
+
+      if (minutes_all) {
+        result += "every minute of ";
+      } else if (minutes_interval) {
+        result += `every ${minutes} minutes of `;
+      } else {
+        result += `${
+          trigger.seconds !== undefined ? "" : "on"
+        } the ${minutes}${ordinalSuffix(minutes)} minute of `;
+      }
+    } else if (trigger.seconds !== undefined) {
+      if (trigger.hours !== undefined) {
+        result += `the 0${ordinalSuffix(0)} minute of `;
+      } else {
+        result += "every minute of ";
+      }
+    }
+    if (trigger.hours !== undefined) {
+      const hours_all = trigger.hours === "*";
+      const hours_interval =
+        typeof trigger.hours === "string" && trigger.hours.startsWith("/");
+      const hours = hours_all
+        ? 0
+        : typeof trigger.hours === "number"
+        ? trigger.hours
+        : hours_interval
+        ? parseInt(trigger.hours.substring(1))
+        : parseInt(trigger.hours);
+
+      if (
+        isNaN(hours) ||
+        hours > 23 ||
+        hours < 0 ||
+        (hours_interval && hours === 0)
+      ) {
+        return "Invalid Time Pattern Hours";
+      }
+
+      if (hours_all) {
+        result += "every hour";
+      } else if (hours_interval) {
+        result += `every ${hours} hours`;
+      } else {
+        result += `${
+          trigger.seconds !== undefined || trigger.minutes !== undefined
+            ? ""
+            : "on"
+        } the ${hours}${ordinalSuffix(hours)} hour`;
+      }
+    } else {
+      result += "every hour";
+    }
+    return result;
   }
 
   // Zone Trigger
