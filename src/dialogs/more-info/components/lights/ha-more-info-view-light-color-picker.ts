@@ -113,6 +113,9 @@ class MoreInfoViewLightColorPicker extends LitElement {
                 @value-changed=${this._hsColorChanged}
                 @cursor-moved=${this._hsColorCursorMoved}
                 .value=${this._hsPickerValue}
+                .colorBrightness=${this._colorBrightnessSliderValue != null
+                  ? (this._colorBrightnessSliderValue * 255) / 100
+                  : undefined}
               >
               </ha-hs-color-picker>
 

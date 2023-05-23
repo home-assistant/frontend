@@ -19,47 +19,38 @@ function polar2xy(r: number, phi: number) {
 }
 
 function rad2deg(rad: number) {
-  return ((rad + Math.PI) / (2 * Math.PI)) * 360;
+  return (rad / (2 * Math.PI)) * 360;
 }
 
 function deg2rad(deg: number) {
-  return (deg / 360) * 2 * Math.PI - Math.PI;
+  return (deg / 360) * 2 * Math.PI;
 }
 
 function drawColorWheel(ctx: CanvasRenderingContext2D, colorBrightness = 255) {
   const radius = ctx.canvas.width / 2;
-  const image = ctx.createImageData(2 * radius, 2 * radius);
-  const data = image.data;
 
-  for (let x = -radius; x < radius; x++) {
-    for (let y = -radius; y < radius; y++) {
-      const [r, phi] = xy2polar(x, y);
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  ctx.beginPath();
 
-      if (r > radius) {
-        continue;
-      }
+  const cX = ctx.canvas.width / 2;
+  const cY = ctx.canvas.width / 2;
+  for (let angle = 0; angle < 360; angle += 1) {
+    const startAngle = deg2rad(angle - 0.5);
+    const endAngle = deg2rad(angle + 1.5);
 
-      const rowLength = 2 * radius;
-      const adjustedX = x + radius;
-      const adjustedY = y + radius;
-      const pixelWidth = 4;
-      const index = (adjustedX + adjustedY * rowLength) * pixelWidth;
+    ctx.beginPath();
+    ctx.moveTo(cX, cY);
+    ctx.arc(cX, cY, radius, startAngle, endAngle);
+    ctx.closePath();
 
-      const deg = rad2deg(phi);
-      const hue = deg;
-      const saturation = r / radius;
-
-      const [red, green, blue] = hsv2rgb([hue, saturation, colorBrightness]);
-      const alpha = 255;
-
-      data[index] = red;
-      data[index + 1] = green;
-      data[index + 2] = blue;
-      data[index + 3] = alpha;
-    }
+    const gradient = ctx.createRadialGradient(cX, cY, 0, cX, cY, radius);
+    const start = rgb2hex(hsv2rgb([angle, 0, colorBrightness]));
+    const end = rgb2hex(hsv2rgb([angle, 1, colorBrightness]));
+    gradient.addColorStop(0, start);
+    gradient.addColorStop(1, end);
+    ctx.fillStyle = gradient;
+    ctx.fill();
   }
-
-  ctx.putImageData(image, 0, 0);
 }
 
 @customElement("ha-hs-color-picker")
@@ -114,7 +105,6 @@ class HaHsColorPicker extends LitElement {
     super.updated(changedProps);
     if (changedProps.has("colorBrightness")) {
       this._generateColorWheel();
-      this._resetPosition();
     }
     if (changedProps.has("value")) {
       if (
@@ -193,9 +183,9 @@ class HaHsColorPicker extends LitElement {
   private _getValueFromCoord = (x: number, y: number): [number, number] => {
     const [r, phi] = xy2polar(x, y);
 
-    const deg = Math.round(rad2deg(phi));
+    const deg = Math.round(rad2deg(phi)) % 360;
 
-    const hue = deg;
+    const hue = (deg + 360) % 360;
     const saturation = Math.round(Math.min(r, 1) * 100) / 100;
 
     return [hue, saturation];
