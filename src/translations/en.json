@@ -3735,6 +3735,7 @@
             "header": "Z-Wave Device Configuration",
             "introduction": "Manage and adjust device specific configuration parameters for the selected device",
             "attribution": "Device configuration parameters and descriptions are provided by the {device_database}",
+            "endpoint": "Endpoint {endpoint}",
             "zwave_js_device_database": "Z-Wave JS Device Database",
             "battery_device_notice": "Battery devices must be awake to update their config. Please refer to your device manual for instructions on how to wake the device.",
             "parameter_is_read_only": "This parameter is read-only.",
@@ -3742,7 +3743,8 @@
             "set_param_accepted": "The parameter has been updated.",
             "set_param_queued": "The parameter change has been queued, and will be updated when the device wakes up.",
             "set_param_error": "An error occurred.",
-            "parameter": "Parameter"
+            "parameter": "Parameter",
+            "bitmask": "Bitmask"
           },
           "node_status": {
             "unknown": "Unknown",
