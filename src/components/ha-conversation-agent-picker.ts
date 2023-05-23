@@ -11,7 +11,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { debounce } from "../common/util/debounce";
-import { ConfigEntry, updateConfigEntry } from "../data/config_entries";
+import { ConfigEntry, getConfigEntry } from "../data/config_entries";
 import { Agent, listAgents } from "../data/conversation";
 import { fetchIntegrationManifest } from "../data/integration";
 import { showOptionsFlowDialog } from "../dialogs/config-flow/show-dialog-options-flow";
@@ -113,7 +113,7 @@ export class HaConversationAgentPicker extends LitElement {
     }
     try {
       this._configEntry = (
-        await updateConfigEntry(this.hass, this.value, {})
+        await getConfigEntry(this.hass, this.value)
       ).config_entry;
     } catch (err) {
       this._configEntry = undefined;
