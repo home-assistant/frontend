@@ -216,7 +216,11 @@ class HaTempColorPicker extends LitElement {
 
   private _resetPosition() {
     if (this.value === undefined) return;
-    this._cursorPosition = this._getCoordsFromValue(this.value);
+    const [, y] = this._getCoordsFromValue(this.value);
+    const currentX = this._cursorPosition?.[0] ?? 0;
+    const x =
+      Math.sign(currentX) * Math.min(Math.sqrt(1 - y ** 2), Math.abs(currentX));
+    this._cursorPosition = [x, y];
     this._localValue = this.value;
   }
 
