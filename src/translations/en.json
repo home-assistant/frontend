@@ -3987,6 +3987,12 @@
             "add_title": "Add network storage",
             "update_title": "Update network storage",
             "no_mounts": "No connected network storage",
+            "not_supported": {
+              "title": "The operating system does not support network storage",
+              "supervised": "Network storage is not supported on this host",
+              "haos": "To use network storage you need to run at least Home Assistant Operating System 10.0",
+              "navigate_to_updates": "Go to updates"
+            },
             "mount_usage": {
               "backup": "Backup",
               "media": "Media"
@@ -4007,6 +4013,10 @@
               "server": {
                 "title": "Server",
                 "description": "This is the domain name (FQDN) or IP address of the storage server you want to connect to"
+              },
+              "default_backup_mount": {
+                "title": "Default backup location",
+                "description": "This will be the default location for backups"
               },
               "path": {
                 "title": "Remote share path",
