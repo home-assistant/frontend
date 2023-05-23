@@ -67,6 +67,7 @@ function drawColorWheel(
   minTemp: number,
   maxTemp: number
 ) {
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   const radius = ctx.canvas.width / 2;
 
   const min = Math.max(minTemp, 2000);
