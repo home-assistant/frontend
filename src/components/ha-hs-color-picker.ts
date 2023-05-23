@@ -67,7 +67,7 @@ class HaHsColorPicker extends LitElement {
   @property({ type: Number })
   public colorBrightness?: number;
 
-  @query("#canvas") private _canvas!: HTMLCanvasElement;
+  @query("#canvas", true) private _canvas!: HTMLCanvasElement;
 
   private _mc?: HammerManager;
 
