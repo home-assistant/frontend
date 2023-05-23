@@ -95,7 +95,7 @@ export const getConfigEntries = (
 };
 
 export const getConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
-  hass.callWS<{ require_restart: boolean; config_entry: ConfigEntry }>({
+  hass.callWS<{ config_entry: ConfigEntry }>({
     type: "config_entries/get",
     entry_id: configEntryId,
   });
