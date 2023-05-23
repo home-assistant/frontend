@@ -258,7 +258,7 @@ class HaTempColorPicker extends LitElement {
     const cy = ((y + 1) * size) / 2;
 
     const markerPosition = `${cx}px, ${cy}px`;
-    const markerScale = this._pressed ? "2" : "1";
+    const markerScale = this._pressed ? "1.5" : "1";
     const markerOffset =
       this._pressed === "touch" ? `0px, -${size / 8}px` : "0px, 0px";
 
@@ -277,7 +277,7 @@ class HaTempColorPicker extends LitElement {
             <circle
               cx="0"
               cy="0"
-              r="12"
+              r="16"
               style=${styleMap({
                 fill: rgb2hex(rgb),
                 transform: `translate(${markerOffset}) scale(${markerScale})`,
@@ -300,25 +300,8 @@ class HaTempColorPicker extends LitElement {
         height="200%"
         filterUnits="objectBoundingBox"
       >
-        <feOffset
-          result="offOut"
-          in="SourceAlpha"
-          dx="2"
-          dy="2"
-        ></feOffset>
-        <feGaussianBlur
-          result="blurOut"
-          in="offOut"
-          stdDeviation="2"
-        ></feGaussianBlur>
-        <feComponentTransfer in="blurOut" result="alphaOut">
-          <feFuncA type="linear" slope="0.3"></feFuncA>
-        </feComponentTransfer>
-        <feBlend
-          in="SourceGraphic"
-          in2="alphaOut"
-          mode="normal"
-        ></feBlend>
+        <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.3" flood-color="rgba(0, 0, 0, 1)"/>
+        <feDropShadow dx="0" dy="1" stdDeviation="3" flood-opacity="0.15" flood-color="rgba(0, 0, 0, 1)"/>
       </filter>
     `;
   }
