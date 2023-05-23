@@ -3321,15 +3321,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/rest@npm:19.0.8":
-  version: 19.0.8
-  resolution: "@octokit/rest@npm:19.0.8"
+"@octokit/rest@npm:19.0.9":
+  version: 19.0.9
+  resolution: "@octokit/rest@npm:19.0.9"
   dependencies:
     "@octokit/core": ^4.1.0
     "@octokit/plugin-paginate-rest": ^6.1.0
     "@octokit/plugin-request-log": ^1.0.4
     "@octokit/plugin-rest-endpoint-methods": ^7.1.0
-  checksum: 86276924a2458cb1cb672d496dee45752ea14c57ca146f148cc51160179600c4071e1d8c4fd593bb20a6b5ca51cc94451d6cb4457865c174090e3e3f9bae597c
+  checksum: 15bcdcd16ff233d2a81e176d9327e8dd4cdb63afab91cbc2d6461cb0979f057e898bc878eae6bebe13e9007a38d9669ba006832c213245ea339865c052d726b8
   languageName: node
   linkType: hard
 
@@ -9605,7 +9605,7 @@ __metadata:
     "@mdi/svg": 7.2.96
     "@octokit/auth-oauth-device": 4.0.4
     "@octokit/plugin-retry": 4.1.3
-    "@octokit/rest": 19.0.8
+    "@octokit/rest": 19.0.9
     "@open-wc/dev-server-hmr": 0.1.4
     "@polymer/app-layout": 3.1.0
     "@polymer/iron-flex-layout": 3.0.1
