@@ -298,6 +298,7 @@ class HaTempColorPicker extends LitElement {
               style=${styleMap({
                 fill: rgb2hex(rgb),
                 transform: `translate(${markerOffset}) scale(${markerScale})`,
+                visibility: this._cursorPosition ? undefined : "hidden",
               })}
             ></circle>
           </g>
@@ -349,6 +350,7 @@ class HaTempColorPicker extends LitElement {
         width: 100%;
         height: 100%;
         cursor: pointer;
+        display: flex;
       }
       canvas {
         width: 100%;

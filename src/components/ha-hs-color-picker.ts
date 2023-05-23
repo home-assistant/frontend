@@ -234,7 +234,7 @@ class HaHsColorPicker extends LitElement {
         ? hsv2rgb([
             this._localValue[0],
             this._localValue[1],
-            this.colorBrightness ?? 100,
+            this.colorBrightness ?? 255,
           ])
         : ([255, 255, 255] as [number, number, number]);
 
@@ -267,6 +267,7 @@ class HaHsColorPicker extends LitElement {
               style=${styleMap({
                 fill: rgb2hex(rgb),
                 transform: `translate(${markerOffset}) scale(${markerScale})`,
+                visibility: this._cursorPosition ? undefined : "hidden",
               })}
             ></circle>
           </g>
@@ -318,6 +319,7 @@ class HaHsColorPicker extends LitElement {
         width: 100%;
         height: 100%;
         cursor: pointer;
+        display: flex;
       }
       canvas {
         width: 100%;
