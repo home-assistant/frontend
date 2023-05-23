@@ -1,7 +1,6 @@
 import "@material/mwc-button";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
-import { mdiPalette } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -11,12 +10,13 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { hs2rgb, rgb2hs } from "../../../../common/color/convert-color";
 import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-button-toggle-group";
-import "../../../../components/ha-color-picker";
-import "../../../../components/ha-control-slider";
+import "../../../../components/ha-hs-color-picker";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-labeled-slider";
+import "../../../../components/ha-temp-color-picker";
 import {
   getLightCurrentModeRgbColor,
   LightColorMode,
@@ -35,8 +35,6 @@ class MoreInfoViewLightColorPicker extends LitElement {
 
   @property() public params?: LightColorPickerViewParams;
 
-  @state() private _ctSliderValue?: number;
-
   @state() private _cwSliderValue?: number;
 
   @state() private _wwSliderValue?: number;
@@ -47,11 +45,9 @@ class MoreInfoViewLightColorPicker extends LitElement {
 
   @state() private _brightnessAdjusted?: number;
 
-  @state() private _hueSegments = 24;
+  @state() private _hsPickerValue?: [number, number];
 
-  @state() private _saturationSegments = 8;
-
-  @state() private _colorPickerColor?: [number, number, number];
+  @state() private _ctPickerValue?: number;
 
   @state() private _mode?: Mode;
 
@@ -94,47 +90,34 @@ class MoreInfoViewLightColorPicker extends LitElement {
               )}
             </mwc-tab-bar>
           `
-        : ""}
+        : nothing}
       <div class="content">
         ${this._mode === LightColorMode.COLOR_TEMP
           ? html`
               <p class="color-temp-value">
-                ${this._ctSliderValue ? `${this._ctSliderValue} K` : nothing}
+                ${this._ctPickerValue ? `${this._ctPickerValue} K` : nothing}
               </p>
-              <ha-control-slider
-                vertical
-                class="color-temp"
-                label=${this.hass.localize("ui.card.light.color_temperature")}
-                min="1"
-                max="100"
-                mode="cursor"
-                .value=${this._ctSliderValue}
-                @value-changed=${this._ctSliderChanged}
-                @slider-moved=${this._ctSliderMoved}
+              <ha-temp-color-picker
+                @value-changed=${this._ctColorChanged}
+                @cursor-moved=${this._ctColorCursorMoved}
                 .min=${this.stateObj.attributes.min_color_temp_kelvin!}
                 .max=${this.stateObj.attributes.max_color_temp_kelvin!}
+                .value=${this._ctPickerValue}
               >
-              </ha-control-slider>
+              </ha-temp-color-picker>
             `
-          : ""}
+          : nothing}
         ${this._mode === "color"
           ? html`
-              <div class="segmentation-container">
-                <ha-color-picker
-                  class="color"
-                  @colorselected=${this._colorPicked}
-                  .desiredRgbColor=${this._colorPickerColor}
-                  throttle="500"
-                  .hueSegments=${this._hueSegments}
-                  .saturationSegments=${this._saturationSegments}
-                >
-                </ha-color-picker>
-                <ha-icon-button
-                  .path=${mdiPalette}
-                  @click=${this._segmentClick}
-                  class="segmentation-button"
-                ></ha-icon-button>
-              </div>
+              <ha-hs-color-picker
+                @value-changed=${this._hsColorChanged}
+                @cursor-moved=${this._hsColorCursorMoved}
+                .value=${this._hsPickerValue}
+                .colorBrightness=${this._colorBrightnessSliderValue != null
+                  ? (this._colorBrightnessSliderValue * 255) / 100
+                  : undefined}
+              >
+              </ha-hs-color-picker>
 
               ${supportsRgbw || supportsRgbww
                 ? html`<ha-labeled-slider
@@ -188,9 +171,9 @@ class MoreInfoViewLightColorPicker extends LitElement {
                       pin
                     ></ha-labeled-slider>
                   `
-                : ""}
+                : nothing}
             `
-          : ""}
+          : nothing}
       </div>
     `;
   }
@@ -212,7 +195,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
           this._brightnessAdjusted = maxVal;
         }
       }
-      this._ctSliderValue =
+      this._ctPickerValue =
         stateObj.attributes.color_mode === LightColorMode.COLOR_TEMP
           ? stateObj.attributes.color_temp_kelvin
           : undefined;
@@ -239,14 +222,12 @@ class MoreInfoViewLightColorPicker extends LitElement {
         ? Math.round((Math.max(...currentRgbColor.slice(0, 3)) * 100) / 255)
         : undefined;
 
-      this._colorPickerColor = currentRgbColor?.slice(0, 3) as [
-        number,
-        number,
-        number
-      ];
+      this._hsPickerValue = currentRgbColor
+        ? rgb2hs(currentRgbColor.slice(0, 3) as [number, number, number])
+        : undefined;
     } else {
-      this._colorPickerColor = [0, 0, 0];
-      this._ctSliderValue = undefined;
+      this._hsPickerValue = [0, 0];
+      this._ctPickerValue = undefined;
       this._wvSliderValue = undefined;
       this._cwSliderValue = undefined;
       this._wwSliderValue = undefined;
@@ -295,14 +276,79 @@ class MoreInfoViewLightColorPicker extends LitElement {
     this._mode = newMode;
   }
 
-  private _ctSliderMoved(ev: CustomEvent) {
+  private _hsColorCursorMoved(ev: CustomEvent) {
+    if (!ev.detail.value) {
+      return;
+    }
+    this._hsPickerValue = ev.detail.value;
+
+    this._throttleUpdateColor();
+  }
+
+  private _throttleUpdateColor = throttle(() => this._updateColor(), 500);
+
+  private _updateColor() {
+    const hs_color = this._hsPickerValue!;
+    const rgb_color = hs2rgb(hs_color);
+
+    if (
+      lightSupportsColorMode(this.stateObj!, LightColorMode.RGBWW) ||
+      lightSupportsColorMode(this.stateObj!, LightColorMode.RGBW)
+    ) {
+      this._setRgbWColor(
+        this._colorBrightnessSliderValue
+          ? this._adjustColorBrightness(
+              rgb_color,
+              (this._colorBrightnessSliderValue * 255) / 100
+            )
+          : rgb_color
+      );
+    } else if (lightSupportsColorMode(this.stateObj!, LightColorMode.RGB)) {
+      if (this._brightnessAdjusted) {
+        const brightnessAdjust = (this._brightnessAdjusted / 255) * 100;
+        const brightnessPercentage = Math.round(
+          ((this.stateObj!.attributes.brightness || 0) * brightnessAdjust) / 255
+        );
+        this.hass.callService("light", "turn_on", {
+          entity_id: this.stateObj!.entity_id,
+          brightness_pct: brightnessPercentage,
+          rgb_color: this._adjustColorBrightness(
+            rgb_color,
+            this._brightnessAdjusted,
+            true
+          ),
+        });
+      } else {
+        this.hass.callService("light", "turn_on", {
+          entity_id: this.stateObj!.entity_id,
+          rgb_color,
+        });
+      }
+    } else {
+      this.hass.callService("light", "turn_on", {
+        entity_id: this.stateObj!.entity_id,
+        hs_color: [hs_color[0], hs_color[1] * 100],
+      });
+    }
+  }
+
+  private _hsColorChanged(ev: CustomEvent) {
+    if (!ev.detail.value) {
+      return;
+    }
+    this._hsPickerValue = ev.detail.value;
+
+    this._updateColor();
+  }
+
+  private _ctColorCursorMoved(ev: CustomEvent) {
     const ct = ev.detail.value;
 
-    if (isNaN(ct) || this._ctSliderValue === ct) {
+    if (isNaN(ct) || this._ctPickerValue === ct) {
       return;
     }
 
-    this._ctSliderValue = ct;
+    this._ctPickerValue = ct;
 
     this._throttleUpdateColorTemp();
   }
@@ -310,18 +356,18 @@ class MoreInfoViewLightColorPicker extends LitElement {
   private _throttleUpdateColorTemp = throttle(() => {
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
-      color_temp_kelvin: this._ctSliderValue,
+      color_temp_kelvin: this._ctPickerValue,
     });
   }, 500);
 
-  private _ctSliderChanged(ev: CustomEvent) {
+  private _ctColorChanged(ev: CustomEvent) {
     const ct = ev.detail.value;
 
-    if (isNaN(ct) || this._ctSliderValue === ct) {
+    if (isNaN(ct) || this._ctPickerValue === ct) {
       return;
     }
 
-    this._ctSliderValue = ct;
+    this._ctPickerValue = ct;
 
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
@@ -399,16 +445,6 @@ class MoreInfoViewLightColorPicker extends LitElement {
     );
   }
 
-  private _segmentClick() {
-    if (this._hueSegments === 24 && this._saturationSegments === 8) {
-      this._hueSegments = 0;
-      this._saturationSegments = 0;
-    } else {
-      this._hueSegments = 24;
-      this._saturationSegments = 8;
-    }
-  }
-
   private _adjustColorBrightness(
     rgbColor: [number, number, number],
     value?: number,
@@ -448,68 +484,6 @@ class MoreInfoViewLightColorPicker extends LitElement {
     }
   }
 
-  /**
-   * Called when a new color has been picked.
-   * should be throttled with the 'throttle=' attribute of the color picker
-   */
-  private _colorPicked(
-    ev: CustomEvent<{
-      hs: { h: number; s: number };
-      rgb: { r: number; g: number; b: number };
-    }>
-  ) {
-    this._colorPickerColor = [
-      ev.detail.rgb.r,
-      ev.detail.rgb.g,
-      ev.detail.rgb.b,
-    ];
-
-    if (
-      lightSupportsColorMode(this.stateObj!, LightColorMode.RGBWW) ||
-      lightSupportsColorMode(this.stateObj!, LightColorMode.RGBW)
-    ) {
-      this._setRgbWColor(
-        this._colorBrightnessSliderValue
-          ? this._adjustColorBrightness(
-              [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b],
-              (this._colorBrightnessSliderValue * 255) / 100
-            )
-          : [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b]
-      );
-    } else if (lightSupportsColorMode(this.stateObj!, LightColorMode.RGB)) {
-      const rgb_color: [number, number, number] = [
-        ev.detail.rgb.r,
-        ev.detail.rgb.g,
-        ev.detail.rgb.b,
-      ];
-      if (this._brightnessAdjusted) {
-        const brightnessAdjust = (this._brightnessAdjusted / 255) * 100;
-        const brightnessPercentage = Math.round(
-          ((this.stateObj!.attributes.brightness || 0) * brightnessAdjust) / 255
-        );
-        this.hass.callService("light", "turn_on", {
-          entity_id: this.stateObj!.entity_id,
-          brightness_pct: brightnessPercentage,
-          rgb_color: this._adjustColorBrightness(
-            rgb_color,
-            this._brightnessAdjusted,
-            true
-          ),
-        });
-      } else {
-        this.hass.callService("light", "turn_on", {
-          entity_id: this.stateObj!.entity_id,
-          rgb_color,
-        });
-      }
-    } else {
-      this.hass.callService("light", "turn_on", {
-        entity_id: this.stateObj!.entity_id,
-        hs_color: [ev.detail.hs.h, ev.detail.hs.s * 100],
-      });
-    }
-  }
-
   static get styles(): CSSResultGroup {
     return [
       css`
@@ -526,35 +500,16 @@ class MoreInfoViewLightColorPicker extends LitElement {
           flex: 1;
         }
 
-        .segmentation-container {
-          position: relative;
-          max-height: 500px;
-          display: flex;
-          justify-content: center;
+        ha-hs-color-picker {
+          max-width: 320px;
+          min-width: 200px;
+          margin: 44px 0 44px 0;
         }
 
-        .segmentation-button {
-          position: absolute;
-          top: 5%;
-          left: 0;
-          color: var(--secondary-text-color);
-        }
-
-        ha-color-picker {
-          --ha-color-picker-wheel-borderwidth: 5;
-          --ha-color-picker-wheel-bordercolor: white;
-          --ha-color-picker-wheel-shadow: none;
-          --ha-color-picker-marker-borderwidth: 2;
-          --ha-color-picker-marker-bordercolor: white;
-        }
-
-        ha-control-slider {
-          height: 45vh;
-          max-height: 320px;
-          min-height: 200px;
-          margin: 20px 0;
-          --control-slider-thickness: 100px;
-          --control-slider-border-radius: 24px;
+        ha-temp-color-picker {
+          max-width: 320px;
+          min-width: 200px;
+          margin: 20px 0 44px 0;
         }
 
         ha-labeled-slider {
@@ -570,17 +525,6 @@ class MoreInfoViewLightColorPicker extends LitElement {
           letter-spacing: 0.1px;
           margin: 0;
           direction: ltr;
-        }
-
-        .color-temp {
-          --control-slider-background: -webkit-linear-gradient(
-            top,
-            rgb(166, 209, 255) 0%,
-            white 50%,
-            rgb(255, 160, 0) 100%
-          );
-          --control-slider-background-opacity: 1;
-          margin-bottom: 44px;
         }
 
         hr {
