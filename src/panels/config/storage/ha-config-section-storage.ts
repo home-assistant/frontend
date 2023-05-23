@@ -148,7 +148,8 @@ class HaConfigSectionStorage extends LitElement {
                 >
                   ${isHAOS
                     ? html`${this.hass.localize(
-                          "ui.panel.config.storage.network_mounts.not_supported.haos"
+                          "ui.panel.config.storage.network_mounts.not_supported.os",
+                          { version: "10.0" }
                         )}
                         <mwc-button
                           slot="action"
