@@ -1,11 +1,5 @@
 import "@material/mwc-list";
-import {
-  mdiBackupRestore,
-  mdiNas,
-  mdiPlayBox,
-  mdiReload,
-  mdiStar,
-} from "@mdi/js";
+import { mdiBackupRestore, mdiNas, mdiPlayBox, mdiReload } from "@mdi/js";
 import {
   LitElement,
   PropertyValues,
@@ -204,16 +198,7 @@ class HaConfigSectionStorage extends LitElement {
                               @click=${this._reloadMount}
                               .path=${mdiReload}
                             ></ha-icon-button>`
-                          : html`${mount.usage ===
-                                SupervisorMountUsage.BACKUP &&
-                              mount.name !==
-                                this._mountsInfo?.default_backup_mount
-                                ? html`<ha-svg-icon
-                                    slot="meta"
-                                    .path=${mdiStar}
-                                  ></ha-svg-icon>`
-                                : ""}
-                              <ha-icon-next slot="meta"></ha-icon-next>`}
+                          : html`<ha-icon-next slot="meta"></ha-icon-next>`}
                       </ha-list-item>
                     `
                   )}
@@ -285,7 +270,6 @@ class HaConfigSectionStorage extends LitElement {
   private _addMount(): void {
     showMountViewDialog(this, {
       reloadMounts: this._reloadMounts,
-      defaultBackupMount: this._mountsInfo!.default_backup_mount,
     });
   }
 
@@ -293,7 +277,6 @@ class HaConfigSectionStorage extends LitElement {
     ev.stopPropagation();
     showMountViewDialog(this, {
       mount: (ev.currentTarget as any).mount,
-      defaultBackupMount: this._mountsInfo!.default_backup_mount,
       reloadMounts: this._reloadMounts,
     });
   }
