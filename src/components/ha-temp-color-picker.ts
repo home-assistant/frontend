@@ -68,40 +68,23 @@ function drawColorWheel(
   maxTemp: number
 ) {
   const radius = ctx.canvas.width / 2;
-  const image = ctx.createImageData(2 * radius, 2 * radius);
-  const data = image.data;
 
   const min = Math.max(minTemp, 2000);
   const max = Math.min(maxTemp, 40000);
 
-  for (let x = -radius; x < radius; x++) {
-    for (let y = -radius; y < radius; y++) {
-      const [r] = xy2polar(x, y);
+  for (let y = -radius; y < radius; y += 1) {
+    const x = radius * Math.sqrt(1 - (y / radius) ** 2);
 
-      if (r > radius) {
-        continue;
-      }
+    const fraction = (y / radius + 1) / 2;
 
-      const rowLength = 2 * radius;
-      const adjustedX = x + radius;
-      const adjustedY = y + radius;
-      const pixelWidth = 4;
-      const index = (adjustedX + adjustedY * rowLength) * pixelWidth;
+    const temperature = min + fraction * (max - min);
 
-      const fraction = (y / radius + 1) / 2;
-      const alpha = 255;
+    const color = rgb2hex(temperature2rgb(temperature));
 
-      const temperature = min + fraction * (max - min);
-
-      const rgb = temperature2rgb(temperature);
-      data[index] = rgb[0];
-      data[index + 1] = rgb[1];
-      data[index + 2] = rgb[2];
-      data[index + 3] = alpha;
-    }
+    ctx.fillStyle = color;
+    ctx.fillRect(radius - x, radius + y - 0.5, 2 * x, 2);
+    ctx.fill();
   }
-
-  ctx.putImageData(image, 0, 0);
 }
 
 @customElement("ha-temp-color-picker")
