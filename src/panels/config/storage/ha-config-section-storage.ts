@@ -269,7 +269,7 @@ class HaConfigSectionStorage extends LitElement {
 
   private _addMount(): void {
     showMountViewDialog(this, {
-      reloadMounts: this._reloadMounts,
+      reloadMounts: () => this._reloadMounts(),
     });
   }
 
@@ -277,7 +277,7 @@ class HaConfigSectionStorage extends LitElement {
     ev.stopPropagation();
     showMountViewDialog(this, {
       mount: (ev.currentTarget as any).mount,
-      reloadMounts: this._reloadMounts,
+      reloadMounts: () => this._reloadMounts(),
     });
   }
 
