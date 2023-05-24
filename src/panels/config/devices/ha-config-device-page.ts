@@ -567,11 +567,16 @@ export class HaConfigDevicePage extends LitElement {
                   <div class="items">
                     ${this._related.script.map((script) => {
                       const entityState = this.hass.states[script];
+                      const entry = this.entities.find(
+                        (e) => e.entity_id === script
+                      );
+                      let url = `/config/script/show/${entityState.entity_id}`;
+                      if (entry) {
+                        url = `/config/script/edit/${entry.unique_id}`;
+                      }
                       return entityState
                         ? html`
-                            <a
-                              href=${`/config/script/edit/${entityState.entity_id}`}
-                            >
+                            <a href=${url}>
                               <paper-item .script=${script}>
                                 <paper-item-body>
                                   ${computeStateName(entityState)}

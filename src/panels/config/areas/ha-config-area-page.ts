@@ -586,7 +586,14 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
   }
 
   private _renderScript(name: string, entityState: ScriptEntity) {
-    return html`<a href=${`/config/script/edit/${entityState.entity_id}`}>
+    const entry = this._entities.find(
+      (e) => e.entity_id === entityState.entity_id
+    );
+    let url = `/config/script/show/${entityState.entity_id}`;
+    if (entry) {
+      url = `/config/script/edit/${entry.unique_id}`;
+    }
+    return html`<a href=${url}>
       <paper-item>
         <paper-item-body> ${name} </paper-item-body>
         <ha-icon-next></ha-icon-next>
