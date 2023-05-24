@@ -27,6 +27,7 @@ import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
 import "../../../../../components/ha-textfield";
+import { groupBy } from "../../../../../common/util/group-by";
 import {
   computeDeviceName,
   DeviceRegistryEntry,
@@ -126,9 +127,6 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     }
 
     const device = this._device!;
-    const endpoints = Object.values(this._config)
-      .map((item) => item.endpoint)
-      .filter((value, index, array) => array.indexOf(value) === index);
 
     return html`
       <hass-tabs-subpage
@@ -176,8 +174,12 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               </em>
             </p>
           </div>
-          ${endpoints.map(
-            (endpoint) => html`<div class="content">
+          ${Object.entries(
+            groupBy(Object.entries(this._config), ([_, item]) =>
+              item.endpoint.toString()
+            )
+          ).map(
+            ([endpoint, configParamEntries]) => html`<div class="content">
               <h3>
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.node_config.endpoint",
@@ -186,17 +188,15 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
                 )}
               </h3>
               <ha-card>
-                ${Object.entries(this._config!)
-                  .filter(([_, item]) => item.endpoint === endpoint)
-                  .map(
-                    ([id, item]) => html` <ha-settings-row
-                      class="config-item"
-                      .configId=${id}
-                      .narrow=${this.narrow}
-                    >
-                      ${this._generateConfigBox(id, item)}
-                    </ha-settings-row>`
-                  )}
+                ${configParamEntries.map(
+                  ([id, item]) => html` <ha-settings-row
+                    class="config-item"
+                    .configId=${id}
+                    .narrow=${this.narrow}
+                  >
+                    ${this._generateConfigBox(id, item)}
+                  </ha-settings-row>`
+                )}
               </ha-card>
             </div>`
           )}
