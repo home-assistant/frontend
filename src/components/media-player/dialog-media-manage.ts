@@ -16,7 +16,7 @@ import {
   removeLocalMedia,
 } from "../../data/media_source";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
-import { haStyleDialog } from "../../resources/styles";
+import { haStyle, haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
 import "../ha-check-list-item";
@@ -24,9 +24,12 @@ import "../ha-circular-progress";
 import "../ha-dialog";
 import "../ha-dialog-header";
 import "../ha-svg-icon";
+import "../ha-tip";
 import "./ha-media-player-browse";
 import "./ha-media-upload-button";
 import type { MediaManageDialogParams } from "./show-media-manage-dialog";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { navigate } from "../../common/navigate";
 
 @customElement("dialog-media-manage")
 class DialogMediaManage extends LitElement {
@@ -197,6 +200,25 @@ class DialogMediaManage extends LitElement {
                 )}
               </mwc-list>
             `}
+        ${isComponentLoaded(this.hass, "hassio")
+          ? html`<ha-tip .hass=${this.hass}>
+              ${this.hass.localize(
+                "ui.components.media-browser.file_management.tip_media_storage",
+                {
+                  storage: html`<button
+                    class="link"
+                    @click=${this._navigateToStorage}
+                  >
+                    ${this.hass
+                      .localize(
+                        "ui.components.media-browser.file_management.tip_storage_panel"
+                      )
+                      .toLowerCase()}
+                  </button>`,
+                }
+              )}
+            </ha-tip>`
+          : nothing}
       </ha-dialog>
     `;
   }
@@ -272,8 +294,14 @@ class DialogMediaManage extends LitElement {
     );
   }
 
+  private async _navigateToStorage() {
+    navigate("/config/storage");
+    this.closeDialog();
+  }
+
   static get styles(): CSSResultGroup {
     return [
+      haStyle,
       haStyleDialog,
       css`
         ha-dialog {
@@ -307,6 +335,10 @@ class DialogMediaManage extends LitElement {
 
         ha-svg-icon[slot="icon"] {
           vertical-align: middle;
+        }
+
+        ha-tip {
+          margin: 16px;
         }
 
         ha-svg-icon[slot="icon"] {
