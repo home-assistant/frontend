@@ -2,6 +2,7 @@ import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { Action, IfAction } from "../../../../../data/script";
+import type { Clipboard } from "../../../../../data/automation";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { Condition } from "../../../../lovelace/common/validate-condition";
@@ -18,6 +19,8 @@ export class HaIfAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public action!: IfAction;
 
   @property({ type: Boolean }) public reOrderMode = false;
+
+  @property() public clipboard?: Clipboard;
 
   @state() private _showElse = false;
 
@@ -43,6 +46,7 @@ export class HaIfAction extends LitElement implements ActionElement {
         .reOrderMode=${this.reOrderMode}
         .disabled=${this.disabled}
         @value-changed=${this._ifChanged}
+        .clipboard=${this.clipboard}
         .hass=${this.hass}
       ></ha-automation-condition>
 
@@ -57,6 +61,7 @@ export class HaIfAction extends LitElement implements ActionElement {
         .reOrderMode=${this.reOrderMode}
         .disabled=${this.disabled}
         @value-changed=${this._thenChanged}
+        .clipboard=${this.clipboard}
         .hass=${this.hass}
       ></ha-automation-action>
       ${this._showElse || action.else

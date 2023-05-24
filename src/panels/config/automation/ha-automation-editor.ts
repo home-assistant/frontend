@@ -46,7 +46,10 @@ import {
   saveAutomationConfig,
   showAutomationEditor,
   triggerAutomationActions,
+  Trigger,
+  Condition,
 } from "../../../data/automation";
+import { Action } from "../../../data/script";
 import { fetchEntityRegistry } from "../../../data/entity_registry";
 import {
   showAlertDialog,
@@ -76,6 +79,11 @@ declare global {
     "ui-mode-not-available": Error;
     duplicate: undefined;
     "re-order": undefined;
+    "set-clipboard": {
+      trigger?: Trigger;
+      condition?: Condition;
+      action?: Action;
+    };
   }
 }
 

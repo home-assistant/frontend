@@ -4,7 +4,7 @@ import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
-import type { Condition } from "../../../../data/automation";
+import type { Condition, Clipboard } from "../../../../data/automation";
 import { expandConditionWithShorthand } from "../../../../data/automation";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -31,6 +31,8 @@ export default class HaAutomationConditionEditor extends LitElement {
   @property({ type: Boolean }) public yamlMode = false;
 
   @property({ type: Boolean }) public reOrderMode = false;
+
+  @property() public clipboard?: Clipboard;
 
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
@@ -70,6 +72,7 @@ export default class HaAutomationConditionEditor extends LitElement {
                   condition: condition,
                   reOrderMode: this.reOrderMode,
                   disabled: this.disabled,
+                  clipboard: this.clipboard,
                 }
               )}
             </div>
