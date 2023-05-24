@@ -38,6 +38,8 @@ export class DialogEnergyWaterSettings
 
   @state() private _costs?: "no-costs" | "number" | "entity" | "statistic";
 
+  @state() private _pickedDisplayUnit?: string | null;
+
   @state() private _defaultDisplayUnit?: string | null;
 
   @state() private _water_units?: string[];
