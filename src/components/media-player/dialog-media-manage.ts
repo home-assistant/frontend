@@ -24,9 +24,11 @@ import "../ha-circular-progress";
 import "../ha-dialog";
 import "../ha-dialog-header";
 import "../ha-svg-icon";
+import "../ha-tip";
 import "./ha-media-player-browse";
 import "./ha-media-upload-button";
 import type { MediaManageDialogParams } from "./show-media-manage-dialog";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
 @customElement("dialog-media-manage")
 class DialogMediaManage extends LitElement {
@@ -197,6 +199,25 @@ class DialogMediaManage extends LitElement {
                 )}
               </mwc-list>
             `}
+        ${isComponentLoaded(this.hass, "hassio")
+          ? html`<ha-tip .hass=${this.hass}>
+              ${this.hass.localize(
+                "ui.components.media-browser.file_management.tip_media_storage",
+                {
+                  storage: html`<a
+                    href="/config/storage"
+                    @click=${this.closeDialog}
+                  >
+                    ${this.hass
+                      .localize(
+                        "ui.components.media-browser.file_management.tip_storage_panel"
+                      )
+                      .toLowerCase()}
+                  </a>`,
+                }
+              )}
+            </ha-tip>`
+          : nothing}
       </ha-dialog>
     `;
   }
@@ -307,6 +328,10 @@ class DialogMediaManage extends LitElement {
 
         ha-svg-icon[slot="icon"] {
           vertical-align: middle;
+        }
+
+        ha-tip {
+          margin: 16px;
         }
 
         ha-svg-icon[slot="icon"] {
