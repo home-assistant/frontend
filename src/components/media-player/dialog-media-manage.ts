@@ -16,7 +16,7 @@ import {
   removeLocalMedia,
 } from "../../data/media_source";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
-import { haStyle, haStyleDialog } from "../../resources/styles";
+import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
 import "../ha-check-list-item";
@@ -29,7 +29,6 @@ import "./ha-media-player-browse";
 import "./ha-media-upload-button";
 import type { MediaManageDialogParams } from "./show-media-manage-dialog";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { navigate } from "../../common/navigate";
 
 @customElement("dialog-media-manage")
 class DialogMediaManage extends LitElement {
@@ -205,16 +204,16 @@ class DialogMediaManage extends LitElement {
               ${this.hass.localize(
                 "ui.components.media-browser.file_management.tip_media_storage",
                 {
-                  storage: html`<button
-                    class="link"
-                    @click=${this._navigateToStorage}
+                  storage: html`<a
+                    href="/config/storage"
+                    @click=${this.closeDialog}
                   >
                     ${this.hass
                       .localize(
                         "ui.components.media-browser.file_management.tip_storage_panel"
                       )
                       .toLowerCase()}
-                  </button>`,
+                  </a>`,
                 }
               )}
             </ha-tip>`
@@ -294,14 +293,8 @@ class DialogMediaManage extends LitElement {
     );
   }
 
-  private async _navigateToStorage() {
-    navigate("/config/storage");
-    this.closeDialog();
-  }
-
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
       haStyleDialog,
       css`
         ha-dialog {
