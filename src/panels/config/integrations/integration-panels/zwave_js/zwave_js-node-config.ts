@@ -192,7 +192,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
                   .sort(([_, paramA], [__, paramB]) =>
                     paramA.property !== paramB.property
                       ? paramA.property - paramB.property
-                      : paramA.property_key! - paramA.property_key!
+                      : paramA.property_key! - paramB.property_key!
                   )
                   .map(
                     ([id, item]) => html` <ha-settings-row
