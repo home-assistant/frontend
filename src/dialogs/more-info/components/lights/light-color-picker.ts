@@ -11,6 +11,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { hs2rgb, rgb2hs } from "../../../../common/color/convert-color";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-button-toggle-group";
 import "../../../../components/ha-hs-color-picker";
@@ -18,6 +19,7 @@ import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-labeled-slider";
 import "../../../../components/ha-temp-color-picker";
 import {
+  FavoriteColor,
   getLightCurrentModeRgbColor,
   LightColorMode,
   LightEntity,
@@ -27,6 +29,12 @@ import {
 import { HomeAssistant } from "../../../../types";
 
 type Mode = "color_temp" | "color";
+
+declare global {
+  interface HASSDomEvents {
+    "color-changed": FavoriteColor;
+  }
+}
 
 @customElement("light-color-picker")
 class LightColorPicker extends LitElement {
@@ -127,7 +135,7 @@ class LightColorPicker extends LitElement {
                     @change=${this._colorBrightnessSliderChanged}
                     pin
                   ></ha-labeled-slider>`
-                : ""}
+                : nothing}
               ${supportsRgbw
                 ? html`
                     <ha-labeled-slider
@@ -142,7 +150,7 @@ class LightColorPicker extends LitElement {
                       pin
                     ></ha-labeled-slider>
                   `
-                : ""}
+                : nothing}
               ${supportsRgbww
                 ? html`
                     <ha-labeled-slider
@@ -288,6 +296,8 @@ class LightColorPicker extends LitElement {
     const hs_color = this._hsPickerValue!;
     const rgb_color = hs2rgb(hs_color);
 
+    fireEvent(this, "color-changed", { rgb_color });
+
     if (
       lightSupportsColorMode(this.stateObj!, LightColorMode.RGBWW) ||
       lightSupportsColorMode(this.stateObj!, LightColorMode.RGBW)
@@ -351,10 +361,7 @@ class LightColorPicker extends LitElement {
   }
 
   private _throttleUpdateColorTemp = throttle(() => {
-    this.hass.callService("light", "turn_on", {
-      entity_id: this.stateObj!.entity_id,
-      color_temp_kelvin: this._ctPickerValue,
-    });
+    this._updateColorTemp();
   }, 500);
 
   private _ctColorChanged(ev: CustomEvent) {
@@ -365,6 +372,14 @@ class LightColorPicker extends LitElement {
     }
 
     this._ctPickerValue = ct;
+
+    this._updateColorTemp();
+  }
+
+  private _updateColorTemp() {
+    const ct = this._ctPickerValue!;
+
+    fireEvent(this, "color-changed", { color_temp_kelvin: ct });
 
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,

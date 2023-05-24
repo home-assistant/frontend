@@ -10,6 +10,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -20,7 +21,10 @@ import "../../../components/ha-outlined-button";
 import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import {
+  ExtEntityRegistryEntry,
+  updateEntityRegistryEntry,
+} from "../../../data/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
 import {
   computeDefaultFavoriteColors,
@@ -38,6 +42,7 @@ import "../components/ha-more-info-state-header";
 import "../components/ha-more-info-toggle";
 import "../components/lights/ha-favorite-color-button";
 import "../components/lights/ha-more-info-light-brightness";
+import { showLightColorFavoriteDialog } from "../components/lights/show-dialog-light-color-favorite";
 import { showLightColorPickerView } from "../components/lights/show-view-light-color-picker";
 
 type Button =
@@ -63,6 +68,8 @@ class MoreInfoLight extends LitElement {
   @state() private _effect?: string;
 
   @state() private _selectedBrightness?: number;
+
+  @state() private _focusedFavoriteIndex?: number;
 
   private _brightnessChanged(ev) {
     const value = (ev.detail as any).value;
@@ -195,7 +202,9 @@ class MoreInfoLight extends LitElement {
                         <ha-favorite-color-button
                           .color=${this._favoriteColors[button.index]}
                           .index=${button.index}
-                          @click=${this._applyFavoriteColor}
+                          @click=${this._handleFavoriteClick}
+                          .editMode=${this._focusedFavoriteIndex ===
+                          button.index}
                         >
                         </ha-favorite-color-button>
                       `;
@@ -270,9 +279,45 @@ class MoreInfoLight extends LitElement {
     );
   };
 
-  private _applyFavoriteColor = (event) => {
+  private _editFavoriteColor = async (index) => {
+    const color = await showLightColorFavoriteDialog(this, {
+      entry: this.entry!,
+    });
+
+    if (color) {
+      const newFavoriteColors = [...this._favoriteColors];
+
+      newFavoriteColors[index] = color;
+
+      const result = await updateEntityRegistryEntry(
+        this.hass,
+        this.entry!.entity_id,
+        {
+          options_domain: "light",
+          options: {
+            favorites_colors: newFavoriteColors,
+          },
+        }
+      );
+
+      fireEvent(this, "entity-entry-updated", result.entity_entry);
+    } else {
+      this._applyFavoriteColor(index);
+    }
+  };
+
+  private _handleFavoriteClick = (event) => {
     const index = event.target.index;
+    if (this._focusedFavoriteIndex === index) {
+      this._editFavoriteColor(index);
+      return;
+    }
+    this._applyFavoriteColor(index);
+  };
+
+  private _applyFavoriteColor = (index: number) => {
     const favorite = this._favoriteColors[index];
+    this._focusedFavoriteIndex = index;
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
       ...favorite,
