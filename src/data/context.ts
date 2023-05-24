@@ -20,5 +20,5 @@ export const userDataContext =
   createContext<HomeAssistant["userData"]>("userData");
 export const panelsContext = createContext<HomeAssistant["panels"]>("panels");
 
-export const extendedEntitiesContext =
+export const fullEntitiesContext =
   createContext<EntityRegistryEntry[]>("extendedEntities");

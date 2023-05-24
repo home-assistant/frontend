@@ -1,3 +1,4 @@
+import { ContextProvider } from "@lit-labs/context";
 import {
   mdiAccount,
   mdiBackupRestore,
@@ -28,13 +29,21 @@ import {
   mdiViewDashboard,
 } from "@mdi/js";
 import { PolymerElement } from "@polymer/polymer";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
+import { fullEntitiesContext } from "../../data/context";
+import {
+  entityRegistryByEntityId,
+  entityRegistryById,
+  subscribeEntityRegistry,
+} from "../../data/entity_registry";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../types";
 
 declare global {
@@ -349,12 +358,25 @@ export const configSections: { [name: string]: PageNavigation[] } = {
 };
 
 @customElement("ha-panel-config")
-class HaPanelConfig extends HassRouterPage {
+class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 
   @property() public route!: Route;
+
+  private _entitiesContext = new ContextProvider(this, {
+    context: fullEntitiesContext,
+    initialValue: [],
+  });
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this._entitiesContext.setValue(entities);
+      }),
+    ];
+  }
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
@@ -545,6 +567,8 @@ class HaPanelConfig extends HassRouterPage {
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
+    entityRegistryByEntityId.clear();
+    entityRegistryById.clear();
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
