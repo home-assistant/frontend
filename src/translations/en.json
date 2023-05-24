@@ -5811,6 +5811,15 @@
         "attributes": "Attributes",
         "device_path": "Device path"
       },
+      "backup_location": {
+        "title": "Change default backup location",
+        "options": {
+          "default_backup_mount": {
+            "name": "Default backup location",
+            "description": "The default location for backups."
+          }
+        }
+      },
       "datadisk_move": {
         "title": "[%key:supervisor::system::host::move_datadisk%]",
         "description": "You are currently using ''{current_path}'' as data disk. Moving data disks will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
