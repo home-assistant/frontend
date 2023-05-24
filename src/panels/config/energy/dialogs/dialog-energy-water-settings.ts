@@ -222,7 +222,7 @@ export class DialogEnergyWaterSettings
                 "ui.panel.config.energy.water.dialog.cost_number_input"
               )}${unitPriceFixed ? ` (${unitPriceFixed})` : ""}`}
               class="price-options"
-              step=".01"
+              step="any"
               type="number"
               .value=${this._source.number_energy_price}
               @change=${this._numberPriceChanged}
