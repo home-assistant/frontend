@@ -593,7 +593,9 @@
           "uploading": "Uploading {count} {count, plural,\n  one {file}\n  other {files}\n}",
           "confirm_delete": "Do you want to delete {count} {count, plural,\n  one {file}\n  other {files}\n}?",
           "delete": "Delete {count}",
-          "deleting": "Deleting {count}"
+          "deleting": "Deleting {count}",
+          "tip_media_storage": "[%key:ui::panel::config::tips::media_storage%]",
+          "tip_storage_panel": "[%key:ui::panel::config::storage::caption%]"
         },
         "class": {
           "album": "Album",
@@ -3915,7 +3917,8 @@
         },
         "tips": {
           "tip": "Tip!",
-          "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}"
+          "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}",
+          "media_storage": "You can add network storage to your Home Assistant instance in the {storage} panel."
         },
         "analytics": {
           "caption": "Analytics",
