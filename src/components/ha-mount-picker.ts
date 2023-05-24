@@ -138,7 +138,7 @@ class HaMountPicker extends LitElement {
     try {
       if (isComponentLoaded(this.hass, "hassio")) {
         this._mounts = await fetchSupervisorMounts(this.hass);
-        if (this.usage === SupervisorMountUsage.BACKUP) {
+        if (this.usage === SupervisorMountUsage.BACKUP && !this.value) {
           this.value =
             this._mounts.default_backup_mount || __BACKUP_DATA_DISK__;
         }
