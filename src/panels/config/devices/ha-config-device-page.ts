@@ -1219,6 +1219,7 @@ export class HaConfigDevicePage extends LitElement {
             ),
             text: err.message,
           });
+          return;
         }
 
         if (
@@ -1246,10 +1247,17 @@ export class HaConfigDevicePage extends LitElement {
 
         const updateProms = entities.map((entity) => {
           const name = entity.name || entity.stateName;
-          let newEntityId: string | null = null;
-          let newName: string | null = null;
+          let newEntityId: string | undefined;
+          let newName: string | null | undefined;
 
-          if (name && name.includes(oldDeviceName)) {
+          if (entity.has_entity_name && !entity.name) {
+            newName = undefined;
+          } else if (
+            entity.has_entity_name &&
+            (entity.name === oldDeviceName || entity.name === newDeviceName)
+          ) {
+            newName = null;
+          } else if (name && name.includes(oldDeviceName)) {
             newName = name.replace(oldDeviceName, newDeviceName);
           }
 
@@ -1263,13 +1271,13 @@ export class HaConfigDevicePage extends LitElement {
             }
           }
 
-          if (!newName && !newEntityId) {
+          if (newName === undefined && newEntityId === undefined) {
             return undefined;
           }
 
           return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-            name: newName || name,
-            new_entity_id: newEntityId || entity.entity_id,
+            name: newName,
+            new_entity_id: newEntityId,
           });
         });
         await Promise.all(updateProms);
