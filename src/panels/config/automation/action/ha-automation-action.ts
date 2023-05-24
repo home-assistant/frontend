@@ -1,8 +1,21 @@
 import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
+import {
+  mdiArrowDown,
+  mdiArrowUp,
+  mdiDrag,
+  mdiPlus,
+  mdiContentPaste,
+} from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
@@ -16,13 +29,14 @@ import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
 import { ACTION_TYPES } from "../../../../data/action";
 import { Action } from "../../../../data/script";
+import { Clipboard } from "../../../../data/automation";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import {
   loadSortable,
   SortableInstance,
 } from "../../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../../types";
-import "./ha-automation-action-row";
+import { getType } from "./ha-automation-action-row";
 import type HaAutomationActionRow from "./ha-automation-action-row";
 import "./types/ha-automation-action-activate_scene";
 import "./types/ha-automation-action-choose";
@@ -39,6 +53,8 @@ import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
 
+const PASTE_VALUE = "__paste__";
+
 @customElement("ha-automation-action")
 export default class HaAutomationAction extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -52,6 +68,8 @@ export default class HaAutomationAction extends LitElement {
   @property() public actions!: Action[];
 
   @property({ type: Boolean }) public reOrderMode = false;
+
+  @property() public clipboard?: Clipboard;
 
   private _focusLastActionOnChange = false;
 
@@ -95,6 +113,7 @@ export default class HaAutomationAction extends LitElement {
               @duplicate=${this._duplicateAction}
               @value-changed=${this._actionChanged}
               @re-order=${this._enterReOrderMode}
+              .clipboard=${this.clipboard}
               .hass=${this.hass}
             >
               ${this.reOrderMode
@@ -139,6 +158,19 @@ export default class HaAutomationAction extends LitElement {
         >
           <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
         </ha-button>
+        ${this.clipboard?.action
+          ? html` <mwc-list-item .value=${PASTE_VALUE} graphic="icon">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.paste"
+              )}
+              (${this.hass.localize(
+                `ui.panel.config.automation.editor.actions.type.${getType(
+                  this.clipboard.action
+                )}.label`
+              )})
+              <ha-svg-icon slot="graphic" .path=${mdiContentPaste}></ha-svg-icon
+            ></mwc-list-item>`
+          : nothing}
         ${this._processedTypes(this.hass.localize).map(
           ([opt, label, icon]) => html`
             <mwc-list-item .value=${opt} graphic="icon">
@@ -221,13 +253,19 @@ export default class HaAutomationAction extends LitElement {
 
   private _addAction(ev: CustomEvent<ActionDetail>) {
     const action = (ev.currentTarget as HaSelect).items[ev.detail.index].value;
-    const elClass = customElements.get(
-      `ha-automation-action-${action}`
-    ) as CustomElementConstructor & { defaultConfig: Action };
 
-    const actions = this.actions.concat({
-      ...elClass.defaultConfig,
-    });
+    let actions: Action[];
+    if (action === PASTE_VALUE) {
+      actions = this.actions.concat(deepClone(this.clipboard!.action));
+    } else {
+      const elClass = customElements.get(
+        `ha-automation-action-${action}`
+      ) as CustomElementConstructor & { defaultConfig: Action };
+
+      actions = this.actions.concat({
+        ...elClass.defaultConfig,
+      });
+    }
     this._focusLastActionOnChange = true;
     fireEvent(this, "value-changed", { value: actions });
   }
