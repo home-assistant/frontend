@@ -188,15 +188,21 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
                 )}
               </h3>
               <ha-card>
-                ${configParamEntries.map(
-                  ([id, item]) => html` <ha-settings-row
-                    class="config-item"
-                    .configId=${id}
-                    .narrow=${this.narrow}
-                  >
-                    ${this._generateConfigBox(id, item)}
-                  </ha-settings-row>`
-                )}
+                ${configParamEntries
+                  .sort(([_, paramA], [__, paramB]) =>
+                    paramA.property !== paramB.property
+                      ? paramA.property - paramB.property
+                      : paramA.property_key! - paramA.property_key!
+                  )
+                  .map(
+                    ([id, item]) => html` <ha-settings-row
+                      class="config-item"
+                      .configId=${id}
+                      .narrow=${this.narrow}
+                    >
+                      ${this._generateConfigBox(id, item)}
+                    </ha-settings-row>`
+                  )}
               </ha-card>
             </div>`
           )}
