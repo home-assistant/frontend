@@ -143,30 +143,46 @@ export class HuiWeatherForecastCardEditor
                 selector: {
                   select: {
                     options: [
-                      {
-                        value: "legacy",
-                        label: localize(
-                          "ui.panel.lovelace.editor.card.weather-forecast.no_type"
-                        ),
-                      },
-                      {
-                        value: "daily",
-                        label: localize(
-                          "ui.panel.lovelace.editor.card.weather-forecast.daily"
-                        ),
-                      },
-                      {
-                        value: "hourly",
-                        label: localize(
-                          "ui.panel.lovelace.editor.card.weather-forecast.hourly"
-                        ),
-                      },
-                      {
-                        value: "twice_daily",
-                        label: localize(
-                          "ui.panel.lovelace.editor.card.weather-forecast.twice_daily"
-                        ),
-                      },
+                      ...(hasForecastLegacy
+                        ? ([
+                            {
+                              value: "legacy",
+                              label: localize(
+                                "ui.panel.lovelace.editor.card.weather-forecast.no_type"
+                              ),
+                            },
+                          ] as const)
+                        : []),
+                      ...(hasForecastDaily
+                        ? ([
+                            {
+                              value: "daily",
+                              label: localize(
+                                "ui.panel.lovelace.editor.card.weather-forecast.daily"
+                              ),
+                            },
+                          ] as const)
+                        : []),
+                      ...(hasForecastHourly
+                        ? ([
+                            {
+                              value: "hourly",
+                              label: localize(
+                                "ui.panel.lovelace.editor.card.weather-forecast.hourly"
+                              ),
+                            },
+                          ] as const)
+                        : []),
+                      ...(hasForecastTwiceDaily
+                        ? ([
+                            {
+                              value: "twice_daily",
+                              label: localize(
+                                "ui.panel.lovelace.editor.card.weather-forecast.twice_daily"
+                              ),
+                            },
+                          ] as const)
+                        : []),
                     ],
                   },
                 },
