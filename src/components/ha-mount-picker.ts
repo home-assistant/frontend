@@ -55,9 +55,10 @@ class HaMountPicker extends LitElement {
       graphic="icon"
       .value=${__BACKUP_DATA_DISK__}
     >
-      <span
-        >${this.hass.localize("ui.components.mount-picker.use_datadisk")}</span
-      >
+      <span>
+        ${this.hass.localize("ui.components.mount-picker.use_datadisk") ||
+        "Use data disk for backup"}
+      </span>
       <ha-svg-icon slot="graphic" .path=${mdiHarddisk}></ha-svg-icon>
     </ha-list-item>`;
     return html`
@@ -91,7 +92,7 @@ class HaMountPicker extends LitElement {
                 ? `:${mount.port}`
                 : nothing}${mount.type === SupervisorMountType.NFS
                 ? mount.path
-                : ` :${mount.share}`}</span
+                : `:${mount.share}`}</span
             >
             <ha-svg-icon
               slot="graphic"
@@ -137,6 +138,10 @@ class HaMountPicker extends LitElement {
     try {
       if (isComponentLoaded(this.hass, "hassio")) {
         this._mounts = await fetchSupervisorMounts(this.hass);
+        if (this.usage === SupervisorMountUsage.BACKUP && !this.value) {
+          this.value =
+            this._mounts.default_backup_mount || __BACKUP_DATA_DISK__;
+        }
       } else {
         this._error = this.hass.localize(
           "ui.components.mount-picker.error.no_supervisor"

@@ -188,7 +188,7 @@ class HaConfigSectionStorage extends LitElement {
                             ? `:${mount.port}`
                             : nothing}${mount.type === SupervisorMountType.NFS
                             ? mount.path
-                            : ` :${mount.share}`}
+                            : `:${mount.share}`}
                         </span>
                         ${mount.state !== SupervisorMountState.ACTIVE
                           ? html`<ha-icon-button
