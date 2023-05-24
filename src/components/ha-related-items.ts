@@ -1,31 +1,29 @@
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import "@material/mwc-list/mwc-list";
+import { mdiDevices, mdiSofa } from "@mdi/js";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
-import {
-  AreaRegistryEntry,
-  subscribeAreaRegistry,
-} from "../data/area_registry";
 import { ConfigEntry, getConfigEntries } from "../data/config_entries";
-import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-} from "../data/device_registry";
 import { SceneEntity } from "../data/scene";
 import { findRelated, ItemType, RelatedResult } from "../data/search";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { HomeAssistant } from "../types";
+import { brandsUrl } from "../util/brands-url";
+import "./ha-icon-next";
+import "./ha-list-item";
+import "./ha-state-icon";
 import "./ha-switch";
 
 @customElement("ha-related-items")
-export class HaRelatedItems extends SubscribeMixin(LitElement) {
+export class HaRelatedItems extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public itemType!: ItemType;
@@ -34,22 +32,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
 
   @state() private _entries?: ConfigEntry[];
 
-  @state() private _devices?: DeviceRegistryEntry[];
-
-  @state() private _areas?: AreaRegistryEntry[];
-
   @state() private _related?: RelatedResult;
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeDeviceRegistry(this.hass.connection!, (devices) => {
-        this._devices = devices;
-      }),
-      subscribeAreaRegistry(this.hass.connection!, (areas) => {
-        this._areas = areas;
-      }),
-    ];
-  }
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -98,17 +81,27 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                 href=${`/config/integrations#config_entry=${relatedConfigEntryId}`}
                 @click=${this._navigateAwayClose}
               >
-                ${this.hass.localize(`component.${entry.domain}.title`)}:
-                ${entry.title}
+                <ha-list-item hasMeta graphic="icon">
+                  <img
+                    .src=${brandsUrl({
+                      domain: entry.domain,
+                      type: "icon",
+                      useFallback: true,
+                      darkOptimized: this.hass.themes?.darkMode,
+                    })}
+                    alt=${entry.domain}
+                    slot="graphic"
+                  />
+                  ${this.hass.localize(`component.${entry.domain}.title`)}:
+                  ${entry.title} <ha-icon-next slot="meta"></ha-icon-next>
+                </ha-list-item>
               </a>
             `;
           })
         : ""}
-      ${this._related.device && this._devices
+      ${this._related.device
         ? this._related.device.map((relatedDeviceId) => {
-            const device: DeviceRegistryEntry | undefined = this._devices!.find(
-              (dev) => dev.id === relatedDeviceId
-            );
+            const device = this.hass.devices[relatedDeviceId];
             if (!device) {
               return "";
             }
@@ -120,16 +113,18 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                 href="/config/devices/device/${relatedDeviceId}"
                 @click=${this._navigateAwayClose}
               >
-                ${device.name_by_user || device.name}
+                <ha-list-item hasMeta graphic="icon">
+                  <ha-svg-icon .path=${mdiDevices} slot="graphic"></ha-svg-icon>
+                  ${device.name_by_user || device.name}
+                  <ha-icon-next slot="meta"></ha-icon-next>
+                </ha-list-item>
               </a>
             `;
           })
         : ""}
-      ${this._related.area && this._areas
+      ${this._related.area
         ? this._related.area.map((relatedAreaId) => {
-            const area: AreaRegistryEntry | undefined = this._areas!.find(
-              (ar) => ar.area_id === relatedAreaId
-            );
+            const area = this.hass.areas[relatedAreaId];
             if (!area) {
               return "";
             }
@@ -141,7 +136,25 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                 href="/config/areas/area/${relatedAreaId}"
                 @click=${this._navigateAwayClose}
               >
-                ${area.name}
+                <ha-list-item
+                  hasMeta
+                  .graphic=${area.picture ? "avatar" : "icon"}
+                >
+                  ${area.picture
+                    ? html` <div
+                        class="avatar"
+                        style=${styleMap({
+                          backgroundImage: `url(${area.picture})`,
+                        })}
+                        slot="graphic"
+                      ></div>`
+                    : html`<ha-svg-icon
+                        .path=${mdiSofa}
+                        slot="graphic"
+                      ></ha-svg-icon>`}
+                  ${area.name}
+                  <ha-icon-next slot="meta"></ha-icon-next>
+                </ha-list-item>
               </a>
             `;
           })
@@ -151,7 +164,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
             <h3>
               ${this.hass.localize("ui.components.related-items.entity")}:
             </h3>
-            <ul>
+            <mwc-list>
               ${this._related.entity.map((entityId) => {
                 const entity: HassEntity | undefined =
                   this.hass.states[entityId];
@@ -159,48 +172,56 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                   return "";
                 }
                 return html`
-                  <li>
-                    <button
-                      @click=${this._openMoreInfo}
-                      .entityId=${entityId}
-                      class="link"
-                    >
-                      ${entity.attributes.friendly_name || entityId}
-                    </button>
-                  </li>
+                  <ha-list-item
+                    @click=${this._openMoreInfo}
+                    .entityId=${entityId}
+                    hasMeta
+                    graphic="icon"
+                  >
+                    <ha-state-icon
+                      .state=${entity}
+                      slot="graphic"
+                    ></ha-state-icon>
+                    ${entity.attributes.friendly_name || entity.entity_id}
+                    <ha-icon-next slot="meta"></ha-icon-next>
+                  </ha-list-item>
                 `;
               })}
-            </ul>
+            </mwc-list>
           `
         : ""}
       ${this._related.group
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.group")}:</h3>
-            <ul>
+            <mwc-list>
               ${this._related.group.map((groupId) => {
                 const group: HassEntity | undefined = this.hass.states[groupId];
                 if (!group) {
                   return "";
                 }
                 return html`
-                  <li>
-                    <button
-                      class="link"
-                      @click=${this._openMoreInfo}
-                      .entityId=${groupId}
-                    >
-                      ${group.attributes.friendly_name || group.entity_id}
-                    </button>
-                  </li>
+                  <ha-list-item
+                    @click=${this._openMoreInfo}
+                    .entityId=${groupId}
+                    hasMeta
+                    graphic="icon"
+                  >
+                    <ha-state-icon
+                      .state=${group}
+                      slot="graphic"
+                    ></ha-state-icon>
+                    ${group.attributes.friendly_name || group.entity_id}
+                    <ha-icon-next slot="meta"></ha-icon-next>
+                  </ha-list-item>
                 `;
               })}
-            </ul>
+            </mwc-list>
           `
         : ""}
       ${this._related.scene
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.scene")}:</h3>
-            <ul>
+            <mwc-list>
               ${this._related.scene.map((sceneId) => {
                 const scene: SceneEntity | undefined =
                   this.hass.states[sceneId];
@@ -208,18 +229,37 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                   return "";
                 }
                 return html`
-                  <li>
-                    <button
-                      class="link"
-                      @click=${this._openMoreInfo}
-                      .entityId=${sceneId}
-                    >
-                      ${scene.attributes.friendly_name || scene.entity_id}
-                    </button>
-                  </li>
+                  <ha-list-item
+                    @click=${this._openMoreInfo}
+                    .entityId=${sceneId}
+                    hasMeta
+                    graphic="icon"
+                  >
+                    <ha-state-icon
+                      .state=${scene}
+                      slot="graphic"
+                    ></ha-state-icon>
+                    ${scene.attributes.friendly_name || scene.entity_id}
+                    <ha-icon-next slot="meta"></ha-icon-next>
+                  </ha-list-item>
                 `;
               })}
-            </ul>
+            </mwc-list>
+          `
+        : ""}
+      ${this._related.automation_blueprint
+        ? html`
+            <h3>
+              ${this.hass.localize("ui.components.related-items.blueprint")}:
+            </h3>
+            <mwc-list>
+              ${this._related.automation_blueprint.map(
+                (path) =>
+                  html`<ha-list-item>
+                    <a href="/config/blueprint/dashboard">${path}</a>
+                  </ha-list-item> `
+              )}
+            </mwc-list>
           `
         : ""}
       ${this._related.automation
@@ -227,7 +267,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
             <h3>
               ${this.hass.localize("ui.components.related-items.automation")}:
             </h3>
-            <ul>
+            <mwc-list>
               ${this._related.automation.map((automationId) => {
                 const automation: HassEntity | undefined =
                   this.hass.states[automationId];
@@ -235,18 +275,37 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                   return "";
                 }
                 return html`
-                  <li>
-                    <button
-                      class="link"
-                      @click=${this._openMoreInfo}
-                      .entityId=${automationId}
-                    >
-                      ${automation.attributes.friendly_name ||
-                      automation.entity_id}
-                    </button>
-                  </li>
+                  <ha-list-item
+                    @click=${this._openMoreInfo}
+                    .entityId=${automationId}
+                    hasMeta
+                    graphic="icon"
+                  >
+                    <ha-state-icon
+                      .state=${automation}
+                      slot="graphic"
+                    ></ha-state-icon>
+                    ${automation.attributes.friendly_name ||
+                    automation.entity_id}
+                    <ha-icon-next slot="meta"></ha-icon-next>
+                  </ha-list-item>
                 `;
               })}
+            </mwc-list>
+          `
+        : ""}
+      ${this._related.script_blueprint
+        ? html`
+            <h3>
+              ${this.hass.localize("ui.components.related-items.blueprint")}:
+            </h3>
+            <ul>
+              ${this._related.script_blueprint.map(
+                (path) =>
+                  html`<li>
+                    <a href="/config/blueprint/dashboard">${path}</a>
+                  </li> `
+              )}
             </ul>
           `
         : ""}
@@ -255,7 +314,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
             <h3>
               ${this.hass.localize("ui.components.related-items.script")}:
             </h3>
-            <ul>
+            <mwc-list>
               ${this._related.script.map((scriptId) => {
                 const script: HassEntity | undefined =
                   this.hass.states[scriptId];
@@ -263,18 +322,22 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                   return "";
                 }
                 return html`
-                  <li>
-                    <button
-                      class="link"
-                      @click=${this._openMoreInfo}
-                      .entityId=${scriptId}
-                    >
-                      ${script.attributes.friendly_name || script.entity_id}
-                    </button>
-                  </li>
+                  <ha-list-item
+                    @click=${this._openMoreInfo}
+                    .entityId=${scriptId}
+                    hasMeta
+                    graphic="icon"
+                  >
+                    <ha-state-icon
+                      .state=${script}
+                      slot="graphic"
+                    ></ha-state-icon>
+                    ${script.attributes.friendly_name || script.entity_id}
+                    <ha-icon-next slot="meta"></ha-icon-next>
+                  </ha-list-item>
                 `;
               })}
-            </ul>
+            </mwc-list>
           `
         : ""}
     `;
@@ -303,19 +366,10 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
     return css`
       a {
         color: var(--primary-color);
+        text-decoration: none;
       }
-      button.link {
-        color: var(--primary-color);
-        text-align: left;
-        cursor: pointer;
-        background: none;
-        border-width: initial;
-        border-style: none;
-        border-color: initial;
-        border-image: initial;
-        padding: 0px;
-        font: inherit;
-        text-decoration: underline;
+      ha-list-item {
+        --mdc-list-side-padding: 24px;
       }
       h3 {
         font-family: var(--paper-font-title_-_font-family);
@@ -327,9 +381,14 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
         letter-spacing: var(--paper-font-title_-_letter-spacing);
         line-height: var(--paper-font-title_-_line-height);
         opacity: var(--dark-primary-opacity);
+        padding: 0 24px;
       }
       h3:first-child {
         margin-top: 0;
+      }
+      .avatar {
+        background-position: center center;
+        background-size: cover;
       }
     `;
   }

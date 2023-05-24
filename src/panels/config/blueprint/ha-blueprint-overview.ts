@@ -41,6 +41,7 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
+import { findRelated } from "../../../data/search";
 
 interface BlueprintMetaDataPath extends BlueprintMetaData {
   path: string;
@@ -326,7 +327,19 @@ class HaBlueprintOverview extends LitElement {
   };
 
   private _delete = async (ev) => {
-    const blueprint = ev.currentTarget.blueprint;
+    const blueprint = ev.currentTarget.blueprint as BlueprintMetaDataPath;
+    const related = await findRelated(
+      this.hass,
+      `${blueprint.domain}_blueprint`,
+      blueprint.path
+    );
+    if (related.automation?.length || related.script?.length) {
+      showAlertDialog(this, {
+        title: "This blueprint is in use, and can not be deleted",
+        text: `Please remove all automations and scripts that use this blueprint before deleting it. Used in: ${related.automation}${related.script}`,
+      });
+      return;
+    }
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass.localize(

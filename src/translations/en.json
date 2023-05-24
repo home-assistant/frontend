@@ -540,7 +540,8 @@
         "group": "Part of the following groups",
         "scene": "Part of the following scenes",
         "script": "Part of the following scripts",
-        "automation": "Part of the following automations"
+        "automation": "Part of the following automations",
+        "blueprint": "Using the following blueprints"
       },
       "data-table": {
         "search": "Search",
