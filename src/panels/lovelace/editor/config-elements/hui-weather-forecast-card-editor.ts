@@ -56,23 +56,67 @@ export class HuiWeatherForecastCardEditor
     }
   }
 
-  get _has_forecast(): boolean | undefined {
+  get _stateObj(): WeatherEntity | undefined {
     if (this.hass && this._config) {
-      const stateObj = this.hass.states[this._config.entity] as WeatherEntity;
-      if (stateObj && stateObj.state !== UNAVAILABLE) {
-        return !!(
-          stateObj.attributes.forecast?.length ||
-          stateObj.attributes.forecast_daily?.length ||
-          stateObj.attributes.forecast_hourly?.length ||
-          stateObj.attributes.forecast_twice_daily?.length
-        );
-      }
+      return this.hass.states[this._config.entity] as WeatherEntity;
+    }
+    return undefined;
+  }
+
+  get _has_forecast(): boolean | undefined {
+    const stateObj = this._stateObj as WeatherEntity;
+    if (stateObj && stateObj.state !== UNAVAILABLE) {
+      return !!(
+        stateObj.attributes.forecast?.length ||
+        stateObj.attributes.forecast_daily?.length ||
+        stateObj.attributes.forecast_hourly?.length ||
+        stateObj.attributes.forecast_twice_daily?.length
+      );
+    }
+    return undefined;
+  }
+
+  get _forecast_legacy(): boolean | undefined {
+    const stateObj = this._stateObj as WeatherEntity;
+    if (stateObj && stateObj.state !== UNAVAILABLE) {
+      return !!stateObj.attributes.forecast?.length;
+    }
+    return undefined;
+  }
+
+  get _forecast_daily(): boolean | undefined {
+    const stateObj = this._stateObj as WeatherEntity;
+    if (stateObj && stateObj.state !== UNAVAILABLE) {
+      return !!stateObj.attributes.forecast_daily?.length;
+    }
+    return undefined;
+  }
+
+  get _forecast_hourly(): boolean | undefined {
+    const stateObj = this._stateObj as WeatherEntity;
+    if (stateObj && stateObj.state !== UNAVAILABLE) {
+      return !!stateObj.attributes.forecast_hourly?.length;
+    }
+    return undefined;
+  }
+
+  get _forecast_twice_daily(): boolean | undefined {
+    const stateObj = this._stateObj as WeatherEntity;
+    if (stateObj && stateObj.state !== UNAVAILABLE) {
+      return !!stateObj.attributes.forecast_twice_daily?.length;
     }
     return undefined;
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, hasForecast?: boolean) =>
+    (
+      localize: LocalizeFunc,
+      hasForecast?: boolean,
+      hasForecastLegacy?: boolean,
+      hasForecastDaily?: boolean,
+      hasForecastHourly?: boolean,
+      hasForecastTwiceDaily?: boolean
+    ) =>
       [
         {
           name: "entity",
@@ -164,7 +208,14 @@ export class HuiWeatherForecastCardEditor
       return nothing;
     }
 
-    const schema = this._schema(this.hass.localize, this._has_forecast);
+    const schema = this._schema(
+      this.hass.localize,
+      this._has_forecast,
+      this._forecast_legacy,
+      this._forecast_daily,
+      this._forecast_hourly,
+      this._forecast_twice_daily
+    );
 
     const data: WeatherForecastCardConfig = {
       show_current: true,
