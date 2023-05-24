@@ -38,7 +38,7 @@ export class DialogEnergyWaterSettings
 
   @state() private _costs?: "no-costs" | "number" | "entity" | "statistic";
 
-  @state() private _pickedDisplayUnit?: string | null;
+  @state() private _defaultDisplayUnit?: string | null;
 
   @state() private _water_units?: string[];
 
@@ -56,6 +56,9 @@ export class DialogEnergyWaterSettings
       params.source?.stat_energy_from,
       params.metadata
     );
+    this._defaultDisplayUnit =
+      this.hass.config.unit_system.volume === "gal" ? "gal" : "m³";
+
     this._costs = this._source.entity_energy_price
       ? "entity"
       : this._source.number_energy_price
@@ -73,6 +76,7 @@ export class DialogEnergyWaterSettings
     this._source = undefined;
     this._error = undefined;
     this._pickedDisplayUnit = undefined;
+    this._defaultDisplayUnit = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -83,8 +87,12 @@ export class DialogEnergyWaterSettings
 
     const pickableUnit = this._water_units?.join(", ") || "";
 
-    const unitPrice = this._pickedDisplayUnit
+    const unitPriceSensor = this._pickedDisplayUnit
       ? `${this.hass.config.currency}/${this._pickedDisplayUnit}`
+      : undefined;
+
+    const unitPriceFixed = this._defaultDisplayUnit
+      ? `${this.hass.config.currency}/${this._defaultDisplayUnit}`
       : undefined;
 
     const externalSource =
@@ -189,7 +197,7 @@ export class DialogEnergyWaterSettings
               .value=${this._source.entity_energy_price}
               .label=${`${this.hass.localize(
                 "ui.panel.config.energy.water.dialog.cost_entity_input"
-              )}${unitPrice ? ` (${unitPrice})` : ""}`}
+              )}${unitPriceSensor ? ` (${unitPriceSensor})` : ""}`}
               @value-changed=${this._priceEntityChanged}
             ></ha-entity-picker>`
           : ""}
@@ -210,13 +218,13 @@ export class DialogEnergyWaterSettings
           ? html`<ha-textfield
               .label=${`${this.hass.localize(
                 "ui.panel.config.energy.water.dialog.cost_number_input"
-              )}${unitPrice ? ` (${unitPrice})` : ""}`}
+              )}${unitPriceFixed ? ` (${unitPriceFixed})` : ""}`}
               class="price-options"
               step=".01"
               type="number"
               .value=${this._source.number_energy_price}
               @change=${this._numberPriceChanged}
-              .suffix=${unitPrice || ""}
+              .suffix=${unitPriceFixed || ""}
             >
             </ha-textfield>`
           : ""}
