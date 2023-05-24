@@ -1250,20 +1250,29 @@ export class HaConfigDevicePage extends LitElement {
           let newEntityId: string | undefined;
           let newName: string | null | undefined;
 
+          let shouldUpdateName: boolean;
+          let shouldUpdateEntityId = false;
+
           if (entity.has_entity_name && !entity.name) {
-            newName = undefined;
+            shouldUpdateName = false;
           } else if (
             entity.has_entity_name &&
             (entity.name === oldDeviceName || entity.name === newDeviceName)
           ) {
+            shouldUpdateName = true;
+            // clear name if it matches the device name and it uses the device name (entity naming)
             newName = null;
           } else if (name && name.includes(oldDeviceName)) {
+            shouldUpdateName = true;
             newName = name.replace(oldDeviceName, newDeviceName);
+          } else {
+            shouldUpdateName = false;
           }
 
           if (renameEntityid) {
             const oldSearch = slugify(oldDeviceName);
             if (entity.entity_id.includes(oldSearch)) {
+              shouldUpdateEntityId = true;
               newEntityId = entity.entity_id.replace(
                 oldSearch,
                 slugify(newDeviceName)
@@ -1276,8 +1285,8 @@ export class HaConfigDevicePage extends LitElement {
           }
 
           return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-            name: newName,
-            new_entity_id: newEntityId,
+            name: shouldUpdateName ? newName : undefined,
+            new_entity_id: shouldUpdateEntityId ? newEntityId : undefined,
           });
         });
         await Promise.all(updateProms);
