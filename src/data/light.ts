@@ -143,11 +143,9 @@ export const computeDefaultFavoriteColors = (
     }
   }
 
-  // Replace last color by white mode if supported
+  // Remove last color by white mode if supported
   if (supportsWhite) {
-    colors[FAVORITE_COLOR_COUNT - 1] = {
-      white: true,
-    };
+    colors.pop();
   }
   return colors;
 };
