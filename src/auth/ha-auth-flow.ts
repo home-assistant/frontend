@@ -105,7 +105,7 @@ export class HaAuthFlow extends LitElement {
     }
 
     this.addEventListener("keypress", (ev) => {
-      if (ev.keyCode === 13) {
+      if (ev.key === "Enter") {
         this._handleSubmit(ev);
       }
     });

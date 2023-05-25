@@ -50,7 +50,7 @@ class OnboardingAnalytics extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this.addEventListener("keypress", (ev) => {
-      if (ev.keyCode === 13) {
+      if (ev.key === "Enter") {
         this._save(ev);
       }
     });

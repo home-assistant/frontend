@@ -324,7 +324,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _handleKeyUp(ev: KeyboardEvent) {
     const input = ev.target as HaTextField;
-    if (ev.keyCode === 13 && input.value) {
+    if (ev.key === "Enter" && input.value) {
       this._processText(input.value);
       input.value = "";
       this._showSendButton = false;

@@ -94,7 +94,7 @@ class OnboardingCreateUser extends LitElement {
     setTimeout(() => this._form?.focus(), 100);
     this.addEventListener("keypress", (ev) => {
       if (
-        ev.keyCode === 13 &&
+        ev.key === "Enter" &&
         this._newUser.name &&
         this._newUser.username &&
         this._newUser.password &&

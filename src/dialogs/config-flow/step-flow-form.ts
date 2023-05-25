@@ -93,7 +93,7 @@ class StepFlowForm extends LitElement {
   }
 
   private _handleKeyDown = (ev: KeyboardEvent) => {
-    if (ev.keyCode === 13) {
+    if (ev.key === "Enter") {
       this._submitStep();
     }
   };

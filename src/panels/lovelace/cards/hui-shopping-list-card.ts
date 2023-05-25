@@ -301,7 +301,7 @@ class HuiShoppingListCard
   }
 
   private _addKeyPress(ev): void {
-    if (ev.keyCode === 13) {
+    if (ev.key === "Enter") {
       this._addItem(null);
     }
   }

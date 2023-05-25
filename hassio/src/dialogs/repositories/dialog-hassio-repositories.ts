@@ -218,7 +218,7 @@ class HassioRepositoriesDialog extends LitElement {
 
   private _handleKeyAdd(ev: KeyboardEvent) {
     ev.stopPropagation();
-    if (ev.keyCode !== 13) {
+    if (ev.key !== "Enter") {
       return;
     }
     this._addRepository();
