@@ -282,7 +282,7 @@ class OnboardingCoreConfig extends LitElement {
       100
     );
     this.addEventListener("keypress", (ev) => {
-      if (ev.keyCode === 13) {
+      if (ev.key === "Enter") {
         this._save(ev);
       }
     });
