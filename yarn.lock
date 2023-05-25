@@ -9720,7 +9720,7 @@ __metadata:
     qrcode: 1.5.3
     resize-observer-polyfill: 1.5.1
     roboto-fontface: 0.10.0
-    rollup: 2.79.1
+    rollup: 3.23.0
     rollup-plugin-string: 3.0.0
     rollup-plugin-terser: 7.0.2
     rollup-plugin-visualizer: 5.9.0
@@ -13896,7 +13896,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup@npm:2.79.1, rollup@npm:^2.43.1, rollup@npm:^2.67.0":
+"rollup@npm:3.23.0":
+  version: 3.23.0
+  resolution: "rollup@npm:3.23.0"
+  dependencies:
+    fsevents: ~2.3.2
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    rollup: dist/bin/rollup
+  checksum: 0721065cf725c5611815be61d2b01f20b4d0027e17035f6e76384d38396b56cf6ed21a3db78eb004d9db4d24c8a6a19da4563b4ff96b5dd36f0a0f7a3baf85e8
+  languageName: node
+  linkType: hard
+
+"rollup@npm:^2.43.1, rollup@npm:^2.67.0":
   version: 2.79.1
   resolution: "rollup@npm:2.79.1"
   dependencies:
