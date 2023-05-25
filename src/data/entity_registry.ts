@@ -20,6 +20,7 @@ export interface EntityRegistryDisplayEntry {
   translation_key?: string;
   platform?: string;
   display_precision?: number;
+  labels?: string[];
 }
 
 interface EntityRegistryDisplayEntryResponse {
@@ -33,6 +34,7 @@ interface EntityRegistryDisplayEntryResponse {
     tk?: string;
     hb?: boolean;
     dp?: number;
+    lb?: string[];
   }[];
   entity_categories: Record<number, entityCategory>;
 }
@@ -54,6 +56,7 @@ export interface EntityRegistryEntry {
   unique_id: string;
   translation_key?: string;
   options: EntityRegistryOptions | null;
+  labels: string[];
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {

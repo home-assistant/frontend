@@ -14,6 +14,7 @@ import { subscribeAreaRegistry } from "../data/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeDeviceRegistry } from "../data/device_registry";
 import { subscribeEntityRegistryDisplay } from "../data/entity_registry";
+import { subscribeLabelRegistry } from "../data/label_registry";
 import { subscribeFrontendUserData } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
@@ -49,6 +50,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         entities: null as any,
         devices: null as any,
         areas: null as any,
+        labels: null as any,
         config: null as any,
         themes: null as any,
         selectedTheme: null,
@@ -229,6 +231,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             name: entity.en,
             hidden: entity.hb,
             display_precision: entity.dp,
+            labels: entity.lb,
           };
         }
         this._updateHass({ entities });
@@ -246,6 +249,13 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           areas[area.area_id] = area;
         }
         this._updateHass({ areas });
+      });
+      subscribeLabelRegistry(conn, (labelReg) => {
+        const labels: HomeAssistant["labels"] = {};
+        for (const label of labelReg) {
+          labels[label.label_id] = label;
+        }
+        this._updateHass({ labels });
       });
       subscribeConfig(conn, (config) => {
         if (this.hass?.config?.time_zone !== config.time_zone) {

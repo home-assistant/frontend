@@ -9,6 +9,7 @@ export const entitiesContext =
 export const devicesContext =
   createContext<HomeAssistant["devices"]>("devices");
 export const areasContext = createContext<HomeAssistant["areas"]>("areas");
+export const labelsContext = createContext<HomeAssistant["labels"]>("labels");
 export const localizeContext =
   createContext<HomeAssistant["localize"]>("localize");
 export const localeContext = createContext<HomeAssistant["locale"]>("locale");
