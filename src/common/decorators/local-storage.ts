@@ -5,7 +5,8 @@ import type { ClassElement } from "../../types";
 type Callback = (oldValue: any, newValue: any) => void;
 
 class Storage {
-  constructor(subscribe = true) {
+  constructor(subscribe = true, storage = window.localStorage) {
+    this.storage = storage;
     if (!subscribe) {
       return;
     }
@@ -26,6 +27,8 @@ class Storage {
     });
   }
 
+  public storage: globalThis.Storage;
+
   private _storage: { [storageKey: string]: any } = {};
 
   private _listeners: {
@@ -34,7 +37,7 @@ class Storage {
 
   public addFromStorage(storageKey: any): void {
     if (!this._storage[storageKey]) {
-      const data = window.localStorage.getItem(storageKey);
+      const data = this.storage.getItem(storageKey);
       if (data) {
         this._storage[storageKey] = JSON.parse(data);
       }
@@ -77,9 +80,9 @@ class Storage {
     this._storage[storageKey] = value;
     try {
       if (value === undefined) {
-        window.localStorage.removeItem(storageKey);
+        this.storage.removeItem(storageKey);
       } else {
-        window.localStorage.setItem(storageKey, JSON.stringify(value));
+        this.storage.setItem(storageKey, JSON.stringify(value));
       }
     } catch (err: any) {
       // Safari in private mode doesn't allow localstorage
@@ -94,10 +97,14 @@ export const LocalStorage =
     storageKey?: string,
     property?: boolean,
     subscribe = true,
+    storageType?: globalThis.Storage,
     propertyOptions?: PropertyDeclaration
   ): any =>
   (clsElement: ClassElement) => {
-    const storage = subscribe ? subscribeStorage : new Storage(false);
+    const storage =
+      subscribe && !storageType
+        ? subscribeStorage
+        : new Storage(subscribe, storageType);
 
     const key = String(clsElement.key);
     storageKey = storageKey || String(clsElement.key);
