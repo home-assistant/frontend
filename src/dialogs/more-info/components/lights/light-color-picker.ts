@@ -121,6 +121,17 @@ class LightColorPicker extends LitElement {
                 .colorBrightness=${this._colorBrightnessSliderValue != null
                   ? (this._colorBrightnessSliderValue * 255) / 100
                   : undefined}
+                .wv=${this._wvSliderValue != null
+                  ? (this._wvSliderValue * 255) / 100
+                  : undefined}
+                .ww=${this._wwSliderValue != null
+                  ? (this._wwSliderValue * 255) / 100
+                  : undefined}
+                .cw=${this._cwSliderValue != null
+                  ? (this._cwSliderValue * 255) / 100
+                  : undefined}
+                .minKelvin=${this.stateObj.attributes.min_color_temp_kelvin}
+                .maxKelvin=${this.stateObj.attributes.max_color_temp_kelvin}
               >
               </ha-hs-color-picker>
 
@@ -459,6 +470,12 @@ class LightColorPicker extends LitElement {
     value?: number,
     invert = false
   ) {
+    const isBlack = rgbColor.every((c) => c === 0);
+    if (isBlack) {
+      rgbColor[0] = 255;
+      rgbColor[1] = 255;
+      rgbColor[2] = 255;
+    }
     if (value !== undefined && value !== 255) {
       let ratio = value / 255;
       if (invert) {

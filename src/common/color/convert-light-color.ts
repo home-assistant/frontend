@@ -1,7 +1,7 @@
 import { clamp } from "../number/clamp";
 
 const DEFAULT_MIN_KELVIN = 2700;
-const DEFAULT_MAX_KELVIN = 6000;
+const DEFAULT_MAX_KELVIN = 6500;
 
 export const temperature2rgb = (
   temperature: number
