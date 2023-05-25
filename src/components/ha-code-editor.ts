@@ -11,6 +11,7 @@ import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { stopPropagation } from "../common/dom/stop_propagation";
 import { loadCodeMirror } from "../resources/codemirror.ondemand";
 import { HomeAssistant } from "../types";
 import "./ha-icon";
@@ -82,12 +83,18 @@ export class HaCodeEditor extends ReactiveElement {
 
   public connectedCallback() {
     super.connectedCallback();
+    this.addEventListener("keydown", stopPropagation);
     if (!this.codemirror) {
       return;
     }
     if (this.autofocus !== false) {
       this.codemirror.focus();
     }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener("keydown", stopPropagation);
   }
 
   protected update(changedProps: PropertyValues): void {
@@ -127,7 +134,6 @@ export class HaCodeEditor extends ReactiveElement {
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-    this._blockKeyboardShortcuts();
     this._load();
   }
 
@@ -269,10 +275,6 @@ export class HaCodeEditor extends ReactiveElement {
       options: iconItems,
       validFor: /^mdi:\S*$/,
     };
-  }
-
-  private _blockKeyboardShortcuts() {
-    this.addEventListener("keydown", (ev) => ev.stopPropagation());
   }
 
   private _onUpdate(update: ViewUpdate): void {
