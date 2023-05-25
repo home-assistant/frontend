@@ -7,6 +7,7 @@ import "../../components/demo-black-white-row";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import type { Trigger } from "../../../../src/data/automation";
 import { HaGeolocationTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-geo_location";
@@ -141,6 +142,7 @@ class DemoHaAutomationEditorTrigger extends LitElement {
     mockEntityRegistry(hass);
     mockDeviceRegistry(hass);
     mockAreaRegistry(hass);
+    mockLabelRegistry(hass);
     mockHassioSupervisor(hass);
   }
 

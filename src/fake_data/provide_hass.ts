@@ -347,6 +347,7 @@ export const provideHass = (
     areas: {},
     devices: {},
     entities: {},
+    labels: {},
     formatEntityState: (stateObj, state) =>
       (state !== null ? state : stateObj.state) ?? "",
     formatEntityAttributeName: (_stateObj, attribute) => attribute,

@@ -19,6 +19,7 @@ import {
 import {
   expandAreaTarget,
   expandDeviceTarget,
+  expandLabelTarget,
   Selector,
 } from "../data/selector";
 import { ValueChangedEvent, HomeAssistant } from "../types";
@@ -127,7 +128,8 @@ export class HaServiceControl extends LitElement {
       "target" in serviceData &&
       (this.value?.data?.entity_id ||
         this.value?.data?.area_id ||
-        this.value?.data?.device_id)
+        this.value?.data?.device_id ||
+        this.value?.data?.label_id)
     ) {
       const target = {
         ...this.value.target,
@@ -142,6 +144,9 @@ export class HaServiceControl extends LitElement {
       if (this.value.data.device_id && !this.value.target?.device_id) {
         target.device_id = this.value.data.device_id;
       }
+      if (this.value.data.label_id && !this.value.target?.label_id) {
+        target.label_id = this.value.data.label_id;
+      }
 
       this._value = {
         ...this.value,
@@ -152,6 +157,7 @@ export class HaServiceControl extends LitElement {
       delete this._value.data!.entity_id;
       delete this._value.data!.device_id;
       delete this._value.data!.area_id;
+      delete this._value.data!.label_id;
     } else {
       this._value = this.value;
     }
@@ -263,6 +269,9 @@ export class HaServiceControl extends LitElement {
     const targetAreas = ensureArray(
       value?.target?.area_id || value?.data?.area_id
     )?.slice();
+    const targetLabels = ensureArray(
+      value?.target?.label_id || value?.data?.label_id
+    )?.slice();
     if (targetAreas) {
       targetAreas.forEach((areaId) => {
         const expanded = expandAreaTarget(
@@ -286,6 +295,19 @@ export class HaServiceControl extends LitElement {
             targetSelector
           ).entities
         );
+      });
+    }
+    if (targetLabels) {
+      targetLabels.forEach((labelId) => {
+        const expanded = expandLabelTarget(
+          this.hass,
+          labelId,
+          this.hass.devices,
+          this.hass.entities,
+          targetSelector
+        );
+        targetEntities.push(...expanded.entities);
+        targetDevices.push(...expanded.devices);
       });
     }
     if (!targetEntities.length) {

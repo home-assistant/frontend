@@ -7,6 +7,7 @@ import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
+import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
 import { BlueprintInput } from "../../../../src/data/blueprint";
@@ -54,6 +55,7 @@ const DEVICES = [
     hw_version: null,
     via_device_id: null,
     serial_number: null,
+    labels: [],
   },
   {
     area_id: "backyard",
@@ -72,6 +74,7 @@ const DEVICES = [
     hw_version: null,
     via_device_id: null,
     serial_number: null,
+    labels: [],
   },
   {
     area_id: null,
@@ -90,9 +93,7 @@ const DEVICES = [
     hw_version: null,
     via_device_id: null,
     serial_number: null,
-  },
 ];
-
 const AREAS = [
   {
     area_id: "backyard",
@@ -111,6 +112,30 @@ const AREAS = [
     name: "Livingroom",
     picture: null,
     aliases: [],
+  },
+];
+
+const LABELS = [
+  {
+    label_id: "romantic",
+    name: "Romantic",
+    icon: "mdi:heart",
+    color: "#ff0000",
+    description: "Lights that can create a romantic atmosphere",
+  },
+  {
+    label_id: "away",
+    name: "Away",
+    icon: "mdi:home-export-outline",
+    color: "#cccccc",
+    description: "All that can all be turned off when away from home",
+  },
+  {
+    label_id: "cleaning",
+    name: "Cleaning",
+    icon: "mdi:home-export-outline",
+    color: "#cccccc",
+    description: "Everything to turn on while cleaning the house",
   },
 ];
 
@@ -138,6 +163,7 @@ const SCHEMAS: {
       duration: { name: "Duration", selector: { duration: {} } },
       addon: { name: "Addon", selector: { addon: {} } },
       area: { name: "Area", selector: { area: {} } },
+      label: { name: "Label", selector: { label: {} } },
       target: { name: "Target", selector: { target: {} } },
       number_box: {
         name: "Number Box",
@@ -161,8 +187,8 @@ const SCHEMAS: {
       },
       boolean: { name: "Boolean", selector: { boolean: {} } },
       time: { name: "Time", selector: { time: {} } },
-      date: { name: "Date", selector: { date: {} } },
-      datetime: { name: "Date Time", selector: { datetime: {} } },
+      // date: { name: "Date", selector: { date: {} } },
+      // datetime: { name: "Date Time", selector: { datetime: {} } },
       action: { name: "Action", selector: { action: {} } },
       text: {
         name: "Text",
@@ -279,6 +305,7 @@ const SCHEMAS: {
       entity: { name: "Entity", selector: { entity: { multiple: true } } },
       device: { name: "Device", selector: { device: { multiple: true } } },
       area: { name: "Area", selector: { area: { multiple: true } } },
+      label: { name: "Label", selector: { label: { multiple: true } } },
       select: {
         name: "Select Multiple",
         selector: {
@@ -335,6 +362,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
     mockDeviceRegistry(hass, DEVICES);
     mockConfigEntries(hass);
     mockAreaRegistry(hass, AREAS);
+    mockLabelRegistry(hass, LABELS);
     mockHassioSupervisor(hass);
     hass.mockWS("auth/sign_path", (params) => params);
     hass.mockWS("media_player/browse_media", this._browseMedia);

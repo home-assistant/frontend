@@ -85,6 +85,7 @@ const tryDescribeAction = <T extends ActionType>(
         area_id: "areas",
         device_id: "devices",
         entity_id: "entities",
+        label_id: "labels",
       })) {
         if (!(key in config.target)) {
           continue;
@@ -145,6 +146,13 @@ const tryDescribeAction = <T extends ActionType>(
                   `${actionTranslationBaseKey}.service.description.target_unknown_area`
                 )
               );
+            }
+          } else if (key === "label_id") {
+            const label_ = hass.labels[targetThing];
+            if (label_?.name) {
+              targets.push(label_.name);
+            } else {
+              targets.push("unknown label");
             }
           } else {
             targets.push(targetThing);

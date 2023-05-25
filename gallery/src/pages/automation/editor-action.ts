@@ -7,6 +7,7 @@ import "../../components/demo-black-white-row";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import "../../../../src/panels/config/automation/action/ha-automation-action";
 import { HaChooseAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-choose";
@@ -59,6 +60,7 @@ class DemoHaAutomationEditorAction extends LitElement {
     mockEntityRegistry(hass);
     mockDeviceRegistry(hass);
     mockAreaRegistry(hass);
+    mockLabelRegistry(hass);
     mockHassioSupervisor(hass);
   }
 

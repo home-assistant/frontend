@@ -198,6 +198,7 @@ const createEntityRegistryEntries = (
     has_entity_name: false,
     unique_id: "updater",
     options: null,
+    labels: [],
   },
 ];
 
@@ -221,6 +222,7 @@ const createDeviceRegistryEntries = (
     name_by_user: null,
     disabled_by: null,
     configuration_url: null,
+    labels: [],
   },
 ];
 

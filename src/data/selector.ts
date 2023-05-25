@@ -33,6 +33,7 @@ export type Selector =
   | LegacyEntitySelector
   | FileSelector
   | IconSelector
+  | LabelSelector
   | LanguageSelector
   | LocationSelector
   | MediaSelector
@@ -153,6 +154,14 @@ export interface DeviceSelector {
   device: {
     filter?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+    multiple?: boolean;
+  } | null;
+}
+
+export interface LabelSelector {
+  label: {
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+    device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
     multiple?: boolean;
   } | null;
 }
@@ -461,6 +470,45 @@ export const expandDeviceTarget = (
     }
   });
   return { entities: newEntities };
+};
+
+export const expandLabelTarget = (
+  hass: HomeAssistant,
+  labelId: string,
+  devices: HomeAssistant["devices"],
+  entities: HomeAssistant["entities"],
+  targetSelector: TargetSelector,
+  entitySources?: EntitySources
+) => {
+  const newEntities: string[] = [];
+  const newDevices: string[] = [];
+  Object.values(devices).forEach((device) => {
+    if (
+      device.labels.includes(labelId) &&
+      deviceMeetsTargetSelector(
+        hass,
+        Object.values(entities),
+        device,
+        targetSelector,
+        entitySources
+      )
+    ) {
+      newDevices.push(device.id);
+    }
+  });
+  Object.values(entities).forEach((entity) => {
+    if (
+      entity.labels!.includes(labelId) &&
+      entityMeetsTargetSelector(
+        hass.states[entity.entity_id],
+        targetSelector,
+        entitySources
+      )
+    ) {
+      newEntities.push(entity.entity_id);
+    }
+  });
+  return { devices: newDevices, entities: newEntities };
 };
 
 const deviceMeetsTargetSelector = (

@@ -404,13 +404,16 @@
         "expand": "Expand",
         "expand_area_id": "Split this area into separate devices and entities.",
         "expand_device_id": "Split this device into separate entities.",
+        "expand_label_id": "Split this label into separate entities.",
         "remove": "Remove",
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
+        "remove_label_id": "Remove label",
         "add_area_id": "Choose area",
         "add_device_id": "Choose device",
-        "add_entity_id": "Choose entity"
+        "add_entity_id": "Choose entity",
+        "add_label_id": "Choose label"
       },
       "config-entry-picker": {
         "config_entry": "Integration"
@@ -474,6 +477,22 @@
           "name": "Name",
           "add": "Add",
           "failed_create_area": "Failed to create area."
+        }
+      },
+      "label-picker": {
+        "clear": "Clear",
+        "show_labels": "Show labels",
+        "label": "Label",
+        "add_new_sugestion": "Add new label ''{name}''",
+        "add_new": "Add new label…",
+        "no_labels": "You don't have any labels",
+        "no_match": "No matching labels found",
+        "add_dialog": {
+          "title": "Add new label",
+          "text": "Enter the name of the new label.",
+          "name": "Name",
+          "add": "Add",
+          "failed_create_label": "Failed to create label."
         }
       },
       "statistic-picker": {
@@ -574,7 +593,7 @@
       "service-control": {
         "required": "This field is required",
         "target": "Targets",
-        "target_description": "What should this service use as targeted areas, devices or entities.",
+        "target_description": "What should this service use as targeted areas, devices, entities or labels.",
         "data": "Service data",
         "integration_doc": "Integration documentation"
       },
