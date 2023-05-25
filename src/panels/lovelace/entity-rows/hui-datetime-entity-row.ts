@@ -89,7 +89,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     const newTime = ev.detail.value.split(":").map(Number);
     dateObj.setHours(newTime[0], newTime[1], newTime[2]);
 
-    setDateTimeValue(this.hass!, stateObj.entity_id, dateObj.toISOString());
+    setDateTimeValue(this.hass!, stateObj.entity_id, dateObj);
   }
 
   private _dateChanged(ev: CustomEvent<{ value: string }>): void {
@@ -98,7 +98,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     const newDate = ev.detail.value.split("-").map(Number);
     dateObj.setFullYear(newDate[0], newDate[1] - 1, newDate[2]);
 
-    setDateTimeValue(this.hass!, stateObj.entity_id, dateObj.toISOString());
+    setDateTimeValue(this.hass!, stateObj.entity_id, dateObj);
   }
 
   static get styles(): CSSResultGroup {
