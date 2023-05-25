@@ -2,7 +2,7 @@ import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import deepClone from "deep-clone-simple";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
@@ -20,6 +20,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
 import "./trigger/ha-automation-trigger";
+import { LocalStorage } from "../../../common/decorators/local-storage";
 
 @customElement("manual-automation-editor")
 export class HaManualAutomationEditor extends LitElement {
@@ -35,7 +36,8 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _clipboard: Clipboard = {};
+  @LocalStorage("automationClipboard", true, false, window.sessionStorage)
+  private _clipboard: Clipboard = {};
 
   protected render() {
     return html`
