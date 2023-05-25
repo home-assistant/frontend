@@ -54,7 +54,7 @@ export class HaTab extends LitElement {
   });
 
   private _handleKeyDown(ev: KeyboardEvent): void {
-    if (ev.keyCode === 13) {
+    if (ev.key === "Enter") {
       (ev.target as HTMLElement).click();
     }
   }

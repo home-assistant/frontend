@@ -73,7 +73,7 @@ export class DialogAddUser extends LitElement {
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
     this.addEventListener("keypress", (ev) => {
-      if (ev.keyCode === 13) {
+      if (ev.key === "Enter") {
         this._createUser(ev);
       }
     });
