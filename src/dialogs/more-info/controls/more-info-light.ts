@@ -200,18 +200,26 @@ class MoreInfoLight extends LitElement {
                       </ha-outlined-icon-button>
                     `
                   : nothing}
-                ${this._favoriteColors.map(
-                  (color, index) => html`
+                ${this._favoriteColors.map((color, index) => {
+                  const editMode = this._focusedFavoriteIndex === index;
+                  return html`
                     <ha-favorite-color-button
+                      .label=${this.hass.localize(
+                        `ui.dialogs.more_info_control.light.favorite_color.${
+                          editMode ? "edit" : "set"
+                        }`,
+                        { number: index }
+                      )}
+                      .disabled=${this.stateObj!.state === UNAVAILABLE}
                       .color=${color}
                       .index=${index}
                       @click=${this._handleFavoriteButton}
                       @blur=${this._removeFocus}
-                      .editMode=${this._focusedFavoriteIndex === index}
+                      .editMode=${editMode}
                     >
                     </ha-favorite-color-button>
-                  `
-                )}
+                  `;
+                })}
               </div>
             `
           : nothing}

@@ -936,6 +936,10 @@
               "color": "Color",
               "color_temp": "Temperature"
             }
+          },
+          "favorite_color": {
+            "set": "Set favorite color {number}",
+            "edit": "Edit favorite color {number}"
           }
         },
         "fan": {

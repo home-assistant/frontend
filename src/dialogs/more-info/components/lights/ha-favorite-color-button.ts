@@ -3,6 +3,7 @@ import type { MdOutlinedIconButton } from "@material/web/iconbutton/outlined-ico
 import { mdiFileWordBox, mdiPencil } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import {
   rgb2hex,
@@ -17,6 +18,8 @@ class MoreInfoViewLightColorPicker extends LitElement {
   public override focus() {
     this._button?.focus();
   }
+
+  @property({ attribute: false }) label?: string;
 
   @property() color!: FavoriteColor;
 
@@ -46,6 +49,8 @@ class MoreInfoViewLightColorPicker extends LitElement {
 
     return html`
       <md-outlined-icon-button
+        title=${ifDefined(this.label)}
+        aria-label=${ifDefined(this.label)}
         style=${styleMap({
           "background-color": backgroundColor,
           "--icon-color": hexIconColor,
