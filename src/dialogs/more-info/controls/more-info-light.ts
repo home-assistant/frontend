@@ -34,7 +34,7 @@ import {
 import { forwardHaptic } from "../../../data/haptics";
 import {
   computeDefaultFavoriteColors,
-  FavoriteColor,
+  LightColor,
   LightColorMode,
   LightEntity,
   LightEntityFeature,
@@ -84,7 +84,7 @@ class MoreInfoLight extends LitElement {
     }
   }
 
-  private get _favoriteColors(): FavoriteColor[] {
+  private get _favoriteColors(): LightColor[] {
     if (this.entry) {
       if (this.entry.options?.light?.favorites_colors) {
         return this.entry.options.light.favorites_colors;

@@ -19,7 +19,7 @@ import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-labeled-slider";
 import "../../../../components/ha-temp-color-picker";
 import {
-  FavoriteColor,
+  LightColor,
   getLightCurrentModeRgbColor,
   LightColorMode,
   LightEntity,
@@ -32,7 +32,7 @@ type Mode = "color_temp" | "color";
 
 declare global {
   interface HASSDomEvents {
-    "color-changed": FavoriteColor;
+    "color-changed": LightColor;
   }
 }
 
@@ -293,10 +293,11 @@ class LightColorPicker extends LitElement {
   private _throttleUpdateColor = throttle(() => this._updateColor(), 500);
 
   private _updateColor() {
-    const hs_color = this._hsPickerValue!;
-    const rgb_color = hs2rgb(hs_color);
-
-    fireEvent(this, "color-changed", { rgb_color });
+    const hs_color = [
+      this._hsPickerValue![0],
+      this._hsPickerValue![1] * 100,
+    ] as [number, number];
+    const rgb_color = hs2rgb(this._hsPickerValue!);
 
     if (
       lightSupportsColorMode(this.stateObj!, LightColorMode.RGBWW) ||
@@ -316,26 +317,20 @@ class LightColorPicker extends LitElement {
         const brightnessPercentage = Math.round(
           ((this.stateObj!.attributes.brightness || 0) * brightnessAdjust) / 255
         );
-        this.hass.callService("light", "turn_on", {
-          entity_id: this.stateObj!.entity_id,
-          brightness_pct: brightnessPercentage,
-          rgb_color: this._adjustColorBrightness(
-            rgb_color,
-            this._brightnessAdjusted,
-            true
-          ),
-        });
-      } else {
-        this.hass.callService("light", "turn_on", {
-          entity_id: this.stateObj!.entity_id,
+        const ajustedRgbColor = this._adjustColorBrightness(
           rgb_color,
-        });
+          this._brightnessAdjusted,
+          true
+        );
+        this._applyColor(
+          { rgb_color: ajustedRgbColor },
+          { brightness_pct: brightnessPercentage }
+        );
+      } else {
+        this._applyColor({ rgb_color });
       }
     } else {
-      this.hass.callService("light", "turn_on", {
-        entity_id: this.stateObj!.entity_id,
-        hs_color: [hs_color[0], hs_color[1] * 100],
-      });
+      this._applyColor({ hs_color });
     }
   }
 
@@ -377,14 +372,9 @@ class LightColorPicker extends LitElement {
   }
 
   private _updateColorTemp() {
-    const ct = this._ctPickerValue!;
+    const color_temp_kelvin = this._ctPickerValue!;
 
-    fireEvent(this, "color-changed", { color_temp_kelvin: ct });
-
-    this.hass.callService("light", "turn_on", {
-      entity_id: this.stateObj!.entity_id,
-      color_temp_kelvin: ct,
-    });
+    this._applyColor({ color_temp_kelvin });
   }
 
   private _wvSliderChanged(ev: CustomEvent) {
@@ -411,9 +401,8 @@ class LightColorPicker extends LitElement {
     if (name === "wv") {
       const rgbw_color = rgb || [0, 0, 0, 0];
       rgbw_color[3] = wv;
-      this.hass.callService("light", "turn_on", {
-        entity_id: this.stateObj!.entity_id,
-        rgbw_color,
+      this._applyColor({
+        rgbw_color: rgbw_color as [number, number, number, number],
       });
       return;
     }
@@ -423,9 +412,17 @@ class LightColorPicker extends LitElement {
       rgbww_color.push(0);
     }
     rgbww_color[name === "cw" ? 3 : 4] = wv;
+    this._applyColor({
+      rgbww_color: rgbww_color as [number, number, number, number, number],
+    });
+  }
+
+  private _applyColor(color: LightColor, params?: Record<string, any>) {
+    fireEvent(this, "color-changed", color);
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
-      rgbww_color,
+      ...color,
+      ...params,
     });
   }
 
@@ -476,23 +473,30 @@ class LightColorPicker extends LitElement {
 
   private _setRgbWColor(rgbColor: [number, number, number]) {
     if (lightSupportsColorMode(this.stateObj!, LightColorMode.RGBWW)) {
-      const rgbww_color: [number, number, number, number, number] = this
+      const rgbwwColor: [number, number, number, number, number] = this
         .stateObj!.attributes.rgbww_color
         ? [...this.stateObj!.attributes.rgbww_color]
         : [0, 0, 0, 0, 0];
-      this.hass.callService("light", "turn_on", {
-        entity_id: this.stateObj!.entity_id,
-        rgbww_color: rgbColor.concat(rgbww_color.slice(3)),
-      });
+      const rgbww_color = rgbColor.concat(rgbwwColor.slice(3)) as [
+        number,
+        number,
+        number,
+        number,
+        number
+      ];
+      this._applyColor({ rgbww_color });
     } else if (lightSupportsColorMode(this.stateObj!, LightColorMode.RGBW)) {
-      const rgbw_color: [number, number, number, number] = this.stateObj!
+      const rgbwColor: [number, number, number, number] = this.stateObj!
         .attributes.rgbw_color
         ? [...this.stateObj!.attributes.rgbw_color]
         : [0, 0, 0, 0];
-      this.hass.callService("light", "turn_on", {
-        entity_id: this.stateObj!.entity_id,
-        rgbw_color: rgbColor.concat(rgbw_color.slice(3)),
-      });
+      const rgbw_color = rgbColor.concat(rgbwColor.slice(3)) as [
+        number,
+        number,
+        number,
+        number
+      ];
+      this._applyColor({ rgbw_color });
     }
   }
 

@@ -1,10 +1,10 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
-import { FavoriteColor } from "../../../../data/light";
+import { LightColor } from "../../../../data/light";
 
 export interface LightColorFavoriteDialogParams {
   entry: ExtEntityRegistryEntry;
-  submit?: (color?: FavoriteColor) => void;
+  submit?: (color?: LightColor) => void;
   cancel?: () => void;
 }
 
@@ -15,7 +15,7 @@ export const showLightColorFavoriteDialog = (
   element: HTMLElement,
   dialogParams: LightColorFavoriteDialogParams
 ) =>
-  new Promise<FavoriteColor | null>((resolve) => {
+  new Promise<LightColor | null>((resolve) => {
     const origCancel = dialogParams.cancel;
     const origSubmit = dialogParams.submit;
 
@@ -30,7 +30,7 @@ export const showLightColorFavoriteDialog = (
             origCancel();
           }
         },
-        submit: (color: FavoriteColor) => {
+        submit: (color: LightColor) => {
           resolve(color);
           if (origSubmit) {
             origSubmit(color);

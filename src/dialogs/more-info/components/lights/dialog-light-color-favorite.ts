@@ -6,7 +6,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import { EntityRegistryEntry } from "../../../../data/entity_registry";
-import { FavoriteColor } from "../../../../data/light";
+import { LightColor } from "../../../../data/light";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "./light-color-picker";
@@ -20,7 +20,7 @@ class DialogLightColorFavorite extends LitElement {
 
   @state() _entry?: EntityRegistryEntry;
 
-  @state() _color?: FavoriteColor;
+  @state() _color?: LightColor;
 
   public async showDialog(
     dialogParams: LightColorFavoriteDialogParams
@@ -44,7 +44,10 @@ class DialogLightColorFavorite extends LitElement {
   }
 
   private async _save() {
-    if (!this._color) return;
+    if (!this._color) {
+      this.closeDialog();
+      return;
+    }
 
     this._dialogParams?.submit?.(this._color);
     this._dialogParams = undefined;
@@ -79,9 +82,11 @@ class DialogLightColorFavorite extends LitElement {
           </light-color-picker>
         </div>
         <ha-button slot="secondaryAction" dialogAction="cancel">
-          Cancel
+          ${this.hass.localize("ui.common.cancel")}
         </ha-button>
-        <ha-button slot="primaryAction" @click=${this._save}> Save </ha-button>
+        <ha-button slot="primaryAction" @click=${this._save}
+          >${this.hass.localize("ui.common.save")}</ha-button
+        >
       </ha-dialog>
     `;
   }

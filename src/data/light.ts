@@ -90,23 +90,29 @@ export interface LightEntity extends HassEntityBase {
   attributes: LightEntityAttributes;
 }
 
-export type FavoriteColor =
-  | {
-      rgb_color: [number, number, number];
-    }
+export type LightColor =
   | {
       color_temp_kelvin: number;
     }
   | {
-      white: true;
+      hs_color: [number, number];
+    }
+  | {
+      rgb_color: [number, number, number];
+    }
+  | {
+      rgbw_color: [number, number, number, number];
+    }
+  | {
+      rgbww_color: [number, number, number, number, number];
     };
 
 const FAVORITE_COLOR_COUNT = 6;
 
 export const computeDefaultFavoriteColors = (
   stateObj: LightEntity
-): FavoriteColor[] => {
-  const colors: FavoriteColor[] = [];
+): LightColor[] => {
+  const colors: LightColor[] = [];
 
   const supportsColorTemp = lightSupportsColorMode(
     stateObj,

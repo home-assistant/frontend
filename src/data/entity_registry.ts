@@ -5,7 +5,7 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
-import { FavoriteColor } from "./light";
+import { LightColor } from "./light";
 
 type entityCategory = "config" | "diagnostic";
 
@@ -76,7 +76,7 @@ export interface SensorEntityOptions {
 }
 
 export interface LightEntityOptions {
-  favorites_colors?: FavoriteColor[];
+  favorites_colors?: LightColor[];
 }
 
 export interface NumberEntityOptions {

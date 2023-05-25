@@ -1,17 +1,19 @@
 import "@material/web/iconbutton/outlined-icon-button";
 import type { MdOutlinedIconButton } from "@material/web/iconbutton/outlined-icon-button";
-import { mdiFileWordBox, mdiPencil } from "@mdi/js";
+import { mdiPencil } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { hs2rgb, rgb2hex } from "../../../../common/color/convert-color";
 import {
-  rgb2hex,
+  rgbw2rgb,
+  rgbww2rgb,
   temperature2rgb,
-} from "../../../../common/color/convert-color";
+} from "../../../../common/color/convert-light-color";
 import { luminosity } from "../../../../common/color/rgb";
 import "../../../../components/ha-svg-icon";
-import { FavoriteColor } from "../../../../data/light";
+import { LightColor, LightEntity } from "../../../../data/light";
 
 @customElement("ha-favorite-color-button")
 class MoreInfoViewLightColorPicker extends LitElement {
@@ -21,7 +23,9 @@ class MoreInfoViewLightColorPicker extends LitElement {
 
   @property({ attribute: false }) label?: string;
 
-  @property() color!: FavoriteColor;
+  @property() stateObj?: LightEntity;
+
+  @property() color!: LightColor;
 
   @property() editMode?: boolean;
 
@@ -29,11 +33,24 @@ class MoreInfoViewLightColorPicker extends LitElement {
   private _button?: MdOutlinedIconButton;
 
   private get _rgbColor(): [number, number, number] {
-    if ("rgb_color" in this.color) {
-      return this.color.rgb_color;
+    if ("hs_color" in this.color) {
+      return hs2rgb([this.color.hs_color[0], this.color.hs_color[1] / 100]);
     }
     if ("color_temp_kelvin" in this.color) {
       return temperature2rgb(this.color.color_temp_kelvin);
+    }
+    if ("rgb_color" in this.color) {
+      return this.color.rgb_color;
+    }
+    if ("rgbw_color" in this.color) {
+      return rgbw2rgb(this.color.rgbw_color);
+    }
+    if ("rgbww_color" in this.color) {
+      return rgbww2rgb(
+        this.color.rgbww_color,
+        this.stateObj?.attributes.min_color_temp_kelvin,
+        this.stateObj?.attributes.max_color_temp_kelvin
+      );
     }
     return [255, 255, 255];
   }
@@ -59,8 +76,6 @@ class MoreInfoViewLightColorPicker extends LitElement {
       >
         ${this.editMode
           ? html`<ha-svg-icon .path=${mdiPencil}></ha-svg-icon>`
-          : "white" in this.color
-          ? html`<ha-svg-icon .path=${mdiFileWordBox}></ha-svg-icon>`
           : nothing}
       </md-outlined-icon-button>
     `;

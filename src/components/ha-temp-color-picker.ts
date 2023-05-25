@@ -4,6 +4,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { rgb2hex } from "../common/color/convert-color";
+import { temperature2rgb } from "../common/color/convert-light-color";
 import { fireEvent } from "../common/dom/fire_event";
 
 declare global {
@@ -22,44 +23,6 @@ function polar2xy(r: number, phi: number) {
   const x = Math.cos(phi) * r;
   const y = Math.sin(phi) * r;
   return [x, y];
-}
-
-function temperature2rgb(temperature: number): [number, number, number] {
-  const value = temperature / 100;
-  return [getRed(value), getGreen(value), getBlue(value)];
-}
-
-function getRed(temperature: number): number {
-  if (temperature <= 66) {
-    return 255;
-  }
-  const tmp_red = 329.698727446 * (temperature - 60) ** -0.1332047592;
-  return clamp(tmp_red);
-}
-
-function getGreen(temperature: number): number {
-  let green: number;
-  if (temperature <= 66) {
-    green = 99.4708025861 * Math.log(temperature) - 161.1195681661;
-  } else {
-    green = 288.1221695283 * (temperature - 60) ** -0.0755148492;
-  }
-  return clamp(green);
-}
-
-function getBlue(temperature: number): number {
-  if (temperature >= 66) {
-    return 255;
-  }
-  if (temperature <= 19) {
-    return 0;
-  }
-  const blue = 138.5177312231 * Math.log(temperature - 10) - 305.0447927307;
-  return clamp(blue);
-}
-
-function clamp(value: number): number {
-  return Math.max(0, Math.min(255, value));
 }
 
 function drawColorWheel(
