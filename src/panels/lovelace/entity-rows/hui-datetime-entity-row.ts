@@ -9,6 +9,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
+import { format } from "date-fns";
 import { isUnavailableState } from "../../../data/entity";
 import { setDateTimeValue } from "../../../data/datetime";
 import type { HomeAssistant } from "../../../types";
@@ -50,6 +51,10 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const dateObj = new Date(stateObj.state);
+    const time = format(dateObj, "HH:mm:ss");
+    const date = format(dateObj, "yyyy-MM-dd");
+
     return html`
       <hui-generic-entity-row
         .hass=${this.hass}
@@ -58,13 +63,13 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
       >
         <ha-date-input
           .locale=${this.hass.locale}
-          .value=${stateObj.state.split(" ")[0]}
+          .value=${date}
           .disabled=${isUnavailableState(stateObj.state)}
           @value-changed=${this._dateChanged}
         >
         </ha-date-input>
         <ha-time-input
-          .value=${stateObj.state.split(" ")[1]}
+          .value=${time}
           .disabled=${isUnavailableState(stateObj.state)}
           .locale=${this.hass.locale}
           @value-changed=${this._timeChanged}
@@ -80,23 +85,20 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
 
   private _timeChanged(ev: CustomEvent<{ value: string }>): void {
     const stateObj = this.hass!.states[this._config!.entity];
-    setDateTimeValue(
-      this.hass!,
-      stateObj.entity_id,
-      ev.detail.value,
-      stateObj.state.split(" ")[0]
-    );
+    const dateObj = new Date(stateObj.state);
+    const newTime = ev.detail.value.split(":").map(Number);
+    dateObj.setHours(newTime[0], newTime[1], newTime[2]);
+
+    setDateTimeValue(this.hass!, stateObj.entity_id, dateObj.toISOString());
   }
 
   private _dateChanged(ev: CustomEvent<{ value: string }>): void {
     const stateObj = this.hass!.states[this._config!.entity];
+    const dateObj = new Date(stateObj.state);
+    const newDate = ev.detail.value.split("-").map(Number);
+    dateObj.setFullYear(newDate[0], newDate[1] - 1, newDate[2]);
 
-    setDateTimeValue(
-      this.hass!,
-      stateObj.entity_id,
-      stateObj.state.split(" ")[1],
-      ev.detail.value
-    );
+    setDateTimeValue(this.hass!, stateObj.entity_id, dateObj.toISOString());
   }
 
   static get styles(): CSSResultGroup {
