@@ -36,6 +36,11 @@ class StepFlowForm extends LitElement {
 
   @state() private _errorMsg?: string;
 
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removeEventListener("keydown", this._handleKeyDown);
+  }
+
   protected render(): TemplateResult {
     const step = this.step;
     const stepData = this._stepDataProcessed;
@@ -84,12 +89,14 @@ class StepFlowForm extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     setTimeout(() => this.shadowRoot!.querySelector("ha-form")!.focus(), 0);
-    this.addEventListener("keypress", (ev) => {
-      if (ev.keyCode === 13) {
-        this._submitStep();
-      }
-    });
+    this.addEventListener("keydown", this._handleKeyDown);
   }
+
+  private _handleKeyDown = (ev: KeyboardEvent) => {
+    if (ev.keyCode === 13) {
+      this._submitStep();
+    }
+  };
 
   private get _stepDataProcessed() {
     if (this._stepData !== undefined) {
