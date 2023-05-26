@@ -321,7 +321,7 @@ export const haStyleDialog = css`
       --mdc-dialog-min-height: 100%;
       --mdc-dialog-max-height: 100%;
       --vertical-align-dialog: flex-end;
-      --ha-dialog-border-radius: 0px;
+      --ha-dialog-border-radius: 0;
     }
   }
   mwc-button.warning,

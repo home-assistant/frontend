@@ -4,6 +4,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { rgb2hex } from "../common/color/convert-color";
+import { temperature2rgb } from "../common/color/convert-light-color";
 import { fireEvent } from "../common/dom/fire_event";
 
 declare global {
@@ -11,6 +12,17 @@ declare global {
     "cursor-moved": { value?: any };
   }
 }
+
+const A11Y_KEY_CODES = new Set([
+  "ArrowRight",
+  "ArrowUp",
+  "ArrowLeft",
+  "ArrowDown",
+  "PageUp",
+  "PageDown",
+  "Home",
+  "End",
+]);
 
 function xy2polar(x: number, y: number) {
   const r = Math.sqrt(x * x + y * y);
@@ -22,44 +34,6 @@ function polar2xy(r: number, phi: number) {
   const x = Math.cos(phi) * r;
   const y = Math.sin(phi) * r;
   return [x, y];
-}
-
-function temperature2rgb(temperature: number): [number, number, number] {
-  const value = temperature / 100;
-  return [getRed(value), getGreen(value), getBlue(value)];
-}
-
-function getRed(temperature: number): number {
-  if (temperature <= 66) {
-    return 255;
-  }
-  const tmp_red = 329.698727446 * (temperature - 60) ** -0.1332047592;
-  return clamp(tmp_red);
-}
-
-function getGreen(temperature: number): number {
-  let green: number;
-  if (temperature <= 66) {
-    green = 99.4708025861 * Math.log(temperature) - 161.1195681661;
-  } else {
-    green = 288.1221695283 * (temperature - 60) ** -0.0755148492;
-  }
-  return clamp(green);
-}
-
-function getBlue(temperature: number): number {
-  if (temperature >= 66) {
-    return 255;
-  }
-  if (temperature <= 19) {
-    return 0;
-  }
-  const blue = 138.5177312231 * Math.log(temperature - 10) - 305.0447927307;
-  return clamp(blue);
-}
-
-function clamp(value: number): number {
-  return Math.max(0, Math.min(255, value));
 }
 
 function drawColorWheel(
@@ -99,9 +73,11 @@ class HaTempColorPicker extends LitElement {
   @property({ type: Number })
   public value?: number;
 
-  @property() min = 2000;
+  @property({ type: Number })
+  public min = 2000;
 
-  @property() max = 10000;
+  @property({ type: Number })
+  public max = 10000;
 
   @query("#canvas") private _canvas!: HTMLCanvasElement;
 
@@ -120,6 +96,11 @@ class HaTempColorPicker extends LitElement {
     super.firstUpdated(changedProps);
     this._setupListeners();
     this._generateColorWheel();
+    this.setAttribute("role", "slider");
+    this.setAttribute("aria-orientation", "vertical");
+    if (!this.hasAttribute("tabindex")) {
+      this.setAttribute("tabindex", "0");
+    }
   }
 
   private _generateColorWheel() {
@@ -139,18 +120,27 @@ class HaTempColorPicker extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+    if (changedProps.has("_localValue")) {
+      this.setAttribute("aria-valuenow", this._localValue?.toString() ?? "");
+    }
     if (changedProps.has("min") || changedProps.has("max")) {
       this._generateColorWheel();
       this._resetPosition();
     }
+    if (changedProps.has("min")) {
+      this.setAttribute("aria-valuemin", this.min.toString());
+    }
+    if (changedProps.has("max")) {
+      this.setAttribute("aria-valuemax", this.max.toString());
+    }
     if (changedProps.has("value")) {
-      if (this.value !== undefined && this._localValue !== this.value) {
+      if (this.value != null && this._localValue !== this.value) {
         this._resetPosition();
       }
     }
   }
 
-  _setupListeners() {
+  private _setupListeners() {
     if (this._canvas && !this._mc) {
       this._mc = new Manager(this._canvas);
       this._mc.add(
@@ -195,6 +185,9 @@ class HaTempColorPicker extends LitElement {
         this._localValue = this._getValueFromCoord(...this._cursorPosition);
         fireEvent(this, "value-changed", { value: this._localValue });
       });
+
+      this.addEventListener("keydown", this._handleKeyDown);
+      this.addEventListener("keyup", this._handleKeyUp);
     }
   }
 
@@ -237,21 +230,74 @@ class HaTempColorPicker extends LitElement {
     return [__x, __y];
   };
 
-  _destroyListeners() {
+  private _destroyListeners() {
     if (this._mc) {
       this._mc.destroy();
       this._mc = undefined;
     }
+    this.removeEventListener("keydown", this._handleKeyDown);
+    this.removeEventListener("keyup", this._handleKeyDown);
+  }
+
+  _handleKeyDown(e: KeyboardEvent) {
+    if (!A11Y_KEY_CODES.has(e.code)) return;
+    e.preventDefault();
+
+    const step = 1;
+    const tenPercentStep = Math.max(step, (this.max - this.min) / 10);
+    const currentValue =
+      this._localValue ?? Math.round((this.max + this.min) / 2);
+    switch (e.code) {
+      case "ArrowRight":
+      case "ArrowUp":
+        this._localValue = Math.round(Math.min(currentValue + step, this.max));
+        break;
+      case "ArrowLeft":
+      case "ArrowDown":
+        this._localValue = Math.round(Math.max(currentValue - step, this.min));
+        break;
+      case "PageUp":
+        this._localValue = Math.round(
+          Math.min(currentValue + tenPercentStep, this.max)
+        );
+        break;
+      case "PageDown":
+        this._localValue = Math.round(
+          Math.max(currentValue - tenPercentStep, this.min)
+        );
+        break;
+      case "Home":
+        this._localValue = this.min;
+        break;
+      case "End":
+        this._localValue = this.max;
+        break;
+    }
+    if (this._localValue != null) {
+      const [_, y] = this._getCoordsFromValue(this._localValue);
+      const currentX = this._cursorPosition?.[0] ?? 0;
+      const x =
+        Math.sign(currentX) *
+        Math.min(Math.sqrt(1 - y ** 2), Math.abs(currentX));
+      this._cursorPosition = [x, y];
+      fireEvent(this, "cursor-moved", { value: this._localValue });
+    }
+  }
+
+  _handleKeyUp(e: KeyboardEvent) {
+    if (!A11Y_KEY_CODES.has(e.code)) return;
+    e.preventDefault();
+    this.value = this._localValue;
+    fireEvent(this, "value-changed", { value: this._localValue });
   }
 
   render() {
     const size = this.renderSize || 400;
     const canvasSize = size * window.devicePixelRatio;
 
-    const rgb =
-      this._localValue !== undefined
-        ? temperature2rgb(this._localValue)
-        : ([255, 255, 255] as [number, number, number]);
+    const rgb = temperature2rgb(
+      this._localValue ?? Math.round((this.max + this.min) / 2)
+    );
 
     const [x, y] = this._cursorPosition ?? [0, 0];
 
@@ -266,7 +312,12 @@ class HaTempColorPicker extends LitElement {
     return html`
       <div class="container ${classMap({ pressed: Boolean(this._pressed) })}">
         <canvas id="canvas" .width=${canvasSize} .height=${canvasSize}></canvas>
-        <svg id="interaction" viewBox="0 0 ${size} ${size}" overflow="visible">
+        <svg
+          id="interaction"
+          viewBox="0 0 ${size} ${size}"
+          overflow="visible"
+          aria-hidden="true"
+        >
           <defs>${this.renderSVGFilter()}</defs>
           <g
             style=${styleMap({
@@ -311,6 +362,11 @@ class HaTempColorPicker extends LitElement {
     return css`
       :host {
         display: block;
+        outline: none;
+        border-radius: 9999px;
+      }
+      :host(:focus-visible) {
+        box-shadow: 0 0 0 2px rgb(255, 160, 0);
       }
       .container {
         position: relative;

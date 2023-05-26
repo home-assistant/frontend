@@ -4,6 +4,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { hsv2rgb, rgb2hex } from "../common/color/convert-color";
+import { rgbw2rgb, rgbww2rgb } from "../common/color/convert-light-color";
 import { fireEvent } from "../common/dom/fire_event";
 
 function xy2polar(x: number, y: number) {
@@ -26,7 +27,36 @@ function deg2rad(deg: number) {
   return (deg / 360) * 2 * Math.PI;
 }
 
-function drawColorWheel(ctx: CanvasRenderingContext2D, colorBrightness = 255) {
+function adjustRgb(
+  rgb: [number, number, number],
+  wv?: number,
+  cw?: number,
+  ww?: number,
+  minKelvin?: number,
+  maxKelvin?: number
+) {
+  if (wv != null) {
+    return rgbw2rgb([...rgb, wv] as [number, number, number, number]);
+  }
+  if (cw != null && ww !== null) {
+    return rgbww2rgb(
+      [...rgb, cw, ww] as [number, number, number, number, number],
+      minKelvin,
+      maxKelvin
+    );
+  }
+  return rgb;
+}
+
+function drawColorWheel(
+  ctx: CanvasRenderingContext2D,
+  colorBrightness = 255,
+  wv?: number,
+  cw?: number,
+  ww?: number,
+  minKelvin?: number,
+  maxKelvin?: number
+) {
   const radius = ctx.canvas.width / 2;
 
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -44,8 +74,26 @@ function drawColorWheel(ctx: CanvasRenderingContext2D, colorBrightness = 255) {
     ctx.closePath();
 
     const gradient = ctx.createRadialGradient(cX, cY, 0, cX, cY, radius);
-    const start = rgb2hex(hsv2rgb([angle, 0, colorBrightness]));
-    const end = rgb2hex(hsv2rgb([angle, 1, colorBrightness]));
+    const start = rgb2hex(
+      adjustRgb(
+        hsv2rgb([angle, 0, colorBrightness]),
+        wv,
+        cw,
+        ww,
+        minKelvin,
+        maxKelvin
+      )
+    );
+    const end = rgb2hex(
+      adjustRgb(
+        hsv2rgb([angle, 1, colorBrightness]),
+        wv,
+        cw,
+        ww,
+        minKelvin,
+        maxKelvin
+      )
+    );
     gradient.addColorStop(0, start);
     gradient.addColorStop(1, end);
     ctx.fillStyle = gradient;
@@ -66,6 +114,21 @@ class HaHsColorPicker extends LitElement {
 
   @property({ type: Number })
   public colorBrightness?: number;
+
+  @property({ type: Number })
+  public wv?: number;
+
+  @property({ type: Number })
+  public cw?: number;
+
+  @property({ type: Number })
+  public ww?: number;
+
+  @property({ type: Number })
+  public minKelvin?: number;
+
+  @property({ type: Number })
+  public maxKelvin?: number;
 
   @query("#canvas") private _canvas!: HTMLCanvasElement;
 
@@ -88,7 +151,15 @@ class HaHsColorPicker extends LitElement {
 
   private _generateColorWheel() {
     const ctx = this._canvas.getContext("2d")!;
-    drawColorWheel(ctx, this.colorBrightness);
+    drawColorWheel(
+      ctx,
+      this.colorBrightness,
+      this.wv,
+      this.cw,
+      this.ww,
+      this.minKelvin,
+      this.maxKelvin
+    );
   }
 
   connectedCallback(): void {
@@ -103,7 +174,14 @@ class HaHsColorPicker extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (changedProps.has("colorBrightness")) {
+    if (
+      changedProps.has("colorBrightness") ||
+      changedProps.has("vw") ||
+      changedProps.has("ww") ||
+      changedProps.has("cw") ||
+      changedProps.has("minKelvin") ||
+      changedProps.has("maxKelvin")
+    ) {
       this._generateColorWheel();
     }
     if (changedProps.has("value")) {
@@ -221,11 +299,16 @@ class HaHsColorPicker extends LitElement {
 
     const rgb =
       this._localValue !== undefined
-        ? hsv2rgb([
-            this._localValue[0],
-            this._localValue[1],
-            this.colorBrightness ?? 255,
-          ])
+        ? adjustRgb(
+            hsv2rgb([
+              this._localValue[0],
+              this._localValue[1],
+              this.colorBrightness ?? 255,
+            ]),
+            this.wv,
+            this.cw,
+            this.ww
+          )
         : ([255, 255, 255] as [number, number, number]);
 
     const [x, y] = this._cursorPosition ?? [0, 0];
