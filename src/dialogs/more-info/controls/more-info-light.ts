@@ -1,6 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/web/button/outlined-button";
-import "@material/web/iconbutton/outlined-icon-button";
 import {
   mdiCreation,
   mdiFileWordBox,
@@ -24,6 +22,8 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-attributes";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-outlined-button";
+import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
@@ -129,7 +129,7 @@ class MoreInfoLight extends LitElement {
               <div class="buttons">
                 ${supportsBrightness
                   ? html`
-                      <md-outlined-icon-button
+                      <ha-outlined-icon-button
                         .disabled=${this.stateObj.state === UNAVAILABLE}
                         .title=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.toggle"
@@ -140,12 +140,12 @@ class MoreInfoLight extends LitElement {
                         @click=${this._toggle}
                       >
                         <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
-                      </md-outlined-icon-button>
+                      </ha-outlined-icon-button>
                     `
                   : nothing}
                 ${supportsColorTemp || supportsColor
                   ? html`
-                      <md-outlined-icon-button
+                      <ha-outlined-icon-button
                         class=${classMap({
                           "color-rgb-mode": supportsColor,
                           "color-temp-mode": !supportsColor,
@@ -159,12 +159,12 @@ class MoreInfoLight extends LitElement {
                         )}
                         @click=${this._showLightColorPickerView}
                       >
-                      </md-outlined-icon-button>
+                      </ha-outlined-icon-button>
                     `
                   : nothing}
                 ${supportsWhite
                   ? html`
-                      <md-outlined-icon-button
+                      <ha-outlined-icon-button
                         .disabled=${this.stateObj.state === UNAVAILABLE}
                         .title=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.set_white"
@@ -175,7 +175,7 @@ class MoreInfoLight extends LitElement {
                         @click=${this._setWhiteColor}
                       >
                         <ha-svg-icon .path=${mdiFileWordBox}></ha-svg-icon>
-                      </md-outlined-icon-button>
+                      </ha-outlined-icon-button>
                     `
                   : nothing}
               </div>
@@ -189,7 +189,7 @@ class MoreInfoLight extends LitElement {
                 fixed
                 .disabled=${this.stateObj.state === UNAVAILABLE}
               >
-                <md-outlined-button
+                <ha-outlined-button
                   slot="trigger"
                   .disabled=${this.stateObj.state === UNAVAILABLE}
                 >
@@ -201,7 +201,7 @@ class MoreInfoLight extends LitElement {
                     this.hass.entities,
                     "effect"
                   )}
-                </md-outlined-button>
+                </ha-outlined-button>
                 ${this.stateObj.attributes.effect_list.map(
                   (effect: string) => html`
                     <ha-list-item
@@ -272,17 +272,6 @@ class MoreInfoLight extends LitElement {
     return [
       moreInfoControlStyle,
       css`
-        md-outlined-icon-button {
-          --ha-icon-display: block;
-          --md-sys-color-on-surface: var(--secondary-text-color);
-          --md-sys-color-on-surface-variant: var(--secondary-text-color);
-          --md-sys-color-on-surface-rgb: var(--rgb-secondary-text-color);
-        }
-        md-outlined-button {
-          --ha-icon-display: block;
-          --md-sys-color-primary: var(--primary-text-color);
-          --md-sys-color-outline: var(--divider-color);
-        }
         .color-rgb-mode {
           background-image: url("/static/images/color_wheel.png");
           background-size: cover;
