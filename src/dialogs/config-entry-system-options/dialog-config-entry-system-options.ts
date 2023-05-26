@@ -132,11 +132,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
   }
 
   private _allowUpdatePolling() {
-    return (
-      this._params!.manifest &&
-      (this._params!.manifest.iot_class === "local_polling" ||
-        this._params!.manifest.iot_class === "cloud_polling")
-    );
+    return true;
   }
 
   private _disableNewEntitiesChanged(ev: Event): void {
