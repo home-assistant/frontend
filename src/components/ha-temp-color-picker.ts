@@ -140,7 +140,7 @@ class HaTempColorPicker extends LitElement {
     }
   }
 
-  _setupListeners() {
+  private _setupListeners() {
     if (this._canvas && !this._mc) {
       this._mc = new Manager(this._canvas);
       this._mc.add(
@@ -230,7 +230,7 @@ class HaTempColorPicker extends LitElement {
     return [__x, __y];
   };
 
-  destroyListeners() {
+  private _destroyListeners() {
     if (this._mc) {
       this._mc.destroy();
       this._mc = undefined;
