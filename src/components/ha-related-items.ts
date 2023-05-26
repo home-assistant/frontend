@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list";
-import { mdiDevices, mdiSofa } from "@mdi/js";
+import { mdiDevices, mdiPaletteSwatch, mdiSofa } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -273,15 +273,23 @@ export class HaRelatedItems extends LitElement {
             <mwc-list>
               ${this._related.automation_blueprint.map((path) => {
                 const blueprintMeta = this._blueprints
-                  ? this._blueprints[path]
+                  ? this._blueprints.automation[path]
                   : undefined;
-                return html`<ha-list-item>
-                  <a href="/config/blueprint/dashboard"
-                    >${!blueprintMeta || "error" in blueprintMeta
+                return html`<a
+                  href="/config/blueprint/dashboard"
+                  @click=${this._navigateAwayClose}
+                >
+                  <ha-list-item hasMeta graphic="icon">
+                    <ha-svg-icon
+                      .path=${mdiPaletteSwatch}
+                      slot="graphic"
+                    ></ha-svg-icon>
+                    ${!blueprintMeta || "error" in blueprintMeta
                       ? path
-                      : blueprintMeta.metadata.name || path}</a
-                  >
-                </ha-list-item>`;
+                      : blueprintMeta.metadata.name || path}
+                    <ha-icon-next slot="meta"></ha-icon-next>
+                  </ha-list-item>
+                </a>`;
               })}
             </mwc-list>
           `
@@ -323,14 +331,28 @@ export class HaRelatedItems extends LitElement {
             <h3>
               ${this.hass.localize("ui.components.related-items.blueprint")}:
             </h3>
-            <ul>
-              ${this._related.script_blueprint.map(
-                (path) =>
-                  html`<li>
-                    <a href="/config/blueprint/dashboard">${path}</a>
-                  </li> `
-              )}
-            </ul>
+            <mwc-list>
+              ${this._related.script_blueprint.map((path) => {
+                const blueprintMeta = this._blueprints
+                  ? this._blueprints.script[path]
+                  : undefined;
+                return html`<a
+                  href="/config/blueprint/dashboard"
+                  @click=${this._navigateAwayClose}
+                >
+                  <ha-list-item hasMeta graphic="icon">
+                    <ha-svg-icon
+                      .path=${mdiPaletteSwatch}
+                      slot="graphic"
+                    ></ha-svg-icon>
+                    ${!blueprintMeta || "error" in blueprintMeta
+                      ? path
+                      : blueprintMeta.metadata.name || path}
+                    <ha-icon-next slot="meta"></ha-icon-next>
+                  </ha-list-item>
+                </a>`;
+              })}
+            </mwc-list>
           `
         : ""}
       ${this._related.script
