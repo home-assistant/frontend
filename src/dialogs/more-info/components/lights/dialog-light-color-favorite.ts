@@ -31,9 +31,6 @@ class DialogLightColorFavorite extends LitElement {
   }
 
   public closeDialog(): void {
-    if (this._dialogParams?.cancel) {
-      this._dialogParams.cancel();
-    }
     this._dialogParams = undefined;
     this._entry = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -43,16 +40,18 @@ class DialogLightColorFavorite extends LitElement {
     this._color = ev.detail;
   }
 
+  private async _cancel() {
+    this._dialogParams?.cancel?.();
+    this.closeDialog();
+  }
+
   private async _save() {
     if (!this._color) {
-      this.closeDialog();
+      this._cancel();
       return;
     }
-
     this._dialogParams?.submit?.(this._color);
-    this._dialogParams = undefined;
-    this._entry = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    this.closeDialog();
   }
 
   protected render() {
@@ -63,7 +62,7 @@ class DialogLightColorFavorite extends LitElement {
     const title = this.hass.localize("ui.dialogs.light-color-favorite.title");
 
     return html`
-      <ha-dialog open @closed=${this.closeDialog} .heading=${title} flexContent>
+      <ha-dialog open @closed=${this._cancel} .heading=${title} flexContent>
         <ha-dialog-header slot="heading">
           <ha-icon-button
             slot="navigationIcon"
