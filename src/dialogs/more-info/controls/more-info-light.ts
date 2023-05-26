@@ -375,7 +375,7 @@ class MoreInfoLight extends LitElement {
         }
         .color-rgb-mode,
         .color-temp-mode {
-          border-radius: var(--md-outlined-icon-button-container-shape, 9999px);
+          border-radius: 9999px;
           --md-sys-color-outline: var(--divider-color);
         }
         .color-rgb-mode {

@@ -1,5 +1,3 @@
-import "@material/web/iconbutton/outlined-icon-button";
-import type { MdOutlinedIconButton } from "@material/web/iconbutton/outlined-icon-button";
 import { mdiPencil } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
@@ -12,6 +10,7 @@ import {
   temperature2rgb,
 } from "../../../../common/color/convert-light-color";
 import { luminosity } from "../../../../common/color/rgb";
+import { HaOutlinedIconButton } from "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-svg-icon";
 import { LightColor, LightEntity } from "../../../../data/light";
 
@@ -31,8 +30,8 @@ class MoreInfoViewLightColorPicker extends LitElement {
 
   @property() editMode?: boolean;
 
-  @query("md-outlined-icon-button", true)
-  private _button?: MdOutlinedIconButton;
+  @query("ha-outlined-icon-button", true)
+  private _button?: HaOutlinedIconButton;
 
   private get _rgbColor(): [number, number, number] {
     if ("hs_color" in this.color) {
@@ -67,7 +66,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
     const rgbIconColor = iconColor.join(", ");
 
     return html`
-      <md-outlined-icon-button
+      <ha-outlined-icon-button
         .disabled=${this.disabled}
         title=${ifDefined(this.label)}
         aria-label=${ifDefined(this.label)}
@@ -80,14 +79,14 @@ class MoreInfoViewLightColorPicker extends LitElement {
         ${this.editMode
           ? html`<ha-svg-icon .path=${mdiPencil}></ha-svg-icon>`
           : nothing}
-      </md-outlined-icon-button>
+      </ha-outlined-icon-button>
     `;
   }
 
   static get styles(): CSSResultGroup {
     return [
       css`
-        md-outlined-icon-button {
+        ha-outlined-icon-button {
           --ha-icon-display: block;
           --md-sys-color-on-surface: var(
             --icon-color,
@@ -102,12 +101,12 @@ class MoreInfoViewLightColorPicker extends LitElement {
             var(--rgb-secondary-text-color)
           );
           --md-sys-color-outline: var(--divider-color);
-          border-radius: var(--md-outlined-icon-button-container-shape, 9999px);
+          border-radius: 9999px;
         }
         :host([disabled]) {
           pointer-events: none;
         }
-        md-outlined-icon-button[disabled] {
+        ha-outlined-icon-button[disabled] {
           filter: grayscale(1) opacity(0.5);
         }
       `,
