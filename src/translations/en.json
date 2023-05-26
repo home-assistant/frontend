@@ -2614,6 +2614,8 @@
               "automation": "Automation",
               "script": "Script"
             },
+            "blueprint_in_use_title": "This blueprint is in use, and can not be deleted",
+            "blueprint_in_use_text": "Please remove all below automations and scripts that use this blueprint before deleting it. {list}",
             "confirm_delete_title": "Delete blueprint?",
             "confirm_delete_text": "{name} will be permanently deleted.",
             "add_blueprint": "Import blueprint",

@@ -42,6 +42,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
 import { findRelated } from "../../../data/search";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
 interface BlueprintMetaDataPath extends BlueprintMetaData {
   path: string;
@@ -335,8 +336,24 @@ class HaBlueprintOverview extends LitElement {
     );
     if (related.automation?.length || related.script?.length) {
       showAlertDialog(this, {
-        title: "This blueprint is in use, and can not be deleted",
-        text: `Please remove all automations and scripts that use this blueprint before deleting it. Used in: ${related.automation}${related.script}`,
+        title: this.hass.localize(
+          "ui.panel.config.blueprint.overview.blueprint_in_use_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.blueprint.overview.blueprint_in_use_text",
+          {
+            list: html`<ul>
+              ${[...(related.automation || []), ...(related.script || [])].map(
+                (item) => {
+                  const state = this.hass.states[item];
+                  return html`<li>
+                    ${state ? `${computeStateName(state)} (${item})` : item}
+                  </li>`;
+                }
+              )}
+            </ul>`,
+          }
+        ),
       });
       return;
     }
