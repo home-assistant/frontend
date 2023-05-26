@@ -110,6 +110,7 @@ export class HaMoreInfoFanSpeed extends LitElement {
           )}
           style=${styleMap({
             "--control-select-color": color,
+            "--control-select-background": color,
           })}
           .disabled=${this.stateObj.state === UNAVAILABLE}
         >
@@ -133,6 +134,7 @@ export class HaMoreInfoFanSpeed extends LitElement {
         )}
         style=${styleMap({
           "--control-slider-color": color,
+          "--control-slider-background": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
       >
