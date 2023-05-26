@@ -107,7 +107,7 @@ export type LightColor =
       rgbww_color: [number, number, number, number, number];
     };
 
-const FAVORITE_COLOR_COUNT = 6;
+const FAVORITE_COLOR_COUNT = 8;
 
 export const computeDefaultFavoriteColors = (
   stateObj: LightEntity
@@ -118,8 +118,6 @@ export const computeDefaultFavoriteColors = (
     stateObj,
     LightColorMode.COLOR_TEMP
   );
-
-  const supportsWhite = lightSupportsColorMode(stateObj, LightColorMode.WHITE);
 
   const supportsColor = lightSupportsColor(stateObj);
 
@@ -149,9 +147,5 @@ export const computeDefaultFavoriteColors = (
     }
   }
 
-  // Remove last color by white mode if supported
-  if (supportsWhite) {
-    colors.pop();
-  }
   return colors;
 };

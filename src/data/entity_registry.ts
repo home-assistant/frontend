@@ -76,7 +76,7 @@ export interface SensorEntityOptions {
 }
 
 export interface LightEntityOptions {
-  favorites_colors?: LightColor[];
+  favorite_colors?: LightColor[];
 }
 
 export interface NumberEntityOptions {
