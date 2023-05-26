@@ -2615,6 +2615,10 @@
               "automation": "Automation",
               "script": "Script"
             },
+            "types_plural": {
+              "automation": "automations",
+              "script": "scripts"
+            },
             "blueprint_in_use_title": "This blueprint is in use, and can not be deleted",
             "blueprint_in_use_text": "Please remove all below {type} that use this blueprint before deleting it. {list}",
             "blueprint_in_use_view": "view {type}",

@@ -350,6 +350,9 @@ class HaBlueprintOverview extends LitElement {
       blueprint.path
     );
     if (related.automation?.length || related.script?.length) {
+      const type = this.hass.localize(
+        `ui.panel.config.blueprint.overview.types_plural.${blueprint.domain}`
+      );
       const result = await showConfirmationDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.blueprint.overview.blueprint_in_use_title"
@@ -357,7 +360,7 @@ class HaBlueprintOverview extends LitElement {
         text: this.hass.localize(
           "ui.panel.config.blueprint.overview.blueprint_in_use_text",
           {
-            type: blueprint.domain,
+            type,
             list: html`<ul>
               ${[...(related.automation || []), ...(related.script || [])].map(
                 (item) => {
@@ -372,7 +375,7 @@ class HaBlueprintOverview extends LitElement {
         ),
         confirmText: this.hass!.localize(
           "ui.panel.config.blueprint.overview.blueprint_in_use_view",
-          { type: blueprint.domain }
+          { type }
         ),
       });
       if (result) {
