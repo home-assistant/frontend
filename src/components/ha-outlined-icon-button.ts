@@ -18,7 +18,7 @@ export class HaOutlinedIconButton extends MdOutlinedIconButton {
         --md-sys-color-on-surface-rgb: var(--rgb-secondary-text-color);
       }
       button {
-        // Fix md-outlined-icon-button padding for iOS
+        /* Fix md-outlined-icon-button padding for iOS */
         padding: 0;
       }
     `,
