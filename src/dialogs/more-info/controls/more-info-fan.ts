@@ -276,13 +276,21 @@ class MoreInfoFan extends LitElement {
                       slot="trigger"
                       .disabled=${this.stateObj.state === UNAVAILABLE}
                     >
-                      ${this._presetMode ||
-                      computeAttributeNameDisplay(
-                        this.hass.localize,
-                        this.stateObj,
-                        this.hass.entities,
-                        "preset_mode"
-                      )}
+                      ${this._presetMode
+                        ? computeAttributeValueDisplay(
+                            this.hass.localize,
+                            this.stateObj!,
+                            this.hass.locale,
+                            this.hass.entities,
+                            "preset_mode",
+                            this._presetMode
+                          )
+                        : computeAttributeNameDisplay(
+                            this.hass.localize,
+                            this.stateObj,
+                            this.hass.entities,
+                            "preset_mode"
+                          )}
                       <ha-svg-icon
                         slot="icon"
                         path=${mdiCreation}
