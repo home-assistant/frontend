@@ -18,7 +18,10 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
+import {
+  computeAttributeNameDisplay,
+  computeAttributeValueDisplay,
+} from "../../../common/entity/compute_attribute_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-attributes";
@@ -236,13 +239,21 @@ class MoreInfoLight extends LitElement {
                   .disabled=${this.stateObj.state === UNAVAILABLE}
                 >
                   <ha-svg-icon slot="icon" path=${mdiCreation}></ha-svg-icon>
-                  ${this._effect ||
-                  computeAttributeNameDisplay(
-                    this.hass.localize,
-                    this.stateObj,
-                    this.hass.entities,
-                    "effect"
-                  )}
+                  ${this._effect
+                    ? computeAttributeValueDisplay(
+                        this.hass.localize,
+                        this.stateObj!,
+                        this.hass.locale,
+                        this.hass.entities,
+                        "effect",
+                        this._effect
+                      )
+                    : computeAttributeNameDisplay(
+                        this.hass.localize,
+                        this.stateObj,
+                        this.hass.entities,
+                        "effect"
+                      )}
                 </ha-outlined-button>
                 ${this.stateObj.attributes.effect_list.map(
                   (effect: string) => html`
@@ -250,7 +261,14 @@ class MoreInfoLight extends LitElement {
                       .value=${effect}
                       .activated=${this.stateObj!.attributes.effect === effect}
                     >
-                      ${effect}
+                      ${computeAttributeValueDisplay(
+                        this.hass.localize,
+                        this.stateObj!,
+                        this.hass.locale,
+                        this.hass.entities,
+                        "effect",
+                        effect
+                      )}
                     </ha-list-item>
                   `
                 )}
