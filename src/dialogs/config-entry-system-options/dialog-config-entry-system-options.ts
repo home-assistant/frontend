@@ -86,33 +86,30 @@ class DialogConfigEntrySystemOptions extends LitElement {
             dialogInitialFocus
           ></ha-switch>
         </ha-formfield>
-        ${this._allowUpdatePolling()
-          ? html`
-              <ha-formfield
-                .label=${html`<p>
-                    ${this.hass.localize(
-                      "ui.dialogs.config_entry_system_options.enable_polling_label"
-                    )}
-                  </p>
-                  <p class="secondary">
-                    ${this.hass.localize(
-                      "ui.dialogs.config_entry_system_options.enable_polling_description",
-                      "integration",
-                      this.hass.localize(
-                        `component.${this._params.entry.domain}.title`
-                      ) || this._params.entry.domain
-                    )}
-                  </p>`}
-                .dir=${computeRTLDirection(this.hass)}
-              >
-                <ha-switch
-                  .checked=${!this._disablePolling}
-                  @change=${this._disablePollingChanged}
-                  .disabled=${this._submitting}
-                ></ha-switch>
-              </ha-formfield>
-            `
-          : ""}
+
+        <ha-formfield
+          .label=${html`<p>
+              ${this.hass.localize(
+                "ui.dialogs.config_entry_system_options.enable_polling_label"
+              )}
+            </p>
+            <p class="secondary">
+              ${this.hass.localize(
+                "ui.dialogs.config_entry_system_options.enable_polling_description",
+                "integration",
+                this.hass.localize(
+                  `component.${this._params.entry.domain}.title`
+                ) || this._params.entry.domain
+              )}
+            </p>`}
+          .dir=${computeRTLDirection(this.hass)}
+        >
+          <ha-switch
+            .checked=${!this._disablePolling}
+            @change=${this._disablePollingChanged}
+            .disabled=${this._submitting}
+          ></ha-switch>
+        </ha-formfield>
         <mwc-button
           slot="secondaryAction"
           @click=${this.closeDialog}
@@ -131,10 +128,6 @@ class DialogConfigEntrySystemOptions extends LitElement {
     `;
   }
 
-  private _allowUpdatePolling() {
-    return true;
-  }
-
   private _disableNewEntitiesChanged(ev: Event): void {
     this._error = undefined;
     this._disableNewEntities = !(ev.target as HaSwitch).checked;
@@ -150,9 +143,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
     const data: ConfigEntryMutableParams = {
       pref_disable_new_entities: this._disableNewEntities,
     };
-    if (this._allowUpdatePolling()) {
-      data.pref_disable_polling = this._disablePolling;
-    }
+    data.pref_disable_polling = this._disablePolling;
     try {
       const result = await updateConfigEntry(
         this.hass,
