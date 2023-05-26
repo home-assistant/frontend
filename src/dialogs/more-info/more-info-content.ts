@@ -2,6 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { PropertyValues, ReactiveElement } from "lit";
 import { property } from "lit/decorators";
 import dynamicContentUpdater from "../../common/dom/dynamic_content_updater";
+import { ExtEntityRegistryEntry } from "../../data/entity_registry";
 import { importMoreInfoControl } from "../../panels/lovelace/custom-card-helpers";
 import { HomeAssistant } from "../../types";
 import { stateMoreInfoType } from "./state_more_info_control";
@@ -10,6 +11,8 @@ class MoreInfoContent extends ReactiveElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
+
+  @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
 
   private _detachedChild?: ChildNode;
 
@@ -21,6 +24,7 @@ class MoreInfoContent extends ReactiveElement {
   protected update(changedProps: PropertyValues): void {
     super.update(changedProps);
     const stateObj = this.stateObj;
+    const entry = this.entry;
     const hass = this.hass;
 
     if (!stateObj || !hass) {
@@ -54,6 +58,7 @@ class MoreInfoContent extends ReactiveElement {
     dynamicContentUpdater(this, moreInfoType.toUpperCase(), {
       hass,
       stateObj,
+      entry,
     });
   }
 }

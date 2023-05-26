@@ -936,6 +936,10 @@
               "color": "Color",
               "color_temp": "Temperature"
             }
+          },
+          "favorite_color": {
+            "set": "Set favorite color {number}",
+            "edit": "Edit favorite color {number}"
           }
         },
         "fan": {
@@ -1330,6 +1334,9 @@
       "enter_code": {
         "title": "Enter code",
         "input_label": "Code"
+      },
+      "light-color-favorite": {
+        "title": "Edit favorite color"
       },
       "tts-try": {
         "header": "Try text-to-speech",
