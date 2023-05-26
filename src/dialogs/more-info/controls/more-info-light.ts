@@ -391,9 +391,9 @@ class MoreInfoLight extends LitElement {
         .color-temp-mode {
           background: linear-gradient(
             0,
-            rgb(255, 160, 0) 0%,
+            rgb(166, 209, 255) 0%,
             white 50%,
-            rgb(166, 209, 255) 100%
+            rgb(255, 160, 0) 100%
           );
           border-radius: var(--md-outlined-icon-button-container-shape, 9999px);
           --md-sys-color-outline: var(--divider-color);
