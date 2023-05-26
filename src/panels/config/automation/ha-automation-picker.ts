@@ -50,6 +50,7 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
+import { findRelated } from "../../../data/search";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
@@ -64,6 +65,8 @@ class HaAutomationPicker extends LitElement {
   @property() public automations!: AutomationEntity[];
 
   @property() private _activeFilters?: string[];
+
+  @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _filteredAutomations?: string[] | null;
 
@@ -306,6 +309,29 @@ class HaAutomationPicker extends LitElement {
         </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
+  }
+
+  firstUpdated() {
+    if (this._searchParms.has("blueprint")) {
+      this._filterBlueprint();
+    }
+  }
+
+  private async _filterBlueprint() {
+    const blueprint = this._searchParms.get("blueprint");
+    if (!blueprint) {
+      return;
+    }
+    this._filteredAutomations =
+      (await findRelated(this.hass, "automation_blueprint", blueprint))
+        .automation || [];
+    this._activeFilters = [
+      this.hass.localize(
+        "ui.panel.config.automation.picker.filtered_by_blueprint",
+        "name",
+        blueprint
+      ),
+    ];
   }
 
   private _relatedFilterChanged(ev: CustomEvent) {

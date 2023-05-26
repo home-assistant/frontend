@@ -1,6 +1,7 @@
 import {
   mdiDelete,
   mdiDownload,
+  mdiEye,
   mdiHelpCircle,
   mdiRobot,
   mdiShareVariant,
@@ -174,6 +175,20 @@ class HaBlueprintOverview extends LitElement {
                 )}
               </mwc-button>`,
       },
+      show: {
+        title: "",
+        type: "icon-button",
+        template: (_, blueprint: any) =>
+          blueprint.error
+            ? ""
+            : html`<a
+                href=${`/config/${
+                  blueprint.type
+                }/dashboard?blueprint=${encodeURIComponent(blueprint.path)}`}
+              >
+                <ha-icon-button .path=${mdiEye}></ha-icon-button>
+              </a>`,
+      },
       share: {
         title: "",
         type: "icon-button",
@@ -335,13 +350,14 @@ class HaBlueprintOverview extends LitElement {
       blueprint.path
     );
     if (related.automation?.length || related.script?.length) {
-      showAlertDialog(this, {
+      const result = await showConfirmationDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.blueprint.overview.blueprint_in_use_title"
         ),
         text: this.hass.localize(
           "ui.panel.config.blueprint.overview.blueprint_in_use_text",
           {
+            type: blueprint.domain,
             list: html`<ul>
               ${[...(related.automation || []), ...(related.script || [])].map(
                 (item) => {
@@ -354,7 +370,18 @@ class HaBlueprintOverview extends LitElement {
             </ul>`,
           }
         ),
+        confirmText: this.hass!.localize(
+          "ui.panel.config.blueprint.overview.blueprint_in_use_view",
+          { type: blueprint.domain }
+        ),
       });
+      if (result) {
+        navigate(
+          `/config/${blueprint.domain}/dashboard?blueprint=${encodeURIComponent(
+            blueprint.path
+          )}`
+        );
+      }
       return;
     }
     if (

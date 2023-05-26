@@ -45,6 +45,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
+import { findRelated } from "../../../data/search";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
@@ -59,6 +60,8 @@ class HaScriptPicker extends LitElement {
   @property() public route!: Route;
 
   @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
+
+  @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _activeFilters?: string[];
 
@@ -249,6 +252,29 @@ class HaScriptPicker extends LitElement {
         </a>
       </hass-tabs-subpage-data-table>
     `;
+  }
+
+  firstUpdated() {
+    if (this._searchParms.has("blueprint")) {
+      this._filterBlueprint();
+    }
+  }
+
+  private async _filterBlueprint() {
+    const blueprint = this._searchParms.get("blueprint");
+    if (!blueprint) {
+      return;
+    }
+    this._filteredScripts =
+      (await findRelated(this.hass, "script_blueprint", blueprint)).script ||
+      [];
+    this._activeFilters = [
+      this.hass.localize(
+        "ui.panel.config.script.picker.filtered_by_blueprint",
+        "name",
+        blueprint
+      ),
+    ];
   }
 
   private _relatedFilterChanged(ev: CustomEvent) {

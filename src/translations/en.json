@@ -2139,6 +2139,7 @@
             "delete_confirm_text": "{name} will be permanently deleted.",
             "duplicate": "[%key:ui::common::duplicate%]",
             "disabled": "Disabled",
+            "filtered_by_blueprint": "blueprint: {name}",
             "headers": {
               "toggle": "Enable/disable",
               "name": "Name",
@@ -2615,7 +2616,8 @@
               "script": "Script"
             },
             "blueprint_in_use_title": "This blueprint is in use, and can not be deleted",
-            "blueprint_in_use_text": "Please remove all below automations and scripts that use this blueprint before deleting it. {list}",
+            "blueprint_in_use_text": "Please remove all below {type} that use this blueprint before deleting it. {list}",
+            "blueprint_in_use_view": "view {type}",
             "confirm_delete_title": "Delete blueprint?",
             "confirm_delete_text": "{name} will be permanently deleted.",
             "add_blueprint": "Import blueprint",
@@ -2656,6 +2658,7 @@
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
+            "filtered_by_blueprint": "[%key:ui::panel::config::automation::picker::filtered_by_blueprint%]",
             "headers": {
               "name": "Name",
               "state": "State"
