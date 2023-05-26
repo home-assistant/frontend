@@ -23,6 +23,8 @@ class MoreInfoViewLightColorPicker extends LitElement {
 
   @property({ attribute: false }) label?: string;
 
+  @property({ type: Boolean, reflect: true }) disabled = false;
+
   @property() stateObj?: LightEntity;
 
   @property() color!: LightColor;
@@ -66,6 +68,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
 
     return html`
       <md-outlined-icon-button
+        .disabled=${this.disabled}
         title=${ifDefined(this.label)}
         aria-label=${ifDefined(this.label)}
         style=${styleMap({
@@ -100,6 +103,12 @@ class MoreInfoViewLightColorPicker extends LitElement {
           );
           --md-sys-color-outline: var(--divider-color);
           border-radius: var(--md-outlined-icon-button-container-shape, 9999px);
+        }
+        :host([disabled]) {
+          pointer-events: none;
+        }
+        md-outlined-icon-button[disabled] {
+          filter: grayscale(1) opacity(0.5);
         }
       `,
     ];
