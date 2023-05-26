@@ -373,22 +373,14 @@ class MoreInfoLight extends LitElement {
           flex-wrap: wrap;
           max-width: 250px;
         }
-        ha-outlined-icon-button {
-          --ha-icon-display: block;
-          --md-sys-color-on-surface: var(--secondary-text-color);
-          --md-sys-color-on-surface-variant: var(--secondary-text-color);
-          --md-sys-color-on-surface-rgb: var(--rgb-secondary-text-color);
-        }
-        ha-outlined-button {
-          --ha-icon-display: block;
-          --md-sys-color-primary: var(--primary-text-color);
+        .color-rgb-mode,
+        .color-temp-mode {
+          border-radius: var(--md-outlined-icon-button-container-shape, 9999px);
           --md-sys-color-outline: var(--divider-color);
         }
         .color-rgb-mode {
           background-image: url("/static/images/color_wheel.png");
           background-size: cover;
-          border-radius: var(--md-outlined-icon-button-container-shape, 9999px);
-          --md-sys-color-outline: var(--divider-color);
         }
         .color-temp-mode {
           background: linear-gradient(
@@ -397,8 +389,6 @@ class MoreInfoLight extends LitElement {
             white 50%,
             rgb(255, 160, 0) 100%
           );
-          border-radius: var(--md-outlined-icon-button-container-shape, 9999px);
-          --md-sys-color-outline: var(--divider-color);
         }
         .color-rgb-mode[disabled],
         .color-temp-mode[disabled] {
