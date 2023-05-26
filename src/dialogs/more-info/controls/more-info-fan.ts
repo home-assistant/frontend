@@ -1,5 +1,3 @@
-import "@material/web/button/outlined-button";
-import "@material/web/iconbutton/outlined-icon-button";
 import {
   mdiCreation,
   mdiFan,
@@ -8,14 +6,7 @@ import {
   mdiRotateLeft,
   mdiRotateRight,
 } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import { CSSResultGroup, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import {
@@ -26,10 +17,12 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
+import "../../../components/ha-outlined-button";
+import "../../../components/ha-outlined-icon-button";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
-  computeFanSpeedStateDisplay,
   computeFanSpeedCount,
+  computeFanSpeedStateDisplay,
   FanEntity,
   FanEntityFeature,
   FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
@@ -201,17 +194,17 @@ class MoreInfoFan extends LitElement {
             ? html`<div class="buttons">
                 ${supportSpeedPercentage
                   ? html`
-                      <md-outlined-icon-button
+                      <ha-outlined-icon-button
                         .disabled=${this.stateObj.state === UNAVAILABLE}
                         @click=${this._toggle}
                       >
                         <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
-                      </md-outlined-icon-button>
+                      </ha-outlined-icon-button>
                     `
                   : nothing}
                 ${supportsDirection
                   ? html`
-                      <md-outlined-icon-button
+                      <ha-outlined-icon-button
                         .disabled=${this.stateObj.state === UNAVAILABLE ||
                         this.stateObj.attributes.direction === "reverse"}
                         .title=${this.hass.localize(
@@ -223,8 +216,8 @@ class MoreInfoFan extends LitElement {
                         @click=${this._setReverseDirection}
                       >
                         <ha-svg-icon .path=${mdiRotateLeft}></ha-svg-icon>
-                      </md-outlined-icon-button>
-                      <md-outlined-icon-button
+                      </ha-outlined-icon-button>
+                      <ha-outlined-icon-button
                         .disabled=${this.stateObj.state === UNAVAILABLE ||
                         this.stateObj.attributes.direction === "forward"}
                         .title=${this.hass.localize(
@@ -236,12 +229,12 @@ class MoreInfoFan extends LitElement {
                         @click=${this._setForwardDirection}
                       >
                         <ha-svg-icon .path=${mdiRotateRight}></ha-svg-icon>
-                      </md-outlined-icon-button>
+                      </ha-outlined-icon-button>
                     `
                   : nothing}
                 ${supportsOscillate
                   ? html`
-                      <md-outlined-icon-button
+                      <ha-outlined-icon-button
                         .disabled=${this.stateObj.state === UNAVAILABLE}
                         .title=${this.hass.localize(
                           `ui.dialogs.more_info_control.fan.${
@@ -264,7 +257,7 @@ class MoreInfoFan extends LitElement {
                             ? haOscillating
                             : haOscillatingOff}
                         ></ha-svg-icon>
-                      </md-outlined-icon-button>
+                      </ha-outlined-icon-button>
                     `
                   : nothing}
               </div> `
@@ -279,7 +272,7 @@ class MoreInfoFan extends LitElement {
                     fixed
                     .disabled=${this.stateObj.state === UNAVAILABLE}
                   >
-                    <md-outlined-button
+                    <ha-outlined-button
                       slot="trigger"
                       .disabled=${this.stateObj.state === UNAVAILABLE}
                     >
@@ -294,7 +287,7 @@ class MoreInfoFan extends LitElement {
                         slot="icon"
                         path=${mdiCreation}
                       ></ha-svg-icon>
-                    </md-outlined-button>
+                    </ha-outlined-button>
                     ${this.stateObj.attributes.preset_modes?.map(
                       (mode) =>
                         html`
@@ -328,16 +321,7 @@ class MoreInfoFan extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      moreInfoControlStyle,
-      css`
-        md-outlined-button {
-          --ha-icon-display: block;
-          --md-sys-color-primary: var(--primary-text-color);
-          --md-sys-color-outline: var(--divider-color);
-        }
-      `,
-    ];
+    return moreInfoControlStyle;
   }
 }
 
