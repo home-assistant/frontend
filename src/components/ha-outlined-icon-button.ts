@@ -1,15 +1,22 @@
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
-import { styles } from "@material/web/iconbutton/lib/outlined-styles.css";
+import { IconButton } from "@material/web/iconbutton/lib/icon-button";
+import { styles as outlinedStyles } from "@material/web/iconbutton/lib/outlined-styles.css";
 import { styles as sharedStyles } from "@material/web/iconbutton/lib/shared-styles.css";
-import { MdOutlinedIconButton } from "@material/web/iconbutton/outlined-icon-button";
 
 @customElement("ha-outlined-icon-button")
-export class HaOutlinedIconButton extends MdOutlinedIconButton {
+export class HaOutlinedIconButton extends IconButton {
+  protected override getRenderClasses() {
+    return {
+      ...super.getRenderClasses(),
+      outlined: true,
+    };
+  }
+
   static override styles = [
     sharedStyles,
-    styles,
+    outlinedStyles,
     css`
       :host {
         --ha-icon-display: block;
