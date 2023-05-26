@@ -321,7 +321,7 @@ class MoreInfoFan extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [moreInfoControlStyle];
+    return moreInfoControlStyle;
   }
 }
 
