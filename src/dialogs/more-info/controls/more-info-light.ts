@@ -323,7 +323,6 @@ class MoreInfoLight extends LitElement {
 
   private _applyFavoriteColor = (index: number) => {
     const favorite = this._favoriteColors[index];
-    this._focusedFavoriteIndex = index;
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
       ...favorite,
@@ -343,6 +342,9 @@ class MoreInfoLight extends LitElement {
     if (this._focusedFavoriteIndex === index) {
       this._editFavoriteColor(index);
       return;
+    }
+    if (this.hass.user?.is_admin) {
+      this._focusedFavoriteIndex = index;
     }
     this._applyFavoriteColor(index);
   };
