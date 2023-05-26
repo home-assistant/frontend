@@ -51,6 +51,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
 import { findRelated } from "../../../data/search";
+import { fetchBlueprints } from "../../../data/blueprint";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
@@ -322,14 +323,19 @@ class HaAutomationPicker extends LitElement {
     if (!blueprint) {
       return;
     }
-    this._filteredAutomations =
-      (await findRelated(this.hass, "automation_blueprint", blueprint))
-        .automation || [];
+    const [related, blueprints] = await Promise.all([
+      findRelated(this.hass, "automation_blueprint", blueprint),
+      fetchBlueprints(this.hass, "automation"),
+    ]);
+    this._filteredAutomations = related.automation || [];
+    const blueprintMeta = blueprints[blueprint];
     this._activeFilters = [
       this.hass.localize(
         "ui.panel.config.automation.picker.filtered_by_blueprint",
         "name",
-        blueprint
+        !blueprintMeta || "error" in blueprintMeta
+          ? blueprint
+          : blueprintMeta.metadata.name || blueprint
       ),
     ];
   }

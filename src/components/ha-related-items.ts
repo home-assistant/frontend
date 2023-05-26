@@ -12,6 +12,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
+import { Blueprints, fetchBlueprints } from "../data/blueprint";
 import { ConfigEntry, getConfigEntries } from "../data/config_entries";
 import { SceneEntity } from "../data/scene";
 import { findRelated, ItemType, RelatedResult } from "../data/search";
@@ -32,14 +33,31 @@ export class HaRelatedItems extends LitElement {
 
   @state() private _entries?: ConfigEntry[];
 
+  @state() private _blueprints?: Blueprints;
+
   @state() private _related?: RelatedResult;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    getConfigEntries(this.hass).then((configEntries) => {
-      this._entries = configEntries;
-    });
+  }
+
+  private async _fetchConfigEntries() {
+    if (this._entries) {
+      return;
+    }
     this.hass.loadBackendTranslation("title");
+    this._entries = await getConfigEntries(this.hass);
+  }
+
+  private async _fetchBlueprints() {
+    if (this._blueprints) {
+      return;
+    }
+    const [automation, script] = await Promise.all([
+      fetchBlueprints(this.hass, "automation"),
+      fetchBlueprints(this.hass, "script"),
+    ]);
+    this._blueprints = { automation, script };
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -253,12 +271,18 @@ export class HaRelatedItems extends LitElement {
               ${this.hass.localize("ui.components.related-items.blueprint")}:
             </h3>
             <mwc-list>
-              ${this._related.automation_blueprint.map(
-                (path) =>
-                  html`<ha-list-item>
-                    <a href="/config/blueprint/dashboard">${path}</a>
-                  </ha-list-item> `
-              )}
+              ${this._related.automation_blueprint.map((path) => {
+                const blueprintMeta = this._blueprints
+                  ? this._blueprints[path]
+                  : undefined;
+                return html`<ha-list-item>
+                  <a href="/config/blueprint/dashboard"
+                    >${!blueprintMeta || "error" in blueprintMeta
+                      ? path
+                      : blueprintMeta.metadata.name || path}</a
+                  >
+                </ha-list-item>`;
+              })}
             </mwc-list>
           `
         : ""}
@@ -353,8 +377,12 @@ export class HaRelatedItems extends LitElement {
 
   private async _findRelated() {
     this._related = await findRelated(this.hass, this.itemType, this.itemId);
-    await this.updateComplete;
-    fireEvent(this, "iron-resize");
+    if (this._related.config_entry) {
+      this._fetchConfigEntries();
+    }
+    if (this._related.script_blueprint || this._related.automation_blueprint) {
+      this._fetchBlueprints();
+    }
   }
 
   private _openMoreInfo(ev: CustomEvent) {
