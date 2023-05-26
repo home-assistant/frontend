@@ -9,6 +9,7 @@ export enum SupervisorMountType {
 export enum SupervisorMountUsage {
   BACKUP = "backup",
   MEDIA = "media",
+  SHARE = "share",
 }
 
 export enum SupervisorMountState {

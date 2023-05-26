@@ -1,5 +1,11 @@
 import "@material/mwc-list";
-import { mdiBackupRestore, mdiNas, mdiPlayBox, mdiReload } from "@mdi/js";
+import {
+  mdiBackupRestore,
+  mdiFolder,
+  mdiNas,
+  mdiPlayBox,
+  mdiReload,
+} from "@mdi/js";
 import {
   LitElement,
   PropertyValues,
@@ -178,6 +184,8 @@ class HaConfigSectionStorage extends LitElement {
                           <ha-svg-icon
                             .path=${mount.usage === SupervisorMountUsage.MEDIA
                               ? mdiPlayBox
+                              : mount.usage === SupervisorMountUsage.SHARE
+                              ? mdiFolder
                               : mdiBackupRestore}
                           ></ha-svg-icon>
                         </div>
