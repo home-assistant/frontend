@@ -1335,6 +1335,9 @@
         "title": "Enter code",
         "input_label": "Code"
       },
+      "light-color-favorite": {
+        "title": "Edit favorite color"
+      },
       "tts-try": {
         "header": "Try text-to-speech",
         "message": "Message",

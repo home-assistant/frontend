@@ -60,7 +60,7 @@ class DialogLightColorFavorite extends LitElement {
       return nothing;
     }
 
-    const title = "Edit favorite color";
+    const title = this.hass.localize("ui.dialogs.light-color-favorite.title");
 
     return html`
       <ha-dialog open @closed=${this.closeDialog} .heading=${title}>
