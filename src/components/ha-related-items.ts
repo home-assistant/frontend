@@ -33,7 +33,7 @@ export class HaRelatedItems extends LitElement {
 
   @state() private _entries?: ConfigEntry[];
 
-  @state() private _blueprints?: Blueprints;
+  @state() private _blueprints?: Record<"automation" | "script", Blueprints>;
 
   @state() private _related?: RelatedResult;
 
@@ -82,100 +82,105 @@ export class HaRelatedItems extends LitElement {
     }
     return html`
       ${this._related.config_entry && this._entries
-        ? this._related.config_entry.map((relatedConfigEntryId) => {
-            const entry: ConfigEntry | undefined = this._entries!.find(
-              (configEntry) => configEntry.entry_id === relatedConfigEntryId
-            );
-            if (!entry) {
-              return "";
-            }
-            return html`
-              <h3>
-                ${this.hass.localize(
-                  "ui.components.related-items.integration"
-                )}:
-              </h3>
-              <a
-                href=${`/config/integrations#config_entry=${relatedConfigEntryId}`}
-                @click=${this._navigateAwayClose}
-              >
-                <ha-list-item hasMeta graphic="icon">
-                  <img
-                    .src=${brandsUrl({
-                      domain: entry.domain,
-                      type: "icon",
-                      useFallback: true,
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
-                    alt=${entry.domain}
-                    slot="graphic"
-                  />
-                  ${this.hass.localize(`component.${entry.domain}.title`)}:
-                  ${entry.title} <ha-icon-next slot="meta"></ha-icon-next>
-                </ha-list-item>
-              </a>
-            `;
-          })
+        ? html`<h3>
+        ${this.hass.localize("ui.components.related-items.integration")}:
+      </h3><mwc-list>${this._related.config_entry.map(
+        (relatedConfigEntryId) => {
+          const entry: ConfigEntry | undefined = this._entries!.find(
+            (configEntry) => configEntry.entry_id === relatedConfigEntryId
+          );
+          if (!entry) {
+            return "";
+          }
+          return html`
+            <a
+              href=${`/config/integrations#config_entry=${relatedConfigEntryId}`}
+              @click=${this._navigateAwayClose}
+            >
+              <ha-list-item hasMeta graphic="icon">
+                <img
+                  .src=${brandsUrl({
+                    domain: entry.domain,
+                    type: "icon",
+                    useFallback: true,
+                    darkOptimized: this.hass.themes?.darkMode,
+                  })}
+                  alt=${entry.domain}
+                  slot="graphic"
+                />
+                ${this.hass.localize(`component.${entry.domain}.title`)}:
+                ${entry.title} <ha-icon-next slot="meta"></ha-icon-next>
+              </ha-list-item>
+            </a>
+          `;
+        }
+      )}</mw-list>`
         : ""}
       ${this._related.device
-        ? this._related.device.map((relatedDeviceId) => {
-            const device = this.hass.devices[relatedDeviceId];
-            if (!device) {
-              return "";
-            }
-            return html`
-              <h3>
-                ${this.hass.localize("ui.components.related-items.device")}:
-              </h3>
-              <a
-                href="/config/devices/device/${relatedDeviceId}"
-                @click=${this._navigateAwayClose}
-              >
-                <ha-list-item hasMeta graphic="icon">
-                  <ha-svg-icon .path=${mdiDevices} slot="graphic"></ha-svg-icon>
-                  ${device.name_by_user || device.name}
-                  <ha-icon-next slot="meta"></ha-icon-next>
-                </ha-list-item>
-              </a>
-            `;
-          })
+        ? html`<h3>
+              ${this.hass.localize("ui.components.related-items.device")}:
+            </h3>
+            ${this._related.device.map((relatedDeviceId) => {
+              const device = this.hass.devices[relatedDeviceId];
+              if (!device) {
+                return "";
+              }
+              return html`
+                <a
+                  href="/config/devices/device/${relatedDeviceId}"
+                  @click=${this._navigateAwayClose}
+                >
+                  <ha-list-item hasMeta graphic="icon">
+                    <ha-svg-icon
+                      .path=${mdiDevices}
+                      slot="graphic"
+                    ></ha-svg-icon>
+                    ${device.name_by_user || device.name}
+                    <ha-icon-next slot="meta"></ha-icon-next>
+                  </ha-list-item>
+                </a>
+              `;
+            })}            </mwc-list>
+            `
         : ""}
       ${this._related.area
-        ? this._related.area.map((relatedAreaId) => {
-            const area = this.hass.areas[relatedAreaId];
-            if (!area) {
-              return "";
-            }
-            return html`
-              <h3>
-                ${this.hass.localize("ui.components.related-items.area")}:
-              </h3>
-              <a
-                href="/config/areas/area/${relatedAreaId}"
-                @click=${this._navigateAwayClose}
-              >
-                <ha-list-item
-                  hasMeta
-                  .graphic=${area.picture ? "avatar" : "icon"}
-                >
-                  ${area.picture
-                    ? html` <div
-                        class="avatar"
-                        style=${styleMap({
-                          backgroundImage: `url(${area.picture})`,
-                        })}
-                        slot="graphic"
-                      ></div>`
-                    : html`<ha-svg-icon
-                        .path=${mdiSofa}
-                        slot="graphic"
-                      ></ha-svg-icon>`}
-                  ${area.name}
-                  <ha-icon-next slot="meta"></ha-icon-next>
-                </ha-list-item>
-              </a>
-            `;
-          })
+        ? html`<h3>
+              ${this.hass.localize("ui.components.related-items.area")}:
+            </h3>
+            <mwc-list
+              >${this._related.area.map((relatedAreaId) => {
+                const area = this.hass.areas[relatedAreaId];
+                if (!area) {
+                  return "";
+                }
+                return html`
+                  <a
+                    href="/config/areas/area/${relatedAreaId}"
+                    @click=${this._navigateAwayClose}
+                  >
+                    <ha-list-item
+                      hasMeta
+                      .graphic=${area.picture ? "avatar" : "icon"}
+                    >
+                      ${area.picture
+                        ? html` <div
+                            class="avatar"
+                            style=${styleMap({
+                              backgroundImage: `url(${area.picture})`,
+                            })}
+                            slot="graphic"
+                          ></div>`
+                        : html`<ha-svg-icon
+                            .path=${mdiSofa}
+                            slot="graphic"
+                          ></ha-svg-icon>`}
+                      ${area.name}
+                      <ha-icon-next slot="meta"></ha-icon-next>
+                    </ha-list-item>
+                  </a>
+                `;
+              })}</mwc-list
+            >`
         : ""}
       ${this._related.entity
         ? html`

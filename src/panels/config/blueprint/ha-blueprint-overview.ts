@@ -76,7 +76,7 @@ class HaBlueprintOverview extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @property({ attribute: false }) public blueprints!: Record<
-    string,
+    "automation" | "script",
     Blueprints
   >;
 
