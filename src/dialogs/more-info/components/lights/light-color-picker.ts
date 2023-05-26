@@ -534,13 +534,13 @@ class LightColorPicker extends LitElement {
         }
 
         ha-hs-color-picker {
-          max-width: 320px;
+          max-width: 300px;
           min-width: 200px;
           margin: 44px 0 44px 0;
         }
 
         ha-temp-color-picker {
-          max-width: 320px;
+          max-width: 300px;
           min-width: 200px;
           margin: 20px 0 44px 0;
         }

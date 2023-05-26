@@ -63,7 +63,7 @@ class DialogLightColorFavorite extends LitElement {
     const title = this.hass.localize("ui.dialogs.light-color-favorite.title");
 
     return html`
-      <ha-dialog open @closed=${this.closeDialog} .heading=${title}>
+      <ha-dialog open @closed=${this.closeDialog} .heading=${title} flexContent>
         <ha-dialog-header slot="heading">
           <ha-icon-button
             slot="navigationIcon"
@@ -73,14 +73,12 @@ class DialogLightColorFavorite extends LitElement {
           ></ha-icon-button>
           <span slot="title">${title}</span>
         </ha-dialog-header>
-        <div>
-          <light-color-picker
-            .hass=${this.hass}
-            entityId=${this._entry.entity_id}
-            @color-changed=${this._colorChanged}
-          >
-          </light-color-picker>
-        </div>
+        <light-color-picker
+          .hass=${this.hass}
+          entityId=${this._entry.entity_id}
+          @color-changed=${this._colorChanged}
+        >
+        </light-color-picker>
         <ha-button slot="secondaryAction" dialogAction="cancel">
           ${this.hass.localize("ui.common.cancel")}
         </ha-button>
@@ -97,6 +95,23 @@ class DialogLightColorFavorite extends LitElement {
       css`
         ha-dialog {
           --dialog-content-padding: 0;
+        }
+
+        light-color-picker {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+        }
+
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-dialog {
+            --dialog-surface-margin-top: 100px;
+            --mdc-dialog-min-height: calc(100% - 100px);
+            --mdc-dialog-max-height: calc(100% - 100px);
+            --ha-dialog-border-radius: unset;
+            --ha-dialog-border-bottom-right-radius: 0;
+            --ha-dialog-border-bottom-left-radius: 0;
+          }
         }
       `,
     ];

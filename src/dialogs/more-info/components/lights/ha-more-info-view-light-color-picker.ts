@@ -22,7 +22,21 @@ class MoreInfoViewLightColorPicker extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [css``];
+    return [
+      css`
+        :host {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+        }
+        light-color-picker {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+        }
+      `,
+    ];
   }
 }
 

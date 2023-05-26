@@ -241,7 +241,13 @@ export class MoreInfoDialog extends LitElement {
     const isInfoView = this._currView === "info" && !this._childView;
 
     return html`
-      <ha-dialog open @closed=${this.closeDialog} .heading=${title} hideActions>
+      <ha-dialog
+        open
+        @closed=${this.closeDialog}
+        .heading=${title}
+        hideActions
+        flexContent
+      >
         <ha-dialog-header slot="heading">
           ${isInfoView
             ? html`
@@ -446,19 +452,22 @@ export class MoreInfoDialog extends LitElement {
         }
 
         .content {
+          display: flex;
+          flex-direction: column;
           outline: none;
+          flex: 1;
+        }
+
+        .child-view {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
         }
 
         ha-related-items,
         ha-more-info-history-and-logbook {
           padding: 8px 24px 24px 24px;
           display: block;
-        }
-
-        @media all and (max-width: 450px) {
-          .child-view > * {
-            min-height: calc(100vh - var(--header-height));
-          }
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {

@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { ExtEntityRegistryEntry } from "../../data/entity_registry";
@@ -38,7 +38,7 @@ export class MoreInfoInfo extends LitElement {
                 "ui.dialogs.entity_registry.editor.unavailable"
               )}
             </ha-alert>`
-          : ""}
+          : nothing}
         ${stateObj?.attributes.restored && entityRegObj
           ? html`<ha-alert alert-type="warning">
               ${this.hass.localize(
@@ -48,7 +48,7 @@ export class MoreInfoInfo extends LitElement {
                 }
               )}
             </ha-alert>`
-          : ""}
+          : nothing}
         <div class="content">
           ${DOMAINS_NO_INFO.includes(domain) || isNewMoreInfo
             ? ""
@@ -79,7 +79,6 @@ export class MoreInfoInfo extends LitElement {
             .hass=${this.hass}
             .entry=${this.entry}
           ></more-info-content>
-          <div class="toto"></div>
         </div>
       </div>
     `;
@@ -87,15 +86,15 @@ export class MoreInfoInfo extends LitElement {
 
   static get styles() {
     return css`
+      :host {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
       .container {
         display: flex;
         flex-direction: column;
-      }
-
-      @media all and (max-width: 450px) {
-        .container {
-          min-height: calc(100vh - var(--header-height));
-        }
+        flex: 1;
       }
 
       .content {
