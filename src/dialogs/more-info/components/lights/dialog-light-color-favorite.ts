@@ -107,9 +107,10 @@ class DialogLightColorFavorite extends LitElement {
             --dialog-surface-margin-top: 100px;
             --mdc-dialog-min-height: calc(100% - 100px);
             --mdc-dialog-max-height: calc(100% - 100px);
-            --ha-dialog-border-radius: unset;
-            --ha-dialog-border-bottom-right-radius: 0;
-            --ha-dialog-border-bottom-left-radius: 0;
+            --ha-dialog-border-radius: var(
+              --ha-dialog-bottom-sheet-border-radius,
+              28px 28px 0 0
+            );
           }
         }
       `,

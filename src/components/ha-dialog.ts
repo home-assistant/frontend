@@ -118,22 +118,6 @@ export class HaDialog extends DialogBase {
         margin-top: var(--dialog-surface-margin-top);
         min-height: var(--mdc-dialog-min-height, auto);
         border-radius: var(--ha-dialog-border-radius, 28px);
-        border-top-left-radius: var(
-          --ha-dialog-border-top-left-radius,
-          var(--ha-dialog-border-radius, 28px)
-        );
-        border-top-right-radius: var(
-          --ha-dialog-border-top-right-radius,
-          var(--ha-dialog-border-radius, 28px)
-        );
-        border-bottom-left-radius: var(
-          --ha-dialog-border-bottom-left-radius,
-          var(--ha-dialog-border-radius, 28px)
-        );
-        border-bottom-right-radius: var(
-          --ha-dialog-border-bottom-right-radius,
-          var(--ha-dialog-border-radius, 28px)
-        );
       }
       :host([flexContent]) .mdc-dialog .mdc-dialog__content {
         display: flex;
