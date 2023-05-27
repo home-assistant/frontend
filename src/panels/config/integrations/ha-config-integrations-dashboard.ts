@@ -19,7 +19,6 @@ import {
   PROTOCOL_INTEGRATIONS,
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
-import type { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
@@ -225,14 +224,9 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
 
   protected firstUpdated(changed: PropertyValues) {
     super.firstUpdated(changed);
-    const localizePromise = this.hass.loadBackendTranslation(
-      "title",
-      undefined,
-      true
-    );
     this._fetchManifests();
     if (this.route.path === "/add") {
-      this._handleAdd(localizePromise);
+      this._handleAdd();
     }
     this._scanUSBDevices();
     if (isComponentLoaded(this.hass, "diagnostics")) {
@@ -605,7 +599,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     }
   }
 
-  private async _handleAdd(localizePromise: Promise<LocalizeFunc>) {
+  private async _handleAdd() {
     const brand = extractSearchParam("brand");
     const domain = extractSearchParam("domain");
     navigate("/config/integrations", { replace: true });
@@ -630,7 +624,11 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
 
     if (integration?.config_flow) {
       // Integration exists, so we can just create a flow
-      const localize = await localizePromise;
+      const localize = await this.hass.loadBackendTranslation(
+        "title",
+        domain,
+        false
+      );
       if (
         await showConfirmationDialog(this, {
           title: localize("ui.panel.config.integrations.confirm_new", {
@@ -647,7 +645,11 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
 
     if (integration?.supported_by) {
       // Integration is a alias, so we can just create a flow
-      const localize = await localizePromise;
+      const localize = await this.hass.loadBackendTranslation(
+        "title",
+        domain,
+        false
+      );
       const supportedIntegration = findIntegration(
         integrations,
         integration.supported_by

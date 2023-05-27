@@ -1,3 +1,4 @@
+import { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../common/navigate";
 import {
@@ -73,11 +74,14 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
   @property()
   private _configEntriesInProgress?: DataEntryFlowProgressExtended[];
 
+  private _loadTranslationsPromise?: Promise<unknown>;
+
   public hassSubscribe() {
     return [
       subscribeConfigEntries(
         this.hass,
-        (messages) => {
+        async (messages) => {
+          await this._loadTranslationsPromise;
           let fullUpdate = false;
           const newEntries: ConfigEntryExtended[] = [];
           messages.forEach((message) => {
@@ -134,6 +138,15 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
         }));
       }),
     ];
+  }
+
+  protected firstUpdated(changed: PropertyValues) {
+    super.firstUpdated(changed);
+    this._loadTranslationsPromise = this.hass.loadBackendTranslation(
+      "title",
+      undefined,
+      true
+    );
   }
 
   protected updatePageEl(pageEl) {
