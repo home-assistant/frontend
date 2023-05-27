@@ -1980,12 +1980,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lezer/highlight@npm:1.1.4, @lezer/highlight@npm:^1.0.0":
-  version: 1.1.4
-  resolution: "@lezer/highlight@npm:1.1.4"
+"@lezer/highlight@npm:1.1.5, @lezer/highlight@npm:^1.0.0":
+  version: 1.1.5
+  resolution: "@lezer/highlight@npm:1.1.5"
   dependencies:
     "@lezer/common": ^1.0.0
-  checksum: 30e848c02839bfcd9472fcd6e74d71cba12379cef38f27d0c6cab0e6831f92150cfc629d267a40cc31f84cf46ac0a935400163fdf931b2672c516bec29417485
+  checksum: 1f0b0a3dc7e1f23d889ce7a61d9ce1ba4d3b307205baf58f97252588df4c6751e4c86d39c20cd0bc7ac39ab82ff78a9251db91148b3b069965ec55d5fe9c4ef5
   languageName: node
   linkType: hard
 
@@ -9570,7 +9570,7 @@ __metadata:
     "@fullcalendar/list": 6.1.7
     "@fullcalendar/timegrid": 6.1.7
     "@koa/cors": 4.0.0
-    "@lezer/highlight": 1.1.4
+    "@lezer/highlight": 1.1.5
     "@lit-labs/context": 0.3.1
     "@lit-labs/motion": 1.0.3
     "@lit-labs/virtualizer": 2.0.2
