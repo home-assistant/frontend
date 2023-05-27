@@ -784,6 +784,67 @@ export const describeCondition = (
     return base;
   }
 
+  // Time condition
+  if (condition.condition === "time") {
+    const weekdaysArray = ensureArray(condition.weekday);
+    const validWeekdays =
+      weekdaysArray && weekdaysArray.length > 0 && weekdaysArray.length < 7;
+    if (condition.before || condition.after || validWeekdays) {
+      const before = condition.before?.toString().includes(".")
+        ? `entity ${
+            hass.states[condition.before]
+              ? computeStateName(hass.states[condition.before])
+              : condition.before
+          }`
+        : condition.before;
+
+      const after = condition.after?.toString().includes(".")
+        ? `entity ${
+            hass.states[condition.after]
+              ? computeStateName(hass.states[condition.after])
+              : condition.after
+          }`
+        : condition.after;
+
+      let result = "Confirm the ";
+      if (after || before) {
+        result += "time is ";
+      }
+      if (after) {
+        result += "after " + after;
+      }
+      if (before && after) {
+        result += " and ";
+      }
+      if (before) {
+        result += "before " + before;
+      }
+      if ((after || before) && validWeekdays) {
+        result += " and the ";
+      }
+      if (validWeekdays) {
+        const localizedDays = weekdaysArray.map((d) =>
+          hass.localize(
+            `ui.panel.config.automation.editor.conditions.type.time.weekdays.${d}`
+          )
+        );
+        const last = localizedDays.pop();
+
+        result += " day is " + localizedDays.join(", ");
+
+        if (localizedDays.length) {
+          if (localizedDays.length > 1) {
+            result += ",";
+          }
+          result += " or ";
+        }
+        result += last;
+      }
+
+      return result;
+    }
+  }
+
   // Sun condition
   if (
     condition.condition === "sun" &&
