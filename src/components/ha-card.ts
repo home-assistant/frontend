@@ -27,7 +27,6 @@ export class HaCard extends LitElement {
         display: block;
         transition: all 0.3s ease-out;
         position: relative;
-        overflow: hidden;
       }
 
       :host([raised]) {
