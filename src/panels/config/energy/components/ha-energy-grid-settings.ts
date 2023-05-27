@@ -229,9 +229,7 @@ export class EnergyGridSettings extends LitElement {
                   })}
                 />
                 <span class="content">${this._co2ConfigEntry.title}</span>
-                <a
-                  href=${`/config/integrations#config_entry=${this._co2ConfigEntry.entry_id}`}
-                >
+                <a href="/config/integrations/integration/co2signal">
                   <ha-icon-button .path=${mdiPencil}></ha-icon-button>
                 </a>
                 <ha-icon-button

@@ -30,12 +30,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/search-input";
 import { ConfigEntry } from "../../../data/config_entries";
-import {
-  getConfigFlowInProgressCollection,
-  localizeConfigFlowTitle,
-  subscribeConfigFlowInProgress,
-} from "../../../data/config_flow";
-import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import { getConfigFlowInProgressCollection } from "../../../data/config_flow";
 import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
 import {
   EntityRegistryEntry,
@@ -67,15 +62,14 @@ import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { isHelperDomain } from "../helpers/const";
 import "./ha-config-flow-card";
+import { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import "./ha-ignored-config-entry-card";
 import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
-
-export interface DataEntryFlowProgressExtended extends DataEntryFlowProgress {
-  localized_title?: string;
-}
+import "./ha-disabled-config-entry-card";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 
 export interface ConfigEntryExtended extends ConfigEntry {
   localized_domain_name?: string;
@@ -94,7 +88,6 @@ const groupByIntegration = (
   });
   return result;
 };
-
 @customElement("ha-config-integrations-dashboard")
 class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -107,10 +100,10 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @property() public configEntries?: ConfigEntryExtended[];
+  @property({ attribute: false }) public configEntries?: ConfigEntryExtended[];
 
-  @property()
-  private _configEntriesInProgress: DataEntryFlowProgressExtended[] = [];
+  @property({ attribute: false })
+  public configEntriesInProgress?: DataEntryFlowProgressExtended[];
 
   @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
@@ -141,27 +134,6 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       subscribeEntityRegistry(this.hass.connection, (entries) => {
         this._entityRegistryEntries = entries;
       }),
-      subscribeConfigFlowInProgress(this.hass, async (flowsInProgress) => {
-        const integrations: Set<string> = new Set();
-        const manifests: Set<string> = new Set();
-        flowsInProgress.forEach((flow) => {
-          // To render title placeholders
-          if (flow.context.title_placeholders) {
-            integrations.add(flow.handler);
-          }
-          manifests.add(flow.handler);
-        });
-        await this.hass.loadBackendTranslation(
-          "config",
-          Array.from(integrations)
-        );
-        this._fetchIntegrationManifests(manifests);
-        await nextRender();
-        this._configEntriesInProgress = flowsInProgress.map((flow) => ({
-          ...flow,
-          localized_title: localizeConfigFlowTitle(this.hass.localize, flow),
-        }));
-      }),
       subscribeLogInfo(this.hass.connection, (log_infos) => {
         const logInfoLookup: { [integration: string]: IntegrationLogInfo } = {};
         for (const log_info of log_infos) {
@@ -176,51 +148,49 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     (
       configEntries: ConfigEntryExtended[],
       filter?: string
-    ): ConfigEntryExtended[] => {
-      if (!filter) {
-        return [...configEntries];
-      }
-      const options: Fuse.IFuseOptions<ConfigEntryExtended> = {
-        keys: ["domain", "localized_domain_name", "title"],
-        isCaseSensitive: false,
-        minMatchCharLength: 2,
-        threshold: 0.2,
-      };
-      const fuse = new Fuse(configEntries, options);
-      return fuse.search(filter).map((result) => result.item);
-    }
-  );
-
-  private _filterGroupConfigEntries = memoizeOne(
-    (
-      configEntries: ConfigEntryExtended[],
-      filter?: string
     ): [
-      Map<string, ConfigEntryExtended[]>,
+      [string, ConfigEntryExtended[]][],
       ConfigEntryExtended[],
-      Map<string, ConfigEntryExtended[]>,
-      // Counter for disabled integrations since the tuple element above will
-      // be grouped by the integration name and therefore not provide a valid count
-      number
+      ConfigEntryExtended[]
     ] => {
-      const filteredConfigEnties = this._filterConfigEntries(
-        configEntries,
-        filter
-      );
+      let filteredConfigEntries: ConfigEntryExtended[];
       const ignored: ConfigEntryExtended[] = [];
       const disabled: ConfigEntryExtended[] = [];
-      for (let i = filteredConfigEnties.length - 1; i >= 0; i--) {
-        if (filteredConfigEnties[i].source === "ignore") {
-          ignored.push(filteredConfigEnties.splice(i, 1)[0]);
-        } else if (filteredConfigEnties[i].disabled_by !== null) {
-          disabled.push(filteredConfigEnties.splice(i, 1)[0]);
+      const integrations: ConfigEntryExtended[] = [];
+      if (filter) {
+        const options: Fuse.IFuseOptions<ConfigEntryExtended> = {
+          keys: ["domain", "localized_domain_name", "title"],
+          isCaseSensitive: false,
+          minMatchCharLength: 2,
+          threshold: 0.2,
+        };
+        const fuse = new Fuse(configEntries, options);
+        filteredConfigEntries = fuse
+          .search(filter)
+          .map((result) => result.item);
+      } else {
+        filteredConfigEntries = configEntries;
+      }
+
+      for (const entry of filteredConfigEntries) {
+        if (entry.source === "ignore") {
+          ignored.push(entry);
+        } else if (entry.disabled_by !== null) {
+          disabled.push(entry);
+        } else {
+          integrations.push(entry);
         }
       }
       return [
-        groupByIntegration(filteredConfigEnties),
+        Array.from(groupByIntegration(integrations)).sort((groupA, groupB) =>
+          caseInsensitiveStringCompare(
+            groupA[1][0].localized_domain_name || groupA[0],
+            groupB[1][0].localized_domain_name || groupB[0],
+            this.hass.locale.language
+          )
+        ),
         ignored,
-        groupByIntegration(disabled),
-        disabled.length,
+        disabled,
       ];
     }
   );
@@ -230,17 +200,26 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       configEntriesInProgress: DataEntryFlowProgressExtended[],
       filter?: string
     ): DataEntryFlowProgressExtended[] => {
-      if (!filter) {
-        return configEntriesInProgress;
+      let filteredEntries: DataEntryFlowProgressExtended[];
+      if (filter) {
+        const options: Fuse.IFuseOptions<DataEntryFlowProgressExtended> = {
+          keys: ["handler", "localized_title"],
+          isCaseSensitive: false,
+          minMatchCharLength: 2,
+          threshold: 0.2,
+        };
+        const fuse = new Fuse(configEntriesInProgress, options);
+        filteredEntries = fuse.search(filter).map((result) => result.item);
+      } else {
+        filteredEntries = configEntriesInProgress;
       }
-      const options: Fuse.IFuseOptions<DataEntryFlowProgressExtended> = {
-        keys: ["handler", "localized_title"],
-        isCaseSensitive: false,
-        minMatchCharLength: 2,
-        threshold: 0.2,
-      };
-      const fuse = new Fuse(configEntriesInProgress, options);
-      return fuse.search(filter).map((result) => result.item);
+      return filteredEntries.sort((a, b) =>
+        caseInsensitiveStringCompare(
+          a.localized_title || a.handler,
+          b.localized_title || b.handler,
+          this.hass.locale.language
+        )
+      );
     }
   );
 
@@ -270,38 +249,43 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   protected updated(changed: PropertyValues) {
     super.updated(changed);
     if (
-      this._searchParms.has("config_entry") &&
-      changed.has("_configEntries") &&
-      !changed.get("_configEntries") &&
+      (this._searchParms.has("config_entry") ||
+        this._searchParms.has("domain")) &&
+      changed.has("configEntries") &&
+      !changed.get("configEntries") &&
       this.configEntries
     ) {
       this._highlightEntry();
     }
+    if (
+      changed.has("configEntriesInProgress") &&
+      this.configEntriesInProgress
+    ) {
+      this._fetchIntegrationManifests(
+        this.configEntriesInProgress.map((flow) => flow.handler)
+      );
+    }
   }
 
   protected render() {
-    if (!this.configEntries) {
+    if (!this.configEntries || !this.configEntriesInProgress) {
       return html`<hass-loading-screen
         .hass=${this.hass}
         .narrow=${this.narrow}
       ></hass-loading-screen>`;
     }
-    const [
-      groupedConfigEntries,
-      ignoredConfigEntries,
-      disabledConfigEntries,
-      disabledCount,
-    ] = this._filterGroupConfigEntries(this.configEntries, this._filter);
+    const [integrations, ignoredConfigEntries, disabledConfigEntries] =
+      this._filterConfigEntries(this.configEntries, this._filter);
     const configEntriesInProgress = this._filterConfigEntriesInProgress(
-      this._configEntriesInProgress,
+      this.configEntriesInProgress,
       this._filter
     );
 
     const filterMenu = html`
       <div slot=${ifDefined(this.narrow ? "toolbar-icon" : undefined)}>
         <div class="menu-badge-container">
-          ${!this._showDisabled && this.narrow && disabledCount
-            ? html`<span class="badge">${disabledCount}</span>`
+          ${!this._showDisabled && this.narrow && disabledConfigEntries.length
+            ? html`<span class="badge">${disabledConfigEntries.length}</span>`
             : ""}
           <ha-button-menu
             multi
@@ -376,14 +360,14 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
                   )}
                 >
                   <div class="filters" slot="suffix">
-                    ${!this._showDisabled && disabledCount
+                    ${!this._showDisabled && disabledConfigEntries.length
                       ? html`<div
                           class="active-filters"
                           @click=${this._preventDefault}
                         >
                           ${this.hass.localize(
                             "ui.panel.config.integrations.disable.disabled_integrations",
-                            { number: disabledCount }
+                            { number: disabledConfigEntries.length }
                           )}
                           <mwc-button
                             @click=${this._toggleShowDisabled}
@@ -425,21 +409,19 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
               )
             : ""}
           ${this._showDisabled
-            ? Array.from(disabledConfigEntries.entries()).map(
-                ([domain, items]) =>
-                  html`<ha-integration-card
-                    data-domain=${domain}
-                    entryDisabled
+            ? disabledConfigEntries.map(
+                (entry: ConfigEntryExtended) => html`
+                  <ha-disabled-config-entry-card
                     .hass=${this.hass}
-                    .domain=${domain}
-                    .items=${items}
-                    .manifest=${this._manifests[domain]}
+                    .entry=${entry}
+                    .manifest=${this._manifests[entry.domain]}
                     .entityRegistryEntries=${this._entityRegistryEntries}
-                  ></ha-integration-card> `
+                  ></ha-disabled-config-entry-card>
+                `
               )
             : ""}
-          ${groupedConfigEntries.size
-            ? Array.from(groupedConfigEntries.entries()).map(
+          ${integrations.length
+            ? integrations.map(
                 ([domain, items]) =>
                   html`<ha-integration-card
                     data-domain=${domain}
@@ -458,8 +440,8 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
               )
             : this._filter &&
               !configEntriesInProgress.length &&
-              !groupedConfigEntries.size &&
-              this._configEntries.length
+              !integrations.length &&
+              this.configEntries.length
             ? html`
                 <div class="empty-message">
                   <h1>
@@ -486,8 +468,8 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
             ? ""
             : // If we're showing 0 cards, show empty state text
             (!this._showIgnored || ignoredConfigEntries.length === 0) &&
-              (!this._showDisabled || disabledConfigEntries.size === 0) &&
-              groupedConfigEntries.size === 0
+              (!this._showDisabled || disabledConfigEntries.length === 0) &&
+              integrations.length === 0
             ? html`
                 <div class="empty-message">
                   <h1>
@@ -545,7 +527,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     this._manifests = manifests;
   }
 
-  private async _fetchIntegrationManifests(integrations: Set<string>) {
+  private async _fetchIntegrationManifests(integrations: string[]) {
     const manifestsToFetch: string[] = [];
     for (const integration of integrations) {
       if (integration in this._manifests) {
@@ -599,22 +581,27 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
 
   private async _highlightEntry() {
     await nextRender();
-    const entryId = this._searchParms.get("config_entry")!;
-    const configEntry = this.configEntries!.find(
-      (entry) => entry.entry_id === entryId
-    );
-    if (!configEntry) {
-      return;
+    const entryId = this._searchParms.get("config_entry");
+    let domain: string | null;
+    if (entryId) {
+      const configEntry = this.configEntries!.find(
+        (entry) => entry.entry_id === entryId
+      );
+      if (!configEntry) {
+        return;
+      }
+      domain = configEntry.domain;
+    } else {
+      domain = this._searchParms.get("domain");
     }
     const card: HaIntegrationCard = this.shadowRoot!.querySelector(
-      `[data-domain=${configEntry?.domain}]`
+      `[data-domain=${domain}]`
     ) as HaIntegrationCard;
     if (card) {
       card.scrollIntoView({
         block: "center",
       });
       card.classList.add("highlight");
-      card.selectedConfigEntryId = entryId;
     }
   }
 

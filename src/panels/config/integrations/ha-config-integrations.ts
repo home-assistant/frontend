@@ -1,17 +1,21 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import { navigate } from "../../../common/navigate";
 import {
   ConfigEntry,
   subscribeConfigEntries,
 } from "../../../data/config_entries";
+import {
+  localizeConfigFlowTitle,
+  subscribeConfigFlowInProgress,
+} from "../../../data/config_flow";
+import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-loading-screen";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 
 import "./ha-config-integration-page";
@@ -23,6 +27,10 @@ export interface ConfigEntryUpdatedEvent {
 
 export interface ConfigEntryRemovedEvent {
   entryId: string;
+}
+
+export interface DataEntryFlowProgressExtended extends DataEntryFlowProgress {
+  localized_title?: string;
 }
 
 declare global {
@@ -38,7 +46,7 @@ export interface ConfigEntryExtended extends ConfigEntry {
 }
 
 @customElement("ha-config-integrations")
-class HaConfigIntegrations extends HassRouterPage {
+class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
@@ -62,40 +70,12 @@ class HaConfigIntegrations extends HassRouterPage {
 
   @state() private _configEntries?: ConfigEntryExtended[];
 
-  private _unsubs?: UnsubscribeFunc[];
+  @property()
+  private _configEntriesInProgress?: DataEntryFlowProgressExtended[];
 
-  public connectedCallback() {
-    super.connectedCallback();
-
-    if (!this.hass) {
-      return;
-    }
-    this._subscribeData();
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._unsubs) {
-      while (this._unsubs.length) {
-        this._unsubs.pop()!();
-      }
-      this._unsubs = undefined;
-    }
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (!this._unsubs && changedProps.has("hass")) {
-      this._subscribeData();
-    }
-  }
-
-  private async _subscribeData() {
-    if (this._unsubs) {
-      return;
-    }
-    this._unsubs = [
-      await subscribeConfigEntries(
+  public hassSubscribe() {
+    return [
+      subscribeConfigEntries(
         this.hass,
         (messages) => {
           let fullUpdate = false;
@@ -131,12 +111,28 @@ class HaConfigIntegrations extends HassRouterPage {
           if (!newEntries.length && !fullUpdate) {
             return;
           }
-          console.log(this._configEntries);
           const existingEntries = fullUpdate ? [] : this._configEntries;
           this._configEntries = [...existingEntries!, ...newEntries];
         },
         { type: ["device", "hub", "service"] }
       ),
+      subscribeConfigFlowInProgress(this.hass, async (flowsInProgress) => {
+        const integrations: Set<string> = new Set();
+        flowsInProgress.forEach((flow) => {
+          // To render title placeholders
+          if (flow.context.title_placeholders) {
+            integrations.add(flow.handler);
+          }
+        });
+        await this.hass.loadBackendTranslation(
+          "config",
+          Array.from(integrations)
+        );
+        this._configEntriesInProgress = flowsInProgress.map((flow) => ({
+          ...flow,
+          localized_title: localizeConfigFlowTitle(this.hass.localize, flow),
+        }));
+      }),
     ];
   }
 
@@ -144,10 +140,20 @@ class HaConfigIntegrations extends HassRouterPage {
     pageEl.hass = this.hass;
 
     if (this._currentPage === "integration") {
-      pageEl.domain = this.routeTail.path.substr(1);
+      if (this.routeTail.path) {
+        pageEl.domain = this.routeTail.path.substring(1);
+      } else if (window.location.search) {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("domain")) {
+          const domain = urlParams.get("domain");
+          pageEl.domain = domain;
+          navigate(`/config/integrations/integration/${domain}`);
+        }
+      }
     }
     pageEl.route = this.routeTail;
     pageEl.configEntries = this._configEntries;
+    pageEl.configEntriesInProgress = this._configEntriesInProgress;
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
     pageEl.showAdvanced = this.showAdvanced;

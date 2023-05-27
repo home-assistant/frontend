@@ -96,7 +96,7 @@ export class HaRelatedItems extends LitElement {
                 }
                 return html`
                   <a
-                    href=${`/config/integrations#config_entry=${relatedConfigEntryId}`}
+                    href=${`/config/integrations/integration/${entry.domain}#config_entry=${relatedConfigEntryId}`}
                     @click=${this._navigateAwayClose}
                   >
                     <ha-list-item hasMeta graphic="icon">

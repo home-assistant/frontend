@@ -3,6 +3,7 @@ import { customElement, property } from "lit/decorators";
 import type { IntegrationManifest } from "../../../data/integration";
 import type { HomeAssistant } from "../../../types";
 import "./ha-integration-header";
+import "../../../components/ha-card";
 
 @customElement("ha-integration-action-card")
 export class HaIntegrationActionCard extends LitElement {
@@ -28,7 +29,9 @@ export class HaIntegrationActionCard extends LitElement {
           .label=${this.label}
           .localizedDomainName=${this.localizedDomainName}
           .manifest=${this.manifest}
-        ></ha-integration-header>
+        >
+          <span slot="header-button"><slot name="header-button"></slot></span>
+        </ha-integration-header>
         <div class="filler"></div>
         <div class="actions"><slot></slot></div>
       </ha-card>

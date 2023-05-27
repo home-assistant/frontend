@@ -70,6 +70,12 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   integrations: {
     redirect: "/config/integrations",
   },
+  integration: {
+    redirect: "/config/integration",
+    params: {
+      domain: "string",
+    },
+  },
   config_mqtt: {
     component: "mqtt",
     redirect: "/config/mqtt",

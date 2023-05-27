@@ -1,9 +1,9 @@
-import { mdiBugPlay, mdiCloud, mdiPackageVariant, mdiSyncOff } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import { mdiCloud, mdiPackageVariant } from "@mdi/js";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-svg-icon";
-import { ConfigEntry } from "../../../data/config_entries";
 import { domainToName, IntegrationManifest } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -18,11 +18,7 @@ export class HaIntegrationHeader extends LitElement {
 
   @property() public domain!: string;
 
-  @property() public label?: string;
-
   @property({ attribute: false }) public manifest?: IntegrationManifest;
-
-  @property({ attribute: false }) public configEntry?: ConfigEntry;
 
   @property({ attribute: false }) public debugLoggingEnabled?: boolean;
 
@@ -56,10 +52,7 @@ export class HaIntegrationHeader extends LitElement {
         ]);
       }
 
-      if (
-        this.manifest.iot_class &&
-        this.manifest.iot_class.startsWith("cloud_")
-      ) {
+      if (this.manifest.iot_class?.startsWith("cloud_")) {
         icons.push([
           mdiCloud,
           this.hass.localize(
@@ -67,26 +60,16 @@ export class HaIntegrationHeader extends LitElement {
           ),
         ]);
       }
-
-      if (this.configEntry?.pref_disable_polling) {
-        icons.push([
-          mdiSyncOff,
-          this.hass.localize(
-            "ui.panel.config.integrations.config_entry.disabled_polling"
-          ),
-        ]);
-      }
     }
 
-    if (this.debugLoggingEnabled) {
-      icons.push([
-        mdiBugPlay,
-        this.hass.localize(
-          "ui.panel.config.integrations.config_entry.debug_logging_enabled"
-        ),
-      ]);
-    }
-
+    // if (this.debugLoggingEnabled) {
+    //   icons.push([
+    //     mdiBugPlay,
+    //     this.hass.localize(
+    //       "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+    //     ),
+    //   ]);
+    // }
     return html`
       ${!this.banner ? "" : html`<div class="banner">${this.banner}</div>`}
       <slot name="above-header"></slot>
@@ -102,15 +85,17 @@ export class HaIntegrationHeader extends LitElement {
           @error=${this._onImageError}
           @load=${this._onImageLoad}
         />
-        <div class="info">
-          <div class="primary" role="heading">${primary}</div>
-          ${secondary ? html`<div class="secondary">${secondary}</div>` : ""}
-        </div>
-
         ${icons.length === 0
           ? ""
           : html`
-              <div class="icons">
+              <div
+                class="icons ${classMap({
+                  double: icons.length > 1,
+                  cloud: Boolean(
+                    this.manifest?.iot_class?.startsWith("cloud_")
+                  ),
+                })}"
+              >
                 ${icons.map(
                   ([icon, description]) => html`
                     <span>
@@ -123,6 +108,13 @@ export class HaIntegrationHeader extends LitElement {
                 )}
               </div>
             `}
+        <div class="info">
+          <div class="primary" role="heading">${primary}</div>
+          <div class="secondary">${secondary}</div>
+        </div>
+        <div class="header-button">
+          <slot name="header-button"></slot>
+        </div>
       </div>
     `;
   }
@@ -175,10 +167,13 @@ export class HaIntegrationHeader extends LitElement {
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .header-button {
+      margin-top: 8px;
+    }
     .primary {
       font-size: 16px;
       margin-top: 16px;
-      margin-right: 2px;
+      margin-right: 48px;
       font-weight: 400;
       word-break: break-word;
       color: var(--primary-text-color);
@@ -188,20 +183,29 @@ export class HaIntegrationHeader extends LitElement {
       color: var(--secondary-text-color);
     }
     .icons {
-      margin-right: 8px;
-      margin-left: auto;
-      height: 28px;
-      color: var(--text-on-state-color, var(--secondary-text-color));
-      background-color: var(--state-color, #e0e0e0);
-      border-bottom-left-radius: 4px;
-      border-bottom-right-radius: 4px;
+      background: var(--warning-color);
+      border: 1px solid var(--card-background-color);
+      border-radius: 14px;
+      color: var(--text-primary-color);
+      position: absolute;
+      left: 40px;
+      top: 40px;
       display: flex;
-      float: right;
+    }
+    .icons.cloud {
+      background: var(--info-color);
+    }
+    .icons.double {
+      background: var(--warning-color);
+      left: 28px;
     }
     .icons ha-svg-icon {
-      width: 20px;
-      height: 20px;
+      width: 16px;
+      height: 16px;
       margin: 4px;
+    }
+    .icons span:not(:first-child) ha-svg-icon {
+      margin-left: 0;
     }
     simple-tooltip {
       white-space: nowrap;
