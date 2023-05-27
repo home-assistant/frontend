@@ -155,19 +155,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         return stateActive(entity) ? computeCssColor(color) : undefined;
       }
 
+      const domain = computeDomain(entity.entity_id);
       // Use default color for person/device_tracker because color is on the badge
-      if (
-        computeDomain(entity.entity_id) === "person" ||
-        computeDomain(entity.entity_id) === "device_tracker"
-      ) {
+      if (domain === "person" || domain === "device_tracker") {
         return undefined;
       }
 
       // Use light color if the light support rgb
-      if (
-        computeDomain(entity.entity_id) === "light" &&
-        entity.attributes.rgb_color
-      ) {
+      if (domain === "light" && entity.attributes.rgb_color) {
         const hsvColor = rgb2hsv(entity.attributes.rgb_color);
 
         // Modify the real rgb color for better contrast
@@ -325,7 +320,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const badge = computeTileBadge(stateObj, this.hass);
 
     return html`
-      <ha-card style=${styleMap(style)} class=${classMap({ active })}>
+      <ha-card
+        style=${styleMap(style)}
+        class=${classMap({ active })}
+        @slider-moved=${this._sliderMoved}
+      >
         ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : nothing}
         <div class="tile">
           <div
@@ -393,6 +392,26 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         </div>
       </ha-card>
     `;
+  }
+
+  private _sliderMoved(ev: CustomEvent) {
+    ev.stopPropagation();
+    const value = ev.detail.value;
+    if (isNaN(value)) return;
+
+    const entity_id = this._config?.entity;
+    if (!entity_id) return;
+    const entity = this.hass?.states[entity_id];
+    if (!entity) return;
+
+    const domain = computeDomain(entity_id);
+    if (domain === "light") {
+      entity.attributes.brightness = Math.round((value * 255) / 100);
+      this.requestUpdate();
+    } else if (domain === "fan") {
+      entity.attributes.percentage = value;
+      this.requestUpdate();
+    }
   }
 
   private _featuresElements = new WeakMap<
