@@ -405,11 +405,17 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     if (!entity) return;
 
     const domain = computeDomain(entity_id);
-    if (domain === "light") {
-      entity.attributes.brightness = Math.round((value * 255) / 100);
-      this.requestUpdate();
-    } else if (domain === "fan") {
-      entity.attributes.percentage = value;
+    if (domain === "light" || domain === "fan") {
+      if (value === 0) {
+        entity.state = "off";
+      } else {
+        entity.state = "on";
+      }
+      if (domain === "light") {
+        entity.attributes.brightness = Math.round((value * 255) / 100);
+      } else if (domain === "fan") {
+        entity.attributes.percentage = value;
+      }
       this.requestUpdate();
     }
   }
