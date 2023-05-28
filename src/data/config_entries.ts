@@ -89,14 +89,14 @@ export const getConfigEntries = (
     }
   }
   return hass.callWS<ConfigEntry[]>({
-    type: "config_entries/get_matching",
+    type: "config_entries/get",
     ...params,
   });
 };
 
 export const getConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
   hass.callWS<{ config_entry: ConfigEntry }>({
-    type: "config_entries/get",
+    type: "config_entries/get_single",
     entry_id: configEntryId,
   });
 
