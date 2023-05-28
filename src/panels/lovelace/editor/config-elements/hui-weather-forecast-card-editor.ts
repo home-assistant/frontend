@@ -54,6 +54,21 @@ export class HuiWeatherForecastCardEditor
         config: { ...config, show_current: true, show_forecast: false },
       });
     }
+    if (!config.forecast_type) {
+      let _forecast_type = "legacy";
+      if (this._forecast_twice_daily === true) {
+        _forecast_type = "twice_daily";
+      }
+      if (this._forecast_hourly === true) {
+        _forecast_type = "hourly";
+      }
+      if (this._forecast_daily === true) {
+        _forecast_type = "daily";
+      }
+      fireEvent(this, "config-changed", {
+        config: { ...config, forecast_type: _forecast_type },
+      });
+    }
   }
 
   get _stateObj(): WeatherEntity | undefined {
