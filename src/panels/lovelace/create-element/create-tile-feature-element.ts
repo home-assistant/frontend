@@ -2,6 +2,7 @@ import "../tile-features/hui-alarm-modes-tile-feature";
 import "../tile-features/hui-cover-open-close-tile-feature";
 import "../tile-features/hui-cover-tilt-tile-feature";
 import "../tile-features/hui-fan-speed-tile-feature";
+import "../tile-features/hui-input_select-options-tile-feature";
 import "../tile-features/hui-light-brightness-tile-feature";
 import "../tile-features/hui-vacuum-commands-tile-feature";
 import { LovelaceTileFeatureConfig } from "../tile-features/types";
@@ -17,6 +18,7 @@ const TYPES: Set<LovelaceTileFeatureConfig["type"]> = new Set([
   "vacuum-commands",
   "fan-speed",
   "alarm-modes",
+  "input_select-options",
 ]);
 
 export const createTileFeatureElement = (config: LovelaceTileFeatureConfig) =>

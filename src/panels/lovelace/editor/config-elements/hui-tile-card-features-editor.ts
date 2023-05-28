@@ -28,6 +28,7 @@ import { getTileFeatureElementClass } from "../../create-element/create-tile-fea
 import { supportsAlarmModesTileFeature } from "../../tile-features/hui-alarm-modes-tile-feature";
 import { supportsCoverOpenCloseTileFeature } from "../../tile-features/hui-cover-open-close-tile-feature";
 import { supportsCoverTiltTileFeature } from "../../tile-features/hui-cover-tilt-tile-feature";
+import { supportsInputSelectOptionsTileFeature } from "../../tile-features/hui-input_select-options-tile-feature";
 import { supportsFanSpeedTileFeature } from "../../tile-features/hui-fan-speed-tile-feature";
 import { supportsLightBrightnessTileFeature } from "../../tile-features/hui-light-brightness-tile-feature";
 import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
@@ -43,11 +44,13 @@ const FEATURE_TYPES: FeatureType[] = [
   "vacuum-commands",
   "fan-speed",
   "alarm-modes",
+  "input_select-options",
 ];
 
 const EDITABLES_FEATURE_TYPES = new Set<FeatureType>([
   "vacuum-commands",
   "alarm-modes",
+  "input_select-options",
 ]);
 
 const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
@@ -58,6 +61,7 @@ const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
     "vacuum-commands": supportsVacuumCommandTileFeature,
     "fan-speed": supportsFanSpeedTileFeature,
     "alarm-modes": supportsAlarmModesTileFeature,
+    "input_select-options": supportsInputSelectOptionsTileFeature,
   };
 
 const CUSTOM_FEATURE_ENTRIES: Record<

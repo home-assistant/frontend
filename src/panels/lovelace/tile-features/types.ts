@@ -21,6 +21,11 @@ export interface AlarmModesFileFeatureConfig {
   modes?: AlarmMode[];
 }
 
+export interface InputSelectOptionsFeatureConfig {
+  type: "input_select-options";
+  options?: string[];
+}
+
 export const VACUUM_COMMANDS = [
   "start_pause",
   "stop",
@@ -42,6 +47,7 @@ export type LovelaceTileFeatureConfig =
   | LightBrightnessTileFeatureConfig
   | VacuumCommandsTileFeatureConfig
   | FanSpeedTileFeatureConfig
+  | InputSelectOptionsFeatureConfig
   | AlarmModesFileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
