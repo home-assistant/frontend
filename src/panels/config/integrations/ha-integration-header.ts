@@ -14,6 +14,8 @@ export class HaIntegrationHeader extends LitElement {
 
   @property() public banner?: string;
 
+  @property() public label?: string;
+
   @property() public localizedDomainName?: string;
 
   @property() public domain!: string;

@@ -38,8 +38,6 @@ export class HaIntegrationCard extends LitElement {
 
   @property() public domain!: string;
 
-  @property({ attribute: false }) public integration!;
-
   @property({ attribute: false }) public items!: ConfigEntryExtended[];
 
   @property({ attribute: false }) public manifest?: IntegrationManifest;

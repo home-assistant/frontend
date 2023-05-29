@@ -277,7 +277,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     </ha-list-item>`
                   : ""}
                 ${this._manifest
-                  ? html` <a
+                  ? html`<a
                       href=${this._manifest.is_built_in
                         ? documentationUrl(
                             this.hass,
@@ -359,7 +359,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               : ""}
             ${attentionFlows.length || attentionEntries.length
               ? html`<ha-card>
-                  <h1 class="card-header">Needs attention</h1>
+                  <h1 class="card-header">
+                    ${this.hass.localize(
+                      `ui.panel.config.integrations.integration_page.attention_entries`
+                    )}
+                  </h1>
                   <mwc-list>
                     ${attentionFlows.map((flow) => {
                       const attention = ATTENTION_SOURCES.includes(
@@ -400,9 +404,17 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               : ""}
 
             <ha-card>
-              <h1 class="card-header">Integration entries</h1>
+              <h1 class="card-header">
+                ${this.hass.localize(
+                  `ui.panel.config.integrations.integration_page.entries`
+                )}
+              </h1>
               ${configEntries.length === 0
-                ? html`<div class="card-content">No entries</div>`
+                ? html`<div class="card-content">
+                    ${this.hass.localize(
+                      `ui.panel.config.integrations.integration_page.no_entries`
+                    )}
+                  </div>`
                 : nothing}
               <mwc-list>
                 ${configEntries
@@ -474,11 +486,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       } else {
         stateTextExtra = html`
           <br />
-          <a href=${`/config/logs/?filter=${item.domain}`}>
-            ${this.hass.localize(
-              "ui.panel.config.integrations.config_entry.check_the_logs"
-            )}
-          </a>
+          ${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.check_the_logs"
+          )}
         `;
       }
     }
@@ -586,7 +596,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               )}
             </mwc-button></a
           >`
-        : item.supports_options
+        : item.supports_options && !stateText
         ? html`
             <mwc-button slot="meta" @click=${this._showOptions}>
               ${this.hass.localize(
@@ -601,6 +611,17 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
+        ${item.supports_options && stateText
+          ? html`<ha-list-item
+              @request-selected=${this._showOptions}
+              graphic="icon"
+            >
+              <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.configure"
+              )}
+            </ha-list-item>`
+          : ""}
         ${!item.disabled_by &&
         RECOVERABLE_STATES.includes(item.state) &&
         item.supports_unload &&
