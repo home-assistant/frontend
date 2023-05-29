@@ -125,6 +125,7 @@ class HassioAddons extends LitElement {
       css`
         ha-card {
           cursor: pointer;
+          overflow: hidden;
         }
         .search {
           position: sticky;
