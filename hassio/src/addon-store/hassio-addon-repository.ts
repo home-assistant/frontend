@@ -130,6 +130,7 @@ export class HassioAddonRepositoryEl extends LitElement {
       css`
         ha-card {
           cursor: pointer;
+          overflow: hidden;
         }
         .not_available {
           opacity: 0.6;
