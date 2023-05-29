@@ -48,6 +48,12 @@ const mountSchema = memoizeOne(
               "ui.panel.config.storage.network_mounts.mount_usage.media"
             ),
           ],
+          [
+            SupervisorMountUsage.SHARE,
+            localize(
+              "ui.panel.config.storage.network_mounts.mount_usage.share"
+            ),
+          ],
         ] as const,
       },
       {

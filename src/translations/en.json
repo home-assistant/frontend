@@ -4016,7 +4016,8 @@
             },
             "mount_usage": {
               "backup": "Backup",
-              "media": "Media"
+              "media": "Media",
+              "share": "Share"
             },
             "mount_type": {
               "nfs": "Network File Share (NFS)",
