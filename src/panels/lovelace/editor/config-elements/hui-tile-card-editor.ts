@@ -31,6 +31,8 @@ import { EditSubElementEvent, SubElementEditorConfig } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-tile-card-features-editor";
 
+const DEFAULT_SECONDARY_INFO_TYPE = "state";
+
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
@@ -43,6 +45,7 @@ const cardConfigStruct = assign(
     tap_action: optional(actionConfigStruct),
     icon_tap_action: optional(actionConfigStruct),
     features: optional(array(any())),
+    secondary_info_type: optional(string()),
   })
 );
 
@@ -88,6 +91,24 @@ export class HuiTileCardEditor
                   name: "color",
                   selector: {
                     ui_color: {},
+                  },
+                },
+                {
+                  name: "secondary_info_type",
+                  selector: {
+                    select: {
+                      options: [
+                        {
+                          value: "state",
+                          label: "State",
+                        },
+                        {
+                          value: "none",
+                          label: "None",
+                        },
+                      ],
+                      mode: "dropdown",
+                    },
                   },
                 },
                 {
@@ -144,6 +165,11 @@ export class HuiTileCardEditor
 
     const schema = this._schema(this.hass!.localize);
 
+    const data = {
+      secondary_info_type: DEFAULT_SECONDARY_INFO_TYPE,
+      ...this._config,
+    };
+
     if (this._subElementEditorConfig) {
       return html`
         <hui-sub-element-editor
@@ -160,7 +186,7 @@ export class HuiTileCardEditor
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
@@ -255,6 +281,9 @@ export class HuiTileCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`
         );
+
+      case "secondary_info_type":
+        return "Secondary info type";
 
       default:
         return this.hass!.localize(

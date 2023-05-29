@@ -14,15 +14,30 @@ export class HaTileInfo extends LitElement {
 
   @property() public secondary?: string | TemplateResult<1>;
 
+  @property() public secondaryInfoType?: string;
+
   protected render() {
     return html`
       <div class="info">
         <span class="primary">${this.primary}</span>
-        ${this.secondary
-          ? html`<span class="secondary">${this.secondary}</span>`
-          : nothing}
+        ${this._conditionallyRenderSecondaryData()}
       </div>
     `;
+  }
+
+  private _conditionallyRenderSecondaryData() {
+    switch (this.secondaryInfoType) {
+      case "state":
+        return this.secondary
+          ? html`<span class="secondary">${this.secondary}</span>`
+          : nothing;
+      case "none":
+        return nothing;
+      default:
+        return this.secondary
+          ? html`<span class="secondary">${this.secondary}</span>`
+          : nothing;
+    }
   }
 
   static get styles(): CSSResultGroup {
