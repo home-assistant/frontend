@@ -211,6 +211,7 @@ export const DOMAINS_INPUT_ROW = [
   "button",
   "cover",
   "date",
+  "datetime",
   "fan",
   "group",
   "humidifier",
