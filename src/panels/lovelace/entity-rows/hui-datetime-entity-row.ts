@@ -1,0 +1,120 @@
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import "../../../components/ha-date-input";
+import { format } from "date-fns";
+import { isUnavailableState } from "../../../data/entity";
+import { setDateTimeValue } from "../../../data/datetime";
+import type { HomeAssistant } from "../../../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-generic-entity-row";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
+import type { EntityConfig, LovelaceRow } from "./types";
+import "../../../components/ha-time-input";
+
+@customElement("hui-datetime-entity-row")
+class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @state() private _config?: EntityConfig;
+
+  public setConfig(config: EntityConfig): void {
+    if (!config) {
+      throw new Error("Invalid configuration");
+    }
+    this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected render(): TemplateResult | typeof nothing {
+    if (!this._config || !this.hass) {
+      return nothing;
+    }
+
+    const stateObj = this.hass.states[this._config.entity];
+
+    if (!stateObj) {
+      return html`
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
+      `;
+    }
+
+    const dateObj = new Date(stateObj.state);
+    const time = format(dateObj, "HH:mm:ss");
+    const date = format(dateObj, "yyyy-MM-dd");
+
+    return html`
+      <hui-generic-entity-row
+        .hass=${this.hass}
+        .config=${this._config}
+        hideName="true"
+      >
+        <ha-date-input
+          .locale=${this.hass.locale}
+          .value=${date}
+          .disabled=${isUnavailableState(stateObj.state)}
+          @value-changed=${this._dateChanged}
+        >
+        </ha-date-input>
+        <ha-time-input
+          .value=${time}
+          .disabled=${isUnavailableState(stateObj.state)}
+          .locale=${this.hass.locale}
+          @value-changed=${this._timeChanged}
+          @click=${this._stopEventPropagation}
+        ></ha-time-input>
+      </hui-generic-entity-row>
+    `;
+  }
+
+  private _stopEventPropagation(ev: Event): void {
+    ev.stopPropagation();
+  }
+
+  private _timeChanged(ev: CustomEvent<{ value: string }>): void {
+    const stateObj = this.hass!.states[this._config!.entity];
+    const dateObj = new Date(stateObj.state);
+    const newTime = ev.detail.value.split(":").map(Number);
+    dateObj.setHours(newTime[0], newTime[1], newTime[2]);
+
+    setDateTimeValue(this.hass!, stateObj.entity_id, dateObj);
+  }
+
+  private _dateChanged(ev: CustomEvent<{ value: string }>): void {
+    const stateObj = this.hass!.states[this._config!.entity];
+    const dateObj = new Date(stateObj.state);
+    const newDate = ev.detail.value.split("-").map(Number);
+    dateObj.setFullYear(newDate[0], newDate[1] - 1, newDate[2]);
+
+    setDateTimeValue(this.hass!, stateObj.entity_id, dateObj);
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      ha-date-input + ha-time-input {
+        margin-left: 4px;
+        margin-inline-start: 4px;
+        margin-inline-end: initial;
+        direction: var(--direction);
+      }
+    `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-datetime-entity-row": HuiInputDatetimeEntityRow;
+  }
+}

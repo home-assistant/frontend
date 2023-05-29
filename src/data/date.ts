@@ -10,5 +10,5 @@ export const setDateValue = (
   date: string | undefined = undefined
 ) => {
   const param = { entity_id: entityId, date };
-  hass.callService(entityId.split(".", 1)[0], "set_value", param);
+  hass.callService("date", "set_value", param);
 };
