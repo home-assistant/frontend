@@ -66,9 +66,6 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues<typeof this>): void {
-    super.firstUpdated(changedProps);
-  }
 
   private async _createSortable() {
     const Sortable = await loadSortable();
