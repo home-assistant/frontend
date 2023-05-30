@@ -1,5 +1,5 @@
 import memoizeOne from "memoize-one";
-import { FrontendLocaleData } from "../../data/translation";
+import { FrontendLocaleData, DateFormat } from "../../data/translation";
 import "../../resources/intl-polyfill";
 
 // Tuesday, August 10
@@ -32,15 +32,50 @@ const formatDateMem = memoizeOne(
 
 // 10/08/2021
 export const formatDateNumeric = (dateObj: Date, locale: FrontendLocaleData) =>
-  formatDateNumericMem(locale).format(dateObj);
+  formatDateNumericMem(locale, dateObj);
 
 const formatDateNumericMem = memoizeOne(
-  (locale: FrontendLocaleData) =>
-    new Intl.DateTimeFormat(locale.language, {
+  (locale: FrontendLocaleData, dateObj: Date) => {
+    const localeString =
+      locale.date_format === DateFormat.system ? undefined : locale.language;
+
+    if (
+      locale.date_format === DateFormat.language ||
+      locale.date_format === DateFormat.system
+    ) {
+      return new Intl.DateTimeFormat(localeString, {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      }).format(dateObj);
+    }
+
+    const parts = new Intl.DateTimeFormat(localeString, {
       year: "numeric",
       month: "numeric",
       day: "numeric",
-    })
+    }).formatToParts(dateObj);
+
+    const literal = parts.find((value) => value.type === "literal")?.value;
+    const day = parts.find((value) => value.type === "day")?.value;
+    const month = parts.find((value) => value.type === "month")?.value;
+    const year = parts.find((value) => value.type === "year")?.value;
+
+    const lastPart = parts.at(parts.length - 1);
+    let lastLiteral = lastPart?.type === "literal" ? lastPart?.value : "";
+
+    if (localeString === "bg" && locale.date_format === DateFormat.YMD) {
+      lastLiteral = "";
+    }
+
+    const formats = {
+      [DateFormat.DMY]: `${day}${literal}${month}${literal}${year}${lastLiteral}`,
+      [DateFormat.MDY]: `${month}${literal}${day}${literal}${year}${lastLiteral}`,
+      [DateFormat.YMD]: `${year}${literal}${month}${literal}${day}${lastLiteral}`,
+    };
+
+    return formats[locale.date_format];
+  }
 );
 
 // Aug 10

@@ -5,6 +5,7 @@ import {
   NumberFormat,
   TimeFormat,
   FirstWeekday,
+  DateFormat,
 } from "../../../src/data/translation";
 
 describe("formatDate", () => {
@@ -16,6 +17,7 @@ describe("formatDate", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.language,
+        date_format: DateFormat.language,
         first_weekday: FirstWeekday.language,
       }),
       "November 18, 2017"

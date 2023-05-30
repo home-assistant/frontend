@@ -4905,6 +4905,18 @@
             "24": "24 hours"
           }
         },
+        "date_format": {
+          "header": "Date Format",
+          "dropdown_label": "Date format",
+          "description": "Choose how dates are formatted.",
+          "formats": {
+            "language": "Auto (use language setting)",
+            "system": "Use system locale",
+            "DMY": "Day-Month-Year",
+            "MDY": "Month-Day-Year",
+            "YMD": "Year-Month-Day"
+          }
+        },
         "first_weekday": {
           "header": "First day of the week",
           "dropdown_label": "First day of the week",
