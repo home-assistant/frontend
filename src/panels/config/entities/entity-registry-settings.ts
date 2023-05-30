@@ -9,7 +9,7 @@ import "../../../components/ha-alert";
 import {
   ConfigEntry,
   deleteConfigEntry,
-  getConfigEntries,
+  getConfigEntry,
 } from "../../../data/config_entries";
 import { updateDeviceRegistryEntry } from "../../../data/device_registry";
 import {
@@ -48,13 +48,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
     if (this.entry.config_entry_id) {
-      getConfigEntries(this.hass, {
-        type: ["helper"],
-        domain: this.entry.platform,
-      }).then((entries) => {
-        this._helperConfigEntry = entries.find(
-          (ent) => ent.entry_id === this.entry.config_entry_id
-        );
+      getConfigEntry(this.hass, this.entry.config_entry_id).then((entry) => {
+        this._helperConfigEntry = entry.config_entry;
       });
     }
   }

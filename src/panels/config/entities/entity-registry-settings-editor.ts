@@ -43,7 +43,7 @@ import {
   STREAM_TYPE_HLS,
   updateCameraPrefs,
 } from "../../../data/camera";
-import { ConfigEntry } from "../../../data/config_entries";
+import { ConfigEntry, deleteConfigEntry } from "../../../data/config_entries";
 import {
   createConfigFlow,
   handleConfigFlowStep,
@@ -58,9 +58,9 @@ import {
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
   fetchEntityRegistry,
+  LockEntityOptions,
   SensorEntityOptions,
   updateEntityRegistryEntry,
-  LockEntityOptions,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
 import { getNumberDeviceClassConvertibleUnits } from "../../../data/number";
@@ -305,6 +305,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
         this._weatherConvertibleUnits = units;
       } else {
         this._weatherConvertibleUnits = undefined;
+      }
+    }
+    if (changedProps.has("helperConfigEntry")) {
+      if (this.helperConfigEntry?.domain === "switch_as_x") {
+        this._switchAs = computeDomain(this.entry.entity_id);
+      } else {
+        this._switchAs = "switch";
       }
     }
   }
@@ -599,7 +606,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
             </ha-select>
           `
         : ""}
-      ${domain === "switch"
+      ${domain === "switch" || this.helperConfigEntry?.domain === "switch_as_x"
         ? html`<ha-select
             .label=${this.hass.localize(
               "ui.dialogs.entity_registry.editor.device_class"
@@ -609,22 +616,36 @@ export class EntityRegistrySettingsEditor extends LitElement {
             @selected=${this._switchAsChanged}
             @closed=${stopPropagation}
           >
-            <ha-list-item
-              value="switch"
-              .selected=${!this._deviceClass || this._deviceClass === "switch"}
-            >
-              ${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.device_classes.switch.switch"
-              )}
-            </ha-list-item>
-            <ha-list-item
-              value="outlet"
-              .selected=${this._deviceClass === "outlet"}
-            >
-              ${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.device_classes.switch.outlet"
-              )}
-            </ha-list-item>
+            ${domain === "switch"
+              ? html`<ha-list-item
+                    value="switch"
+                    .selected=${!this._deviceClass ||
+                    this._deviceClass === "switch"}
+                  >
+                    ${this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.device_classes.switch.switch"
+                    )}
+                  </ha-list-item>
+                  <ha-list-item
+                    value="outlet"
+                    .selected=${this._deviceClass === "outlet"}
+                  >
+                    ${this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.device_classes.switch.outlet"
+                    )}
+                  </ha-list-item>`
+              : html`<ha-list-item
+                    value="switch"
+                    .selected=${this._switchAs === "switch"}
+                  >
+                    ${domainToName(this.hass.localize, "switch")}
+                  </ha-list-item>
+                  <ha-list-item
+                    value="switch"
+                    .selected=${this._switchAs === domain}
+                  >
+                    ${domainToName(this.hass.localize, domain)}
+                  </ha-list-item>`}
             <li divider role="separator"></li>
             ${this._switchAsDomainsSorted(
               SWITCH_AS_DOMAINS,
@@ -881,7 +902,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   public async updateEntry(): Promise<ExtEntityRegistryEntry> {
-    const parent = (this.getRootNode() as ShadowRoot).host as HTMLElement;
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    let parent: HTMLElement = this;
+    while (parent?.localName !== "home-assistant") {
+      parent = (parent.getRootNode() as ShadowRoot).host as HTMLElement;
+    }
 
     const params: Partial<EntityRegistryEntryUpdateParams> = {
       name: this._name.trim() || null,
@@ -979,13 +1004,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
       });
     }
 
-    if (this._switchAs !== "switch") {
+    if (domain === "switch" && this._switchAs !== "switch") {
+      // generate config flow for switch_as_x
       if (
         await showConfirmationDialog(this, {
           text: this.hass!.localize(
             "ui.dialogs.entity_registry.editor.switch_as_x_confirm",
-            "domain",
-            this._switchAs
+            { domain: this._switchAs }
           ),
         })
       ) {
@@ -999,24 +1024,76 @@ export class EntityRegistrySettingsEditor extends LitElement {
           }
         )) as DataEntryFlowStepCreateEntry;
         if (configFlowResult.result?.entry_id) {
-          const unsub = await this.hass.connection.subscribeEvents(() => {
-            unsub();
-            fetchEntityRegistry(this.hass.connection).then((entityRegistry) => {
-              const entity = entityRegistry.find(
-                (reg) =>
-                  reg.config_entry_id === configFlowResult.result!.entry_id
-              );
-              if (!entity) {
-                return;
-              }
-              showMoreInfoDialog(parent, { entityId: entity.entity_id });
-            });
-          }, "entity_registry_updated");
+          const entry = await this._waitForEntityRegistryUpdate(
+            configFlowResult.result!.entry_id
+          );
+          showMoreInfoDialog(parent, { entityId: entry.entity_id });
+        }
+      }
+    } else if (
+      this.helperConfigEntry?.domain === "switch_as_x" &&
+      this._switchAs !== domain
+    ) {
+      // change a current switch as x to something else
+      if (
+        await showConfirmationDialog(this, {
+          text:
+            this._switchAs === "switch"
+              ? this.hass!.localize(
+                  "ui.dialogs.entity_registry.editor.switch_as_x_remove_confirm",
+                  { domain }
+                )
+              : this.hass!.localize(
+                  "ui.dialogs.entity_registry.editor.switch_as_x_change_confirm",
+                  { domain_1: domain, domain_2: this._switchAs }
+                ),
+        })
+      ) {
+        const origEntityId = this.entry.options?.switch_as_x?.entity_id;
+        // remove current helper
+        await deleteConfigEntry(this.hass, this.helperConfigEntry.entry_id);
+
+        if (!origEntityId) {
+          // should not happen, guard for types
+        } else if (this._switchAs === "switch") {
+          // done, original switch is back
+          showMoreInfoDialog(parent, { entityId: origEntityId });
+        } else {
+          const configFlow = await createConfigFlow(this.hass, "switch_as_x");
+          const configFlowResult = (await handleConfigFlowStep(
+            this.hass,
+            configFlow.flow_id,
+            {
+              entity_id: origEntityId,
+              target_domain: this._switchAs,
+            }
+          )) as DataEntryFlowStepCreateEntry;
+          if (configFlowResult.result?.entry_id) {
+            const entry = await this._waitForEntityRegistryUpdate(
+              configFlowResult.result!.entry_id
+            );
+            showMoreInfoDialog(parent, { entityId: entry.entity_id });
+          }
         }
       }
     }
 
     return result.entity_entry;
+  }
+
+  private async _waitForEntityRegistryUpdate(config_entry_id: string) {
+    return new Promise<EntityRegistryEntry>((resolve) => {
+      const unsub = this.hass.connection.subscribeEvents(async () => {
+        const entityRegistry = await fetchEntityRegistry(this.hass.connection);
+        const entity = entityRegistry.find(
+          (reg) => reg.config_entry_id === config_entry_id
+        );
+        if (entity) {
+          (await unsub)();
+          resolve(entity);
+        }
+      }, "entity_registry_updated");
+    });
   }
 
   private _nameChanged(ev): void {
@@ -1090,7 +1167,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
     const switchAs = ev.target.value === "outlet" ? "switch" : ev.target.value;
     this._switchAs = switchAs;
 
-    if (ev.target.value === "outlet" || ev.target.value === "switch") {
+    if (
+      (computeDomain(this.entry.entity_id) === "switch" &&
+        ev.target.value === "outlet") ||
+      ev.target.value === "switch"
+    ) {
       this._deviceClass = ev.target.value;
     }
   }
@@ -1177,9 +1258,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
   private _switchAsDomainsSorted = memoizeOne(
     (domains: string[], localize: LocalizeFunc) =>
       domains
-        .map((entry) => ({
-          domain: entry,
-          label: domainToName(localize, entry),
+        .map((domain) => ({
+          domain,
+          label: domainToName(localize, domain),
         }))
         .sort((a, b) =>
           stringCompare(a.label, b.label, this.hass.locale.language)
