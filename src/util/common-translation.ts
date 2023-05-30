@@ -5,15 +5,15 @@ import {
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
 
-const DEFAULT_BASE_URL = "/static/translations";
+const BASE_URL = `${__STATIC_PATH__}translations`;
 const STORAGE = window.localStorage || {};
 
 // Store loaded translations in memory so translations are available immediately
 // when DOM is created in Polymer. Even a cache lookup creates noticeable latency.
 const translations = {};
 
-async function fetchTranslation(fingerprint: string, base_url: string) {
-  const response = await fetch(`${base_url}/${fingerprint}`, {
+async function fetchTranslation(fingerprint: string) {
+  const response = await fetch(`${BASE_URL}/${fingerprint}`, {
     credentials: "same-origin",
   });
   if (!response.ok) {
@@ -131,13 +131,12 @@ export function getLocalLanguage() {
 
 export async function getTranslation(
   fragment: string | null,
-  language: string,
-  base_url?: string
+  language: string
 ) {
   const metadata = translationMetadata.translations[language];
   if (!metadata?.hash) {
     if (language !== "en") {
-      return getTranslation(fragment, "en", base_url);
+      return getTranslation(fragment, "en");
     }
     throw new Error("Language en is not found in metadata");
   }
@@ -149,16 +148,13 @@ export async function getTranslation(
 
   // Fetch translation from the server
   if (!translations[fingerprint]) {
-    translations[fingerprint] = fetchTranslation(
-      fingerprint,
-      base_url || DEFAULT_BASE_URL
-    )
+    translations[fingerprint] = fetchTranslation(fingerprint)
       .then((data) => ({ language, data }))
       .catch((error) => {
         delete translations[fingerprint];
         if (language !== "en") {
           // Couldn't load selected translation. Try a fall back to en before failing.
-          return getTranslation(fragment, "en", base_url);
+          return getTranslation(fragment, "en");
         }
         return Promise.reject(error);
       });
