@@ -71,7 +71,7 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     redirect: "/config/integrations",
   },
   integration: {
-    redirect: "/config/integration",
+    redirect: "/config/integrations/integration",
     params: {
       domain: "string",
     },
