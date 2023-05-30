@@ -137,14 +137,14 @@ export class CastManager {
       this.status = undefined;
       this._fireEvent("connection-changed");
     }
-  }
+  };
 
   private _castStateChanged = (ev: cast.framework.CastStateEventData) => {
     if (__DEV__) {
       console.log("Cast state changed", ev.castState);
     }
     this._fireEvent("state-changed");
-  }
+  };
 
   private _attachMessageListener() {
     const session = this.castSession;
