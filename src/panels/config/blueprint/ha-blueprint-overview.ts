@@ -1,12 +1,12 @@
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiDelete,
   mdiDownload,
   mdiEye,
   mdiHelpCircle,
-  mdiRobot,
+  mdiPlus,
   mdiShareVariant,
 } from "@mdi/js";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   CSSResultGroup,
   html,
@@ -17,12 +17,14 @@ import {
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
 import { showAutomationEditor } from "../../../data/automation";
 import {
@@ -32,6 +34,7 @@ import {
   deleteBlueprint,
 } from "../../../data/blueprint";
 import { showScriptEditor } from "../../../data/script";
+import { findRelated } from "../../../data/search";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -42,8 +45,6 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
-import { findRelated } from "../../../data/search";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 
 interface BlueprintMetaDataPath extends BlueprintMetaData {
   path: string;
@@ -107,7 +108,7 @@ class HaBlueprintOverview extends LitElement {
   );
 
   private _columns = memoizeOne(
-    (narrow, _language): DataTableColumnContainer => ({
+    (narrow, _language): DataTableColumnContainer<BlueprintMetaDataPath> => ({
       name: {
         title: this.hass.localize(
           "ui.panel.config.blueprint.overview.headers.name"
@@ -149,78 +150,57 @@ class HaBlueprintOverview extends LitElement {
         direction: "asc",
         width: "25%",
       },
-      create: {
+      actions: {
         title: "",
-        width: narrow ? undefined : "20%",
-        type: narrow ? "icon-button" : undefined,
-        template: (_, blueprint: BlueprintMetaDataPath) =>
+        width: this.narrow ? undefined : "10%",
+        type: "overflow-menu",
+        template: (_: string, blueprint) =>
           blueprint.error
             ? ""
-            : narrow
-            ? html`<ha-icon-button
-                .blueprint=${blueprint}
-                .label=${this.hass.localize(
-                  `ui.panel.config.blueprint.overview.create_${blueprint.domain}`
-                )}
-                @click=${this._createNew}
-                .path=${mdiRobot}
-              >
-              </ha-icon-button>`
-            : html`<mwc-button
-                .blueprint=${blueprint}
-                @click=${this._createNew}
-              >
-                ${this.hass.localize(
-                  `ui.panel.config.blueprint.overview.create_${blueprint.domain}`
-                )}
-              </mwc-button>`,
-      },
-      show: {
-        title: "",
-        type: "icon-button",
-        template: (_, blueprint: any) =>
-          blueprint.error
-            ? ""
-            : html`<a
-                href=${`/config/${
-                  blueprint.type
-                }/dashboard?blueprint=${encodeURIComponent(blueprint.path)}`}
-              >
-                <ha-icon-button .path=${mdiEye}></ha-icon-button>
-              </a>`,
-      },
-      share: {
-        title: "",
-        type: "icon-button",
-        template: (_, blueprint: any) =>
-          blueprint.error
-            ? ""
-            : html`<ha-icon-button
-                .blueprint=${blueprint}
-                .disabled=${!blueprint.source_url}
-                .label=${this.hass.localize(
-                  blueprint.source_url
-                    ? "ui.panel.config.blueprint.overview.share_blueprint"
-                    : "ui.panel.config.blueprint.overview.share_blueprint_no_url"
-                )}
-                .path=${mdiShareVariant}
-                @click=${this._share}
-              ></ha-icon-button>`,
-      },
-      delete: {
-        title: "",
-        type: "icon-button",
-        template: (_, blueprint: any) =>
-          blueprint.error
-            ? ""
-            : html`<ha-icon-button
-                .blueprint=${blueprint}
-                .label=${this.hass.localize(
-                  "ui.panel.config.blueprint.overview.delete_blueprint"
-                )}
-                .path=${mdiDelete}
-                @click=${this._delete}
-              ></ha-icon-button>`,
+            : html`
+                <ha-icon-overflow-menu
+                  .hass=${this.hass}
+                  narrow
+                  .items=${[
+                    {
+                      path: mdiPlus,
+                      label: this.hass.localize(
+                        `ui.panel.config.blueprint.overview.create_${blueprint.domain}`
+                      ),
+                      action: () => this._createNew(blueprint),
+                    },
+                    {
+                      path: mdiEye,
+                      label: this.hass.localize(
+                        `ui.panel.config.blueprint.overview.view_${blueprint.domain}`
+                      ),
+                      action: () => this._showUsed(blueprint),
+                    },
+                    {
+                      path: mdiShareVariant,
+                      disabled: !blueprint.source_url,
+                      label: this.hass.localize(
+                        blueprint.source_url
+                          ? "ui.panel.config.blueprint.overview.share_blueprint"
+                          : "ui.panel.config.blueprint.overview.share_blueprint_no_url"
+                      ),
+                      action: () => this._share(blueprint),
+                    },
+                    {
+                      divider: true,
+                    },
+                    {
+                      label: this.hass.localize(
+                        "ui.panel.config.blueprint.overview.delete_blueprint"
+                      ),
+                      path: mdiDelete,
+                      action: () => this._delete(blueprint),
+                      warning: true,
+                    },
+                  ]}
+                >
+                </ha-icon-overflow-menu>
+              `,
       },
     })
   );
@@ -327,23 +307,28 @@ class HaBlueprintOverview extends LitElement {
     fireEvent(this, "reload-blueprints");
   }
 
-  private _createNew = (ev) => {
-    const blueprint = ev.currentTarget.blueprint as BlueprintMetaDataPath;
+  private _showUsed = (blueprint: BlueprintMetaDataPath) => {
+    navigate(
+      `/config/${blueprint.domain}/dashboard?blueprint=${encodeURIComponent(
+        blueprint.path
+      )}`
+    );
+  };
+
+  private _createNew = (blueprint: BlueprintMetaDataPath) => {
     createNewFunctions[blueprint.domain](blueprint);
   };
 
-  private _share = (ev) => {
-    const blueprint = ev.currentTarget.blueprint;
+  private _share = (blueprint: BlueprintMetaDataPath) => {
     const params = new URLSearchParams();
     params.append("redirect", "blueprint_import");
-    params.append("blueprint_url", blueprint.source_url);
+    params.append("blueprint_url", blueprint.source_url!);
     window.open(
       `https://my.home-assistant.io/create-link/?${params.toString()}`
     );
   };
 
-  private _delete = async (ev) => {
-    const blueprint = ev.currentTarget.blueprint as BlueprintMetaDataPath;
+  private _delete = async (blueprint: BlueprintMetaDataPath) => {
     const related = await findRelated(
       this.hass,
       `${blueprint.domain}_blueprint`,
