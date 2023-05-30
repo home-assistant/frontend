@@ -41,7 +41,7 @@ const createWebpackConfig = ({
   return {
     name,
     mode: isProdBuild ? "production" : "development",
-    target: ["web", latestBuild ? "es2017" : "es5"],
+    target: `browserslist:${latestBuild ? "modern" : "legacy"}`,
     // For tests/CI, source maps are skipped to gain build speed
     // For production, generate source maps for accurate stack traces without source code
     // For development, generate "cheap" versions that can map to original line numbers
@@ -163,6 +163,7 @@ const createWebpackConfig = ({
       },
     },
     output: {
+      module: latestBuild,
       filename: ({ chunk }) =>
         !isProdBuild || isStatsBuild || dontHash.has(chunk.name)
           ? "[name].js"
@@ -196,7 +197,7 @@ const createWebpackConfig = ({
           : undefined,
     },
     experiments: {
-      topLevelAwait: true,
+      outputModule: true,
     },
   };
 };
