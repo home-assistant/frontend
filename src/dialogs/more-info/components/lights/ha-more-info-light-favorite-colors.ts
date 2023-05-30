@@ -41,15 +41,15 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
 
-  @state() private _editMode = false;
+  @property({ attribute: false }) public editMode?: boolean;
 
   @state() private _favoriteColors: LightColor[] = [];
 
   private _sortable?: SortableInstance;
 
   protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("_editMode")) {
-      if (this._editMode) {
+    if (changedProps.has("editMode")) {
+      if (this.editMode) {
         this._createSortable();
       } else {
         this._destroySortable();
@@ -203,12 +203,12 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
   private _handleColorAction = (ev) => {
     ev.stopPropagation();
     if (ev.detail.action === "hold" && this.hass.user?.is_admin) {
-      this._editMode = true;
+      fireEvent(this, "toggle-edit-mode", true);
       return;
     }
 
     const index = ev.target.index;
-    if (this._editMode) {
+    if (this.editMode) {
       this._edit(index);
       return;
     }
@@ -217,7 +217,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   private _exitEditMode = (ev) => {
     ev.stopPropagation();
-    this._editMode = false;
+    fireEvent(this, "toggle-edit-mode", false);
   };
 
   protected render(): TemplateResult {
@@ -228,13 +228,13 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
             <div class="color">
               <div
                 class="color-bubble ${classMap({
-                  shake: this._editMode,
+                  shake: !!this.editMode,
                 })}"
               >
                 <ha-favorite-color-button
                   .label=${this.hass.localize(
                     `ui.dialogs.more_info_control.light.favorite_color.${
-                      this._editMode ? "edit" : "set"
+                      this.editMode ? "edit" : "set"
                     }`,
                     { number: index }
                   )}
@@ -242,13 +242,13 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
                   .color=${color}
                   .index=${index}
                   .actionHandler=${actionHandler({
-                    hasHold: !this._editMode && this.hass.user?.is_admin,
+                    hasHold: !this.editMode && this.hass.user?.is_admin,
                     disabled: this.stateObj!.state === UNAVAILABLE,
                   })}
                   @action=${this._handleColorAction}
                 >
                 </ha-favorite-color-button>
-                ${this._editMode
+                ${this.editMode
                   ? html`
                       <button
                         @click=${this._handleDeleteButton}
@@ -271,7 +271,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
             </div>
           `
         )}
-        ${this._editMode
+        ${this.editMode
           ? html`
               <ha-outlined-icon-button
                 class="button"

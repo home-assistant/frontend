@@ -19,9 +19,11 @@ import "./more-info-content";
 export class MoreInfoInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entityId!: string;
+  @property({ attribute: false }) public entityId!: string;
 
-  @property() public entry?: ExtEntityRegistryEntry | null;
+  @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
+
+  @property({ attribute: false }) public editMode?: boolean;
 
   protected render() {
     const entityId = this.entityId;
@@ -78,6 +80,7 @@ export class MoreInfoInfo extends LitElement {
             .stateObj=${stateObj}
             .hass=${this.hass}
             .entry=${this.entry}
+            .editMode=${this.editMode}
           ></more-info-content>
         </div>
       </div>

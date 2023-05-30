@@ -5,6 +5,8 @@ import {
   mdiDevices,
   mdiDotsVertical,
   mdiInformationOutline,
+  mdiPencil,
+  mdiPencilOff,
   mdiPencilOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
@@ -66,6 +68,9 @@ declare global {
   interface HASSDomEvents {
     "show-child-view": ChildView;
   }
+  interface HASSDomEvents {
+    "toggle-edit-mode": boolean;
+  }
 }
 
 @customElement("ha-more-info-dialog")
@@ -81,6 +86,8 @@ export class MoreInfoDialog extends LitElement {
   @state() private _childView?: ChildView;
 
   @state() private _entry?: ExtEntityRegistryEntry | null;
+
+  @state() private _infoEditMode = false;
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
@@ -217,6 +224,15 @@ export class MoreInfoDialog extends LitElement {
     this.closeDialog();
   }
 
+  private _toggleInfoEditMode(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) return;
+    this._infoEditMode = !this._infoEditMode;
+  }
+
+  private _handleToggleInfoEditModeEvent(ev) {
+    this._infoEditMode = ev.detail;
+  }
+
   private _goToRelated(ev): void {
     if (!shouldHandleRequestSelectedEvent(ev)) return;
     this.setView("related");
@@ -341,6 +357,28 @@ export class MoreInfoDialog extends LitElement {
                               </ha-list-item>
                             `
                           : nothing}
+                        ${this._entry && domain === "light"
+                          ? html`
+                              <ha-list-item
+                                graphic="icon"
+                                @request-selected=${this._toggleInfoEditMode}
+                              >
+                                ${this._infoEditMode
+                                  ? this.hass.localize(
+                                      `ui.dialogs.more_info_control.exit_edit_mode`
+                                    )
+                                  : this.hass.localize(
+                                      `ui.dialogs.more_info_control.${domain}.edit_mode`
+                                    )}
+                                <ha-svg-icon
+                                  slot="graphic"
+                                  .path=${this._infoEditMode
+                                    ? mdiPencilOff
+                                    : mdiPencil}
+                                ></ha-svg-icon>
+                              </ha-list-item>
+                            `
+                          : nothing}
                         <ha-list-item
                           graphic="icon"
                           @request-selected=${this._goToRelated}
@@ -365,6 +403,7 @@ export class MoreInfoDialog extends LitElement {
           dialogInitialFocus
           @show-child-view=${this._showChildView}
           @entity-entry-updated=${this._entryUpdated}
+          @toggle-edit-mode=${this._handleToggleInfoEditModeEvent}
         >
           ${this._childView
             ? html`
@@ -384,6 +423,7 @@ export class MoreInfoDialog extends LitElement {
                         .hass=${this.hass}
                         .entityId=${this._entityId}
                         .entry=${this._entry}
+                        .editMode=${this._infoEditMode}
                       ></ha-more-info-info>
                     `
                   : this._currView === "history"
@@ -425,6 +465,7 @@ export class MoreInfoDialog extends LitElement {
     super.updated(changedProps);
     if (changedProps.has("_currView")) {
       this._childView = undefined;
+      this._infoEditMode = false;
     }
   }
 

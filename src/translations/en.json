@@ -868,6 +868,7 @@
         "turn_on": "Turn on",
         "turn_off": "Turn off",
         "toggle": "Toggle",
+        "exit_edit_mode": "Exit edit mode",
         "script": {
           "last_action": "Last action",
           "last_triggered": "Last triggered"
@@ -925,6 +926,7 @@
           "graph_unit": "People in zone"
         },
         "light": {
+          "edit_mode": "Edit favorite colors",
           "toggle": "Toggle",
           "change_color": "Change color",
           "set_white": "Set white",

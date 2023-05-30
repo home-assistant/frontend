@@ -55,6 +55,8 @@ class MoreInfoLight extends LitElement {
 
   @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
 
+  @property({ attribute: false }) public editMode?: boolean;
+
   @state() private _effect?: string;
 
   @state() private _selectedBrightness?: number;
@@ -199,12 +201,18 @@ class MoreInfoLight extends LitElement {
                       `
                     : nothing}
                 </div>
-                <ha-more-info-light-favorite-colors
-                  .hass=${this.hass}
-                  .stateObj=${this.stateObj}
-                  .entry=${this.entry}
-                >
-                </ha-more-info-light-favorite-colors>
+                ${this.editMode ||
+                (this.entry?.options?.light?.favorite_colors?.length ?? 0) > 0
+                  ? html`
+                      <ha-more-info-light-favorite-colors
+                        .hass=${this.hass}
+                        .stateObj=${this.stateObj}
+                        .entry=${this.entry}
+                        .editMode=${this.editMode}
+                      >
+                      </ha-more-info-light-favorite-colors>
+                    `
+                  : nothing}
               </div>
             `
           : nothing}
