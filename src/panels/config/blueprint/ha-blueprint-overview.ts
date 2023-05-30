@@ -1,5 +1,6 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
+  mdiAlertCircle,
   mdiDelete,
   mdiDownload,
   mdiEye,
@@ -16,11 +17,14 @@ import {
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
-import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import {
+  DataTableColumnContainer,
+  RowClickedEvent,
+} from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
@@ -156,7 +160,10 @@ class HaBlueprintOverview extends LitElement {
         type: "overflow-menu",
         template: (_: string, blueprint) =>
           blueprint.error
-            ? ""
+            ? html`<ha-svg-icon
+                style="color: var(--error-color); display: block; margin-inline-end: 12px; margin-inline-start: auto;"
+                .path=${mdiAlertCircle}
+              ></ha-svg-icon>`
             : html`
                 <ha-icon-overflow-menu
                   .hass=${this.hass}
@@ -226,11 +233,13 @@ class HaBlueprintOverview extends LitElement {
         .tabs=${configSections.automations}
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._processedBlueprints(this.blueprints)}
-        id="entity_id"
+        id="path"
         .noDataText=${this.hass.localize(
           "ui.panel.config.blueprint.overview.no_blueprints"
         )}
         hasFab
+        clickable
+        @row-click=${this._handleRowClicked}
         .appendRow=${html` <div
           class="mdc-data-table__cell"
           style="width: 100%; text-align: center;"
@@ -305,6 +314,16 @@ class HaBlueprintOverview extends LitElement {
 
   private _reload() {
     fireEvent(this, "reload-blueprints");
+  }
+
+  private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
+    const blueprint = this._processedBlueprints(this.blueprints).find(
+      (b) => b.path === ev.detail.id
+    );
+    if (blueprint.error) {
+      return;
+    }
+    this._createNew(blueprint);
   }
 
   private _showUsed = (blueprint: BlueprintMetaDataPath) => {
