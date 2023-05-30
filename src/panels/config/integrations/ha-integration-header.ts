@@ -167,7 +167,6 @@ export class HaIntegrationHeader extends LitElement {
     .primary {
       font-size: 16px;
       margin-top: 16px;
-      margin-right: 48px;
       font-weight: 400;
       word-break: break-word;
       color: var(--primary-text-color);
