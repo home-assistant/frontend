@@ -1,4 +1,4 @@
-export {}; // for Babel to treat as a module
+import { cast } from "chromecast-caf-receiver";
 
 const castContext = cast.framework.CastReceiverContext.getInstance();
 
