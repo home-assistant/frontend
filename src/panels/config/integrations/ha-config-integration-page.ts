@@ -38,6 +38,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isDevVersion } from "../../../common/config/version";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
@@ -419,6 +420,16 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               <mwc-list>
                 ${configEntries
                   .filter((entry) => !ERROR_STATES.includes(entry.state))
+                  .sort((a, b) => {
+                    if (Boolean(a.disabled_by) !== Boolean(b.disabled_by)) {
+                      return a.disabled_by ? 1 : -1;
+                    }
+                    return caseInsensitiveStringCompare(
+                      a.title,
+                      b.title,
+                      this.hass.locale.language
+                    );
+                  })
                   .map((item) => this._renderConfigEntry(item))}
               </mwc-list>
             </ha-card>

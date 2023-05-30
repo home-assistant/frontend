@@ -1,15 +1,16 @@
+import { mdiCog } from "@mdi/js";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { IntegrationManifest } from "../../../data/integration";
-import type { HomeAssistant } from "../../../types";
-import type { ConfigEntryExtended } from "./ha-config-integrations";
-import "./ha-integration-action-card";
 import "../../../components/ha-button";
 import {
   DisableConfigEntryResult,
   enableConfigEntry,
 } from "../../../data/config_entries";
+import type { IntegrationManifest } from "../../../data/integration";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import type { HomeAssistant } from "../../../types";
+import type { ConfigEntryExtended } from "./ha-config-integrations";
+import "./ha-integration-action-card";
 
 @customElement("ha-disabled-config-entry-card")
 export class HaDisabledConfigEntryCard extends LitElement {
@@ -38,6 +39,12 @@ export class HaDisabledConfigEntryCard extends LitElement {
         .localizedDomainName=${this.entry.localized_domain_name}
         .label=${this.entry.title || this.entry.localized_domain_name}
       >
+        <a
+          href=${`/config/integrations/integration/${this.entry.domain}`}
+          slot="header-button"
+        >
+          <ha-icon-button .path=${mdiCog}></ha-icon-button>
+        </a>
         <ha-button
           @click=${this._handleEnable}
           .label=${this.hass.localize("ui.common.enable")}
@@ -78,6 +85,9 @@ export class HaDisabledConfigEntryCard extends LitElement {
 
     ha-button {
       --mdc-theme-primary: var(--primary-color);
+    }
+    a ha-icon-button {
+      color: var(--secondary-text-color);
     }
   `;
 }
