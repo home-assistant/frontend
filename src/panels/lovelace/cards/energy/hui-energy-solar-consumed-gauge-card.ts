@@ -68,10 +68,11 @@ class HuiEnergySolarGaugeCard
       return nothing;
     }
 
-    const totalSolarProduction = calculateStatisticsSumGrowth(
-      this._data.stats,
-      types.solar.map((source) => source.stat_energy_from)
-    );
+    const totalSolarProduction =
+      calculateStatisticsSumGrowth(
+        this._data.stats,
+        types.solar.map((source) => source.stat_energy_from)
+      ) || 0;
 
     const productionReturnedToGrid = calculateStatisticsSumGrowth(
       this._data.stats,
