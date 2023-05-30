@@ -1002,6 +1002,7 @@
           "visibility_unit": "Visibility unit",
           "wind_speed_unit": "Wind speed unit",
           "device_class": "Show as",
+          "switch_as_x": "Show switch as",
           "device_classes": {
             "binary_sensor": {
               "door": "Door",
@@ -1046,8 +1047,7 @@
               "shutter": "Shutter"
             },
             "switch": {
-              "outlet": "Outlet",
-              "switch": "Switch"
+              "outlet": "Outlet"
             }
           },
           "unavailable": "This entity is unavailable.",
@@ -1063,6 +1063,8 @@
           "enable_entity": "Enable",
           "open_device_settings": "Open device settings",
           "switch_as_x_confirm": "This switch will be hidden and a new {domain} will be added. Your existing configurations using the switch will continue to work.",
+          "switch_as_x_remove_confirm": "This {domain} will be removed and the original switch will be visible again. Your existing configurations using the {domain} will no longer work!",
+          "switch_as_x_change_confirm": "This {domain_1} will be removed and will be replaced by a new {domain_2}. Your existing configurations using the {domain_1} will no longer work!",
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
           "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
