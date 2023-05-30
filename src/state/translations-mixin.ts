@@ -53,6 +53,8 @@ interface LoadedTranslationCategory {
   configFlow: boolean;
 }
 
+let updateResourcesIteration = 0;
+
 /*
  * superClass needs to contain `this.hass` and `this._updateHass`.
  */
@@ -362,6 +364,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
 
     private async _updateResources(language: string, data: any) {
+      updateResourcesIteration++;
+      const i = updateResourcesIteration;
+
       // Update the language in hass, and update the resources with the newly
       // loaded resources. This merges the new data on top of the old data for
       // this language, so that the full translation set can be loaded across
@@ -394,11 +399,17 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       const localize = await computeLocalize(this, language, resources);
 
-      if (language === (this.hass ?? this._pendingHass).language) {
-        this._updateHass({
-          localize,
-        });
+      if (
+        updateResourcesIteration !== i ||
+        language !== (this.hass ?? this._pendingHass).language
+      ) {
+        // if a new iteration has started or the language changed, abort
+        return;
       }
+
+      this._updateHass({
+        localize,
+      });
       fireEvent(this, "translations-updated");
     }
 
