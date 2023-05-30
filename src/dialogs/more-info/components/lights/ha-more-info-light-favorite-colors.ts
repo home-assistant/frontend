@@ -66,7 +66,6 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
     }
   }
 
-
   private async _createSortable() {
     const Sortable = await loadSortable();
     this._sortable = new Sortable(
