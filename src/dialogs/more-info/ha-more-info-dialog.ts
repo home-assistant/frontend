@@ -30,6 +30,7 @@ import {
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntry,
 } from "../../data/entity_registry";
+import { SearchableDomains } from "../../data/search";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
@@ -406,7 +407,9 @@ export class MoreInfoDialog extends LitElement {
                       <ha-related-items
                         .hass=${this.hass}
                         .itemId=${entityId}
-                        itemType="entity"
+                        .itemType=${SearchableDomains.has(domain)
+                          ? domain
+                          : "entity"}
                       ></ha-related-items>
                     `
                   : nothing
@@ -464,7 +467,6 @@ export class MoreInfoDialog extends LitElement {
           flex: 1;
         }
 
-        ha-related-items,
         ha-more-info-history-and-logbook {
           padding: 8px 24px 24px 24px;
           display: block;
