@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+import { cast } from "chromecast-caf-receiver";
 import { CAST_NS } from "../../../src/cast/const";
 import { HassMessage } from "../../../src/cast/receiver_messages";
 import "../../../src/resources/custom-card-support";
