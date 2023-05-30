@@ -541,7 +541,7 @@
         "scene": "Part of the following scenes",
         "script": "Part of the following scripts",
         "automation": "Part of the following automations",
-        "blueprint": "Using the following blueprints"
+        "blueprint": "Using blueprint"
       },
       "data-table": {
         "search": "Search",

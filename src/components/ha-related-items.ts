@@ -16,6 +16,7 @@ import { Blueprints, fetchBlueprints } from "../data/blueprint";
 import { ConfigEntry, getConfigEntries } from "../data/config_entries";
 import { SceneEntity } from "../data/scene";
 import { findRelated, ItemType, RelatedResult } from "../data/search";
+import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import "./ha-icon-next";
@@ -83,42 +84,43 @@ export class HaRelatedItems extends LitElement {
     return html`
       ${this._related.config_entry && this._entries
         ? html`<h3>
-        ${this.hass.localize("ui.components.related-items.integration")}:
-      </h3><mwc-list>${this._related.config_entry.map(
-        (relatedConfigEntryId) => {
-          const entry: ConfigEntry | undefined = this._entries!.find(
-            (configEntry) => configEntry.entry_id === relatedConfigEntryId
-          );
-          if (!entry) {
-            return "";
-          }
-          return html`
-            <a
-              href=${`/config/integrations#config_entry=${relatedConfigEntryId}`}
-              @click=${this._navigateAwayClose}
-            >
-              <ha-list-item hasMeta graphic="icon">
-                <img
-                  .src=${brandsUrl({
-                    domain: entry.domain,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  alt=${entry.domain}
-                  slot="graphic"
-                />
-                ${this.hass.localize(`component.${entry.domain}.title`)}:
-                ${entry.title} <ha-icon-next slot="meta"></ha-icon-next>
-              </ha-list-item>
-            </a>
-          `;
-        }
-      )}</mw-list>`
+              ${this.hass.localize("ui.components.related-items.integration")}
+            </h3>
+            <mwc-list
+              >${this._related.config_entry.map((relatedConfigEntryId) => {
+                const entry: ConfigEntry | undefined = this._entries!.find(
+                  (configEntry) => configEntry.entry_id === relatedConfigEntryId
+                );
+                if (!entry) {
+                  return "";
+                }
+                return html`
+                  <a
+                    href=${`/config/integrations#config_entry=${relatedConfigEntryId}`}
+                    @click=${this._navigateAwayClose}
+                  >
+                    <ha-list-item hasMeta graphic="icon">
+                      <img
+                        .src=${brandsUrl({
+                          domain: entry.domain,
+                          type: "icon",
+                          useFallback: true,
+                          darkOptimized: this.hass.themes?.darkMode,
+                        })}
+                        alt=${entry.domain}
+                        slot="graphic"
+                      />
+                      ${this.hass.localize(`component.${entry.domain}.title`)}:
+                      ${entry.title} <ha-icon-next slot="meta"></ha-icon-next>
+                    </ha-list-item>
+                  </a>
+                `;
+              })}</mwc-list
+            >`
         : ""}
       ${this._related.device
         ? html`<h3>
-              ${this.hass.localize("ui.components.related-items.device")}:
+              ${this.hass.localize("ui.components.related-items.device")}
             </h3>
             ${this._related.device.map((relatedDeviceId) => {
               const device = this.hass.devices[relatedDeviceId];
@@ -145,7 +147,7 @@ export class HaRelatedItems extends LitElement {
         : ""}
       ${this._related.area
         ? html`<h3>
-              ${this.hass.localize("ui.components.related-items.area")}:
+              ${this.hass.localize("ui.components.related-items.area")}
             </h3>
             <mwc-list
               >${this._related.area.map((relatedAreaId) => {
@@ -184,9 +186,7 @@ export class HaRelatedItems extends LitElement {
         : ""}
       ${this._related.entity
         ? html`
-            <h3>
-              ${this.hass.localize("ui.components.related-items.entity")}:
-            </h3>
+            <h3>${this.hass.localize("ui.components.related-items.entity")}</h3>
             <mwc-list>
               ${this._related.entity.map((entityId) => {
                 const entity: HassEntity | undefined =
@@ -215,7 +215,7 @@ export class HaRelatedItems extends LitElement {
         : ""}
       ${this._related.group
         ? html`
-            <h3>${this.hass.localize("ui.components.related-items.group")}:</h3>
+            <h3>${this.hass.localize("ui.components.related-items.group")}</h3>
             <mwc-list>
               ${this._related.group.map((groupId) => {
                 const group: HassEntity | undefined = this.hass.states[groupId];
@@ -243,7 +243,7 @@ export class HaRelatedItems extends LitElement {
         : ""}
       ${this._related.scene
         ? html`
-            <h3>${this.hass.localize("ui.components.related-items.scene")}:</h3>
+            <h3>${this.hass.localize("ui.components.related-items.scene")}</h3>
             <mwc-list>
               ${this._related.scene.map((sceneId) => {
                 const scene: SceneEntity | undefined =
@@ -273,7 +273,7 @@ export class HaRelatedItems extends LitElement {
       ${this._related.automation_blueprint
         ? html`
             <h3>
-              ${this.hass.localize("ui.components.related-items.blueprint")}:
+              ${this.hass.localize("ui.components.related-items.blueprint")}
             </h3>
             <mwc-list>
               ${this._related.automation_blueprint.map((path) => {
@@ -302,7 +302,7 @@ export class HaRelatedItems extends LitElement {
       ${this._related.automation
         ? html`
             <h3>
-              ${this.hass.localize("ui.components.related-items.automation")}:
+              ${this.hass.localize("ui.components.related-items.automation")}
             </h3>
             <mwc-list>
               ${this._related.automation.map((automationId) => {
@@ -334,7 +334,7 @@ export class HaRelatedItems extends LitElement {
       ${this._related.script_blueprint
         ? html`
             <h3>
-              ${this.hass.localize("ui.components.related-items.blueprint")}:
+              ${this.hass.localize("ui.components.related-items.blueprint")}
             </h3>
             <mwc-list>
               ${this._related.script_blueprint.map((path) => {
@@ -362,9 +362,7 @@ export class HaRelatedItems extends LitElement {
         : ""}
       ${this._related.script
         ? html`
-            <h3>
-              ${this.hass.localize("ui.components.related-items.script")}:
-            </h3>
+            <h3>${this.hass.localize("ui.components.related-items.script")}</h3>
             <mwc-list>
               ${this._related.script.map((scriptId) => {
                 const script: HassEntity | undefined =
@@ -418,34 +416,29 @@ export class HaRelatedItems extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      a {
-        color: var(--primary-color);
-        text-decoration: none;
-      }
-      ha-list-item {
-        --mdc-list-side-padding: 24px;
-      }
-      h3 {
-        font-family: var(--paper-font-title_-_font-family);
-        -webkit-font-smoothing: var(
-          --paper-font-title_-_-webkit-font-smoothing
-        );
-        font-size: var(--paper-font-title_-_font-size);
-        font-weight: var(--paper-font-headline-_font-weight);
-        letter-spacing: var(--paper-font-title_-_letter-spacing);
-        line-height: var(--paper-font-title_-_line-height);
-        opacity: var(--dark-primary-opacity);
-        padding: 0 24px;
-      }
-      h3:first-child {
-        margin-top: 0;
-      }
-      .avatar {
-        background-position: center center;
-        background-size: cover;
-      }
-    `;
+    return [
+      haStyle,
+      css`
+        a {
+          color: var(--primary-color);
+          text-decoration: none;
+        }
+        ha-list-item {
+          --mdc-list-side-padding: 24px;
+        }
+        h3 {
+          padding: 0 24px;
+          margin-bottom: 0;
+        }
+        h3:first-child {
+          margin-top: 0;
+        }
+        .avatar {
+          background-position: center center;
+          background-size: cover;
+        }
+      `,
+    ];
   }
 }
 
