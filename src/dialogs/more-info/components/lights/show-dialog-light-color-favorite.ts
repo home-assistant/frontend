@@ -4,6 +4,7 @@ import { LightColor } from "../../../../data/light";
 
 export interface LightColorFavoriteDialogParams {
   entry: ExtEntityRegistryEntry;
+  title: string;
   submit?: (color?: LightColor) => void;
   cancel?: () => void;
 }

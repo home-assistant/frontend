@@ -14473,6 +14473,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sortablejs@patch:sortablejs@npm%3A1.15.0#./.yarn/patches/sortablejs-npm-1.15.0-f3a393abcc.patch::locator=home-assistant-frontend%40workspace%3A.":
+  version: 1.15.0
+  resolution: "sortablejs@patch:sortablejs@npm%3A1.15.0#./.yarn/patches/sortablejs-npm-1.15.0-f3a393abcc.patch::version=1.15.0&hash=29e891&locator=home-assistant-frontend%40workspace%3A."
+  checksum: 9a5c899bc4ec1a99732a44511ef7188ae0aba59b98bce66b952590a33a12e0779cebe8664a5565815facfeb0a32072418a2447eb690a5d3c234981126462da7e
+  languageName: node
+  linkType: hard
+
 "source-list-map@npm:^2.0.1":
   version: 2.0.1
   resolution: "source-list-map@npm:2.0.1"

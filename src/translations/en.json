@@ -869,6 +869,7 @@
         "turn_on": "Turn on",
         "turn_off": "Turn off",
         "toggle": "Toggle",
+        "exit_edit_mode": "Exit edit mode",
         "script": {
           "last_action": "Last action",
           "last_triggered": "Last triggered"
@@ -926,6 +927,7 @@
           "graph_unit": "People in zone"
         },
         "light": {
+          "edit_mode": "Edit favorite colors",
           "toggle": "Toggle",
           "change_color": "Change color",
           "set_white": "Set white",
@@ -940,7 +942,14 @@
           },
           "favorite_color": {
             "set": "Set favorite color {number}",
-            "edit": "Edit favorite color {number}"
+            "edit": "Edit favorite color {number}",
+            "remove": "Remove favorite color {number}",
+            "remove_confirm_title": "Remove favorite color?",
+            "remove_confirm_text": "This favorite color will be permanently removed.",
+            "remove_confirm_action": "Remove",
+            "add": "Add new favorite color",
+            "edit_title": "Edit favorite color",
+            "add_title": "Add favorite color"
           }
         },
         "fan": {
@@ -1335,9 +1344,6 @@
       "enter_code": {
         "title": "Enter code",
         "input_label": "Code"
-      },
-      "light-color-favorite": {
-        "title": "Edit favorite color"
       },
       "tts-try": {
         "header": "Try text-to-speech",

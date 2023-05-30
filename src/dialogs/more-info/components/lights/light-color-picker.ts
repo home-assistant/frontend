@@ -42,6 +42,8 @@ class LightColorPicker extends LitElement {
 
   @property() public entityId!: string;
 
+  @property() public defaultMode!: Mode;
+
   @state() private _cwSliderValue?: number;
 
   @state() private _wwSliderValue?: number;
@@ -274,11 +276,13 @@ class LightColorPicker extends LitElement {
       }
 
       this._modes = modes;
-      this._mode = this.stateObj!.attributes.color_mode
-        ? this.stateObj!.attributes.color_mode === LightColorMode.COLOR_TEMP
-          ? LightColorMode.COLOR_TEMP
-          : "color"
-        : this._modes[0];
+      this._mode =
+        this.defaultMode ??
+        (this.stateObj!.attributes.color_mode
+          ? this.stateObj!.attributes.color_mode === LightColorMode.COLOR_TEMP
+            ? LightColorMode.COLOR_TEMP
+            : "color"
+          : this._modes[0]);
     }
 
     this._updateSliderValues();

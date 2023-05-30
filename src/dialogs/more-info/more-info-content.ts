@@ -14,6 +14,8 @@ class MoreInfoContent extends ReactiveElement {
 
   @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
 
+  @property({ attribute: false }) public editMode?: boolean;
+
   private _detachedChild?: ChildNode;
 
   protected createRenderRoot() {
@@ -26,6 +28,7 @@ class MoreInfoContent extends ReactiveElement {
     const stateObj = this.stateObj;
     const entry = this.entry;
     const hass = this.hass;
+    const editMode = this.editMode;
 
     if (!stateObj || !hass) {
       if (this.lastChild) {
@@ -59,6 +62,7 @@ class MoreInfoContent extends ReactiveElement {
       hass,
       stateObj,
       entry,
+      editMode,
     });
   }
 }
