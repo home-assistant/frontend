@@ -25,7 +25,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "dependencies": {
-    "@babel/runtime": "7.22.0",
+    "@babel/runtime": "7.22.3",
     "@braintree/sanitize-url": "6.0.2",
     "@codemirror/autocomplete": "6.7.1",
     "@codemirror/commands": "6.2.4",
@@ -150,7 +150,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.22.1",
-    "@babel/plugin-proposal-decorators": "7.22.0",
+    "@babel/plugin-proposal-decorators": "7.22.3",
     "@babel/plugin-transform-runtime": "7.22.2",
     "@babel/preset-env": "7.22.2",
     "@babel/preset-typescript": "7.21.5",
