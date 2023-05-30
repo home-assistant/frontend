@@ -10,12 +10,6 @@ supports es6-module-dynamic-import
 not Safari < 13
 not iOS < 13
 
-# Exclude KaiOS, QQ, and UC browsers due to lack of sufficient feature support data
-# Babel ignores these automatically, but we need here for Webpack to output ESM with dynamic imports
-not KaiOS > 0
-not QQAndroid > 0
-not UCAndroid > 0
-
 # Exclude unsupported browsers
 not dead
 
