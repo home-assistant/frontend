@@ -64,14 +64,6 @@ export class HaIntegrationHeader extends LitElement {
       }
     }
 
-    // if (this.debugLoggingEnabled) {
-    //   icons.push([
-    //     mdiBugPlay,
-    //     this.hass.localize(
-    //       "ui.panel.config.integrations.config_entry.debug_logging_enabled"
-    //     ),
-    //   ]);
-    // }
     return html`
       ${!this.banner ? "" : html`<div class="banner">${this.banner}</div>`}
       <slot name="above-header"></slot>
