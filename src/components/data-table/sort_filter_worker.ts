@@ -1,6 +1,6 @@
 // To use comlink under ES5
-import { expose } from "comlink";
 import "proxy-polyfill";
+import { expose } from "comlink";
 import type {
   ClonedDataTableColumnData,
   DataTableRowData,
