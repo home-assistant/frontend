@@ -16,7 +16,11 @@ class MoreInfoViewLightColorPicker extends LitElement {
     }
 
     return html`
-      <light-color-picker .hass=${this.hass} entityId=${this.params.entityId}>
+      <light-color-picker
+        .hass=${this.hass}
+        .entityId=${this.params.entityId}
+        .defaultMode=${this.params.defaultMode}
+      >
       </light-color-picker>
     `;
   }

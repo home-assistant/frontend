@@ -24,6 +24,11 @@ export class HaOutlinedIconButton extends IconButton {
         --md-sys-color-on-surface-variant: var(--secondary-text-color);
         --md-sys-color-on-surface-rgb: var(--rgb-secondary-text-color);
       }
+      :host([no-ripple]) .outlined {
+        --md-ripple-focus-opacity: 0;
+        --md-ripple-hover-opacity: 0;
+        --md-ripple-pressed-opacity: 0;
+      }
       button {
         /* Fix md-outlined-icon-button padding for iOS */
         padding: 0;

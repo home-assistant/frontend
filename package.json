@@ -248,7 +248,8 @@
   "_comment": "Polymer 3.2 contained a bug, fixed in https://github.com/Polymer/polymer/pull/5569, add as patch",
   "resolutions": {
     "@polymer/polymer": "patch:@polymer/polymer@3.5.1#./.yarn/patches/@polymer/polymer/pr-5569.patch",
-    "@material/mwc-button@^0.25.3": "^0.27.0"
+    "@material/mwc-button@^0.25.3": "^0.27.0",
+    "sortablejs@1.15.0": "patch:sortablejs@npm%3A1.15.0#./.yarn/patches/sortablejs-npm-1.15.0-f3a393abcc.patch"
   },
   "prettier": {
     "trailingComma": "es5",
