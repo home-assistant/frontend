@@ -57,9 +57,9 @@ import {
   EntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
-  fetchEntityRegistry,
   LockEntityOptions,
   SensorEntityOptions,
+  subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
@@ -650,12 +650,14 @@ export class EntityRegistrySettingsEditor extends LitElement {
             ${this._switchAsDomainsSorted(
               SWITCH_AS_DOMAINS,
               this.hass.localize
-            ).map(
-              (entry) => html`
-                <ha-list-item .value=${entry.domain}>
-                  ${entry.label}
-                </ha-list-item>
-              `
+            ).map((entry) =>
+              this._switchAs === entry.domain
+                ? nothing
+                : html`
+                    <ha-list-item .value=${entry.domain}>
+                      ${entry.label}
+                    </ha-list-item>
+                  `
             )}
           </ha-select>`
         : ""}
@@ -901,7 +903,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
     `;
   }
 
-  public async updateEntry(): Promise<ExtEntityRegistryEntry> {
+  public async updateEntry(): Promise<{
+    close: boolean;
+    entry: ExtEntityRegistryEntry;
+  }> {
+    let close = true;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let parent: HTMLElement = this;
     while (parent?.localName !== "home-assistant") {
@@ -1024,10 +1030,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
           }
         )) as DataEntryFlowStepCreateEntry;
         if (configFlowResult.result?.entry_id) {
-          const entry = await this._waitForEntityRegistryUpdate(
-            configFlowResult.result!.entry_id
-          );
-          showMoreInfoDialog(parent, { entityId: entry.entity_id });
+          try {
+            const entry = await this._waitForEntityRegistryUpdate(
+              configFlowResult.result.entry_id
+            );
+            showMoreInfoDialog(parent, { entityId: entry.entity_id });
+            close = false;
+          } catch (err) {
+            // ignore
+          }
         }
       }
     } else if (
@@ -1058,6 +1069,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         } else if (this._switchAs === "switch") {
           // done, original switch is back
           showMoreInfoDialog(parent, { entityId: origEntityId });
+          close = false;
         } else {
           const configFlow = await createConfigFlow(this.hass, "switch_as_x");
           const configFlowResult = (await handleConfigFlowStep(
@@ -1069,30 +1081,41 @@ export class EntityRegistrySettingsEditor extends LitElement {
             }
           )) as DataEntryFlowStepCreateEntry;
           if (configFlowResult.result?.entry_id) {
-            const entry = await this._waitForEntityRegistryUpdate(
-              configFlowResult.result!.entry_id
-            );
-            showMoreInfoDialog(parent, { entityId: entry.entity_id });
+            try {
+              const entry = await this._waitForEntityRegistryUpdate(
+                configFlowResult.result.entry_id
+              );
+              showMoreInfoDialog(parent, { entityId: entry.entity_id });
+              close = false;
+            } catch (err) {
+              // ignore
+            }
           }
         }
       }
     }
 
-    return result.entity_entry;
+    return { close, entry: result.entity_entry };
   }
 
   private async _waitForEntityRegistryUpdate(config_entry_id: string) {
-    return new Promise<EntityRegistryEntry>((resolve) => {
-      const unsub = this.hass.connection.subscribeEvents(async () => {
-        const entityRegistry = await fetchEntityRegistry(this.hass.connection);
-        const entity = entityRegistry.find(
-          (reg) => reg.config_entry_id === config_entry_id
-        );
-        if (entity) {
-          (await unsub)();
-          resolve(entity);
+    return new Promise<EntityRegistryEntry>((resolve, reject) => {
+      const timeout = setTimeout(reject, 5000);
+      const unsub = subscribeEntityRegistry(
+        this.hass.connection,
+        (entityRegistry) => {
+          const entity = entityRegistry.find(
+            (reg) => reg.config_entry_id === config_entry_id
+          );
+          if (entity) {
+            clearTimeout(timeout);
+            unsub();
+            resolve(entity);
+          }
         }
-      }, "entity_registry_updated");
+      );
+      // @ts-ignore Force refresh
+      this.hass.connection._entityRegistry?.refresh();
     });
   }
 
