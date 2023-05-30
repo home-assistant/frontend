@@ -13,6 +13,7 @@ import {
   NumberFormat,
   saveTranslationPreferences,
   TimeFormat,
+  DateFormat,
   TranslationCategory,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
@@ -36,6 +37,9 @@ declare global {
     };
     "hass-time-format-select": {
       time_format: TimeFormat;
+    };
+    "hass-date-format-select": {
+      date_format: DateFormat;
     };
     "hass-first-weekday-select": {
       first_weekday: FirstWeekday;
@@ -80,6 +84,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this.addEventListener("hass-time-format-select", (e) => {
         this._selectTimeFormat((e as CustomEvent).detail, true);
       });
+      this.addEventListener("hass-date-format-select", (e) => {
+        this._selectDateFormat((e as CustomEvent).detail, true);
+      });
       this.addEventListener("hass-first-weekday-select", (e) => {
         this._selectFirstWeekday((e as CustomEvent).detail, true);
       });
@@ -120,6 +127,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         ) {
           // We just got time_format from backend, no need to save back
           this._selectTimeFormat(locale.time_format, false);
+        }
+        if (
+          locale?.date_format &&
+          this.hass!.locale.date_format !== locale.date_format
+        ) {
+          // We just got date_format from backend, no need to save back
+          this._selectDateFormat(locale.date_format, false);
         }
         if (
           locale?.first_weekday &&
@@ -169,6 +183,18 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     private _selectTimeFormat(time_format: TimeFormat, saveToBackend: boolean) {
       this._updateHass({
         locale: { ...this.hass!.locale, time_format: time_format },
+      });
+      if (saveToBackend) {
+        saveTranslationPreferences(this.hass!, this.hass!.locale);
+      }
+    }
+
+    private _selectDateFormat(date_format: DateFormat, saveToBackend: boolean) {
+      this._updateHass({
+        locale: {
+          ...this.hass!.locale,
+          date_format: date_format,
+        },
       });
       if (saveToBackend) {
         saveTranslationPreferences(this.hass!, this.hass!.locale);

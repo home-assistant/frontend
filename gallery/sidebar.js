@@ -46,6 +46,10 @@ export default [
     pages: ["user-types", "configuration-menu"],
   },
   {
+    category: "date-time",
+    header: "Date and Time",
+  },
+  {
     category: "design.home-assistant.io",
     header: "About",
   },

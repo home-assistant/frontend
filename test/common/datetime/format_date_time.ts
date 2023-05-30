@@ -8,6 +8,7 @@ import {
   NumberFormat,
   TimeFormat,
   FirstWeekday,
+  DateFormat,
 } from "../../../src/data/translation";
 
 describe("formatDateTime", () => {
@@ -19,6 +20,7 @@ describe("formatDateTime", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.am_pm,
+        date_format: DateFormat.language,
         first_weekday: FirstWeekday.language,
       }),
       "November 18, 2017 at 11:12 PM"
@@ -28,6 +30,7 @@ describe("formatDateTime", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.twenty_four,
+        date_format: DateFormat.language,
         first_weekday: FirstWeekday.language,
       }),
       "November 18, 2017 at 23:12"
@@ -44,6 +47,7 @@ describe("formatDateTimeWithSeconds", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.am_pm,
+        date_format: DateFormat.language,
         first_weekday: FirstWeekday.language,
       }),
       "November 18, 2017 at 11:12:13 PM"
@@ -53,6 +57,7 @@ describe("formatDateTimeWithSeconds", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.twenty_four,
+        date_format: DateFormat.language,
         first_weekday: FirstWeekday.language,
       }),
       "November 18, 2017 at 23:12:13"

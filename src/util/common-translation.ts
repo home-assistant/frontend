@@ -76,6 +76,7 @@ export async function getUserLocale(
   const language = result?.language;
   const number_format = result?.number_format;
   const time_format = result?.time_format;
+  const date_format = result?.date_format;
   const first_weekday = result?.first_weekday;
   if (language) {
     const availableLanguage = findAvailableLanguage(language);
@@ -84,6 +85,7 @@ export async function getUserLocale(
         language: availableLanguage,
         number_format,
         time_format,
+        date_format: date_format,
         first_weekday,
       };
     }
@@ -91,6 +93,7 @@ export async function getUserLocale(
   return {
     number_format,
     time_format,
+    date_format: date_format,
     first_weekday,
   };
 }
