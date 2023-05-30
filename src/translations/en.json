@@ -3238,6 +3238,11 @@
             "confirm_delete_ignore": "This will make the integration appear in your discovered integrations again when it gets discovered. This might require a restart or take some time.",
             "stop_ignore": "Stop ignoring"
           },
+          "integration_page": {
+            "entries": "Integration entries",
+            "no_entries": "No entries",
+            "attention_entries": "Needs attention"
+          },
           "config_entry": {
             "application_credentials": {
               "delete_title": "Application Credentials",

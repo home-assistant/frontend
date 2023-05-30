@@ -9,10 +9,13 @@ export const restoreScroll =
     key: element.key,
     descriptor: {
       set(this: LitElement, value: number) {
+        history.replaceState({ scrollPosition: value }, "");
         this[`__${String(element.key)}`] = value;
       },
       get(this: LitElement) {
-        return this[`__${String(element.key)}`];
+        return (
+          this[`__${String(element.key)}`] || history.state?.scrollPosition
+        );
       },
       enumerable: true,
       configurable: true,
@@ -21,12 +24,17 @@ export const restoreScroll =
       const connectedCallback = cls.prototype.connectedCallback;
       cls.prototype.connectedCallback = function () {
         connectedCallback.call(this);
-        if (this[element.key]) {
-          const target = this.renderRoot.querySelector(selector);
-          if (!target) {
-            return;
-          }
-          target.scrollTop = this[element.key];
+        const scrollPos = this[element.key];
+        if (scrollPos) {
+          this.updateComplete.then(() => {
+            const target = this.renderRoot.querySelector(selector);
+            if (!target) {
+              return;
+            }
+            setTimeout(() => {
+              target.scrollTop = scrollPos;
+            }, 0);
+          });
         }
       };
     },
