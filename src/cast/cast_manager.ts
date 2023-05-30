@@ -116,7 +116,7 @@ export class CastManager {
     }
   }
 
-  private _sessionStateChanged(ev: cast.framework.SessionStateEventData) {
+  private _sessionStateChanged = (ev: cast.framework.SessionStateEventData) => {
     if (__DEV__) {
       console.log("Cast session state changed", ev.sessionState);
     }
@@ -139,7 +139,7 @@ export class CastManager {
     }
   }
 
-  private _castStateChanged(ev: cast.framework.CastStateEventData) {
+  private _castStateChanged = (ev: cast.framework.CastStateEventData) => {
     if (__DEV__) {
       console.log("Cast state changed", ev.castState);
     }
