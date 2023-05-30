@@ -10,7 +10,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { repeat } from "lit/directives/repeat";
 import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-control-slider";
@@ -151,7 +150,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   private _edit = async (index) => {
     // Make sure the current favorite color is set
-    this._apply(index);
+    await this._apply(index);
     const color = await showLightColorFavoriteDialog(this, {
       entry: this.entry!,
       title: this.hass.localize(
@@ -224,9 +223,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="container">
-        ${repeat(
-          this._favoriteColors,
-          (color) => color,
+        ${this._favoriteColors.map(
           (color, index) => html`
             <div class="color">
               <div
@@ -304,6 +301,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
         margin-bottom: 12px;
         flex-wrap: wrap;
         max-width: 250px;
+        user-select: none;
       }
 
       .container > * {
@@ -311,7 +309,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
       }
 
       .color {
-        user-select: none;
+        display: block;
       }
 
       .color .color-bubble.shake {
@@ -325,12 +323,12 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
       .color:nth-child(3n + 2) .color-bubble.shake {
         animation-delay: 0.3s;
       }
-      .sortable-ghost {
-        opacity: 0;
-      }
 
+      .sortable-ghost {
+        opacity: 0.4;
+      }
       .sortable-fallback {
-        opacity: 0;
+        display: none;
       }
 
       @keyframes shake {

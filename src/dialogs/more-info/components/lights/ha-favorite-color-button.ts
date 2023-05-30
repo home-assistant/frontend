@@ -67,6 +67,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
 
     return html`
       <ha-outlined-icon-button
+        no-ripple
         .disabled=${this.disabled}
         title=${ifDefined(this.label)}
         aria-label=${ifDefined(this.label)}
@@ -100,6 +101,9 @@ class MoreInfoViewLightColorPicker extends LitElement {
             var(--rgb-secondary-text-color)
           );
           --md-sys-color-outline: var(--divider-color);
+          --md-ripple-focus-color: 0;
+          --md-ripple-hover-opacity: 0;
+          --md-ripple-pressed-opacity: 0;
           border-radius: 9999px;
         }
         :host([disabled]) {

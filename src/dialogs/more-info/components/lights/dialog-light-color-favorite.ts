@@ -33,6 +33,7 @@ class DialogLightColorFavorite extends LitElement {
   public closeDialog(): void {
     this._dialogParams = undefined;
     this._entry = undefined;
+    this._color = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
