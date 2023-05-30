@@ -59,10 +59,13 @@ class DialogLightColorFavorite extends LitElement {
       return nothing;
     }
 
-    const title = this.hass.localize("ui.dialogs.light-color-favorite.title");
-
     return html`
-      <ha-dialog open @closed=${this._cancel} .heading=${title} flexContent>
+      <ha-dialog
+        open
+        @closed=${this._cancel}
+        .heading=${this._dialogParams?.title ?? ""}
+        flexContent
+      >
         <ha-dialog-header slot="heading">
           <ha-icon-button
             slot="navigationIcon"
@@ -70,7 +73,7 @@ class DialogLightColorFavorite extends LitElement {
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title">${title}</span>
+          <span slot="title">${this._dialogParams?.title}</span>
         </ha-dialog-header>
         <light-color-picker
           .hass=${this.hass}
