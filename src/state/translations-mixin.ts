@@ -278,8 +278,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           return this.hass!.localize;
         }
 
-        await this._updateResources(language, resources);
-        return this.hass!.localize;
+        return this._updateResources(language, resources);
       }
 
       let alreadyLoaded: LoadedTranslationCategory;
@@ -340,8 +339,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         return this.hass!.localize;
       }
 
-      await this._updateResources(language, resources);
-      return this.hass!.localize;
+      return this._updateResources(language, resources);
     }
 
     private async _loadFragmentTranslations(
@@ -370,8 +368,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
       this.__loadedFragmetTranslations.add(fragment);
       const result = await getTranslation(fragment, language);
-      await this._updateResources(result.language, result.data);
-      return this.hass!.localize;
+      return this._updateResources(result.language, result.data);
     }
 
     private async _loadCoreTranslations(language: string) {
@@ -389,7 +386,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
     }
 
-    private async _updateResources(language: string, data: any) {
+    private async _updateResources(
+      language: string,
+      data: any
+    ): Promise<LocalizeFunc> {
       updateResourcesIteration++;
       const i = updateResourcesIteration;
 
@@ -410,7 +410,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       if (language !== (this.hass ?? this._pendingHass).language) {
         // the language was changed, abort
-        return;
+        return (this.hass ?? this._pendingHass).localize!;
       }
 
       const resources = {
@@ -430,13 +430,15 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         language !== (this.hass ?? this._pendingHass).language
       ) {
         // if a new iteration has started or the language changed, abort
-        return;
+        return localize;
       }
 
       this._updateHass({
         localize,
       });
       fireEvent(this, "translations-updated");
+
+      return localize;
     }
 
     private _refetchCachedHassTranslations(
