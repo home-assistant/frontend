@@ -9,7 +9,7 @@ type SortDataParamTypes = Parameters<SortDataType>;
 
 let worker: Remote<Api> | undefined;
 
-export const filterData = async (
+export const filterData = (
   data: FilterDataParamTypes[0],
   columns: FilterDataParamTypes[1],
   filter: FilterDataParamTypes[2]
@@ -21,7 +21,7 @@ export const filterData = async (
   return worker.filterData(data, columns, filter);
 };
 
-export const sortData = async (
+export const sortData = (
   data: SortDataParamTypes[0],
   columns: SortDataParamTypes[1],
   direction: SortDataParamTypes[2],
