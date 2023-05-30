@@ -128,6 +128,13 @@ export class HaConfigDeviceDashboard extends LitElement {
             );
             break;
           }
+          case "domain": {
+            filterTexts.push(
+              `${this.hass.localize(
+                "ui.panel.config.integrations.integration"
+              )} "${domainToName(localize, value)}"`
+            );
+          }
         }
       });
       return filterTexts.length ? filterTexts : undefined;
@@ -186,6 +193,15 @@ export class HaConfigDeviceDashboard extends LitElement {
           );
           startLength = outputDevices.length;
           filterConfigEntry = entries.find((entry) => entry.entry_id === value);
+        }
+        if (key === "domain") {
+          const entryIds = entries
+            .filter((entry) => entry.domain === value)
+            .map((entry) => entry.entry_id);
+          outputDevices = outputDevices.filter((device) =>
+            device.config_entries.some((entryId) => entryIds.includes(entryId))
+          );
+          startLength = outputDevices.length;
         }
       });
 
@@ -383,8 +399,11 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   public willUpdate(changedProps) {
     if (changedProps.has("_searchParms")) {
-      if (this._searchParms.get("config_entry")) {
-        // If we are requested to show the devices for a given config entry,
+      if (
+        this._searchParms.get("config_entry") ||
+        this._searchParms.get("domain")
+      ) {
+        // If we are requested to show the devices for a given config entry / domain,
         // also show the disabled ones by default.
         this._showDisabled = true;
       }
@@ -548,7 +567,9 @@ export class HaConfigDeviceDashboard extends LitElement {
       showMatterAddDeviceDialog(this);
       return;
     }
-    showAddIntegrationDialog(this);
+    showAddIntegrationDialog(this, {
+      domain: this._searchParms.get("domain") || undefined,
+    });
   }
 
   private _showZJSAddDeviceDialog(filteredConfigEntry: ConfigEntry) {
