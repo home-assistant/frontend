@@ -373,6 +373,74 @@ export class EntityRegistrySettingsEditor extends LitElement {
               : undefined}
             .disabled=${this.disabled}
           ></ha-icon-picker>`}
+      ${domain === "switch"
+        ? html`<ha-select
+            .label=${this.hass.localize(
+              "ui.dialogs.entity_registry.editor.device_class"
+            )}
+            naturalMenuWidth
+            fixedMenuPosition
+            @selected=${this._switchAsChanged}
+            @closed=${stopPropagation}
+          >
+            <ha-list-item
+              value="switch"
+              .selected=${!this._deviceClass || this._deviceClass === "switch"}
+            >
+              ${domainToName(this.hass.localize, "switch")}
+            </ha-list-item>
+            <ha-list-item
+              value="outlet"
+              .selected=${this._deviceClass === "outlet"}
+            >
+              ${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.device_classes.switch.outlet"
+              )}
+            </ha-list-item>
+            <li divider role="separator"></li>
+            ${this._switchAsDomainsSorted(
+              SWITCH_AS_DOMAINS,
+              this.hass.localize
+            ).map(
+              (entry) => html`
+                <ha-list-item .value=${entry.domain}>
+                  ${entry.label}
+                </ha-list-item>
+              `
+            )}
+          </ha-select>`
+        : this.helperConfigEntry?.domain === "switch_as_x"
+        ? html`<ha-select
+            .label=${this.hass.localize(
+              "ui.dialogs.entity_registry.editor.switch_as_x"
+            )}
+            .value=${this._switchAs}
+            naturalMenuWidth
+            fixedMenuPosition
+            @selected=${this._switchAsChanged}
+            @closed=${stopPropagation}
+          >
+            <ha-list-item value="switch">
+              ${domainToName(this.hass.localize, "switch")}
+            </ha-list-item>
+            <ha-list-item .value=${domain}>
+              ${domainToName(this.hass.localize, domain)}
+            </ha-list-item>
+            <li divider role="separator"></li>
+            ${this._switchAsDomainsSorted(
+              SWITCH_AS_DOMAINS,
+              this.hass.localize
+            ).map((entry) =>
+              domain === entry.domain
+                ? nothing
+                : html`
+                    <ha-list-item .value=${entry.domain}>
+                      ${entry.label}
+                    </ha-list-item>
+                  `
+            )}
+          </ha-select>`
+        : nothing}
       ${this._deviceClassOptions
         ? html`
             <ha-select
@@ -605,61 +673,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
               )}
             </ha-select>
           `
-        : ""}
-      ${domain === "switch" || this.helperConfigEntry?.domain === "switch_as_x"
-        ? html`<ha-select
-            .label=${this.hass.localize(
-              "ui.dialogs.entity_registry.editor.device_class"
-            )}
-            naturalMenuWidth
-            fixedMenuPosition
-            @selected=${this._switchAsChanged}
-            @closed=${stopPropagation}
-          >
-            ${domain === "switch"
-              ? html`<ha-list-item
-                    value="switch"
-                    .selected=${!this._deviceClass ||
-                    this._deviceClass === "switch"}
-                  >
-                    ${this.hass.localize(
-                      "ui.dialogs.entity_registry.editor.device_classes.switch.switch"
-                    )}
-                  </ha-list-item>
-                  <ha-list-item
-                    value="outlet"
-                    .selected=${this._deviceClass === "outlet"}
-                  >
-                    ${this.hass.localize(
-                      "ui.dialogs.entity_registry.editor.device_classes.switch.outlet"
-                    )}
-                  </ha-list-item>`
-              : html`<ha-list-item
-                    value="switch"
-                    .selected=${this._switchAs === "switch"}
-                  >
-                    ${domainToName(this.hass.localize, "switch")}
-                  </ha-list-item>
-                  <ha-list-item
-                    value="switch"
-                    .selected=${this._switchAs === domain}
-                  >
-                    ${domainToName(this.hass.localize, domain)}
-                  </ha-list-item>`}
-            <li divider role="separator"></li>
-            ${this._switchAsDomainsSorted(
-              SWITCH_AS_DOMAINS,
-              this.hass.localize
-            ).map((entry) =>
-              this._switchAs === entry.domain
-                ? nothing
-                : html`
-                    <ha-list-item .value=${entry.domain}>
-                      ${entry.label}
-                    </ha-list-item>
-                  `
-            )}
-          </ha-select>`
         : ""}
       <ha-textfield
         error-message="Domain needs to stay the same"
@@ -1016,7 +1029,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
         await showConfirmationDialog(this, {
           text: this.hass!.localize(
             "ui.dialogs.entity_registry.editor.switch_as_x_confirm",
-            { domain: this._switchAs }
+            {
+              domain: domainToName(
+                this.hass.localize,
+                this._switchAs
+              ).toLowerCase(),
+            }
           ),
         })
       ) {
@@ -1052,11 +1070,25 @@ export class EntityRegistrySettingsEditor extends LitElement {
             this._switchAs === "switch"
               ? this.hass!.localize(
                   "ui.dialogs.entity_registry.editor.switch_as_x_remove_confirm",
-                  { domain }
+                  {
+                    domain: domainToName(
+                      this.hass.localize,
+                      domain
+                    ).toLowerCase(),
+                  }
                 )
               : this.hass!.localize(
                   "ui.dialogs.entity_registry.editor.switch_as_x_change_confirm",
-                  { domain_1: domain, domain_2: this._switchAs }
+                  {
+                    domain_1: domainToName(
+                      this.hass.localize,
+                      domain
+                    ).toLowerCase(),
+                    domain_2: domainToName(
+                      this.hass.localize,
+                      this._switchAs
+                    ).toLowerCase(),
+                  }
                 ),
         })
       ) {
