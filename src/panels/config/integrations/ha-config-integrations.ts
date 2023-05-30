@@ -1,6 +1,7 @@
 import { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../common/navigate";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import {
   ConfigEntry,
   subscribeConfigEntries,
@@ -74,14 +75,20 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
   @property()
   private _configEntriesInProgress?: DataEntryFlowProgressExtended[];
 
-  private _loadTranslationsPromise?: Promise<unknown>;
+  private _loadTranslationsPromise?: Promise<LocalizeFunc>;
 
   public hassSubscribe() {
     return [
       subscribeConfigEntries(
         this.hass,
         async (messages) => {
-          await this._loadTranslationsPromise;
+          await this._loadTranslationsPromise?.then(
+            () =>
+              // allow hass to update
+              new Promise((resolve) => {
+                window.setTimeout(resolve, 0);
+              })
+          );
           let fullUpdate = false;
           const newEntries: ConfigEntryExtended[] = [];
           messages.forEach((message) => {
@@ -140,13 +147,12 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
     ];
   }
 
-  protected firstUpdated(changed: PropertyValues) {
-    super.firstUpdated(changed);
-    this._loadTranslationsPromise = this.hass.loadBackendTranslation(
-      "title",
-      undefined,
-      true
-    );
+  protected willUpdate(changed: PropertyValues) {
+    super.willUpdate(changed);
+    if (this.hasUpdated) {
+      return;
+    }
+    this._loadTranslationsPromise = this.hass.loadBackendTranslation("title");
   }
 
   protected updatePageEl(pageEl) {
