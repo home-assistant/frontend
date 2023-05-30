@@ -55,6 +55,7 @@ import {
   DisableConfigEntryResult,
   enableConfigEntry,
   ERROR_STATES,
+  getConfigEntries,
   RECOVERABLE_STATES,
   reloadConfigEntry,
   updateConfigEntry,
@@ -122,6 +123,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @state() private _manifest?: IntegrationManifest;
 
+  @state() private _extraConfigEntries?: ConfigEntry[];
+
   @state() private _diagnosticHandler?: DiagnosticInfo;
 
   @state() private _logInfo?: IntegrationLogInfo;
@@ -165,6 +168,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   protected willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has("domain")) {
       this.hass.loadBackendTranslation("title", [this.domain]);
+      this._extraConfigEntries = undefined;
       this._fetchManifest();
       this._fetchDiagnostics();
     }
@@ -189,7 +193,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
     const configEntries = this._domainConfigEntries(
       this.domain,
-      this.configEntries
+      this._extraConfigEntries || this.configEntries
     );
 
     const configEntriesInProgress = this._domainConfigEntriesInProgress(
@@ -754,6 +758,14 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       return;
     }
     this._manifest = await fetchIntegrationManifest(this.hass, this.domain);
+    if (
+      this._manifest.integration_type &&
+      !["device", "hub", "service"].includes(this._manifest.integration_type)
+    ) {
+      this._extraConfigEntries = await getConfigEntries(this.hass, {
+        domain: this.domain,
+      });
+    }
   }
 
   private async _fetchDiagnostics() {
