@@ -98,11 +98,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
   }
 
   private async _initializeLocalize() {
-    const { language, data } = await getTranslation(
-      null,
-      this._language,
-      "/api/hassio/app/static/translations"
-    );
+    const { language, data } = await getTranslation(null, this._language);
 
     this._updateSupervisor({
       localize: await computeLocalize<SupervisorKeys>(

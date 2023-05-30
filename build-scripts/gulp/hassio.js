@@ -21,7 +21,7 @@ gulp.task(
     "build-supervisor-translations",
     "copy-translations-supervisor",
     "build-locale-data",
-    "copy-locale-data-supervisor",
+    "copy-static-supervisor",
     env.useRollup() ? "rollup-watch-hassio" : "webpack-watch-hassio"
   )
 );
@@ -37,7 +37,7 @@ gulp.task(
     "build-supervisor-translations",
     "copy-translations-supervisor",
     "build-locale-data",
-    "copy-locale-data-supervisor",
+    "copy-static-supervisor",
     env.useRollup() ? "rollup-prod-hassio" : "webpack-prod-hassio",
     "gen-pages-hassio-prod",
     ...// Don't compress running tests

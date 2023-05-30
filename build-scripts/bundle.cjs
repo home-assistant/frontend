@@ -259,6 +259,7 @@ module.exports.config = {
       isHassioBuild: true,
       defineOverlay: {
         __SUPERVISOR__: true,
+        __STATIC_PATH__: `"${paths.hassio_publicPath}/static/"`,
       },
     };
   },
