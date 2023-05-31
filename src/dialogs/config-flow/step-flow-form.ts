@@ -21,6 +21,7 @@ import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+import { isNavigationClick } from "../../common/dom/is-navigation-click";
 
 @customElement("step-flow-form")
 class StepFlowForm extends LitElement {
@@ -47,7 +48,7 @@ class StepFlowForm extends LitElement {
 
     return html`
       <h2>${this.flowConfig.renderShowFormStepHeader(this.hass, this.step)}</h2>
-      <div class="content">
+      <div class="content" @click=${this._clickHandler}>
         ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
         ${this._errorMsg
           ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
@@ -90,6 +91,14 @@ class StepFlowForm extends LitElement {
     super.firstUpdated(changedProps);
     setTimeout(() => this.shadowRoot!.querySelector("ha-form")!.focus(), 0);
     this.addEventListener("keydown", this._handleKeyDown);
+  }
+
+  private _clickHandler(ev: MouseEvent) {
+    if (isNavigationClick(ev, false)) {
+      fireEvent(this, "flow-update", {
+        step: undefined,
+      });
+    }
   }
 
   private _handleKeyDown = (ev: KeyboardEvent) => {
