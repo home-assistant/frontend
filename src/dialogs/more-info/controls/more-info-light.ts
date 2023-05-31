@@ -331,7 +331,6 @@ class MoreInfoLight extends LitElement {
           height: 48px;
           border-radius: 24px;
           background-color: rgba(139, 145, 151, 0.1);
-          color: var(--secondary-text-color);
           box-sizing: border-box;
           width: auto;
         }
@@ -340,6 +339,9 @@ class MoreInfoLight extends LitElement {
           height: 30px;
           flex: none;
           border-radius: 15px;
+        }
+        ha-icon-button[disabled] .wheel {
+          filter: grayscale(1) opacity(0.5);
         }
         .wheel.color {
           background-image: url("/static/images/color_wheel.png");
@@ -356,10 +358,6 @@ class MoreInfoLight extends LitElement {
         .buttons {
           flex-wrap: wrap;
           max-width: 250px;
-        }
-        .color-rgb-mode[disabled],
-        .color-temp-mode[disabled] {
-          filter: grayscale(1) opacity(0.5);
         }
       `,
     ];
