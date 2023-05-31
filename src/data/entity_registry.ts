@@ -95,17 +95,12 @@ export interface WeatherEntityOptions {
   wind_speed_unit?: string | null;
 }
 
-export interface SwitchAsXEntityOptions {
-  entity_id: string;
-}
-
 export interface EntityRegistryOptions {
   number?: NumberEntityOptions;
   sensor?: SensorEntityOptions;
   lock?: LockEntityOptions;
   weather?: WeatherEntityOptions;
   light?: LightEntityOptions;
-  switch_as_x?: SwitchAsXEntityOptions;
   conversation?: Record<string, unknown>;
   "cloud.alexa"?: Record<string, unknown>;
   "cloud.google_assistant"?: Record<string, unknown>;

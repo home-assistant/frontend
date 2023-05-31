@@ -9,7 +9,7 @@ import "../../../components/ha-alert";
 import {
   ConfigEntry,
   deleteConfigEntry,
-  getConfigEntry,
+  getConfigEntries,
 } from "../../../data/config_entries";
 import { updateDeviceRegistryEntry } from "../../../data/device_registry";
 import {
@@ -21,7 +21,6 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import { hideMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -49,8 +48,13 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
     if (this.entry.config_entry_id) {
-      getConfigEntry(this.hass, this.entry.config_entry_id).then((entry) => {
-        this._helperConfigEntry = entry.config_entry;
+      getConfigEntries(this.hass, {
+        type: ["helper"],
+        domain: this.entry.platform,
+      }).then((entries) => {
+        this._helperConfigEntry = entries.find(
+          (ent) => ent.entry_id === this.entry.config_entry_id
+        );
       });
     }
   }
@@ -179,10 +183,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
     try {
-      const result = await this._registryEditor!.updateEntry();
-      if (result.close) {
-        hideMoreInfoDialog(this);
-      }
+      await this._registryEditor!.updateEntry();
+      fireEvent(this, "close-dialog");
     } catch (err: any) {
       this._error = err.message || "Unknown error";
     } finally {

@@ -16,7 +16,6 @@ import {
 } from "../../../../../data/entity_registry";
 import { HELPERS_CRUD } from "../../../../../data/helpers_crud";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { hideMoreInfoDialog } from "../../../../../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { Helper } from "../../../helpers/const";
@@ -149,10 +148,8 @@ export class EntityRegistrySettingsHelper extends LitElement {
           this._item
         );
       }
-      const result = await this._registryEditor!.updateEntry();
-      if (result.close) {
-        hideMoreInfoDialog(this);
-      }
+      await this._registryEditor!.updateEntry();
+      fireEvent(this, "close-dialog");
     } catch (err: any) {
       this._error = err.message || "Unknown error";
     } finally {
