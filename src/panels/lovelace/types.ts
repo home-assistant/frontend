@@ -93,6 +93,7 @@ export interface LovelaceHeaderFooter extends HTMLElement {
 
 export interface LovelaceCardEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceCardConfig): void;
+  setClipboard?(clipboard: LovelaceCardConfig | undefined): void;
 }
 
 export interface LovelaceHeaderFooterEditor
@@ -109,6 +110,7 @@ export interface LovelaceGenericElementEditor<C = any> extends HTMLElement {
   lovelace?: LovelaceConfig;
   context?: C;
   setConfig(config: any): void;
+  setClipboard?(clipboard: any): void;
   focusYamlEditor?: () => void;
 }
 

@@ -114,6 +114,7 @@ export class HuiCreateDialogCard
                 <hui-card-picker
                   .lovelace=${this._params.lovelaceConfig}
                   .hass=${this.hass}
+                  .clipboard=${this._params.clipboard}
                   @config-changed=${this._handleCardPicked}
                 ></hui-card-picker>
               `
@@ -215,6 +216,7 @@ export class HuiCreateDialogCard
       lovelaceConfig: this._params!.lovelaceConfig,
       saveConfig: this._params!.saveConfig,
       path: this._params!.path,
+      clipboard: this._params!.clipboard,
       cardConfig: config,
     });
 

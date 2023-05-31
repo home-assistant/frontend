@@ -98,6 +98,8 @@ export class HuiCardOptions extends LitElement {
                   "ui.panel.lovelace.editor.edit_card.duplicate"
                 )}</mwc-list-item
               >
+              <mwc-list-item class="copy-item"> Copy </mwc-list-item>
+              <mwc-list-item class="cut-item"> Cut </mwc-list-item>
               <mwc-list-item class="delete-item">
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.delete"
@@ -163,6 +165,12 @@ export class HuiCardOptions extends LitElement {
         this._duplicateCard();
         break;
       case 2:
+        this._copyCard();
+        break;
+      case 3:
+        this._cutCard();
+        break;
+      case 4:
         this._deleteCard();
         break;
     }
@@ -181,6 +189,16 @@ export class HuiCardOptions extends LitElement {
 
   private _editCard(): void {
     fireEvent(this, "ll-edit-card", { path: this.path! });
+  }
+
+  private _cutCard(): void {
+    fireEvent(this, "ll-cut-card", { path: this.path! });
+  }
+
+  private _copyCard(): void {
+    const path = this.path!;
+    const cardConfig = this.lovelace!.config.views[path[0]].cards![path[1]];
+    fireEvent(this, "ll-copy-card", { config: cardConfig });
   }
 
   private _cardUp(): void {

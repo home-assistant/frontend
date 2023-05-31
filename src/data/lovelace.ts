@@ -104,6 +104,7 @@ export interface LovelaceViewElement extends HTMLElement {
   index?: number;
   cards?: Array<LovelaceCard | HuiErrorCard>;
   badges?: LovelaceBadge[];
+  clipboard?: LovelaceCardConfig;
   isStrategy: boolean;
   setConfig(config: LovelaceViewConfig): void;
 }

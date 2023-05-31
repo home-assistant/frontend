@@ -43,6 +43,8 @@ export class HuiStackCardEditor
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
+  @state() public clipboard?: LovelaceCardConfig;
+
   @state() protected _config?: StackCardConfig;
 
   @state() protected _selectedCard = 0;
@@ -57,6 +59,10 @@ export class HuiStackCardEditor
   public setConfig(config: Readonly<StackCardConfig>): void {
     assert(config, cardConfigStruct);
     this._config = config;
+  }
+
+  public setClipboard(clipboard: LovelaceCardConfig | undefined): void {
+    this.clipboard = clipboard;
   }
 
   public focusYamlEditor() {
@@ -142,6 +148,7 @@ export class HuiStackCardEditor
                   .hass=${this.hass}
                   .value=${this._config.cards[selected]}
                   .lovelace=${this.lovelace}
+                  .clipboard=${this.clipboard}
                   @config-changed=${this._handleConfigChanged}
                   @GUImode-changed=${this._handleGUIModeChanged}
                 ></hui-card-element-editor>
@@ -150,6 +157,7 @@ export class HuiStackCardEditor
                 <hui-card-picker
                   .hass=${this.hass}
                   .lovelace=${this.lovelace}
+                  .clipboard=${this.clipboard}
                   @config-changed=${this._handleCardPicked}
                 ></hui-card-picker>
               `}

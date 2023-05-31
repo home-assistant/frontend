@@ -1,4 +1,4 @@
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import type { LovelaceCardConfig } from "../../../../data/lovelace";
 import { getCardElementClass } from "../../create-element/create-card-element";
 import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
@@ -6,6 +6,8 @@ import { HuiElementEditor } from "../hui-element-editor";
 
 @customElement("hui-card-element-editor")
 export class HuiCardElementEditor extends HuiElementEditor<LovelaceCardConfig> {
+  @property() public clipboard?: LovelaceCardConfig;
+
   protected async getConfigElement(): Promise<LovelaceCardEditor | undefined> {
     const elClass = await getCardElementClass(this.configElementType!);
 
@@ -26,6 +28,10 @@ export class HuiCardElementEditor extends HuiElementEditor<LovelaceCardConfig> {
     }
 
     return undefined;
+  }
+
+  protected getClipboard(): LovelaceCardConfig | undefined {
+    return this.clipboard;
   }
 }
 

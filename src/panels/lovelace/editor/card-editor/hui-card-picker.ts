@@ -49,6 +49,8 @@ interface CardElement {
 export class HuiCardPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property() public clipboard?: LovelaceCardConfig;
+
   @state() private _cards: CardElement[] = [];
 
   public lovelace?: LovelaceConfig;
@@ -114,6 +116,30 @@ export class HuiCardPicker extends LitElement {
         })}
       >
         <div class="cards-container">
+          ${this.clipboard
+            ? html`
+                ${until(
+                  this._renderCardElement(
+                    {
+                      type: this.clipboard.type,
+                      showElement: true,
+                      isCustom: false,
+                      name: "Paste from Clipboard",
+                      description: `Paste a ${this.clipboard.type} card from the clipboard.`,
+                    },
+                    this.clipboard
+                  ),
+                  html`
+                    <div class="card spinner">
+                      <ha-circular-progress
+                        active
+                        alt="Loading"
+                      ></ha-circular-progress>
+                    </div>
+                  `
+                )}
+              `
+            : nothing}
           ${this._filterCards(this._cards, this._filter).map(
             (cardElement: CardElement) => cardElement.element
           )}
@@ -272,7 +298,10 @@ export class HuiCardPicker extends LitElement {
     }
   }
 
-  private async _renderCardElement(card: Card): Promise<TemplateResult> {
+  private async _renderCardElement(
+    card: Card,
+    config?: LovelaceCardConfig
+  ): Promise<TemplateResult> {
     let { type } = card;
     const { showElement, isCustom, name, description } = card;
     const customCard = isCustom ? getCustomCardEntry(type) : undefined;
@@ -281,15 +310,17 @@ export class HuiCardPicker extends LitElement {
     }
 
     let element: LovelaceCard | undefined;
-    let cardConfig: LovelaceCardConfig = { type };
+    let cardConfig: LovelaceCardConfig = config ?? { type };
 
     if (this.hass && this.lovelace) {
-      cardConfig = await getCardStubConfig(
-        this.hass,
-        type,
-        this._unusedEntities!,
-        this._usedEntities!
-      );
+      if (!config) {
+        cardConfig = await getCardStubConfig(
+          this.hass,
+          type,
+          this._unusedEntities!,
+          this._usedEntities!
+        );
+      }
 
       if (showElement) {
         try {

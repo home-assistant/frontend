@@ -190,6 +190,10 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
     return undefined;
   }
 
+  protected getClipboard(): LovelaceCardConfig | undefined {
+    return undefined;
+  }
+
   protected get configElementType(): string | undefined {
     return this.value ? (this.value as any).type : undefined;
   }
@@ -364,6 +368,8 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
           configElement.addEventListener("config-changed", (ev) =>
             this._handleUIConfigChanged(ev as UIConfigChangedEvent)
           );
+
+          configElement.setClipboard?.(this.getClipboard());
 
           this._configElement = configElement;
           this._guiSupported = true;
