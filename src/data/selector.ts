@@ -295,6 +295,7 @@ export interface SelectSelector {
 
 export interface StateSelector {
   state: {
+    extra_options?: { label: string; value: any }[];
     entity_id?: string;
     attribute?: string;
   } | null;

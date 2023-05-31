@@ -301,6 +301,14 @@ export const describeTrigger = (
       }
     }
 
+    if (
+      !trigger.attribute &&
+      trigger.from === undefined &&
+      trigger.to === undefined
+    ) {
+      base += " state or any attributes";
+    }
+
     if (trigger.for) {
       const duration = describeDuration(trigger.for);
       if (duration) {
