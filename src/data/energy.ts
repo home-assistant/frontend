@@ -1,6 +1,8 @@
 import {
+  addDays,
   addHours,
   addMilliseconds,
+  addMonths,
   differenceInDays,
   endOfToday,
   endOfYesterday,
@@ -414,11 +416,17 @@ const getEnergyData = async (
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
 
   if (compare) {
+    if (dayDifference > 27 && dayDifference < 32) {
+      // When comparing a month, we want to start at the begining of the month
+      startCompare = addMonths(start, -1);
+    } else {
+      startCompare = addDays(start, (dayDifference + 1) * -1);
+    }
     endCompare = addMilliseconds(start, -1);
     if (energyStatIds.length) {
       _energyStatsCompare = fetchStatistics(
         hass!,
-        start,
+        startCompare,
         endCompare,
         energyStatIds,
         period,
@@ -429,7 +437,7 @@ const getEnergyData = async (
     if (waterStatIds.length) {
       _waterStatsCompare = fetchStatistics(
         hass!,
-        start,
+        startCompare,
         endCompare,
         waterStatIds,
         period,
