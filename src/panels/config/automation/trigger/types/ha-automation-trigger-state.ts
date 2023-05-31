@@ -224,10 +224,10 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     ev.stopPropagation();
     const newTrigger = ev.detail.value;
 
-    if (newTrigger.to && newTrigger.to === ANY_STATE_VALUE) {
+    if (newTrigger.to === ANY_STATE_VALUE) {
       newTrigger.to = newTrigger.attribute ? undefined : null;
     }
-    if (newTrigger.from && newTrigger.from === ANY_STATE_VALUE) {
+    if (newTrigger.from === ANY_STATE_VALUE) {
       newTrigger.from = newTrigger.attribute ? undefined : null;
     }
 
