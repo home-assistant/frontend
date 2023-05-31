@@ -120,6 +120,7 @@ export class MoreInfoDialog extends LitElement {
     this._entityId = undefined;
     this._entry = undefined;
     this._childView = undefined;
+    this._infoEditMode = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
