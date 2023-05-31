@@ -45,11 +45,11 @@ class HaMountPicker extends LitElement {
   }
 
   protected render() {
-    if (!this._mounts) {
-      return nothing;
-    }
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
+    }
+    if (!this._mounts) {
+      return nothing;
     }
     const dataDiskOption = html`<ha-list-item
       graphic="icon"
