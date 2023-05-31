@@ -321,6 +321,12 @@ class HaBlueprintOverview extends LitElement {
       (b) => b.path === ev.detail.id
     );
     if (blueprint.error) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.blueprint.overview.error", {
+          path: blueprint.path,
+        }),
+        text: blueprint.name,
+      });
       return;
     }
     this._createNew(blueprint);
