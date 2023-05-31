@@ -101,7 +101,9 @@ class MoreInfoLight extends LitElement {
     );
 
     const hasFavoriteColors =
-      (this.entry?.options?.light?.favorite_colors?.length ?? 0) > 0;
+      this.entry &&
+      (this.entry.options?.light?.favorite_colors == null ||
+        this.entry.options.light.favorite_colors.length > 0);
 
     const stateOverride = this._selectedBrightness
       ? `${Math.round(this._selectedBrightness)}${blankBeforePercent(
