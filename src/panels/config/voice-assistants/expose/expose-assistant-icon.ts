@@ -31,7 +31,7 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
           style=${styleMap({
             filter: this.manual ? "grayscale(100%)" : undefined,
           })}
-          alt=""
+          alt=${voiceAssistants[this.assistant].name}
           src=${brandsUrl({
             domain: voiceAssistants[this.assistant].domain,
             type: "icon",
