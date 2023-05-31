@@ -2,7 +2,7 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { hs2rgb } from "../common/color/convert-color";
+import { temperature2rgb } from "../common/color/convert-light-color";
 
 export const enum LightEntityFeature {
   EFFECT = 4,
@@ -107,7 +107,13 @@ export type LightColor =
       rgbww_color: [number, number, number, number, number];
     };
 
-const FAVORITE_COLOR_COUNT = 8;
+const COLOR_TEMP_COUNT = 4;
+const DEFAULT_COLORED_COLORS = [
+  { rgb_color: [127, 172, 255] }, // blue #7FACFF
+  { rgb_color: [215, 150, 255] }, // purple #D796FF
+  { rgb_color: [255, 158, 243] }, // pink #FF9EF3
+  { rgb_color: [255, 110, 84] }, // red #FF6E54
+] as LightColor[];
 
 export const computeDefaultFavoriteColors = (
   stateObj: LightEntity
@@ -121,30 +127,30 @@ export const computeDefaultFavoriteColors = (
 
   const supportsColor = lightSupportsColor(stateObj);
 
-  const colorPerMode =
-    supportsColorTemp && supportsColor
-      ? FAVORITE_COLOR_COUNT / 2
-      : FAVORITE_COLOR_COUNT;
-
   if (supportsColorTemp) {
     const min = stateObj.attributes.min_color_temp_kelvin!;
     const max = stateObj.attributes.max_color_temp_kelvin!;
-    const step = (max - min) / (colorPerMode - 1);
+    const step = (max - min) / (COLOR_TEMP_COUNT - 1);
 
-    for (let i = 0; i < colorPerMode; i++) {
+    for (let i = 0; i < COLOR_TEMP_COUNT; i++) {
       colors.push({
         color_temp_kelvin: Math.round(min + step * i),
+      });
+    }
+  } else if (supportsColor) {
+    const min = 2000;
+    const max = 6500;
+    const step = (max - min) / (COLOR_TEMP_COUNT - 1);
+
+    for (let i = 0; i < COLOR_TEMP_COUNT; i++) {
+      colors.push({
+        rgb_color: temperature2rgb(Math.round(min + step * i)),
       });
     }
   }
 
   if (supportsColor) {
-    const step = 360 / colorPerMode;
-    for (let i = 0; i < colorPerMode; i++) {
-      colors.push({
-        rgb_color: hs2rgb([step * i, 1]),
-      });
-    }
+    colors.push(...DEFAULT_COLORED_COLORS);
   }
 
   return colors;
