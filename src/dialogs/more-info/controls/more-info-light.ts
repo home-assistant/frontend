@@ -177,10 +177,10 @@ class MoreInfoLight extends LitElement {
                       <ha-icon-button
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
                         .title=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.change_color"
+                          "ui.dialogs.more_info_control.light.change_color_temp"
                         )}
                         .ariaLabel=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.change_color"
+                          "ui.dialogs.more_info_control.light.change_color_temp"
                         )}
                         .mode=${"color_temp"}
                         @click=${this._showLightColorPickerView}
@@ -294,7 +294,7 @@ class MoreInfoLight extends LitElement {
       ),
       {
         entityId: this.stateObj!.entity_id,
-        defaultMode: ev.target.mode,
+        defaultMode: ev.currentTarget.mode,
       }
     );
   };
