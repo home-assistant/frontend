@@ -2,17 +2,9 @@ import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-button";
 import "@material/mwc-list";
 import { mdiApplication, mdiCog, mdiDevices, mdiShape } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  TemplateResult,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -105,64 +97,40 @@ export class HaIntegrationCard extends LitElement {
       <div class="content">
         ${devices.length > 0
           ? html`<a
-              href=${ifDefined(
-                devices.length === 1
-                  ? `/config/devices/device/${devices[0].id}`
-                  : devices.length > 1
-                  ? `/config/devices/dashboard?historyBack=1&domain=${this.domain}`
-                  : undefined
-              )}
+              href=${devices.length === 1
+                ? `/config/devices/device/${devices[0].id}`
+                : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`}
             >
-              <ha-list-item
-                hasMeta
-                graphic="icon"
-                .noninteractive=${devices.length === 0}
-              >
+              <ha-list-item hasMeta graphic="icon">
                 <ha-svg-icon
                   .path=${services ? mdiApplication : mdiDevices}
                   slot="graphic"
                 ></ha-svg-icon>
-                ${devices.length === 0
-                  ? "No devices"
-                  : this.hass.localize(
-                      `ui.panel.config.integrations.config_entry.${
-                        services ? "services" : "devices"
-                      }`,
-                      "count",
-                      devices.length
-                    )}
-                ${devices.length === 0
-                  ? nothing
-                  : html`<ha-icon-next slot="meta"></ha-icon-next>`}
+                ${this.hass.localize(
+                  `ui.panel.config.integrations.config_entry.${
+                    services ? "services" : "devices"
+                  }`,
+                  "count",
+                  devices.length
+                )}
+                <ha-icon-next slot="meta"></ha-icon-next>
               </ha-list-item>
             </a>`
           : ""}
         ${entities.length > 0
           ? html`<a
-              href=${ifDefined(
-                entities.length
-                  ? `/config/entities?historyBack=1&domain=${this.domain}`
-                  : undefined
-              )}
+              href=${`/config/entities?historyBack=1&domain=${this.domain}`}
             >
-              <ha-list-item
-                hasMeta
-                graphic="icon"
-                .noninteractive=${entities.length === 0}
-              >
+              <ha-list-item hasMeta graphic="icon">
                 <ha-svg-icon .path=${mdiShape} slot="graphic"></ha-svg-icon>
-                ${entities.length === 0
-                  ? "No entities"
-                  : this.hass.localize(
-                      `ui.panel.config.integrations.config_entry.entities`,
-                      "count",
-                      entities.length
-                    )}
-                ${entities.length === 0
-                  ? nothing
-                  : html`<ha-icon-next slot="meta"></ha-icon-next>`}
-              </ha-list-item></a
-            >`
+                ${this.hass.localize(
+                  `ui.panel.config.integrations.config_entry.entities`,
+                  "count",
+                  entities.length
+                )}
+                <ha-icon-next slot="meta"></ha-icon-next>
+              </ha-list-item>
+            </a>`
           : ""}
       </div>
     `;
