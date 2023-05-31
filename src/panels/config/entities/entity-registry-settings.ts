@@ -47,9 +47,11 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @query("entity-registry-settings-editor")
   private _registryEditor?: EntityRegistrySettingsEditor;
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    this._fetchHelperConfigEntry();
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (changedProps.has("entry")) {
+      this._fetchHelperConfigEntry();
+    }
   }
 
   private async _fetchHelperConfigEntry() {
@@ -66,9 +68,11 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       );
       if (manifest.integration_type === "helper") {
         this._helperConfigEntry = configEntry;
+      } else {
+        this._helperConfigEntry = undefined;
       }
     } catch (err) {
-      // ignore;
+      this._helperConfigEntry = undefined;
     }
   }
 
