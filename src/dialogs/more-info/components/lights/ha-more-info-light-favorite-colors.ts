@@ -294,7 +294,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 12px;
+        margin: -8px;
         flex-wrap: wrap;
         max-width: 250px;
         user-select: none;
