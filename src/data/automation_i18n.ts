@@ -1,4 +1,9 @@
 import { formatDuration } from "../common/datetime/format_duration";
+import {
+  formatTime,
+  formatTimeWithSeconds,
+} from "../common/datetime/format_time";
+import { FrontendLocaleData } from "./translation";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateName } from "../common/entity/compute_state_name";
@@ -27,6 +32,22 @@ const describeDuration = (forTime: number | string | ForDict) => {
     duration = formatDuration(forTime);
   }
   return duration;
+};
+
+const localizeTimeString = (time: string, locale: FrontendLocaleData) => {
+  const chunks = time.split(":");
+  if (chunks.length < 2 || chunks.length > 3) {
+    return time;
+  }
+  try {
+    const dt = new Date("1970-01-01T" + time);
+    if (chunks.length === 2 || Number(chunks[2]) === 0) {
+      return formatTime(dt, locale);
+    }
+    return formatTimeWithSeconds(dt, locale);
+  } catch {
+    return time;
+  }
 };
 
 const ordinalSuffix = (n: number) => {
@@ -320,9 +341,11 @@ export const describeTrigger = (
   // Time Trigger
   if (trigger.platform === "time" && trigger.at) {
     const result = ensureArray(trigger.at).map((at) =>
-      at.toString().includes(".")
+      typeof at !== "string"
+        ? at
+        : at.includes(".")
         ? `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`
-        : at
+        : localizeTimeString(at, hass.locale)
     );
 
     const last = result.splice(-1, 1)[0];
@@ -790,21 +813,27 @@ export const describeCondition = (
     const validWeekdays =
       weekdaysArray && weekdaysArray.length > 0 && weekdaysArray.length < 7;
     if (condition.before || condition.after || validWeekdays) {
-      const before = condition.before?.toString().includes(".")
-        ? `entity ${
-            hass.states[condition.before]
-              ? computeStateName(hass.states[condition.before])
-              : condition.before
-          }`
-        : condition.before;
+      const before =
+        typeof condition.before !== "string"
+          ? condition.before
+          : condition.before.includes(".")
+          ? `entity ${
+              hass.states[condition.before]
+                ? computeStateName(hass.states[condition.before])
+                : condition.before
+            }`
+          : localizeTimeString(condition.before, hass.locale);
 
-      const after = condition.after?.toString().includes(".")
-        ? `entity ${
-            hass.states[condition.after]
-              ? computeStateName(hass.states[condition.after])
-              : condition.after
-          }`
-        : condition.after;
+      const after =
+        typeof condition.after !== "string"
+          ? condition.after
+          : condition.after.includes(".")
+          ? `entity ${
+              hass.states[condition.after]
+                ? computeStateName(hass.states[condition.after])
+                : condition.after
+            }`
+          : localizeTimeString(condition.after, hass.locale);
 
       let result = "Confirm the ";
       if (after || before) {
