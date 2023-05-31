@@ -1,5 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "app-datepicker";
+import { format } from "date-fns";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -67,10 +68,7 @@ export class HaDialogDatePicker extends LitElement {
 
   private _setToday() {
     const today = new Date();
-    const y = today.getFullYear();
-    const m = (today.getMonth() + 1 < 10 ? "0" : "") + (today.getMonth() + 1);
-    const d = (today.getDate() < 10 ? "0" : "") + today.getDate();
-    this._value = y + "-" + m + "-" + d;
+    this._value = format(today, "yyyy-MM-dd");
   }
 
   private _setValue() {
