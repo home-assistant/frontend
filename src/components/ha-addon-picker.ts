@@ -58,11 +58,11 @@ class HaAddonPicker extends LitElement {
   }
 
   protected render() {
-    if (!this._addons) {
-      return nothing;
-    }
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
+    }
+    if (!this._addons) {
+      return nothing;
     }
     return html`
       <ha-combo-box
