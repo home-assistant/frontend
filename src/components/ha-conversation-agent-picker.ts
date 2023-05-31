@@ -1,3 +1,4 @@
+import { mdiCog } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -10,7 +11,10 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { debounce } from "../common/util/debounce";
+import { ConfigEntry, getConfigEntry } from "../data/config_entries";
 import { Agent, listAgents } from "../data/conversation";
+import { fetchIntegrationManifest } from "../data/integration";
+import { showOptionsFlowDialog } from "../dialogs/config-flow/show-dialog-options-flow";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
@@ -33,6 +37,8 @@ export class HaConversationAgentPicker extends LitElement {
   @property({ type: Boolean }) public required = false;
 
   @state() _agents?: Agent[];
+
+  @state() private _configEntry?: ConfigEntry;
 
   protected render() {
     if (!this._agents) {
@@ -77,8 +83,13 @@ export class HaConversationAgentPicker extends LitElement {
             >
               ${agent.name}
             </ha-list-item>`
-        )}
-      </ha-select>
+        )}</ha-select
+      >${this._configEntry?.supports_options
+        ? html`<ha-icon-button
+            .path=${mdiCog}
+            @click=${this._openOptionsFlow}
+          ></ha-icon-button>`
+        : ""}
     `;
   }
 
@@ -88,6 +99,24 @@ export class HaConversationAgentPicker extends LitElement {
       this._updateAgents();
     } else if (changedProperties.has("language")) {
       this._debouncedUpdateAgents();
+    }
+
+    if (changedProperties.has("value")) {
+      this._maybeFetchConfigEntry();
+    }
+  }
+
+  private async _maybeFetchConfigEntry() {
+    if (!this.value || this.value === "homeassistant") {
+      this._configEntry = undefined;
+      return;
+    }
+    try {
+      this._configEntry = (
+        await getConfigEntry(this.hass, this.value)
+      ).config_entry;
+    } catch (err) {
+      this._configEntry = undefined;
     }
   }
 
@@ -122,10 +151,28 @@ export class HaConversationAgentPicker extends LitElement {
     }
   }
 
+  private async _openOptionsFlow() {
+    if (!this._configEntry) {
+      return;
+    }
+    showOptionsFlowDialog(
+      this,
+      this._configEntry,
+      await fetchIntegrationManifest(this.hass, this._configEntry.domain)
+    );
+  }
+
   static get styles(): CSSResultGroup {
     return css`
+      :host {
+        display: flex;
+        align-items: center;
+      }
       ha-select {
         width: 100%;
+      }
+      ha-icon-button {
+        color: var(--secondary-text-color);
       }
     `;
   }

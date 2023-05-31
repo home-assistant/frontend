@@ -21,9 +21,8 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
-import { PolymerChangedEvent } from "../../../polymer-types";
+import { ValueChangedEvent, HomeAssistant } from "../../../types";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showAddUserDialog } from "../users/show-dialog-add-user";
 import { showAdminChangePasswordDialog } from "../users/show-dialog-admin-change-password";
@@ -325,12 +324,12 @@ class DialogPersonDetail extends LitElement {
     }
   }
 
-  private _deviceTrackersChanged(ev: PolymerChangedEvent<string[]>) {
+  private _deviceTrackersChanged(ev: ValueChangedEvent<string[]>) {
     this._error = undefined;
     this._deviceTrackers = ev.detail.value;
   }
 
-  private _pictureChanged(ev: PolymerChangedEvent<string | null>) {
+  private _pictureChanged(ev: ValueChangedEvent<string | null>) {
     this._error = undefined;
     this._picture = (ev.target as HaPictureUpload).value;
   }

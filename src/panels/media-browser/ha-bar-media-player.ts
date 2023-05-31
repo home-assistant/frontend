@@ -11,7 +11,6 @@ import {
   mdiStop,
   mdiVolumeHigh,
 } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -34,7 +33,6 @@ import "../../components/ha-button-menu";
 import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
 import { UNAVAILABLE } from "../../data/entity";
-import { subscribeEntityRegistry } from "../../data/entity_registry";
 import {
   BROWSER_PLAYER,
   cleanupMediaTitle,
@@ -83,9 +81,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   @state() private _newMediaExpected = false;
 
   @state() private _browserPlayer?: BrowserMediaPlayer;
-
-  @state()
-  private _hiddenEntities = new Set<string>();
 
   private _progressInterval?: number;
 
@@ -469,7 +464,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       (entity) =>
         computeStateDomain(entity) === "media_player" &&
         supportsFeature(entity, MediaPlayerEntityFeature.BROWSE_MEDIA) &&
-        !this._hiddenEntities.has(entity.entity_id)
+        !this.hass.entities[entity.entity_id].hidden
     );
   }
 
@@ -493,28 +488,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     if (this._currentProgress) {
       this._currentProgress.innerHTML = formatMediaTime(currentProgress);
     }
-  }
-
-  protected override hassSubscribe(): (
-    | UnsubscribeFunc
-    | Promise<UnsubscribeFunc>
-  )[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection, (entries) => {
-        const hiddenEntities = new Set<string>();
-
-        for (const entry of entries) {
-          if (
-            entry.hidden_by &&
-            computeDomain(entry.entity_id) === "media_player"
-          ) {
-            hiddenEntities.add(entry.entity_id);
-          }
-        }
-
-        this._hiddenEntities = hiddenEntities;
-      }),
-    ];
   }
 
   private _handleControlClick(e: MouseEvent): void {

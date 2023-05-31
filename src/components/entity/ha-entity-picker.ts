@@ -8,8 +8,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
-import { PolymerChangedEvent } from "../../polymer-types";
-import { HomeAssistant } from "../../types";
+import { ValueChangedEvent, HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-icon-button";
@@ -102,6 +101,9 @@ export class HaEntityPicker extends LitElement {
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ type: Boolean }) public hideClearIcon = false;
+
+  @property({ attribute: "item-label-path" }) public itemLabelPath =
+    "friendly_name";
 
   @state() private _opened = false;
 
@@ -301,7 +303,7 @@ export class HaEntityPicker extends LitElement {
     return html`
       <ha-combo-box
         item-value-path="entity_id"
-        item-label-path="friendly_name"
+        .itemLabelPath=${this.itemLabelPath}
         .hass=${this.hass}
         .value=${this._value}
         .label=${this.label === undefined
@@ -325,11 +327,11 @@ export class HaEntityPicker extends LitElement {
     return this.value || "";
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private _openedChanged(ev: ValueChangedEvent<boolean>) {
     this._opened = ev.detail.value;
   }
 
-  private _valueChanged(ev: PolymerChangedEvent<string>) {
+  private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
     if (newValue !== this._value) {

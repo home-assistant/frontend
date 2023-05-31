@@ -56,19 +56,25 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     redirect: "/config/cloud",
   },
   config_flow_start: {
-    redirect: "/config/integrations/add",
+    redirect: "/config/integrations/dashboard/add",
     params: {
       domain: "string",
     },
   },
   brand: {
-    redirect: "/config/integrations/add",
+    redirect: "/config/integrations/dashboard/add",
     params: {
       brand: "string",
     },
   },
   integrations: {
     redirect: "/config/integrations",
+  },
+  integration: {
+    redirect: "/config/integrations/integration",
+    params: {
+      domain: "string",
+    },
   },
   config_mqtt: {
     component: "mqtt",

@@ -1,11 +1,9 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/web/iconbutton/outlined-icon-button";
 import {
   mdiCreation,
   mdiFileWordBox,
   mdiLightbulb,
   mdiLightbulbOff,
-  mdiPalette,
   mdiPower,
 } from "@mdi/js";
 import {
@@ -18,12 +16,19 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import {
+  computeAttributeNameDisplay,
+  computeAttributeValueDisplay,
+} from "../../../common/entity/compute_attribute_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-attributes";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-outlined-button";
+import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
+import { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
 import {
   LightColorMode,
@@ -37,7 +42,9 @@ import type { HomeAssistant } from "../../../types";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 import "../components/ha-more-info-toggle";
+import "../components/lights/ha-favorite-color-button";
 import "../components/lights/ha-more-info-light-brightness";
+import "../components/lights/ha-more-info-light-favorite-colors";
 import { showLightColorPickerView } from "../components/lights/show-view-light-color-picker";
 
 @customElement("more-info-light")
@@ -45,6 +52,12 @@ class MoreInfoLight extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: LightEntity;
+
+  @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
+
+  @property({ attribute: false }) public editMode?: boolean;
+
+  @state() private _effect?: string;
 
   @state() private _selectedBrightness?: number;
 
@@ -54,11 +67,12 @@ class MoreInfoLight extends LitElement {
     this._selectedBrightness = value;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<typeof this>): void {
     if (changedProps.has("stateObj")) {
       this._selectedBrightness = this.stateObj?.attributes.brightness
         ? Math.round((this.stateObj.attributes.brightness * 100) / 255)
         : undefined;
+      this._effect = this.stateObj?.attributes.effect;
     }
   }
 
@@ -74,17 +88,22 @@ class MoreInfoLight extends LitElement {
 
     const supportsColor = lightSupportsColor(this.stateObj);
 
+    const supportsBrightness = lightSupportsBrightness(this.stateObj);
+
     const supportsWhite = lightSupportsColorMode(
       this.stateObj,
       LightColorMode.WHITE
     );
 
-    const supportsBrightness = lightSupportsBrightness(this.stateObj);
-
     const supportsEffects = supportsFeature(
       this.stateObj,
       LightEntityFeature.EFFECT
     );
+
+    const hasFavoriteColors =
+      this.entry &&
+      (this.entry.options?.light?.favorite_colors == null ||
+        this.entry.options.light.favorite_colors.length > 0);
 
     const stateOverride = this._selectedBrightness
       ? `${Math.round(this._selectedBrightness)}${blankBeforePercent(
@@ -116,16 +135,13 @@ class MoreInfoLight extends LitElement {
                 .iconPathOff=${mdiLightbulbOff}
               ></ha-more-info-toggle>
             `}
-        ${supportsColorTemp ||
-        supportsColor ||
-        supportsEffects ||
-        supportsBrightness
+        ${supportsColorTemp || supportsColor || supportsBrightness
           ? html`
-              <div class="buttons">
+              <div class="button-bar">
                 ${supportsBrightness
                   ? html`
-                      <md-outlined-icon-button
-                        .disabled=${this.stateObj.state === UNAVAILABLE}
+                      <ha-icon-button
+                        .disabled=${this.stateObj!.state === UNAVAILABLE}
                         .title=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.toggle"
                         )}
@@ -135,76 +151,121 @@ class MoreInfoLight extends LitElement {
                         @click=${this._toggle}
                       >
                         <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
-                      </md-outlined-icon-button>
+                      </ha-icon-button>
                     `
                   : nothing}
-                ${supportsColorTemp || supportsColor
+                ${supportsColor
                   ? html`
-                      <md-outlined-icon-button
-                        .disabled=${this.stateObj.state === UNAVAILABLE}
+                      <ha-icon-button
+                        class="color-mode"
+                        .disabled=${this.stateObj!.state === UNAVAILABLE}
                         .title=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.change_color"
                         )}
                         .ariaLabel=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.change_color"
                         )}
+                        .mode=${"color"}
                         @click=${this._showLightColorPickerView}
                       >
-                        <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
-                      </md-outlined-icon-button>
+                        <span class="wheel color"></span>
+                      </ha-icon-button>
+                    `
+                  : nothing}
+                ${supportsColorTemp
+                  ? html`
+                      <ha-icon-button
+                        .disabled=${this.stateObj!.state === UNAVAILABLE}
+                        .title=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.change_color_temp"
+                        )}
+                        .ariaLabel=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.change_color_temp"
+                        )}
+                        .mode=${"color_temp"}
+                        @click=${this._showLightColorPickerView}
+                      >
+                        <span class="wheel color-temp"></span>
+                      </ha-icon-button>
                     `
                   : nothing}
                 ${supportsWhite
                   ? html`
-                      <md-outlined-icon-button
-                        .disabled=${this.stateObj.state === UNAVAILABLE}
+                      <ha-icon-button
+                        .disabled=${this.stateObj!.state === UNAVAILABLE}
                         .title=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.set_white"
                         )}
                         .ariaLabel=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.set_white"
                         )}
-                        @click=${this._setWhiteColor}
+                        @click=${this._setWhite}
                       >
                         <ha-svg-icon .path=${mdiFileWordBox}></ha-svg-icon>
-                      </md-outlined-icon-button>
-                    `
-                  : nothing}
-                ${supportsEffects && this.stateObj.attributes.effect_list
-                  ? html`
-                      <ha-button-menu
-                        @action=${this._handleEffectButton}
-                        @closed=${stopPropagation}
-                        fixed
-                        .disabled=${this.stateObj.state === UNAVAILABLE}
-                      >
-                        <md-outlined-icon-button
-                          .disabled=${this.stateObj.state === UNAVAILABLE}
-                          slot="trigger"
-                          .title=${this.hass.localize(
-                            "ui.dialogs.more_info_control.light.select_effect"
-                          )}
-                          .ariaLabel=${this.hass.localize(
-                            "ui.dialogs.more_info_control.light.select_effect"
-                          )}
-                        >
-                          <ha-svg-icon .path=${mdiCreation}></ha-svg-icon>
-                        </md-outlined-icon-button>
-                        ${this.stateObj.attributes.effect_list.map(
-                          (effect: string) => html`
-                            <mwc-list-item
-                              .value=${effect}
-                              .activated=${this.stateObj!.attributes.effect ===
-                              effect}
-                            >
-                              ${effect}
-                            </mwc-list-item>
-                          `
-                        )}
-                      </ha-button-menu>
+                      </ha-icon-button>
                     `
                   : nothing}
               </div>
+              ${this.entry && (this.editMode || hasFavoriteColors)
+                ? html`
+                    <ha-more-info-light-favorite-colors
+                      .hass=${this.hass}
+                      .stateObj=${this.stateObj}
+                      .entry=${this.entry}
+                      .editMode=${this.editMode}
+                    >
+                    </ha-more-info-light-favorite-colors>
+                  `
+                : nothing}
+            `
+          : nothing}
+        ${supportsEffects && this.stateObj.attributes.effect_list
+          ? html`
+              <ha-button-menu
+                @action=${this._handleEffectButton}
+                @closed=${stopPropagation}
+                fixed
+                .disabled=${this.stateObj.state === UNAVAILABLE}
+              >
+                <ha-outlined-button
+                  slot="trigger"
+                  .disabled=${this.stateObj.state === UNAVAILABLE}
+                >
+                  <ha-svg-icon slot="icon" path=${mdiCreation}></ha-svg-icon>
+                  ${this._effect
+                    ? computeAttributeValueDisplay(
+                        this.hass.localize,
+                        this.stateObj!,
+                        this.hass.locale,
+                        this.hass.entities,
+                        "effect",
+                        this._effect
+                      )
+                    : computeAttributeNameDisplay(
+                        this.hass.localize,
+                        this.stateObj,
+                        this.hass.entities,
+                        "effect"
+                      )}
+                </ha-outlined-button>
+                ${this.stateObj.attributes.effect_list.map(
+                  (effect: string) => html`
+                    <ha-list-item
+                      .value=${effect}
+                      .activated=${this.stateObj!.attributes.effect === effect}
+                    >
+                      ${computeAttributeValueDisplay(
+                        this.hass.localize,
+                        this.stateObj!,
+                        this.hass.locale,
+                        this.hass.entities,
+                        "effect",
+                        effect
+                      )}
+                    </ha-list-item>
+                  `
+                )}
+              </ha-button-menu>
             `
           : nothing}
       </div>
@@ -225,7 +286,7 @@ class MoreInfoLight extends LitElement {
     });
   };
 
-  private _showLightColorPickerView = () => {
+  private _showLightColorPickerView = (ev) => {
     showLightColorPickerView(
       this,
       this.hass.localize(
@@ -233,11 +294,12 @@ class MoreInfoLight extends LitElement {
       ),
       {
         entityId: this.stateObj!.entity_id,
+        defaultMode: ev.currentTarget.mode,
       }
     );
   };
 
-  private _setWhiteColor = () => {
+  private _setWhite = () => {
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
       white: true,
@@ -249,15 +311,14 @@ class MoreInfoLight extends LitElement {
     ev.preventDefault();
 
     const index = ev.detail.index;
-    const effect = this.stateObj!.attributes.effect_list![index];
+    const newVal = this.stateObj!.attributes.effect_list![index];
+    const oldVal = this._effect;
 
-    if (!effect || this.stateObj!.attributes.effect === effect) {
-      return;
-    }
+    if (!newVal || oldVal === newVal) return;
 
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
-      effect,
+      effect: newVal,
     });
   }
 
@@ -265,13 +326,40 @@ class MoreInfoLight extends LitElement {
     return [
       moreInfoControlStyle,
       css`
-        md-outlined-icon-button-toggle,
-        md-outlined-icon-button {
-          --ha-icon-display: block;
-          --md-sys-color-on-surface: var(--secondary-text-color);
-          --md-sys-color-on-surface-variant: var(--secondary-text-color);
-          --md-sys-color-on-surface-rgb: var(--rgb-secondary-text-color);
-          --md-sys-color-outline: var(--secondary-text-color);
+        .button-bar {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          height: 48px;
+          border-radius: 24px;
+          background-color: rgba(139, 145, 151, 0.1);
+          box-sizing: border-box;
+          width: auto;
+        }
+        .wheel {
+          width: 30px;
+          height: 30px;
+          flex: none;
+          border-radius: 15px;
+        }
+        ha-icon-button[disabled] .wheel {
+          filter: grayscale(1) opacity(0.5);
+        }
+        .wheel.color {
+          background-image: url("/static/images/color_wheel.png");
+          background-size: cover;
+        }
+        .wheel.color-temp {
+          background: linear-gradient(
+            0,
+            rgb(166, 209, 255) 0%,
+            white 50%,
+            rgb(255, 160, 0) 100%
+          );
+        }
+        .buttons {
+          flex-wrap: wrap;
+          max-width: 250px;
         }
       `,
     ];

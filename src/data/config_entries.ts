@@ -94,6 +94,12 @@ export const getConfigEntries = (
   });
 };
 
+export const getConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
+  hass.callWS<{ config_entry: ConfigEntry }>({
+    type: "config_entries/get_single",
+    entry_id: configEntryId,
+  });
+
 export const updateConfigEntry = (
   hass: HomeAssistant,
   configEntryId: string,

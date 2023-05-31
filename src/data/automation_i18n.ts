@@ -1,4 +1,9 @@
 import { formatDuration } from "../common/datetime/format_duration";
+import {
+  formatTime,
+  formatTimeWithSeconds,
+} from "../common/datetime/format_time";
+import { FrontendLocaleData } from "./translation";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateName } from "../common/entity/compute_state_name";
@@ -15,6 +20,7 @@ import {
   computeAttributeValueDisplay,
 } from "../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
+import { EntityRegistryEntry } from "./entity_registry";
 
 const describeDuration = (forTime: number | string | ForDict) => {
   let duration: string | null;
@@ -28,9 +34,43 @@ const describeDuration = (forTime: number | string | ForDict) => {
   return duration;
 };
 
+const localizeTimeString = (time: string, locale: FrontendLocaleData) => {
+  const chunks = time.split(":");
+  if (chunks.length < 2 || chunks.length > 3) {
+    return time;
+  }
+  try {
+    const dt = new Date("1970-01-01T" + time);
+    if (chunks.length === 2 || Number(chunks[2]) === 0) {
+      return formatTime(dt, locale);
+    }
+    return formatTimeWithSeconds(dt, locale);
+  } catch {
+    return time;
+  }
+};
+
+const ordinalSuffix = (n: number) => {
+  n %= 100;
+  if ([11, 12, 13].includes(n)) {
+    return "th";
+  }
+  if (n % 10 === 1) {
+    return "st";
+  }
+  if (n % 10 === 2) {
+    return "nd";
+  }
+  if (n % 10 === 3) {
+    return "rd";
+  }
+  return "th";
+};
+
 export const describeTrigger = (
   trigger: Trigger,
   hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
   ignoreAlias = false
 ) => {
   if (trigger.alias && !ignoreAlias) {
@@ -261,6 +301,14 @@ export const describeTrigger = (
       }
     }
 
+    if (
+      !trigger.attribute &&
+      trigger.from === undefined &&
+      trigger.to === undefined
+    ) {
+      base += " state or any attributes";
+    }
+
     if (trigger.for) {
       const duration = describeDuration(trigger.for);
       if (duration) {
@@ -301,9 +349,11 @@ export const describeTrigger = (
   // Time Trigger
   if (trigger.platform === "time" && trigger.at) {
     const result = ensureArray(trigger.at).map((at) =>
-      at.toString().includes(".")
+      typeof at !== "string"
+        ? at
+        : at.includes(".")
         ? `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`
-        : at
+        : localizeTimeString(at, hass.locale)
     );
 
     const last = result.splice(-1, 1)[0];
@@ -312,9 +362,116 @@ export const describeTrigger = (
     }${last}`;
   }
 
-  // Time Patter Trigger
-  if (trigger.platform === "time_pattern") {
-    return "Time pattern trigger";
+  // Time Pattern Trigger
+  if (
+    trigger.platform === "time_pattern" &&
+    (trigger.seconds !== undefined ||
+      trigger.minutes !== undefined ||
+      trigger.hours !== undefined)
+  ) {
+    let result = "Trigger ";
+    if (trigger.seconds !== undefined) {
+      const seconds_all = trigger.seconds === "*";
+      const seconds_interval =
+        typeof trigger.seconds === "string" && trigger.seconds.startsWith("/");
+      const seconds = seconds_all
+        ? 0
+        : typeof trigger.seconds === "number"
+        ? trigger.seconds
+        : seconds_interval
+        ? parseInt(trigger.seconds.substring(1))
+        : parseInt(trigger.seconds);
+
+      if (
+        isNaN(seconds) ||
+        seconds > 59 ||
+        seconds < 0 ||
+        (seconds_interval && seconds === 0)
+      ) {
+        return "Invalid Time Pattern Seconds";
+      }
+
+      if (seconds_all) {
+        result += "every second of ";
+      } else if (seconds_interval) {
+        result += `every ${seconds} seconds of `;
+      } else {
+        result += `on the ${seconds}${ordinalSuffix(seconds)} second of `;
+      }
+    }
+    if (trigger.minutes !== undefined) {
+      const minutes_all = trigger.minutes === "*";
+      const minutes_interval =
+        typeof trigger.minutes === "string" && trigger.minutes.startsWith("/");
+      const minutes = minutes_all
+        ? 0
+        : typeof trigger.minutes === "number"
+        ? trigger.minutes
+        : minutes_interval
+        ? parseInt(trigger.minutes.substring(1))
+        : parseInt(trigger.minutes);
+
+      if (
+        isNaN(minutes) ||
+        minutes > 59 ||
+        minutes < 0 ||
+        (minutes_interval && minutes === 0)
+      ) {
+        return "Invalid Time Pattern Minutes";
+      }
+
+      if (minutes_all) {
+        result += "every minute of ";
+      } else if (minutes_interval) {
+        result += `every ${minutes} minutes of `;
+      } else {
+        result += `${
+          trigger.seconds !== undefined ? "" : "on"
+        } the ${minutes}${ordinalSuffix(minutes)} minute of `;
+      }
+    } else if (trigger.seconds !== undefined) {
+      if (trigger.hours !== undefined) {
+        result += `the 0${ordinalSuffix(0)} minute of `;
+      } else {
+        result += "every minute of ";
+      }
+    }
+    if (trigger.hours !== undefined) {
+      const hours_all = trigger.hours === "*";
+      const hours_interval =
+        typeof trigger.hours === "string" && trigger.hours.startsWith("/");
+      const hours = hours_all
+        ? 0
+        : typeof trigger.hours === "number"
+        ? trigger.hours
+        : hours_interval
+        ? parseInt(trigger.hours.substring(1))
+        : parseInt(trigger.hours);
+
+      if (
+        isNaN(hours) ||
+        hours > 23 ||
+        hours < 0 ||
+        (hours_interval && hours === 0)
+      ) {
+        return "Invalid Time Pattern Hours";
+      }
+
+      if (hours_all) {
+        result += "every hour";
+      } else if (hours_interval) {
+        result += `every ${hours} hours`;
+      } else {
+        result += `${
+          trigger.seconds !== undefined || trigger.minutes !== undefined
+            ? ""
+            : "on"
+        } the ${hours}${ordinalSuffix(hours)} hour`;
+      }
+    } else {
+      result += "every hour";
+    }
+    return result;
   }
 
   // Zone Trigger
@@ -437,7 +594,11 @@ export const describeTrigger = (
       return "Device trigger";
     }
     const config = trigger as DeviceTrigger;
-    const localized = localizeDeviceAutomationTrigger(hass, config);
+    const localized = localizeDeviceAutomationTrigger(
+      hass,
+      entityRegistry,
+      config
+    );
     if (localized) {
       return localized;
     }
@@ -455,6 +616,7 @@ export const describeTrigger = (
 export const describeCondition = (
   condition: Condition,
   hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
   ignoreAlias = false
 ) => {
   if (condition.alias && !ignoreAlias) {
@@ -653,6 +815,73 @@ export const describeCondition = (
     return base;
   }
 
+  // Time condition
+  if (condition.condition === "time") {
+    const weekdaysArray = ensureArray(condition.weekday);
+    const validWeekdays =
+      weekdaysArray && weekdaysArray.length > 0 && weekdaysArray.length < 7;
+    if (condition.before || condition.after || validWeekdays) {
+      const before =
+        typeof condition.before !== "string"
+          ? condition.before
+          : condition.before.includes(".")
+          ? `entity ${
+              hass.states[condition.before]
+                ? computeStateName(hass.states[condition.before])
+                : condition.before
+            }`
+          : localizeTimeString(condition.before, hass.locale);
+
+      const after =
+        typeof condition.after !== "string"
+          ? condition.after
+          : condition.after.includes(".")
+          ? `entity ${
+              hass.states[condition.after]
+                ? computeStateName(hass.states[condition.after])
+                : condition.after
+            }`
+          : localizeTimeString(condition.after, hass.locale);
+
+      let result = "Confirm the ";
+      if (after || before) {
+        result += "time is ";
+      }
+      if (after) {
+        result += "after " + after;
+      }
+      if (before && after) {
+        result += " and ";
+      }
+      if (before) {
+        result += "before " + before;
+      }
+      if ((after || before) && validWeekdays) {
+        result += " and the ";
+      }
+      if (validWeekdays) {
+        const localizedDays = weekdaysArray.map((d) =>
+          hass.localize(
+            `ui.panel.config.automation.editor.conditions.type.time.weekdays.${d}`
+          )
+        );
+        const last = localizedDays.pop();
+
+        result += " day is " + localizedDays.join(", ");
+
+        if (localizedDays.length) {
+          if (localizedDays.length > 1) {
+            result += ",";
+          }
+          result += " or ";
+        }
+        result += last;
+      }
+
+      return result;
+    }
+  }
+
   // Sun condition
   if (
     condition.condition === "sun" &&
@@ -749,7 +978,11 @@ export const describeCondition = (
       return "Device condition";
     }
     const config = condition as DeviceCondition;
-    const localized = localizeDeviceAutomationCondition(hass, config);
+    const localized = localizeDeviceAutomationCondition(
+      hass,
+      entityRegistry,
+      config
+    );
     if (localized) {
       return localized;
     }

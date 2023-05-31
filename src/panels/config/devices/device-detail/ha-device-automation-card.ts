@@ -1,13 +1,16 @@
+import { consume } from "@lit-labs/context";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-chip";
 import "../../../../components/ha-chip-set";
 import { showAutomationEditor } from "../../../../data/automation";
+import { fullEntitiesContext } from "../../../../data/context";
 import {
   DeviceAction,
   DeviceAutomation,
 } from "../../../../data/device_automation";
+import { EntityRegistryEntry } from "../../../../data/entity_registry";
 import { showScriptEditor } from "../../../../data/script";
 import { buttonLinkStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
@@ -31,12 +34,17 @@ export abstract class HaDeviceAutomationCard<
 
   @state() public _showSecondary = false;
 
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
+
   abstract headerKey: Parameters<typeof this.hass.localize>[0];
 
   abstract type: "action" | "condition" | "trigger";
 
   private _localizeDeviceAutomation: (
     hass: HomeAssistant,
+    entityRegistry: EntityRegistryEntry[],
     automation: T
   ) => string;
 
@@ -79,7 +87,11 @@ export abstract class HaDeviceAutomationCard<
                   @click=${this._handleAutomationClicked}
                   class=${automation.metadata?.secondary ? "secondary" : ""}
                 >
-                  ${this._localizeDeviceAutomation(this.hass, automation)}
+                  ${this._localizeDeviceAutomation(
+                    this.hass,
+                    this._entityReg,
+                    automation
+                  )}
                 </ha-chip>
               `
           )}

@@ -1,3 +1,4 @@
+import { consume } from "@lit-labs/context";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -5,12 +6,14 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/device/ha-device-action-picker";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-form/ha-form";
+import { fullEntitiesContext } from "../../../../../data/context";
 import {
   DeviceAction,
   deviceAutomationsEqual,
   DeviceCapabilities,
   fetchDeviceActionCapabilities,
 } from "../../../../../data/device_automation";
+import { EntityRegistryEntry } from "../../../../../data/entity_registry";
 import { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-action-device_id")
@@ -24,6 +27,10 @@ export class HaDeviceAction extends LitElement {
   @state() private _deviceId?: string;
 
   @state() private _capabilities?: DeviceCapabilities;
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
 
   private _origAction?: DeviceAction;
 
@@ -98,7 +105,10 @@ export class HaDeviceAction extends LitElement {
 
   protected updated(changedPros) {
     const prevAction = changedPros.get("action");
-    if (prevAction && !deviceAutomationsEqual(prevAction, this.action)) {
+    if (
+      prevAction &&
+      !deviceAutomationsEqual(this._entityReg, prevAction, this.action)
+    ) {
       this._deviceId = undefined;
       this._getCapabilities();
     }
@@ -123,7 +133,10 @@ export class HaDeviceAction extends LitElement {
   private _deviceActionPicked(ev) {
     ev.stopPropagation();
     let action = ev.detail.value;
-    if (this._origAction && deviceAutomationsEqual(this._origAction, action)) {
+    if (
+      this._origAction &&
+      deviceAutomationsEqual(this._entityReg, this._origAction, action)
+    ) {
       action = this._origAction;
     }
     fireEvent(this, "value-changed", { value: action });

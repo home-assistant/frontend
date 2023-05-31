@@ -2,6 +2,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 
 export interface LightColorPickerViewParams {
   entityId: string;
+  defaultMode: "color" | "color_temp";
 }
 
 export const loadLightColorPickerView = () =>

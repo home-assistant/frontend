@@ -95,12 +95,21 @@ interface EMOutgoingMessageSidebarShow extends EMMessage {
   type: "sidebar/show";
 }
 
+interface EMOutgoingMessageAssistShow extends EMMessage {
+  type: "assist/show";
+  payload?: {
+    pipeline_id?: string;
+    start_listening?: boolean;
+  };
+}
+
 type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageHaptic
   | EMOutgoingMessageConnectionStatus
   | EMOutgoingMessageAppConfiguration
   | EMOutgoingMessageTagWrite
   | EMOutgoingMessageSidebarShow
+  | EMOutgoingMessageAssistShow
   | EMOutgoingMessageExoplayerPlayHLS
   | EMOutgoingMessageExoplayerResize
   | EMOutgoingMessageExoplayerStop
@@ -152,6 +161,7 @@ export interface ExternalConfig {
   canWriteTag: boolean;
   hasExoPlayer: boolean;
   canCommissionMatter: boolean;
+  hasAssist: boolean;
 }
 
 export class ExternalMessaging {

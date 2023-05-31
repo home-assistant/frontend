@@ -83,6 +83,7 @@ export const FIXED_DOMAIN_ICONS = {
   configurator: mdiCog,
   conversation: mdiMicrophoneMessage,
   counter: mdiCounter,
+  date: mdiCalendar,
   demo: mdiHomeAssistant,
   google_assistant: mdiGoogleAssistant,
   group: mdiGoogleCirclesCommunities,
@@ -159,6 +160,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   temperature: mdiThermometer,
   timestamp: mdiClock,
   volatile_organic_compounds: mdiMolecule,
+  volatile_organic_compounds_parts: mdiMolecule,
   voltage: mdiSineWave,
   volume: mdiCarCoolantLevel,
   water: mdiWater,
@@ -208,6 +210,8 @@ export const DOMAINS_INPUT_ROW = [
   "automation",
   "button",
   "cover",
+  "date",
+  "datetime",
   "fan",
   "group",
   "humidifier",
@@ -226,6 +230,7 @@ export const DOMAINS_INPUT_ROW = [
   "select",
   "switch",
   "text",
+  "time",
   "vacuum",
 ];
 

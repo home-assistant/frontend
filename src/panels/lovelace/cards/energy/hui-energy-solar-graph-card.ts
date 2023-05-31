@@ -365,7 +365,6 @@ export class HuiEnergySolarGraphCard
         ? rgb2hex(lab2rgb(modifiedColor))
         : solarColor;
 
-      let prevValue: number | null = null;
       let prevStart: number | null = null;
 
       const solarProductionData: ScatterDataPoint[] = [];
@@ -375,24 +374,18 @@ export class HuiEnergySolarGraphCard
         const stats = statistics[source.stat_energy_from];
 
         for (const point of stats) {
-          if (point.sum === null || point.sum === undefined) {
-            continue;
-          }
-          if (prevValue === null || prevValue === undefined) {
-            prevValue = point.sum;
+          if (point.change === null || point.change === undefined) {
             continue;
           }
           if (prevStart === point.start) {
             continue;
           }
-          const value = point.sum - prevValue;
           const date = new Date(point.start);
           solarProductionData.push({
             x: date.getTime(),
-            y: value,
+            y: point.change,
           });
           prevStart = point.start;
-          prevValue = point.sum;
         }
       }
 

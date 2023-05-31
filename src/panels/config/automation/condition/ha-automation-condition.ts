@@ -1,6 +1,12 @@
 import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
+import {
+  mdiArrowDown,
+  mdiArrowUp,
+  mdiDrag,
+  mdiPlus,
+  mdiContentPaste,
+} from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
   css,
@@ -18,7 +24,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-svg-icon";
-import type { Condition } from "../../../../data/automation";
+import type { Condition, Clipboard } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
@@ -44,6 +50,8 @@ import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
 
+const PASTE_VALUE = "__paste__";
+
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -55,6 +63,8 @@ export default class HaAutomationCondition extends LitElement {
   @property({ type: Boolean }) public nested = false;
 
   @property({ type: Boolean }) public reOrderMode = false;
+
+  @property() public clipboard?: Clipboard;
 
   private _focusLastConditionOnChange = false;
 
@@ -147,6 +157,7 @@ export default class HaAutomationCondition extends LitElement {
               @move-condition=${this._move}
               @value-changed=${this._conditionChanged}
               @re-order=${this._enterReOrderMode}
+              .clipboard=${this.clipboard}
               .hass=${this.hass}
             >
               ${this.reOrderMode
@@ -191,6 +202,17 @@ export default class HaAutomationCondition extends LitElement {
         >
           <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
         </ha-button>
+        ${this.clipboard?.condition
+          ? html` <mwc-list-item .value=${PASTE_VALUE} graphic="icon">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.paste"
+              )}
+              (${this.hass.localize(
+                `ui.panel.config.automation.editor.conditions.type.${this.clipboard.condition.condition}.label`
+              )})
+              <ha-svg-icon slot="graphic" .path=${mdiContentPaste}></ha-svg-icon
+            ></mwc-list-item>`
+          : nothing}
         ${this._processedTypes(this.hass.localize).map(
           ([opt, label, icon]) => html`
             <mwc-list-item .value=${opt} graphic="icon">
@@ -251,19 +273,25 @@ export default class HaAutomationCondition extends LitElement {
   }
 
   private _addCondition(ev: CustomEvent<ActionDetail>) {
-    const condition = (ev.currentTarget as HaSelect).items[ev.detail.index]
-      .value as Condition["condition"];
+    const value = (ev.currentTarget as HaSelect).items[ev.detail.index].value;
 
-    const elClass = customElements.get(
-      `ha-automation-condition-${condition}`
-    ) as CustomElementConstructor & {
-      defaultConfig: Omit<Condition, "condition">;
-    };
+    let conditions: Condition[];
+    if (value === PASTE_VALUE) {
+      conditions = this.conditions.concat(deepClone(this.clipboard!.condition));
+    } else {
+      const condition = value as Condition["condition"];
 
-    const conditions = this.conditions.concat({
-      condition: condition as any,
-      ...elClass.defaultConfig,
-    });
+      const elClass = customElements.get(
+        `ha-automation-condition-${condition}`
+      ) as CustomElementConstructor & {
+        defaultConfig: Omit<Condition, "condition">;
+      };
+
+      conditions = this.conditions.concat({
+        condition: condition as any,
+        ...elClass.defaultConfig,
+      });
+    }
     this._focusLastConditionOnChange = true;
     fireEvent(this, "value-changed", { value: conditions });
   }

@@ -60,7 +60,7 @@ export class HaConfigFlowCard extends LitElement {
             }`
           )}
         ></mwc-button>
-        <ha-button-menu>
+        <ha-button-menu slot="header-button">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
@@ -185,6 +185,9 @@ export class HaConfigFlowCard extends LitElement {
     a {
       text-decoration: none;
       color: var(--primary-color);
+    }
+    ha-button-menu {
+      color: var(--secondary-text-color);
     }
     ha-svg-icon[slot="meta"] {
       width: 18px;

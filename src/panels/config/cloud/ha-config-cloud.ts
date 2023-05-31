@@ -6,8 +6,7 @@ import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
-import { PolymerChangedEvent } from "../../../polymer-types";
-import { HomeAssistant, Route } from "../../../types";
+import { ValueChangedEvent, HomeAssistant, Route } from "../../../types";
 import "./account/cloud-account";
 import "./login/cloud-login";
 
@@ -95,10 +94,10 @@ class HaConfigCloud extends HassRouterPage {
   protected createElement(tag: string) {
     const el = super.createElement(tag);
     el.addEventListener("email-changed", (ev) => {
-      this._loginEmail = (ev as PolymerChangedEvent<string>).detail.value;
+      this._loginEmail = (ev as ValueChangedEvent<string>).detail.value;
     });
     el.addEventListener("flash-message-changed", (ev) => {
-      this._flashMessage = (ev as PolymerChangedEvent<string>).detail.value;
+      this._flashMessage = (ev as ValueChangedEvent<string>).detail.value;
     });
     return el;
   }

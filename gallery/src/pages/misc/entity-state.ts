@@ -50,6 +50,7 @@ const SENSOR_DEVICE_CLASSES = [
   "temperature",
   "timestamp",
   "volatile_organic_compounds",
+  "volatile_organic_compounds_parts",
   "voltage",
   "volume",
   "water",

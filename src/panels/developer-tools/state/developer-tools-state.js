@@ -193,6 +193,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               value="{{_entityId}}"
               on-change="entityIdChanged"
               allow-custom-entity
+              item-label-path="entity_id"
             ></ha-entity-picker>
             <ha-tip hass="[[hass]]">[[localize('ui.tips.key_e_hint')]]</ha-tip>
             <ha-textfield

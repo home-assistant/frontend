@@ -5,6 +5,13 @@ import { customElement } from "lit/decorators";
 
 @customElement("ha-list-item")
 export class HaListItem extends ListItemBase {
+  protected renderRipple() {
+    if (this.noninteractive) {
+      return "";
+    }
+    return super.renderRipple();
+  }
+
   static get styles(): CSSResultGroup {
     return [
       styles,
@@ -32,6 +39,7 @@ export class HaListItem extends ListItemBase {
         }
         .mdc-deprecated-list-item__meta {
           display: var(--mdc-list-item-meta-display);
+          align-items: center;
         }
         :host([multiline-secondary]) {
           height: auto;
@@ -59,6 +67,9 @@ export class HaListItem extends ListItemBase {
         }
         :host([disabled]) {
           color: var(--disabled-text-color);
+        }
+        :host([noninteractive]) {
+          pointer-events: unset;
         }
       `,
     ];

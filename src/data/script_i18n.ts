@@ -186,7 +186,7 @@ export const describeAction = <T extends ActionType>(
       return "Wait for a trigger";
     }
     return `Wait for ${triggers
-      .map((trigger) => describeTrigger(trigger, hass))
+      .map((trigger) => describeTrigger(trigger, hass, entityRegistry))
       .join(", ")}`;
   }
 
@@ -208,7 +208,7 @@ export const describeAction = <T extends ActionType>(
   }
 
   if (actionType === "check_condition") {
-    return describeCondition(action as Condition, hass);
+    return describeCondition(action as Condition, hass, entityRegistry);
   }
 
   if (actionType === "stop") {
@@ -226,7 +226,7 @@ export const describeAction = <T extends ActionType>(
         : ensureArray(config.if).length > 1
         ? `${ensureArray(config.if).length} conditions`
         : ensureArray(config.if).length
-        ? describeCondition(ensureArray(config.if)[0], hass)
+        ? describeCondition(ensureArray(config.if)[0], hass, entityRegistry)
         : ""
     }${config.else ? " (or else!)" : ""}`;
   }
@@ -252,11 +252,11 @@ export const describeAction = <T extends ActionType>(
       base += ` ${count} time${Number(count) === 1 ? "" : "s"}`;
     } else if ("while" in config.repeat) {
       base += ` while ${ensureArray(config.repeat.while)
-        .map((condition) => describeCondition(condition, hass))
+        .map((condition) => describeCondition(condition, hass, entityRegistry))
         .join(", ")} is true`;
     } else if ("until" in config.repeat) {
       base += ` until ${ensureArray(config.repeat.until)
-        .map((condition) => describeCondition(condition, hass))
+        .map((condition) => describeCondition(condition, hass, entityRegistry))
         .join(", ")} is true`;
     } else if ("for_each" in config.repeat) {
       base += ` for every item: ${ensureArray(config.repeat.for_each)
@@ -267,7 +267,11 @@ export const describeAction = <T extends ActionType>(
   }
 
   if (actionType === "check_condition") {
-    return `Test ${describeCondition(action as Condition, hass)}`;
+    return `Test ${describeCondition(
+      action as Condition,
+      hass,
+      entityRegistry
+    )}`;
   }
 
   if (actionType === "device_action") {
@@ -275,7 +279,11 @@ export const describeAction = <T extends ActionType>(
     if (!config.device_id) {
       return "Device action";
     }
-    const localized = localizeDeviceAutomationAction(hass, config);
+    const localized = localizeDeviceAutomationAction(
+      hass,
+      entityRegistry,
+      config
+    );
     if (localized) {
       return localized;
     }

@@ -21,21 +21,6 @@
       "unavailable": "Unavailable"
     }
   },
-  "state_attributes": {
-    "humidifier": {
-      "mode": {
-        "normal": "Normal",
-        "eco": "Eco",
-        "away": "Away",
-        "boost": "Boost",
-        "comfort": "Comfort",
-        "home": "Home",
-        "sleep": "Sleep",
-        "auto": "Auto",
-        "baby": "Baby"
-      }
-    }
-  },
   "state_badge": {
     "default": {
       "unknown": "Unk",
@@ -468,17 +453,22 @@
       "addon-picker": {
         "addon": "Add-on",
         "error": {
-          "no_supervisor": {
-            "title": "No Supervisor",
-            "description": "Add-ons are not supported."
-          },
-          "fetch_addons": {
-            "title": "Error loading add-ons",
-            "description": "There was an error loading add-ons."
-          }
+          "no_supervisor": "Add-ons are not supported on your installation.",
+          "fetch_addons": "There was an error loading add-ons."
         }
       },
-      "stt-picker": { "stt": "Speech-to-text", "none": "None" },
+      "mount-picker": {
+        "mount": "Location",
+        "use_datadisk": "Use data disk for backup",
+        "error": {
+          "no_supervisor": "Storage is not supported on your installation.",
+          "fetch_mounts": "There was an error loading the locations."
+        }
+      },
+      "stt-picker": {
+        "stt": "Speech-to-text",
+        "none": "None"
+      },
       "related-filter-menu": {
         "filter": "Filter",
         "filter_by_entity": "Filter by entity",
@@ -506,11 +496,15 @@
       "relative_time": {
         "never": "Never"
       },
+      "absolute_time": {
+        "never": "[%key:ui::components::relative_time::never%]"
+      },
       "history_charts": {
         "history_disabled": "History integration disabled",
         "loading_history": "Loading state history…",
         "no_history_found": "No state history found.",
-        "error": "Unable to load history"
+        "error": "Unable to load history",
+        "duration": "Duration"
       },
       "map": {
         "error": "Unable to load map"
@@ -546,7 +540,8 @@
         "group": "Part of the following groups",
         "scene": "Part of the following scenes",
         "script": "Part of the following scripts",
-        "automation": "Part of the following automations"
+        "automation": "Part of the following automations",
+        "blueprint": "Using blueprint"
       },
       "data-table": {
         "search": "Search",
@@ -599,7 +594,9 @@
           "uploading": "Uploading {count} {count, plural,\n  one {file}\n  other {files}\n}",
           "confirm_delete": "Do you want to delete {count} {count, plural,\n  one {file}\n  other {files}\n}?",
           "delete": "Delete {count}",
-          "deleting": "Deleting {count}"
+          "deleting": "Deleting {count}",
+          "tip_media_storage": "[%key:ui::panel::config::tips::media_storage%]",
+          "tip_storage_panel": "[%key:ui::panel::config::storage::caption%]"
         },
         "class": {
           "album": "Album",
@@ -872,6 +869,7 @@
         "turn_on": "Turn on",
         "turn_off": "Turn off",
         "toggle": "Toggle",
+        "exit_edit_mode": "Exit edit mode",
         "script": {
           "last_action": "Last action",
           "last_triggered": "Last triggered"
@@ -929,8 +927,10 @@
           "graph_unit": "People in zone"
         },
         "light": {
+          "edit_mode": "Edit favorite colors",
           "toggle": "Toggle",
           "change_color": "Change color",
+          "change_color_temp": "Change color temperature",
           "set_white": "Set white",
           "select_effect": "Select effect",
           "brightness": "Brightness",
@@ -940,6 +940,17 @@
               "color": "Color",
               "color_temp": "Temperature"
             }
+          },
+          "favorite_color": {
+            "set": "Set favorite color {number}",
+            "edit": "Edit favorite color {number}",
+            "delete": "Delete favorite color {number}",
+            "delete_confirm_title": "Delete favorite color?",
+            "delete_confirm_text": "This favorite color will be permanently deleted.",
+            "delete_confirm_action": "Delete",
+            "add": "Add new favorite color",
+            "edit_title": "Edit favorite color",
+            "add_title": "Add favorite color"
           }
         },
         "fan": {
@@ -980,6 +991,8 @@
           "name": "Name",
           "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
+          "default_code": "Default code",
+          "default_code_error": "Code does not match code format",
           "entity_id": "Entity ID",
           "unit_of_measurement": "Unit of Measurement",
           "precipitation_unit": "Precipitation unit",
@@ -990,6 +1003,7 @@
           "visibility_unit": "Visibility unit",
           "wind_speed_unit": "Wind speed unit",
           "device_class": "Show as",
+          "switch_as_x": "Show switch as",
           "device_classes": {
             "binary_sensor": {
               "door": "Door",
@@ -1034,8 +1048,7 @@
               "shutter": "Shutter"
             },
             "switch": {
-              "outlet": "Outlet",
-              "switch": "Switch"
+              "outlet": "Outlet"
             }
           },
           "unavailable": "This entity is unavailable.",
@@ -1051,10 +1064,12 @@
           "enable_entity": "Enable",
           "open_device_settings": "Open device settings",
           "switch_as_x_confirm": "This switch will be hidden and a new {domain} will be added. Your existing configurations using the switch will continue to work.",
+          "switch_as_x_remove_confirm": "This {domain} will be removed and the original switch will be visible again. Your existing configurations using the {domain} will no longer work!",
+          "switch_as_x_change_confirm": "This {domain_1} will be removed and will be replaced by a new {domain_2}. Your existing configurations using the {domain_1} will no longer work!",
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
           "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
-          "hidden_description": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with services.",
+          "hidden_description": "Hidden entities will not be shown on your dashboard or included when indirectly referenced (ie via an area or device). Their history is still tracked and you can still interact with them with services.",
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entity?",
           "update": "Update",
@@ -1103,7 +1118,7 @@
         "restart": {
           "title": "Restart Home Assistant",
           "description": "Interrupts all running automations and scripts.",
-          "confirm_title": "Restart  Home Assistant?",
+          "confirm_title": "Restart Home Assistant?",
           "confirm_description": "This will interrupt all running automations and scripts.",
           "confirm_action": "Restart",
           "failed": "Failed to restart Home Assistant"
@@ -2142,6 +2157,7 @@
             "delete_confirm_text": "{name} will be permanently deleted.",
             "duplicate": "[%key:ui::common::duplicate%]",
             "disabled": "Disabled",
+            "filtered_by_blueprint": "blueprint: {name}",
             "headers": {
               "toggle": "Enable/disable",
               "name": "Name",
@@ -2234,6 +2250,9 @@
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "Re-order",
               "rename": "Rename",
+              "cut": "Cut",
+              "copy": "Copy",
+              "paste": "Paste",
               "change_alias": "Rename trigger",
               "alias": "Trigger name",
               "delete": "[%key:ui::common::delete%]",
@@ -2282,7 +2301,8 @@
                   "attribute": "Attribute (optional)",
                   "from": "From (optional)",
                   "for": "For",
-                  "to": "To (optional)"
+                  "to": "To (optional)",
+                  "any_state_ignore_attributes": "Any state (ignoring attribute changes)"
                 },
                 "homeassistant": {
                   "label": "Home Assistant",
@@ -2363,6 +2383,9 @@
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
+              "cut": "[%key:ui::panel::config::automation::editor::triggers::cut%]",
+              "copy": "[%key:ui::panel::config::automation::editor::triggers::copy%]",
+              "paste": "[%key:ui::panel::config::automation::editor::triggers::paste%]",
               "change_alias": "Rename condition",
               "alias": "Condition name",
               "delete": "[%key:ui::common::delete%]",
@@ -2460,6 +2483,9 @@
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
+              "cut": "[%key:ui::panel::config::automation::editor::triggers::cut%]",
+              "copy": "[%key:ui::panel::config::automation::editor::triggers::copy%]",
+              "paste": "[%key:ui::panel::config::automation::editor::triggers::paste%]",
               "change_alias": "Rename action",
               "alias": "Action name",
               "enable": "Enable",
@@ -2561,6 +2587,9 @@
                 },
                 "parallel": {
                   "label": "Run in parallel"
+                },
+                "variables": {
+                  "label": "Define variables"
                 }
               }
             }
@@ -2605,12 +2634,22 @@
               "automation": "Automation",
               "script": "Script"
             },
+            "types_plural": {
+              "automation": "automations",
+              "script": "scripts"
+            },
+            "error": "{path} could not be loaded",
+            "blueprint_in_use_title": "This blueprint is in use, and can not be deleted",
+            "blueprint_in_use_text": "Please remove all below {type} that use this blueprint before deleting it. {list}",
+            "blueprint_in_use_view": "view {type}",
             "confirm_delete_title": "Delete blueprint?",
             "confirm_delete_text": "{name} will be permanently deleted.",
             "add_blueprint": "Import blueprint",
             "no_blueprints": "[%key:ui::panel::config::automation::editor::blueprint::no_blueprints%]",
             "create_automation": "Create automation",
             "create_script": "Create script",
+            "view_automation": "Show automations using this blueprint",
+            "view_script": "Show scripts using this blueprint",
             "delete_blueprint": "Delete blueprint",
             "share_blueprint": "Share blueprint",
             "share_blueprint_no_url": "Unable to share blueprint: no source url",
@@ -2645,6 +2684,7 @@
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
+            "filtered_by_blueprint": "[%key:ui::panel::config::automation::picker::filtered_by_blueprint%]",
             "headers": {
               "name": "Name",
               "state": "State"
@@ -3209,6 +3249,11 @@
             "confirm_delete_ignore": "This will make the integration appear in your discovered integrations again when it gets discovered. This might require a restart or take some time.",
             "stop_ignore": "Stop ignoring"
           },
+          "integration_page": {
+            "entries": "Integration entries",
+            "no_entries": "No entries",
+            "attention_entries": "Needs attention"
+          },
           "config_entry": {
             "application_credentials": {
               "delete_title": "Application Credentials",
@@ -3463,7 +3508,8 @@
             "update_button": "Update Configuration",
             "download_backup": "Download Backup",
             "migrate_radio": "Migrate Radio",
-            "network_settings_title": "Network Settings"
+            "network_settings_title": "Network Settings",
+            "change_channel": "Change channel"
           },
           "add_device_page": {
             "spinner": "Searching for Zigbee devices…",
@@ -3557,6 +3603,14 @@
             "lqi": "LQI",
             "relationship": "Relationship",
             "depth": "Depth"
+          },
+          "change_channel_dialog": {
+            "title": "Change network channel",
+            "new_channel": "New channel",
+            "change_channel": "Change channel",
+            "migration_warning": "Zigbee channel migration is an experimental feature and relies on devices on your network to support it. Device support for this feature varies and only a portion of your network may end up migrating!",
+            "channel_has_been_changed": "Network channel has been changed",
+            "devices_will_rejoin": "Devices will re-join the network over time. This may take a few minutes."
           }
         },
         "zwave_js": {
@@ -3726,6 +3780,7 @@
             "header": "Z-Wave Device Configuration",
             "introduction": "Manage and adjust device specific configuration parameters for the selected device",
             "attribution": "Device configuration parameters and descriptions are provided by the {device_database}",
+            "endpoint": "Endpoint {endpoint}",
             "zwave_js_device_database": "Z-Wave JS Device Database",
             "battery_device_notice": "Battery devices must be awake to update their config. Please refer to your device manual for instructions on how to wake the device.",
             "parameter_is_read_only": "This parameter is read-only.",
@@ -3733,7 +3788,8 @@
             "set_param_accepted": "The parameter has been updated.",
             "set_param_queued": "The parameter change has been queued, and will be updated when the device wakes up.",
             "set_param_error": "An error occurred.",
-            "parameter": "Parameter"
+            "parameter": "Parameter",
+            "bitmask": "Bitmask"
           },
           "node_status": {
             "unknown": "Unknown",
@@ -3898,7 +3954,8 @@
         },
         "tips": {
           "tip": "Tip!",
-          "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}"
+          "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}",
+          "media_storage": "You can add network storage to your Home Assistant instance in the {storage} panel."
         },
         "analytics": {
           "caption": "Analytics",
@@ -3961,6 +4018,7 @@
           "description": "{percent_used} used - {free_space} free",
           "used_space": "Used Space",
           "emmc_lifetime_used": "eMMC Lifetime Used",
+          "disk_metrics": "Disk metrics",
           "datadisk": {
             "title": "Move data disk",
             "description": "You are currently using ''{current_path}'' as data disk. Moving the data disk will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
@@ -3974,6 +4032,71 @@
             "cancel": "[%key:ui::common::cancel%]",
             "failed_to_move": "Failed to move data disk",
             "move": "Move"
+          },
+          "network_mounts": {
+            "title": "Network storage",
+            "add_title": "Add network storage",
+            "update_title": "Update network storage",
+            "no_mounts": "No connected network storage",
+            "not_supported": {
+              "title": "The operating system does not support network storage",
+              "supervised": "Network storage is not supported on this host",
+              "os": "To use network storage you need to run at least Home Assistant Operating System {version}",
+              "navigate_to_updates": "Go to updates"
+            },
+            "mount_usage": {
+              "backup": "Backup",
+              "media": "Media",
+              "share": "Share"
+            },
+            "mount_type": {
+              "nfs": "Network File Share (NFS)",
+              "cifs": "Samba/Windows (CIFS)"
+            },
+            "options": {
+              "name": {
+                "title": "Name",
+                "description": "This name will be shown to you in the UI, and will also be the name of the folder created on your system"
+              },
+              "share": {
+                "title": "Remote share",
+                "description": "This is the name of the share you created on your storage server"
+              },
+              "server": {
+                "title": "Server",
+                "description": "This is the domain name (FQDN) or IP address of the storage server you want to connect to"
+              },
+              "default_backup_mount": {
+                "title": "Default backup location",
+                "description": "This will be the default location for backups"
+              },
+              "path": {
+                "title": "Remote share path",
+                "description": "This is the path of the remote share on your storage server"
+              },
+              "type": {
+                "title": "Protocol",
+                "description": "This determines how to communicate with the storage server"
+              },
+              "usage": {
+                "title": "Usage",
+                "description": "This determines how the share is intended to be used"
+              },
+              "username": {
+                "title": "Username",
+                "description": "This is your username for the samba share"
+              },
+              "password": {
+                "title": "Password",
+                "description": "This is your password for the samba share"
+              }
+            },
+            "connect": "Connect",
+            "update": "Update",
+            "errors": {
+              "reload": "Could not reload mount {mount}",
+              "invalid_name": "Invalid name, can only contain alphanumeric characters and underscores"
+            }
           }
         },
         "system_health": {
@@ -4787,6 +4910,18 @@
             "24": "24 hours"
           }
         },
+        "date_format": {
+          "header": "Date Format",
+          "dropdown_label": "Date format",
+          "description": "Choose how dates are formatted.",
+          "formats": {
+            "language": "Auto (use language setting)",
+            "system": "Use system locale",
+            "DMY": "Day-Month-Year",
+            "MDY": "Month-Day-Year",
+            "YMD": "Year-Month-Day"
+          }
+        },
         "first_weekday": {
           "header": "First day of the week",
           "dropdown_label": "First day of the week",
@@ -5528,7 +5663,8 @@
       "addon_running": "Add-on is running",
       "addon_stopped": "Add-on is stopped",
       "addons": "Installed add-ons",
-      "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!"
+      "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!",
+      "search_addons": "Search add-ons"
     },
     "store": {
       "missing_addons": "Missing add-ons? Enable advanced mode in your user profile page",
@@ -5727,6 +5863,15 @@
         "id": "ID",
         "attributes": "Attributes",
         "device_path": "Device path"
+      },
+      "backup_location": {
+        "title": "Change default backup location",
+        "options": {
+          "default_backup_mount": {
+            "name": "Default backup location",
+            "description": "The default location for backups."
+          }
+        }
       },
       "datadisk_move": {
         "title": "[%key:supervisor::system::host::move_datadisk%]",

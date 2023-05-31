@@ -389,9 +389,6 @@ const getEnergyData = async (
   const period =
     dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
 
-  // Subtract 1 hour from start to get starting point data
-  const startMinHour = addHours(start, -1);
-
   const lengthUnit = hass.config.unit_system.length || "";
   const energyUnits: StatisticsUnitConfiguration = {
     energy: "kWh",
@@ -402,26 +399,14 @@ const getEnergyData = async (
   };
 
   const _energyStats: Statistics | Promise<Statistics> = energyStatIds.length
-    ? fetchStatistics(
-        hass!,
-        startMinHour,
-        end,
-        energyStatIds,
-        period,
-        energyUnits,
-        ["sum"]
-      )
+    ? fetchStatistics(hass!, start, end, energyStatIds, period, energyUnits, [
+        "change",
+      ])
     : {};
   const _waterStats: Statistics | Promise<Statistics> = waterStatIds.length
-    ? fetchStatistics(
-        hass!,
-        startMinHour,
-        end,
-        waterStatIds,
-        period,
-        waterUnits,
-        ["sum"]
-      )
+    ? fetchStatistics(hass!, start, end, waterStatIds, period, waterUnits, [
+        "change",
+      ])
     : {};
 
   let statsCompare;
@@ -437,29 +422,27 @@ const getEnergyData = async (
     } else {
       startCompare = addDays(start, (dayDifference + 1) * -1);
     }
-
-    const compareStartMinHour = addHours(startCompare, -1);
     endCompare = addMilliseconds(start, -1);
     if (energyStatIds.length) {
       _energyStatsCompare = fetchStatistics(
         hass!,
-        compareStartMinHour,
+        startCompare,
         endCompare,
         energyStatIds,
         period,
         energyUnits,
-        ["sum"]
+        ["change"]
       );
     }
     if (waterStatIds.length) {
       _waterStatsCompare = fetchStatistics(
         hass!,
-        compareStartMinHour,
+        startCompare,
         endCompare,
         waterStatIds,
         period,
         waterUnits,
-        ["sum"]
+        ["change"]
       );
     }
   }
@@ -521,19 +504,6 @@ const getEnergyData = async (
       statsMetadata[x.statistic_id] = x;
     });
   }
-
-  Object.values(stats).forEach((stat) => {
-    // if the start of the first value is after the requested period, we have the first data point, and should add a zero point
-    if (stat.length && new Date(stat[0].start) > startMinHour) {
-      stat.unshift({
-        ...stat[0],
-        start: startMinHour.getTime(),
-        end: startMinHour.getTime(),
-        sum: 0,
-        state: 0,
-      });
-    }
-  });
 
   const data: EnergyData = {
     start,

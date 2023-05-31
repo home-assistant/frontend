@@ -15,7 +15,6 @@ import {
   showPromptDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
-import "../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../types";
 import { showLongLivedAccessTokenDialog } from "./show-long-lived-access-token-dialog";
 

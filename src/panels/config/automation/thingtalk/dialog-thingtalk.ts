@@ -235,7 +235,7 @@ class DialogThingtalk extends LitElement {
   };
 
   private _handleKeyUp(ev: KeyboardEvent) {
-    if (ev.keyCode === 13) {
+    if (ev.key === "Enter") {
       this._generate();
     }
   }

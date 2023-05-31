@@ -379,3 +379,9 @@ export const testCondition = (
     condition,
     variables,
   });
+
+export type Clipboard = {
+  trigger?: Trigger;
+  condition?: Condition;
+  action?: Action;
+};

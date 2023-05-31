@@ -74,6 +74,7 @@ export class HaMoreInfoLightBrightness extends LitElement {
         )}
         style=${styleMap({
           "--control-slider-color": color,
+          "--control-slider-background": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
       >
