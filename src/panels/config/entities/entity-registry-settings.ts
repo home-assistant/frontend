@@ -17,6 +17,7 @@ import {
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { fetchIntegrationManifest } from "../../../data/integration";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -46,12 +47,32 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @query("entity-registry-settings-editor")
   private _registryEditor?: EntityRegistrySettingsEditor;
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    if (this.entry.config_entry_id) {
-      getConfigEntry(this.hass, this.entry.config_entry_id).then((entry) => {
-        this._helperConfigEntry = entry.config_entry;
-      });
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (changedProps.has("entry")) {
+      this._fetchHelperConfigEntry();
+    }
+  }
+
+  private async _fetchHelperConfigEntry() {
+    if (!this.entry?.config_entry_id) {
+      return;
+    }
+    try {
+      const configEntry = (
+        await getConfigEntry(this.hass, this.entry.config_entry_id)
+      ).config_entry;
+      const manifest = await fetchIntegrationManifest(
+        this.hass,
+        configEntry.domain
+      );
+      if (manifest.integration_type === "helper") {
+        this._helperConfigEntry = configEntry;
+      } else {
+        this._helperConfigEntry = undefined;
+      }
+    } catch (err) {
+      this._helperConfigEntry = undefined;
     }
   }
 
