@@ -1,5 +1,10 @@
 import type { LitElement } from "lit";
 import type { ClassElement } from "../../types";
+import { throttle } from "../util/throttle";
+
+const throttleReplaceState = throttle((value) => {
+  history.replaceState({ scrollPosition: value }, "");
+}, 300);
 
 export const restoreScroll =
   (selector: string): any =>
@@ -9,7 +14,7 @@ export const restoreScroll =
     key: element.key,
     descriptor: {
       set(this: LitElement, value: number) {
-        history.replaceState({ scrollPosition: value }, "");
+        throttleReplaceState(value);
         this[`__${String(element.key)}`] = value;
       },
       get(this: LitElement) {
