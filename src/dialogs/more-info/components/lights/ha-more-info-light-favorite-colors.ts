@@ -163,17 +163,17 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
     }
   };
 
-  private _remove = async (index) => {
+  private _delete = async (index) => {
     const confirm = await showConfirmationDialog(this, {
       destructive: true,
       title: this.hass.localize(
-        `ui.dialogs.more_info_control.light.favorite_color.remove_confirm_title`
+        `ui.dialogs.more_info_control.light.favorite_color.delete_confirm_title`
       ),
       text: this.hass.localize(
-        `ui.dialogs.more_info_control.light.favorite_color.remove_confirm_text`
+        `ui.dialogs.more_info_control.light.favorite_color.delete_confirm_text`
       ),
       confirmText: this.hass.localize(
-        `ui.dialogs.more_info_control.light.favorite_color.remove_confirm_action`
+        `ui.dialogs.more_info_control.light.favorite_color.delete_confirm_action`
       ),
     });
     if (!confirm) {
@@ -188,7 +188,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
   private _handleDeleteButton = (ev) => {
     ev.stopPropagation();
     const index = ev.target.index;
-    this._remove(index);
+    this._delete(index);
   };
 
   private _handleAddButton = (ev) => {
@@ -251,11 +251,11 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
                         class="delete"
                         .index=${index}
                         aria-label=${this.hass.localize(
-                          `ui.dialogs.more_info_control.light.favorite_color.remove`,
+                          `ui.dialogs.more_info_control.light.favorite_color.delete`,
                           { number: index }
                         )}
                         .title=${this.hass.localize(
-                          `ui.dialogs.more_info_control.light.favorite_color.remove`,
+                          `ui.dialogs.more_info_control.light.favorite_color.delete`,
                           { number: index }
                         )}
                       >
