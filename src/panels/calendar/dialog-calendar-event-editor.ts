@@ -194,6 +194,7 @@ class DialogCalendarEventEditor extends LitElement {
             .value=${this._calendarId!}
             .includeDomains=${CALENDAR_DOMAINS}
             .entityFilter=${this._isEditableCalendar}
+            .disabled=${!isCreate}
             required
             @value-changed=${this._handleCalendarChanged}
           ></ha-entity-picker>

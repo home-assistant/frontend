@@ -3,6 +3,14 @@ import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import { debounce } from "../common/util/debounce";
 
+export const integrationsWithPanel = {
+  matter: "/config/matter",
+  mqtt: "/config/mqtt",
+  thread: "/config/thread",
+  zha: "/config/zha/dashboard",
+  zwave_js: "/config/zwave_js/dashboard",
+};
+
 export type IntegrationType =
   | "device"
   | "helper"
@@ -62,7 +70,7 @@ export const integrationIssuesUrl = (
   manifest: IntegrationManifest
 ) =>
   manifest.issue_tracker ||
-  `https://github.com/home-assistant/home-assistant/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+${domain}%22`;
+  `https://github.com/home-assistant/core/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+${domain}%22`;
 
 export const domainToName = (
   localize: LocalizeFunc,

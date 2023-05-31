@@ -1,10 +1,6 @@
 import memoizeOne from "memoize-one";
-import { FrontendLocaleData } from "../../data/translation";
-import { polyfillsLoaded } from "../translations/localize";
-
-if (__BUILD__ === "latest" && polyfillsLoaded) {
-  await polyfillsLoaded;
-}
+import { FrontendLocaleData, DateFormat } from "../../data/translation";
+import "../../resources/intl-polyfill";
 
 // Tuesday, August 10
 export const formatDateWeekdayDay = (
@@ -35,17 +31,63 @@ const formatDateMem = memoizeOne(
 );
 
 // 10/08/2021
-export const formatDateNumeric = (dateObj: Date, locale: FrontendLocaleData) =>
-  formatDateNumericMem(locale).format(dateObj);
+export const formatDateNumeric = (
+  dateObj: Date,
+  locale: FrontendLocaleData
+) => {
+  const formatter = formatDateNumericMem(locale);
 
-const formatDateNumericMem = memoizeOne(
-  (locale: FrontendLocaleData) =>
-    new Intl.DateTimeFormat(locale.language, {
+  if (
+    locale.date_format === DateFormat.language ||
+    locale.date_format === DateFormat.system
+  ) {
+    return formatter.format(dateObj);
+  }
+
+  const parts = formatter.formatToParts(dateObj);
+
+  const literal = parts.find((value) => value.type === "literal")?.value;
+  const day = parts.find((value) => value.type === "day")?.value;
+  const month = parts.find((value) => value.type === "month")?.value;
+  const year = parts.find((value) => value.type === "year")?.value;
+
+  const lastPart = parts.at(parts.length - 1);
+  let lastLiteral = lastPart?.type === "literal" ? lastPart?.value : "";
+
+  if (locale.language === "bg" && locale.date_format === DateFormat.YMD) {
+    lastLiteral = "";
+  }
+
+  const formats = {
+    [DateFormat.DMY]: `${day}${literal}${month}${literal}${year}${lastLiteral}`,
+    [DateFormat.MDY]: `${month}${literal}${day}${literal}${year}${lastLiteral}`,
+    [DateFormat.YMD]: `${year}${literal}${month}${literal}${day}${lastLiteral}`,
+  };
+
+  return formats[locale.date_format];
+};
+
+const formatDateNumericMem = memoizeOne((locale: FrontendLocaleData) => {
+  const localeString =
+    locale.date_format === DateFormat.system ? undefined : locale.language;
+
+  if (
+    locale.date_format === DateFormat.language ||
+    locale.date_format === DateFormat.system
+  ) {
+    return new Intl.DateTimeFormat(localeString, {
       year: "numeric",
       month: "numeric",
       day: "numeric",
-    })
-);
+    });
+  }
+
+  return new Intl.DateTimeFormat(localeString, {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  });
+});
 
 // Aug 10
 export const formatDateShort = (dateObj: Date, locale: FrontendLocaleData) =>

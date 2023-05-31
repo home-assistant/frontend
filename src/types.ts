@@ -40,18 +40,32 @@ declare global {
       getComputedStyleValue(element, propertyName);
     };
   }
+
   // for fire event
   interface HASSDomEvents {
     "value-changed": {
       value: unknown;
     };
     change: undefined;
+    "hass-logout": undefined;
+    "iron-resize": undefined;
+    "config-refresh": undefined;
+    "hass-api-called": {
+      success: boolean;
+      response: unknown;
+    };
   }
 
   // For loading workers in webpack
   interface ImportMeta {
     url: string;
   }
+}
+
+export interface ValueChangedEvent<T> extends CustomEvent {
+  detail: {
+    value: T;
+  };
 }
 
 export type Constructor<T = any> = new (...args: any[]) => T;

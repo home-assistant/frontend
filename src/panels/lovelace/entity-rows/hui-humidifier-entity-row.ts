@@ -5,6 +5,7 @@ import { HumidifierEntity } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { EntityConfig, LovelaceRow } from "./types";
 
@@ -49,11 +50,13 @@ class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {
           ? `${this.hass!.localize("ui.card.humidifier.humidity")}:
             ${stateObj.attributes.humidity} %${
               stateObj.attributes.mode
-                ? ` (${
-                    this.hass!.localize(
-                      `state_attributes.humidifier.mode.${stateObj.attributes.mode}`
-                    ) || stateObj.attributes.mode
-                  })`
+                ? ` (${computeAttributeValueDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    this.hass.entities,
+                    "mode"
+                  )})`
                 : ""
             }`
           : ""}

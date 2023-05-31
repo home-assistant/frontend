@@ -244,6 +244,7 @@ export class HaComboBox extends LitElement {
       );
 
       if (overlay) {
+        overlay.setAttribute("required-vertical-space", "0");
         this._removeInert(overlay);
       }
       this._observeBody();

@@ -159,6 +159,14 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             );
             break;
           }
+          case "domain": {
+            this._showDisabled = true;
+            filterTexts.push(
+              `${this.hass.localize(
+                "ui.panel.config.integrations.integration"
+              )} "${domainToName(localize, value)}"`
+            );
+          }
         }
       });
       return filterTexts.length ? filterTexts : undefined;
@@ -367,6 +375,22 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           if (configEntry) {
             filteredDomains.push(configEntry.domain);
           }
+        }
+        if (key === "domain") {
+          if (!entries) {
+            this._loadConfigEntries();
+            return;
+          }
+          const entryIds = entries
+            .filter((entry) => entry.domain === value)
+            .map((entry) => entry.entry_id);
+          filteredEntities = filteredEntities.filter(
+            (entity) =>
+              entity.config_entry_id &&
+              entryIds.includes(entity.config_entry_id)
+          );
+          filteredDomains.push(value);
+          startLength = filteredEntities.length;
         }
       });
 

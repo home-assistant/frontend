@@ -4,6 +4,7 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import "../../../components/ha-dialog-header";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -43,14 +44,14 @@ class DialogVoiceSettings extends LitElement {
 
     return html`
       <ha-dialog open @closed=${this.closeDialog} hideActions .heading=${title}>
-        <ha-header-bar slot="heading">
+        <ha-dialog-header slot="heading">
           <ha-icon-button
             slot="navigationIcon"
             dialogAction="cancel"
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <div slot="title" class="main-title" .title=${title}>${title}</div>
+          <span slot="title" .title=${title}>${title}</span>
           <ha-icon-button
             slot="actionItems"
             .label=${this.hass.localize(
@@ -59,7 +60,7 @@ class DialogVoiceSettings extends LitElement {
             .path=${mdiTuneVertical}
             @click=${this._viewMoreInfo}
           ></ha-icon-button>
-        </ha-header-bar>
+        </ha-dialog-header>
         <div>
           <entity-voice-settings
             .hass=${this.hass}
@@ -87,15 +88,6 @@ class DialogVoiceSettings extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          display: block;
-        }
-        .main-title {
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
         ha-dialog {
           --dialog-content-padding: 0;
         }

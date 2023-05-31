@@ -1,10 +1,10 @@
-import "@material/web/button/outlined-button";
 import { mdiShieldOff } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { stateColorCss } from "../../../common/entity/state_color";
+import "../../../components/ha-outlined-button";
 import { AlarmControlPanelEntity } from "../../../data/alarm_control_panel";
 import type { HomeAssistant } from "../../../types";
 import "../components/alarm_control_panel/ha-more-info-alarm_control_panel-modes";
@@ -67,14 +67,12 @@ class MoreInfoAlarmControlPanel extends LitElement {
                     .path=${domainIcon("alarm_control_panel", this.stateObj)}
                   ></ha-svg-icon>
                 </div>
-                <md-outlined-button
-                  .label=${this.hass.localize(
+                <ha-outlined-button @click=${this._disarm}>
+                  ${this.hass.localize(
                     "ui.dialogs.more_info_control.alarm_control_panel.disarm_action"
                   )}
-                  @click=${this._disarm}
-                >
                   <ha-svg-icon slot="icon" .path=${mdiShieldOff}></ha-svg-icon>
-                </md-outlined-button>
+                </ha-outlined-button>
               </div>
             `
           : html`
@@ -95,10 +93,6 @@ class MoreInfoAlarmControlPanel extends LitElement {
       css`
         :host {
           --icon-color: var(--primary-color);
-        }
-        md-outlined-button {
-          --ha-icon-display: block;
-          --md-sys-color-primary: var(--primary-text-color);
         }
         @keyframes pulse {
           0% {
@@ -140,7 +134,7 @@ class MoreInfoAlarmControlPanel extends LitElement {
           transition: background-color 180ms ease-in-out;
           opacity: 0.2;
         }
-        .status md-outlined-button {
+        .status ha-outlined-button {
           margin-top: 32px;
         }
       `,

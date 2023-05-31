@@ -1,5 +1,6 @@
 import {
   mdiAbTesting,
+  mdiApplicationVariableOutline,
   mdiArrowDecision,
   mdiCallSplit,
   mdiCodeBraces,
@@ -30,4 +31,9 @@ export const ACTION_TYPES = {
   device_id: mdiDevices,
   stop: mdiHandBackRight,
   parallel: mdiShuffleDisabled,
-};
+  variables: mdiApplicationVariableOutline,
+} as const;
+
+export const YAML_ONLY_ACTION_TYPES = new Set<keyof typeof ACTION_TYPES>([
+  "variables",
+]);

@@ -22,9 +22,8 @@ import {
   SYSTEM_GROUP_ID_USER,
   User,
 } from "../../../data/user";
-import { PolymerChangedEvent } from "../../../polymer-types";
+import { ValueChangedEvent, HomeAssistant } from "../../../types";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
 import { AddUserDialogParams } from "./show-dialog-add-user";
 
 @customElement("dialog-add-user")
@@ -74,7 +73,7 @@ export class DialogAddUser extends LitElement {
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
     this.addEventListener("keypress", (ev) => {
-      if (ev.keyCode === 13) {
+      if (ev.key === "Enter") {
         this._createUser(ev);
       }
     });
@@ -231,7 +230,7 @@ export class DialogAddUser extends LitElement {
     }
   }
 
-  private _handleValueChanged(ev: PolymerChangedEvent<string>): void {
+  private _handleValueChanged(ev: ValueChangedEvent<string>): void {
     this._error = undefined;
     const name = (ev.target as any).name;
     this[`_${name}`] = ev.detail.value;

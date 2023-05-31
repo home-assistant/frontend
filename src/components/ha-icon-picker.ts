@@ -8,8 +8,7 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { customIcons } from "../data/custom_icons";
-import { PolymerChangedEvent } from "../polymer-types";
-import { HomeAssistant } from "../types";
+import { ValueChangedEvent, HomeAssistant } from "../types";
 import "./ha-combo-box";
 import "./ha-icon";
 
@@ -173,7 +172,7 @@ export class HaIconPicker extends LitElement {
     callback(filteredItems.slice(iStart, iEnd), filteredItems.length);
   };
 
-  private async _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private async _openedChanged(ev: ValueChangedEvent<boolean>) {
     const opened = ev.detail.value;
     if (opened && !ICONS_LOADED) {
       await loadIcons();
@@ -181,7 +180,7 @@ export class HaIconPicker extends LitElement {
     }
   }
 
-  private _valueChanged(ev: PolymerChangedEvent<string>) {
+  private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     this._setValue(ev.detail.value);
   }

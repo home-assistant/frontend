@@ -1,11 +1,13 @@
 import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import deepClone from "deep-clone-simple";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { Action, ScriptConfig } from "../../../data/script";
+import { Clipboard } from "../../../data/automation";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -22,6 +24,8 @@ export class HaManualScriptEditor extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ attribute: false }) public config!: ScriptConfig;
+
+  @state() private _clipboard: Clipboard = {};
 
   protected render() {
     return html`
@@ -59,6 +63,8 @@ export class HaManualScriptEditor extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
+        @set-clipboard=${this._setClipboard}
+        .clipboard=${this._clipboard}
       ></ha-automation-action>
     `;
   }
@@ -68,6 +74,11 @@ export class HaManualScriptEditor extends LitElement {
     fireEvent(this, "value-changed", {
       value: { ...this.config!, sequence: ev.detail.value as Action[] },
     });
+  }
+
+  private _setClipboard(ev: CustomEvent): void {
+    ev.stopPropagation();
+    this._clipboard = { ...this._clipboard, ...deepClone(ev.detail) };
   }
 
   private _duplicate() {

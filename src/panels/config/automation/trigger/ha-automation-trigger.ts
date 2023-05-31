@@ -1,8 +1,21 @@
 import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
+import {
+  mdiArrowDown,
+  mdiArrowUp,
+  mdiDrag,
+  mdiPlus,
+  mdiContentPaste,
+} from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
@@ -14,7 +27,7 @@ import "../../../../components/ha-button-menu";
 import "../../../../components/ha-button";
 import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
-import { Trigger } from "../../../../data/automation";
+import { Trigger, Clipboard } from "../../../../data/automation";
 import { TRIGGER_TYPES } from "../../../../data/trigger";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import { SortableInstance } from "../../../../resources/sortable";
@@ -38,6 +51,8 @@ import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
 
+const PASTE_VALUE = "__paste__";
+
 @customElement("ha-automation-trigger")
 export default class HaAutomationTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -49,6 +64,8 @@ export default class HaAutomationTrigger extends LitElement {
   @property({ type: Boolean }) public nested = false;
 
   @property({ type: Boolean }) public reOrderMode = false;
+
+  @property() public clipboard?: Clipboard;
 
   private _focusLastTriggerOnChange = false;
 
@@ -136,6 +153,22 @@ export default class HaAutomationTrigger extends LitElement {
           >
             <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
           </ha-button>
+          ${
+            this.clipboard?.trigger
+              ? html` <mwc-list-item .value=${PASTE_VALUE} graphic="icon">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.triggers.paste"
+                  )}
+                  (${this.hass.localize(
+                    `ui.panel.config.automation.editor.triggers.type.${this.clipboard.trigger.platform}.label`
+                  )})
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiContentPaste}
+                  ></ha-svg-icon
+                ></mwc-list-item>`
+              : nothing
+          }
           ${this._processedTypes(this.hass.localize).map(
             ([opt, label, icon]) => html`
               <mwc-list-item .value=${opt} graphic="icon">
@@ -222,19 +255,25 @@ export default class HaAutomationTrigger extends LitElement {
   }
 
   private _addTrigger(ev: CustomEvent<ActionDetail>) {
-    const platform = (ev.currentTarget as HaSelect).items[ev.detail.index]
-      .value as Trigger["platform"];
+    const value = (ev.currentTarget as HaSelect).items[ev.detail.index].value;
 
-    const elClass = customElements.get(
-      `ha-automation-trigger-${platform}`
-    ) as CustomElementConstructor & {
-      defaultConfig: Omit<Trigger, "platform">;
-    };
+    let triggers: Trigger[];
+    if (value === PASTE_VALUE) {
+      triggers = this.triggers.concat(deepClone(this.clipboard!.trigger));
+    } else {
+      const platform = value as Trigger["platform"];
 
-    const triggers = this.triggers.concat({
-      platform: platform as any,
-      ...elClass.defaultConfig,
-    });
+      const elClass = customElements.get(
+        `ha-automation-trigger-${platform}`
+      ) as CustomElementConstructor & {
+        defaultConfig: Omit<Trigger, "platform">;
+      };
+
+      triggers = this.triggers.concat({
+        platform: platform as any,
+        ...elClass.defaultConfig,
+      });
+    }
     this._focusLastTriggerOnChange = true;
     fireEvent(this, "value-changed", { value: triggers });
   }

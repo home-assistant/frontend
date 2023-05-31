@@ -597,6 +597,8 @@ class DialogZWaveJSAddNode extends LitElement {
     } catch (err: any) {
       this._error = err.message;
       this._status = "validate_dsk_enter_pin";
+      await this.updateComplete;
+      this._pinInput?.focus();
     }
   }
 

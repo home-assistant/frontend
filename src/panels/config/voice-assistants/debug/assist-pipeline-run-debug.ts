@@ -296,7 +296,7 @@ export class AssistPipelineRunDebug extends LitElement {
   }
 
   private _handleContinueKeyDown(ev) {
-    if (ev.keyCode === 13) {
+    if (ev.key === "Enter") {
       this._runTextPipeline();
     }
   }

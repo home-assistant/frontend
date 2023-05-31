@@ -24,10 +24,10 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-dialog";
-import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
 import "../../components/ha-textfield";
+import "../../components/ha-dialog-header";
 import type { HaTextField } from "../../components/ha-textfield";
 import {
   AssistPipeline,
@@ -122,73 +122,68 @@ export class HaVoiceCommandDialog extends LitElement {
         .heading=${this.hass.localize("ui.dialogs.voice_command.title")}
         flexContent
       >
-        <div slot="heading">
-          <ha-header-bar>
-            <ha-icon-button
-              slot="navigationIcon"
-              dialogAction="cancel"
-              .label=${this.hass.localize("ui.common.close")}
-              .path=${mdiClose}
-            ></ha-icon-button>
-            <div slot="title">
-              ${this.hass.localize("ui.dialogs.voice_command.title")}
-              <ha-button-menu
-                @opened=${this._loadPipelines}
-                @closed=${stopPropagation}
-                activatable
-                fixed
-              >
-                <ha-button slot="trigger">
-                  ${this._pipeline?.name}
-                  <ha-svg-icon
-                    slot="trailingIcon"
-                    .path=${mdiChevronDown}
-                  ></ha-svg-icon>
-                </ha-button>
-                ${this._pipelines?.map(
-                  (pipeline) => html`<ha-list-item
-                    ?selected=${pipeline.id === this._pipelineId ||
-                    (!this._pipelineId &&
-                      pipeline.id === this._preferredPipeline)}
-                    .pipeline=${pipeline.id}
-                    @click=${this._selectPipeline}
-                    .hasMeta=${pipeline.id === this._preferredPipeline}
-                  >
-                    ${pipeline.name}${pipeline.id === this._preferredPipeline
-                      ? html`
-                          <ha-svg-icon
-                            slot="meta"
-                            .path=${mdiStar}
-                          ></ha-svg-icon>
-                        `
-                      : nothing}
-                  </ha-list-item>`
-                )}
-                ${this.hass.user?.is_admin
-                  ? html`<li divider role="separator"></li>
-                      <a href="/config/voice-assistants/assistants"
-                        ><ha-list-item @click=${this.closeDialog}
-                          >${this.hass.localize(
-                            "ui.dialogs.voice_command.manage_assistants"
-                          )}</ha-list-item
-                        ></a
-                      >`
-                  : nothing}
-              </ha-button-menu>
-            </div>
-            <a
-              href=${documentationUrl(this.hass, "/docs/assist/")}
-              slot="actionItems"
-              target="_blank"
-              rel="noopener noreferer"
+        <ha-dialog-header slot="heading">
+          <ha-icon-button
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${mdiClose}
+          ></ha-icon-button>
+          <div slot="title">
+            ${this.hass.localize("ui.dialogs.voice_command.title")}
+            <ha-button-menu
+              @opened=${this._loadPipelines}
+              @closed=${stopPropagation}
+              activatable
+              fixed
             >
-              <ha-icon-button
-                .label=${this.hass.localize("ui.common.help")}
-                .path=${mdiHelpCircleOutline}
-              ></ha-icon-button>
-            </a>
-          </ha-header-bar>
-        </div>
+              <ha-button slot="trigger">
+                ${this._pipeline?.name}
+                <ha-svg-icon
+                  slot="trailingIcon"
+                  .path=${mdiChevronDown}
+                ></ha-svg-icon>
+              </ha-button>
+              ${this._pipelines?.map(
+                (pipeline) => html`<ha-list-item
+                  ?selected=${pipeline.id === this._pipelineId ||
+                  (!this._pipelineId &&
+                    pipeline.id === this._preferredPipeline)}
+                  .pipeline=${pipeline.id}
+                  @click=${this._selectPipeline}
+                  .hasMeta=${pipeline.id === this._preferredPipeline}
+                >
+                  ${pipeline.name}${pipeline.id === this._preferredPipeline
+                    ? html`
+                        <ha-svg-icon slot="meta" .path=${mdiStar}></ha-svg-icon>
+                      `
+                    : nothing}
+                </ha-list-item>`
+              )}
+              ${this.hass.user?.is_admin
+                ? html`<li divider role="separator"></li>
+                    <a href="/config/voice-assistants/assistants"
+                      ><ha-list-item @click=${this.closeDialog}
+                        >${this.hass.localize(
+                          "ui.dialogs.voice_command.manage_assistants"
+                        )}</ha-list-item
+                      ></a
+                    >`
+                : nothing}
+            </ha-button-menu>
+          </div>
+          <a
+            href=${documentationUrl(this.hass, "/docs/assist/")}
+            slot="actionItems"
+            target="_blank"
+            rel="noopener noreferer"
+          >
+            <ha-icon-button
+              .label=${this.hass.localize("ui.common.help")}
+              .path=${mdiHelpCircleOutline}
+            ></ha-icon-button>
+          </a>
+        </ha-dialog-header>
         <div class="messages">
           <div class="messages-container" id="scroll-container">
             ${this._conversation!.map(
@@ -329,7 +324,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _handleKeyUp(ev: KeyboardEvent) {
     const input = ev.target as HaTextField;
-    if (ev.keyCode === 13 && input.value) {
+    if (ev.key === "Enter" && input.value) {
       this._processText(input.value);
       input.value = "";
       this._showSendButton = false;
@@ -645,18 +640,13 @@ export class HaVoiceCommandDialog extends LitElement {
           --mdc-dialog-max-height: 500px;
           --dialog-content-padding: 0;
         }
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          --header-height: 64px;
-        }
-        ha-header-bar a {
+        ha-dialog-header a {
           color: var(--primary-text-color);
         }
         div[slot="title"] {
           display: flex;
           flex-direction: column;
-          margin-top: 8px;
+          margin: -4px 0;
         }
         ha-button-menu {
           --mdc-theme-on-primary: var(--text-primary-color);

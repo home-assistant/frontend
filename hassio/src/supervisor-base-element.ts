@@ -53,78 +53,54 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this._initializeLocalize();
+    if (!this.hasUpdated) {
+      return;
+    }
+    if (this.route?.prefix === "/hassio") {
+      this._initSupervisor();
+    }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     Object.keys(this._unsubs).forEach((unsub) => {
       this._unsubs[unsub]();
+      delete this._unsubs[unsub];
     });
+    this.removeEventListener(
+      "supervisor-collection-refresh",
+      this._handleSupervisorStoreRefreshEvent
+    );
   }
 
-  protected updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (!this.hasUpdated) {
+      if (this.route?.prefix === "/hassio") {
+        this._initSupervisor();
+      }
+    }
     if (changedProperties.has("hass")) {
       const oldHass = changedProperties.get("hass") as
         | HomeAssistant
         | undefined;
-      if (
-        oldHass !== undefined &&
-        oldHass.language !== undefined &&
-        oldHass.language !== this.hass.language
-      ) {
+      if (oldHass?.language !== this.hass.language) {
         this._language = this.hass.language;
       }
     }
 
-    if (changedProperties.has("_language")) {
-      if (changedProperties.get("_language") !== this._language) {
-        this._initializeLocalize();
-      }
-    }
-
-    if (changedProperties.has("_collections")) {
-      if (this._collections) {
-        const unsubs = Object.keys(this._unsubs);
-        for (const collection of Object.keys(this._collections)) {
-          if (!unsubs.includes(collection)) {
-            this._unsubs[collection] = this._collections[collection].subscribe(
-              (data) => this._updateSupervisor({ [collection]: data })
-            );
-          }
-        }
-      }
+    if (changedProperties.has("_language") || !this.hasUpdated) {
+      this._initializeLocalize();
     }
   }
 
-  protected _updateSupervisor(obj: Partial<Supervisor>): void {
-    this.supervisor = { ...this.supervisor, ...obj };
-  }
-
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    if (
-      this._language !== this.hass.language &&
-      this.hass.language !== undefined
-    ) {
-      this._language = this.hass.language;
-    }
-    this._initializeLocalize();
-    if (this.route?.prefix === "/hassio") {
-      this._initSupervisor();
-    }
+  protected _updateSupervisor(update: Partial<Supervisor>): void {
+    this.supervisor = { ...this.supervisor, ...update };
   }
 
   private async _initializeLocalize() {
-    const { language, data } = await getTranslation(
-      null,
-      this._language,
-      "/api/hassio/app/static/translations"
-    );
+    const { language, data } = await getTranslation(null, this._language);
 
-    this.supervisor = {
-      ...this.supervisor,
+    this._updateSupervisor({
       localize: await computeLocalize<SupervisorKeys>(
         this.constructor.prototype,
         language,
@@ -132,7 +108,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
           [language]: data,
         }
       ),
-    };
+    });
   }
 
   private async _handleSupervisorStoreRefreshEvent(ev) {
@@ -149,6 +125,17 @@ export class SupervisorBaseElement extends urlSyncMixin(
     this._updateSupervisor({ [collection]: response.data });
   }
 
+  private _subscribeCollection(collection: string) {
+    if (this._unsubs[collection]) {
+      this._unsubs[collection]();
+    }
+    this._unsubs[collection] = this._collections[collection].subscribe((data) =>
+      this._updateSupervisor({
+        [collection]: data,
+      })
+    );
+  }
+
   private async _initSupervisor(): Promise<void> {
     this.addEventListener(
       "supervisor-collection-refresh",
@@ -158,6 +145,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
     if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
       Object.keys(supervisorCollection).forEach((collection) => {
         if (collection in this._collections) {
+          this._subscribeCollection(collection);
           this._collections[collection].refresh();
         } else {
           this._collections[collection] = getSupervisorEventCollection(
@@ -165,17 +153,13 @@ export class SupervisorBaseElement extends urlSyncMixin(
             collection,
             supervisorCollection[collection]
           );
-        }
-      });
-
-      Object.keys(this._collections).forEach((collection) => {
-        if (
-          this.supervisor === undefined ||
-          this.supervisor[collection] === undefined
-        ) {
-          this._updateSupervisor({
-            [collection]: this._collections[collection].state,
-          });
+          if (this._collections[collection].state) {
+            // happens when the grace period of the collection unsubscribe has not passed yet
+            this._updateSupervisor({
+              [collection]: this._collections[collection].state,
+            });
+          }
+          this._subscribeCollection(collection);
         }
       });
     } else {

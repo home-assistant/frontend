@@ -3,11 +3,11 @@ import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiBackupRestore, mdiDelete, mdiDotsVertical, mdiPlus } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -26,9 +26,9 @@ import "../../../src/components/ha-fab";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-svg-icon";
 import {
+  HassioBackup,
   fetchHassioBackups,
   friendlyFolderName,
-  HassioBackup,
   reloadHassioBackups,
   removeBackup,
 } from "../../../src/data/hassio/backup";
@@ -43,6 +43,7 @@ import type { HaTabsSubpageDataTable } from "../../../src/layouts/hass-tabs-subp
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
 import { showBackupUploadDialog } from "../dialogs/backup/show-dialog-backup-upload";
+import { showHassioBackupLocationDialog } from "../dialogs/backup/show-dialog-hassio-backu-location";
 import { showHassioBackupDialog } from "../dialogs/backup/show-dialog-hassio-backup";
 import { showHassioCreateBackupDialog } from "../dialogs/backup/show-dialog-hassio-create-backup";
 import { supervisorTabs } from "../hassio-tabs";
@@ -204,6 +205,9 @@ export class HassioBackups extends LitElement {
           <mwc-list-item>
             ${this.supervisor.localize("common.reload")}
           </mwc-list-item>
+          <mwc-list-item>
+            ${this.supervisor.localize("dialog.backup_location.title")}
+          </mwc-list-item>
           ${atLeastVersion(this.hass.config.version, 0, 116)
             ? html`<mwc-list-item>
                 ${this.supervisor.localize("backup.upload_backup")}
@@ -270,6 +274,9 @@ export class HassioBackups extends LitElement {
         this.refreshData();
         break;
       case 1:
+        showHassioBackupLocationDialog(this, { supervisor: this.supervisor });
+        break;
+      case 2:
         this._showUploadBackupDialog();
         break;
     }

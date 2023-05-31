@@ -91,6 +91,7 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
         )}
         style=${styleMap({
           "--control-slider-color": color,
+          "--control-slider-background": color,
         })}
         .disabled=${isUnavailable}
       >
@@ -110,8 +111,8 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
         --control-slider-thickness: 100px;
         --control-slider-border-radius: 24px;
         --control-slider-color: var(--primary-color);
+        --control-slider-background: var(--disabled-color);
         --control-slider-background-opacity: 0.2;
-        --control-slider-background: var(--control-slider-color);
       }
       .gradient {
         background: -webkit-linear-gradient(top, ${GRADIENT});

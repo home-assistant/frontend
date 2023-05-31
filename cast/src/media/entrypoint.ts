@@ -1,3 +1,5 @@
+import { cast } from "chromecast-caf-receiver";
+
 const castContext = cast.framework.CastReceiverContext.getInstance();
 
 const playerManager = castContext.getPlayerManager();
