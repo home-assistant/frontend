@@ -1,6 +1,7 @@
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
+import { mdiContentCopy } from "@mdi/js";
 import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -120,6 +121,14 @@ export class HuiConditionalCardEditor
                             : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
                         )}
                       </mwc-button>
+
+                      <ha-icon-button
+                        .label=${this.hass!.localize(
+                          "ui.panel.lovelace.editor.edit_card.copy"
+                        )}
+                        .path=${mdiContentCopy}
+                        @click=${this._handleCopyCard}
+                      ></ha-icon-button>
                       <mwc-button @click=${this._handleReplaceCard}
                         >${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.conditional.change_type"
@@ -244,6 +253,14 @@ export class HuiConditionalCardEditor
     this._guiModeAvailable = true;
     this._config = { ...this._config, card: ev.detail.config };
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  protected _handleCopyCard() {
+    if (!this._config) {
+      return;
+    }
+    this.clipboard = this._config.card;
+    fireEvent(this, "set-dashboard-clipboard", { config: this.clipboard });
   }
 
   private _handleCardChanged(ev: HASSDomEvent<ConfigChangedEvent>): void {
