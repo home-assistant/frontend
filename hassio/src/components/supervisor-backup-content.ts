@@ -1,5 +1,6 @@
 import { mdiFolder, mdiHomeAssistant, mdiPuzzle } from "@mdi/js";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResultGroup,
