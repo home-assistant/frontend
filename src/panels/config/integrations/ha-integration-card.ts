@@ -1,7 +1,12 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-button";
 import "@material/mwc-list";
-import { mdiApplication, mdiCog, mdiDevices, mdiShape } from "@mdi/js";
+import {
+  mdiCog,
+  mdiDevices,
+  mdiHandExtendedOutline,
+  mdiShapeOutline,
+} from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -78,7 +83,7 @@ export class HaIntegrationCard extends LitElement {
             href=${`/config/integrations/integration/${this.domain}`}
             slot="header-button"
           >
-            <ha-icon-button .path=${mdiCog}></ha-icon-button>
+            <ha-icon-button .path=${mdiCogOutline}></ha-icon-button>
           </a>
         </ha-integration-header>
 
@@ -103,7 +108,7 @@ export class HaIntegrationCard extends LitElement {
             >
               <ha-list-item hasMeta graphic="icon">
                 <ha-svg-icon
-                  .path=${services ? mdiApplication : mdiDevices}
+                  .path=${services ? mdiHandExtendedOutline : mdiDevices}
                   slot="graphic"
                 ></ha-svg-icon>
                 ${this.hass.localize(
@@ -122,7 +127,10 @@ export class HaIntegrationCard extends LitElement {
               href=${`/config/entities?historyBack=1&domain=${this.domain}`}
             >
               <ha-list-item hasMeta graphic="icon">
-                <ha-svg-icon .path=${mdiShape} slot="graphic"></ha-svg-icon>
+                <ha-svg-icon
+                  .path=${mdiShapeOutline}
+                  slot="graphic"
+                ></ha-svg-icon>
                 ${this.hass.localize(
                   `ui.panel.config.integrations.config_entry.entities`,
                   "count",
