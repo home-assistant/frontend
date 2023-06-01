@@ -75,27 +75,25 @@ export default class HaAutomationTrigger extends LitElement {
 
   protected render() {
     return html`
-      ${
-        this.reOrderMode && !this.nested
-          ? html`
-              <ha-alert
-                alert-type="info"
-                .title=${this.hass.localize(
-                  "ui.panel.config.automation.editor.re_order_mode.title"
-                )}
-              >
+      ${this.reOrderMode && !this.nested
+        ? html`
+            <ha-alert
+              alert-type="info"
+              .title=${this.hass.localize(
+                "ui.panel.config.automation.editor.re_order_mode.title"
+              )}
+            >
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.re_order_mode.description_triggers"
+              )}
+              <mwc-button slot="action" @click=${this._exitReOrderMode}>
                 ${this.hass.localize(
-                  "ui.panel.config.automation.editor.re_order_mode.description_triggers"
+                  "ui.panel.config.automation.editor.re_order_mode.exit"
                 )}
-                <mwc-button slot="action" @click=${this._exitReOrderMode}>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.re_order_mode.exit"
-                  )}
-                </mwc-button>
-              </ha-alert>
-            `
-          : null
-      }
+              </mwc-button>
+            </ha-alert>
+          `
+        : null}
       <div class="triggers">
         ${repeat(
           this.triggers,
@@ -141,8 +139,11 @@ export default class HaAutomationTrigger extends LitElement {
             </ha-automation-trigger-row>
           `
         )}
-        </div>
-        <ha-button-menu @action=${this._addTrigger} .disabled=${this.disabled}>
+        <ha-button-menu
+          @action=${this._addTrigger}
+          .disabled=${this.disabled}
+          fixed
+        >
           <ha-button
             slot="trigger"
             outlined
@@ -153,22 +154,20 @@ export default class HaAutomationTrigger extends LitElement {
           >
             <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
           </ha-button>
-          ${
-            this.clipboard?.trigger
-              ? html` <mwc-list-item .value=${PASTE_VALUE} graphic="icon">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.triggers.paste"
-                  )}
-                  (${this.hass.localize(
-                    `ui.panel.config.automation.editor.triggers.type.${this.clipboard.trigger.platform}.label`
-                  )})
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiContentPaste}
-                  ></ha-svg-icon
-                ></mwc-list-item>`
-              : nothing
-          }
+          ${this.clipboard?.trigger
+            ? html` <mwc-list-item .value=${PASTE_VALUE} graphic="icon">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.triggers.paste"
+                )}
+                (${this.hass.localize(
+                  `ui.panel.config.automation.editor.triggers.type.${this.clipboard.trigger.platform}.label`
+                )})
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${mdiContentPaste}
+                ></ha-svg-icon
+              ></mwc-list-item>`
+            : nothing}
           ${this._processedTypes(this.hass.localize).map(
             ([opt, label, icon]) => html`
               <mwc-list-item .value=${opt} graphic="icon">

@@ -147,7 +147,11 @@ export default class HaAutomationAction extends LitElement {
           `
         )}
       </div>
-      <ha-button-menu @action=${this._addAction} .disabled=${this.disabled}>
+      <ha-button-menu
+        @action=${this._addAction}
+        .disabled=${this.disabled}
+        fixed
+      >
         <ha-button
           slot="trigger"
           outlined

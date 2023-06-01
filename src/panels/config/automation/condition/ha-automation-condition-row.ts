@@ -130,6 +130,7 @@ export default class HaAutomationConditionRow extends LitElement {
                   slot="icons"
                   @action=${this._handleAction}
                   @click=${preventDefault}
+                  fixed
                 >
                   <ha-icon-button
                     slot="trigger"
