@@ -46,6 +46,8 @@ import {
 } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 
+const MULTIPROTOCOL_ADDON_URL = "socket://core-silabs-multiprotocol:9999";
+
 export const zhaTabs: PageNavigation[] = [
   {
     translationKey: "ui.panel.config.zha.network.caption",
@@ -274,6 +276,19 @@ class ZHAConfigDashboard extends LitElement {
   }
 
   private async _showChannelMigrationDialog(): Promise<void> {
+    if (this._networkSettings!.device.path === MULTIPROTOCOL_ADDON_URL) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.zha.configuration_page.channel_dialog.title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.zha.configuration_page.channel_dialog.text"
+        ),
+        warning: true,
+      });
+      return;
+    }
+
     showZHAChangeChannelDialog(this, {
       currentChannel: this._networkSettings!.settings.network_info.channel,
     });
