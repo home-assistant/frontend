@@ -305,9 +305,13 @@ class HaTempColorPicker extends LitElement {
     const cy = ((y + 1) * size) / 2;
 
     const markerPosition = `${cx}px, ${cy}px`;
-    const markerScale = this._pressed ? "1.5" : "1";
+    const markerScale = this._pressed
+      ? this._pressed === "touch"
+        ? "2.5"
+        : "1.5"
+      : "1";
     const markerOffset =
-      this._pressed === "touch" ? `0px, -${size / 8}px` : "0px, 0px";
+      this._pressed === "touch" ? `0px, -${size / 16}px` : "0px, 0px";
 
     return html`
       <div class="container ${classMap({ pressed: Boolean(this._pressed) })}">

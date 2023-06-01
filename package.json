@@ -151,8 +151,8 @@
   "devDependencies": {
     "@babel/core": "7.22.1",
     "@babel/plugin-proposal-decorators": "7.22.3",
-    "@babel/plugin-transform-runtime": "7.22.2",
-    "@babel/preset-env": "7.22.2",
+    "@babel/plugin-transform-runtime": "7.22.4",
+    "@babel/preset-env": "7.22.4",
     "@babel/preset-typescript": "7.21.5",
     "@koa/cors": "4.0.0",
     "@octokit/auth-oauth-device": "4.0.4",
