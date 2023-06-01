@@ -191,6 +191,7 @@ export class HaIntegrationCard extends LitElement {
           display: flex;
           flex-direction: column;
           height: 100%;
+          overflow: hidden;
           --state-color: var(--divider-color, #e0e0e0);
           --ha-card-border-color: var(--state-color);
           --state-message-color: var(--state-color);
