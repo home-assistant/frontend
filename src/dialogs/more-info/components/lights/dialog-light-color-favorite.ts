@@ -79,6 +79,7 @@ class DialogLightColorFavorite extends LitElement {
         <light-color-picker
           .hass=${this.hass}
           entityId=${this._entry.entity_id}
+          .defaultMode=${this._dialogParams?.defaultMode}
           @color-changed=${this._colorChanged}
         >
         </light-color-picker>
