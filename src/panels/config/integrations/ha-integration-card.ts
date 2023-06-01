@@ -2,7 +2,7 @@ import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-button";
 import "@material/mwc-list";
 import {
-  mdiCog,
+  mdiCogOutline,
   mdiDevices,
   mdiHandExtendedOutline,
   mdiShapeOutline,
