@@ -1,13 +1,14 @@
 import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import deepClone from "deep-clone-simple";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import { LocalStorage } from "../../../common/decorators/local-storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
-import { Action, ScriptConfig } from "../../../data/script";
 import { Clipboard } from "../../../data/automation";
+import { Action, ScriptConfig } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -25,7 +26,8 @@ export class HaManualScriptEditor extends LitElement {
 
   @property({ attribute: false }) public config!: ScriptConfig;
 
-  @state() private _clipboard: Clipboard = {};
+  @LocalStorage("automationClipboard", true, false, window.sessionStorage)
+  private _clipboard: Clipboard = {};
 
   protected render() {
     return html`
