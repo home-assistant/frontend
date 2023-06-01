@@ -55,6 +55,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   }
 
   private async _fetchHelperConfigEntry() {
+    this._helperConfigEntry = undefined;
     if (!this.entry?.config_entry_id) {
       return;
     }
@@ -68,12 +69,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       );
       if (manifest.integration_type === "helper") {
         this._helperConfigEntry = configEntry;
-      } else {
-        this._helperConfigEntry = undefined;
       }
-    } catch (err) {
-      this._helperConfigEntry = undefined;
-    }
+      // eslint-disable-next-line no-empty
+    } catch (err) {}
   }
 
   protected render() {
