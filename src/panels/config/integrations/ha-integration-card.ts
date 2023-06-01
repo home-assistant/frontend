@@ -219,7 +219,9 @@ export class HaIntegrationCard extends LitElement {
         }
         .content {
           flex: 1;
-          --mdc-list-side-padding: 16px;
+          --mdc-list-side-padding-right: 20px;
+          --mdc-list-side-padding-left: 24px;
+          --mdc-list-item-graphic-margin: 24px;
         }
         a {
           text-decoration: none;
