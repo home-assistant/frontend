@@ -29,9 +29,10 @@ export class HaOutlinedIconButton extends IconButton {
         --md-ripple-hover-opacity: 0;
         --md-ripple-pressed-opacity: 0;
       }
-      button {
-        /* Fix md-outlined-icon-button padding for iOS */
+      .outlined {
+        /* Fix md-outlined-icon-button padding and margin for iOS */
         padding: 0;
+        margin: 0;
       }
     `,
   ];

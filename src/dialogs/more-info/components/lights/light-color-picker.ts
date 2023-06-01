@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
+import { mdiEyedropper } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -10,7 +11,14 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { hs2rgb, rgb2hs } from "../../../../common/color/convert-color";
+import {
+  hex2rgb,
+  hs2rgb,
+  hsv2rgb,
+  rgb2hex,
+  rgb2hs,
+  rgb2hsv,
+} from "../../../../common/color/convert-color";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-button-toggle-group";
@@ -27,8 +35,9 @@ import {
   lightSupportsColorMode,
 } from "../../../../data/light";
 import { HomeAssistant } from "../../../../types";
+import "../../../../components/ha-icon";
 
-type Mode = "color_temp" | "color";
+export type LightPickerMode = "color_temp" | "color";
 
 declare global {
   interface HASSDomEvents {
@@ -42,7 +51,7 @@ class LightColorPicker extends LitElement {
 
   @property() public entityId!: string;
 
-  @property() public defaultMode!: Mode;
+  @property() public defaultMode?: LightPickerMode;
 
   @state() private _cwSliderValue?: number;
 
@@ -58,9 +67,9 @@ class LightColorPicker extends LitElement {
 
   @state() private _ctPickerValue?: number;
 
-  @state() private _mode?: Mode;
+  @state() private _mode?: LightPickerMode;
 
-  @state() private _modes: Mode[] = [];
+  @state() private _modes: LightPickerMode[] = [];
 
   get stateObj() {
     return this.hass.states[this.entityId] as LightEntity | undefined;
@@ -79,6 +88,16 @@ class LightColorPicker extends LitElement {
     const supportsRgbw =
       !supportsRgbww &&
       lightSupportsColorMode(this.stateObj, LightColorMode.RGBW);
+
+    const hexValue = this._hsPickerValue
+      ? rgb2hex(
+          hsv2rgb([
+            this._hsPickerValue[0],
+            this._hsPickerValue[1],
+            ((this._colorBrightnessSliderValue ?? 100) / 100) * 255,
+          ])
+        )
+      : "";
 
     return html`
       ${this._modes.length > 1
@@ -116,27 +135,37 @@ class LightColorPicker extends LitElement {
           : nothing}
         ${this._mode === "color"
           ? html`
-              <ha-hs-color-picker
-                @value-changed=${this._hsColorChanged}
-                @cursor-moved=${this._hsColorCursorMoved}
-                .value=${this._hsPickerValue}
-                .colorBrightness=${this._colorBrightnessSliderValue != null
-                  ? (this._colorBrightnessSliderValue * 255) / 100
-                  : undefined}
-                .wv=${this._wvSliderValue != null
-                  ? (this._wvSliderValue * 255) / 100
-                  : undefined}
-                .ww=${this._wwSliderValue != null
-                  ? (this._wwSliderValue * 255) / 100
-                  : undefined}
-                .cw=${this._cwSliderValue != null
-                  ? (this._cwSliderValue * 255) / 100
-                  : undefined}
-                .minKelvin=${this.stateObj.attributes.min_color_temp_kelvin}
-                .maxKelvin=${this.stateObj.attributes.max_color_temp_kelvin}
-              >
-              </ha-hs-color-picker>
+              <div class="color-container">
+                <label class="native-color-picker">
+                  <input
+                    type="color"
+                    .value=${hexValue ?? ""}
+                    @input=${this._nativeColorChanged}
+                  />
+                  <ha-svg-icon .path=${mdiEyedropper}></ha-svg-icon>
+                </label>
 
+                <ha-hs-color-picker
+                  @value-changed=${this._hsColorChanged}
+                  @cursor-moved=${this._hsColorCursorMoved}
+                  .value=${this._hsPickerValue}
+                  .colorBrightness=${this._colorBrightnessSliderValue != null
+                    ? (this._colorBrightnessSliderValue * 255) / 100
+                    : undefined}
+                  .wv=${this._wvSliderValue != null
+                    ? (this._wvSliderValue * 255) / 100
+                    : undefined}
+                  .ww=${this._wwSliderValue != null
+                    ? (this._wwSliderValue * 255) / 100
+                    : undefined}
+                  .cw=${this._cwSliderValue != null
+                    ? (this._cwSliderValue * 255) / 100
+                    : undefined}
+                  .minKelvin=${this.stateObj.attributes.min_color_temp_kelvin}
+                  .maxKelvin=${this.stateObj.attributes.max_color_temp_kelvin}
+                >
+                </ha-hs-color-picker>
+              </div>
               ${supportsRgbw || supportsRgbww
                 ? html`<ha-labeled-slider
                     .caption=${this.hass.localize(
@@ -267,7 +296,7 @@ class LightColorPicker extends LitElement {
 
       const supportsColor = lightSupportsColor(this.stateObj!);
 
-      const modes: Mode[] = [];
+      const modes: LightPickerMode[] = [];
       if (supportsColor) {
         modes.push("color");
       }
@@ -347,6 +376,23 @@ class LightColorPicker extends LitElement {
     } else {
       this._applyColor({ hs_color });
     }
+  }
+
+  private _nativeColorChanged(ev) {
+    const rgb = hex2rgb(ev.currentTarget.value);
+
+    const hsv = rgb2hsv(rgb);
+
+    this._hsPickerValue = [hsv[0], hsv[1]];
+
+    if (
+      lightSupportsColorMode(this.stateObj!, LightColorMode.RGBW) ||
+      lightSupportsColorMode(this.stateObj!, LightColorMode.RGBWW)
+    ) {
+      this._colorBrightnessSliderValue = hsv[2] / 2.55;
+    }
+
+    this._throttleUpdateColor();
   }
 
   private _hsColorChanged(ev: CustomEvent) {
@@ -537,10 +583,65 @@ class LightColorPicker extends LitElement {
           flex: 1;
         }
 
-        ha-hs-color-picker {
+        .native-color-picker {
+          position: absolute;
+          top: 0;
+          right: 0;
+        }
+
+        .native-color-picker ha-svg-icon {
+          pointer-events: none;
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          margin: auto;
+          padding: 0;
+        }
+
+        input[type="color"] {
+          appearance: none;
+          -webkit-appearance: none;
+          border: none;
+          outline: none;
+          display: block;
+          width: var(--mdc-icon-button-size, 48px);
+          height: var(--mdc-icon-button-size, 48px);
+          padding: calc(
+            (var(--mdc-icon-button-size, 48px) - var(--mdc-icon-size, 24px)) / 2
+          );
+          background-color: transparent;
+          border-radius: calc(var(--mdc-icon-button-size, 48px) / 2);
+          overflow: hidden;
+          cursor: pointer;
+          transition: background-color 180ms ease-in-out;
+        }
+
+        input[type="color"]:focus-visible,
+        input[type="color"]:hover {
+          background-color: rgb(127, 127, 127, 0.15);
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+          display: none;
+          background: none;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+          border: none;
+        }
+
+        .color-container {
+          position: relative;
           max-width: 300px;
           min-width: 200px;
-          margin: 44px 0 44px 0;
+          margin: 0 0 44px 0;
+          padding-top: 44px;
+        }
+
+        ha-hs-color-picker {
+          width: 100%;
         }
 
         ha-temp-color-picker {

@@ -415,7 +415,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 )}
               </h1>
               ${configEntries.length === 0
-                ? html`<div class="card-content">
+                ? html`<div class="card-content no-entries">
                     ${this.hass.localize(
                       `ui.panel.config.integrations.integration_page.no_entries`
                     )}
@@ -1168,7 +1168,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .card-header {
           padding-bottom: 0;
         }
-        .card-content {
+        .no-entries {
           padding-top: 12px;
         }
         .logo-container {
@@ -1179,11 +1179,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           padding: 0;
         }
         img {
-          width: 200px;
+          max-width: 200px;
+          max-height: 100px;
         }
         ha-alert {
           display: block;
           margin-top: 4px;
+        }
+        ha-alert:first-of-type {
+          margin-top: 16px;
         }
         ha-list-item.discovered {
           --mdc-list-item-meta-size: auto;
