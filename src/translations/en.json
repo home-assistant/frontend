@@ -4685,6 +4685,8 @@
               "manual_description": "Need to add a custom card or just want to manually write the YAML?",
               "minimum": "Minimum",
               "name": "Name",
+              "paste": "Paste from Clipboard",
+              "paste_description": "Paste a {type} card from the clipboard",
               "refresh_interval": "Refresh Interval",
               "show_icon": "Show Icon?",
               "show_name": "Show Name?",

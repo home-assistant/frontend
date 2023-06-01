@@ -124,8 +124,15 @@ export class HuiCardPicker extends LitElement {
                       type: this.clipboard.type,
                       showElement: true,
                       isCustom: false,
-                      name: "Paste from Clipboard",
-                      description: `Paste a ${this.clipboard.type} card from the clipboard.`,
+                      name: this.hass!.localize(
+                        "ui.panel.lovelace.editor.card.generic.paste"
+                      ),
+                      description: `${this.hass!.localize(
+                        "ui.panel.lovelace.editor.card.generic.paste_description",
+                        {
+                          type: this.clipboard.type,
+                        }
+                      )}`,
                     },
                     this.clipboard
                   ),
