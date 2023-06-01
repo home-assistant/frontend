@@ -1,4 +1,11 @@
-import { mdiArrowLeft, mdiArrowRight, mdiDelete, mdiPlus } from "@mdi/js";
+import {
+  mdiArrowLeft,
+  mdiArrowRight,
+  mdiDelete,
+  mdiContentCut,
+  mdiContentCopy,
+  mdiPlus,
+} from "@mdi/js";
 import "@polymer/paper-tabs";
 import "@polymer/paper-tabs/paper-tab";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
@@ -137,6 +144,22 @@ export class HuiStackCardEditor
 
                   <ha-icon-button
                     .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_card.copy"
+                    )}
+                    .path=${mdiContentCopy}
+                    @click=${this._handleCopyCard}
+                  ></ha-icon-button>
+
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_card.cut"
+                    )}
+                    .path=${mdiContentCut}
+                    @click=${this._handleCutCard}
+                  ></ha-icon-button>
+
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
                       "ui.panel.lovelace.editor.edit_card.delete"
                     )}
                     .path=${mdiDelete}
@@ -197,6 +220,19 @@ export class HuiStackCardEditor
     const cards = [...this._config.cards, config];
     this._config = { ...this._config, cards };
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  protected _handleCopyCard() {
+    if (!this._config) {
+      return;
+    }
+    this.clipboard = this._config.cards[this._selectedCard];
+    fireEvent(this, "set-dashboard-clipboard", { config: this.clipboard });
+  }
+
+  protected _handleCutCard() {
+    this._handleCopyCard();
+    this._handleDeleteCard();
   }
 
   protected _handleDeleteCard() {

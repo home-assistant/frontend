@@ -12,7 +12,10 @@ import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { DataTableRowData } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
-import type { LovelaceViewConfig } from "../../../../data/lovelace";
+import type {
+  LovelaceViewConfig,
+  LovelaceCardConfig,
+} from "../../../../data/lovelace";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -47,10 +50,13 @@ export class HuiCreateDialogCard
 
   @state() private _currTabIndex = 0;
 
+  @state() private _clipboard?: LovelaceCardConfig;
+
   public async showDialog(params: CreateCardDialogParams): Promise<void> {
     this._params = params;
     const [view] = params.path;
     this._viewConfig = params.lovelaceConfig.views[view];
+    this._clipboard = params.clipboard?.card;
   }
 
   public closeDialog(): boolean {
@@ -114,7 +120,7 @@ export class HuiCreateDialogCard
                 <hui-card-picker
                   .lovelace=${this._params.lovelaceConfig}
                   .hass=${this.hass}
-                  .clipboard=${this._params.clipboard}
+                  .clipboard=${this._clipboard}
                   @config-changed=${this._handleCardPicked}
                 ></hui-card-picker>
               `

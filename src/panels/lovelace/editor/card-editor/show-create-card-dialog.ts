@@ -1,12 +1,13 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { LovelaceConfig, LovelaceCardConfig } from "../../../../data/lovelace";
+import { LovelaceConfig } from "../../../../data/lovelace";
+import { DashboardClipboard } from "../../types";
 
 export interface CreateCardDialogParams {
   lovelaceConfig: LovelaceConfig;
   saveConfig: (config: LovelaceConfig) => void;
   path: [number] | [number, number];
   entities?: string[]; // We can pass entity id's that will be added to the config when a card is picked
-  clipboard?: LovelaceCardConfig;
+  clipboard?: DashboardClipboard;
 }
 
 export const importCreateCardDialog = () => import("./hui-dialog-create-card");

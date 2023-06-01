@@ -43,11 +43,16 @@ export interface ConfigChangedEvent {
   guiModeAvailable?: boolean;
 }
 
+export interface SetDashboardClipboardEvent {
+  config: LovelaceCardConfig;
+}
+
 declare global {
   interface HASSDomEvents {
     "config-changed": ConfigChangedEvent;
     "GUImode-changed": GUIModeChangedEvent;
     "edit-detail-element": EditSubElementEvent;
+    "set-dashboard-clipboard": SetDashboardClipboardEvent;
   }
 }
 
@@ -291,6 +296,14 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
     }
     if (this._configElement && changedProperties.has("context")) {
       this._configElement.context = this.context;
+    }
+
+    if (
+      this._configElement &&
+      this._configElement.setClipboard &&
+      this.getClipboard()
+    ) {
+      this._configElement.setClipboard?.(this.getClipboard());
     }
   }
 

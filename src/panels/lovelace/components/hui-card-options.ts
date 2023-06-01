@@ -98,8 +98,16 @@ export class HuiCardOptions extends LitElement {
                   "ui.panel.lovelace.editor.edit_card.duplicate"
                 )}</mwc-list-item
               >
-              <mwc-list-item class="copy-item"> Copy </mwc-list-item>
-              <mwc-list-item class="cut-item"> Cut </mwc-list-item>
+              <mwc-list-item class="copy-item"
+                >${this.hass!.localize(
+                  "ui.panel.lovelace.editor.edit_card.copy"
+                )}</mwc-list-item
+              >
+              <mwc-list-item class="copy-item"
+                >${this.hass!.localize(
+                  "ui.panel.lovelace.editor.edit_card.cut"
+                )}</mwc-list-item
+              >
               <mwc-list-item class="delete-item">
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.delete"

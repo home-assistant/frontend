@@ -4429,6 +4429,8 @@
             "edit": "Edit",
             "clear": "Clear",
             "delete": "Delete card",
+            "copy": "Copy card",
+            "cut": "Cut card",
             "duplicate": "Duplicate card",
             "move": "Move to view",
             "move_up": "Move card up",

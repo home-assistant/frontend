@@ -20,6 +20,10 @@ declare global {
   }
 }
 
+export type DashboardClipboard = {
+  card?: LovelaceCardConfig;
+};
+
 export interface Lovelace {
   config: LovelaceConfig;
   // If not set, a strategy was used to generate everything

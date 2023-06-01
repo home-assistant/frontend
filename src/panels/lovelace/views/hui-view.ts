@@ -29,7 +29,12 @@ import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog"
 import { confDeleteCard } from "../editor/delete-card";
 import { deleteCard } from "../editor/config-util";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
-import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
+import type {
+  Lovelace,
+  LovelaceBadge,
+  LovelaceCard,
+  DashboardClipboard,
+} from "../types";
 import { PANEL_VIEW_LAYOUT, DEFAULT_VIEW_LAYOUT } from "./const";
 
 declare global {
@@ -58,7 +63,7 @@ export class HUIView extends ReactiveElement {
   @state() private _badges: LovelaceBadge[] = [];
 
   @LocalStorage("lovelaceClipboard", true, false, window.sessionStorage)
-  private _clipboard?: LovelaceCardConfig;
+  private _clipboard: DashboardClipboard = {};
 
   private _layoutElementType?: string;
 
@@ -187,9 +192,6 @@ export class HUIView extends ReactiveElement {
       if (changedProperties.has("_badges")) {
         this._layoutElement.badges = this._badges;
       }
-      if (changedProperties.has("_clipboard")) {
-        this._layoutElement.clipboard = this._clipboard;
-      }
     }
   }
 
@@ -267,12 +269,13 @@ export class HUIView extends ReactiveElement {
     });
     this._layoutElement.addEventListener("ll-cut-card", (ev) => {
       const path = ev.detail.path;
-      this._clipboard = this.lovelace!.config.views[path[0]].cards![path[1]];
+      this._clipboard.card =
+        this.lovelace!.config.views[path[0]].cards![path[1]];
       const newLovelace = deleteCard(this.lovelace!.config, path);
       this.lovelace.saveConfig(newLovelace);
     });
     this._layoutElement.addEventListener("ll-copy-card", (ev) => {
-      this._clipboard = ev.detail.config;
+      this._clipboard.card = ev.detail.config;
     });
   }
 
