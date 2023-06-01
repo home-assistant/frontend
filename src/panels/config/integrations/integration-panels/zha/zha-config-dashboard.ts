@@ -181,6 +181,25 @@ class ZHAConfigDashboard extends LitElement {
                     >${this._networkSettings.radio_type}</span
                   >
                 </ha-settings-row>
+
+                <ha-settings-row>
+                  <span slot="description">Serial port</span>
+                  <span slot="heading"
+                    >${this._networkSettings.device.path}</span
+                  >
+                </ha-settings-row>
+
+                ${this._networkSettings.device.baudrate &&
+                !this._networkSettings.device.path.startsWith("socket://")
+                  ? html`
+                      <ha-settings-row>
+                        <span slot="description">Baudrate</span>
+                        <span slot="heading"
+                          >${this._networkSettings.device.baudrate}</span
+                        >
+                      </ha-settings-row>
+                    `
+                  : ""}
               </div>`
             : ""}
           <div class="card-actions">
