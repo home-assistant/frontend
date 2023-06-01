@@ -267,7 +267,7 @@ class LightColorPicker extends LitElement {
 
       const supportsColor = lightSupportsColor(this.stateObj!);
 
-      const modes: Mode[] = [];
+      const modes: LightPickerMode[] = [];
       if (supportsColor) {
         modes.push("color");
       }
