@@ -83,7 +83,7 @@ export const FIXED_DOMAIN_ICONS = {
   configurator: mdiCog,
   conversation: mdiMicrophoneMessage,
   counter: mdiCounter,
-  date_time: mdiCalendarClock,
+  datetime: mdiCalendarClock,
   date: mdiCalendar,
   demo: mdiHomeAssistant,
   google_assistant: mdiGoogleAssistant,
