@@ -28,7 +28,7 @@ import {
 } from "../../../../data/light";
 import { HomeAssistant } from "../../../../types";
 
-type Mode = "color_temp" | "color";
+export type LightPickerMode = "color_temp" | "color";
 
 declare global {
   interface HASSDomEvents {
@@ -42,7 +42,7 @@ class LightColorPicker extends LitElement {
 
   @property() public entityId!: string;
 
-  @property() public defaultMode!: Mode;
+  @property() public defaultMode?: LightPickerMode;
 
   @state() private _cwSliderValue?: number;
 
@@ -58,9 +58,9 @@ class LightColorPicker extends LitElement {
 
   @state() private _ctPickerValue?: number;
 
-  @state() private _mode?: Mode;
+  @state() private _mode?: LightPickerMode;
 
-  @state() private _modes: Mode[] = [];
+  @state() private _modes: LightPickerMode[] = [];
 
   get stateObj() {
     return this.hass.states[this.entityId] as LightEntity | undefined;
