@@ -1179,7 +1179,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           padding: 0;
         }
         img {
-          width: 200px;
+          max-width: 200px;
+          max-height: 100px;
         }
         ha-alert {
           display: block;

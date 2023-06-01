@@ -17,8 +17,14 @@ export class HaListItem extends ListItemBase {
       styles,
       css`
         :host {
-          padding-left: var(--mdc-list-side-padding, 20px);
-          padding-right: var(--mdc-list-side-padding, 20px);
+          padding-left: var(
+            --mdc-list-side-padding-left,
+            var(--mdc-list-side-padding, 20px)
+          );
+          padding-right: var(
+            --mdc-list-side-padding-right,
+            var(--mdc-list-side-padding, 20px)
+          );
         }
         :host([graphic="avatar"]:not([twoLine])),
         :host([graphic="icon"]:not([twoLine])) {
