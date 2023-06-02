@@ -1,8 +1,11 @@
+import { consume } from "@lit-labs/context";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
   mdiContentDuplicate,
+  mdiContentCopy,
+  mdiContentCut,
   mdiDelete,
   mdiDotsVertical,
   mdiIdentifier,
@@ -30,6 +33,8 @@ import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { subscribeTrigger, Trigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
+import { fullEntitiesContext } from "../../../../data/context";
+import { EntityRegistryEntry } from "../../../../data/entity_registry";
 import { TRIGGER_TYPES } from "../../../../data/trigger";
 import {
   showAlertDialog,
@@ -104,6 +109,10 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
+
   private _triggerUnsub?: Promise<UnsubscribeFunc>;
 
   protected render() {
@@ -131,7 +140,9 @@ export default class HaAutomationTriggerRow extends LitElement {
               class="trigger-icon"
               .path=${TRIGGER_TYPES[this.trigger.platform]}
             ></ha-svg-icon>
-            ${capitalizeFirstLetter(describeTrigger(this.trigger, this.hass))}
+            ${capitalizeFirstLetter(
+              describeTrigger(this.trigger, this.hass, this._entityReg)
+            )}
           </h3>
 
           <slot name="icons" slot="icons"></slot>
@@ -142,6 +153,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                   slot="icons"
                   @action=${this._handleAction}
                   @click=${preventDefault}
+                  fixed
                 >
                   <ha-icon-button
                     slot="trigger"
@@ -168,6 +180,18 @@ export default class HaAutomationTriggerRow extends LitElement {
 
                   <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.edit_id"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiIdentifier}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+
+                  <li divider role="separator"></li>
+
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                    ${this.hass.localize(
                       "ui.panel.config.automation.editor.triggers.duplicate"
                     )}
                     <ha-svg-icon
@@ -178,11 +202,21 @@ export default class HaAutomationTriggerRow extends LitElement {
 
                   <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.hass.localize(
-                      "ui.panel.config.automation.editor.triggers.edit_id"
+                      "ui.panel.config.automation.editor.triggers.copy"
                     )}
                     <ha-svg-icon
                       slot="graphic"
-                      .path=${mdiIdentifier}
+                      .path=${mdiContentCopy}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.cut"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiContentCut}
                     ></ha-svg-icon>
                   </mwc-list-item>
 
@@ -427,24 +461,31 @@ export default class HaAutomationTriggerRow extends LitElement {
         fireEvent(this, "re-order");
         break;
       case 2:
-        fireEvent(this, "duplicate");
-        break;
-      case 3:
         this._requestShowId = true;
         this.expand();
         break;
+      case 3:
+        fireEvent(this, "duplicate");
+        break;
       case 4:
+        fireEvent(this, "set-clipboard", { trigger: this.trigger });
+        break;
+      case 5:
+        fireEvent(this, "set-clipboard", { trigger: this.trigger });
+        fireEvent(this, "value-changed", { value: null });
+        break;
+      case 6:
         this._switchUiMode();
         this.expand();
         break;
-      case 5:
+      case 7:
         this._switchYamlMode();
         this.expand();
         break;
-      case 6:
+      case 8:
         this._onDisable();
         break;
-      case 7:
+      case 9:
         this._onDelete();
         break;
     }
@@ -534,7 +575,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       ),
       inputType: "string",
       placeholder: capitalizeFirstLetter(
-        describeTrigger(this.trigger, this.hass, true)
+        describeTrigger(this.trigger, this.hass, this._entityReg, true)
       ),
       defaultValue: this.trigger.alias,
       confirmText: this.hass.localize("ui.common.submit"),

@@ -17,6 +17,14 @@ export enum TimeFormat {
   twenty_four = "24",
 }
 
+export enum DateFormat {
+  language = "language",
+  system = "system",
+  DMY = "DMY",
+  MDY = "MDY",
+  YMD = "YMD",
+}
+
 export enum FirstWeekday {
   language = "language",
   monday = "monday",
@@ -32,6 +40,7 @@ export interface FrontendLocaleData {
   language: string;
   number_format: NumberFormat;
   time_format: TimeFormat;
+  date_format: DateFormat;
   first_weekday: FirstWeekday;
 }
 

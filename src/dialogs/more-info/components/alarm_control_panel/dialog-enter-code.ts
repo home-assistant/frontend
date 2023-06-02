@@ -1,5 +1,3 @@
-import "@material/web/button/filled-button";
-import "@material/web/iconbutton/filled-icon-button";
 import { mdiCheck, mdiClose } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -47,9 +45,6 @@ export class DialogEnterCode
   }
 
   public closeDialog(): void {
-    if (this._dialogParams?.cancel) {
-      this._dialogParams.cancel();
-    }
     this._dialogParams = undefined;
     this._showClearButton = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -57,8 +52,12 @@ export class DialogEnterCode
 
   private _submit(): void {
     this._dialogParams?.submit?.(this._input?.value ?? "");
-    this._dialogParams = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    this.closeDialog();
+  }
+
+  private _cancel(): void {
+    this._dialogParams?.cancel?.();
+    this.closeDialog();
   }
 
   private _numberClick(e: MouseEvent): void {
@@ -88,8 +87,7 @@ export class DialogEnterCode
       return html`
         <ha-dialog
           open
-          @closed=${this.closeDialog}
-          defaultAction="ignore"
+          @closed=${this._cancel}
           .heading=${this._dialogParams.title ??
           this.hass.localize("ui.dialogs.enter_code.title")}
         >
@@ -101,7 +99,7 @@ export class DialogEnterCode
             type="password"
             input-mode="text"
           ></ha-textfield>
-          <ha-button @click=${this.closeDialog} slot="secondaryAction">
+          <ha-button slot="secondaryAction" dialogAction="cancel">
             ${this._dialogParams.cancelText ??
             this.hass.localize("ui.common.cancel")}
           </ha-button>
@@ -120,7 +118,7 @@ export class DialogEnterCode
           this.hass,
           this._dialogParams.title ?? "Enter code"
         )}
-        @closed=${this.closeDialog}
+        @closed=${this._cancel}
         hideActions
       >
         <div class="container">
@@ -176,8 +174,6 @@ export class DialogEnterCode
   static get styles(): CSSResultGroup {
     return css`
       ha-dialog {
-        --mdc-dialog-heading-ink-color: var(--primary-text-color);
-        --mdc-dialog-content-ink-color: var(--primary-text-color);
         /* Place above other dialogs */
         --dialog-z-index: 104;
       }

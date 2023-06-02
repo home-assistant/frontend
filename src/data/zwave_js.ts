@@ -234,6 +234,8 @@ export interface ZWaveJSNodeComment {
 
 export interface ZWaveJSNodeConfigParam {
   property: number;
+  property_key: number | null;
+  endpoint: number;
   value: any;
   configuration_value_type: string;
   metadata: ZWaveJSNodeConfigParamMetadata;
@@ -255,6 +257,7 @@ export interface ZWaveJSSetConfigParamData {
   type: string;
   device_id: string;
   property: number;
+  endpoint: number;
   property_key?: number;
   value: string | number;
 }
@@ -622,6 +625,7 @@ export const setZwaveNodeConfigParameter = (
   hass: HomeAssistant,
   device_id: string,
   property: number,
+  endpoint: number,
   value: number,
   property_key?: number
 ): Promise<ZWaveJSSetConfigParamResult> => {
@@ -629,6 +633,7 @@ export const setZwaveNodeConfigParameter = (
     type: "zwave_js/set_config_parameter",
     device_id,
     property,
+    endpoint,
     value,
     property_key,
   };

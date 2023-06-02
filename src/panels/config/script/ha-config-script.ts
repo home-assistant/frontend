@@ -1,19 +1,17 @@
-import { HassEntities, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { consume } from "@lit-labs/context";
+import { HassEntities } from "home-assistant-js-websocket";
 import { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { debounce } from "../../../common/util/debounce";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../../data/entity_registry";
+import { fullEntitiesContext } from "../../../data/context";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { ScriptEntity } from "../../../data/script";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
 import "./ha-script-editor";
 import "./ha-script-picker";
@@ -26,7 +24,7 @@ const equal = (a: ScriptEntity[], b: ScriptEntity[]): boolean => {
 };
 
 @customElement("ha-config-script")
-class HaConfigScript extends SubscribeMixin(HassRouterPage) {
+class HaConfigScript extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
@@ -37,15 +35,9 @@ class HaConfigScript extends SubscribeMixin(HassRouterPage) {
 
   @property() public scripts: ScriptEntity[] = [];
 
-  @state() private _entityReg: EntityRegistryEntry[] = [];
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entityReg = entities;
-      }),
-    ];
-  }
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",

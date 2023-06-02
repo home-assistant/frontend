@@ -196,7 +196,16 @@ class MoreInfoVacuum extends LitElement {
                 >
                   ${stateObj.attributes.fan_speed_list!.map(
                     (mode) => html`
-                      <mwc-list-item .value=${mode}>${mode}</mwc-list-item>
+                      <mwc-list-item .value=${mode}>
+                        ${computeAttributeValueDisplay(
+                          this.hass.localize,
+                          stateObj,
+                          this.hass.locale,
+                          this.hass.entities,
+                          "fan_speed",
+                          mode
+                        )}
+                      </mwc-list-item>
                     `
                   )}
                 </ha-select>
@@ -205,7 +214,13 @@ class MoreInfoVacuum extends LitElement {
                 >
                   <span>
                     <ha-svg-icon .path=${mdiFan}></ha-svg-icon>
-                    ${stateObj.attributes.fan_speed}
+                    ${computeAttributeValueDisplay(
+                      this.hass.localize,
+                      stateObj,
+                      this.hass.locale,
+                      this.hass.entities,
+                      "fan_speed"
+                    )}
                   </span>
                 </div>
               </div>

@@ -14,8 +14,9 @@ import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
-import "./ha-list-item";
 import "./ha-icon-button";
+import "./ha-list-item";
+import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
 registerStyles(
@@ -243,6 +244,7 @@ export class HaComboBox extends LitElement {
       );
 
       if (overlay) {
+        overlay.setAttribute("required-vertical-space", "0");
         this._removeInert(overlay);
       }
       this._observeBody();

@@ -272,7 +272,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   private _toggleCompare() {
     this._compare = !this._compare;
     const energyCollection = getEnergyDataCollection(this.hass, {
-      key: "energy_dashboard",
+      key: this.collectionKey,
     });
     energyCollection.setCompare(this._compare);
     energyCollection.refresh();

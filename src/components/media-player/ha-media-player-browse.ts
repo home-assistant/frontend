@@ -1,4 +1,3 @@
-import "@lit-labs/virtualizer";
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { grid } from "@lit-labs/virtualizer/layouts/grid";
 import "@material/mwc-button/mwc-button";
@@ -40,7 +39,7 @@ import {
 import { browseLocalMediaPlayer } from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
+import { loadPolyfillIfNeeded } from "../../resources/resize-observer.polyfill";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import {
@@ -59,6 +58,7 @@ import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./ha-browse-media-tts";
 import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
+import { loadVirtualizer } from "../../resources/virtualizer";
 
 declare global {
   interface HASSDomEvents {
@@ -153,6 +153,10 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
 
     if (changedProps.has("entityId")) {
       this._setError(undefined);
@@ -750,7 +754,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private async _attachResizeObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await installResizeObserver();
+      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measureCard(), 250, false)
       );

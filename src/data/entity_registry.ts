@@ -5,6 +5,7 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
+import { LightColor } from "./light";
 
 type entityCategory = "config" | "diagnostic";
 
@@ -74,8 +75,16 @@ export interface SensorEntityOptions {
   unit_of_measurement?: string | null;
 }
 
+export interface LightEntityOptions {
+  favorite_colors?: LightColor[];
+}
+
 export interface NumberEntityOptions {
   unit_of_measurement?: string | null;
+}
+
+export interface LockEntityOptions {
+  default_code?: string | null;
 }
 
 export interface WeatherEntityOptions {
@@ -86,10 +95,20 @@ export interface WeatherEntityOptions {
   wind_speed_unit?: string | null;
 }
 
+export interface SwitchAsXEntityOptions {
+  entity_id: string;
+}
+
 export interface EntityRegistryOptions {
   number?: NumberEntityOptions;
   sensor?: SensorEntityOptions;
+  lock?: LockEntityOptions;
   weather?: WeatherEntityOptions;
+  light?: LightEntityOptions;
+  switch_as_x?: SwitchAsXEntityOptions;
+  conversation?: Record<string, unknown>;
+  "cloud.alexa"?: Record<string, unknown>;
+  "cloud.google_assistant"?: Record<string, unknown>;
 }
 
 export interface EntityRegistryEntryUpdateParams {
@@ -101,7 +120,12 @@ export interface EntityRegistryEntryUpdateParams {
   hidden_by: string | null;
   new_entity_id?: string;
   options_domain?: string;
-  options?: SensorEntityOptions | NumberEntityOptions | WeatherEntityOptions;
+  options?:
+    | SensorEntityOptions
+    | NumberEntityOptions
+    | LockEntityOptions
+    | WeatherEntityOptions
+    | LightEntityOptions;
   aliases?: string[];
 }
 

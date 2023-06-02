@@ -1,10 +1,6 @@
-import { shouldPolyfill as shouldPolyfillLocale } from "@formatjs/intl-locale/lib/should-polyfill";
-import { shouldPolyfill as shouldPolyfillPluralRules } from "@formatjs/intl-pluralrules/lib/should-polyfill";
-import { shouldPolyfill as shouldPolyfillRelativeTime } from "@formatjs/intl-relativetimeformat/lib/should-polyfill";
-import { shouldPolyfill as shouldPolyfillDateTime } from "@formatjs/intl-datetimeformat/lib/should-polyfill";
 import IntlMessageFormat from "intl-messageformat";
+import { polyfillLocaleData } from "../../resources/locale-data-polyfill";
 import { Resources, TranslationDict } from "../../types";
-import { getLocalLanguage } from "../../util/common-translation";
 
 // Exclude some patterns from key type checking for now
 // These are intended to be removed as errors are fixed
@@ -63,36 +59,6 @@ export interface FormatsType {
   time: FormatType;
 }
 
-const loadedPolyfillLocale = new Set();
-
-const locale = getLocalLanguage();
-
-const polyfills: Promise<any>[] = [];
-if (__BUILD__ === "latest") {
-  if (shouldPolyfillLocale()) {
-    await import("@formatjs/intl-locale/polyfill");
-  }
-  if (shouldPolyfillPluralRules(locale)) {
-    polyfills.push(import("@formatjs/intl-pluralrules/polyfill"));
-    polyfills.push(import("@formatjs/intl-pluralrules/locale-data/en"));
-  }
-  if (shouldPolyfillRelativeTime(locale)) {
-    polyfills.push(import("@formatjs/intl-relativetimeformat/polyfill"));
-  }
-  if (shouldPolyfillDateTime(locale)) {
-    polyfills.push(import("@formatjs/intl-datetimeformat/polyfill"));
-    polyfills.push(import("@formatjs/intl-datetimeformat/add-all-tz"));
-  }
-}
-
-export const polyfillsLoaded =
-  polyfills.length === 0
-    ? undefined
-    : Promise.all(polyfills).then(() =>
-        // Load the default language
-        loadPolyfillLocales(locale)
-      );
-
 /**
  * Adapted from Polymer app-localize-behavior.
  *
@@ -120,11 +86,9 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
   resources: Resources,
   formats?: FormatsType
 ): Promise<LocalizeFunc<Keys>> => {
-  if (polyfillsLoaded) {
-    await polyfillsLoaded;
-  }
-
-  await loadPolyfillLocales(language);
+  await import("../../resources/intl-polyfill").then(() =>
+    polyfillLocaleData(language)
+  );
 
   // Every time any of the parameters change, invalidate the strings cache.
   cache._localizationCache = {};
@@ -175,48 +139,4 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
       return "Translation " + err;
     }
   };
-};
-
-export const loadPolyfillLocales = async (language: string) => {
-  if (loadedPolyfillLocale.has(language)) {
-    return;
-  }
-  loadedPolyfillLocale.add(language);
-  try {
-    if (
-      Intl.NumberFormat &&
-      // @ts-ignore
-      typeof Intl.NumberFormat.__addLocaleData === "function"
-    ) {
-      const result = await fetch(
-        `/static/locale-data/intl-numberformat/${language}.json`
-      );
-      // @ts-ignore
-      Intl.NumberFormat.__addLocaleData(await result.json());
-    }
-    if (
-      Intl.RelativeTimeFormat &&
-      // @ts-ignore
-      typeof Intl.RelativeTimeFormat.__addLocaleData === "function"
-    ) {
-      const result = await fetch(
-        `/static/locale-data/intl-relativetimeformat/${language}.json`
-      );
-      // @ts-ignore
-      Intl.RelativeTimeFormat.__addLocaleData(await result.json());
-    }
-    if (
-      Intl.DateTimeFormat &&
-      // @ts-ignore
-      typeof Intl.DateTimeFormat.__addLocaleData === "function"
-    ) {
-      const result = await fetch(
-        `/static/locale-data/intl-datetimeformat/${language}.json`
-      );
-      // @ts-ignore
-      Intl.DateTimeFormat.__addLocaleData(await result.json());
-    }
-  } catch (e) {
-    // Ignore
-  }
 };

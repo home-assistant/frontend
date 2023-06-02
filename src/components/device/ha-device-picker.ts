@@ -15,6 +15,7 @@ import {
   computeDeviceName,
   DeviceEntityLookup,
   DeviceRegistryEntry,
+  getDeviceEntityLookup,
   subscribeDeviceRegistry,
 } from "../../data/device_registry";
 import {
@@ -22,8 +23,7 @@ import {
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
-import { PolymerChangedEvent } from "../../polymer-types";
-import { HomeAssistant } from "../../types";
+import { ValueChangedEvent, HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 
@@ -130,7 +130,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         ];
       }
 
-      const deviceEntityLookup: DeviceEntityLookup = {};
+      let deviceEntityLookup: DeviceEntityLookup = {};
 
       if (
         includeDomains ||
@@ -138,15 +138,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         includeDeviceClasses ||
         entityFilter
       ) {
-        for (const entity of entities) {
-          if (!entity.device_id) {
-            continue;
-          }
-          if (!(entity.device_id in deviceEntityLookup)) {
-            deviceEntityLookup[entity.device_id] = [];
-          }
-          deviceEntityLookup[entity.device_id].push(entity);
-        }
+        deviceEntityLookup = getDeviceEntityLookup(entities);
       }
 
       const areaLookup: { [areaId: string]: AreaRegistryEntry } = {};
@@ -330,7 +322,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
     return this.value || "";
   }
 
-  private _deviceChanged(ev: PolymerChangedEvent<string>) {
+  private _deviceChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     let newValue = ev.detail.value;
 
@@ -343,7 +335,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private _openedChanged(ev: ValueChangedEvent<boolean>) {
     this._opened = ev.detail.value;
   }
 

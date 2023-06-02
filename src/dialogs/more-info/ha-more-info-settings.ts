@@ -5,11 +5,12 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import "../../components/ha-alert";
 import {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
@@ -39,18 +40,17 @@ export class HaMoreInfoSettings extends LitElement {
     if (this.entry === null) {
       return html`
         <div class="content">
-          ${this.hass.localize(
-            "ui.dialogs.entity_registry.no_unique_id",
-            "entity_id",
-            this.entityId,
-            "faq_link",
-            html`<a
-              href=${documentationUrl(this.hass, "/faq/unique_id")}
-              target="_blank"
-              rel="noreferrer"
-              >${this.hass.localize("ui.dialogs.entity_registry.faq")}</a
-            >`
-          )}
+          <ha-alert alert-type="warning">
+            ${this.hass.localize("ui.dialogs.entity_registry.no_unique_id", {
+              entity_id: this.entityId,
+              faq_link: html`<a
+                href=${documentationUrl(this.hass, "/faq/unique_id")}
+                target="_blank"
+                rel="noreferrer"
+                >${this.hass.localize("ui.dialogs.entity_registry.faq")}</a
+              >`,
+            })}
+          </ha-alert>
         </div>
       `;
     }

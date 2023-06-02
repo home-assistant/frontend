@@ -2,7 +2,6 @@ import { mdiArrowLeft, mdiClose } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
-import { computeRTLDirection } from "../../common/util/compute_rtl";
 import type {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
@@ -11,7 +10,7 @@ import type {
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-dialog";
-import "../ha-header-bar";
+import "../ha-dialog-header";
 import "./ha-media-manage-button";
 import "./ha-media-player-browse";
 import type {
@@ -68,7 +67,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           : this._currentItem.title}
         @closed=${this.closeDialog}
       >
-        <ha-header-bar slot="heading">
+        <ha-dialog-header show-border slot="heading">
           ${this._navigateIds.length > 1
             ? html`
                 <ha-icon-button
@@ -77,7 +76,7 @@ class DialogMediaPlayerBrowse extends LitElement {
                   @click=${this._goBack}
                 ></ha-icon-button>
               `
-            : ""}
+            : nothing}
           <span slot="title">
             ${!this._currentItem
               ? this.hass.localize(
@@ -97,10 +96,8 @@ class DialogMediaPlayerBrowse extends LitElement {
             .path=${mdiClose}
             dialogAction="close"
             slot="actionItems"
-            class="header_button"
-            dir=${computeRTLDirection(this.hass)}
           ></ha-icon-button>
-        </ha-header-bar>
+        </ha-dialog-header>
         <ha-media-player-browse
           dialog
           .hass=${this.hass}
@@ -145,7 +142,7 @@ class DialogMediaPlayerBrowse extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
-          --dialog-z-index: 8;
+          --dialog-z-index: 9;
           --dialog-content-padding: 0;
         }
 
@@ -170,15 +167,10 @@ class DialogMediaPlayerBrowse extends LitElement {
           }
         }
 
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          flex-shrink: 0;
-          border-bottom: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
-        }
-
-        ha-media-manage-button {
-          --mdc-theme-primary: var(--mdc-theme-on-primary);
+        ha-dialog-header ha-media-manage-button {
+          --mdc-theme-primary: var(--primary-text-color);
+          margin: 6px;
+          display: block;
         }
       `,
     ];

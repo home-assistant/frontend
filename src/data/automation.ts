@@ -123,6 +123,8 @@ export interface TimePatternTrigger extends BaseTrigger {
 export interface WebhookTrigger extends BaseTrigger {
   platform: "webhook";
   webhook_id: string;
+  allowed_methods?: string[];
+  local_only?: boolean;
 }
 
 export interface ZoneTrigger extends BaseTrigger {
@@ -377,3 +379,9 @@ export const testCondition = (
     condition,
     variables,
   });
+
+export type Clipboard = {
+  trigger?: Trigger;
+  condition?: Condition;
+  action?: Action;
+};

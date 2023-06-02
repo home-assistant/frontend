@@ -6,7 +6,7 @@ import { stringCompare } from "../../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-select";
 import type { HaSelect } from "../../../../../components/ha-select";
-import type { Condition } from "../../../../../data/automation";
+import type { Condition, Clipboard } from "../../../../../data/automation";
 import { CONDITION_TYPES } from "../../../../../data/condition";
 import { HomeAssistant } from "../../../../../types";
 import "../../condition/ha-automation-condition-editor";
@@ -19,6 +19,8 @@ export class HaConditionAction extends LitElement implements ActionElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property() public action!: Condition;
+
+  @property() public clipboard?: Clipboard;
 
   public static get defaultConfig() {
     return { condition: "state" };
@@ -49,6 +51,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
         .disabled=${this.disabled}
         .hass=${this.hass}
         @value-changed=${this._conditionChanged}
+        .clipboard=${this.clipboard}
       ></ha-automation-condition-editor>
     `;
   }

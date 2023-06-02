@@ -70,7 +70,7 @@ class HassSubpage extends LitElement {
               ></ha-icon-button-arrow-prev>
             `}
 
-        <div class="main-title">${this.header}</div>
+        <div class="main-title"><slot name="header">${this.header}</slot></div>
         <slot name="toolbar-icon"></slot>
       </div>
       <div class="content" @scroll=${this._saveScrollPos}><slot></slot></div>

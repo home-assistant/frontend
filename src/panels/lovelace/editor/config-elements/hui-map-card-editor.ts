@@ -11,12 +11,13 @@ import {
   string,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { hasLocation } from "../../../../common/entity/has_location";
 import "../../../../components/ha-form/ha-form";
 import { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
-import { PolymerChangedEvent } from "../../../../polymer-types";
-import { HomeAssistant } from "../../../../types";
+import { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import { DEFAULT_HOURS_TO_SHOW, DEFAULT_ZOOM } from "../../cards/hui-map-card";
 import { MapCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../../components/hui-input-list-editor";
@@ -27,8 +28,6 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { hasLocation } from "../../../../common/entity/has_location";
-import { DEFAULT_HOURS_TO_SHOW, DEFAULT_ZOOM } from "../../cards/hui-map-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -134,7 +133,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     }
   }
 
-  private _geoSourcesChanged(ev: PolymerChangedEvent<any>): void {
+  private _geoSourcesChanged(ev: ValueChangedEvent<any>): void {
     if (!this._config || !this.hass) {
       return;
     }

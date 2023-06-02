@@ -33,6 +33,11 @@ export class HaFormGrid extends LitElement implements HaFormElement {
 
   @property() public computeHelper?: (schema: HaFormSchema) => string;
 
+  public async focus() {
+    await this.updateComplete;
+    this.renderRoot.querySelector("ha-form")?.focus();
+  }
+
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
     if (changedProps.has("schema")) {

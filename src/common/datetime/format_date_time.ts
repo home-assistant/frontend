@@ -1,11 +1,9 @@
 import memoizeOne from "memoize-one";
 import { FrontendLocaleData } from "../../data/translation";
-import { polyfillsLoaded } from "../translations/localize";
+import "../../resources/intl-polyfill";
 import { useAmPm } from "./use_am_pm";
-
-if (__BUILD__ === "latest" && polyfillsLoaded) {
-  await polyfillsLoaded;
-}
+import { formatDateNumeric } from "./format_date";
+import { formatTime } from "./format_time";
 
 // August 9, 2021, 8:23 AM
 export const formatDateTime = (dateObj: Date, locale: FrontendLocaleData) =>
@@ -20,6 +18,29 @@ const formatDateTimeMem = memoizeOne(
       {
         year: "numeric",
         month: "long",
+        day: "numeric",
+        hour: useAmPm(locale) ? "numeric" : "2-digit",
+        minute: "2-digit",
+        hour12: useAmPm(locale),
+      }
+    )
+);
+
+// Aug 9, 2021, 8:23 AM
+export const formatShortDateTimeWithYear = (
+  dateObj: Date,
+  locale: FrontendLocaleData
+) => formatShortDateTimeWithYearMem(locale).format(dateObj);
+
+const formatShortDateTimeWithYearMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DateTimeFormat(
+      locale.language === "en" && !useAmPm(locale)
+        ? "en-u-hc-h23"
+        : locale.language,
+      {
+        year: "numeric",
+        month: "short",
         day: "numeric",
         hour: useAmPm(locale) ? "numeric" : "2-digit",
         minute: "2-digit",
@@ -78,21 +99,4 @@ const formatDateTimeWithSecondsMem = memoizeOne(
 export const formatDateTimeNumeric = (
   dateObj: Date,
   locale: FrontendLocaleData
-) => formatDateTimeNumericMem(locale).format(dateObj);
-
-const formatDateTimeNumericMem = memoizeOne(
-  (locale: FrontendLocaleData) =>
-    new Intl.DateTimeFormat(
-      locale.language === "en" && !useAmPm(locale)
-        ? "en-u-hc-h23"
-        : locale.language,
-      {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: useAmPm(locale),
-      }
-    )
-);
+) => `${formatDateNumeric(dateObj, locale)}, ${formatTime(dateObj, locale)}`;

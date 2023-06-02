@@ -118,7 +118,7 @@ class HaChangePasswordCard extends LitElement {
     super.firstUpdated(changedProps);
     this.addEventListener("keypress", (ev) => {
       this._statusMsg = undefined;
-      if (ev.keyCode === 13) {
+      if (ev.key === "Enter") {
         this._changePassword();
       }
     });

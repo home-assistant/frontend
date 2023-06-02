@@ -9,7 +9,14 @@ import {
   mdiPlusCircle,
 } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -62,7 +69,6 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
-import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -262,6 +268,9 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   protected render() {
+    if (!this.devices || !this.deviceId) {
+      return nothing;
+    }
     const device = this._device(this.deviceId, this.devices);
 
     if (!device) {
@@ -291,7 +300,29 @@ export class HaConfigDevicePage extends LitElement {
       : undefined;
     const area = this._computeArea(this.areas, device);
 
-    const deviceInfo: TemplateResult[] = [];
+    const deviceInfo: TemplateResult[] = integrations.map(
+      (integration) =>
+        html`<a
+          slot="actions"
+          href=${`/config/integrations/integration/${integration.domain}#config_entry=${integration.entry_id}`}
+        >
+          <ha-list-item graphic="icon" hasMeta>
+            <img
+              slot="graphic"
+              alt=${domainToName(this.hass.localize, integration.domain)}
+              src=${brandsUrl({
+                domain: integration.domain,
+                type: "icon",
+                darkOptimized: this.hass.themes?.darkMode,
+              })}
+              referrerpolicy="no-referrer"
+            />
+
+            ${domainToName(this.hass.localize, integration.domain)}
+            <ha-icon-next slot="meta"></ha-icon-next>
+          </ha-list-item>
+        </a>`
+    );
 
     const actions = [...(this._deviceActions || [])];
     if (Array.isArray(this._diagnosticDownloadLinks)) {
@@ -568,11 +599,16 @@ export class HaConfigDevicePage extends LitElement {
                   <div class="items">
                     ${this._related.script.map((script) => {
                       const entityState = this.hass.states[script];
+                      const entry = this.entities.find(
+                        (e) => e.entity_id === script
+                      );
+                      let url = `/config/script/show/${entityState.entity_id}`;
+                      if (entry) {
+                        url = `/config/script/edit/${entry.unique_id}`;
+                      }
                       return entityState
                         ? html`
-                            <a
-                              href=${`/config/script/edit/${entityState.entity_id}`}
-                            >
+                            <a href=${url}>
                               <paper-item .script=${script}>
                                 <paper-item-body>
                                   ${computeStateName(entityState)}
@@ -756,52 +792,52 @@ export class HaConfigDevicePage extends LitElement {
                                     )}
                                     .path=${mdiDotsVertical}
                                   ></ha-icon-button>
-                                  ${actions.map(
-                                    (deviceAction) => html`
-                                      <a
-                                        href=${ifDefined(deviceAction.href)}
-                                        target=${ifDefined(deviceAction.target)}
-                                        rel=${ifDefined(
-                                          deviceAction.target
-                                            ? "noreferrer"
-                                            : undefined
-                                        )}
-                                      >
-                                        <mwc-list-item
-                                          class=${ifDefined(
-                                            deviceAction.classes
+                                  ${actions.map((deviceAction) => {
+                                    const listItem = html`<mwc-list-item
+                                      class=${ifDefined(deviceAction.classes)}
+                                      .action=${deviceAction.action}
+                                      @click=${this._deviceActionClicked}
+                                      graphic="icon"
+                                      .hasMeta=${Boolean(
+                                        deviceAction.trailingIcon
+                                      )}
+                                    >
+                                      ${deviceAction.label}
+                                      ${deviceAction.icon
+                                        ? html`
+                                            <ha-svg-icon
+                                              class=${ifDefined(
+                                                deviceAction.classes
+                                              )}
+                                              .path=${deviceAction.icon}
+                                              slot="graphic"
+                                            ></ha-svg-icon>
+                                          `
+                                        : ""}
+                                      ${deviceAction.trailingIcon
+                                        ? html`
+                                            <ha-svg-icon
+                                              slot="meta"
+                                              .path=${deviceAction.trailingIcon}
+                                            ></ha-svg-icon>
+                                          `
+                                        : ""}
+                                    </mwc-list-item>`;
+                                    return deviceAction.href
+                                      ? html`<a
+                                          href=${deviceAction.href}
+                                          target=${ifDefined(
+                                            deviceAction.target
                                           )}
-                                          .action=${deviceAction.action}
-                                          @click=${this._deviceActionClicked}
-                                          graphic="icon"
-                                          .hasMeta=${Boolean(
-                                            deviceAction.trailingIcon
+                                          rel=${ifDefined(
+                                            deviceAction.target
+                                              ? "noreferrer"
+                                              : undefined
                                           )}
-                                        >
-                                          ${deviceAction.label}
-                                          ${deviceAction.icon
-                                            ? html`
-                                                <ha-svg-icon
-                                                  class=${ifDefined(
-                                                    deviceAction.classes
-                                                  )}
-                                                  .path=${deviceAction.icon}
-                                                  slot="graphic"
-                                                ></ha-svg-icon>
-                                              `
-                                            : ""}
-                                          ${deviceAction.trailingIcon
-                                            ? html`
-                                                <ha-svg-icon
-                                                  slot="meta"
-                                                  .path=${deviceAction.trailingIcon}
-                                                ></ha-svg-icon>
-                                              `
-                                            : ""}
-                                        </mwc-list-item>
-                                      </a>
-                                    `
-                                  )}
+                                          >${listItem}
+                                        </a>`
+                                      : listItem;
+                                  })}
                                 </ha-button-menu>
                               `
                             : ""}
@@ -1220,6 +1256,7 @@ export class HaConfigDevicePage extends LitElement {
             ),
             text: err.message,
           });
+          return;
         }
 
         if (
@@ -1247,16 +1284,32 @@ export class HaConfigDevicePage extends LitElement {
 
         const updateProms = entities.map((entity) => {
           const name = entity.name || entity.stateName;
-          let newEntityId: string | null = null;
-          let newName: string | null = null;
+          let newEntityId: string | undefined;
+          let newName: string | null | undefined;
 
-          if (name && name.includes(oldDeviceName)) {
+          let shouldUpdateName: boolean;
+          let shouldUpdateEntityId = false;
+
+          if (entity.has_entity_name && !entity.name) {
+            shouldUpdateName = false;
+          } else if (
+            entity.has_entity_name &&
+            (entity.name === oldDeviceName || entity.name === newDeviceName)
+          ) {
+            shouldUpdateName = true;
+            // clear name if it matches the device name and it uses the device name (entity naming)
+            newName = null;
+          } else if (name && name.includes(oldDeviceName)) {
+            shouldUpdateName = true;
             newName = name.replace(oldDeviceName, newDeviceName);
+          } else {
+            shouldUpdateName = false;
           }
 
           if (renameEntityid) {
             const oldSearch = slugify(oldDeviceName);
             if (entity.entity_id.includes(oldSearch)) {
+              shouldUpdateEntityId = true;
               newEntityId = entity.entity_id.replace(
                 oldSearch,
                 slugify(newDeviceName)
@@ -1264,13 +1317,13 @@ export class HaConfigDevicePage extends LitElement {
             }
           }
 
-          if (!newName && !newEntityId) {
+          if (newName === undefined && newEntityId === undefined) {
             return undefined;
           }
 
           return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-            name: newName || name,
-            new_entity_id: newEntityId || entity.entity_id,
+            name: shouldUpdateName ? newName : undefined,
+            new_entity_id: shouldUpdateEntityId ? newEntityId : undefined,
           });
         });
         await Promise.all(updateProms);

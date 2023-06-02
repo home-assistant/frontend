@@ -7,7 +7,6 @@ on:
 
 env:
   PYTHON_VERSION: "3.10"
-  NODE_VERSION: 16
   NODE_OPTIONS: --max_old_space_size=6144
 
 # Set default workflow permissions
@@ -24,7 +23,7 @@ jobs:
       contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3.5.0
+        uses: actions/checkout@v3.5.2
 
       - name: Verify version
         uses: home-assistant/actions/helpers/verify-version@master
@@ -34,10 +33,10 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Set up Node ${{ env.NODE_VERSION }}
+      - name: Setup Node
         uses: actions/setup-node@v3.6.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: ".nvmrc"
           cache: yarn
 
       - name: Install dependencies
@@ -75,7 +74,7 @@ jobs:
           echo "home-assistant-frontend==$version" > ./requirements.txt
 
       - name: Build wheels
-        uses: home-assistant/wheels@2022.10.1
+        uses: home-assistant/wheels@2023.04.0
         with:
           abi: cp310
           tag: musllinux_1_2

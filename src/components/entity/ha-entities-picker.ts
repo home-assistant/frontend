@@ -4,8 +4,7 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
-import type { PolymerChangedEvent } from "../../polymer-types";
-import type { HomeAssistant } from "../../types";
+import type { ValueChangedEvent, HomeAssistant } from "../../types";
 import "./ha-entity-picker";
 import type { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
 
@@ -151,7 +150,7 @@ class HaEntitiesPickerLight extends LitElement {
     });
   }
 
-  private _entityChanged(event: PolymerChangedEvent<string>) {
+  private _entityChanged(event: ValueChangedEvent<string>) {
     event.stopPropagation();
     const curValue = (event.currentTarget as any).curValue;
     const newValue = event.detail.value;
@@ -171,7 +170,7 @@ class HaEntitiesPickerLight extends LitElement {
     );
   }
 
-  private async _addEntity(event: PolymerChangedEvent<string>) {
+  private async _addEntity(event: ValueChangedEvent<string>) {
     event.stopPropagation();
     const toAdd = event.detail.value;
     if (!toAdd) {

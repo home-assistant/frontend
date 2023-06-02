@@ -76,7 +76,7 @@ module.exports.htmlMinifierOptions = {
 
 module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
   safari10: !latestBuild,
-  ecma: latestBuild ? undefined : 5,
+  ecma: latestBuild ? 2015 : 5,
   format: { comments: false },
   sourceMap: !isTestBuild,
 });
@@ -84,17 +84,25 @@ module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
 module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
   babelrc: false,
   compact: false,
+  assumptions: {
+    privateFieldsAsProperties: true,
+    setPublicClassFields: true,
+    setSpreadProperties: true,
+  },
+  browserslistEnv: latestBuild ? "modern" : "legacy",
+  // Must be unambiguous because some dependencies are CommonJS only
+  sourceType: "unambiguous",
   presets: [
-    !latestBuild && [
+    [
       "@babel/preset-env",
       {
-        useBuiltIns: "entry",
-        corejs: { version: "3.29", proposals: true },
+        useBuiltIns: latestBuild ? false : "entry",
+        corejs: latestBuild ? false : { version: "3.30", proposals: true },
         bugfixes: true,
       },
     ],
     "@babel/preset-typescript",
-  ].filter(Boolean),
+  ],
   plugins: [
     [
       path.resolve(
@@ -106,22 +114,6 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
         ignoreModuleNotFound: true,
       },
     ],
-    // Part of ES2018. Converts {...a, b: 2} to Object.assign({}, a, {b: 2})
-    !latestBuild && [
-      "@babel/plugin-proposal-object-rest-spread",
-      { loose: true, useBuiltIns: true },
-    ],
-    // Only support the syntax, Webpack will handle it.
-    "@babel/plugin-syntax-import-meta",
-    "@babel/plugin-syntax-dynamic-import",
-    "@babel/plugin-syntax-top-level-await",
-    // Support  various proposals
-    "@babel/plugin-proposal-optional-chaining",
-    "@babel/plugin-proposal-nullish-coalescing-operator",
-    ["@babel/plugin-proposal-decorators", { decoratorsBeforeExport: true }],
-    ["@babel/plugin-proposal-private-methods", { loose: true }],
-    ["@babel/plugin-proposal-private-property-in-object", { loose: true }],
-    ["@babel/plugin-proposal-class-properties", { loose: true }],
     // Minify template literals for production
     isProdBuild && [
       "template-html-minifier",
@@ -139,6 +131,13 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
         failOnError: true, // we can turn this off in case of false positives
       },
     ],
+    // Import helpers and regenerator from runtime package
+    [
+      "@babel/plugin-transform-runtime",
+      { version: require("../package.json").dependencies["@babel/runtime"] },
+    ],
+    // Support  some proposals still in TC39 process
+    ["@babel/plugin-proposal-decorators", { decoratorsBeforeExport: true }],
   ].filter(Boolean),
   exclude: [
     // \\ for Windows, / for Mac OS and Linux
@@ -157,27 +156,27 @@ const publicPath = (latestBuild, root = "") =>
   latestBuild ? `${root}/frontend_latest/` : `${root}/frontend_es5/`;
 
 /*
-BundleConfig {
-  // Object with entrypoints that need to be bundled
-  entry: { [name: string]: pathToFile },
-  // Folder where bundled files need to be written
-  outputPath: string,
-  // absolute url-path where bundled files can be found
-  publicPath: string,
-  // extra definitions that we need to replace in source
-  defineOverlay: {[name: string]: value },
-  // if this is a production build
-  isProdBuild: boolean,
-  // If we're targeting latest browsers
-  latestBuild: boolean,
-  // If we're doing a stats build (create nice chunk names)
-  isStatsBuild: boolean,
-  // If it's just a test build in CI, skip time on source map generation
-  isTestBuild: boolean,
-  // Names of entrypoints that should not be hashed
-  dontHash: Set<string>
-}
-*/
+  BundleConfig {
+    // Object with entrypoints that need to be bundled
+    entry: { [name: string]: pathToFile },
+    // Folder where bundled files need to be written
+    outputPath: string,
+    // absolute url-path where bundled files can be found
+    publicPath: string,
+    // extra definitions that we need to replace in source
+    defineOverlay: {[name: string]: value },
+    // if this is a production build
+    isProdBuild: boolean,
+    // If we're targeting latest browsers
+    latestBuild: boolean,
+    // If we're doing a stats build (create nice chunk names)
+    isStatsBuild: boolean,
+    // If it's just a test build in CI, skip time on source map generation
+    isTestBuild: boolean,
+    // Names of entrypoints that should not be hashed
+    dontHash: Set<string>
+  }
+  */
 
 module.exports.config = {
   app({ isProdBuild, latestBuild, isStatsBuild, isTestBuild, isWDS }) {
@@ -260,6 +259,7 @@ module.exports.config = {
       isHassioBuild: true,
       defineOverlay: {
         __SUPERVISOR__: true,
+        __STATIC_PATH__: `"${paths.hassio_publicPath}/static/"`,
       },
     };
   },

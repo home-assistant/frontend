@@ -52,18 +52,17 @@ export class HaSettingsRow extends LitElement {
         white-space: nowrap;
       }
       .body > .secondary {
-        font-family: var(--paper-font-body1_-_font-family);
-        -webkit-font-smoothing: var(
-          --paper-font-body1_-_-webkit-font-smoothing
+        display: block;
+        padding-top: 4px;
+        font-family: var(
+          --mdc-typography-body2-font-family,
+          var(--mdc-typography-font-family, Roboto, sans-serif)
         );
-        font-size: var(--paper-font-body1_-_font-size);
-        font-weight: var(--paper-font-body1_-_font-weight);
-        line-height: var(--paper-font-body1_-_line-height);
-
-        color: var(
-          --paper-item-body-secondary-color,
-          var(--secondary-text-color)
-        );
+        -webkit-font-smoothing: antialiased;
+        font-size: var(--mdc-typography-body2-font-size, 0.875rem);
+        font-weight: var(--mdc-typography-body2-font-weight, 400);
+        line-height: normal;
+        color: var(--secondary-text-color);
       }
       .body[two-line] {
         min-height: calc(

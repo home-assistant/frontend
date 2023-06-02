@@ -190,7 +190,7 @@ export class HcConnect extends LitElement {
 
   private _handleInputKeyDown(ev: KeyboardEvent) {
     // Handle pressing enter.
-    if (ev.keyCode === 13) {
+    if (ev.key === "Enter") {
       this._handleConnect();
     }
   }

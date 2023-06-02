@@ -1,4 +1,7 @@
 // https://github.com/home-assistant/frontend/pull/7031
+
+export {}; // for Babel to treat as a module
+
 const isSafari14 = /^((?!chrome|android).)*version\/14\.0\s.*safari/i.test(
   navigator.userAgent
 );

@@ -6,7 +6,6 @@ import "@webcomponents/scoped-custom-element-registry/scoped-custom-element-regi
 import "../layouts/home-assistant";
 import "../resources/ha-style";
 import "../resources/roboto";
-import "../util/legacy-support";
 
 setPassiveTouchGestures(true);
 setCancelSyntheticClickEvents(false);

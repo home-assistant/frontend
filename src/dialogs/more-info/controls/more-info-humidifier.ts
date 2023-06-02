@@ -10,6 +10,7 @@ import {
 import { property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -78,9 +79,14 @@ class MoreInfoHumidifier extends LitElement {
                 ${stateObj.attributes.available_modes!.map(
                   (mode) => html`
                     <mwc-list-item .value=${mode}>
-                      ${hass.localize(
-                        `state_attributes.humidifier.mode.${mode}`
-                      ) || mode}
+                      ${computeAttributeValueDisplay(
+                        hass.localize,
+                        stateObj,
+                        hass.locale,
+                        hass.entities,
+                        "mode",
+                        mode
+                      )}
                     </mwc-list-item>
                   `
                 )}

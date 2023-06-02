@@ -63,7 +63,7 @@ class StateHistoryChartLine extends LitElement {
         animation: false,
         interaction: {
           mode: "nearest",
-          axis: "x",
+          axis: "xy",
         },
         scales: {
           x: {

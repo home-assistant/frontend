@@ -1,5 +1,5 @@
 import { DEFAULT_SCHEMA, dump, load, Schema } from "js-yaml";
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
@@ -31,6 +31,8 @@ export class HaYamlEditor extends LitElement {
 
   @property() public label?: string;
 
+  @property({ type: Boolean }) public autoUpdate = false;
+
   @property({ type: Boolean }) public readOnly = false;
 
   @property({ type: Boolean }) public required = false;
@@ -41,7 +43,11 @@ export class HaYamlEditor extends LitElement {
     try {
       this._yaml =
         value && !isEmpty(value)
-          ? dump(value, { schema: this.yamlSchema, quotingType: '"' })
+          ? dump(value, {
+              schema: this.yamlSchema,
+              quotingType: '"',
+              noRefs: true,
+            })
           : "";
     } catch (err: any) {
       // eslint-disable-next-line no-console
@@ -53,6 +59,13 @@ export class HaYamlEditor extends LitElement {
   protected firstUpdated(): void {
     if (this.defaultValue) {
       this.setValue(this.defaultValue);
+    }
+  }
+
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
+    super.willUpdate(changedProperties);
+    if (this.autoUpdate && changedProperties.has("value")) {
+      this.setValue(this.value);
     }
   }
 

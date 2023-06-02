@@ -115,6 +115,8 @@ export const derivedStyles = {
   "mdc-button-disabled-ink-color": "var(--disabled-text-color)",
   "mdc-button-outline-color": "var(--divider-color)",
   "mdc-dialog-scroll-divider-color": "var(--divider-color)",
+  "mdc-dialog-heading-ink-color": "var(--primary-text-color)",
+  "mdc-dialog-content-ink-color": "var(--primary-text-color)",
 
   "mdc-text-field-idle-line-color": "var(--input-idle-line-color)",
   "mdc-text-field-hover-line-color": "var(--input-hover-line-color)",
@@ -299,8 +301,6 @@ export const haStyleDialog = css`
   ha-dialog {
     --mdc-dialog-min-width: 400px;
     --mdc-dialog-max-width: 600px;
-    --mdc-dialog-heading-ink-color: var(--primary-text-color);
-    --mdc-dialog-content-ink-color: var(--primary-text-color);
     --justify-action-buttons: space-between;
   }
 
@@ -324,7 +324,7 @@ export const haStyleDialog = css`
       --mdc-dialog-min-height: 100%;
       --mdc-dialog-max-height: 100%;
       --vertical-align-dialog: flex-end;
-      --ha-dialog-border-radius: 0px;
+      --ha-dialog-border-radius: 0;
     }
   }
   mwc-button.warning,

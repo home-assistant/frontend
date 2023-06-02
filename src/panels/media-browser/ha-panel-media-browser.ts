@@ -286,10 +286,8 @@ class PanelMediaBrowser extends LitElement {
         }
 
         ha-bar-media-player {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
+          position: fixed;
+          width: var(--mdc-top-app-bar-width, 100%);
         }
       `,
     ];

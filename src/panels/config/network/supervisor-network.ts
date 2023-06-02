@@ -301,7 +301,7 @@ export class HassioNetwork extends LitElement {
         <div class="radio-row">
           <ha-formfield
             .label=${this.hass.localize(
-              "ui.panel.config.network.supervisor.dhcp"
+              "ui.panel.config.network.supervisor.auto"
             )}
           >
             <ha-radio

@@ -18,7 +18,7 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { computeStateDisplaySingleEntity } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateColorCss } from "../../../common/entity/state_color";
@@ -46,6 +46,7 @@ import { ButtonCardConfig } from "./types";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { FrontendLocaleData } from "../../../data/translation";
 import { Themes } from "../../../data/ws-themes";
+import { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
 
 @customElement("hui-button-card")
 export class HuiButtonCard extends LitElement implements LovelaceCard {
@@ -90,25 +91,26 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   })
   _stateObj?: HassEntity;
 
+  @state()
   @consume({ context: themesContext, subscribe: true })
   _themes!: Themes;
 
+  @state()
   @consume({ context: localizeContext, subscribe: true })
   _localize!: LocalizeFunc;
 
+  @state()
   @consume({ context: localeContext, subscribe: true })
   _locale!: FrontendLocaleData;
 
-  @consume({ context: entitiesContext, subscribe: true })
-  @transform<HomeAssistant["entities"], HomeAssistant["entities"]>({
+  @consume<any>({ context: entitiesContext, subscribe: true })
+  @transform<HomeAssistant["entities"], EntityRegistryDisplayEntry>({
     transformer: function (this: HuiButtonCard, value) {
-      return this._config?.entity
-        ? { [this._config?.entity]: value[this._config?.entity] }
-        : {};
+      return this._config?.entity ? value[this._config?.entity] : undefined;
     },
     watch: ["_config"],
   })
-  _entities!: HomeAssistant["entities"];
+  _entity?: EntityRegistryDisplayEntry;
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
@@ -150,7 +152,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   protected render() {
-    if (!this._config) {
+    if (!this._config || !this._localize || !this._locale) {
       return nothing;
     }
     const stateObj = this._stateObj;
@@ -217,11 +219,11 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           : ""}
         ${this._config.show_state && stateObj
           ? html`<span class="state">
-              ${computeStateDisplay(
+              ${computeStateDisplaySingleEntity(
                 this._localize,
                 stateObj,
                 this._locale,
-                this._entities
+                this._entity
               )}
             </span>`
           : ""}

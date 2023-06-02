@@ -10,7 +10,6 @@ import {
   subscribeServices,
 } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
-import { polyfillsLoaded } from "../common/translations/localize";
 import { subscribeAreaRegistry } from "../data/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeDeviceRegistry } from "../data/device_registry";
@@ -19,7 +18,12 @@ import { subscribeFrontendUserData } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
 import { serviceCallWillDisconnect } from "../data/service";
-import { FirstWeekday, NumberFormat, TimeFormat } from "../data/translation";
+import {
+  FirstWeekday,
+  NumberFormat,
+  DateFormat,
+  TimeFormat,
+} from "../data/translation";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
@@ -58,6 +62,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           language,
           number_format: NumberFormat.language,
           time_format: TimeFormat.language,
+          date_format: DateFormat.language,
           first_weekday: FirstWeekday.language,
         },
         resources: null as any,
@@ -224,17 +229,12 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       });
       subscribeConfig(conn, (config) => {
         if (this.hass?.config?.time_zone !== config.time_zone) {
-          if (__BUILD__ === "latest" && polyfillsLoaded) {
-            polyfillsLoaded.then(() => {
-              if ("__setDefaultTimeZone" in Intl.DateTimeFormat) {
-                // @ts-ignore
-                Intl.DateTimeFormat.__setDefaultTimeZone(config.time_zone);
-              }
-            });
-          } else if ("__setDefaultTimeZone" in Intl.DateTimeFormat) {
-            // @ts-ignore
-            Intl.DateTimeFormat.__setDefaultTimeZone(config.time_zone);
-          }
+          import("../resources/intl-polyfill").then(() => {
+            if ("__setDefaultTimeZone" in Intl.DateTimeFormat) {
+              // @ts-ignore
+              Intl.DateTimeFormat.__setDefaultTimeZone(config.time_zone);
+            }
+          });
         }
         this._updateHass({ config });
       });
@@ -255,6 +255,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       // @ts-ignore
       this.hass!.callWS({ type: "get_config" }).then((config: HassConfig) => {
         this._updateHass({ config });
+        this.checkDataBaseMigration();
       });
     }
 

@@ -3,13 +3,22 @@ import { HomeAssistant } from "../types";
 export interface RelatedResult {
   area?: string[];
   automation?: string[];
+  automation_blueprint?: string[];
   config_entry?: string[];
   device?: string[];
   entity?: string[];
   group?: string[];
   scene?: string[];
   script?: string[];
+  script_blueprint?: string[];
 }
+
+export const SearchableDomains = new Set([
+  "automation",
+  "script",
+  "scene",
+  "group",
+]);
 
 export type ItemType =
   | "area"
@@ -19,7 +28,9 @@ export type ItemType =
   | "entity"
   | "group"
   | "scene"
-  | "script";
+  | "script"
+  | "automation_blueprint"
+  | "script_blueprint";
 
 export const findRelated = (
   hass: HomeAssistant,

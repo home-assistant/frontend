@@ -42,6 +42,7 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
         .image=${this._config.image}
         .stateImage=${this._config.state_image}
         .cameraImage=${this._config.camera_image}
+        .cameraView=${this._config.camera_view}
         .filter=${this._config.filter}
         .stateFilter=${this._config.state_filter}
         .title=${computeTooltip(this.hass, this._config)}

@@ -1,4 +1,3 @@
-import "@lit-labs/virtualizer";
 import "@material/mwc-list/mwc-list";
 import type { ListItem } from "@material/mwc-list/mwc-list-item";
 import {
@@ -39,6 +38,7 @@ import { getPanelNameTranslationKey } from "../../data/panel";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { configSections } from "../../panels/config/ha-panel-config";
 import { haStyleDialog, haStyleScrollbar } from "../../resources/styles";
+import { loadVirtualizer } from "../../resources/virtualizer";
 import { HomeAssistant } from "../../types";
 import {
   ConfirmationDialogParams,
@@ -120,6 +120,12 @@ export class QuickBar extends LitElement {
     this._filter = "";
     this._search = "";
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  protected willUpdate() {
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
   }
 
   private _getItems = memoizeOne(
@@ -769,7 +775,7 @@ export class QuickBar extends LitElement {
         }
 
         ha-dialog {
-          --dialog-z-index: 8;
+          --dialog-z-index: 9;
           --dialog-content-padding: 0;
         }
 

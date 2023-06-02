@@ -11,7 +11,6 @@ on:
       - master
 
 env:
-  NODE_VERSION: 16
   NODE_OPTIONS: --max_old_space_size=6144
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -25,11 +24,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3.5.0
-      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/checkout@v3.5.2
+      - name: Setup Node
         uses: actions/setup-node@v3.6.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: ".nvmrc"
           cache: yarn
       - name: Install dependencies
         run: yarn install --immutable
@@ -48,11 +47,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3.5.0
-      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/checkout@v3.5.2
+      - name: Setup Node
         uses: actions/setup-node@v3.6.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: ".nvmrc"
           cache: yarn
       - name: Install dependencies
         run: yarn install --immutable
@@ -66,11 +65,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3.5.0
-      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/checkout@v3.5.2
+      - name: Setup Node
         uses: actions/setup-node@v3.6.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: ".nvmrc"
           cache: yarn
       - name: Install dependencies
         run: yarn install --immutable
@@ -84,11 +83,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3.5.0
-      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/checkout@v3.5.2
+      - name: Setup Node
         uses: actions/setup-node@v3.6.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: ".nvmrc"
           cache: yarn
       - name: Install dependencies
         run: yarn install --immutable

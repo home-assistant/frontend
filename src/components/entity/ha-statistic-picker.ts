@@ -11,8 +11,7 @@ import {
   getStatisticLabel,
   StatisticsMetaData,
 } from "../../data/recorder";
-import { PolymerChangedEvent } from "../../polymer-types";
-import { HomeAssistant } from "../../types";
+import { ValueChangedEvent, HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
@@ -266,7 +265,7 @@ export class HaStatisticPicker extends LitElement {
     return this.value || "";
   }
 
-  private _statisticChanged(ev: PolymerChangedEvent<string>) {
+  private _statisticChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     let newValue = ev.detail.value;
     if (newValue === "__missing") {
@@ -278,7 +277,7 @@ export class HaStatisticPicker extends LitElement {
     }
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private _openedChanged(ev: ValueChangedEvent<boolean>) {
     this._opened = ev.detail.value;
   }
 

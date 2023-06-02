@@ -1,16 +1,13 @@
 import "@material/mwc-button/mwc-button";
-import { mdiDeleteOutline, mdiPlus } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
-import "../../components/ha-area-picker";
 import "../../components/ha-dialog";
-import "../../components/ha-textfield";
-import type { HaTextField } from "../../components/ha-textfield";
 import { haStyle, haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { AliasesDialogParams } from "./show-dialog-aliases";
+import "../../components/ha-aliases-editor";
 
 @customElement("dialog-aliases")
 class DialogAliases extends LitElement {
@@ -57,43 +54,11 @@ class DialogAliases extends LitElement {
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
-          <div class="form">
-            ${this._aliases.map(
-              (alias, index) => html`
-                <div class="layout horizontal center-center row">
-                  <ha-textfield
-                    dialogInitialFocus=${index}
-                    .index=${index}
-                    class="flex-auto"
-                    .label=${this.hass!.localize(
-                      "ui.dialogs.aliases.input_label",
-                      { number: index + 1 }
-                    )}
-                    .value=${alias}
-                    ?data-last=${index === this._aliases.length - 1}
-                    @input=${this._editAlias}
-                    @keydown=${this._keyDownAlias}
-                  ></ha-textfield>
-                  <ha-icon-button
-                    .index=${index}
-                    slot="navigationIcon"
-                    label=${this.hass!.localize(
-                      "ui.dialogs.aliases.remove_alias",
-                      { number: index + 1 }
-                    )}
-                    @click=${this._removeAlias}
-                    .path=${mdiDeleteOutline}
-                  ></ha-icon-button>
-                </div>
-              `
-            )}
-            <div class="layout horizontal center-center">
-              <mwc-button @click=${this._addAlias}>
-                ${this.hass!.localize("ui.dialogs.aliases.add_alias")}
-                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-              </mwc-button>
-            </div>
-          </div>
+          <ha-aliases-editor
+            .hass=${this.hass}
+            .aliases=${this._aliases}
+            @value-changed=${this._aliasesChanged}
+          ></ha-aliases-editor>
         </div>
         <mwc-button
           slot="secondaryAction"
@@ -113,32 +78,8 @@ class DialogAliases extends LitElement {
     `;
   }
 
-  private async _addAlias() {
-    this._aliases = [...this._aliases, ""];
-    await this.updateComplete;
-    const field = this.shadowRoot?.querySelector(`ha-textfield[data-last]`) as
-      | HaTextField
-      | undefined;
-    field?.focus();
-  }
-
-  private async _editAlias(ev: Event) {
-    const index = (ev.target as any).index;
-    this._aliases[index] = (ev.target as any).value;
-  }
-
-  private async _keyDownAlias(ev: KeyboardEvent) {
-    if (ev.key === "Enter") {
-      ev.stopPropagation();
-      this._addAlias();
-    }
-  }
-
-  private async _removeAlias(ev: Event) {
-    const index = (ev.target as any).index;
-    const aliases = [...this._aliases];
-    aliases.splice(index, 1);
-    this._aliases = aliases;
+  private _aliasesChanged(ev: CustomEvent): void {
+    this._aliases = ev.detail.value;
   }
 
   private async _updateAliases(): Promise<void> {

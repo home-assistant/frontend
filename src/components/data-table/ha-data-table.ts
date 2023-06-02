@@ -1,4 +1,3 @@
-import "@lit-labs/virtualizer";
 import { mdiArrowDown, mdiArrowUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
@@ -26,6 +25,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { debounce } from "../../common/util/debounce";
 import { nextRender } from "../../common/util/render-status";
 import { haStyleScrollbar } from "../../resources/styles";
+import { loadVirtualizer } from "../../resources/virtualizer";
 import { HomeAssistant } from "../../types";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
@@ -73,7 +73,7 @@ export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
   main?: boolean;
   title: TemplateResult | string;
   label?: TemplateResult | string;
-  type?: "numeric" | "icon" | "icon-button" | "overflow-menu";
+  type?: "numeric" | "icon" | "icon-button" | "overflow-menu" | "flex";
   template?: (data: any, row: T) => TemplateResult | string | typeof nothing;
   width?: string;
   maxWidth?: string;
@@ -183,6 +183,10 @@ export class HaDataTable extends LitElement {
 
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
+
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
 
     if (properties.has("columns")) {
       this._filterable = Object.values(this.columns).some(
@@ -359,10 +363,10 @@ export class HaDataTable extends LitElement {
       return nothing;
     }
     if (row.append) {
-      return html` <div class="mdc-data-table__row">${row.content}</div> `;
+      return html`<div class="mdc-data-table__row">${row.content}</div>`;
     }
     if (row.empty) {
-      return html` <div class="mdc-data-table__row"></div> `;
+      return html`<div class="mdc-data-table__row"></div>`;
     }
     return html`
       <div
@@ -406,6 +410,7 @@ export class HaDataTable extends LitElement {
             <div
               role=${column.main ? "rowheader" : "cell"}
               class="mdc-data-table__cell ${classMap({
+                "mdc-data-table__cell--flex": column.type === "flex",
                 "mdc-data-table__cell--numeric": column.type === "numeric",
                 "mdc-data-table__cell--icon": column.type === "icon",
                 "mdc-data-table__cell--icon-button":
@@ -485,7 +490,7 @@ export class HaDataTable extends LitElement {
   }
 
   private _memFilterData = memoizeOne(
-    async (
+    (
       data: DataTableRowData[],
       columns: SortableColumnContainer,
       filter: string
@@ -661,6 +666,11 @@ export class HaDataTable extends LitElement {
           text-overflow: ellipsis;
           flex-shrink: 0;
           box-sizing: border-box;
+        }
+
+        .mdc-data-table__cell.mdc-data-table__cell--flex {
+          display: flex;
+          overflow: initial;
         }
 
         .mdc-data-table__cell.mdc-data-table__cell--icon {
@@ -979,6 +989,7 @@ export class HaDataTable extends LitElement {
         }
         lit-virtualizer {
           contain: size layout !important;
+          overscroll-behavior: contain;
         }
       `,
     ];
