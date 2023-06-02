@@ -77,7 +77,9 @@ export class HaDeviceSelector extends LitElement {
           .label=${this.label}
           .helper=${this.helper}
           .deviceFilter=${this._filterDevices}
-          .entityFilter=${this._filterEntities}
+          .entityFilter=${this.selector.device?.entity
+            ? this._filterEntities
+            : undefined}
           .disabled=${this.disabled}
           .required=${this.required}
           allow-custom-entity
@@ -92,7 +94,9 @@ export class HaDeviceSelector extends LitElement {
         .value=${this.value}
         .helper=${this.helper}
         .deviceFilter=${this._filterDevices}
-        .entityFilter=${this._filterEntities}
+        .entityFilter=${this.selector.device?.entity
+          ? this._filterEntities
+          : undefined}
         .disabled=${this.disabled}
         .required=${this.required}
       ></ha-devices-picker>
@@ -115,14 +119,10 @@ export class HaDeviceSelector extends LitElement {
     );
   };
 
-  private _filterEntities = (entity: HassEntity): boolean => {
-    if (!this.selector.device?.entity) {
-      return true;
-    }
-    return ensureArray(this.selector.device.entity).some((filter) =>
+  private _filterEntities = (entity: HassEntity): boolean =>
+    ensureArray(this.selector.device!.entity).some((filter) =>
       filterSelectorEntities(filter, entity, this._entitySources)
     );
-  };
 }
 
 declare global {
