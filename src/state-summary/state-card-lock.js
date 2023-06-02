@@ -6,6 +6,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { supportsFeature } from "../common/entity/supports-feature";
 import "../components/entity/state-info";
 import LocalizeMixin from "../mixins/localize-mixin";
+import { LockEntityFeature } from "../data/lock";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -78,7 +79,7 @@ class StateCardLock extends LocalizeMixin(PolymerElement) {
   _stateObjChanged(newVal) {
     if (newVal) {
       this.isLocked = newVal.state === "locked";
-      this.supportsOpen = supportsFeature(newVal, 1);
+      this.supportsOpen = supportsFeature(newVal, LockEntityFeature.OPEN);
     }
   }
 
