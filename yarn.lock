@@ -9817,7 +9817,7 @@ __metadata:
     webpackbar: 5.0.2
     weekstart: 2.0.0
     workbox-build: 6.6.0
-    workbox-cacheable-response: 6.6.0
+    workbox-cacheable-response: 6.6.1
     workbox-core: 6.6.0
     workbox-expiration: 6.6.0
     workbox-precaching: 6.6.0
@@ -16528,10 +16528,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"workbox-cacheable-response@npm:6.6.1":
+  version: 6.6.1
+  resolution: "workbox-cacheable-response@npm:6.6.1"
+  dependencies:
+    workbox-core: 6.6.1
+  checksum: 5095404f11b44d97fdec1bedf6a59dd4e6967c9bbd5d13ff7a93433208b4c63062c72f8fcfe358bc310c14fe4dd062f11c1d07cdd88cf050fcfab9c303b7e8cc
+  languageName: node
+  linkType: hard
+
 "workbox-core@npm:6.6.0":
   version: 6.6.0
   resolution: "workbox-core@npm:6.6.0"
   checksum: 7d773a866b73a733780c52b895f9cf7bec926c9187395c307174deefba9a0a2fcd1edce0d1ca12b8a6c95ca9cf7755ccc1885b03bc82ebcfc4843e015bd84d7b
+  languageName: node
+  linkType: hard
+
+"workbox-core@npm:6.6.1":
+  version: 6.6.1
+  resolution: "workbox-core@npm:6.6.1"
+  checksum: b11f3908607328e3886878aafb326f1d62052e3adf778f65ae9f80dc10a002e84e1c70e9c32d852bd4961fd1e42dd42cbf4617de6bb4692f941abab458780baf
   languageName: node
   linkType: hard
 
