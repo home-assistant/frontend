@@ -11,6 +11,9 @@ class HaMarkdownElement extends ReactiveElement {
 
   @property({ type: Boolean }) public breaks = false;
 
+  @property({ type: Boolean, attribute: "lazy-images" }) public lazyImages =
+    false;
+
   protected createRenderRoot() {
     return this;
   }
@@ -58,6 +61,9 @@ class HaMarkdownElement extends ReactiveElement {
 
         // Fire a resize event when images loaded to notify content resized
       } else if (node instanceof HTMLImageElement) {
+        if (this.lazyImages) {
+          node.loading = "lazy";
+        }
         node.addEventListener("load", this._resize);
       }
     }
