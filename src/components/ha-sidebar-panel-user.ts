@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { haStyleSidebarItem } from "../resources/styles";
 import { HomeAssistant } from "../types";
 import "./user/ha-user-badge";
+import { keydown, keyup } from "../resources/button-handlers";
 
 const styles = css`
   .icon {
@@ -32,6 +33,8 @@ class HaSidebarPanelUser extends LitElement {
       href="/profile"
       aria-selected=${this.selected}
       class="item ${this.expanded ? "expanded" : ""}"
+      @keydown=${keydown((e) => (e.currentTarget as HTMLElement).click())}
+      @keyup=${keyup((e) => (e.currentTarget as HTMLElement).click())}
     >
       <span class="icon">
         <span class="user-icon">

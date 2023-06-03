@@ -134,6 +134,11 @@ const computePanels = memoizeOne(_computePanels);
 
 @customElement("ha-sidebar-panels")
 class HaSidebarPanels extends LitElement {
+  static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public editMode = false;
@@ -148,7 +153,51 @@ class HaSidebarPanels extends LitElement {
   @LocalStorage("sidebarHiddenPanels", true)
   private _hiddenPanels: string[] = [];
 
+  private searchKeys = "";
+
+  private searchKeysUpdated = 0;
+
   static styles = styles;
+
+  constructor() {
+    super();
+    const getCurrentFocus = () => {
+      let activeItem = this.shadowRoot?.activeElement;
+      activeItem = activeItem?.shadowRoot?.activeElement;
+      if (!(activeItem instanceof HTMLElement)) return null;
+
+      const items = this._listItems();
+      return { items, index: items.indexOf(activeItem) };
+    };
+    this.addEventListener("keydown", (e) => {
+      if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+      const focus = getCurrentFocus();
+      if (!focus) return;
+      const next = e.key === "ArrowUp" ? focus.index - 1 : focus.index + 1;
+      if (next >= 0 && next < focus.items.length) {
+        e.preventDefault();
+        const item = focus.items[next];
+        item.focus();
+      }
+    });
+    this.addEventListener("keydown", (e) => {
+      if (e.key.length > 1) return;
+      if (Date.now() - this.searchKeysUpdated > 500) {
+        this.searchKeys = "";
+      }
+      this.searchKeys += e.key.toLowerCase();
+      this.searchKeysUpdated = Date.now();
+
+      const items = this._listItems();
+      const item = items.find((i) => {
+        const name = i.getAttribute("aria-label");
+        return name && name.toLowerCase().startsWith(this.searchKeys);
+      });
+      if (item) {
+        item.focus();
+      }
+    });
+  }
 
   protected render() {
     const [beforeSpacer, afterSpacer] = computePanels(
@@ -259,6 +308,19 @@ class HaSidebarPanels extends LitElement {
 
   private _panelShow(ev: CustomEvent) {
     this._hiddenPanels = this._hiddenPanels.filter((p) => p !== ev.detail);
+  }
+
+  private _listItems() {
+    return [...this.shadowRoot!.children].reduce<HTMLElement[]>(
+      (acc, child) => {
+        if (child.shadowRoot) {
+          const item = child.shadowRoot.firstElementChild;
+          if (item instanceof HTMLElement) acc.push(item);
+        }
+        return acc;
+      },
+      []
+    );
   }
 }
 

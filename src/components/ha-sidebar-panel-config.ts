@@ -9,6 +9,7 @@ import { updateCanInstall, UpdateEntity } from "../data/update";
 import { haStyleSidebarItem } from "../resources/styles";
 import { HomeAssistant } from "../types";
 import "./ha-svg-icon";
+import { keydown, keyup } from "../resources/button-handlers";
 
 const styles = css`
   :host {
@@ -41,8 +42,11 @@ class HaSidebarPanelConfig extends LitElement {
     const notices = this._updatesCount + this._issuesCount;
     return html`<a
       href="/config"
+      aria-label=${this.name}
       aria-selected=${this.selected}
       class="item ${this.expanded ? "expanded" : ""}"
+      @keydown=${keydown((e) => (e.currentTarget as HTMLElement).click())}
+      @keyup=${keyup((e) => (e.currentTarget as HTMLElement).click())}
     >
       <span class="icon">
         <ha-svg-icon slot="item-icon" .path=${mdiCog}></ha-svg-icon>

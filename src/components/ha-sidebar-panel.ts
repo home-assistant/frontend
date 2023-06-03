@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { haStyleSidebarItem } from "../resources/styles";
 import "./ha-svg-icon";
 import "./ha-icon";
+import { keydown, keyup } from "../resources/button-handlers";
 
 const styles = css`
   :host {
@@ -36,7 +37,10 @@ class HaSidebarPanel extends LitElement {
     return html`<a
       href="/${this.path}"
       aria-selected=${this.selected}
+      aria-label=${this.name}
       class="item ${this.expanded ? "expanded" : ""}"
+      @keydown=${keydown((e) => (e.currentTarget as HTMLElement).click())}
+      @keyup=${keyup((e) => (e.currentTarget as HTMLElement).click())}
     >
       <span class="icon">
         ${this.iconPath

@@ -370,6 +370,9 @@ export const haStyleSidebarItem = css`
     color: rgb(var(--rgb-text));
     background-color: rgba(var(--rgb-text), 0.08);
   }
+  .item:focus-visible {
+    outline: none;
+  }
   .item:focus-visible,
   .item:active {
     color: rgb(var(--rgb-text));
@@ -378,6 +381,9 @@ export const haStyleSidebarItem = css`
   .item[aria-selected="true"] {
     --rgb-text: var(--rgb-sidebar-selected-color);
     background-color: rgba(var(--rgb-text), 0.12);
+  }
+  .item[aria-selected="true"]:focus-visible {
+    background-color: rgba(var(--rgb-text), 0.2);
   }
   .item.expanded {
     margin: 0;

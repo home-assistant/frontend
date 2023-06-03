@@ -28,6 +28,7 @@ class HaSidebarPanelExtConfig extends LitElement {
   protected render() {
     return html`<button
       class="item ${this.expanded ? "expanded" : ""}"
+      aria-label=${this.name}
       @click=${this._showConfig}
     >
       <span class="icon">

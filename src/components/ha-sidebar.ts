@@ -43,12 +43,13 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   static styles = styles;
 
-  private currentPanel = "";
-
   protected render() {
     if (!this.hass) {
       return nothing;
     }
+    const currentPanel = this.route.path?.startsWith("/hassio/")
+      ? "config"
+      : this.hass.panelUrl;
 
     return html`
       <ha-sidebar-title
@@ -61,10 +62,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         <ha-sidebar-panels
           .hass=${this.hass}
           .expanded=${this.alwaysExpand}
-          .currentPanel=${this.currentPanel}
+          .currentPanel=${currentPanel}
           .editMode=${this.editMode}
           @panel-hover=${this._panelHover}
           @panel-leave=${this._mouseLeave}
+          role="listbox"
         ></ha-sidebar-panels>
         <hr />
         <ha-sidebar-panel-notifications
@@ -76,19 +78,13 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         <ha-sidebar-panel-user
           .hass=${this.hass}
           .expanded=${this.alwaysExpand}
-          .selected=${this.currentPanel === "profile"}
+          .selected=${currentPanel === "profile"}
           @mouseenter=${this._mouseOverItem}
           @mouseleave=${this._mouseLeave}
         ></ha-sidebar-panel-user>
       </div>
       <ha-sidebar-tooltip></ha-sidebar-tooltip>
     `;
-  }
-
-  protected updated() {
-    this.currentPanel = this.route.path?.startsWith("/hassio/")
-      ? "config"
-      : this.hass.panelUrl;
   }
 
   private _panelHover(ev: CustomEvent) {
