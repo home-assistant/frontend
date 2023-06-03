@@ -3898,9 +3898,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-node-resolve@npm:15.0.2":
-  version: 15.0.2
-  resolution: "@rollup/plugin-node-resolve@npm:15.0.2"
+"@rollup/plugin-node-resolve@npm:15.1.0":
+  version: 15.1.0
+  resolution: "@rollup/plugin-node-resolve@npm:15.1.0"
   dependencies:
     "@rollup/pluginutils": ^5.0.1
     "@types/resolve": 1.20.2
@@ -3913,7 +3913,7 @@ __metadata:
   peerDependenciesMeta:
     rollup:
       optional: true
-  checksum: 328eafee06ff967a36441b55e77fbd0d4f599d256e5d1977800ee71915846c46bc1b6185df35c7b512ad2b4023b05b65a332be77b8b00b9d8a20f87d056b8166
+  checksum: 83617cdbb90cb780251e8b16dc1671e35bde90b8d4d30e008aefe706b5b643057f6299bdd3226b2a30bf5e4f807a880169de3faa47b9f2ba38d39f294f85f951
   languageName: node
   linkType: hard
 
@@ -9686,7 +9686,7 @@ __metadata:
     "@rollup/plugin-babel": 6.0.3
     "@rollup/plugin-commonjs": 25.0.0
     "@rollup/plugin-json": 6.0.0
-    "@rollup/plugin-node-resolve": 15.0.2
+    "@rollup/plugin-node-resolve": 15.1.0
     "@rollup/plugin-replace": 5.0.2
     "@thomasloven/round-slider": 0.6.0
     "@types/babel__plugin-transform-runtime": 7.9.2
