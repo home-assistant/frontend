@@ -19,7 +19,6 @@ import "../../../components/ha-radio";
 import type { HaRadio } from "../../../components/ha-radio";
 import "../../../components/ha-select";
 import "../../../components/ha-settings-row";
-import "../../../components/ha-textfield";
 import "../../../components/ha-timezone-picker";
 import "../../../components/map/ha-locations-editor";
 import type { MarkerLocation } from "../../../components/map/ha-locations-editor";
@@ -27,7 +26,8 @@ import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import { HaTextField } from "../../../components/ha-textfield";
 
 @customElement("ha-config-section-general")
 class HaConfigSectionGeneral extends LitElement {
@@ -303,11 +303,11 @@ class HaConfigSectionGeneral extends LitElement {
 
   private _handleValueChanged(ev) {
     const target = ev.currentTarget;
-    this[`_${target.name}`] = ev.detail.value;
+    this[`_${target.getAttribute("name")}`] = ev.detail.value;
   }
 
-  private _handleChange(ev) {
-    const target = ev.currentTarget;
+  private _handleChange(ev: ValueChangedEvent<string>) {
+    const target = ev.currentTarget as HaTextField;
     this[`_${target.name}`] = target.value;
   }
 
