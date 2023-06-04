@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { renderMarkdown } from "../resources/render-markdown";
 
-const _blockQuoteToAlert = { Note: "info", Warning: "warning", Error: "error" };
+const _blockQuoteToAlert = { Note: "info", Warning: "warning" };
 
 @customElement("ha-markdown-element")
 class HaMarkdownElement extends ReactiveElement {
