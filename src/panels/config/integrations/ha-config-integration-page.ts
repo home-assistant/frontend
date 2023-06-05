@@ -894,24 +894,32 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   );
 
   private _getConfigEntryEntities = (
-    configEntry: ConfigEntry,
-    entityRegistryEntries: EntityRegistryEntry[]
+    configEntry: ConfigEntry
   ): EntityRegistryEntry[] => {
-    if (!entityRegistryEntries) {
-      return [];
-    }
+    const configEntries = this._domainConfigEntries(
+      this.domain,
+      this._extraConfigEntries || this.configEntries
+    );
+    const entityRegistryEntries = this._getEntities(
+      configEntries,
+      this._entities
+    );
     return entityRegistryEntries.filter(
       (entity) => entity.config_entry_id === configEntry.entry_id
     );
   };
 
   private _getConfigEntryDevices = (
-    configEntry: ConfigEntry,
-    deviceRegistryEntries: HomeAssistant["devices"]
+    configEntry: ConfigEntry
   ): DeviceRegistryEntry[] => {
-    if (!deviceRegistryEntries) {
-      return [];
-    }
+    const configEntries = this._domainConfigEntries(
+      this.domain,
+      this._extraConfigEntries || this.configEntries
+    );
+    const deviceRegistryEntries = this._getDevices(
+      configEntries,
+      this.hass.devices
+    );
     return Object.values(deviceRegistryEntries).filter(
       (device) =>
         device.config_entries.includes(configEntry.entry_id) &&
@@ -920,12 +928,16 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   };
 
   private _getConfigEntryServices = (
-    configEntry: ConfigEntry,
-    deviceRegistryEntries: HomeAssistant["devices"]
+    configEntry: ConfigEntry
   ): DeviceRegistryEntry[] => {
-    if (!deviceRegistryEntries) {
-      return [];
-    }
+    const configEntries = this._domainConfigEntries(
+      this.domain,
+      this._extraConfigEntries || this.configEntries
+    );
+    const deviceRegistryEntries = this._getDevices(
+      configEntries,
+      this.hass.devices
+    );
     return Object.values(deviceRegistryEntries).filter(
       (device) =>
         device.config_entries.includes(configEntry.entry_id) &&
