@@ -15,7 +15,7 @@ class MoreInfoDatetime extends LitElement {
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   protected render() {
-    if (!this.stateObj) {
+    if (!this.stateObj || isUnavailableState(this.stateObj.state)) {
       return nothing;
     }
 
