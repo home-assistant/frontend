@@ -46,6 +46,8 @@ import {
 } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 
+const MULTIPROTOCOL_ADDON_URL = "socket://core-silabs-multiprotocol:9999";
+
 export const zhaTabs: PageNavigation[] = [
   {
     translationKey: "ui.panel.config.zha.network.caption",
@@ -181,6 +183,25 @@ class ZHAConfigDashboard extends LitElement {
                     >${this._networkSettings.radio_type}</span
                   >
                 </ha-settings-row>
+
+                <ha-settings-row>
+                  <span slot="description">Serial port</span>
+                  <span slot="heading"
+                    >${this._networkSettings.device.path}</span
+                  >
+                </ha-settings-row>
+
+                ${this._networkSettings.device.baudrate &&
+                !this._networkSettings.device.path.startsWith("socket://")
+                  ? html`
+                      <ha-settings-row>
+                        <span slot="description">Baudrate</span>
+                        <span slot="heading"
+                          >${this._networkSettings.device.baudrate}</span
+                        >
+                      </ha-settings-row>
+                    `
+                  : ""}
               </div>`
             : ""}
           <div class="card-actions">
@@ -255,6 +276,19 @@ class ZHAConfigDashboard extends LitElement {
   }
 
   private async _showChannelMigrationDialog(): Promise<void> {
+    if (this._networkSettings!.device.path === MULTIPROTOCOL_ADDON_URL) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.zha.configuration_page.channel_dialog.title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.zha.configuration_page.channel_dialog.text"
+        ),
+        warning: true,
+      });
+      return;
+    }
+
     showZHAChangeChannelDialog(this, {
       currentChannel: this._networkSettings!.settings.network_info.channel,
     });

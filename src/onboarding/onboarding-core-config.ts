@@ -128,9 +128,9 @@ class OnboardingCoreConfig extends LitElement {
       </div>
 
       <div class="row">
-        <ha-country-picker 
+        <ha-country-picker
           class="flex"
-          .language=${this.hass.locale.language} 
+          .language=${this.hass.locale.language}
           .label=${
             this.hass.localize(
               "ui.panel.config.core.section.core.core_config.country"
@@ -335,12 +335,12 @@ class OnboardingCoreConfig extends LitElement {
     ]
   );
 
-  private _handleValueChanged(ev) {
-    const target = ev.currentTarget;
+  private _handleValueChanged(ev: ValueChangedEvent<string>) {
+    const target = ev.currentTarget as HTMLElement;
     this[`_${target.getAttribute("name")}`] = ev.detail.value;
   }
 
-  private _handleChange(ev: ValueChangedEvent<string>) {
+  private _handleChange(ev: Event) {
     const target = ev.currentTarget as HaTextField;
     this[`_${target.name}`] = target.value;
   }

@@ -4,7 +4,10 @@ import { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
 import { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "./process-config-entities";
 
-function hasConfigChanged(element: any, changedProps: PropertyValues): boolean {
+export function hasConfigChanged(
+  element: any,
+  changedProps: PropertyValues
+): boolean {
   if (changedProps.has("_config")) {
     return true;
   }

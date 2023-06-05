@@ -176,7 +176,7 @@ class HaHsColorPicker extends LitElement {
     super.updated(changedProps);
     if (
       changedProps.has("colorBrightness") ||
-      changedProps.has("vw") ||
+      changedProps.has("wv") ||
       changedProps.has("ww") ||
       changedProps.has("cw") ||
       changedProps.has("minKelvin") ||
