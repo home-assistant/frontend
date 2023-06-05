@@ -15,7 +15,6 @@ import {
   mdiOpenInNew,
   mdiPackageVariant,
   mdiPlayCircleOutline,
-  mdiPlus,
   mdiProgressHelper,
   mdiReload,
   mdiReloadAlert,
@@ -237,7 +236,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       >
         <div class="container">
           <div class="column small">
-            <ha-card>
+            <ha-card class="overview">
               <div class="card-content">
                 <div class="logo-container">
                   <img
@@ -440,20 +439,16 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               <mwc-list>
                 ${normalEntries.map((item) => this._renderConfigEntry(item))}
               </mwc-list>
+              <div class="card-actions">
+                <ha-button @click=${this._addIntegration}>
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.integration_page.add_entry"
+                  )}
+                </ha-button>
+              </div>
             </ha-card>
           </div>
         </div>
-        <ha-fab
-          slot="fab"
-          @click=${this._addIntegration}
-          .label=${this.hass.localize(
-            "ui.panel.config.integrations.integration_page.add",
-            { integration: domainToName(this.hass.localize, this.domain) }
-          )}
-          extended
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
       </hass-subpage>
     `;
   }
@@ -1182,7 +1177,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           display: flex;
           justify-content: center;
         }
-        .card-actions {
+        .overview .card-actions {
           padding: 0;
         }
         img {
