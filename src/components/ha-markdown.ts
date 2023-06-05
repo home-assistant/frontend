@@ -15,6 +15,9 @@ export class HaMarkdown extends LitElement {
 
   @property({ type: Boolean }) public breaks = false;
 
+  @property({ type: Boolean, attribute: "lazy-images" }) public lazyImages =
+    false;
+
   protected render() {
     if (!this.content) {
       return nothing;
@@ -24,6 +27,7 @@ export class HaMarkdown extends LitElement {
       .content=${this.content}
       .allowSvg=${this.allowSvg}
       .breaks=${this.breaks}
+      .lazyImages=${this.lazyImages}
     ></ha-markdown-element>`;
   }
 

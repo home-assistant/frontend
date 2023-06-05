@@ -44,7 +44,10 @@ class HassioAddonDocumentationDashboard extends LitElement {
             : ""}
           <div class="card-content">
             ${this._content
-              ? html`<ha-markdown .content=${this._content}></ha-markdown>`
+              ? html`<ha-markdown
+                  .content=${this._content}
+                  lazy-images
+                ></ha-markdown>`
               : html`<hass-loading-screen no-toolbar></hass-loading-screen>`}
           </div>
         </ha-card>
