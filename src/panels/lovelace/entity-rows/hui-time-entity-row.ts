@@ -42,16 +42,14 @@ class HuiTimeEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const unavailable = isUnavailableState(stateObj.state);
+
     return html`
-      <hui-generic-entity-row
-        .hass=${this.hass}
-        .config=${this._config}
-        hideName="true"
-      >
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <ha-time-input
-          .value=${stateObj.state}
+          .value=${unavailable ? "" : stateObj.state}
           .locale=${this.hass.locale}
-          .disabled=${isUnavailableState(stateObj.state)}
+          .disabled=${unavailable}
           @value-changed=${this._timeChanged}
           @click=${this._stopEventPropagation}
         ></ha-time-input>
