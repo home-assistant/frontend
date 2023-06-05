@@ -95,7 +95,9 @@ export class HaIntegrationCard extends LitElement {
 
   private _renderSingleEntry(): TemplateResult {
     const devices = this._getDevices(this.items, this.hass.devices);
-    const entities = this._getEntities(this.items, this.entityRegistryEntries);
+    const entities = devices.length
+      ? []
+      : this._getEntities(this.items, this.entityRegistryEntries);
 
     const services = !devices.some((device) => device.entry_type !== "service");
 
@@ -122,8 +124,7 @@ export class HaIntegrationCard extends LitElement {
                 <ha-icon-next slot="meta"></ha-icon-next>
               </ha-list-item>
             </a>`
-          : ""}
-        ${entities.length > 0
+          : entities.length > 0
           ? html`<a
               href=${`/config/entities?historyBack=1&domain=${this.domain}`}
             >
@@ -140,9 +141,7 @@ export class HaIntegrationCard extends LitElement {
                 <ha-icon-next slot="meta"></ha-icon-next>
               </ha-list-item>
             </a>`
-          : ""}
-        ${devices.length === 0 && entities.length === 0
-          ? html`<a href=${`/config/integrations/integration/${this.domain}`}>
+          : html`<a href=${`/config/integrations/integration/${this.domain}`}>
               <ha-list-item hasMeta graphic="icon">
                 <ha-svg-icon
                   .path=${mdiPuzzleOutline}
@@ -155,8 +154,7 @@ export class HaIntegrationCard extends LitElement {
                 )}
                 <ha-icon-next slot="meta"></ha-icon-next>
               </ha-list-item>
-            </a>`
-          : ""}
+            </a>`}
       </div>
     `;
   }
