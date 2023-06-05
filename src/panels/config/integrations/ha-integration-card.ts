@@ -5,6 +5,7 @@ import {
   mdiCogOutline,
   mdiDevices,
   mdiHandExtendedOutline,
+  mdiPuzzleOutline,
   mdiShapeOutline,
 } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -135,6 +136,22 @@ export class HaIntegrationCard extends LitElement {
                   `ui.panel.config.integrations.config_entry.entities`,
                   "count",
                   entities.length
+                )}
+                <ha-icon-next slot="meta"></ha-icon-next>
+              </ha-list-item>
+            </a>`
+          : ""}
+        ${devices.length === 0 && entities.length === 0
+          ? html`<a href=${`/config/integrations/integration/${this.domain}`}>
+              <ha-list-item hasMeta graphic="icon">
+                <ha-svg-icon
+                  .path=${mdiPuzzleOutline}
+                  slot="graphic"
+                ></ha-svg-icon>
+                ${this.hass.localize(
+                  `ui.panel.config.integrations.config_entry.entries`,
+                  "count",
+                  this.items.length
                 )}
                 <ha-icon-next slot="meta"></ha-icon-next>
               </ha-list-item>
