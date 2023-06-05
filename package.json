@@ -48,7 +48,7 @@
     "@fullcalendar/list": "6.1.8",
     "@fullcalendar/timegrid": "6.1.8",
     "@lezer/highlight": "1.1.6",
-    "@lit-labs/context": "0.3.1",
+    "@lit-labs/context": "0.3.2",
     "@lit-labs/motion": "1.0.3",
     "@lit-labs/virtualizer": "2.0.2",
     "@lrnwebcomponents/simple-tooltip": "7.0.0",
