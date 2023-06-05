@@ -18,6 +18,7 @@ import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { EntityConfig, LovelaceRow } from "./types";
 import "../../../components/ha-time-input";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
 @customElement("hui-datetime-entity-row")
 class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
@@ -59,9 +60,10 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row
         .hass=${this.hass}
         .config=${this._config}
-        hideName="true"
+        hideName
       >
         <ha-date-input
+          .label=${this._config.name || computeStateName(stateObj)}
           .locale=${this.hass.locale}
           .value=${date}
           .disabled=${isUnavailableState(stateObj.state)}
@@ -103,7 +105,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-date-input + ha-time-input {
+      ha-time-input {
         margin-left: 4px;
         margin-inline-start: 4px;
         margin-inline-end: initial;

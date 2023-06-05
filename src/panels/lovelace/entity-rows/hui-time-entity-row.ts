@@ -43,11 +43,7 @@ class HuiTimeEntityRow extends LitElement implements LovelaceRow {
     }
 
     return html`
-      <hui-generic-entity-row
-        .hass=${this.hass}
-        .config=${this._config}
-        hideName="true"
-      >
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <ha-time-input
           .value=${stateObj.state}
           .locale=${this.hass.locale}

@@ -85,7 +85,7 @@ class HuiGenericEntityRow extends LitElement {
         tabindex=${ifDefined(pointer ? "0" : undefined)}
       ></state-badge>
       ${!this.hideName
-        ? html` <div
+        ? html`<div
             class="info ${classMap({
               pointer,
               "text-content": !hasSecondary,
@@ -167,7 +167,7 @@ class HuiGenericEntityRow extends LitElement {
           >
             <div class="state"><slot></slot></div>
           </div>`
-        : html`<slot></slot>`}
+        : html`<div class="input"><slot></slot></div>`}
     `;
   }
 
@@ -229,6 +229,11 @@ class HuiGenericEntityRow extends LitElement {
       }
       .pointer {
         cursor: pointer;
+      }
+      .input {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
       }
       .state {
         text-align: right;
