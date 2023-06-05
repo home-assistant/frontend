@@ -10,8 +10,10 @@ import {
   mdiCloud,
   mdiCog,
   mdiDelete,
+  mdiDevices,
   mdiDotsVertical,
   mdiDownload,
+  mdiHandExtendedOutline,
   mdiOpenInNew,
   mdiPackageVariant,
   mdiPlayCircleOutline,
@@ -19,6 +21,7 @@ import {
   mdiReload,
   mdiReloadAlert,
   mdiRenameBox,
+  mdiShapeOutline,
   mdiStopCircleOutline,
 } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -228,6 +231,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         );
       });
 
+    const devices = this._getDevices(configEntries, this.hass.devices);
+    const entities = this._getEntities(configEntries, this._entities);
+
+    const services = !devices.some((device) => device.entry_type !== "service");
+
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -273,28 +281,47 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               </div>
 
               <div class="card-actions">
-                ${this._logInfo
-                  ? html`<ha-list-item
-                      @request-selected=${this._logInfo.level ===
-                      LogSeverity.DEBUG
-                        ? this._handleDisableDebugLogging
-                        : this._handleEnableDebugLogging}
-                      graphic="icon"
+                ${devices.length > 0
+                  ? html`<a
+                      href=${devices.length === 1
+                        ? `/config/devices/device/${devices[0].id}`
+                        : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`}
                     >
-                      ${this._logInfo.level === LogSeverity.DEBUG
-                        ? this.hass.localize(
-                            "ui.panel.config.integrations.config_entry.disable_debug_logging"
-                          )
-                        : this.hass.localize(
-                            "ui.panel.config.integrations.config_entry.enable_debug_logging"
-                          )}
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${this._logInfo.level === LogSeverity.DEBUG
-                          ? mdiBugStop
-                          : mdiBugPlay}
-                      ></ha-svg-icon>
-                    </ha-list-item>`
+                      <ha-list-item hasMeta graphic="icon">
+                        <ha-svg-icon
+                          .path=${services
+                            ? mdiHandExtendedOutline
+                            : mdiDevices}
+                          slot="graphic"
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          `ui.panel.config.integrations.config_entry.${
+                            services ? "services" : "devices"
+                          }`,
+                          "count",
+                          devices.length
+                        )}
+                        <ha-icon-next slot="meta"></ha-icon-next>
+                      </ha-list-item>
+                    </a>`
+                  : ""}
+                ${entities.length > 0
+                  ? html`<a
+                      href=${`/config/entities?historyBack=1&domain=${this.domain}`}
+                    >
+                      <ha-list-item hasMeta graphic="icon">
+                        <ha-svg-icon
+                          .path=${mdiShapeOutline}
+                          slot="graphic"
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          `ui.panel.config.integrations.config_entry.entities`,
+                          "count",
+                          entities.length
+                        )}
+                        <ha-icon-next slot="meta"></ha-icon-next>
+                      </ha-list-item>
+                    </a>`
                   : ""}
                 ${this._manifest
                   ? html`<a
@@ -343,6 +370,32 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         ></ha-svg-icon>
                       </ha-list-item>
                     </a>`
+                  : ""}
+                ${this._logInfo
+                  ? html`<ha-list-item
+                      @request-selected=${this._logInfo.level ===
+                      LogSeverity.DEBUG
+                        ? this._handleDisableDebugLogging
+                        : this._handleEnableDebugLogging}
+                      graphic="icon"
+                    >
+                      ${this._logInfo.level === LogSeverity.DEBUG
+                        ? this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.disable_debug_logging"
+                          )
+                        : this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.enable_debug_logging"
+                          )}
+                      <ha-svg-icon
+                        slot="graphic"
+                        class=${this._logInfo.level === LogSeverity.DEBUG
+                          ? "warning"
+                          : ""}
+                        .path=${this._logInfo.level === LogSeverity.DEBUG
+                          ? mdiBugStop
+                          : mdiBugPlay}
+                      ></ha-svg-icon>
+                    </ha-list-item>`
                   : ""}
               </div>
             </ha-card>
@@ -510,9 +563,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       }
     }
 
-    const devices = this._getDevices(item, this.hass.devices);
-    const services = this._getServices(item, this.hass.devices);
-    const entities = this._getEntities(item, this._entities);
+    const devices = this._getConfigEntryDevices(item);
+    const services = this._getConfigEntryServices(item);
+    const entities = this._getConfigEntryEntities(item);
 
     let devicesLine: (TemplateResult | string)[] = [];
 
@@ -809,49 +862,77 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   private _getEntities = memoizeOne(
     (
-      configEntry: ConfigEntry,
+      configEntry: ConfigEntry[],
       entityRegistryEntries: EntityRegistryEntry[]
     ): EntityRegistryEntry[] => {
       if (!entityRegistryEntries) {
         return [];
       }
+      const entryIds = configEntry.map((entry) => entry.entry_id);
       return entityRegistryEntries.filter(
-        (entity) => entity.config_entry_id === configEntry.entry_id
+        (entity) =>
+          entity.config_entry_id && entryIds.includes(entity.config_entry_id)
       );
     }
   );
 
   private _getDevices = memoizeOne(
     (
-      configEntry: ConfigEntry,
+      configEntry: ConfigEntry[],
       deviceRegistryEntries: HomeAssistant["devices"]
     ): DeviceRegistryEntry[] => {
       if (!deviceRegistryEntries) {
         return [];
       }
-      return Object.values(deviceRegistryEntries).filter(
-        (device) =>
-          device.config_entries.includes(configEntry.entry_id) &&
-          device.entry_type !== "service"
+      const entryIds = configEntry.map((entry) => entry.entry_id);
+      return Object.values(deviceRegistryEntries).filter((device) =>
+        device.config_entries.some((entryId) => entryIds.includes(entryId))
       );
     }
   );
 
-  private _getServices = memoizeOne(
-    (
-      configEntry: ConfigEntry,
-      deviceRegistryEntries: HomeAssistant["devices"]
-    ): DeviceRegistryEntry[] => {
-      if (!deviceRegistryEntries) {
-        return [];
-      }
-      return Object.values(deviceRegistryEntries).filter(
-        (device) =>
-          device.config_entries.includes(configEntry.entry_id) &&
-          device.entry_type === "service"
-      );
-    }
-  );
+  private _getConfigEntryEntities = (
+    configEntry: ConfigEntry
+  ): EntityRegistryEntry[] => {
+    const entries = this._domainConfigEntries(
+      this.domain,
+      this._extraConfigEntries || this.configEntries
+    );
+    const entityRegistryEntries = this._getEntities(entries, this._entities);
+    return entityRegistryEntries.filter(
+      (entity) => entity.config_entry_id === configEntry.entry_id
+    );
+  };
+
+  private _getConfigEntryDevices = (
+    configEntry: ConfigEntry
+  ): DeviceRegistryEntry[] => {
+    const entries = this._domainConfigEntries(
+      this.domain,
+      this._extraConfigEntries || this.configEntries
+    );
+    const deviceRegistryEntries = this._getDevices(entries, this.hass.devices);
+    return Object.values(deviceRegistryEntries).filter(
+      (device) =>
+        device.config_entries.includes(configEntry.entry_id) &&
+        device.entry_type !== "service"
+    );
+  };
+
+  private _getConfigEntryServices = (
+    configEntry: ConfigEntry
+  ): DeviceRegistryEntry[] => {
+    const entries = this._domainConfigEntries(
+      this.domain,
+      this._extraConfigEntries || this.configEntries
+    );
+    const deviceRegistryEntries = this._getDevices(entries, this.hass.devices);
+    return Object.values(deviceRegistryEntries).filter(
+      (device) =>
+        device.config_entries.includes(configEntry.entry_id) &&
+        device.entry_type === "service"
+    );
+  };
 
   private _showOptions(ev) {
     showOptionsFlowDialog(
@@ -1222,6 +1303,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .attention {
           primary-color: var(--error-color);
+        }
+        .warning {
+          color: var(--warning-color);
         }
         .state-error {
           --state-message-color: var(--error-color);
