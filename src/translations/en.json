@@ -3509,7 +3509,11 @@
             "download_backup": "Download Backup",
             "migrate_radio": "Migrate Radio",
             "network_settings_title": "Network Settings",
-            "change_channel": "Change channel"
+            "change_channel": "Change channel",
+            "channel_dialog": {
+              "title": "Multiprotocol addon in use",
+              "text": "Zigbee and Thread share the same radio and must use the same channel. Change the channel of both networks by reconfiguring multiprotocol from the hardware menu."
+            }
           },
           "add_device_page": {
             "spinner": "Searching for Zigbee devices…",
