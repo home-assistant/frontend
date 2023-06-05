@@ -206,10 +206,10 @@ export class HaIntegrationHeader extends LitElement {
       height: 16px;
       display: block;
     }
-    .icons span:not(:last-child) ha-svg-icon {
-      margin-right: 4px;
-      margin-inline-end: 4px;
-      margin-inline-start: inherit;
+    .icons span:not(:first-child) ha-svg-icon {
+      margin-left: 4px;
+      margin-inline-start: 4px;
+      margin-inline-end: inherit;
     }
     simple-tooltip {
       white-space: nowrap;
