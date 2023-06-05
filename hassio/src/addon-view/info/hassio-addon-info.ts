@@ -659,6 +659,7 @@ class HassioAddonInfo extends LitElement {
               <div class="card-content">
                 <ha-markdown
                   .content=${this.addon.long_description}
+                  lazy-images
                 ></ha-markdown>
               </div>
             </ha-card>
