@@ -64,21 +64,23 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         hideName
       >
-        <ha-date-input
-          .label=${this._config.name || computeStateName(stateObj)}
-          .locale=${this.hass.locale}
-          .value=${date}
-          .disabled=${unavailable}
-          @value-changed=${this._dateChanged}
-        >
-        </ha-date-input>
-        <ha-time-input
-          .value=${time}
-          .disabled=${unavailable}
-          .locale=${this.hass.locale}
-          @value-changed=${this._timeChanged}
-          @click=${this._stopEventPropagation}
-        ></ha-time-input>
+        <div>
+          <ha-date-input
+            .label=${this._config.name || computeStateName(stateObj)}
+            .locale=${this.hass.locale}
+            .value=${date}
+            .disabled=${unavailable}
+            @value-changed=${this._dateChanged}
+          >
+          </ha-date-input>
+          <ha-time-input
+            .value=${time}
+            .disabled=${unavailable}
+            .locale=${this.hass.locale}
+            @value-changed=${this._timeChanged}
+            @click=${this._stopEventPropagation}
+          ></ha-time-input>
+        </div>
       </hui-generic-entity-row>
     `;
   }
@@ -112,6 +114,11 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
         margin-inline-start: 4px;
         margin-inline-end: initial;
         direction: var(--direction);
+      }
+      div {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
       }
     `;
   }
