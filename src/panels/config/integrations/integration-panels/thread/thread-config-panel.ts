@@ -501,7 +501,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     haStyle,
     css`
       .content {
-        padding: 24px 0 32px;
+        padding: 24px 8px 32px;
         max-width: 600px;
         margin: 0 auto;
         direction: ltr;
