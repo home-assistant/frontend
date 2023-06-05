@@ -568,24 +568,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       }
     }
 
-    const devices = this._getConfigEntryDevices(
-      item,
-      this.domain,
-      this._extraConfigEntries || this.configEntries,
-      this.hass.devices
-    );
-    const services = this._getConfigEntryServices(
-      item,
-      this.domain,
-      this._extraConfigEntries || this.configEntries,
-      this.hass.devices
-    );
-    const entities = this._getConfigEntryEntities(
-      item,
-      this.domain,
-      this._extraConfigEntries || this.configEntries,
-      this._entities
-    );
+    const devices = this._getConfigEntryDevices(item);
+    const services = this._getConfigEntryServices(item);
+    const entities = this._getConfigEntryEntities(item);
 
     let devicesLine: (TemplateResult | string)[] = [];
 
@@ -912,26 +897,26 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   );
 
   private _getConfigEntryEntities = (
-    configEntry: ConfigEntry,
-    domain: string,
-    configEntries: ConfigEntry[],
-    entities: EntityRegistryEntry[]
+    configEntry: ConfigEntry
   ): EntityRegistryEntry[] => {
-    const entries = this._domainConfigEntries(domain, configEntries);
-    const entityRegistryEntries = this._getEntities(entries, entities);
+    const entries = this._domainConfigEntries(
+      this.domain,
+      this._extraConfigEntries || this.configEntries
+    );
+    const entityRegistryEntries = this._getEntities(entries, this._entities);
     return entityRegistryEntries.filter(
       (entity) => entity.config_entry_id === configEntry.entry_id
     );
   };
 
   private _getConfigEntryDevices = (
-    configEntry: ConfigEntry,
-    domain: string,
-    configEntries: ConfigEntry[],
-    devices: HomeAssistant["devices"]
+    configEntry: ConfigEntry
   ): DeviceRegistryEntry[] => {
-    const entries = this._domainConfigEntries(domain, configEntries);
-    const deviceRegistryEntries = this._getDevices(entries, devices);
+    const entries = this._domainConfigEntries(
+      this.domain,
+      this._extraConfigEntries || this.configEntries
+    );
+    const deviceRegistryEntries = this._getDevices(entries, this.hass.devices);
     return Object.values(deviceRegistryEntries).filter(
       (device) =>
         device.config_entries.includes(configEntry.entry_id) &&
@@ -940,13 +925,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   };
 
   private _getConfigEntryServices = (
-    configEntry: ConfigEntry,
-    domain: string,
-    configEntries: ConfigEntry[],
-    devices: HomeAssistant["devices"]
+    configEntry: ConfigEntry
   ): DeviceRegistryEntry[] => {
-    const entries = this._domainConfigEntries(domain, configEntries);
-    const deviceRegistryEntries = this._getDevices(entries, devices);
+    const entries = this._domainConfigEntries(
+      this.domain,
+      this._extraConfigEntries || this.configEntries
+    );
+    const deviceRegistryEntries = this._getDevices(entries, this.hass.devices);
     return Object.values(deviceRegistryEntries).filter(
       (device) =>
         device.config_entries.includes(configEntry.entry_id) &&
