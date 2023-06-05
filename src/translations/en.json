@@ -3252,7 +3252,8 @@
           "integration_page": {
             "entries": "Integration entries",
             "no_entries": "No entries",
-            "attention_entries": "Needs attention"
+            "attention_entries": "Needs attention",
+            "add": "Add {integration}"
           },
           "config_entry": {
             "application_credentials": {

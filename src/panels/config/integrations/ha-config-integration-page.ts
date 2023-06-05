@@ -37,6 +37,7 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isDevVersion } from "../../../common/config/version";
+import { PROTOCOL_INTEGRATIONS } from "../../../common/integrations/protocolIntegrationPicked";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
@@ -427,13 +428,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             <ha-card>
               <h1 class="card-header">
                 ${this.hass.localize(
-                  `ui.panel.config.integrations.integration_page.entries`
+                  "ui.panel.config.integrations.integration_page.entries"
                 )}
               </h1>
               ${normalEntries.length === 0
                 ? html`<div class="card-content no-entries">
                     ${this.hass.localize(
-                      `ui.panel.config.integrations.integration_page.no_entries`
+                      "ui.panel.config.integrations.integration_page.no_entries"
                     )}
                   </div>`
                 : nothing}
@@ -446,7 +447,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         <ha-fab
           slot="fab"
           @click=${this._addIntegration}
-          .label=${`Add ${domainToName(this.hass.localize, this.domain)}`}
+          .label=${this.hass.localize(
+            "ui.panel.config.integrations.integration_page.add",
+            { integration: domainToName(this.hass.localize, this.domain) }
+          )}
           extended
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
@@ -1128,6 +1132,14 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   }
 
   private async _addIntegration() {
+    if (
+      (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(this.domain)
+    ) {
+      showAddIntegrationDialog(this, {
+        brand: this.domain,
+      });
+      return;
+    }
     showAddIntegrationDialog(this, {
       domain: this.domain,
     });
