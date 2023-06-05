@@ -32,6 +32,7 @@ import {
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntry,
 } from "../../data/entity_registry";
+import { lightSupportsFavoriteColors } from "../../data/light";
 import { SearchableDomains } from "../../data/search";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
@@ -359,7 +360,10 @@ export class MoreInfoDialog extends LitElement {
                               </ha-list-item>
                             `
                           : nothing}
-                        ${this._entry && domain === "light"
+                        ${this._entry &&
+                        stateObj &&
+                        domain === "light" &&
+                        lightSupportsFavoriteColors(stateObj)
                           ? html`
                               <ha-list-item
                                 graphic="icon"

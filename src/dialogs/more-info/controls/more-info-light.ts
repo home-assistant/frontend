@@ -37,6 +37,7 @@ import {
   lightSupportsBrightness,
   lightSupportsColor,
   lightSupportsColorMode,
+  lightSupportsFavoriteColors,
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
@@ -206,7 +207,9 @@ class MoreInfoLight extends LitElement {
                     `
                   : nothing}
               </div>
-              ${this.entry && (this.editMode || hasFavoriteColors)
+              ${this.entry &&
+              lightSupportsFavoriteColors(this.stateObj) &&
+              (this.editMode || hasFavoriteColors)
                 ? html`
                     <ha-more-info-light-favorite-colors
                       .hass=${this.hass}

@@ -58,6 +58,10 @@ export const lightSupportsBrightness = (entity: LightEntity) =>
     modesSupportingBrightness.includes(mode)
   ) || false;
 
+export const lightSupportsFavoriteColors = (entity: LightEntity) =>
+  lightSupportsColor(entity) ||
+  lightSupportsColorMode(entity, LightColorMode.COLOR_TEMP);
+
 export const getLightCurrentModeRgbColor = (
   entity: LightEntity
 ): number[] | undefined =>
