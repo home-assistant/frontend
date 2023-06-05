@@ -478,9 +478,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
             <ha-card>
               <h1 class="card-header">
-                ${this.hass.localize(
-                  "ui.panel.config.integrations.integration_page.entries"
-                )}
+                ${this._manifest?.integration_type
+                  ? this.hass.localize(
+                      `ui.panel.config.integrations.integration_page.entries_${this._manifest?.integration_type}`
+                    )
+                  : this.hass.localize(
+                      `ui.panel.config.integrations.integration_page.entries`
+                    )}
               </h1>
               ${normalEntries.length === 0
                 ? html`<div class="card-content no-entries">
@@ -494,9 +498,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               </mwc-list>
               <div class="card-actions">
                 <ha-button @click=${this._addIntegration}>
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.integration_page.add_entry"
-                  )}
+                  ${this._manifest?.integration_type
+                    ? this.hass.localize(
+                        `ui.panel.config.integrations.integration_page.add_${this._manifest?.integration_type}`
+                      )
+                    : this.hass.localize(
+                        `ui.panel.config.integrations.integration_page.add_entry`
+                      )}
                 </ha-button>
               </div>
             </ha-card>
