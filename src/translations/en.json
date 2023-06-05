@@ -3251,8 +3251,19 @@
           },
           "integration_page": {
             "entries": "Integration entries",
+            "entries_device": "Devices",
+            "entries_hub": "Hubs",
+            "entries_service": "Services",
+            "entries_helper": "Helpers",
+            "entries_hardware": "Hardware",
             "no_entries": "No entries",
-            "attention_entries": "Needs attention"
+            "attention_entries": "Needs attention",
+            "add_entry": "Add entry",
+            "add_device": "Add device",
+            "add_hub": "Add hub",
+            "add_service": "Add service",
+            "add_helper": "Add helper",
+            "add_hardware": "Add hardware"
           },
           "config_entry": {
             "application_credentials": {
@@ -3266,6 +3277,7 @@
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
+            "entries": "{count} {count, plural,\n  one {entry}\n  other {entries}\n}",
             "rename": "Rename",
             "configure": "Configure",
             "system_options": "System options",
@@ -3509,7 +3521,11 @@
             "download_backup": "Download Backup",
             "migrate_radio": "Migrate Radio",
             "network_settings_title": "Network Settings",
-            "change_channel": "Change channel"
+            "change_channel": "Change channel",
+            "channel_dialog": {
+              "title": "Multiprotocol addon in use",
+              "text": "Zigbee and Thread share the same radio and must use the same channel. Change the channel of both networks by reconfiguring multiprotocol from the hardware menu."
+            }
           },
           "add_device_page": {
             "spinner": "Searching for Zigbee devices…",

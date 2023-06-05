@@ -2,7 +2,7 @@ import { html, LitElement, nothing, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
 import { isUnavailableState } from "../../../data/entity";
-import { setDateValue, stateToIsoDateString } from "../../../data/date";
+import { setDateValue } from "../../../data/date";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -41,16 +41,14 @@ class HuiDateEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const unavailable = isUnavailableState(stateObj.state);
+
     return html`
-      <hui-generic-entity-row
-        .hass=${this.hass}
-        .config=${this._config}
-        hideName="true"
-      >
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <ha-date-input
           .locale=${this.hass.locale}
-          .disabled=${isUnavailableState(stateObj.state)}
-          .value=${stateToIsoDateString(stateObj)}
+          .disabled=${unavailable}
+          .value=${unavailable ? "" : stateObj.state}
           @value-changed=${this._dateChanged}
         >
         </ha-date-input>
@@ -59,9 +57,7 @@ class HuiDateEntityRow extends LitElement implements LovelaceRow {
   }
 
   private _dateChanged(ev: CustomEvent<{ value: string }>): void {
-    const stateObj = this.hass!.states[this._config!.entity];
-
-    setDateValue(this.hass!, stateObj.entity_id, ev.detail.value);
+    setDateValue(this.hass!, this._config!.entity, ev.detail.value);
   }
 }
 

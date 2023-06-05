@@ -603,6 +603,7 @@ class LightColorPicker extends LitElement {
         input[type="color"] {
           appearance: none;
           -webkit-appearance: none;
+          -moz-appearance: none;
           border: none;
           outline: none;
           display: block;
@@ -626,6 +627,10 @@ class LightColorPicker extends LitElement {
         input[type="color"]::-webkit-color-swatch-wrapper {
           display: none;
           background: none;
+        }
+
+        input[type="color"]::-moz-color-swatch {
+          display: none;
         }
 
         input[type="color"]::-webkit-color-swatch {
