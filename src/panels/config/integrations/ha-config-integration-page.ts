@@ -37,7 +37,6 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isDevVersion } from "../../../common/config/version";
-import { PROTOCOL_INTEGRATIONS } from "../../../common/integrations/protocolIntegrationPicked";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
@@ -1132,14 +1131,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   }
 
   private async _addIntegration() {
-    if (
-      (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(this.domain)
-    ) {
-      showAddIntegrationDialog(this, {
-        brand: this.domain,
-      });
-      return;
-    }
     showAddIntegrationDialog(this, {
       domain: this.domain,
     });
