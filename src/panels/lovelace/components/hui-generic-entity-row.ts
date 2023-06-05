@@ -167,7 +167,9 @@ class HuiGenericEntityRow extends LitElement {
           >
             <div class="state"><slot></slot></div>
           </div>`
-        : html`<div class="input"><slot></slot></div>`}
+        : html`<div class=${this.hideName ? "fullWidth" : ""}>
+            <slot></slot>
+          </div>`}
     `;
   }
 
@@ -230,7 +232,7 @@ class HuiGenericEntityRow extends LitElement {
       .pointer {
         cursor: pointer;
       }
-      .input {
+      .fullWidth {
         display: flex;
         justify-content: flex-end;
         width: 100%;
