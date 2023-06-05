@@ -85,7 +85,7 @@ class HuiGenericEntityRow extends LitElement {
         tabindex=${ifDefined(pointer ? "0" : undefined)}
       ></state-badge>
       ${!this.hideName
-        ? html` <div
+        ? html`<div
             class="info ${classMap({
               pointer,
               "text-content": !hasSecondary,
