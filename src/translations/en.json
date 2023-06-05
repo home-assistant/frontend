@@ -3253,7 +3253,7 @@
             "entries": "Integration entries",
             "no_entries": "No entries",
             "attention_entries": "Needs attention",
-            "add": "Add {integration}"
+            "add_entry": "Add entry"
           },
           "config_entry": {
             "application_credentials": {
