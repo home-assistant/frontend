@@ -3,6 +3,7 @@ import { mdiCloud, mdiPackageVariant } from "@mdi/js";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-svg-icon";
 import { domainToName, IntegrationManifest } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
@@ -94,7 +95,10 @@ export class HaIntegrationHeader extends LitElement {
                   ([icon, description]) => html`
                     <span>
                       <ha-svg-icon .path=${icon}></ha-svg-icon>
-                      <simple-tooltip animation-delay="0"
+                      <simple-tooltip
+                        animation-delay="0"
+                        .position=${computeRTL(this.hass) ? "left" : "right"}
+                        offset="4"
                         >${description}</simple-tooltip
                       >
                     </span>
@@ -184,6 +188,9 @@ export class HaIntegrationHeader extends LitElement {
       left: 40px;
       top: 40px;
       display: flex;
+      padding: 4px;
+      inset-inline-start: 40px;
+      inset-inline-end: initial;
     }
     .icons.cloud {
       background: var(--info-color);
@@ -191,14 +198,18 @@ export class HaIntegrationHeader extends LitElement {
     .icons.double {
       background: var(--warning-color);
       left: 28px;
+      inset-inline-start: 28px;
+      inset-inline-end: initial;
     }
     .icons ha-svg-icon {
       width: 16px;
       height: 16px;
-      margin: 4px;
+      display: block;
     }
-    .icons span:not(:first-child) ha-svg-icon {
-      margin-left: 0;
+    .icons span:not(:last-child) ha-svg-icon {
+      margin-right: 4px;
+      margin-inline-end: 4px;
+      margin-inline-start: inherit;
     }
     simple-tooltip {
       white-space: nowrap;
