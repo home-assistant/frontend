@@ -320,6 +320,11 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         min-width: 0;
       }
 
+      /* Fix for safari */
+      .column:has(> *) {
+        flex-grow: 1;
+      }
+
       .column:not(:has(> *:not([hidden]))) {
         flex-grow: 0;
       }
