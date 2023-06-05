@@ -3251,9 +3251,19 @@
           },
           "integration_page": {
             "entries": "Integration entries",
+            "entries_device": "Devices",
+            "entries_hub": "Hubs",
+            "entries_service": "Services",
+            "entries_helper": "Helpers",
+            "entries_hardware": "Hardware",
             "no_entries": "No entries",
             "attention_entries": "Needs attention",
-            "add_entry": "Add entry"
+            "add_entry": "Add entry",
+            "add_device": "Add device",
+            "add_hub": "Add hub",
+            "add_service": "Add service",
+            "add_helper": "Add helper",
+            "add_hardware": "Add hardware"
           },
           "config_entry": {
             "application_credentials": {
