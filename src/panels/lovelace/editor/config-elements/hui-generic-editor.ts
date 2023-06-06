@@ -4,8 +4,8 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
+import { LovelaceCardConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
-import type { ButtonCardConfig } from "../../cards/types";
 import type { LovelaceGenericElementEditor } from "../../types";
 import { configElementStyle } from "./config-elements-style";
 
@@ -16,11 +16,11 @@ export class HuiGenericEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public schema?: HaFormSchema[];
+  @property({ attribute: false }) public schema!: HaFormSchema[];
 
-  @state() private _config?: ButtonCardConfig;
+  @state() private _config?: LovelaceCardConfig;
 
-  public setConfig(config: ButtonCardConfig): void {
+  public setConfig(config: LovelaceCardConfig): void {
     this._config = config;
   }
 
