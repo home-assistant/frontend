@@ -802,7 +802,7 @@ class HUIRoot extends LitElement {
     }
     if (this._yamlMode) {
       showAlertDialog(this, {
-        text: "The edit UI is not available when in YAML mode.",
+        text: this.hass!.localize("ui.panel.lovelace.editor.yaml_unsupported"),
       });
       return;
     }
