@@ -71,33 +71,43 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
   private _columns = memoizeOne(
     (localize): DataTableColumnContainer => ({
       displayName: {
-        title: "Name",
+        title: localize(
+          "ui.panel.developer-tools.tabs.statistics.data_table.name"
+        ),
         sortable: true,
         filterable: true,
         grows: true,
       },
       statistic_id: {
-        title: "Statistic id",
+        title: localize(
+          "ui.panel.developer-tools.tabs.statistics.data_table.statistic_id"
+        ),
         sortable: true,
         filterable: true,
         hidden: this.narrow,
         width: "20%",
       },
       statistics_unit_of_measurement: {
-        title: "Statistics unit",
+        title: localize(
+          "ui.panel.developer-tools.tabs.statistics.data_table.statistics_unit"
+        ),
         sortable: true,
         filterable: true,
         width: "10%",
         forceLTR: true,
       },
       source: {
-        title: "Source",
+        title: localize(
+          "ui.panel.developer-tools.tabs.statistics.data_table.source"
+        ),
         sortable: true,
         filterable: true,
         width: "10%",
       },
       issues: {
-        title: "Issue",
+        title: localize(
+          "ui.panel.developer-tools.tabs.statistics.data_table.issue"
+        ),
         sortable: true,
         filterable: true,
         direction: "asc",

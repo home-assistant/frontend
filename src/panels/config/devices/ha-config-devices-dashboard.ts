@@ -216,8 +216,12 @@ export class HaConfigDeviceDashboard extends LitElement {
           this.hass,
           deviceEntityLookup[device.id]
         ),
-        model: device.model || "<unknown>",
-        manufacturer: device.manufacturer || "<unknown>",
+        model:
+          device.model ||
+          `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
+        manufacturer:
+          device.manufacturer ||
+          `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
         area:
           device.area_id && areaLookup[device.area_id]
             ? areaLookup[device.area_id].name
