@@ -38,6 +38,30 @@ export class StateBadge extends LitElement {
 
   @state() private _iconStyle: { [name: string]: string | undefined } = {};
 
+  connectedCallback(): void {
+    super.connectedCallback();
+    if (
+      this.overrideImage === undefined &&
+      (this.stateObj?.attributes.entity_picture ||
+        this.stateObj?.attributes.entity_picture_local)
+    ) {
+      // Update image on connect, so we get new auth token
+      this.requestUpdate("stateObj");
+    }
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (
+      this.overrideImage === undefined &&
+      (this.stateObj?.attributes.entity_picture ||
+        this.stateObj?.attributes.entity_picture_local)
+    ) {
+      // Clear image on disconnect so we don't fetch with old auth when we reconnect
+      this.style.backgroundImage = "";
+    }
+  }
+
   private get _stateColor() {
     const domain = this.stateObj
       ? computeStateDomain(this.stateObj)
