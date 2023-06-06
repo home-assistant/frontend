@@ -2299,10 +2299,14 @@
                 "state": {
                   "label": "State",
                   "attribute": "Attribute (optional)",
+                  "attribute_type": "Attribute Type",
+                  "attribute_type_string": "String",
+                  "attribute_type_number_boolean": "Number/Boolean",
                   "from": "From (optional)",
                   "for": "For",
                   "to": "To (optional)",
-                  "any_state_ignore_attributes": "Any state (ignoring attribute changes)"
+                  "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
+                  "ui_error_attribute_type_mismatch": "The UI mode does not support attributes with mismatched types."
                 },
                 "homeassistant": {
                   "label": "Home Assistant",
