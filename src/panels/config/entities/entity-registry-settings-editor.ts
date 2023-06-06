@@ -15,6 +15,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
@@ -324,8 +325,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
       this.hass.states[this.entry.entity_id];
 
     const domain = computeDomain(this.entry.entity_id);
-
-    const invalidDomainUpdate = computeDomain(this._entityId.trim()) !== domain;
 
     const invalidDefaultCode =
       domain === "lock" &&
@@ -675,13 +674,14 @@ export class EntityRegistrySettingsEditor extends LitElement {
           `
         : ""}
       <ha-textfield
-        error-message="Domain needs to stay the same"
-        .value=${this._entityId}
+        class="entityId"
+        .value=${computeObjectId(this._entityId)}
+        .prefix=${domain + "."}
         .label=${this.hass.localize(
           "ui.dialogs.entity_registry.editor.entity_id"
         )}
-        .invalid=${invalidDomainUpdate}
         .disabled=${this.disabled}
+        required
         @input=${this._entityIdChanged}
       ></ha-textfield>
       ${!this.entry.device_id
@@ -1163,7 +1163,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   private _entityIdChanged(ev): void {
     fireEvent(this, "change");
-    this._entityId = ev.target.value;
+    this._entityId = `${computeDomain(this._origEntityId)}.${ev.target.value}`;
   }
 
   private _deviceClassChanged(ev): void {
@@ -1342,6 +1342,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
       css`
         :host {
           display: block;
+        }
+        ha-textfield.entityId {
+          --text-field-prefix-padding-right: 0;
         }
         ha-switch {
           margin-right: 16px;
