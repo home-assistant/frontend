@@ -111,10 +111,10 @@ class HaDevicesPicker extends LitElement {
     event.stopPropagation();
     const curValue = (event.currentTarget as any).curValue;
     const newValue = event.detail.value;
-    if (newValue === curValue || newValue !== "") {
+    if (newValue === curValue) {
       return;
     }
-    if (newValue === "") {
+    if (newValue === undefined) {
       this._updateDevices(
         this._currentDevices.filter((dev) => dev !== curValue)
       );
