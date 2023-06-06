@@ -1,9 +1,11 @@
 import { mdiCalendar } from "@mdi/js";
+import { HassConfig } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { formatDateNumeric } from "../common/datetime/format_date";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
+import { formatDateNumeric } from "../common/datetime/format_date";
 import { fireEvent } from "../common/dom/fire_event";
+import { TimeZone } from "../data/translation";
 import { HomeAssistant } from "../types";
 import "./ha-svg-icon";
 import "./ha-textfield";
@@ -59,7 +61,11 @@ export class HaDateInput extends LitElement {
       .value=${this.value
         ? formatDateNumeric(
             new Date(`${this.value.split("T")[0]}T00:00:00`),
-            this.locale
+            {
+              ...this.locale,
+              time_zone: TimeZone.local,
+            },
+            {} as HassConfig
           )
         : ""}
       .required=${this.required}

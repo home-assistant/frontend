@@ -337,6 +337,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                       this.hass!.localize,
                       stateObj,
                       this.hass!.locale,
+                      this.hass!.config,
                       this.hass!.entities
                     )}
               </div>

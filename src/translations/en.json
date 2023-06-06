@@ -4926,6 +4926,15 @@
             "24": "24 hours"
           }
         },
+        "time_zone": {
+          "header": "Time Zone",
+          "dropdown_label": "Time zone",
+          "description": "Choose the time zone to use for displaying times.",
+          "options": {
+            "local": "Use your local time zone ({timezone})",
+            "server": "Use server time zone ({timezone})"
+          }
+        },
         "date_format": {
           "header": "Date Format",
           "dropdown_label": "Date format",

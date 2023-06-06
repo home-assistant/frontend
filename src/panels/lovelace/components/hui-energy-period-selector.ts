@@ -21,6 +21,7 @@ import {
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { calcDate } from "../../../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import {
   formatDate,
@@ -105,17 +106,27 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       <div class="row">
         <div class="label">
           ${this._period === "day"
-            ? formatDate(this._startDate, this.hass.locale)
+            ? formatDate(this._startDate, this.hass.locale, this.hass.config)
             : this._period === "month"
-            ? formatDateMonthYear(this._startDate, this.hass.locale)
+            ? formatDateMonthYear(
+                this._startDate,
+                this.hass.locale,
+                this.hass.config
+              )
             : this._period === "year"
-            ? formatDateYear(this._startDate, this.hass.locale)
+            ? formatDateYear(
+                this._startDate,
+                this.hass.locale,
+                this.hass.config
+              )
             : `${formatDateShort(
                 this._startDate,
-                this.hass.locale
+                this.hass.locale,
+                this.hass.config
               )} – ${formatDateShort(
                 this._endDate || new Date(),
-                this.hass.locale
+                this.hass.locale,
+                this.hass.config
               )}`}
           <ha-icon-button-prev
             .label=${this.hass.localize(
@@ -186,12 +197,14 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
     this._setDate(
       this._period === "day"
-        ? startOfDay(start)
+        ? calcDate(start, startOfDay, this.hass.locale, this.hass.config)
         : this._period === "week"
-        ? startOfWeek(start, { weekStartsOn })
+        ? calcDate(start, startOfWeek, this.hass.locale, this.hass.config, {
+            weekStartsOn,
+          })
         : this._period === "month"
-        ? startOfMonth(start)
-        : startOfYear(start)
+        ? calcDate(start, startOfMonth, this.hass.locale, this.hass.config)
+        : calcDate(start, startOfYear, this.hass.locale, this.hass.config)
     );
   }
 
@@ -200,12 +213,20 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
     this._setDate(
       this._period === "day"
-        ? startOfToday()
+        ? calcDate(new Date(), startOfDay, this.hass.locale, this.hass.config)
         : this._period === "week"
-        ? startOfWeek(new Date(), { weekStartsOn })
+        ? calcDate(
+            new Date(),
+            startOfWeek,
+            this.hass.locale,
+            this.hass.config,
+            {
+              weekStartsOn,
+            }
+          )
         : this._period === "month"
-        ? startOfMonth(new Date())
-        : startOfYear(new Date())
+        ? calcDate(new Date(), startOfMonth, this.hass.locale, this.hass.config)
+        : calcDate(new Date(), startOfYear, this.hass.locale, this.hass.config)
     );
   }
 
@@ -238,12 +259,14 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
     const endDate =
       this._period === "day"
-        ? endOfDay(startDate)
+        ? calcDate(startDate, endOfDay, this.hass.locale, this.hass.config)
         : this._period === "week"
-        ? endOfWeek(startDate, { weekStartsOn })
+        ? calcDate(startDate, endOfWeek, this.hass.locale, this.hass.config, {
+            weekStartsOn,
+          })
         : this._period === "month"
-        ? endOfMonth(startDate)
-        : endOfYear(startDate);
+        ? calcDate(startDate, endOfMonth, this.hass.locale, this.hass.config)
+        : calcDate(startDate, endOfYear, this.hass.locale, this.hass.config);
 
     const energyCollection = getEnergyDataCollection(this.hass, {
       key: this.collectionKey,

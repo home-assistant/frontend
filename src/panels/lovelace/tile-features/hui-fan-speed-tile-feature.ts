@@ -59,6 +59,7 @@ class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
         this.hass!.localize,
         this.stateObj!,
         this.hass!.locale,
+        this.hass!.config,
         this.hass!.entities,
         speed
       );

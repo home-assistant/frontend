@@ -164,7 +164,8 @@ class MoreInfoWeather extends LitElement {
                           <div class="main">
                             ${formatTimeWeekday(
                               new Date(item.datetime),
-                              this.hass.locale
+                              this.hass.locale,
+                              this.hass.config
                             )}
                           </div>
                         `
@@ -172,7 +173,8 @@ class MoreInfoWeather extends LitElement {
                           <div class="main">
                             ${formatDateWeekdayDay(
                               new Date(item.datetime),
-                              this.hass.locale
+                              this.hass.locale,
+                              this.hass.config
                             )}
                           </div>
                         `}

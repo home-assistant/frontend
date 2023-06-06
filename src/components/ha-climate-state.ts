@@ -28,6 +28,7 @@ class HaClimateState extends LitElement {
                       this.hass.localize,
                       this.stateObj,
                       this.hass.locale,
+                      this.hass.config,
                       this.hass.entities,
                       "preset_mode"
                     )}`
@@ -136,6 +137,7 @@ class HaClimateState extends LitElement {
       this.hass.localize,
       this.stateObj,
       this.hass.locale,
+      this.hass.config,
       this.hass.entities
     );
 
@@ -144,6 +146,7 @@ class HaClimateState extends LitElement {
           this.hass.localize,
           this.stateObj,
           this.hass.locale,
+          this.hass.config,
           this.hass.entities,
           "hvac_action"
         )} (${stateString})`

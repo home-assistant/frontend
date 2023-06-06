@@ -349,7 +349,11 @@ class DialogSystemInformation extends LitElement {
                     `}
               `;
             } else if (info.type === "date") {
-              value = formatDateTime(new Date(info.value), this.hass.locale);
+              value = formatDateTime(
+                new Date(info.value),
+                this.hass.locale,
+                this.hass.config
+              );
             }
           } else {
             value = domainInfo.info[key];
@@ -425,7 +429,11 @@ class DialogSystemInformation extends LitElement {
           } else if (info.type === "failed") {
             value = `failed to load: ${info.error}`;
           } else if (info.type === "date") {
-            value = formatDateTime(new Date(info.value), this.hass.locale);
+            value = formatDateTime(
+              new Date(info.value),
+              this.hass.locale,
+              this.hass.config
+            );
           }
         } else {
           value = domainInfo.info[key];

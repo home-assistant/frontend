@@ -105,7 +105,7 @@ class MqttSubscribeCard extends LitElement {
                   "topic",
                   msg.message.topic,
                   "time",
-                  formatTime(msg.time, this.hass!.locale)
+                  formatTime(msg.time, this.hass!.locale, this.hass!.config)
                 )}
                 <pre>${msg.payload}</pre>
                 <div class="bottom">

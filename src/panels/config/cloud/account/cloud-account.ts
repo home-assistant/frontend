@@ -79,7 +79,8 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                                 new Date(
                                   this._subscription.plan_renewal_date * 1000
                                 ),
-                                this.hass.locale
+                                this.hass.locale,
+                                this.hass.config
                               )
                             : ""
                         )
