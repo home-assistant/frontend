@@ -161,7 +161,6 @@ export class HaTextField extends TextFieldBase {
         direction: var(--direction);
       }
       .mdc-text-field__affix--prefix {
-        padding-left: 0;
         padding-right: var(--text-field-prefix-padding-right, 2px);
       }
     `,
