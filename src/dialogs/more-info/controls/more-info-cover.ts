@@ -195,7 +195,7 @@ class MoreInfoCover extends LitElement {
                     <ha-icon-button
                       .label=${this.hass.localize(
                         `ui.dialogs.more_info_control.cover.switch_mode.${
-                          this._mode || "position"
+                          this._mode === "position" ? "button" : "position"
                         }`
                       )}
                       .path=${this._mode === "position"
