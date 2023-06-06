@@ -80,7 +80,7 @@ class MoreInfoLock extends LitElement {
       ></ha-more-info-state-header>
       <div class="controls" style=${styleMap(style)}>
         ${
-          ["locking", "unlocking", "jammed"].includes(this.stateObj.state)
+          this.stateObj.state === "jammed"
             ? html`
                 <div class="status">
                   <span></span>

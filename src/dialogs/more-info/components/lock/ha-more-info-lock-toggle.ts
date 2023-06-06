@@ -34,7 +34,8 @@ export class HaMoreInfoLockToggle extends LitElement {
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     if (changedProps.has("stateObj")) {
-      this._isOn = this.stateObj.state === "locked";
+      this._isOn =
+        this.stateObj.state === "locked" || this.stateObj.state === "locking";
     }
   }
 
@@ -95,13 +96,35 @@ export class HaMoreInfoLockToggle extends LitElement {
     await wait(2000);
 
     if (this.stateObj === currentState) {
-      this._isOn = this.stateObj.state === "locked";
+      this._isOn =
+        this.stateObj.state === "locked" || this.stateObj.state === "locking";
     }
   }
 
   protected render(): TemplateResult {
-    const onColor = stateColorCss(this.stateObj, "locked");
-    const offColor = stateColorCss(this.stateObj, "unlocked");
+    const locking = this.stateObj.state === "locking";
+    const unlocking = this.stateObj.state === "unlocking";
+
+    const onColor = stateColorCss(
+      this.stateObj,
+      locking ? "locking" : "locked"
+    );
+    const offColor = stateColorCss(
+      this.stateObj,
+      unlocking ? "unlocking" : "unlocked"
+    );
+
+    const onIcon = domainIcon(
+      "lock",
+      this.stateObj,
+      locking ? "locking" : "locked"
+    );
+
+    const offIcon = domainIcon(
+      "lock",
+      this.stateObj,
+      unlocking ? "unlocking" : "unlocked"
+    );
 
     if (this.stateObj.state === UNKNOWN) {
       return html`
@@ -112,9 +135,7 @@ export class HaMoreInfoLockToggle extends LitElement {
             )}
             @click=${this._turnOn}
           >
-            <ha-svg-icon
-              .path=${domainIcon("lock", this.stateObj, "locked")}
-            ></ha-svg-icon>
+            <ha-svg-icon .path=${onIcon}></ha-svg-icon>
           </ha-control-button>
           <ha-control-button
             .label=${this.hass.localize(
@@ -122,9 +143,7 @@ export class HaMoreInfoLockToggle extends LitElement {
             )}
             @click=${this._turnOff}
           >
-            <ha-svg-icon
-              .path=${domainIcon("lock", this.stateObj, "unlocked")}
-            ></ha-svg-icon>
+            <ha-svg-icon .path=${offIcon}></ha-svg-icon>
           </ha-control-button>
         </div>
       `;
@@ -132,8 +151,8 @@ export class HaMoreInfoLockToggle extends LitElement {
 
     return html`
       <ha-control-switch
-        .pathOn=${domainIcon("lock", this.stateObj, "locked")}
-        .pathOff=${domainIcon("lock", this.stateObj, "unlocked")}
+        .pathOn=${onIcon}
+        .pathOff=${offIcon}
         vertical
         reversed
         .checked=${this._isOn}
