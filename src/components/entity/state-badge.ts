@@ -41,6 +41,7 @@ export class StateBadge extends LitElement {
   connectedCallback(): void {
     super.connectedCallback();
     if (
+      this.hasUpdated &&
       this.overrideImage === undefined &&
       (this.stateObj?.attributes.entity_picture ||
         this.stateObj?.attributes.entity_picture_local)
