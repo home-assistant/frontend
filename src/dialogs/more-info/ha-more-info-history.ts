@@ -192,7 +192,8 @@ export class MoreInfoHistory extends LitElement {
         }
       }
     }
-    if (!isComponentLoaded(this.hass, "history") || this._subscribed) {
+
+    if (!isComponentLoaded(this.hass, "history")) {
       return;
     }
     if (this._subscribed) {

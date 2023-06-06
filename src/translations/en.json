@@ -3062,7 +3062,8 @@
             "battery": "Battery",
             "disabled_by": "Disabled",
             "no_devices": "No devices",
-            "no_integration": "No integration"
+            "no_integration": "No integration",
+            "unknown": "unknown"
           },
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this device?",
@@ -4284,6 +4285,7 @@
         },
         "editor": {
           "header": "Edit UI",
+          "yaml_unsupported": "The edit UI is not available when in YAML mode.",
           "menu": {
             "open": "Open dashboard menu",
             "raw_editor": "Raw configuration editor",
@@ -5269,7 +5271,14 @@
                 "clear": "Delete all old statistic data for this entity"
               }
             },
-            "adjust_sum": "Adjust sum"
+            "adjust_sum": "Adjust sum",
+            "data_table": {
+              "name": "Name",
+              "statistic_id": "Statistic id",
+              "statistics_unit": "Statistics unit",
+              "source": "Source",
+              "issue": "Issue"
+            }
           },
           "yaml": {
             "title": "YAML",

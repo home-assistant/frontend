@@ -3349,15 +3349,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-retry@npm:4.1.5":
-  version: 4.1.5
-  resolution: "@octokit/plugin-retry@npm:4.1.5"
+"@octokit/plugin-retry@npm:4.1.6":
+  version: 4.1.6
+  resolution: "@octokit/plugin-retry@npm:4.1.6"
   dependencies:
     "@octokit/types": ^9.0.0
     bottleneck: ^2.15.3
   peerDependencies:
     "@octokit/core": ">=3"
-  checksum: 37272a0dd2fea5025797bb0f6812899c048468b3ef35c0413154230ef0d5c3e323a76bb9eb971ea5ba498f68407711507336852783443397a185a9a75b28b06c
+  checksum: 9bebaf7fc9c34683d7e97c0398ab9f5a164ce8770e92e8b8a65ed8e85ee3b0fddc5c72dfb18da112e2f643434d217ec7092f57496808c4ae6c2a824f42ae1ccf
   languageName: node
   linkType: hard
 
@@ -9669,7 +9669,7 @@ __metadata:
     "@mdi/js": 7.2.96
     "@mdi/svg": 7.2.96
     "@octokit/auth-oauth-device": 4.0.4
-    "@octokit/plugin-retry": 4.1.5
+    "@octokit/plugin-retry": 4.1.6
     "@octokit/rest": 19.0.11
     "@open-wc/dev-server-hmr": 0.1.4
     "@polymer/app-layout": 3.1.0
