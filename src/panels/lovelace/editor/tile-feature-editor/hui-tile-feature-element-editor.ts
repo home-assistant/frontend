@@ -1,11 +1,13 @@
 import { customElement } from "lit/decorators";
-import { HaFormSchema } from "../../../../components/ha-form/types";
 import { getTileFeatureElementClass } from "../../create-element/create-tile-feature-element";
 import {
   LovelaceTileFeatureConfig,
   LovelaceTileFeatureContext,
 } from "../../tile-features/types";
-import type { LovelaceTileFeatureEditor } from "../../types";
+import type {
+  LovelaceConfigForm,
+  LovelaceTileFeatureEditor,
+} from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
 
 @customElement("hui-tile-feature-element-editor")
@@ -26,12 +28,12 @@ export class HuiTileFeatureElementEditor extends HuiElementEditor<
     return undefined;
   }
 
-  protected async getConfigSchema(): Promise<HaFormSchema[] | undefined> {
+  protected async getConfigForm(): Promise<LovelaceConfigForm | undefined> {
     const elClass = await getTileFeatureElementClass(this.configElementType!);
 
     // Check if a schema exists
-    if (elClass && elClass.getConfigSchema) {
-      return elClass.getConfigSchema();
+    if (elClass && elClass.getConfigForm) {
+      return elClass.getConfigForm();
     }
 
     return undefined;

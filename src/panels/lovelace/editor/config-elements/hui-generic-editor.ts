@@ -18,9 +18,16 @@ export class HuiGenericEditor
 
   @property({ attribute: false }) public schema!: HaFormSchema[];
 
+  @property({ attribute: false }) public translationKey?: string;
+
   @state() private _config?: LovelaceCardConfig;
 
+  public assertConfig(_config: LovelaceCardConfig): void {
+    return undefined;
+  }
+
   public setConfig(config: LovelaceCardConfig): void {
+    this.assertConfig(config);
     this._config = config;
   }
 
@@ -41,6 +48,13 @@ export class HuiGenericEditor
   }
 
   private _computeLabelCallback = (schema: HaFormSchema) =>
+    (this.translationKey &&
+      this.hass?.localize(
+        `ui.panel.lovelace.editor.card.${this.translationKey}.${schema.name}`
+      )) ||
+    this.hass?.localize(
+      `ui.panel.lovelace.editor.card.generic.${schema.name}`
+    ) ||
     capitalizeFirstLetter(schema.name.split("_").join(" "));
 
   private _valueChanged(ev: CustomEvent): void {

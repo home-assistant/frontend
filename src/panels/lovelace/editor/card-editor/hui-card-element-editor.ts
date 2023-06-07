@@ -1,9 +1,8 @@
 import { customElement } from "lit/decorators";
 import type { LovelaceCardConfig } from "../../../../data/lovelace";
 import { getCardElementClass } from "../../create-element/create-card-element";
-import type { LovelaceCardEditor } from "../../types";
+import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
-import { HaFormSchema } from "../../../../components/ha-form/types";
 
 @customElement("hui-card-element-editor")
 export class HuiCardElementEditor extends HuiElementEditor<LovelaceCardConfig> {
@@ -18,12 +17,12 @@ export class HuiCardElementEditor extends HuiElementEditor<LovelaceCardConfig> {
     return undefined;
   }
 
-  protected async getConfigSchema(): Promise<HaFormSchema[] | undefined> {
+  protected async getConfigForm(): Promise<LovelaceConfigForm | undefined> {
     const elClass = await getCardElementClass(this.configElementType!);
 
     // Check if a schema exists
-    if (elClass && elClass.getConfigSchema) {
-      return elClass.getConfigSchema();
+    if (elClass && elClass.getConfigForm) {
+      return elClass.getConfigForm();
     }
 
     return undefined;

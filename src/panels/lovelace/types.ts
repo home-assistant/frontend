@@ -1,4 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import { HaFormSchema } from "../../components/ha-form/types";
 import {
   LovelaceBadgeConfig,
   LovelaceCardConfig,
@@ -9,7 +10,6 @@ import { Constructor, HomeAssistant } from "../../types";
 import { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
 import { LovelaceTileFeatureConfig } from "./tile-features/types";
-import { HaFormSchema } from "../../components/ha-form/types";
 
 declare global {
   // eslint-disable-next-line
@@ -46,6 +46,12 @@ export interface LovelaceCard extends HTMLElement {
   setConfig(config: LovelaceCardConfig): void;
 }
 
+export interface LovelaceConfigForm {
+  schema: HaFormSchema[];
+  translationKey?: string;
+  assertConfig?: (config: LovelaceCardConfig) => void;
+}
+
 export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
   getStubConfig?: (
     hass: HomeAssistant,
@@ -53,7 +59,7 @@ export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
     entitiesFallback: string[]
   ) => LovelaceCardConfig;
   getConfigElement?: () => LovelaceCardEditor;
-  getConfigSchema?: () => HaFormSchema[];
+  getConfigForm?: () => LovelaceConfigForm;
 }
 
 export interface LovelaceHeaderFooterConstructor
@@ -111,7 +117,10 @@ export interface LovelaceTileFeatureConstructor
     stateObj?: HassEntity
   ) => LovelaceTileFeatureConfig;
   getConfigElement?: () => LovelaceTileFeatureEditor;
-  getConfigSchema?: () => HaFormSchema[];
+  getConfigForm?: () => {
+    schema: HaFormSchema[];
+    assertConfig?: (config: LovelaceCardConfig) => void;
+  };
   isSupported?: (stateObj?: HassEntity) => boolean;
 }
 
