@@ -375,16 +375,18 @@ class ZHAConfigDashboard extends LitElement {
           max-width: 500px;
         }
 
-        .network-settings > div {
-          word-break: break-all;
-          margin-top: 2px;
-        }
-
         .network-settings ha-settings-row {
           padding-left: 0;
           padding-right: 0;
 
           --paper-item-body-two-line-min-height: 55px;
+        }
+
+        .network-settings ha-settings-row span[slot="heading"] {
+          white-space: normal;
+          word-break: break-all;
+          text-indent: -1em;
+          padding-left: 1em;
         }
 
         .network-settings ha-settings-row ha-icon-button {
