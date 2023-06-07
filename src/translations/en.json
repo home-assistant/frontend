@@ -5815,6 +5815,8 @@
       "download_backup": "Download backup",
       "create_backup": "Create backup",
       "create": "Create",
+      "location": "Location",
+      "data_disk": "Data disk",
       "created": "Created",
       "name": "Backup name",
       "type": "Backup type",
