@@ -581,17 +581,19 @@ export default class HaAutomationTriggerRow extends LitElement {
       confirmText: this.hass.localize("ui.common.submit"),
     });
 
-    const value = { ...this.trigger };
-    if (!alias) {
-      delete value.alias;
-    } else {
-      value.alias = alias;
-    }
-    fireEvent(this, "value-changed", {
-      value,
-    });
-    if (this._yamlMode) {
-      this._yamlEditor?.setValue(value);
+    if (alias !== null) {
+      const value = { ...this.trigger };
+      if (alias === "") {
+        delete value.alias;
+      } else {
+        value.alias = alias;
+      }
+      fireEvent(this, "value-changed", {
+        value,
+      });
+      if (this._yamlMode) {
+        this._yamlEditor?.setValue(value);
+      }
     }
   }
 
