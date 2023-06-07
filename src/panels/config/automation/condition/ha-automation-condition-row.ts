@@ -471,16 +471,17 @@ export default class HaAutomationConditionRow extends LitElement {
       defaultValue: this.condition.alias,
       confirmText: this.hass.localize("ui.common.submit"),
     });
-
-    const value = { ...this.condition };
-    if (!alias) {
-      delete value.alias;
-    } else {
-      value.alias = alias;
+    if (alias !== null) {
+      const value = { ...this.condition };
+      if (alias === "") {
+        delete value.alias;
+      } else {
+        value.alias = alias;
+      }
+      fireEvent(this, "value-changed", {
+        value,
+      });
     }
-    fireEvent(this, "value-changed", {
-      value,
-    });
   }
 
   public expand() {
