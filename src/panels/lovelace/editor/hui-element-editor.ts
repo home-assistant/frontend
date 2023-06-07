@@ -341,9 +341,14 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
           if (form) {
             await import("./config-elements/hui-generic-editor");
             configElement = document.createElement("hui-generic-editor");
-            const { schema, assertConfig, translationKey } = form;
+            const { schema, assertConfig, computeLabel, computeHelper } = form;
             (configElement as HuiGenericEditor).schema = schema;
-            (configElement as HuiGenericEditor).translationKey = translationKey;
+            if (computeLabel) {
+              (configElement as HuiGenericEditor).computeLabel = computeLabel;
+            }
+            if (computeHelper) {
+              (configElement as HuiGenericEditor).computeHelper = computeHelper;
+            }
             if (assertConfig) {
               (configElement as HuiGenericEditor).assertConfig = assertConfig;
             }

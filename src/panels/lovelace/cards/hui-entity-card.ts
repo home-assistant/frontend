@@ -25,7 +25,9 @@ import {
   isNumericState,
 } from "../../../common/number/format_number";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-card";
+import { HaFormSchema } from "../../../components/ha-form/types";
 import "../../../components/ha-icon";
 import { HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import { isUnavailableState } from "../../../data/entity";
@@ -67,7 +69,10 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       "../editor/config-elements/hui-entity-card-editor"
     );
     const assertConfig = (config: EntityCardConfig) => assert(config, struct);
-    return { schema, assertConfig, translationKey: "entity" };
+    const computeLabel = (_schema: HaFormSchema, localize: LocalizeFunc) =>
+      localize(`ui.panel.lovelace.editor.card.entity.${_schema.name}`);
+
+    return { schema, assertConfig, computeLabel };
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;

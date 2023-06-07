@@ -1,4 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import { LocalizeFunc } from "../../common/translations/localize";
 import { HaFormSchema } from "../../components/ha-form/types";
 import {
   LovelaceBadgeConfig,
@@ -48,8 +49,15 @@ export interface LovelaceCard extends HTMLElement {
 
 export interface LovelaceConfigForm {
   schema: HaFormSchema[];
-  translationKey?: string;
   assertConfig?: (config: LovelaceCardConfig) => void;
+  computeLabel?: (
+    schema: HaFormSchema,
+    localize: LocalizeFunc
+  ) => string | undefined;
+  computeHelper?: (
+    schema: HaFormSchema,
+    localize: LocalizeFunc
+  ) => string | undefined;
 }
 
 export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
