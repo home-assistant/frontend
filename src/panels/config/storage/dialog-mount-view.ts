@@ -22,7 +22,8 @@ const mountSchema = memoizeOne(
   (
     localize: LocalizeFunc,
     existing?: boolean,
-    mountType?: SupervisorMountType
+    mountType?: SupervisorMountType,
+    showCIFSVersion?: boolean
   ) =>
     [
       {
@@ -86,37 +87,41 @@ const mountSchema = memoizeOne(
           ] as const)
         : mountType === "cifs"
         ? ([
-            {
-              name: "cifs_version",
-              required: true,
-              selector: {
-                select: {
-                  options: [
-                    {
-                      label: localize(
-                        "ui.panel.config.storage.network_mounts.cifs_versions.auto"
-                      ),
-                      value: "auto",
+            ...(showCIFSVersion
+              ? ([
+                  {
+                    name: "cifs_version",
+                    required: true,
+                    selector: {
+                      select: {
+                        options: [
+                          {
+                            label: localize(
+                              "ui.panel.config.storage.network_mounts.cifs_versions.auto"
+                            ),
+                            value: "auto",
+                          },
+                          {
+                            label: localize(
+                              "ui.panel.config.storage.network_mounts.cifs_versions.legacy",
+                              { version: "2.0" }
+                            ),
+                            value: "2.0",
+                          },
+                          {
+                            label: localize(
+                              "ui.panel.config.storage.network_mounts.cifs_versions.legacy",
+                              { version: "1.0" }
+                            ),
+                            value: "1.0",
+                          },
+                        ],
+                        mode: "dropdown",
+                      },
                     },
-                    {
-                      label: localize(
-                        "ui.panel.config.storage.network_mounts.cifs_versions.legacy",
-                        { version: "2.0" }
-                      ),
-                      value: "2.0",
-                    },
-                    {
-                      label: localize(
-                        "ui.panel.config.storage.network_mounts.cifs_versions.legacy",
-                        { version: "1.0" }
-                      ),
-                      value: "1.0",
-                    },
-                  ],
-                  mode: "dropdown",
-                },
-              },
-            },
+                  },
+                ] as const)
+              : ([] as const)),
             {
               name: "share",
               required: true,
@@ -153,6 +158,8 @@ class ViewMountDialog extends LitElement {
 
   @state() private _existing?: boolean;
 
+  @state() private _showCIFSVersion?: boolean;
+
   @state() private _reloadMounts?: () => void;
 
   public async showDialog(
@@ -161,6 +168,12 @@ class ViewMountDialog extends LitElement {
     this._data = dialogParams.mount;
     this._existing = dialogParams.mount !== undefined;
     this._reloadMounts = dialogParams.reloadMounts;
+    if (
+      dialogParams.mount?.type === "cifs" &&
+      dialogParams.mount.cifs_version !== "auto"
+    ) {
+      this._showCIFSVersion = true;
+    }
   }
 
   public closeDialog(): void {
@@ -170,6 +183,7 @@ class ViewMountDialog extends LitElement {
     this._validationError = undefined;
     this._validationWarning = undefined;
     this._existing = undefined;
+    this._showCIFSVersion = undefined;
     this._reloadMounts = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -200,7 +214,8 @@ class ViewMountDialog extends LitElement {
           .schema=${mountSchema(
             this.hass.localize,
             this._existing,
-            this._data?.type
+            this._data?.type,
+            this._showCIFSVersion
           )}
           .error=${this._validationError}
           .warning=${this._validationWarning}
@@ -298,6 +313,9 @@ class ViewMountDialog extends LitElement {
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);
       this._waiting = false;
+      if (this._data!.type === "cifs" && !this._showCIFSVersion) {
+        this._showCIFSVersion = true;
+      }
       return;
     }
     if (this._reloadMounts) {
