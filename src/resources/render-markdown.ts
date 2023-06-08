@@ -12,8 +12,12 @@ export const renderMarkdown = async (
   hassOptions?: RenderMarkdownParamTypes[2]
 ): Promise<ReturnType<RenderMarkdownType>> => {
   if (!worker) {
-    worker = wrap(new Worker(new URL("./markdown_worker", import.meta.url)));
+    worker = wrap(
+      new Worker(
+        /* webpackChunkName: "markdown_worker" */
+        new URL("./markdown_worker", import.meta.url)
+      )
+    );
   }
-
   return worker.renderMarkdown(content, markedOptions, hassOptions);
 };
