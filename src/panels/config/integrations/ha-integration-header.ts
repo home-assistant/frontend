@@ -50,7 +50,7 @@ export class HaIntegrationHeader extends LitElement {
         icons.push([
           mdiPackageVariant,
           this.hass.localize(
-            "ui.panel.config.integrations.config_entry.provided_by_custom_integration"
+            "ui.panel.config.integrations.config_entry.custom_integration"
           ),
         ]);
       }
