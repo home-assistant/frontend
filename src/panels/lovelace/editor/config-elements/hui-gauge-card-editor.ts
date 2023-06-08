@@ -1,6 +1,5 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import {
   array,
   assert,
@@ -13,7 +12,10 @@ import {
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { GaugeCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
@@ -41,6 +43,75 @@ const cardConfigStruct = assign(
   })
 );
 
+const SCHEMA = [
+  {
+    name: "entity",
+    selector: {
+      entity: {
+        domain: ["counter", "input_number", "number", "sensor"],
+      },
+    },
+  },
+  {
+    name: "",
+    type: "grid",
+    schema: [
+      { name: "name", selector: { text: {} } },
+      { name: "unit", selector: { text: {} } },
+    ],
+  },
+  { name: "theme", selector: { theme: {} } },
+  {
+    name: "",
+    type: "grid",
+    schema: [
+      {
+        name: "min",
+        default: DEFAULT_MIN,
+        selector: { number: { mode: "box" } },
+      },
+      {
+        name: "max",
+        default: DEFAULT_MAX,
+        selector: { number: { mode: "box" } },
+      },
+    ],
+  },
+  {
+    name: "",
+    type: "grid",
+    schema: [
+      { name: "needle", selector: { boolean: {} } },
+      { name: "show_severity", selector: { boolean: {} } },
+    ],
+  },
+  {
+    name: "",
+    type: "conditional",
+    condition: (data) => !!data.show_severity,
+    schema: [
+      {
+        name: "severity",
+        type: "grid",
+        schema: [
+          {
+            name: "green",
+            selector: { number: { mode: "box" } },
+          },
+          {
+            name: "yellow",
+            selector: { number: { mode: "box" } },
+          },
+          {
+            name: "red",
+            selector: { number: { mode: "box" } },
+          },
+        ],
+      },
+    ],
+  },
+] as const satisfies readonly HaFormSchema[];
+
 @customElement("hui-gauge-card-editor")
 export class HuiGaugeCardEditor
   extends LitElement
@@ -55,81 +126,11 @@ export class HuiGaugeCardEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne(
-    (showSeverity: boolean) =>
-      [
-        {
-          name: "entity",
-          selector: {
-            entity: {
-              domain: ["counter", "input_number", "number", "sensor"],
-            },
-          },
-        },
-        {
-          name: "",
-          type: "grid",
-          schema: [
-            { name: "name", selector: { text: {} } },
-            { name: "unit", selector: { text: {} } },
-          ],
-        },
-        { name: "theme", selector: { theme: {} } },
-        {
-          name: "",
-          type: "grid",
-          schema: [
-            {
-              name: "min",
-              default: DEFAULT_MIN,
-              selector: { number: { mode: "box" } },
-            },
-            {
-              name: "max",
-              default: DEFAULT_MAX,
-              selector: { number: { mode: "box" } },
-            },
-          ],
-        },
-        {
-          name: "",
-          type: "grid",
-          schema: [
-            { name: "needle", selector: { boolean: {} } },
-            { name: "show_severity", selector: { boolean: {} } },
-          ],
-        },
-        ...(showSeverity
-          ? ([
-              {
-                name: "severity",
-                type: "grid",
-                schema: [
-                  {
-                    name: "green",
-                    selector: { number: { mode: "box" } },
-                  },
-                  {
-                    name: "yellow",
-                    selector: { number: { mode: "box" } },
-                  },
-                  {
-                    name: "red",
-                    selector: { number: { mode: "box" } },
-                  },
-                ],
-              },
-            ] as const)
-          : []),
-      ] as const
-  );
-
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
-    const schema = this._schema(this._config!.severity !== undefined);
     const data = {
       show_severity: this._config!.severity !== undefined,
       ...this._config,
@@ -139,7 +140,7 @@ export class HuiGaugeCardEditor
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${schema}
+        .schema=${SCHEMA}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -153,7 +154,7 @@ export class HuiGaugeCardEditor
       config = {
         ...config,
         severity: {
-          green: config.green || config.severity?.green || 0,
+          green: config.green || config.severity?.green,
           yellow: config.yellow || config.severity?.yellow || 0,
           red: config.red || config.severity?.red || 0,
         },
@@ -170,9 +171,7 @@ export class HuiGaugeCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     switch (schema.name) {
       case "name":
         return this.hass!.localize(

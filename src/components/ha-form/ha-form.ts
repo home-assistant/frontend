@@ -21,6 +21,7 @@ const LOAD_ELEMENTS = {
   float: () => import("./ha-form-float"),
   grid: () => import("./ha-form-grid"),
   expandable: () => import("./ha-form-expandable"),
+  conditional: () => import("./ha-form-conditional"),
   integer: () => import("./ha-form-integer"),
   multi_select: () => import("./ha-form-multi_select"),
   positive_time_period_dict: () =>
@@ -189,11 +190,12 @@ export class HaForm extends LitElement implements HaFormElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      .root {
+        display: grid;
+        row-gap: 24px;
+      }
       .root > * {
         display: block;
-      }
-      .root > *:not([own-margin]):not(:last-child) {
-        margin-bottom: 24px;
       }
       ha-alert[own-margin] {
         margin-bottom: 4px;
