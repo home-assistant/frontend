@@ -1,6 +1,7 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
+  mdiBugPlay,
   mdiCheck,
   mdiContentDuplicate,
   mdiContentCopy,
@@ -14,7 +15,14 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
@@ -34,7 +42,11 @@ import {
   subscribeEntityRegistry,
 } from "../../../../data/entity_registry";
 import { Clipboard } from "../../../../data/automation";
-import { Action, getActionType } from "../../../../data/script";
+import {
+  Action,
+  NonConditionAction,
+  getActionType,
+} from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
 import { callExecuteScript } from "../../../../data/service";
 import {
@@ -184,6 +196,14 @@ export default class HaAutomationActionRow extends LitElement {
           </h3>
 
           <slot name="icons" slot="icons"></slot>
+          ${type !== "condition" &&
+          type !== "check_condition" &&
+          (this.action as NonConditionAction).continue_on_error === true
+            ? html` <ha-svg-icon
+                .path=${mdiBugPlay}
+                slot="icons"
+              ></ha-svg-icon>`
+            : nothing}
           ${this.hideMenu
             ? ""
             : html`
