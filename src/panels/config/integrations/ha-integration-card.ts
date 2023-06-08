@@ -65,28 +65,28 @@ export class HaIntegrationCard extends LitElement {
           "debug-logging": Boolean(debugLoggingEnabled),
         })}
       >
-        <ha-integration-header
-          .hass=${this.hass}
-          .domain=${this.domain}
-          .localizedDomainName=${this.items[0].localized_domain_name}
-          .banner=${state !== "loaded"
-            ? this.hass.localize(
-                `ui.panel.config.integrations.config_entry.state.${state}`
-              )
-            : debugLoggingEnabled
-            ? this.hass.localize(
-                "ui.panel.config.integrations.config_entry.debug_logging_enabled"
-              )
-            : undefined}
-          .manifest=${this.manifest}
-        >
-          <a
-            href=${`/config/integrations/integration/${this.domain}`}
-            slot="header-button"
+        <a href=${`/config/integrations/integration/${this.domain}`}>
+          <ha-integration-header
+            .hass=${this.hass}
+            .domain=${this.domain}
+            .localizedDomainName=${this.items[0].localized_domain_name}
+            .banner=${state !== "loaded"
+              ? this.hass.localize(
+                  `ui.panel.config.integrations.config_entry.state.${state}`
+                )
+              : debugLoggingEnabled
+              ? this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+                )
+              : undefined}
+            .manifest=${this.manifest}
           >
-            <ha-icon-button .path=${mdiCogOutline}></ha-icon-button>
-          </a>
-        </ha-integration-header>
+            <ha-icon-button
+              slot="header-button"
+              .path=${mdiCogOutline}
+            ></ha-icon-button>
+          </ha-integration-header>
+        </a>
 
         ${this._renderSingleEntry()}
       </ha-card>
@@ -249,7 +249,7 @@ export class HaIntegrationCard extends LitElement {
         }
         a {
           text-decoration: none;
-          color: var(--primary-color);
+          color: var(--primary-text-color);
         }
         a ha-icon-button {
           color: var(--secondary-text-color);

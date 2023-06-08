@@ -266,7 +266,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         path=${mdiPackageVariant}
                       ></ha-svg-icon>
                       ${this.hass.localize(
-                        "ui.panel.config.integrations.config_entry.provided_by_custom_integration"
+                        "ui.panel.config.integrations.config_entry.custom_integration"
                       )}</ha-alert
                     >`
                   : ""}
@@ -422,7 +422,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           .flow=${flow}
                           @click=${this._continueFlow}
                           .label=${this.hass.localize(
-                            "config_entry.disabled_by.config_entry"
+                            "ui.panel.config.integrations.configure"
                           )}
                         ></ha-button>
                       </ha-list-item>`

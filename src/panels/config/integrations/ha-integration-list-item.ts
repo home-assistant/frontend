@@ -84,7 +84,7 @@ export class HaIntegrationListItem extends ListItemBase {
             ><ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon
             ><simple-tooltip animation-delay="0" position="left"
               >${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.provided_by_custom_integration"
+                "ui.panel.config.integrations.config_entry.custom_integration"
               )}</simple-tooltip
             ></span
           >`

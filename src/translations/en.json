@@ -3320,7 +3320,7 @@
                 "device": "device"
               }
             },
-            "provided_by_custom_integration": "Provided by a custom integration",
+            "custom_integration": "Custom integration",
             "depends_on_cloud": "Depends on the cloud",
             "yaml_only": "Needs manual configuration",
             "disabled_polling": "Automatic polling for updated data disabled",
