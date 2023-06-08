@@ -4555,7 +4555,6 @@
             "entity": {
               "name": "Entity",
               "description": "The Entity card gives you a quick overview of your entity's state.",
-              "state_color": "test"
             },
             "button": {
               "name": "Button",
