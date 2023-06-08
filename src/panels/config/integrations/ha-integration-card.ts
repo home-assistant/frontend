@@ -249,7 +249,7 @@ export class HaIntegrationCard extends LitElement {
         }
         a {
           text-decoration: none;
-          color: var(--primary-color);
+          color: var(--primary-text-color);
         }
         a ha-icon-button {
           color: var(--secondary-text-color);
