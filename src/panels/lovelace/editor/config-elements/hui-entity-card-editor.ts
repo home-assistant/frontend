@@ -1,8 +1,12 @@
-import { assign, boolean, object, optional, string } from "superstruct";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
+import { LocalizeFunc } from "../../../../common/translations/localize";
+import { HaFormSchema } from "../../../../components/ha-form/types";
+import { EntityCardConfig } from "../../cards/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
+import { LovelaceConfigForm } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-export const struct = assign(
+const struct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
@@ -16,7 +20,7 @@ export const struct = assign(
   })
 );
 
-export const schema = [
+const SCHEMA = [
   { name: "entity", required: true, selector: { entity: {} } },
   {
     type: "grid",
@@ -46,4 +50,19 @@ export const schema = [
       { name: "state_color", selector: { boolean: {} } },
     ],
   },
-] as const;
+] as HaFormSchema[];
+
+const entityCardConfigForm: LovelaceConfigForm = {
+  schema: SCHEMA,
+  assertConfig: (config: EntityCardConfig) => assert(config, struct),
+  computeLabel: (schema: HaFormSchema, localize: LocalizeFunc) => {
+    if (schema.name === "theme") {
+      return `${localize(
+        "ui.panel.lovelace.editor.card.generic.theme"
+      )} (${localize("ui.panel.lovelace.editor.card.config.optional")})`;
+    }
+    return localize(`ui.panel.lovelace.editor.card.generic.${schema.name}`);
+  },
+};
+
+export default entityCardConfigForm;

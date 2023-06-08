@@ -10,7 +10,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
-import { assert } from "superstruct";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
@@ -25,9 +24,7 @@ import {
   isNumericState,
 } from "../../../common/number/format_number";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
-import { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-card";
-import { HaFormSchema } from "../../../components/ha-form/types";
 import "../../../components/ha-icon";
 import { HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import { isUnavailableState } from "../../../data/entity";
@@ -65,14 +62,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   }
 
   public static async getConfigForm() {
-    const { schema, struct } = await import(
-      "../editor/config-elements/hui-entity-card-editor"
-    );
-    const assertConfig = (config: EntityCardConfig) => assert(config, struct);
-    const computeLabel = (_schema: HaFormSchema, localize: LocalizeFunc) =>
-      localize(`ui.panel.lovelace.editor.card.entity.${_schema.name}`);
-
-    return { schema, assertConfig, computeLabel };
+    return (await import("../editor/config-elements/hui-entity-card-editor"))
+      .default;
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
