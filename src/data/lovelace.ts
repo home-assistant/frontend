@@ -152,6 +152,12 @@ export interface MoreInfoActionConfig extends BaseActionConfig {
   action: "more-info";
 }
 
+export interface AssistActionConfig extends BaseActionConfig {
+  action: "assist";
+  pipeline_id?: string;
+  start_listening?: boolean;
+}
+
 export interface NoActionConfig extends BaseActionConfig {
   action: "none";
 }
@@ -180,6 +186,7 @@ export type ActionConfig =
   | NavigateActionConfig
   | UrlActionConfig
   | MoreInfoActionConfig
+  | AssistActionConfig
   | NoActionConfig
   | CustomActionConfig;
 

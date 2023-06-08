@@ -4,6 +4,7 @@ import { forwardHaptic } from "../../../data/haptics";
 import { domainToName } from "../../../data/integration";
 import { ActionConfig } from "../../../data/lovelace";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { toggleEntity } from "./entity/toggle-entity";
@@ -153,6 +154,13 @@ export const handleAction = async (
         actionConfig.target
       );
       forwardHaptic("light");
+      break;
+    }
+    case "assist": {
+      showVoiceCommandDialog(node, hass, {
+        start_listening: actionConfig.start_listening,
+        pipeline_id: actionConfig.pipeline_id,
+      });
       break;
     }
     case "fire-dom-event": {
