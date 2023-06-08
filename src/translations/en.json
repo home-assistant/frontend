@@ -4070,6 +4070,10 @@
               "nfs": "Network File Share (NFS)",
               "cifs": "Samba/Windows (CIFS)"
             },
+            "cifs_versions": {
+              "auto": "Auto (2.1+)",
+              "legacy": "Legacy ({version})"
+            },
             "options": {
               "name": {
                 "title": "Name",
@@ -4099,6 +4103,10 @@
                 "title": "Usage",
                 "description": "This determines how the share is intended to be used"
               },
+              "cifs_version": {
+                "title": "Samba/Windows (CIFS) version",
+                "description": "This choses the version of the protocol to use"
+              },
               "username": {
                 "title": "Username",
                 "description": "This is your username for the samba share"
@@ -4113,6 +4121,9 @@
             "errors": {
               "reload": "Could not reload mount {mount}",
               "invalid_name": "Invalid name, can only contain alphanumeric characters and underscores"
+            },
+            "warnings": {
+              "not_recomeded_cifs_version": "The selected CIFS version is not recommended to use, you should only use this if you have problems with auto and your server does not support version 2.1 or newer"
             }
           }
         },
