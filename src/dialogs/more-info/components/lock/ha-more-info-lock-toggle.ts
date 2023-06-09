@@ -18,11 +18,6 @@ import { LockEntity } from "../../../../data/lock";
 import { HomeAssistant } from "../../../../types";
 import { showEnterCodeDialogDialog } from "../../../enter-code/show-enter-code-dialog";
 
-const wait = (duration: number) =>
-  new Promise<void>((res) => {
-    setTimeout(() => res(), duration);
-  });
-
 @customElement("ha-more-info-lock-toggle")
 export class HaMoreInfoLockToggle extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -49,12 +44,22 @@ export class HaMoreInfoLockToggle extends LitElement {
     }
   }
 
-  private _turnOn() {
-    this._callService(true);
+  private async _turnOn() {
+    this._isOn = true;
+    try {
+      await this._callService(true);
+    } catch (err) {
+      this._isOn = false;
+    }
   }
 
-  private _turnOff() {
-    this._callService(false);
+  private async _turnOff() {
+    this._isOn = false;
+    try {
+      await this._callService(false);
+    } catch (err) {
+      this._isOn = true;
+    }
   }
 
   private async _callService(turnOn: boolean): Promise<void> {
@@ -64,8 +69,6 @@ export class HaMoreInfoLockToggle extends LitElement {
     forwardHaptic("light");
 
     let code: string | undefined;
-
-    this._isOn = turnOn;
 
     if (this.stateObj.attributes.code_format) {
       const response = await showEnterCodeDialogDialog(this, {
@@ -78,41 +81,23 @@ export class HaMoreInfoLockToggle extends LitElement {
           `ui.dialogs.more_info_control.lock.${turnOn ? "lock" : "unlock"}`
         ),
       });
-      if (!response) {
-        return;
+      if (response == null) {
+        throw new Error("cancel");
       }
       code = response;
     }
-
-    const currentState = this.stateObj;
 
     await this.hass.callService("lock", turnOn ? "lock" : "unlock", {
       entity_id: this.stateObj.entity_id,
       code,
     });
-
-    // If after 2 seconds we have not received a state update
-    // reset the switch to it's original state.
-    await wait(2000);
-
-    if (this.stateObj === currentState) {
-      this._isOn =
-        this.stateObj.state === "locked" || this.stateObj.state === "locking";
-    }
   }
 
   protected render(): TemplateResult {
     const locking = this.stateObj.state === "locking";
     const unlocking = this.stateObj.state === "unlocking";
 
-    const onColor = stateColorCss(
-      this.stateObj,
-      locking ? "locking" : "locked"
-    );
-    const offColor = stateColorCss(
-      this.stateObj,
-      unlocking ? "unlocking" : "unlocked"
-    );
+    const color = stateColorCss(this.stateObj);
 
     const onIcon = domainIcon(
       "lock",
@@ -159,8 +144,8 @@ export class HaMoreInfoLockToggle extends LitElement {
         @change=${this._valueChanged}
         .ariaLabel=${this.hass.localize("ui.dialogs.more_info_control.toggle")}
         style=${styleMap({
-          "--control-switch-on-color": onColor,
-          "--control-switch-off-color": offColor,
+          "--control-switch-on-color": color,
+          "--control-switch-off-color": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
       >
