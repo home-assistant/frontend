@@ -77,6 +77,7 @@ export class HaIfAction extends LitElement implements ActionElement {
               .reOrderMode=${this.reOrderMode}
               .disabled=${this.disabled}
               @value-changed=${this._elseChanged}
+              .clipboard=${this.clipboard}
               .hass=${this.hass}
             ></ha-automation-action>
           `
