@@ -84,6 +84,15 @@ const createWebpackConfig = ({
       ],
       moduleIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
       chunkIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
+      splitChunks: {
+        // Disable splitting for web workers with ESM output
+        // Imports of external chunks are broken
+        chunks: latestBuild
+          ? (chunk) =>
+              !chunk.canBeInitial() &&
+              !/(sort_filter|markdown)_worker/.test(chunk.name)
+          : undefined,
+      },
     },
     plugins: [
       !isStatsBuild && new WebpackBar({ fancy: !isProdBuild }),
