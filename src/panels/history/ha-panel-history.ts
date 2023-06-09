@@ -204,6 +204,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                 <state-history-charts
                   .hass=${this.hass}
                   .historyData=${this._stateHistory}
+                  .startTime=${this._startDate}
                   .endTime=${this._endDate}
                 >
                 </state-history-charts>

@@ -30,6 +30,8 @@ class StateHistoryChartLine extends LitElement {
 
   @property({ type: Boolean }) public showNames = true;
 
+  @property({ attribute: false }) public startTime!: Date;
+
   @property({ attribute: false }) public endTime!: Date;
 
   @property({ type: Number }) public paddingYAxis = 0;
@@ -57,7 +59,12 @@ class StateHistoryChartLine extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues) {
-    if (!this.hasUpdated || changedProps.has("showNames")) {
+    if (
+      !this.hasUpdated ||
+      changedProps.has("showNames") ||
+      changedProps.has("startTime") ||
+      changedProps.has("endTime")
+    ) {
       this._chartOptions = {
         parsing: false,
         animation: false,
@@ -73,6 +80,7 @@ class StateHistoryChartLine extends LitElement {
                 locale: this.hass.locale,
               },
             },
+            suggestedMin: this.startTime,
             suggestedMax: this.endTime,
             ticks: {
               maxRotation: 0,
@@ -145,6 +153,8 @@ class StateHistoryChartLine extends LitElement {
     }
     if (
       changedProps.has("data") ||
+      changedProps.has("startTime") ||
+      changedProps.has("endTime") ||
       this._chartTime <
         new Date(this.endTime.getTime() - MIN_TIME_BETWEEN_UPDATES)
     ) {
