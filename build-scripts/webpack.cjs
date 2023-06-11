@@ -88,9 +88,7 @@ const createWebpackConfig = ({
         // Disable splitting for web workers with ESM output
         // Imports of external chunks are broken
         chunks: latestBuild
-          ? (chunk) =>
-              !chunk.canBeInitial() &&
-              !/(sort_filter|markdown)_worker/.test(chunk.name)
+          ? (chunk) => !chunk.canBeInitial() && !/^.+-worker$/.test(chunk.name)
           : undefined,
       },
     },

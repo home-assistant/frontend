@@ -1,5 +1,5 @@
 import { Remote, wrap } from "comlink";
-import type { Api } from "./sort_filter_worker";
+import type { Api } from "./sort-filter-worker";
 
 type FilterDataType = Api["filterData"];
 type FilterDataParamTypes = Parameters<FilterDataType>;
@@ -13,8 +13,8 @@ const getWorker = () => {
   if (!worker) {
     worker = wrap(
       new Worker(
-        /* webpackChunkName: "sort_filter_worker" */
-        new URL("./sort_filter_worker", import.meta.url)
+        /* webpackChunkName: "sort-filter-worker" */
+        new URL("./sort-filter-worker", import.meta.url)
       )
     );
   }
