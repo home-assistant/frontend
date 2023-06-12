@@ -21,6 +21,7 @@ import {
 } from "../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { EntityRegistryEntry } from "./entity_registry";
+import "../../resources/intl-polyfill";
 
 const describeDuration = (forTime: number | string | ForDict) => {
   let duration: string | null;
