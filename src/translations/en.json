@@ -4598,6 +4598,7 @@
               "aspect_ratio": "Aspect Ratio",
               "attribute": "Attribute",
               "camera_image": "Camera Entity",
+              "image_entity": "Image Entity",
               "camera_view": "Camera View",
               "double_tap_action": "Double Tap Action",
               "entities": "Entities",
