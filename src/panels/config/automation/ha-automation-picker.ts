@@ -282,6 +282,7 @@ class HaAutomationPicker extends LitElement {
         @clear-filter=${this._clearFilter}
         hasFab
         clickable
+        attemptInPlaceUpdates
       >
         <ha-icon-button
           slot="toolbar-icon"

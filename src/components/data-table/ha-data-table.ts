@@ -129,6 +129,8 @@ export class HaDataTable extends LitElement {
 
   @property({ type: String }) public filter = "";
 
+  @property({ type: Boolean }) public attemptInPlaceUpdates = false;
+
   @state() private _filterable = false;
 
   @state() private _filter = "";
@@ -482,11 +484,32 @@ export class HaDataTable extends LitElement {
       if (this.hasFab) {
         items.push({ empty: true });
       }
-      this._items = items;
+      this._inPlaceUpdateItems(items);
     } else {
-      this._items = data;
+      this._inPlaceUpdateItems(data);
     }
     this._filteredData = data;
+  }
+
+  private _inPlaceUpdateItems(items: DataTableRowData[]) {
+    // This function attemps to update the original DataTableRowData objects
+    // instead of overwriting them with new objects. Prevents popup menus
+    // from being destroyed when table data updates.
+
+    if (
+      !this.attemptInPlaceUpdates ||
+      !this._items ||
+      this._items.length !== items.length
+    ) {
+      this._items = items;
+      return;
+    }
+    for (let i = 0; i < items.length; i++) {
+      Object.assign(this._items[i], items[i]);
+    }
+
+    // Update the items pointer so that lit-virtualizer performs an update.
+    this._items = [...this._items];
   }
 
   private _memFilterData = memoizeOne(

@@ -222,6 +222,7 @@ class HaScriptPicker extends LitElement {
         hasFab
         clickable
         @row-click=${this._handleRowClicked}
+        attemptInPlaceUpdates
       >
         <ha-icon-button
           slot="toolbar-icon"

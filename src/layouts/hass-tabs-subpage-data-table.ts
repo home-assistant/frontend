@@ -37,6 +37,8 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
+  @property({ type: Boolean }) public attemptInPlaceUpdates = false;
+
   /**
    * Object with the columns.
    * @type {Object}
@@ -240,6 +242,7 @@ export class HaTabsSubpageDataTable extends LitElement {
           .dir=${computeRTLDirection(this.hass)}
           .clickable=${this.clickable}
           .appendRow=${this.appendRow}
+          .attemptInPlaceUpdates=${this.attemptInPlaceUpdates}
         >
           ${!this.narrow
             ? html`
