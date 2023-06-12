@@ -109,7 +109,8 @@ class HaHLSPlayer extends LitElement {
   private async _startHls(): Promise<void> {
     const masterPlaylistPromise = fetch(this.url);
 
-    const Hls: typeof HlsType = (await import("hls.js/dist/hls.light")).default;
+    const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.mjs"))
+      .default;
 
     if (!this.isConnected) {
       return;
