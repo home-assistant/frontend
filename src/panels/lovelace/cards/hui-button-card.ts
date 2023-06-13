@@ -8,12 +8,12 @@ import {
   HassEntity,
 } from "home-assistant-js-websocket";
 import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
   css,
+  CSSResultGroup,
   html,
+  LitElement,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, eventOptions, queryAsync, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -21,6 +21,7 @@ import { styleMap } from "lit/directives/style-map";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplaySingleEntity } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -28,6 +29,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-card";
 import { HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import {
@@ -38,20 +40,18 @@ import {
   statesContext,
   themesContext,
 } from "../../../data/context";
+import { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
 import { LightEntity } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
+import { FrontendLocaleData } from "../../../data/translation";
+import { Themes } from "../../../data/ws-themes";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
-import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ButtonCardConfig } from "./types";
-import { LocalizeFunc } from "../../../common/translations/localize";
-import { FrontendLocaleData } from "../../../data/translation";
-import { Themes } from "../../../data/ws-themes";
-import { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
 
 @customElement("hui-button-card")
 export class HuiButtonCard extends LitElement implements LovelaceCard {
@@ -364,7 +364,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
-    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+    fireEvent(this, "hass-action", {
+      config: this._config!,
+      action: ev.detail.action,
+    });
   }
 }
 
