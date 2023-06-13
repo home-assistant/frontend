@@ -20,7 +20,7 @@ import {
   lightSupportsColorMode,
 } from "../../../../data/light";
 import { HomeAssistant } from "../../../../types";
-import "./light-color-rgb";
+import "./light-color-rgb-picker";
 import "./light-color-temp-picker";
 
 export type LightPickerMode = "color_temp" | "color";

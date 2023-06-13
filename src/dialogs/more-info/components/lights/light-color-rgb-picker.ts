@@ -445,6 +445,7 @@ class LightRgbColorPicker extends LitElement {
           position: absolute;
           top: 0;
           right: 0;
+          z-index: 1;
         }
 
         .native-color-picker ha-svg-icon {
@@ -497,10 +498,8 @@ class LightRgbColorPicker extends LitElement {
 
         .color-container {
           position: relative;
-          max-width: 300px;
+          max-width: 320px;
           min-width: 200px;
-          margin: 0 0 44px 0;
-          padding-top: 44px;
         }
 
         ha-hs-color-picker {

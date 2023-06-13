@@ -37,9 +37,6 @@ class LightColorTempPicker extends LitElement {
     }
 
     return html`
-      <p class="color-temp-value">
-        ${this._ctPickerValue ? `${this._ctPickerValue} K` : nothing}
-      </p>
       <ha-temp-color-picker
         @value-changed=${this._ctColorChanged}
         @cursor-moved=${this._ctColorCursorMoved}
@@ -83,6 +80,10 @@ class LightColorTempPicker extends LitElement {
 
     this._ctPickerValue = ct;
 
+    fireEvent(this, "live-value-changed", {
+      value: `${this._ctPickerValue} K`,
+    });
+
     this._throttleUpdateColorTemp();
   }
 
@@ -92,6 +93,8 @@ class LightColorTempPicker extends LitElement {
 
   private _ctColorChanged(ev: CustomEvent) {
     const ct = ev.detail.value;
+
+    fireEvent(this, "live-value-changed", { value: undefined });
 
     if (isNaN(ct) || this._ctPickerValue === ct) {
       return;
@@ -126,27 +129,8 @@ class LightColorTempPicker extends LitElement {
         }
 
         ha-temp-color-picker {
-          max-width: 300px;
+          max-width: 320px;
           min-width: 200px;
-          margin: 20px 0 44px 0;
-        }
-
-        .color-temp-value {
-          font-style: normal;
-          font-weight: 500;
-          font-size: 16px;
-          height: 24px;
-          line-height: 24px;
-          letter-spacing: 0.1px;
-          margin: 0;
-          direction: ltr;
-          text-align: center;
-        }
-
-        hr {
-          border-color: var(--divider-color);
-          border-bottom: none;
-          margin: 16px 0;
         }
       `,
     ];

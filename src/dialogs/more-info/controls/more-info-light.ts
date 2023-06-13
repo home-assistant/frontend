@@ -1,5 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import {
+  mdiBrightness6,
   mdiCreation,
   mdiFileWordBox,
   mdiLightbulb,
@@ -15,6 +16,7 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import {
   computeAttributeNameDisplay,
@@ -46,7 +48,16 @@ import "../components/ha-more-info-toggle";
 import "../components/lights/ha-favorite-color-button";
 import "../components/lights/ha-more-info-light-brightness";
 import "../components/lights/ha-more-info-light-favorite-colors";
-import { showLightColorPickerView } from "../components/lights/show-view-light-color-picker";
+import "../components/lights/light-color-rgb-picker";
+import "../components/lights/light-color-temp-picker";
+
+declare global {
+  interface HASSDomEvents {
+    "live-value-changed": { value: string | undefined };
+  }
+}
+
+type ControlView = "brightness" | "color_temp" | "color";
 
 @customElement("more-info-light")
 class MoreInfoLight extends LitElement {
@@ -62,10 +73,18 @@ class MoreInfoLight extends LitElement {
 
   @state() private _selectedBrightness?: number;
 
+  @state() private _liveValue?: string;
+
+  @state() private _controlView: ControlView = "brightness";
+
   private _brightnessChanged(ev) {
     const value = (ev.detail as any).value;
     if (isNaN(value)) return;
     this._selectedBrightness = value;
+  }
+
+  private _liveValueChanged(ev) {
+    this._liveValue = ev.detail.value as string | undefined;
   }
 
   protected updated(changedProps: PropertyValues<typeof this>): void {
@@ -75,6 +94,11 @@ class MoreInfoLight extends LitElement {
         : undefined;
       this._effect = this.stateObj?.attributes.effect;
     }
+  }
+
+  private setControlView(ev: any) {
+    ev.stopPropagation();
+    this._controlView = ev.currentTarget.view;
   }
 
   protected render() {
@@ -106,11 +130,13 @@ class MoreInfoLight extends LitElement {
       (this.entry.options?.light?.favorite_colors == null ||
         this.entry.options.light.favorite_colors.length > 0);
 
-    const stateOverride = this._selectedBrightness
-      ? `${Math.round(this._selectedBrightness)}${blankBeforePercent(
-          this.hass!.locale
-        )}%`
-      : undefined;
+    const stateOverride =
+      this._liveValue ??
+      (this._selectedBrightness
+        ? `${Math.round(this._selectedBrightness)}${blankBeforePercent(
+            this.hass!.locale
+          )}%`
+        : undefined);
 
     return html`
       <ha-more-info-state-header
@@ -119,25 +145,47 @@ class MoreInfoLight extends LitElement {
         .stateOverride=${stateOverride}
       ></ha-more-info-state-header>
       <div class="controls">
-        ${supportsBrightness
+        ${!supportsBrightness
           ? html`
-              <ha-more-info-light-brightness
-                .stateObj=${this.stateObj}
-                .hass=${this.hass}
-                @slider-moved=${this._brightnessChanged}
-              >
-              </ha-more-info-light-brightness>
-            `
-          : html`
               <ha-more-info-toggle
                 .stateObj=${this.stateObj}
                 .hass=${this.hass}
                 .iconPathOn=${mdiLightbulb}
                 .iconPathOff=${mdiLightbulbOff}
               ></ha-more-info-toggle>
-            `}
+            `
+          : nothing}
         ${supportsColorTemp || supportsColor || supportsBrightness
           ? html`
+              ${supportsBrightness && this._controlView === "brightness"
+                ? html`
+                    <ha-more-info-light-brightness
+                      .stateObj=${this.stateObj}
+                      .hass=${this.hass}
+                      @slider-moved=${this._brightnessChanged}
+                    >
+                    </ha-more-info-light-brightness>
+                  `
+                : nothing}
+              ${supportsColor && this._controlView === "color"
+                ? html`
+                    <light-color-rgb-picker
+                      .hass=${this.hass}
+                      .stateObj=${this.stateObj}
+                    >
+                    </light-color-rgb-picker>
+                  `
+                : nothing}
+              ${supportsColorTemp && this._controlView === "color_temp"
+                ? html`
+                    <light-color-temp-picker
+                      .hass=${this.hass}
+                      .stateObj=${this.stateObj}
+                      @live-value-changed=${this._liveValueChanged}
+                    >
+                    </light-color-temp-picker>
+                  `
+                : nothing}
               <div class="button-bar">
                 ${supportsBrightness
                   ? html`
@@ -153,12 +201,31 @@ class MoreInfoLight extends LitElement {
                       >
                         <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
                       </ha-icon-button>
+                      <div class="separator"></div>
+                      <ha-icon-button
+                        class=${classMap({
+                          selected: this._controlView === "brightness",
+                        })}
+                        .disabled=${this.stateObj!.state === UNAVAILABLE}
+                        .title=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.brightness"
+                        )}
+                        .ariaLabel=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.brightness"
+                        )}
+                        .view=${"brightness"}
+                        @click=${this.setControlView}
+                      >
+                        <ha-svg-icon .path=${mdiBrightness6}></ha-svg-icon>
+                      </ha-icon-button>
                     `
                   : nothing}
                 ${supportsColor
                   ? html`
                       <ha-icon-button
-                        class="color-mode"
+                        class=${classMap({
+                          selected: this._controlView === "color",
+                        })}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
                         .title=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.change_color"
@@ -166,8 +233,8 @@ class MoreInfoLight extends LitElement {
                         .ariaLabel=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.change_color"
                         )}
-                        .mode=${"color"}
-                        @click=${this._showLightColorPickerView}
+                        .view=${"color"}
+                        @click=${this.setControlView}
                       >
                         <span class="wheel color"></span>
                       </ha-icon-button>
@@ -176,6 +243,9 @@ class MoreInfoLight extends LitElement {
                 ${supportsColorTemp
                   ? html`
                       <ha-icon-button
+                        class=${classMap({
+                          selected: this._controlView === "color_temp",
+                        })}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
                         .title=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.change_color_temp"
@@ -183,13 +253,14 @@ class MoreInfoLight extends LitElement {
                         .ariaLabel=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.change_color_temp"
                         )}
-                        .mode=${"color_temp"}
-                        @click=${this._showLightColorPickerView}
+                        .view=${"color_temp"}
+                        @click=${this.setControlView}
                       >
                         <span class="wheel color-temp"></span>
                       </ha-icon-button>
                     `
                   : nothing}
+                <div class="separator"></div>
                 ${supportsWhite
                   ? html`
                       <ha-icon-button
@@ -291,19 +362,6 @@ class MoreInfoLight extends LitElement {
     });
   };
 
-  private _showLightColorPickerView = (ev) => {
-    showLightColorPickerView(
-      this,
-      this.hass.localize(
-        "ui.dialogs.more_info_control.light.color_picker.title"
-      ),
-      {
-        entityId: this.stateObj!.entity_id,
-        defaultMode: ev.currentTarget.mode,
-      }
-    );
-  };
-
   private _setWhite = () => {
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
@@ -341,11 +399,42 @@ class MoreInfoLight extends LitElement {
           box-sizing: border-box;
           width: auto;
         }
+        ha-icon-button {
+          position: relative;
+          transition: color 180ms ease-in-out;
+        }
+        ha-icon-button.selected {
+          color: var(--primary-background-color);
+        }
+        ha-icon-button *::before {
+          opacity: 0;
+          transition: opacity 180ms ease-in-out;
+          background-color: var(--primary-text-color);
+          border-radius: 20px;
+          height: 40px;
+          width: 40px;
+          content: "";
+          position: absolute;
+          top: -10px;
+          left: -10px;
+          bottom: -10px;
+          right: -10px;
+          margin: auto;
+          z-index: -1;
+          box-sizing: border-box;
+        }
+        ha-icon-button .wheel::before {
+          background-color: transparent;
+          border: 2px solid var(--primary-text-color);
+        }
         .wheel {
           width: 30px;
           height: 30px;
           flex: none;
           border-radius: 15px;
+        }
+        ha-icon-button.selected *::before {
+          opacity: 1;
         }
         ha-icon-button[disabled] .wheel {
           filter: grayscale(1) opacity(0.5);
@@ -365,6 +454,17 @@ class MoreInfoLight extends LitElement {
         .buttons {
           flex-wrap: wrap;
           max-width: 250px;
+        }
+        .separator {
+          background-color: rgba(var(--rgb-primary-text-color), 0.15);
+          width: 1px;
+          height: 30px;
+          margin: 4px;
+        }
+        .separator:last-child,
+        .separator:first-child,
+        .separator + .separator {
+          display: none;
         }
       `,
     ];
