@@ -98,13 +98,8 @@ export class HaVoiceCommandDialog extends LitElement {
     await this.updateComplete;
     this._scrollMessagesBottom();
 
-    if (params?.start_listening) {
-      if (this._pipelineId) {
-        await this._getPipeline();
-      }
-      if (this._pipeline?.stt_engine) {
-        this._toggleListening();
-      }
+    if (params?.start_listening && this._pipeline?.stt_engine) {
+      this._toggleListening();
     }
   }
 
