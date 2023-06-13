@@ -1669,6 +1669,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@formatjs/intl-listformat@npm:7.3.0":
+  version: 7.3.0
+  resolution: "@formatjs/intl-listformat@npm:7.3.0"
+  dependencies:
+    "@formatjs/ecma402-abstract": 1.16.0
+    "@formatjs/intl-localematcher": 0.3.0
+    tslib: ^2.4.0
+  checksum: 6638e6a3cad750ac5199cf293c549c4048f0de240762dd98c61cece645091f19262ef64c1fb2f7a44b5bb3e5c168a8f53e9aa604b4867290981c30baf8635c0d
+  languageName: node
+  linkType: hard
+
 "@formatjs/intl-locale@npm:3.3.1":
   version: 3.3.1
   resolution: "@formatjs/intl-locale@npm:3.3.1"
@@ -9620,6 +9631,7 @@ __metadata:
     "@formatjs/intl-datetimeformat": 6.9.0
     "@formatjs/intl-displaynames": 6.4.0
     "@formatjs/intl-getcanonicallocales": 2.2.1
+    "@formatjs/intl-listformat": 7.3.0
     "@formatjs/intl-locale": 3.3.1
     "@formatjs/intl-numberformat": 8.6.0
     "@formatjs/intl-pluralrules": 5.2.3
