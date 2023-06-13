@@ -7,6 +7,8 @@ import { rgb2hex } from "../common/color/convert-color";
 import { temperature2rgb } from "../common/color/convert-light-color";
 import { fireEvent } from "../common/dom/fire_event";
 
+const SAFE_ZONE_FACTOR = 0.9;
+
 declare global {
   interface HASSDomEvents {
     "cursor-moved": { value?: any };
@@ -50,9 +52,12 @@ function drawColorWheel(
   for (let y = -radius; y < radius; y += 1) {
     const x = radius * Math.sqrt(1 - (y / radius) ** 2);
 
-    const fraction = (y / radius + 1) / 2;
+    const fraction = (y / (radius * SAFE_ZONE_FACTOR) + 1) / 2;
 
-    const temperature = min + fraction * (max - min);
+    const temperature = Math.max(
+      Math.min(min + fraction * (max - min), max),
+      min
+    );
 
     const color = rgb2hex(temperature2rgb(temperature));
 
@@ -202,14 +207,23 @@ class HaTempColorPicker extends LitElement {
   }
 
   private _getCoordsFromValue = (temperature: number): [number, number] => {
+    if (this.value === this.min) {
+      return [0, -1];
+    }
+    if (this.value === this.max) {
+      return [0, 1];
+    }
     const fraction = (temperature - this.min) / (this.max - this.min);
-    const y = 2 * fraction - 1;
+    const y = (2 * fraction - 1) * SAFE_ZONE_FACTOR;
     return [0, y];
   };
 
   private _getValueFromCoord = (_x: number, y: number): number => {
-    const fraction = (y + 1) / 2;
-    const temperature = this.min + fraction * (this.max - this.min);
+    const fraction = (y / SAFE_ZONE_FACTOR + 1) / 2;
+    const temperature = Math.max(
+      Math.min(this.min + fraction * (this.max - this.min), this.max),
+      this.min
+    );
     return Math.round(temperature);
   };
 
