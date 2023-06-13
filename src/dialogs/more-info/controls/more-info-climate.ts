@@ -203,6 +203,7 @@ class MoreInfoClimate extends LitElement {
                         hass.localize,
                         stateObj,
                         hass.locale,
+                        this.hass.config,
                         hass.entities,
                         mode
                       )}
@@ -236,6 +237,7 @@ class MoreInfoClimate extends LitElement {
                           hass.localize,
                           stateObj,
                           hass.locale,
+                          hass.config,
                           hass.entities,
                           "preset_mode",
                           mode
@@ -270,6 +272,7 @@ class MoreInfoClimate extends LitElement {
                           hass.localize,
                           stateObj,
                           hass.locale,
+                          this.hass.config,
                           hass.entities,
                           "fan_mode",
                           mode
@@ -304,6 +307,7 @@ class MoreInfoClimate extends LitElement {
                           hass.localize,
                           stateObj,
                           hass.locale,
+                          this.hass.config,
                           hass.entities,
                           "swing_mode",
                           mode

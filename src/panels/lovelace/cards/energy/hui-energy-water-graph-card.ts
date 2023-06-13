@@ -12,7 +12,7 @@ import {
   isToday,
   startOfToday,
 } from "date-fns";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -112,6 +112,7 @@ export class HuiEnergyWaterGraphCard
               this._start,
               this._end,
               this.hass.locale,
+              this.hass.config,
               this._unit,
               this._compareStart,
               this._compareEnd
@@ -137,6 +138,7 @@ export class HuiEnergyWaterGraphCard
       start: Date,
       end: Date,
       locale: FrontendLocaleData,
+      config: HassConfig,
       unit?: string,
       compareStart?: Date,
       compareEnd?: Date
@@ -167,7 +169,8 @@ export class HuiEnergyWaterGraphCard
             suggestedMax: end.getTime(),
             adapters: {
               date: {
-                locale: locale,
+                locale,
+                config,
               },
             },
             ticks: {
@@ -221,10 +224,11 @@ export class HuiEnergyWaterGraphCard
                 }
                 const date = new Date(datasets[0].parsed.x);
                 return `${
-                  compare ? `${formatDateShort(date, locale)}: ` : ""
-                }${formatTime(date, locale)} – ${formatTime(
+                  compare ? `${formatDateShort(date, locale, config)}: ` : ""
+                }${formatTime(date, locale, config)} – ${formatTime(
                   addHours(date, 1),
-                  locale
+                  locale,
+                  config
                 )}`;
               },
               label: (context) =>

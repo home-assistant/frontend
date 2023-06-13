@@ -1,16 +1,20 @@
+import { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import { FrontendLocaleData } from "../../data/translation";
 import "../../resources/intl-polyfill";
-import { useAmPm } from "./use_am_pm";
 import { formatDateNumeric } from "./format_date";
 import { formatTime } from "./format_time";
+import { useAmPm } from "./use_am_pm";
 
 // August 9, 2021, 8:23 AM
-export const formatDateTime = (dateObj: Date, locale: FrontendLocaleData) =>
-  formatDateTimeMem(locale).format(dateObj);
+export const formatDateTime = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => formatDateTimeMem(locale, config.time_zone).format(dateObj);
 
 const formatDateTimeMem = memoizeOne(
-  (locale: FrontendLocaleData) =>
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(
       locale.language === "en" && !useAmPm(locale)
         ? "en-u-hc-h23"
@@ -22,6 +26,7 @@ const formatDateTimeMem = memoizeOne(
         hour: useAmPm(locale) ? "numeric" : "2-digit",
         minute: "2-digit",
         hour12: useAmPm(locale),
+        timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
       }
     )
 );
@@ -29,11 +34,12 @@ const formatDateTimeMem = memoizeOne(
 // Aug 9, 2021, 8:23 AM
 export const formatShortDateTimeWithYear = (
   dateObj: Date,
-  locale: FrontendLocaleData
-) => formatShortDateTimeWithYearMem(locale).format(dateObj);
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => formatShortDateTimeWithYearMem(locale, config.time_zone).format(dateObj);
 
 const formatShortDateTimeWithYearMem = memoizeOne(
-  (locale: FrontendLocaleData) =>
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(
       locale.language === "en" && !useAmPm(locale)
         ? "en-u-hc-h23"
@@ -45,6 +51,7 @@ const formatShortDateTimeWithYearMem = memoizeOne(
         hour: useAmPm(locale) ? "numeric" : "2-digit",
         minute: "2-digit",
         hour12: useAmPm(locale),
+        timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
       }
     )
 );
@@ -52,11 +59,12 @@ const formatShortDateTimeWithYearMem = memoizeOne(
 // Aug 9, 8:23 AM
 export const formatShortDateTime = (
   dateObj: Date,
-  locale: FrontendLocaleData
-) => formatShortDateTimeMem(locale).format(dateObj);
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => formatShortDateTimeMem(locale, config.time_zone).format(dateObj);
 
 const formatShortDateTimeMem = memoizeOne(
-  (locale: FrontendLocaleData) =>
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(
       locale.language === "en" && !useAmPm(locale)
         ? "en-u-hc-h23"
@@ -67,6 +75,7 @@ const formatShortDateTimeMem = memoizeOne(
         hour: useAmPm(locale) ? "numeric" : "2-digit",
         minute: "2-digit",
         hour12: useAmPm(locale),
+        timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
       }
     )
 );
@@ -74,11 +83,12 @@ const formatShortDateTimeMem = memoizeOne(
 // August 9, 2021, 8:23:15 AM
 export const formatDateTimeWithSeconds = (
   dateObj: Date,
-  locale: FrontendLocaleData
-) => formatDateTimeWithSecondsMem(locale).format(dateObj);
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => formatDateTimeWithSecondsMem(locale, config.time_zone).format(dateObj);
 
 const formatDateTimeWithSecondsMem = memoizeOne(
-  (locale: FrontendLocaleData) =>
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(
       locale.language === "en" && !useAmPm(locale)
         ? "en-u-hc-h23"
@@ -91,6 +101,7 @@ const formatDateTimeWithSecondsMem = memoizeOne(
         minute: "2-digit",
         second: "2-digit",
         hour12: useAmPm(locale),
+        timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
       }
     )
 );
@@ -98,5 +109,11 @@ const formatDateTimeWithSecondsMem = memoizeOne(
 // 9/8/2021, 8:23 AM
 export const formatDateTimeNumeric = (
   dateObj: Date,
-  locale: FrontendLocaleData
-) => `${formatDateNumeric(dateObj, locale)}, ${formatTime(dateObj, locale)}`;
+  locale: FrontendLocaleData,
+  config: HassConfig
+) =>
+  `${formatDateNumeric(dateObj, locale, config)}, ${formatTime(
+    dateObj,
+    locale,
+    config
+  )}`;

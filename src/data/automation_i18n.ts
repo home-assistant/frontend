@@ -1,27 +1,28 @@
+import { HassConfig } from "home-assistant-js-websocket";
+import { ensureArray } from "../common/array/ensure-array";
 import { formatDuration } from "../common/datetime/format_duration";
 import {
   formatTime,
   formatTimeWithSeconds,
 } from "../common/datetime/format_time";
-import { FrontendLocaleData } from "./translation";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
-import { ensureArray } from "../common/array/ensure-array";
+import {
+  computeAttributeNameDisplay,
+  computeAttributeValueDisplay,
+} from "../common/entity/compute_attribute_display";
+import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
-import { Condition, Trigger, ForDict } from "./automation";
+import { Condition, ForDict, Trigger } from "./automation";
 import {
   DeviceCondition,
   DeviceTrigger,
   localizeDeviceAutomationCondition,
   localizeDeviceAutomationTrigger,
 } from "./device_automation";
-import {
-  computeAttributeNameDisplay,
-  computeAttributeValueDisplay,
-} from "../common/entity/compute_attribute_display";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { EntityRegistryEntry } from "./entity_registry";
 import "../resources/intl-polyfill";
+import { FrontendLocaleData } from "./translation";
 
 const describeDuration = (forTime: number | string | ForDict) => {
   let duration: string | null;
@@ -35,7 +36,11 @@ const describeDuration = (forTime: number | string | ForDict) => {
   return duration;
 };
 
-const localizeTimeString = (time: string, locale: FrontendLocaleData) => {
+const localizeTimeString = (
+  time: string,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => {
   const chunks = time.split(":");
   if (chunks.length < 2 || chunks.length > 3) {
     return time;
@@ -43,9 +48,9 @@ const localizeTimeString = (time: string, locale: FrontendLocaleData) => {
   try {
     const dt = new Date("1970-01-01T" + time);
     if (chunks.length === 2 || Number(chunks[2]) === 0) {
-      return formatTime(dt, locale);
+      return formatTime(dt, locale, config);
     }
-    return formatTimeWithSeconds(dt, locale);
+    return formatTimeWithSeconds(dt, locale, config);
   } catch {
     return time;
   }
@@ -215,6 +220,7 @@ export const describeTrigger = (
                   hass.localize,
                   stateObj,
                   hass.locale,
+                  hass.config,
                   hass.entities,
                   trigger.attribute,
                   state
@@ -223,6 +229,7 @@ export const describeTrigger = (
                   hass.localize,
                   stateObj,
                   hass.locale,
+                  hass.config,
                   hass.entities,
                   state
                 )
@@ -238,6 +245,7 @@ export const describeTrigger = (
                 hass.localize,
                 stateObj,
                 hass.locale,
+                hass.config,
                 hass.entities,
                 trigger.attribute,
                 trigger.from
@@ -246,6 +254,7 @@ export const describeTrigger = (
                 hass.localize,
                 stateObj,
                 hass.locale,
+                hass.config,
                 hass.entities,
                 trigger.from.toString()
               ).toString()
@@ -269,6 +278,7 @@ export const describeTrigger = (
                   hass.localize,
                   stateObj,
                   hass.locale,
+                  hass.config,
                   hass.entities,
                   trigger.attribute,
                   state
@@ -277,6 +287,7 @@ export const describeTrigger = (
                   hass.localize,
                   stateObj,
                   hass.locale,
+                  hass.config,
                   hass.entities,
                   state
                 ).toString()
@@ -292,6 +303,7 @@ export const describeTrigger = (
                 hass.localize,
                 stateObj,
                 hass.locale,
+                hass.config,
                 hass.entities,
                 trigger.attribute,
                 trigger.to
@@ -300,6 +312,7 @@ export const describeTrigger = (
                 hass.localize,
                 stateObj,
                 hass.locale,
+                hass.config,
                 hass.entities,
                 trigger.to.toString()
               ).toString()
@@ -359,7 +372,7 @@ export const describeTrigger = (
         ? at
         : at.includes(".")
         ? `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`
-        : localizeTimeString(at, hass.locale)
+        : localizeTimeString(at, hass.locale, hass.config)
     );
 
     const last = result.splice(-1, 1)[0];
@@ -741,6 +754,7 @@ export const describeCondition = (
                 hass.localize,
                 stateObj,
                 hass.locale,
+                hass.config,
                 hass.entities,
                 condition.attribute,
                 state
@@ -749,6 +763,7 @@ export const describeCondition = (
                 hass.localize,
                 stateObj,
                 hass.locale,
+                hass.config,
                 hass.entities,
                 state
               )
@@ -761,6 +776,7 @@ export const describeCondition = (
               hass.localize,
               stateObj,
               hass.locale,
+              hass.config,
               hass.entities,
               condition.attribute,
               condition.state
@@ -769,6 +785,7 @@ export const describeCondition = (
               hass.localize,
               stateObj,
               hass.locale,
+              hass.config,
               hass.entities,
               condition.state.toString()
             ).toString()
@@ -833,7 +850,7 @@ export const describeCondition = (
                 ? computeStateName(hass.states[condition.before])
                 : condition.before
             }`
-          : localizeTimeString(condition.before, hass.locale);
+          : localizeTimeString(condition.before, hass.locale, hass.config);
 
       const after =
         typeof condition.after !== "string"
@@ -844,7 +861,7 @@ export const describeCondition = (
                 ? computeStateName(hass.states[condition.after])
                 : condition.after
             }`
-          : localizeTimeString(condition.after, hass.locale);
+          : localizeTimeString(condition.after, hass.locale, hass.config);
 
       let result = "Confirm the ";
       if (after || before) {

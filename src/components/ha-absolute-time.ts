@@ -64,7 +64,11 @@ class HaAbsoluteTime extends ReactiveElement {
     if (!this.datetime) {
       this.innerHTML = this.hass.localize("ui.components.absolute_time.never");
     } else {
-      this.innerHTML = absoluteTime(new Date(this.datetime), this.hass.locale);
+      this.innerHTML = absoluteTime(
+        new Date(this.datetime),
+        this.hass.locale,
+        this.hass.config
+      );
     }
   }
 }

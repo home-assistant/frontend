@@ -62,6 +62,7 @@ class HaAttributes extends LitElement {
                           this.hass.localize,
                           this.stateObj!,
                           this.hass.locale,
+                          this.hass.config,
                           this.hass.entities,
                           attribute
                         )}

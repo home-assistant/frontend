@@ -42,7 +42,7 @@ export class StateCardDisplay extends LitElement {
           this.stateObj.attributes.device_class ===
             SENSOR_DEVICE_CLASS_TIMESTAMP &&
           !isUnavailableState(this.stateObj.state)
-            ? html` <hui-timestamp-display
+            ? html`<hui-timestamp-display
                 .hass=${this.hass}
                 .ts=${new Date(this.stateObj.state)}
                 format="datetime"
@@ -52,6 +52,7 @@ export class StateCardDisplay extends LitElement {
                 this.hass!.localize,
                 this.stateObj,
                 this.hass.locale,
+                this.hass.config,
                 this.hass.entities
               )}
         </div>

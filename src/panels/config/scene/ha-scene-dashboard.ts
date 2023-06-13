@@ -118,7 +118,11 @@ class HaSceneDashboard extends LitElement {
             return html`
               ${last_activated && !isUnavailableState(last_activated)
                 ? dayDifference > 3
-                  ? formatShortDateTime(date, this.hass.locale)
+                  ? formatShortDateTime(
+                      date,
+                      this.hass.locale,
+                      this.hass.config
+                    )
                   : relativeTime(date, this.hass.locale)
                 : this.hass.localize("ui.components.relative_time.never")}
             `;

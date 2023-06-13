@@ -118,7 +118,11 @@ class HaScriptPicker extends LitElement {
                   ${this.hass.localize("ui.card.automation.last_triggered")}:
                   ${script.attributes.last_triggered
                     ? dayDifference > 3
-                      ? formatShortDateTime(date, this.hass.locale)
+                      ? formatShortDateTime(
+                          date,
+                          this.hass.locale,
+                          this.hass.config
+                        )
                       : relativeTime(date, this.hass.locale)
                     : this.hass.localize("ui.components.relative_time.never")}
                 </div>
@@ -139,7 +143,7 @@ class HaScriptPicker extends LitElement {
           return html`
             ${last_triggered
               ? dayDifference > 3
-                ? formatShortDateTime(date, this.hass.locale)
+                ? formatShortDateTime(date, this.hass.locale, this.hass.config)
                 : relativeTime(date, this.hass.locale)
               : this.hass.localize("ui.components.relative_time.never")}
           `;
