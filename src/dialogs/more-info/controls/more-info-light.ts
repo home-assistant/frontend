@@ -57,7 +57,7 @@ declare global {
   }
 }
 
-type ControlView = "brightness" | "color_temp" | "color";
+type MainControl = "brightness" | "color_temp" | "color";
 
 @customElement("more-info-light")
 class MoreInfoLight extends LitElement {
@@ -75,7 +75,7 @@ class MoreInfoLight extends LitElement {
 
   @state() private _liveValue?: string;
 
-  @state() private _controlView: ControlView = "brightness";
+  @state() private _mainControl: MainControl = "brightness";
 
   private _brightnessChanged(ev) {
     const value = (ev.detail as any).value;
@@ -96,9 +96,9 @@ class MoreInfoLight extends LitElement {
     }
   }
 
-  private setControlView(ev: any) {
+  private _setMainControl(ev: any) {
     ev.stopPropagation();
-    this._controlView = ev.currentTarget.view;
+    this._mainControl = ev.currentTarget.control;
   }
 
   protected render() {
@@ -157,7 +157,7 @@ class MoreInfoLight extends LitElement {
           : nothing}
         ${supportsColorTemp || supportsColor || supportsBrightness
           ? html`
-              ${supportsBrightness && this._controlView === "brightness"
+              ${supportsBrightness && this._mainControl === "brightness"
                 ? html`
                     <ha-more-info-light-brightness
                       .stateObj=${this.stateObj}
@@ -167,7 +167,7 @@ class MoreInfoLight extends LitElement {
                     </ha-more-info-light-brightness>
                   `
                 : nothing}
-              ${supportsColor && this._controlView === "color"
+              ${supportsColor && this._mainControl === "color"
                 ? html`
                     <light-color-rgb-picker
                       .hass=${this.hass}
@@ -176,7 +176,7 @@ class MoreInfoLight extends LitElement {
                     </light-color-rgb-picker>
                   `
                 : nothing}
-              ${supportsColorTemp && this._controlView === "color_temp"
+              ${supportsColorTemp && this._mainControl === "color_temp"
                 ? html`
                     <light-color-temp-picker
                       .hass=${this.hass}
@@ -204,7 +204,7 @@ class MoreInfoLight extends LitElement {
                       <div class="separator"></div>
                       <ha-icon-button
                         class=${classMap({
-                          selected: this._controlView === "brightness",
+                          selected: this._mainControl === "brightness",
                         })}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
                         .title=${this.hass.localize(
@@ -213,8 +213,8 @@ class MoreInfoLight extends LitElement {
                         .ariaLabel=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.brightness"
                         )}
-                        .view=${"brightness"}
-                        @click=${this.setControlView}
+                        .control=${"brightness"}
+                        @click=${this._setMainControl}
                       >
                         <ha-svg-icon .path=${mdiBrightness6}></ha-svg-icon>
                       </ha-icon-button>
@@ -224,7 +224,7 @@ class MoreInfoLight extends LitElement {
                   ? html`
                       <ha-icon-button
                         class=${classMap({
-                          selected: this._controlView === "color",
+                          selected: this._mainControl === "color",
                         })}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
                         .title=${this.hass.localize(
@@ -233,8 +233,8 @@ class MoreInfoLight extends LitElement {
                         .ariaLabel=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.change_color"
                         )}
-                        .view=${"color"}
-                        @click=${this.setControlView}
+                        .control=${"color"}
+                        @click=${this._setMainControl}
                       >
                         <span class="wheel color"></span>
                       </ha-icon-button>
@@ -244,7 +244,7 @@ class MoreInfoLight extends LitElement {
                   ? html`
                       <ha-icon-button
                         class=${classMap({
-                          selected: this._controlView === "color_temp",
+                          selected: this._mainControl === "color_temp",
                         })}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
                         .title=${this.hass.localize(
@@ -253,8 +253,8 @@ class MoreInfoLight extends LitElement {
                         .ariaLabel=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.change_color_temp"
                         )}
-                        .view=${"color_temp"}
-                        @click=${this.setControlView}
+                        .control=${"color_temp"}
+                        @click=${this._setMainControl}
                       >
                         <span class="wheel color-temp"></span>
                       </ha-icon-button>
