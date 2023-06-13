@@ -1,23 +1,21 @@
-import { html, css, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import "../../../../src/components/ha-card";
-import { HomeAssistant } from "../../../../src/types";
-import { translationMetadata } from "../../../../src/resources/translations-metadata";
+import "@material/mwc-list/mwc-list";
+import { css, html, LitElement } from "lit";
+import { customElement } from "lit/decorators";
 import { formatDateNumeric } from "../../../../src/common/datetime/format_date";
+import "../../../../src/components/ha-card";
 import {
+  DateFormat,
+  FirstWeekday,
   FrontendLocaleData,
   NumberFormat,
   TimeFormat,
-  DateFormat,
-  FirstWeekday,
   TimeZone,
 } from "../../../../src/data/translation";
-import "@material/mwc-list/mwc-list";
+import { demoConfig } from "../../../../src/fake_data/demo_config";
+import { translationMetadata } from "../../../../src/resources/translations-metadata";
 
 @customElement("demo-date-time-date")
 export class DemoDateTimeDate extends LitElement {
-  @property({ attribute: false }) hass!: HomeAssistant;
-
   protected render() {
     const defaultLocale: FrontendLocaleData = {
       language: "en",
@@ -51,7 +49,7 @@ export class DemoDateTimeDate extends LitElement {
                       language: key,
                       date_format: DateFormat.language,
                     },
-                    this.hass.config
+                    demoConfig
                   )}
                 </div>
                 <div class="center">
@@ -62,7 +60,7 @@ export class DemoDateTimeDate extends LitElement {
                       language: key,
                       date_format: DateFormat.DMY,
                     },
-                    this.hass.config
+                    demoConfig
                   )}
                 </div>
                 <div class="center">
@@ -73,7 +71,7 @@ export class DemoDateTimeDate extends LitElement {
                       language: key,
                       date_format: DateFormat.MDY,
                     },
-                    this.hass.config
+                    demoConfig
                   )}
                 </div>
                 <div class="center">
@@ -84,7 +82,7 @@ export class DemoDateTimeDate extends LitElement {
                       language: key,
                       date_format: DateFormat.YMD,
                     },
-                    this.hass.config
+                    demoConfig
                   )}
                 </div>
               </div>
