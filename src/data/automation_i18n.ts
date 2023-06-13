@@ -21,6 +21,7 @@ import {
   localizeDeviceAutomationTrigger,
 } from "./device_automation";
 import { EntityRegistryEntry } from "./entity_registry";
+import "../resources/intl-polyfill";
 import { FrontendLocaleData } from "./translation";
 
 const describeDuration = (forTime: number | string | ForDict) => {
@@ -81,6 +82,11 @@ export const describeTrigger = (
   if (trigger.alias && !ignoreAlias) {
     return trigger.alias;
   }
+
+  const disjunctionFormatter = new Intl.ListFormat("en", {
+    style: "long",
+    type: "disjunction",
+  });
 
   // Event Trigger
   if (trigger.platform === "event" && trigger.event_type) {
@@ -489,51 +495,43 @@ export const describeTrigger = (
 
   // Zone Trigger
   if (trigger.platform === "zone" && trigger.entity_id && trigger.zone) {
-    let entities = "";
-    let zones = "";
-    let zonesPlural = false;
+    const entities: string[] = [];
+    const zones: string[] = [];
 
     const states = hass.states;
 
     if (Array.isArray(trigger.entity_id)) {
-      for (const [index, entity] of trigger.entity_id.entries()) {
+      for (const [entity] of trigger.entity_id.entries()) {
         if (states[entity]) {
-          entities += `${index > 0 ? "," : ""} ${
-            trigger.entity_id.length > 1 &&
-            index === trigger.entity_id.length - 1
-              ? "or"
-              : ""
-          } ${computeStateName(states[entity]) || entity}`;
+          entities.push(`${computeStateName(states[entity]) || entity}`);
         }
       }
     } else {
-      entities = states[trigger.entity_id]
-        ? computeStateName(states[trigger.entity_id])
-        : trigger.entity_id;
+      entities.push(
+        states[trigger.entity_id]
+          ? computeStateName(states[trigger.entity_id])
+          : trigger.entity_id
+      );
     }
 
     if (Array.isArray(trigger.zone)) {
-      if (trigger.zone.length > 1) {
-        zonesPlural = true;
-      }
-
-      for (const [index, zone] of trigger.zone.entries()) {
+      for (const [zone] of trigger.zone.entries()) {
         if (states[zone]) {
-          zones += `${index > 0 ? "," : ""} ${
-            trigger.zone.length > 1 && index === trigger.zone.length - 1
-              ? "or"
-              : ""
-          } ${computeStateName(states[zone]) || zone}`;
+          zones.push(`${computeStateName(states[zone]) || zone}`);
         }
       }
     } else {
-      zones = states[trigger.zone]
-        ? computeStateName(states[trigger.zone])
-        : trigger.zone;
+      zones.push(
+        states[trigger.zone]
+          ? computeStateName(states[trigger.zone])
+          : trigger.zone
+      );
     }
 
-    return `When ${entities} ${trigger.event}s ${zones} ${
-      zonesPlural ? "zones" : "zone"
+    const entitiesString = disjunctionFormatter.format(entities);
+    const zonesString = disjunctionFormatter.format(zones);
+    return `When ${entitiesString} ${trigger.event}s ${zonesString} ${
+      zones.length > 1 ? "zones" : "zone"
     }`;
   }
 
@@ -635,6 +633,11 @@ export const describeCondition = (
   if (condition.alias && !ignoreAlias) {
     return condition.alias;
   }
+
+  const disjunctionFormatter = new Intl.ListFormat("en", {
+    style: "long",
+    type: "disjunction",
+  });
 
   if (!condition.condition) {
     const shorthands: Array<"and" | "or" | "not"> = ["and", "or", "not"];
@@ -938,56 +941,44 @@ export const describeCondition = (
 
   // Zone condition
   if (condition.condition === "zone" && condition.entity_id && condition.zone) {
-    let entities = "";
-    let entitiesPlural = false;
-    let zones = "";
-    let zonesPlural = false;
+    const entities: string[] = [];
+    const zones: string[] = [];
 
     const states = hass.states;
 
     if (Array.isArray(condition.entity_id)) {
-      if (condition.entity_id.length > 1) {
-        entitiesPlural = true;
-      }
-      for (const [index, entity] of condition.entity_id.entries()) {
+      for (const [entity] of condition.entity_id.entries()) {
         if (states[entity]) {
-          entities += `${index > 0 ? "," : ""} ${
-            condition.entity_id.length > 1 &&
-            index === condition.entity_id.length - 1
-              ? "or"
-              : ""
-          } ${computeStateName(states[entity]) || entity}`;
+          entities.push(`${computeStateName(states[entity]) || entity}`);
         }
       }
     } else {
-      entities = states[condition.entity_id]
-        ? computeStateName(states[condition.entity_id])
-        : condition.entity_id;
+      entities.push(
+        states[condition.entity_id]
+          ? computeStateName(states[condition.entity_id])
+          : condition.entity_id
+      );
     }
 
     if (Array.isArray(condition.zone)) {
-      if (condition.zone.length > 1) {
-        zonesPlural = true;
-      }
-
-      for (const [index, zone] of condition.zone.entries()) {
+      for (const [zone] of condition.zone.entries()) {
         if (states[zone]) {
-          zones += `${index > 0 ? "," : ""} ${
-            condition.zone.length > 1 && index === condition.zone.length - 1
-              ? "or"
-              : ""
-          } ${computeStateName(states[zone]) || zone}`;
+          zones.push(`${computeStateName(states[zone]) || zone}`);
         }
       }
     } else {
-      zones = states[condition.zone]
-        ? computeStateName(states[condition.zone])
-        : condition.zone;
+      zones.push(
+        states[condition.zone]
+          ? computeStateName(states[condition.zone])
+          : condition.zone
+      );
     }
 
-    return `Confirm ${entities} ${entitiesPlural ? "are" : "is"} in ${zones} ${
-      zonesPlural ? "zones" : "zone"
-    }`;
+    const entitiesString = disjunctionFormatter.format(entities);
+    const zonesString = disjunctionFormatter.format(zones);
+    return `Confirm ${entitiesString} ${
+      entities.length > 1 ? "are" : "is"
+    } in ${zonesString} ${zones.length > 1 ? "zones" : "zone"}`;
   }
 
   if (condition.condition === "device") {
