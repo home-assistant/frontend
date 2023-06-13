@@ -374,7 +374,6 @@ class HaHsColorPicker extends LitElement {
       :host {
         display: block;
         outline: none;
-        border-radius: 9999px;
       }
       .container {
         position: relative;
@@ -385,7 +384,7 @@ class HaHsColorPicker extends LitElement {
       canvas {
         width: 100%;
         height: 100%;
-        border-radius: 9999px;
+        border-radius: 50%;
         cursor: pointer;
       }
       svg {
