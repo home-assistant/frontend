@@ -94,6 +94,7 @@ export const computeDisplayTimer = (
       hass.localize,
       stateObj,
       hass.locale,
+      hass.config,
       hass.entities
     );
   }
@@ -105,6 +106,7 @@ export const computeDisplayTimer = (
       hass.localize,
       stateObj,
       hass.locale,
+      hass.config,
       hass.entities
     )})`;
   }

@@ -140,6 +140,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
                   this.hass.localize,
                   stateObj,
                   this.hass.locale,
+                  this.hass.config,
                   this.hass.entities,
                   "mode"
                 )}

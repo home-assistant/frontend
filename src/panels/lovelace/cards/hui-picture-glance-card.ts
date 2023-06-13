@@ -257,6 +257,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             this.hass!.localize,
             stateObj,
             this.hass!.locale,
+            this.hass!.config,
             this.hass!.entities
           )}`}
         >
@@ -280,6 +281,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
                       this.hass!.localize,
                       stateObj,
                       this.hass!.locale,
+                      this.hass!.config,
                       this.hass!.entities
                     )}
               </div>

@@ -192,7 +192,11 @@ class HaLogbookRenderer extends LitElement {
             new Date(previous.when * 1000).toDateString())
           ? html`
               <h4 class="date">
-                ${formatDate(new Date(item.when * 1000), this.hass.locale)}
+                ${formatDate(
+                  new Date(item.when * 1000),
+                  this.hass.locale,
+                  this.hass.config
+                )}
               </h4>
             `
           : nothing}
@@ -229,7 +233,8 @@ class HaLogbookRenderer extends LitElement {
                 <span
                   >${formatTimeWithSeconds(
                     new Date(item.when * 1000),
-                    this.hass.locale
+                    this.hass.locale,
+                    this.hass.config
                   )}</span
                 >
                 -

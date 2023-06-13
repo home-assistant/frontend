@@ -10,7 +10,9 @@ import {
   TimeFormat,
   DateFormat,
   FirstWeekday,
+  TimeZone,
 } from "../../../../src/data/translation";
+import "@material/mwc-list/mwc-list";
 
 @customElement("demo-date-time-date")
 export class DemoDateTimeDate extends LitElement {
@@ -22,6 +24,7 @@ export class DemoDateTimeDate extends LitElement {
       number_format: NumberFormat.language,
       time_format: TimeFormat.language,
       date_format: DateFormat.language,
+      time_zone: TimeZone.local,
       first_weekday: FirstWeekday.language,
     };
     const date = new Date();
@@ -41,32 +44,48 @@ export class DemoDateTimeDate extends LitElement {
               <div class="container">
                 <div>${value.nativeName}</div>
                 <div class="center">
-                  ${formatDateNumeric(date, {
-                    ...defaultLocale,
-                    language: key,
-                    date_format: DateFormat.language,
-                  })}
+                  ${formatDateNumeric(
+                    date,
+                    {
+                      ...defaultLocale,
+                      language: key,
+                      date_format: DateFormat.language,
+                    },
+                    this.hass.config
+                  )}
                 </div>
                 <div class="center">
-                  ${formatDateNumeric(date, {
-                    ...defaultLocale,
-                    language: key,
-                    date_format: DateFormat.DMY,
-                  })}
+                  ${formatDateNumeric(
+                    date,
+                    {
+                      ...defaultLocale,
+                      language: key,
+                      date_format: DateFormat.DMY,
+                    },
+                    this.hass.config
+                  )}
                 </div>
                 <div class="center">
-                  ${formatDateNumeric(date, {
-                    ...defaultLocale,
-                    language: key,
-                    date_format: DateFormat.MDY,
-                  })}
+                  ${formatDateNumeric(
+                    date,
+                    {
+                      ...defaultLocale,
+                      language: key,
+                      date_format: DateFormat.MDY,
+                    },
+                    this.hass.config
+                  )}
                 </div>
                 <div class="center">
-                  ${formatDateNumeric(date, {
-                    ...defaultLocale,
-                    language: key,
-                    date_format: DateFormat.YMD,
-                  })}
+                  ${formatDateNumeric(
+                    date,
+                    {
+                      ...defaultLocale,
+                      language: key,
+                      date_format: DateFormat.YMD,
+                    },
+                    this.hass.config
+                  )}
                 </div>
               </div>
             `

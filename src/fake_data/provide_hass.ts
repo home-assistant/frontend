@@ -11,6 +11,7 @@ import {
   NumberFormat,
   DateFormat,
   TimeFormat,
+  TimeZone,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
@@ -230,6 +231,7 @@ export const provideHass = (
       number_format: NumberFormat.language,
       time_format: TimeFormat.language,
       date_format: DateFormat.language,
+      time_zone: TimeZone.local,
       first_weekday: FirstWeekday.language,
     },
     resources: null as any,

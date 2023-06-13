@@ -127,7 +127,8 @@ export class HaTracePathDetails extends LitElement {
             Executed:
             ${formatDateTimeWithSeconds(
               new Date(timestamp),
-              this.hass.locale
+              this.hass.locale,
+              this.hass.config
             )}<br />
             ${result
               ? html`Result:

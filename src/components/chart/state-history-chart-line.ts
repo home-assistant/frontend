@@ -71,6 +71,7 @@ class StateHistoryChartLine extends LitElement {
             adapters: {
               date: {
                 locale: this.hass.locale,
+                config: this.hass.config,
               },
             },
             suggestedMax: this.endTime,

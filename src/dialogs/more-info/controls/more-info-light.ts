@@ -240,6 +240,7 @@ class MoreInfoLight extends LitElement {
                         this.hass.localize,
                         this.stateObj!,
                         this.hass.locale,
+                        this.hass.config,
                         this.hass.entities,
                         "effect",
                         this._effect
@@ -261,6 +262,7 @@ class MoreInfoLight extends LitElement {
                         this.hass.localize,
                         this.stateObj!,
                         this.hass.locale,
+                        this.hass.config,
                         this.hass.entities,
                         "effect",
                         effect

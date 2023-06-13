@@ -2,7 +2,11 @@ import { consume } from "@lit-labs/context";
 import "@material/mwc-ripple";
 import type { Ripple } from "@material/mwc-ripple";
 import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
-import { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import {
+  HassConfig,
+  HassEntities,
+  HassEntity,
+} from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
   LitElement,
@@ -27,6 +31,7 @@ import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import { HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import {
+  configContext,
   entitiesContext,
   localeContext,
   localizeContext,
@@ -102,6 +107,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   @state()
   @consume({ context: localeContext, subscribe: true })
   _locale!: FrontendLocaleData;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  _hassConfig!: HassConfig;
 
   @consume<any>({ context: entitiesContext, subscribe: true })
   @transform<HomeAssistant["entities"], EntityRegistryDisplayEntry>({
@@ -223,6 +232,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                 this._localize,
                 stateObj,
                 this._locale,
+                this._hassConfig,
                 this._entity
               )}
             </span>`
