@@ -80,7 +80,8 @@ class EventSubscribeCard extends LitElement {
                   )}
                   ${formatTime(
                     new Date(event.event.time_fired),
-                    this.hass!.locale
+                    this.hass!.locale,
+                    this.hass!.config
                   )}:
                   <ha-yaml-editor
                     .defaultValue=${event.event}

@@ -154,23 +154,28 @@ class DialogCalendarEventDetail extends LitElement {
     if (isSameDay(start, end)) {
       if (isDate(this._data.dtstart)) {
         // Single date string only
-        return formatDate(start, this.hass.locale);
+        return formatDate(start, this.hass.locale, this.hass.config);
       }
       // Single day with a start/end time range
-      return `${formatDate(start, this.hass.locale)} ${formatTime(
+      return `${formatDate(
         start,
-        this.hass.locale
-      )} - ${formatTime(end, this.hass.locale)}`;
+        this.hass.locale,
+        this.hass.config
+      )} ${formatTime(
+        start,
+        this.hass.locale,
+        this.hass.config
+      )} - ${formatTime(end, this.hass.locale, this.hass.config)}`;
     }
     // An event across multiple dates, optionally with a time range
     return `${
       isDate(this._data.dtstart)
-        ? formatDate(start, this.hass.locale)
-        : formatDateTime(start, this.hass.locale)
+        ? formatDate(start, this.hass.locale, this.hass.config)
+        : formatDateTime(start, this.hass.locale, this.hass.config)
     } - ${
       isDate(this._data.dtend)
-        ? formatDate(end, this.hass.locale)
-        : formatDateTime(end, this.hass.locale)
+        ? formatDate(end, this.hass.locale, this.hass.config)
+        : formatDateTime(end, this.hass.locale, this.hass.config)
     }`;
   }
 

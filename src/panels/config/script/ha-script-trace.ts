@@ -191,7 +191,8 @@ export class HaScriptTrace extends LitElement {
                       html`<option value=${trace.run_id}>
                         ${formatDateTimeWithSeconds(
                           new Date(trace.timestamp.start),
-                          this.hass.locale
+                          this.hass.locale,
+                          this.hass.config
                         )}
                       </option>`
                   )}

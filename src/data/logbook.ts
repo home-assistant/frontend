@@ -439,6 +439,7 @@ export const localizeStateMessage = (
           localize,
           stateObj,
           hass.locale,
+          hass.config,
           hass.entities,
           state
         )

@@ -72,6 +72,7 @@ class StateCardInputNumber extends LitElement {
                   this.hass.localize,
                   this.stateObj,
                   this.hass.locale,
+                  this.hass.config,
                   this.hass.entities,
                   this.stateObj.state
                 )}

@@ -1,4 +1,5 @@
 import {
+  HassConfig,
   HassEntities,
   HassEntity,
   HassEntityAttributeBase,
@@ -269,7 +270,8 @@ const equalState = (obj1: LineChartState, obj2: LineChartState) =>
 
 const processTimelineEntity = (
   localize: LocalizeFunc,
-  language: FrontendLocaleData,
+  locale: FrontendLocaleData,
+  config: HassConfig,
   entities: HomeAssistant["entities"],
   entityId: string,
   states: EntityHistoryState[],
@@ -290,7 +292,8 @@ const processTimelineEntity = (
     data.push({
       state_localize: computeStateDisplayFromEntityAttributes(
         localize,
-        language,
+        locale,
+        config,
         entities[entityId],
         entityId,
         {
@@ -441,6 +444,7 @@ export const computeHistory = (
         processTimelineEntity(
           localize,
           hass.locale,
+          hass.config,
           hass.entities,
           entityId,
           stateInfo,

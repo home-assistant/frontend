@@ -83,6 +83,7 @@ class MoreInfoHumidifier extends LitElement {
                         hass.localize,
                         stateObj,
                         hass.locale,
+                        this.hass.config,
                         hass.entities,
                         "mode",
                         mode

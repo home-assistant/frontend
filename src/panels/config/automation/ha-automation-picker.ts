@@ -128,7 +128,11 @@ class HaAutomationPicker extends LitElement {
                     ${this.hass.localize("ui.card.automation.last_triggered")}:
                     ${automation.attributes.last_triggered
                       ? dayDifference > 3
-                        ? formatShortDateTime(date, this.hass.locale)
+                        ? formatShortDateTime(
+                            date,
+                            this.hass.locale,
+                            this.hass.config
+                          )
                         : relativeTime(date, this.hass.locale)
                       : this.hass.localize("ui.components.relative_time.never")}
                   </div>
@@ -149,7 +153,11 @@ class HaAutomationPicker extends LitElement {
             return html`
               ${last_triggered
                 ? dayDifference > 3
-                  ? formatShortDateTime(date, this.hass.locale)
+                  ? formatShortDateTime(
+                      date,
+                      this.hass.locale,
+                      this.hass.config
+                    )
                   : relativeTime(date, this.hass.locale)
                 : this.hass.localize("ui.components.relative_time.never")}
             `;

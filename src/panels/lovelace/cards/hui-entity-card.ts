@@ -163,6 +163,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                     this.hass.localize,
                     stateObj,
                     this.hass.locale,
+                    this.hass.config,
                     this.hass.entities,
                     this._config.attribute!
                   )
@@ -180,6 +181,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                   this.hass.localize,
                   stateObj,
                   this.hass.locale,
+                  this.hass.config,
                   this.hass.entities
                 )}</span
           >${showUnit

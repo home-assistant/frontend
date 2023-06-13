@@ -38,14 +38,22 @@ export class SystemLogCard extends LitElement {
   }
 
   private _timestamp(item: LoggedError): string {
-    return formatSystemLogTime(item.timestamp, this.hass!.locale);
+    return formatSystemLogTime(
+      item.timestamp,
+      this.hass.locale,
+      this.hass.config
+    );
   }
 
   private _multipleMessages(item: LoggedError): string {
     return this.hass.localize(
       "ui.panel.config.logs.multiple_messages",
       "time",
-      formatSystemLogTime(item.first_occurred, this.hass!.locale),
+      formatSystemLogTime(
+        item.first_occurred,
+        this.hass.locale,
+        this.hass.config
+      ),
       "counter",
       item.count
     );

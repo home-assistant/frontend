@@ -15,6 +15,7 @@ import {
   TimeFormat,
   DateFormat,
   TranslationCategory,
+  TimeZone,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, HomeAssistant } from "../types";
@@ -40,6 +41,9 @@ declare global {
     };
     "hass-date-format-select": {
       date_format: DateFormat;
+    };
+    "hass-time-zone-select": {
+      time_zone: TimeZone;
     };
     "hass-first-weekday-select": {
       first_weekday: FirstWeekday;
@@ -89,6 +93,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this.addEventListener("hass-date-format-select", (e) => {
         this._selectDateFormat((e as CustomEvent).detail, true);
       });
+      this.addEventListener("hass-time-zone-select", (e) => {
+        this._selectTimeZone((e as CustomEvent).detail, true);
+      });
       this.addEventListener("hass-first-weekday-select", (e) => {
         this._selectFirstWeekday((e as CustomEvent).detail, true);
       });
@@ -136,6 +143,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         ) {
           // We just got date_format from backend, no need to save back
           this._selectDateFormat(locale.date_format, false);
+        }
+        if (
+          locale?.time_zone &&
+          this.hass!.locale.time_zone !== locale.time_zone
+        ) {
+          // We just got time_zone from backend, no need to save back
+          this._selectTimeZone(locale.time_zone, false);
         }
         if (
           locale?.first_weekday &&
@@ -197,6 +211,15 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           ...this.hass!.locale,
           date_format: date_format,
         },
+      });
+      if (saveToBackend) {
+        saveTranslationPreferences(this.hass!, this.hass!.locale);
+      }
+    }
+
+    private _selectTimeZone(time_zone: TimeZone, saveToBackend: boolean) {
+      this._updateHass({
+        locale: { ...this.hass!.locale, time_zone },
       });
       if (saveToBackend) {
         saveTranslationPreferences(this.hass!, this.hass!.locale);

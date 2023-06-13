@@ -1,4 +1,5 @@
 import { createContext } from "@lit-labs/context";
+import { HassConfig } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 import { EntityRegistryEntry } from "./entity_registry";
 
@@ -11,7 +12,7 @@ export const areasContext = createContext<HomeAssistant["areas"]>("areas");
 export const localizeContext =
   createContext<HomeAssistant["localize"]>("localize");
 export const localeContext = createContext<HomeAssistant["locale"]>("locale");
-export const configContext = createContext<HomeAssistant["config"]>("config");
+export const configContext = createContext<HassConfig>("config");
 export const themesContext = createContext<HomeAssistant["themes"]>("themes");
 export const selectedThemeContext =
   createContext<HomeAssistant["selectedTheme"]>("selectedTheme");

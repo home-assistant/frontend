@@ -44,6 +44,7 @@ class MoreInfoRemote extends LitElement {
                       this.hass.localize,
                       stateObj,
                       this.hass.locale,
+                      this.hass.config,
                       this.hass.entities,
                       "activity",
                       activity
