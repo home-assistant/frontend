@@ -208,7 +208,7 @@ class LightRgbColorPicker extends LitElement {
         ? rgb2hs(currentRgbColor.slice(0, 3) as [number, number, number])
         : undefined;
     } else {
-      this._hsPickerValue = [0, 0];
+      this._hsPickerValue = undefined;
       this._wvSliderValue = undefined;
       this._cwSliderValue = undefined;
       this._wwSliderValue = undefined;

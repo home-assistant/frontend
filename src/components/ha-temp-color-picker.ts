@@ -139,7 +139,7 @@ class HaTempColorPicker extends LitElement {
       this.setAttribute("aria-valuemax", this.max.toString());
     }
     if (changedProps.has("value")) {
-      if (this.value != null && this._localValue !== this.value) {
+      if (this._localValue !== this.value) {
         this._resetPosition();
       }
     }
@@ -197,7 +197,11 @@ class HaTempColorPicker extends LitElement {
   }
 
   private _resetPosition() {
-    if (this.value === undefined) return;
+    if (this.value === undefined) {
+      this._cursorPosition = undefined;
+      this._localValue = undefined;
+      return;
+    }
     const [, y] = this._getCoordsFromValue(this.value);
     const currentX = this._cursorPosition?.[0] ?? 0;
     const x =
