@@ -381,21 +381,22 @@ class HaTempColorPicker extends LitElement {
       :host {
         display: block;
         outline: none;
-        border-radius: 9999px;
-      }
-      :host(:focus-visible) {
-        box-shadow: 0 0 0 2px rgb(255, 160, 0);
       }
       .container {
         position: relative;
         width: 100%;
         height: 100%;
-        cursor: pointer;
         display: flex;
       }
       canvas {
         width: 100%;
         height: 100%;
+        border-radius: 50%;
+        transition: box-shadow 180ms ease-in-out;
+        cursor: pointer;
+      }
+      :host(:focus-visible) canvas {
+        box-shadow: 0 0 0 2px rgb(255, 160, 0);
       }
       svg {
         position: absolute;
