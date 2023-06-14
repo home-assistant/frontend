@@ -1687,7 +1687,7 @@
                 "energy_stat": "Energy returned to the grid",
                 "cost_para": "Do you get money back when you return energy to the grid?",
                 "no_cost": "I do not get money back",
-                "cost_stat": "Use an entity tracking the total recieved money",
+                "cost_stat": "Use an entity tracking the total received money",
                 "cost_stat_input": "Entity with the total compensation",
                 "cost_entity": "Use an entity with current rate",
                 "cost_entity_input": "Entity with the current rate",
