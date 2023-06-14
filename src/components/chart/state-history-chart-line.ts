@@ -376,6 +376,9 @@ class StateHistoryChartLine extends LitElement {
             lastNullDate = date;
           }
         });
+        if (lastNullDate !== null) {
+          pushData(lastNullDate, [null]);
+        }
       }
 
       // Add an entry for final values
