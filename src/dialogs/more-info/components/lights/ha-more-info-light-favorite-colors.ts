@@ -30,8 +30,8 @@ import {
 } from "../../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../../types";
 import { showConfirmationDialog } from "../../../generic/show-dialog-box";
+import type { LightPickerMode } from "./dialog-light-color-favorite";
 import "./ha-favorite-color-button";
-import type { LightPickerMode } from "./light-color-picker";
 import { showLightColorFavoriteDialog } from "./show-dialog-light-color-favorite";
 
 declare global {
