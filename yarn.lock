@@ -8068,9 +8068,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-lit-a11y@npm:2.4.1":
-  version: 2.4.1
-  resolution: "eslint-plugin-lit-a11y@npm:2.4.1"
+"eslint-plugin-lit-a11y@npm:3.0.0":
+  version: 3.0.0
+  resolution: "eslint-plugin-lit-a11y@npm:3.0.0"
   dependencies:
     aria-query: ^5.1.3
     axe-core: ^4.3.3
@@ -8085,7 +8085,7 @@ __metadata:
     requireindex: ~1.2.0
   peerDependencies:
     eslint: ">= 5"
-  checksum: 1e3caf3dbe16545bbdde096dea1c6ac47b1c366ac7014ccda392c6a62faecaf8c066b5a2f22e7f39c2618a4f14b91158bffbcb48c7f305ce92769f0e9e9bb257
+  checksum: c7836aa88714a2fc0388216d44b8a1251edadc6a540cdc054cb4951b56eaa5a017cb51cc37ed8f33e79e8e139cb0c9208ee488af100f76e31c381b66488fc783
   languageName: node
   linkType: hard
 
@@ -9745,7 +9745,7 @@ __metadata:
     eslint-plugin-disable: 2.0.3
     eslint-plugin-import: 2.27.5
     eslint-plugin-lit: 1.8.3
-    eslint-plugin-lit-a11y: 2.4.1
+    eslint-plugin-lit-a11y: 3.0.0
     eslint-plugin-unused-imports: 2.0.0
     eslint-plugin-wc: 1.5.0
     esprima: 4.0.1
