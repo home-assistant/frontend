@@ -7,7 +7,10 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { caseInsensitiveStringCompare } from "../../common/string/compare";
+import {
+  fuzzyFilterSort,
+  ScorableTextItem,
+} from "../../common/string/filter/sequence-matching";
 import { ValueChangedEvent, HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
@@ -15,7 +18,7 @@ import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./state-badge";
 
-interface HassEntityWithCachedName extends HassEntity {
+interface HassEntityWithCachedName extends HassEntity, ScorableTextItem {
   friendly_name: string;
 }
 
@@ -159,6 +162,7 @@ export class HaEntityPicker extends LitElement {
               ),
               icon: "mdi:magnify",
             },
+            strings: [],
           },
         ];
       }
@@ -168,18 +172,14 @@ export class HaEntityPicker extends LitElement {
           this.includeEntities!.includes(entityId)
         );
 
-        return entityIds
-          .map((key) => ({
+        return entityIds.map((key) => {
+          const friendly_name = computeStateName(hass!.states[key]) || key;
+          return {
             ...hass!.states[key],
-            friendly_name: computeStateName(hass!.states[key]) || key,
-          }))
-          .sort((entityA, entityB) =>
-            caseInsensitiveStringCompare(
-              entityA.friendly_name,
-              entityB.friendly_name,
-              this.hass.locale.language
-            )
-          );
+            friendly_name,
+            strings: [key, friendly_name],
+          };
+        });
       }
 
       if (excludeEntities) {
@@ -200,18 +200,14 @@ export class HaEntityPicker extends LitElement {
         );
       }
 
-      states = entityIds
-        .map((key) => ({
+      states = entityIds.map((key) => {
+        const friendly_name = computeStateName(hass!.states[key]) || key;
+        return {
           ...hass!.states[key],
-          friendly_name: computeStateName(hass!.states[key]) || key,
-        }))
-        .sort((entityA, entityB) =>
-          caseInsensitiveStringCompare(
-            entityA.friendly_name,
-            entityB.friendly_name,
-            this.hass.locale.language
-          )
-        );
+          friendly_name,
+          strings: [key, friendly_name],
+        };
+      });
 
       if (includeDeviceClasses) {
         states = states.filter(
@@ -260,6 +256,7 @@ export class HaEntityPicker extends LitElement {
               ),
               icon: "mdi:magnify",
             },
+            strings: [],
           },
         ];
       }
@@ -341,11 +338,8 @@ export class HaEntityPicker extends LitElement {
 
   private _filterChanged(ev: CustomEvent): void {
     const filterString = ev.detail.value.toLowerCase();
-    (this.comboBox as any).filteredItems = this._states.filter(
-      (entityState) =>
-        entityState.entity_id.toLowerCase().includes(filterString) ||
-        computeStateName(entityState).toLowerCase().includes(filterString)
-    );
+    (this.comboBox as any).filteredItems =
+      fuzzyFilterSort<HassEntityWithCachedName>(filterString, this._states);
   }
 
   private _setValue(value: string) {

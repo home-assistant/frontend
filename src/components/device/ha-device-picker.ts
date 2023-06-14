@@ -26,12 +26,18 @@ import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { ValueChangedEvent, HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
+import {
+  fuzzyFilterSort,
+  ScorableTextItem,
+} from "../../common/string/filter/sequence-matching";
 
 interface Device {
   name: string;
   area: string;
   id: string;
 }
+
+type ScorableDevice = ScorableTextItem & Device;
 
 export type HaDevicePickerDeviceFilterFunc = (
   device: DeviceRegistryEntry
@@ -284,7 +290,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       (this._init && changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
-      (this.comboBox as any).items = this._getDevices(
+      const devices = this._getDevices(
         this.devices!,
         this.areas!,
         this.entities!,
@@ -294,7 +300,9 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         this.deviceFilter,
         this.entityFilter,
         this.excludeDevices
-      );
+      ).map((device) => ({ ...device, strings: [device.name] }));
+      (this.comboBox as any).items = devices;
+      (this.comboBox as any).filteredItems = devices;
     }
   }
 
@@ -314,12 +322,21 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         item-label-path="name"
         @opened-changed=${this._openedChanged}
         @value-changed=${this._deviceChanged}
+        @filter-changed=${this._filterChanged}
       ></ha-combo-box>
     `;
   }
 
   private get _value() {
     return this.value || "";
+  }
+
+  private _filterChanged(ev: CustomEvent): void {
+    const filterString = ev.detail.value.toLowerCase();
+    (this.comboBox as any).filteredItems = fuzzyFilterSort<ScorableDevice>(
+      filterString,
+      this.comboBox?.items || []
+    );
   }
 
   private _deviceChanged(ev: ValueChangedEvent<string>) {

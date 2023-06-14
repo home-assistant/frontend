@@ -8,6 +8,10 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import {
+  fuzzyFilterSort,
+  ScorableTextItem,
+} from "../common/string/filter/sequence-matching";
+import {
   AreaRegistryEntry,
   createAreaRegistryEntry,
 } from "../data/area_registry";
@@ -27,6 +31,8 @@ import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-icon-button";
 import "./ha-svg-icon";
+
+type ScorableAreaRegistryEntry = ScorableTextItem & AreaRegistryEntry;
 
 const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (
   item
@@ -306,7 +312,10 @@ export class HaAreaPicker extends LitElement {
         this.entityFilter,
         this.noAdd,
         this.excludeAreas
-      );
+      ).map((area) => ({
+        ...area,
+        strings: [area.area_id, ...area.aliases, area.name],
+      }));
       (this.comboBox as any).items = areas;
       (this.comboBox as any).filteredItems = areas;
     }
@@ -345,8 +354,9 @@ export class HaAreaPicker extends LitElement {
       return;
     }
 
-    const filteredItems = this.comboBox.items?.filter((item) =>
-      item.name.toLowerCase().includes(filter!.toLowerCase())
+    const filteredItems = fuzzyFilterSort<ScorableAreaRegistryEntry>(
+      filter,
+      this.comboBox?.items || []
     );
     if (!this.noAdd && filteredItems?.length === 0) {
       this._suggestion = filter;
