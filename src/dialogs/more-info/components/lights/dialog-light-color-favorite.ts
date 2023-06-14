@@ -19,7 +19,7 @@ import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { LightColorFavoriteDialogParams } from "./show-dialog-light-color-favorite";
 
-type LightPickerMode = "color_temp" | "color";
+export type LightPickerMode = "color_temp" | "color";
 
 @customElement("dialog-light-color-favorite")
 class DialogLightColorFavorite extends LitElement {
