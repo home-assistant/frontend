@@ -34,6 +34,12 @@ import "./ha-favorite-color-button";
 import type { LightPickerMode } from "./light-color-picker";
 import { showLightColorFavoriteDialog } from "./show-dialog-light-color-favorite";
 
+declare global {
+  interface HASSDomEvents {
+    "favorite-color-edit-started";
+  }
+}
+
 @customElement("ha-more-info-light-favorite-colors")
 export class HaMoreInfoLightFavoriteColors extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -147,8 +153,8 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   private _edit = async (index) => {
     // Make sure the current favorite color is set
+    fireEvent(this, "favorite-color-edit-started");
     await this._apply(index);
-
     const defaultMode: LightPickerMode =
       "color_temp_kelvin" in this._favoriteColors[index]
         ? "color_temp"

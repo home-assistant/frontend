@@ -102,6 +102,11 @@ class MoreInfoLight extends LitElement {
     this._mainControl = ev.currentTarget.control;
   }
 
+  private _resetMainControl(ev: any) {
+    ev.stopPropagation();
+    this._mainControl = "brightness";
+  }
+
   protected render() {
     if (!this.hass || !this.stateObj) {
       return nothing;
@@ -288,6 +293,7 @@ class MoreInfoLight extends LitElement {
                       .stateObj=${this.stateObj}
                       .entry=${this.entry}
                       .editMode=${this.editMode}
+                      @favorite-color-edit-started=${this._resetMainControl}
                     >
                     </ha-more-info-light-favorite-colors>
                   `
