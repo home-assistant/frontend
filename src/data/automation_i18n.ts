@@ -93,7 +93,7 @@ export const describeTrigger = (
     const eventTypes: string[] = [];
 
     if (Array.isArray(trigger.event_type)) {
-      for (const [_, state] of trigger.event_type.entries()) {
+      for (const state of trigger.event_type.values()) {
         eventTypes.push(state);
       }
     } else {
@@ -169,7 +169,7 @@ export const describeTrigger = (
     }
 
     if (Array.isArray(trigger.entity_id)) {
-      for (const [_, entity] of trigger.entity_id.entries()) {
+      for (const entity of trigger.entity_id.values()) {
         if (states[entity]) {
           entities.push(computeStateName(states[entity]) || entity);
         }
@@ -202,7 +202,7 @@ export const describeTrigger = (
         }
       } else if (Array.isArray(trigger.from)) {
         const from: string[] = [];
-        for (const [_, state] of trigger.from.entries()) {
+        for (const state of trigger.from.values()) {
           from.push(
             trigger.attribute
               ? computeAttributeValueDisplay(
@@ -259,7 +259,7 @@ export const describeTrigger = (
         }
       } else if (Array.isArray(trigger.to)) {
         const to: string[] = [];
-        for (const [_, state] of trigger.to.entries()) {
+        for (const state of trigger.to.values()) {
           to.push(
             trigger.attribute
               ? computeAttributeValueDisplay(
@@ -490,7 +490,7 @@ export const describeTrigger = (
     const states = hass.states;
 
     if (Array.isArray(trigger.entity_id)) {
-      for (const [_, entity] of trigger.entity_id.entries()) {
+      for (const entity of trigger.entity_id.values()) {
         if (states[entity]) {
           entities.push(computeStateName(states[entity]) || entity);
         }
@@ -504,7 +504,7 @@ export const describeTrigger = (
     }
 
     if (Array.isArray(trigger.zone)) {
-      for (const [_, zone] of trigger.zone.entries()) {
+      for (const zone of trigger.zone.values()) {
         if (states[zone]) {
           zones.push(computeStateName(states[zone]) || zone);
         }
@@ -531,7 +531,7 @@ export const describeTrigger = (
     const states = hass.states;
 
     if (Array.isArray(trigger.source)) {
-      for (const [_, source] of trigger.source.entries()) {
+      for (const source of trigger.source.values()) {
         sources.push(source);
       }
     } else {
@@ -539,7 +539,7 @@ export const describeTrigger = (
     }
 
     if (Array.isArray(trigger.zone)) {
-      for (const [_, zone] of trigger.zone.entries()) {
+      for (const zone of trigger.zone.values()) {
         if (states[zone]) {
           zones.push(computeStateName(states[zone]) || zone);
         }
@@ -615,6 +615,10 @@ export const describeCondition = (
     return condition.alias;
   }
 
+  const conjunctionFormatter = new Intl.ListFormat("en", {
+    style: "long",
+    type: "conjunction",
+  });
   const disjunctionFormatter = new Intl.ListFormat("en", {
     style: "long",
     type: "disjunction",
@@ -690,16 +694,12 @@ export const describeCondition = (
 
     if (Array.isArray(condition.entity_id)) {
       const entities: string[] = [];
-      for (const [_, entity] of condition.entity_id.entries()) {
+      for (const entity of condition.entity_id.values()) {
         if (hass.states[entity]) {
           entities.push(computeStateName(hass.states[entity]) || entity);
         }
       }
       if (entities.length !== 0) {
-        const conjunctionFormatter = new Intl.ListFormat("en", {
-          style: "long",
-          type: "conjunction",
-        });
         const entitiesString =
           condition.match === "any"
             ? disjunctionFormatter.format(entities)
@@ -727,7 +727,7 @@ export const describeCondition = (
           : condition.entity_id
       ];
     if (Array.isArray(condition.state)) {
-      for (const [_, state] of condition.state.entries()) {
+      for (const state of condition.state.values()) {
         states.push(
           condition.attribute
             ? computeAttributeValueDisplay(
@@ -866,17 +866,7 @@ export const describeCondition = (
             `ui.panel.config.automation.editor.conditions.type.time.weekdays.${d}`
           )
         );
-        const last = localizedDays.pop();
-
-        result += " day is " + localizedDays.join(", ");
-
-        if (localizedDays.length) {
-          if (localizedDays.length > 1) {
-            result += ",";
-          }
-          result += " or ";
-        }
-        result += last;
+        result += " day is " + disjunctionFormatter.format(localizedDays);
       }
 
       return result;
@@ -928,7 +918,7 @@ export const describeCondition = (
     const states = hass.states;
 
     if (Array.isArray(condition.entity_id)) {
-      for (const [_, entity] of condition.entity_id.entries()) {
+      for (const entity of condition.entity_id.values()) {
         if (states[entity]) {
           entities.push(computeStateName(states[entity]) || entity);
         }
@@ -942,7 +932,7 @@ export const describeCondition = (
     }
 
     if (Array.isArray(condition.zone)) {
-      for (const [_, zone] of condition.zone.entries()) {
+      for (const zone of condition.zone.values()) {
         if (states[zone]) {
           zones.push(computeStateName(states[zone]) || zone);
         }
