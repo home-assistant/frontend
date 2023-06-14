@@ -9,6 +9,7 @@ import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button-toggle";
 import type { EntityRegistryEntry } from "../../../../data/entity_registry";
 import {
+  formatTempColor,
   LightColor,
   LightColorMode,
   LightEntity,
@@ -17,6 +18,8 @@ import {
 } from "../../../../data/light";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import "./light-color-rgb-picker";
+import "./light-color-temp-picker";
 import type { LightColorFavoriteDialogParams } from "./show-dialog-light-color-favorite";
 
 export type LightPickerMode = "color_temp" | "color";
@@ -34,6 +37,16 @@ class DialogLightColorFavorite extends LitElement {
   @state() private _mode?: LightPickerMode;
 
   @state() private _modes: LightPickerMode[] = [];
+
+  @state() private _currentValue?: string;
+
+  private _colorHovered(ev: CustomEvent<HASSDomEvents["color-hovered"]>) {
+    if (ev.detail && "color_temp_kelvin" in ev.detail) {
+      this._currentValue = formatTempColor(ev.detail.color_temp_kelvin);
+    } else {
+      this._currentValue = undefined;
+    }
+  }
 
   public async showDialog(
     dialogParams: LightColorFavoriteDialogParams
@@ -131,33 +144,37 @@ class DialogLightColorFavorite extends LitElement {
           ></ha-icon-button>
           <span slot="title">${this._dialogParams?.title}</span>
         </ha-dialog-header>
-        ${this._modes.length > 1
-          ? html`
-              <div class="modes">
-                ${this._modes.map(
-                  (value) =>
-                    html`
-                      <ha-icon-button-toggle
-                        border-only
-                        ?selected=${value === this._mode}
-                        .title=${this.hass.localize(
-                          `ui.dialogs.more_info_control.light.color_picker.mode.${value}`
-                        )}
-                        .ariaLabel=${this.hass.localize(
-                          `ui.dialogs.more_info_control.light.color_picker.mode.${value}`
-                        )}
-                        .mode=${value}
-                        @click=${this._modeChanged}
-                      >
-                        <span
-                          class="wheel ${classMap({ [value]: true })}"
-                        ></span>
-                      </ha-icon-button-toggle>
-                    `
-                )}
-              </div>
-            `
-          : nothing}
+        <div class="header">
+          <span class="value">${this._currentValue}</span>
+          ${this._modes.length > 1
+            ? html`
+                <div class="modes">
+                  ${this._modes.map(
+                    (value) =>
+                      html`
+                        <ha-icon-button-toggle
+                          border-only
+                          ?selected=${value === this._mode}
+                          .title=${this.hass.localize(
+                            `ui.dialogs.more_info_control.light.color_picker.mode.${value}`
+                          )}
+                          .ariaLabel=${this.hass.localize(
+                            `ui.dialogs.more_info_control.light.color_picker.mode.${value}`
+                          )}
+                          .mode=${value}
+                          @click=${this._modeChanged}
+                        >
+                          <span
+                            class="wheel ${classMap({ [value]: true })}"
+                          ></span>
+                        </ha-icon-button-toggle>
+                      `
+                  )}
+                </div>
+              `
+            : nothing}
+        </div>
+
         <div class="content">
           ${this._mode === "color_temp"
             ? html`
@@ -165,6 +182,7 @@ class DialogLightColorFavorite extends LitElement {
                   .hass=${this.hass}
                   .stateObj=${this.stateObj}
                   @color-changed=${this._colorChanged}
+                  @color-hovered=${this._colorHovered}
                 >
                 </light-color-temp-picker>
               `
@@ -175,6 +193,7 @@ class DialogLightColorFavorite extends LitElement {
                   .hass=${this.hass}
                   .stateObj=${this.stateObj}
                   @color-changed=${this._colorChanged}
+                  @color-hovered=${this._colorHovered}
                 >
                 </light-color-rgb-picker>
               `
@@ -241,6 +260,21 @@ class DialogLightColorFavorite extends LitElement {
             white 50%,
             rgb(255, 160, 0) 100%
           );
+        }
+        .value {
+          pointer-events: none;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          margin: auto;
+          font-style: normal;
+          font-weight: 500;
+          font-size: 16px;
+          height: 48px;
+          line-height: 48px;
+          letter-spacing: 0.1px;
+          text-align: center;
         }
       `,
     ];

@@ -34,6 +34,7 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
 import {
+  formatTempColor,
   LightColorMode,
   LightEntity,
   LightEntityFeature,
@@ -52,12 +53,6 @@ import "../components/lights/ha-more-info-light-favorite-colors";
 import "../components/lights/light-color-rgb-picker";
 import "../components/lights/light-color-temp-picker";
 
-declare global {
-  interface HASSDomEvents {
-    "live-value-changed": { value: string | undefined };
-  }
-}
-
 type MainControl = "brightness" | "color_temp" | "color";
 
 @customElement("more-info-light")
@@ -74,7 +69,7 @@ class MoreInfoLight extends LitElement {
 
   @state() private _selectedBrightness?: number;
 
-  @state() private _liveValue?: string;
+  @state() private _colorTempPreview?: number;
 
   @state() private _mainControl: MainControl = "brightness";
 
@@ -84,8 +79,12 @@ class MoreInfoLight extends LitElement {
     this._selectedBrightness = value;
   }
 
-  private _liveValueChanged(ev) {
-    this._liveValue = ev.detail.value as string | undefined;
+  private _tempColorHovered(ev: CustomEvent<HASSDomEvents["color-hovered"]>) {
+    if (ev.detail && "color_temp_kelvin" in ev.detail) {
+      this._colorTempPreview = ev.detail.color_temp_kelvin;
+    } else {
+      this._colorTempPreview = undefined;
+    }
   }
 
   protected updated(changedProps: PropertyValues<typeof this>): void {
@@ -105,6 +104,18 @@ class MoreInfoLight extends LitElement {
   private _resetMainControl(ev: any) {
     ev.stopPropagation();
     this._mainControl = "brightness";
+  }
+
+  private get _stateOverride() {
+    if (this._colorTempPreview) {
+      return formatTempColor(this._colorTempPreview);
+    }
+    if (this._selectedBrightness) {
+      return `${Math.round(this._selectedBrightness)}${blankBeforePercent(
+        this.hass!.locale
+      )}%`;
+    }
+    return undefined;
   }
 
   protected render() {
@@ -136,19 +147,11 @@ class MoreInfoLight extends LitElement {
       (this.entry.options?.light?.favorite_colors == null ||
         this.entry.options.light.favorite_colors.length > 0);
 
-    const stateOverride =
-      this._liveValue ??
-      (this._selectedBrightness
-        ? `${Math.round(this._selectedBrightness)}${blankBeforePercent(
-            this.hass!.locale
-          )}%`
-        : undefined);
-
     return html`
       <ha-more-info-state-header
         .hass=${this.hass}
         .stateObj=${this.stateObj}
-        .stateOverride=${stateOverride}
+        .stateOverride=${this._stateOverride}
       ></ha-more-info-state-header>
       <div class="controls">
         ${!supportsBrightness
@@ -187,7 +190,7 @@ class MoreInfoLight extends LitElement {
                     <light-color-temp-picker
                       .hass=${this.hass}
                       .stateObj=${this.stateObj}
-                      @live-value-changed=${this._liveValueChanged}
+                      @color-hovered=${this._tempColorHovered}
                     >
                     </light-color-temp-picker>
                   `

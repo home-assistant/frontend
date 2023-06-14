@@ -20,6 +20,7 @@ import { HomeAssistant } from "../../../../types";
 declare global {
   interface HASSDomEvents {
     "color-changed": LightColor;
+    "color-hovered": LightColor | undefined;
   }
 }
 
@@ -80,8 +81,8 @@ class LightColorTempPicker extends LitElement {
 
     this._ctPickerValue = ct;
 
-    fireEvent(this, "live-value-changed", {
-      value: `${this._ctPickerValue} K`,
+    fireEvent(this, "color-hovered", {
+      color_temp_kelvin: ct,
     });
 
     this._throttleUpdateColorTemp();
@@ -94,7 +95,7 @@ class LightColorTempPicker extends LitElement {
   private _ctColorChanged(ev: CustomEvent) {
     const ct = ev.detail.value;
 
-    fireEvent(this, "live-value-changed", { value: undefined });
+    fireEvent(this, "color-hovered", undefined);
 
     if (isNaN(ct) || this._ctPickerValue === ct) {
       return;
