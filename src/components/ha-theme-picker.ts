@@ -36,6 +36,11 @@ export class HaThemePicker extends LitElement {
             "ui.components.theme-picker.no_theme"
           )}</mwc-list-item
         >
+        <mwc-list-item value="default"
+          >${this.hass!.localize(
+            "ui.components.theme-picker.default"
+          )}</mwc-list-item
+        >
         ${Object.keys(this.hass!.themes.themes)
           .sort()
           .map(

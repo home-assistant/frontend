@@ -396,7 +396,8 @@
       },
       "theme-picker": {
         "theme": "Theme",
-        "no_theme": "No theme"
+        "no_theme": "No theme",
+        "default": "Default"
       },
       "language-picker": {
         "language": "Language",
