@@ -129,8 +129,9 @@ class LightColorTempPicker extends LitElement {
         }
 
         ha-temp-color-picker {
-          max-width: 320px;
-          min-width: 200px;
+          height: 45vh;
+          max-height: 320px;
+          min-height: 200px;
         }
       `,
     ];

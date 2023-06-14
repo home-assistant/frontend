@@ -498,12 +498,12 @@ class LightRgbColorPicker extends LitElement {
 
         .color-container {
           position: relative;
-          max-width: 320px;
-          min-width: 200px;
         }
 
         ha-hs-color-picker {
-          width: 100%;
+          height: 45vh;
+          max-height: 320px;
+          min-height: 200px;
         }
 
         ha-labeled-slider {

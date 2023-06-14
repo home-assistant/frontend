@@ -16,7 +16,6 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import {
   computeAttributeNameDisplay,
@@ -26,6 +25,8 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-attributes";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-icon-button-group";
+import "../../../components/ha-icon-button-toggle";
 import "../../../components/ha-outlined-button";
 import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-select";
@@ -186,7 +187,7 @@ class MoreInfoLight extends LitElement {
                     </light-color-temp-picker>
                   `
                 : nothing}
-              <div class="button-bar">
+              <ha-icon-button-group>
                 ${supportsBrightness
                   ? html`
                       <ha-icon-button
@@ -201,11 +202,13 @@ class MoreInfoLight extends LitElement {
                       >
                         <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
                       </ha-icon-button>
+                    `
+                  : nothing}
+                ${supportsColor || supportsColorTemp
+                  ? html`
                       <div class="separator"></div>
-                      <ha-icon-button
-                        class=${classMap({
-                          selected: this._mainControl === "brightness",
-                        })}
+                      <ha-icon-button-toggle
+                        ?selected=${this._mainControl === "brightness"}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
                         .title=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.brightness"
@@ -217,15 +220,14 @@ class MoreInfoLight extends LitElement {
                         @click=${this._setMainControl}
                       >
                         <ha-svg-icon .path=${mdiBrightness6}></ha-svg-icon>
-                      </ha-icon-button>
+                      </ha-icon-button-toggle>
                     `
                   : nothing}
                 ${supportsColor
                   ? html`
-                      <ha-icon-button
-                        class=${classMap({
-                          selected: this._mainControl === "color",
-                        })}
+                      <ha-icon-button-toggle
+                        border-only
+                        ?selected=${this._mainControl === "color"}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
                         .title=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.change_color"
@@ -237,15 +239,14 @@ class MoreInfoLight extends LitElement {
                         @click=${this._setMainControl}
                       >
                         <span class="wheel color"></span>
-                      </ha-icon-button>
+                      </ha-icon-button-toggle>
                     `
                   : nothing}
                 ${supportsColorTemp
                   ? html`
-                      <ha-icon-button
-                        class=${classMap({
-                          selected: this._mainControl === "color_temp",
-                        })}
+                      <ha-icon-button-toggle
+                        border-only
+                        ?selected=${this._mainControl === "color_temp"}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
                         .title=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.change_color_temp"
@@ -257,12 +258,12 @@ class MoreInfoLight extends LitElement {
                         @click=${this._setMainControl}
                       >
                         <span class="wheel color-temp"></span>
-                      </ha-icon-button>
+                      </ha-icon-button-toggle>
                     `
                   : nothing}
-                <div class="separator"></div>
                 ${supportsWhite
                   ? html`
+                      <div class="separator"></div>
                       <ha-icon-button
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
                         .title=${this.hass.localize(
@@ -277,7 +278,7 @@ class MoreInfoLight extends LitElement {
                       </ha-icon-button>
                     `
                   : nothing}
-              </div>
+              </ha-icon-button-group>
               ${this.entry &&
               lightSupportsFavoriteColors(this.stateObj) &&
               (this.editMode || hasFavoriteColors)
@@ -399,45 +400,11 @@ class MoreInfoLight extends LitElement {
           box-sizing: border-box;
           width: auto;
         }
-        ha-icon-button {
-          position: relative;
-          transition: color 180ms ease-in-out;
-        }
-        ha-icon-button.selected {
-          color: var(--primary-background-color);
-        }
-        ha-icon-button *::before {
-          opacity: 0;
-          transition: opacity 180ms ease-in-out;
-          background-color: var(--primary-text-color);
-          border-radius: 20px;
-          height: 40px;
-          width: 40px;
-          content: "";
-          position: absolute;
-          top: -10px;
-          left: -10px;
-          bottom: -10px;
-          right: -10px;
-          margin: auto;
-          z-index: -1;
-          box-sizing: border-box;
-        }
-        ha-icon-button .wheel::before {
-          background-color: transparent;
-          border: 2px solid var(--primary-text-color);
-        }
         .wheel {
           width: 30px;
           height: 30px;
           flex: none;
           border-radius: 15px;
-        }
-        ha-icon-button.selected *::before {
-          opacity: 1;
-        }
-        ha-icon-button[disabled] .wheel {
-          filter: grayscale(1) opacity(0.5);
         }
         .wheel.color {
           background-image: url("/static/images/color_wheel.png");
@@ -451,20 +418,12 @@ class MoreInfoLight extends LitElement {
             rgb(255, 160, 0) 100%
           );
         }
+        *[disabled] .wheel {
+          filter: grayscale(1) opacity(0.5);
+        }
         .buttons {
           flex-wrap: wrap;
           max-width: 250px;
-        }
-        .separator {
-          background-color: rgba(var(--rgb-primary-text-color), 0.15);
-          width: 1px;
-          height: 30px;
-          margin: 4px;
-        }
-        .separator:last-child,
-        .separator:first-child,
-        .separator + .separator {
-          display: none;
         }
       `,
     ];
