@@ -200,10 +200,7 @@ class MoreInfoLight extends LitElement {
                   ? html`
                       <ha-icon-button
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .title=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.toggle"
-                        )}
-                        .ariaLabel=${this.hass.localize(
+                        .label=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.toggle"
                         )}
                         @click=${this._toggle}
@@ -216,12 +213,9 @@ class MoreInfoLight extends LitElement {
                   ? html`
                       <div class="separator"></div>
                       <ha-icon-button-toggle
-                        ?selected=${this._mainControl === "brightness"}
+                        .selected=${this._mainControl === "brightness"}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .title=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.brightness"
-                        )}
-                        .ariaLabel=${this.hass.localize(
+                        .label=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.brightness"
                         )}
                         .control=${"brightness"}
@@ -235,13 +229,10 @@ class MoreInfoLight extends LitElement {
                   ? html`
                       <ha-icon-button-toggle
                         border-only
-                        ?selected=${this._mainControl === "color"}
+                        .selected=${this._mainControl === "color"}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .title=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.change_color"
-                        )}
-                        .ariaLabel=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.change_color"
+                        .label=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.color"
                         )}
                         .control=${"color"}
                         @click=${this._setMainControl}
@@ -254,13 +245,10 @@ class MoreInfoLight extends LitElement {
                   ? html`
                       <ha-icon-button-toggle
                         border-only
-                        ?selected=${this._mainControl === "color_temp"}
+                        .selected=${this._mainControl === "color_temp"}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .title=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.change_color_temp"
-                        )}
-                        .ariaLabel=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.change_color_temp"
+                        .label=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.color_temp"
                         )}
                         .control=${"color_temp"}
                         @click=${this._setMainControl}
@@ -274,10 +262,7 @@ class MoreInfoLight extends LitElement {
                       <div class="separator"></div>
                       <ha-icon-button
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .title=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.set_white"
-                        )}
-                        .ariaLabel=${this.hass.localize(
+                        .label=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.set_white"
                         )}
                         @click=${this._setWhite}

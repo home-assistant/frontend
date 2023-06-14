@@ -1,16 +1,15 @@
 import { css, CSSResultGroup } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { HaIconButton } from "./ha-icon-button";
 
 @customElement("ha-icon-button-toggle")
 export class HaIconButtonToggle extends HaIconButton {
+  @property({ type: Boolean, reflect: true }) selected = false;
+
   static get styles(): CSSResultGroup {
     return css`
       :host {
         position: relative;
-      }
-      :host([selected]) mwc-icon-button {
-        color: var(--primary-background-color);
       }
       mwc-icon-button {
         position: relative;
@@ -35,6 +34,9 @@ export class HaIconButtonToggle extends HaIconButton {
       :host([border-only]) mwc-icon-button::before {
         background-color: transparent;
         border: 2px solid var(--primary-text-color);
+      }
+      :host([selected]) mwc-icon-button {
+        color: var(--primary-background-color);
       }
       :host([selected]) mwc-icon-button::before {
         opacity: 1;

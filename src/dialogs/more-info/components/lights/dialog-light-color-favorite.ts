@@ -154,11 +154,8 @@ class DialogLightColorFavorite extends LitElement {
                       html`
                         <ha-icon-button-toggle
                           border-only
-                          ?selected=${value === this._mode}
-                          .title=${this.hass.localize(
-                            `ui.dialogs.more_info_control.light.color_picker.mode.${value}`
-                          )}
-                          .ariaLabel=${this.hass.localize(
+                          .selected=${value === this._mode}
+                          .label=${this.hass.localize(
                             `ui.dialogs.more_info_control.light.color_picker.mode.${value}`
                           )}
                           .mode=${value}
