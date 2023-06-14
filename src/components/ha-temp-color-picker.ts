@@ -395,6 +395,7 @@ class HaTempColorPicker extends LitElement {
       canvas {
         width: 100%;
         height: 100%;
+        object-fit: contain;
         border-radius: 50%;
         transition: box-shadow 180ms ease-in-out;
         cursor: pointer;

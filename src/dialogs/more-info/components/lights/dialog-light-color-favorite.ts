@@ -110,7 +110,7 @@ class DialogLightColorFavorite extends LitElement {
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-dialog {
             --dialog-surface-margin-top: 100px;
-            --mdc-dialog-min-height: calc(100% - 100px);
+            --mdc-dialog-min-height: auto;
             --mdc-dialog-max-height: calc(100% - 100px);
             --ha-dialog-border-radius: var(
               --ha-dialog-bottom-sheet-border-radius,

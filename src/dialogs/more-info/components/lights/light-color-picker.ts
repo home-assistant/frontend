@@ -1,6 +1,3 @@
-import "@material/mwc-button";
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
 import {
   css,
   CSSResultGroup,
@@ -10,7 +7,10 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-hs-color-picker";
+import "../../../../components/ha-icon-button-group";
+import "../../../../components/ha-icon-button-toggle";
 import "../../../../components/ha-temp-color-picker";
 import {
   LightColor,
@@ -55,19 +55,29 @@ class LightColorPicker extends LitElement {
     return html`
       ${this._modes.length > 1
         ? html`
-            <mwc-tab-bar
-              .activeIndex=${this._mode ? this._modes.indexOf(this._mode) : 0}
-              @MDCTabBar:activated=${this._handleTabChanged}
-            >
+            <div class="modes">
               ${this._modes.map(
                 (value) =>
-                  html`<mwc-tab
-                    .label=${this.hass.localize(
+                  html`<ha-icon-button-toggle
+                    border-only
+                    ?selected=${value === this._mode}
+                    .title=${this.hass.localize(
                       `ui.dialogs.more_info_control.light.color_picker.mode.${value}`
                     )}
-                  ></mwc-tab>`
+                    .ariaLabel=${this.hass.localize(
+                      `ui.dialogs.more_info_control.light.color_picker.mode.${value}`
+                    )}
+                    .mode=${value}
+                    @click=${this._modeChanged}
+                  >
+                    <span
+                      class="wheel ${classMap({
+                        [value]: true,
+                      })}"
+                    ></span>
+                  </ha-icon-button-toggle>`
               )}
-            </mwc-tab-bar>
+            </div>
           `
         : nothing}
       <div class="content">
@@ -127,8 +137,8 @@ class LightColorPicker extends LitElement {
     }
   }
 
-  private _handleTabChanged(ev: CustomEvent): void {
-    const newMode = this._modes[ev.detail.index];
+  private _modeChanged(ev): void {
+    const newMode = ev.currentTarget.mode;
     if (newMode === this._mode) {
       return;
     }
@@ -147,8 +157,32 @@ class LightColorPicker extends LitElement {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 24px;
+          padding: 12px 24px 12px 24px;
           flex: 1;
+        }
+        .modes {
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-end;
+          padding: 0 24px;
+        }
+        .wheel {
+          width: 30px;
+          height: 30px;
+          flex: none;
+          border-radius: 15px;
+        }
+        .wheel.color {
+          background-image: url("/static/images/color_wheel.png");
+          background-size: cover;
+        }
+        .wheel.color_temp {
+          background: linear-gradient(
+            0,
+            rgb(166, 209, 255) 0%,
+            white 50%,
+            rgb(255, 160, 0) 100%
+          );
         }
       `,
     ];
