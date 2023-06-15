@@ -102,7 +102,15 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
     frontend_stream_type: ["hls", "web_rtc"],
   },
   climate: {
-    hvac_action: ["off", "idle", "heating", "cooling", "drying", "fan"],
+    hvac_action: [
+      "off",
+      "idle",
+      "preheating",
+      "heating",
+      "cooling",
+      "drying",
+      "fan",
+    ],
   },
   cover: {
     device_class: [
