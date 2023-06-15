@@ -86,7 +86,7 @@ class HaPanelDevTemplate extends LitElement {
       <div
         class="content ${classMap({
           layout: !this.narrow,
-          horizontal: !this.narrow,
+          vertical: !this.narrow,
         })}"
       >
         <div class="edit-pane">
@@ -264,10 +264,6 @@ class HaPanelDevTemplate extends LitElement {
 
         .edit-pane a {
           color: var(--primary-color);
-        }
-
-        .horizontal .edit-pane {
-          max-width: 50%;
         }
 
         .render-pane {
