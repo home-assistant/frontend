@@ -1,8 +1,10 @@
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { mdiHelpCircle } from "@mdi/js";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-form/ha-form";
+import "../../../components/ha-icon-button";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   createSupervisorMount,
@@ -17,6 +19,8 @@ import { HomeAssistant } from "../../../types";
 import { MountViewDialogParams } from "./show-dialog-view-mount";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import type { SchemaUnion } from "../../../components/ha-form/types";
+import { documentationUrl } from "../../../util/documentation-url";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 const mountSchema = memoizeOne(
   (
@@ -149,15 +153,36 @@ class ViewMountDialog extends LitElement {
         open
         scrimClickAction
         escapeKeyAction
-        .heading=${this._existing
-          ? this.hass.localize(
-              "ui.panel.config.storage.network_mounts.update_title"
-            )
-          : this.hass.localize(
-              "ui.panel.config.storage.network_mounts.add_title"
-            )}
+        .heading=${true}
         @closed=${this.closeDialog}
       >
+        <ha-dialog-header slot="heading">
+          <span slot="title"
+            >${this._existing
+              ? this.hass.localize(
+                  "ui.panel.config.storage.network_mounts.update_title"
+                )
+              : this.hass.localize(
+                  "ui.panel.config.storage.network_mounts.add_title"
+                )}
+          </span>
+          <a
+            slot="actionItems"
+            class="header_button"
+            href=${documentationUrl(
+              this.hass,
+              "/common-tasks/os#network-storage"
+            )}
+            title=${this.hass.localize(
+              "ui.panel.config.storage.network_mounts.documentation"
+            )}
+            target="_blank"
+            rel="noreferrer"
+            dir=${computeRTLDirection(this.hass)}
+          >
+            <ha-icon-button .path=${mdiHelpCircle}></ha-icon-button>
+          </a>
+        </ha-dialog-header>
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : nothing}
@@ -274,6 +299,9 @@ class ViewMountDialog extends LitElement {
       haStyle,
       haStyleDialog,
       css`
+        ha-icon-button {
+          color: var(--primary-text-color);
+        }
         .delete-btn {
           --mdc-theme-primary: var(--error-color);
         }

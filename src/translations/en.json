@@ -4055,6 +4055,7 @@
             "add_title": "Add network storage",
             "update_title": "Update network storage",
             "no_mounts": "No connected network storage",
+            "documentation": "Documentation",
             "not_supported": {
               "title": "The operating system does not support network storage",
               "supervised": "Network storage is not supported on this host",
