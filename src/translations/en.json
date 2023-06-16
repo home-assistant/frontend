@@ -2692,6 +2692,21 @@
             "delete": "[%key:ui::common::delete%]",
             "duplicate": "[%key:ui::common::duplicate%]"
           },
+          "dialog_new": {
+            "header": "Create script",
+            "create_empty": "Create new script",
+            "create_empty_description": "Start with an empty script from scratch",
+            "create_blueprint": "[%key:ui::panel::config::automation::dialog_new::create_blueprint%]",
+            "create_blueprint_description": "[%key:ui::panel::config::automation::dialog_new::create_blueprint_description%]",
+            "blueprint_source": {
+              "author": "[%key:ui::panel::config::automation::dialog_new::blueprint_source::author%]",
+              "local": "[%key:ui::panel::config::automation::dialog_new::blueprint_source::local%]",
+              "community": "[%key:ui::panel::config::automation::dialog_new::blueprint_source::community%]",
+              "homeassistant": "[%key:ui::panel::config::automation::dialog_new::blueprint_source::homeassistant%]"
+            },
+            "discover_blueprint_tip": "[%key:ui::panel::config::automation::dialog_new::discover_blueprint_tip%]"
+          },
+
           "editor": {
             "alias": "Name",
             "icon": "Icon",

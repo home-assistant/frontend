@@ -12,6 +12,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { differenceInDays } from "date-fns/esm";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
@@ -44,6 +45,7 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
+import { showNewAutomationDialog } from "../automation/show-dialog-new-automation";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { findRelated } from "../../../data/search";
 import { fetchBlueprints } from "../../../data/blueprint";
@@ -238,19 +240,19 @@ class HaScriptPicker extends LitElement {
           @related-changed=${this._relatedFilterChanged}
         >
         </ha-button-related-filter-menu>
-        <a href="/config/script/edit/new" slot="fab">
-          <ha-fab
-            ?is-wide=${this.isWide}
-            ?narrow=${this.narrow}
-            .label=${this.hass.localize(
-              "ui.panel.config.script.picker.add_script"
-            )}
-            extended
-            ?rtl=${computeRTL(this.hass)}
-          >
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </ha-fab>
-        </a>
+        <ha-fab
+          slot="fab"
+          ?is-wide=${this.isWide}
+          ?narrow=${this.narrow}
+          .label=${this.hass.localize(
+            "ui.panel.config.script.picker.add_script"
+          )}
+          extended
+          ?rtl=${computeRTL(this.hass)}
+          @click=${this._createNew}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -305,6 +307,14 @@ class HaScriptPicker extends LitElement {
       navigate(`/config/script/edit/${entry.unique_id}`);
     } else {
       navigate(`/config/script/show/${ev.detail.id}`);
+    }
+  }
+
+  private _createNew() {
+    if (isComponentLoaded(this.hass, "blueprint")) {
+      showNewAutomationDialog(this, true);
+    } else {
+      navigate("/config/script/edit/new");
     }
   }
 
