@@ -183,7 +183,7 @@
     "@types/webspeechapi": "0.0.29",
     "@typescript-eslint/eslint-plugin": "5.59.11",
     "@typescript-eslint/parser": "5.59.11",
-    "@web/dev-server": "0.1.38",
+    "@web/dev-server": "0.2.3",
     "@web/dev-server-rollup": "0.4.1",
     "babel-loader": "9.1.2",
     "babel-plugin-template-html-minifier": "4.1.0",
