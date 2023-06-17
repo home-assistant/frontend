@@ -158,16 +158,6 @@ export class HuiWeatherForecastCardEditor
                 selector: {
                   select: {
                     options: [
-                      ...(hasForecastLegacy
-                        ? ([
-                            {
-                              value: "legacy",
-                              label: localize(
-                                "ui.panel.lovelace.editor.card.weather-forecast.no_type"
-                              ),
-                            },
-                          ] as const)
-                        : []),
                       ...(hasForecastDaily
                         ? ([
                             {
