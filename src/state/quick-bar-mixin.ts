@@ -1,5 +1,5 @@
 import type { PropertyValues } from "lit";
-import tinykeys from "tinykeys";
+import { tinykeys } from "tinykeys";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { mainWindow } from "../common/dom/get_main_window";
 import {
