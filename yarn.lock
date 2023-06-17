@@ -9849,7 +9849,7 @@ __metadata:
     systemjs: 6.14.1
     tar: 6.1.15
     terser-webpack-plugin: 5.3.9
-    tinykeys: 2.0.0
+    tinykeys: 2.1.0
     ts-lit-plugin: 1.2.1
     tsparticles-engine: 2.9.3
     tsparticles-preset-links: 2.9.3
@@ -15233,10 +15233,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinykeys@npm:2.0.0":
-  version: 2.0.0
-  resolution: "tinykeys@npm:2.0.0"
-  checksum: 2f81ce9660b27e3ea664c5afc3af89860254989bb194834b530f5ccad389fef2ddbdac8e6b4de8628c0f8e5b50957032d11a27232fc6666472212513c279a9c1
+"tinykeys@npm:2.1.0":
+  version: 2.1.0
+  resolution: "tinykeys@npm:2.1.0"
+  checksum: 49e8f7cf09c29372758f434d072429ed5a93cd3148d218af9938ccbbac4e15a2697c93a34dcfe7138a11e569a2145b35709947e5d2b74e48a8e17c575b8beb7f
   languageName: node
   linkType: hard
 
