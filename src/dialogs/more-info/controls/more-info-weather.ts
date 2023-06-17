@@ -22,7 +22,6 @@ import {
   getForecast,
   getWeatherUnit,
   getWind,
-  isForecastHourly,
   WeatherEntity,
   weatherIcons,
 } from "../../../data/weather";
@@ -56,14 +55,9 @@ class MoreInfoWeather extends LitElement {
       return nothing;
     }
 
-    const forecast = getForecast(
-      this.stateObj.attributes.forecast,
-      this.stateObj.attributes.forecast_daily,
-      this.stateObj.attributes.forecast_hourly,
-      this.stateObj.attributes.forecast_twice_daily
-    );
-
-    const hourly = isForecastHourly(forecast);
+    const forecastData = getForecast(this.stateObj.attributes);
+    const forecast = forecastData?.[0];
+    const hourly = forecastData?.[1] === "hourly";
 
     return html`
       ${this._showValue(this.stateObj.attributes.temperature)
@@ -184,7 +178,7 @@ class MoreInfoWeather extends LitElement {
                               this.hass.locale,
                               this.hass.config
                             )}
-                            ${item.is_daytime === undefined || item.is_daytime
+                            ${item.is_daytime !== false
                               ? this.hass!.localize("ui.card.weather.day")
                               : this.hass!.localize("ui.card.weather.night")}
                           </div>

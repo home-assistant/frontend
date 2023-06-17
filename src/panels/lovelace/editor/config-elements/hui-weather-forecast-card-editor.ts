@@ -45,7 +45,7 @@ export class HuiWeatherForecastCardEditor
 
     if (
       /* cannot show forecast in case it is unavailable on the entity */
-      (config.show_forecast === true && this._has_forecast === false) ||
+      (config.show_forecast === true && this._hasForecast === false) ||
       /* cannot hide both weather and forecast, need one of them */
       (config.show_current === false && config.show_forecast === false)
     ) {
@@ -55,30 +55,30 @@ export class HuiWeatherForecastCardEditor
       });
     }
     if (!config.forecast_type) {
-      let _forecast_type = "legacy";
-      if (this._forecast_twice_daily === true) {
-        _forecast_type = "twice_daily";
+      let forecastType = "legacy";
+      if (this._forecastTwiceDaily === true) {
+        forecastType = "twice_daily";
       }
-      if (this._forecast_hourly === true) {
-        _forecast_type = "hourly";
+      if (this.__forecastHourly === true) {
+        forecastType = "hourly";
       }
-      if (this._forecast_daily === true) {
-        _forecast_type = "daily";
+      if (this._forecastDaily === true) {
+        forecastType = "daily";
       }
       fireEvent(this, "config-changed", {
-        config: { ...config, forecast_type: _forecast_type },
+        config: { ...config, forecast_type: forecastType },
       });
     }
   }
 
-  get _stateObj(): WeatherEntity | undefined {
+  private get _stateObj(): WeatherEntity | undefined {
     if (this.hass && this._config) {
       return this.hass.states[this._config.entity] as WeatherEntity;
     }
     return undefined;
   }
 
-  get _has_forecast(): boolean | undefined {
+  private get _hasForecast(): boolean | undefined {
     const stateObj = this._stateObj as WeatherEntity;
     if (stateObj && stateObj.state !== UNAVAILABLE) {
       return !!(
@@ -91,7 +91,7 @@ export class HuiWeatherForecastCardEditor
     return undefined;
   }
 
-  get _forecast_legacy(): boolean | undefined {
+  private get _forecastLegacy(): boolean | undefined {
     const stateObj = this._stateObj as WeatherEntity;
     if (stateObj && stateObj.state !== UNAVAILABLE) {
       return !!stateObj.attributes.forecast?.length;
@@ -99,7 +99,7 @@ export class HuiWeatherForecastCardEditor
     return undefined;
   }
 
-  get _forecast_daily(): boolean | undefined {
+  private get _forecastDaily(): boolean | undefined {
     const stateObj = this._stateObj as WeatherEntity;
     if (stateObj && stateObj.state !== UNAVAILABLE) {
       return !!stateObj.attributes.forecast_daily?.length;
@@ -107,7 +107,7 @@ export class HuiWeatherForecastCardEditor
     return undefined;
   }
 
-  get _forecast_hourly(): boolean | undefined {
+  private get __forecastHourly(): boolean | undefined {
     const stateObj = this._stateObj as WeatherEntity;
     if (stateObj && stateObj.state !== UNAVAILABLE) {
       return !!stateObj.attributes.forecast_hourly?.length;
@@ -115,7 +115,7 @@ export class HuiWeatherForecastCardEditor
     return undefined;
   }
 
-  get _forecast_twice_daily(): boolean | undefined {
+  private get _forecastTwiceDaily(): boolean | undefined {
     const stateObj = this._stateObj as WeatherEntity;
     if (stateObj && stateObj.state !== UNAVAILABLE) {
       return !!stateObj.attributes.forecast_twice_daily?.length;
@@ -151,7 +151,7 @@ export class HuiWeatherForecastCardEditor
             { name: "theme", selector: { theme: {} } },
           ],
         },
-        ...(hasForecast
+        ...(hasForecast && hasForecastLegacy === false
           ? ([
               {
                 name: "forecast_type",
@@ -241,16 +241,16 @@ export class HuiWeatherForecastCardEditor
 
     const schema = this._schema(
       this.hass.localize,
-      this._has_forecast,
-      this._forecast_legacy,
-      this._forecast_daily,
-      this._forecast_hourly,
-      this._forecast_twice_daily
+      this._hasForecast,
+      this._forecastLegacy,
+      this._forecastDaily,
+      this.__forecastHourly,
+      this._forecastTwiceDaily
     );
 
     const data: WeatherForecastCardConfig = {
       show_current: true,
-      show_forecast: this._has_forecast,
+      show_forecast: this._hasForecast,
       ...this._config,
     };
 

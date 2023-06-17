@@ -25,7 +25,6 @@ import {
   getWeatherStateIcon,
   getWeatherUnit,
   getWind,
-  isForecastHourly,
   weatherAttrIcons,
   WeatherEntity,
   weatherSVGStyles,
@@ -41,8 +40,6 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { WeatherForecastCardConfig } from "./types";
 import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
-
-const DAY_IN_MILLISECONDS = 86400000;
 
 @customElement("hui-weather-forecast-card")
 class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
@@ -173,35 +170,18 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const forecastType = getForecast(
-      stateObj.attributes.forecast,
-      stateObj.attributes.forecast_daily,
-      stateObj.attributes.forecast_hourly,
-      stateObj.attributes.forecast_twice_daily,
+    const forecastData = getForecast(
+      stateObj.attributes,
       this._config?.forecast_type
     );
     const forecast =
-      this._config?.show_forecast !== false && forecastType?.length
-        ? forecastType.slice(0, this._veryVeryNarrow ? 3 : 5)
+      this._config?.show_forecast !== false && forecastData?.[0]?.length
+        ? forecastData[0].slice(0, this._veryVeryNarrow ? 3 : 5)
         : undefined;
     const weather = !forecast || this._config?.show_current !== false;
 
-    const hourly = isForecastHourly(forecast);
-    let dayNight: boolean | undefined;
-
-    if (hourly) {
-      const dateFirst = new Date(forecast![0].datetime);
-      const datelast = new Date(forecast![forecast!.length - 1].datetime);
-      const dayDiff = datelast.getTime() - dateFirst.getTime();
-
-      dayNight = dayDiff > DAY_IN_MILLISECONDS;
-    }
-
-    const twice_daily =
-      this._config?.forecastType === "twice_daily" ? true : undefined;
-    if (twice_daily) {
-      dayNight = true;
-    }
+    const hourly = forecastData?.[1];
+    const dayNight = forecastData?.[2];
 
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
     const name = this._config.name ?? computeStateName(stateObj);
@@ -325,8 +305,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                                     { weekday: "short" }
                                   )}
                                   <div class="daynight">
-                                    ${item.is_daytime === undefined ||
-                                    item.is_daytime
+                                    ${item.is_daytime !== false
                                       ? this.hass!.localize(
                                           "ui.card.weather.day"
                                         )

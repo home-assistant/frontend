@@ -546,45 +546,105 @@ export const getWeatherConvertibleUnits = (
   });
 
 export const getForecast = (
-  forecast?: ForecastAttribute[],
-  forecastDaily?: ForecastAttribute[],
-  forecastHourly?: ForecastAttribute[],
-  forecastTwiceDaily?: ForecastAttribute[],
-  forecastType?: string | undefined
-): ForecastAttribute[] | undefined => {
+  weather_attributes?: WeatherEntityAttributes | undefined,
+  forecast_type?: string | undefined
+):
+  | [
+      forecast: ForecastAttribute[],
+      type: "daily" | "hourly" | "twice_daily",
+      dayNight: boolean
+    ]
+  | undefined => {
+  let dayNight: boolean | undefined;
+
   if (
-    forecastType === "daily" &&
-    forecastDaily?.length &&
-    forecastDaily?.length > 2
+    forecast_type === "daily" &&
+    weather_attributes &&
+    weather_attributes?.forecast_daily &&
+    weather_attributes?.forecast_daily?.length &&
+    weather_attributes?.forecast_daily?.length > 2
   ) {
-    return forecastDaily;
+    return [weather_attributes.forecast_daily, "daily", false];
   }
   if (
-    forecastType === "hourly" &&
-    forecastHourly?.length &&
-    forecastHourly?.length > 2
+    forecast_type === "hourly" &&
+    weather_attributes &&
+    weather_attributes?.forecast_hourly &&
+    weather_attributes?.forecast_hourly?.length &&
+    weather_attributes?.forecast_hourly?.length > 2
   ) {
-    return forecastHourly;
+    return [weather_attributes.forecast_hourly, "hourly", false];
   }
   if (
-    forecastType === "twice_daily" &&
-    forecastTwiceDaily?.length &&
-    forecastTwiceDaily?.length > 2
+    forecast_type === "twice_daily" &&
+    weather_attributes &&
+    weather_attributes?.forecast_twice_daily &&
+    weather_attributes?.forecast_twice_daily?.length &&
+    weather_attributes?.forecast_twice_daily?.length > 2
   ) {
-    return forecastTwiceDaily;
+    return [weather_attributes.forecast_twice_daily, "twice_daily", true];
   }
-  if (forecastType === "legacy" && forecast?.length && forecast?.length > 2) {
-    return forecast;
-  }
-  if (forecastType === undefined) {
-    if (forecastDaily?.length && forecastDaily?.length > 2) {
-      return forecastDaily;
+  if (
+    forecast_type === "legacy" &&
+    weather_attributes &&
+    weather_attributes?.forecast &&
+    weather_attributes?.forecast?.length &&
+    weather_attributes?.forecast?.length > 2
+  ) {
+    const hourly = isForecastHourly(weather_attributes.forecast);
+    if (hourly === true) {
+      const dateFirst = new Date(weather_attributes.forecast![0].datetime);
+      const datelast = new Date(
+        weather_attributes.forecast![
+          weather_attributes.forecast!.length - 1
+        ].datetime
+      );
+      const dayDiff = datelast.getTime() - dateFirst.getTime();
+      dayNight = dayDiff > DAY_IN_MILLISECONDS;
+      return [weather_attributes.forecast, "hourly", dayNight];
     }
-    if (forecastHourly?.length && forecastHourly?.length > 2) {
-      return forecastHourly;
+    return [weather_attributes.forecast, "daily", false];
+  }
+  if (forecast_type === undefined) {
+    if (
+      weather_attributes &&
+      weather_attributes?.forecast_daily?.length &&
+      weather_attributes?.forecast_daily?.length > 2
+    ) {
+      return [weather_attributes.forecast_daily, "daily", false];
     }
-    if (forecastTwiceDaily?.length && forecastTwiceDaily?.length > 2) {
-      return forecastTwiceDaily;
+    if (
+      weather_attributes &&
+      weather_attributes?.forecast_hourly?.length &&
+      weather_attributes?.forecast_hourly?.length > 2
+    ) {
+      return [weather_attributes.forecast_hourly, "hourly", false];
+    }
+    if (
+      weather_attributes &&
+      weather_attributes?.forecast_twice_daily?.length &&
+      weather_attributes?.forecast_twice_daily?.length > 2
+    ) {
+      return [weather_attributes.forecast_twice_daily, "twice_daily", true];
+    }
+    if (
+      weather_attributes &&
+      weather_attributes?.forecast?.length &&
+      weather_attributes?.forecast?.length > 2
+    ) {
+      const hourly = isForecastHourly(weather_attributes.forecast);
+      if (hourly === true) {
+        const dateFirst = new Date(weather_attributes.forecast![0].datetime);
+        const datelast = new Date(
+          weather_attributes.forecast![
+            weather_attributes.forecast!.length - 1
+          ].datetime
+        );
+        const dayDiff = datelast.getTime() - dateFirst.getTime();
+        dayNight = dayDiff > DAY_IN_MILLISECONDS;
+        return [weather_attributes.forecast, "hourly", dayNight];
+      }
+      return [weather_attributes.forecast, "daily", false];
     }
   }
 
