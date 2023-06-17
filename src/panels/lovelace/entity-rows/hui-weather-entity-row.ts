@@ -73,12 +73,8 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     const hasSecondary = this._config.secondary_info;
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
 
-    const forecast = getForecast(
-      stateObj.attributes.forecast,
-      stateObj.attributes.forecast_daily,
-      stateObj.attributes.forecast_hourly,
-      stateObj.attributes.forecast_twice_daily
-    );
+    const forecastData = getForecast(stateObj.attributes);
+    const forecast = forecastData?.[0];
 
     return html`
       <div
