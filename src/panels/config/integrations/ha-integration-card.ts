@@ -2,7 +2,6 @@ import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-button";
 import "@material/mwc-list";
 import {
-  mdiCogOutline,
   mdiDevices,
   mdiHandExtendedOutline,
   mdiPuzzleOutline,
@@ -64,7 +63,7 @@ export class HaIntegrationCard extends LitElement {
           "debug-logging": Boolean(debugLoggingEnabled),
         })}
       >
-        <a href=${`/config/integrations/integration/${this.domain}`}>
+        <a href=${`/config/integrations/integration/${this.domain}`} class="header-link">
           <ha-integration-header
             .hass=${this.hass}
             .domain=${this.domain}
@@ -248,6 +247,12 @@ export class HaIntegrationCard extends LitElement {
         a:focus-visible {
           background-color: rgba(var(--rgb-primary-text-color), 0.04);
           outline: none;
+        }
+        .header-link:hover {
+          background-color: rgba(var(--rgb-primary-text-color), 0.04);
+        }
+        .content > a {
+          display: block;
         }
       `,
     ];
