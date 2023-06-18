@@ -28,8 +28,10 @@ export class HaColorTempSelector extends LitElement {
         icon="hass:thermometer"
         .caption=${this.label || ""}
         .min=${this.selector.color_temp?.min ??
+        this.selector.color_temp?.min_mireds ??
         (this.selector.color_temp?.unit === "Kelvin" ? 2700 : 153)}
         .max=${this.selector.color_temp?.max ??
+        this.selector.color_temp?.max_mireds ??
         (this.selector.color_temp?.unit === "Kelvin" ? 6000 : 500)}
         .value=${this.value}
         .step=${this.selector.color_temp?.unit === "Kelvin" ? 100 : 1}

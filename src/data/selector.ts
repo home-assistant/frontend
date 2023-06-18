@@ -94,6 +94,8 @@ export interface ColorTempSelector {
     unit: "Kelvin" | "Mired";
     min?: number;
     max?: number;
+    min_mireds?: number; // kept for legacy blueprint support
+    max_mireds?: number; // kept for legacy blueprint support
   } | null;
 }
 
