@@ -13,7 +13,6 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
@@ -246,8 +245,9 @@ export class HaIntegrationCard extends LitElement {
           text-decoration: none;
           color: var(--primary-text-color);
         }
-        a ha-icon-button {
-          color: var(--secondary-text-color);
+        a:focus-visible {
+          background-color: rgba(var(--rgb-primary-text-color), 0.04);
+          outline: none;
         }
       `,
     ];
