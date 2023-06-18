@@ -80,12 +80,7 @@ export class HaIntegrationCard extends LitElement {
                 )
               : undefined}
             .manifest=${this.manifest}
-          >
-            <ha-icon-button
-              slot="header-button"
-              .path=${mdiCogOutline}
-            ></ha-icon-button>
-          </ha-integration-header>
+          ></ha-integration-header>
         </a>
 
         ${this._renderSingleEntry()}
