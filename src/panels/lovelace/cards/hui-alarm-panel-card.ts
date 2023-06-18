@@ -4,17 +4,19 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { alarmPanelIcon } from "../../../common/entity/alarm_panel_icon";
+import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-chip";
-import type { HaTextField } from "../../../components/ha-textfield";
 import "../../../components/ha-textfield";
+import type { HaTextField } from "../../../components/ha-textfield";
 import {
   callAlarmAction,
   FORMAT_NUMBER,
@@ -131,9 +133,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     );
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
     const stateObj = this.hass.states[this._config.entity];
 
@@ -155,6 +157,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           stateLabel}
           <ha-chip
             hasIcon
+            style=${styleMap({
+              "--alarm-state-color": stateColorCss(stateObj),
+            })}
             class=${classMap({ [stateObj.state]: true })}
             @click=${this._handleMoreInfo}
           >
@@ -180,7 +185,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           )}
         </div>
         ${!stateObj.attributes.code_format
-          ? html``
+          ? nothing
           : html`
               <ha-textfield
                 id="alarmCode"
@@ -192,7 +197,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
               ></ha-textfield>
             `}
         ${stateObj.attributes.code_format !== FORMAT_NUMBER
-          ? html``
+          ? nothing
           : html`
               <div id="keypad">
                 ${BUTTONS.map((value) =>
@@ -231,7 +236,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     return entityState === UNAVAILABLE
       ? this.hass!.localize("state.default.unavailable")
       : this.hass!.localize(
-          `component.alarm_control_panel.state._.${entityState}`
+          `component.alarm_control_panel.entity_component._.state.${entityState}`
         ) || entityState;
   }
 
@@ -269,12 +274,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         flex-direction: column;
         align-items: center;
         box-sizing: border-box;
-        --alarm-color-disarmed: var(--label-badge-green);
-        --alarm-color-pending: var(--label-badge-yellow);
-        --alarm-color-triggered: var(--label-badge-red);
-        --alarm-color-armed: var(--label-badge-red);
-        --alarm-color-autoarm: rgba(0, 153, 255, 0.1);
-        --alarm-state-color: var(--alarm-color-armed);
+        --alarm-state-color: var(--state-inactive-color);
       }
 
       ha-chip {
@@ -291,26 +291,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         box-sizing: border-box;
       }
 
-      .unavailable {
-        --alarm-state-color: var(--state-unavailable-color);
-      }
-
-      .disarmed {
-        --alarm-state-color: var(--alarm-color-disarmed);
-      }
-
-      .triggered {
-        --alarm-state-color: var(--alarm-color-triggered);
-        animation: pulse 1s infinite;
-      }
-
-      .arming {
-        --alarm-state-color: var(--alarm-color-pending);
-        animation: pulse 1s infinite;
-      }
-
+      .triggered,
+      .arming,
       .pending {
-        --alarm-state-color: var(--alarm-color-pending);
         animation: pulse 1s infinite;
       }
 

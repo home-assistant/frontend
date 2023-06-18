@@ -1,18 +1,18 @@
-import "../../../../components/ha-form/ha-form";
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, boolean, object, optional, string, assign } from "superstruct";
-import { memoize } from "@fullcalendar/common";
+import memoizeOne from "memoize-one";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import { UNAVAILABLE } from "../../../../data/entity";
+import type { WeatherEntity } from "../../../../data/weather";
 import type { HomeAssistant } from "../../../../types";
 import type { WeatherForecastCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { UNAVAILABLE } from "../../../../data/entity";
-import type { WeatherEntity } from "../../../../data/weather";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -65,8 +65,8 @@ export class HuiWeatherForecastCardEditor
     return undefined;
   }
 
-  private _schema = memoize(
-    (entity: string, localize: LocalizeFunc, hasForecast?: boolean) =>
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc, hasForecast?: boolean) =>
       [
         {
           name: "entity",
@@ -80,7 +80,8 @@ export class HuiWeatherForecastCardEditor
           schema: [
             {
               name: "secondary_info_attribute",
-              selector: { attribute: { entity_id: entity } },
+              selector: { attribute: {} },
+              context: { filter_entity: "entity" },
             },
             { name: "theme", selector: { theme: {} } },
           ],
@@ -119,16 +120,12 @@ export class HuiWeatherForecastCardEditor
       ] as const
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
-    const schema = this._schema(
-      this._config.entity,
-      this.hass.localize,
-      this._has_forecast
-    );
+    const schema = this._schema(this.hass.localize, this._has_forecast);
 
     const data: WeatherForecastCardConfig = {
       show_current: true,

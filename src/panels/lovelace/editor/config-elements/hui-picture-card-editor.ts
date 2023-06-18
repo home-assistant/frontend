@@ -1,12 +1,12 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-theme-picker";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { PictureCardConfig } from "../../cards/types";
 import "../../components/hui-action-editor";
-import "../../../../components/ha-theme-picker";
 import { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
@@ -20,6 +20,7 @@ const cardConfigStruct = assign(
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     theme: optional(string()),
+    alt_text: optional(string()),
   })
 );
 
@@ -53,9 +54,13 @@ export class HuiPictureCardEditor
     return this._config!.theme || "";
   }
 
-  protected render(): TemplateResult {
+  get _alt_text(): string {
+    return this._config!.alt_text || "";
+  }
+
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const actions = ["navigate", "url", "call-service", "none"];
@@ -70,6 +75,16 @@ export class HuiPictureCardEditor
           )})"
           .value=${this._image}
           .configValue=${"image"}
+          @input=${this._valueChanged}
+        ></ha-textfield>
+        <ha-textfield
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.alt_text"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .value=${this._alt_text}
+          .configValue=${"alt_text"}
           @input=${this._valueChanged}
         ></ha-textfield>
         <ha-theme-picker

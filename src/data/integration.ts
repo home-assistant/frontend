@@ -1,5 +1,15 @@
+import { Connection, createCollection } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
+import { debounce } from "../common/util/debounce";
+
+export const integrationsWithPanel = {
+  matter: "/config/matter",
+  mqtt: "/config/mqtt",
+  thread: "/config/thread",
+  zha: "/config/zha/dashboard",
+  zwave_js: "/config/zwave_js/dashboard",
+};
 
 export type IntegrationType =
   | "device"
@@ -23,6 +33,7 @@ export interface IntegrationManifest {
   zeroconf?: string[];
   homekit?: { models: string[] };
   integration_type?: IntegrationType;
+  loggers?: string[];
   quality_scale?: "gold" | "internal" | "platinum" | "silver";
   iot_class:
     | "assumed_state"
@@ -36,12 +47,30 @@ export interface IntegrationSetup {
   seconds?: number;
 }
 
+export interface IntegrationLogInfo {
+  domain: string;
+  level?: number;
+}
+
+export enum LogSeverity {
+  CRITICAL = 50,
+  FATAL = 50,
+  ERROR = 40,
+  WARNING = 30,
+  WARN = 30,
+  INFO = 20,
+  DEBUG = 10,
+  NOTSET = 0,
+}
+
+export type IntegrationLogPersistance = "none" | "once" | "permanent";
+
 export const integrationIssuesUrl = (
   domain: string,
   manifest: IntegrationManifest
 ) =>
   manifest.issue_tracker ||
-  `https://github.com/home-assistant/home-assistant/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+${domain}%22`;
+  `https://github.com/home-assistant/core/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+${domain}%22`;
 
 export const domainToName = (
   localize: LocalizeFunc,
@@ -69,3 +98,46 @@ export const fetchIntegrationManifest = (
 
 export const fetchIntegrationSetups = (hass: HomeAssistant) =>
   hass.callWS<IntegrationSetup[]>({ type: "integration/setup_info" });
+
+export const fetchIntegrationLogInfo = (conn) =>
+  conn.sendMessagePromise({
+    type: "logger/log_info",
+  });
+
+export const setIntegrationLogLevel = (
+  hass: HomeAssistant,
+  integration: string,
+  level: string,
+  persistence: IntegrationLogPersistance
+) =>
+  hass.callWS({
+    type: "logger/integration_log_level",
+    integration,
+    level,
+    persistence,
+  });
+
+const subscribeLogInfoUpdates = (conn, store) =>
+  conn.subscribeEvents(
+    debounce(
+      () =>
+        fetchIntegrationLogInfo(conn).then((log_infos) =>
+          store.setState(log_infos, true)
+        ),
+      200,
+      true
+    ),
+    "logging_changed"
+  );
+
+export const subscribeLogInfo = (
+  conn: Connection,
+  onChange: (devices: IntegrationLogInfo[]) => void
+) =>
+  createCollection<IntegrationLogInfo[]>(
+    "_integration_log_info",
+    fetchIntegrationLogInfo,
+    subscribeLogInfoUpdates,
+    conn,
+    onChange
+  );

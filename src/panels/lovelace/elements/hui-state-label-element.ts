@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -38,9 +38,9 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.hass.states[this._config.entity!];
@@ -83,7 +83,13 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
         )}
       >
         ${this._config.prefix}${!this._config.attribute
-          ? computeStateDisplay(this.hass.localize, stateObj, this.hass.locale)
+          ? computeStateDisplay(
+              this.hass.localize,
+              stateObj,
+              this.hass.locale,
+              this.hass.config,
+              this.hass.entities
+            )
           : stateObj.attributes[this._config.attribute]}${this._config.suffix}
       </div>
     `;

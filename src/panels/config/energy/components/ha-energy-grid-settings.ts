@@ -220,6 +220,7 @@ export class EnergyGridSettings extends LitElement {
           ${this._co2ConfigEntry
             ? html`<div class="row" .entry=${this._co2ConfigEntry}>
                 <img
+                  alt=""
                   referrerpolicy="no-referrer"
                   src=${brandsUrl({
                     domain: "co2signal",
@@ -229,7 +230,7 @@ export class EnergyGridSettings extends LitElement {
                 />
                 <span class="content">${this._co2ConfigEntry.title}</span>
                 <a
-                  href=${`/config/integrations#config_entry=${this._co2ConfigEntry.entry_id}`}
+                  href=${`/config/integrations/integration/${this._co2ConfigEntry?.domain}`}
                 >
                   <ha-icon-button .path=${mdiPencil}></ha-icon-button>
                 </a>
@@ -244,6 +245,7 @@ export class EnergyGridSettings extends LitElement {
             : html`
                 <div class="row border-bottom">
                   <img
+                    alt=""
                     referrerpolicy="no-referrer"
                     src=${brandsUrl({
                       domain: "co2signal",
@@ -364,6 +366,7 @@ export class EnergyGridSettings extends LitElement {
       ev.currentTarget.closest(".row").source;
     showEnergySettingsGridFlowFromDialog(this, {
       source: { ...origSource },
+      metadata: this.statsMetadata?.[origSource.stat_energy_from],
       saveCallback: async (source) => {
         const flowFrom = energySourcesByType(this.preferences).grid![0]
           .flow_from;
@@ -391,6 +394,7 @@ export class EnergyGridSettings extends LitElement {
       ev.currentTarget.closest(".row").source;
     showEnergySettingsGridFlowToDialog(this, {
       source: { ...origSource },
+      metadata: this.statsMetadata?.[origSource.stat_energy_to],
       saveCallback: async (source) => {
         const flowTo = energySourcesByType(this.preferences).grid![0].flow_to;
 

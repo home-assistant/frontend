@@ -8,8 +8,7 @@ import {
   LovelaceConfig,
   LovelaceViewConfig,
 } from "../data/lovelace";
-import { PolymerChangedEvent } from "../polymer-types";
-import { HomeAssistant, PanelInfo } from "../types";
+import { ValueChangedEvent, HomeAssistant, PanelInfo } from "../types";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-icon";
@@ -96,7 +95,7 @@ export class HaNavigationPicker extends LitElement {
     `;
   }
 
-  private async _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private async _openedChanged(ev: ValueChangedEvent<boolean>) {
     this._opened = ev.detail.value;
     if (this._opened && !this.navigationItemsLoaded) {
       this._loadNavigationItems();
@@ -152,7 +151,7 @@ export class HaNavigationPicker extends LitElement {
     return !this._opened || changedProps.has("_opened");
   }
 
-  private _valueChanged(ev: PolymerChangedEvent<string>) {
+  private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     this._setValue(ev.detail.value);
   }

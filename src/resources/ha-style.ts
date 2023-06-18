@@ -1,4 +1,3 @@
-import "@polymer/paper-styles/paper-styles";
 import "@polymer/polymer/lib/elements/custom-style";
 import { derivedStyles } from "./styles";
 
@@ -51,37 +50,16 @@ documentContainer.innerHTML = `<custom-style>
       --header-height: 56px;
 
       /* for label-badge */
-      --label-badge-red: #DF4C1E;
-      --label-badge-blue: #039be5;
-      --label-badge-green: #0DA035;
-      --label-badge-yellow: #f4b400;
+      --label-badge-red: var(--error-color);
+      --label-badge-blue: var(--info-color);
+      --label-badge-green: var(--success-color);
+      --label-badge-yellow: var(--warning-color);
       --label-badge-grey: #9e9e9e;
 
-      /* states */
+      /* states icon */
       --state-icon-color: #44739e;
-      /* an active state is anything that would require attention */
-      --state-icon-active-color: #FDD835;
       /* an error state is anything that would be considered an error */
       /* --state-icon-error-color: #db4437; derived from error-color */
-
-      --state-on-color: #66a61e;
-      --state-off-color: #ff0029;
-      --state-home-color: #66a61e;
-      --state-not_home-color: #ff0029;
-      /* --state-unavailable-color: #a0a0a0; derived from disabled-text-color */
-      --state-unknown-color: #606060;
-      --state-idle-color: #7990a3;
-
-      /* climate state colors */
-      --state-climate-auto-color: #008000;
-      --state-climate-eco-color: #00ff7f;
-      --state-climate-cool-color: #2b9af9;
-      --state-climate-heat-color: #ff8100;
-      --state-climate-manual-color: #44739e;
-      --state-climate-off-color: #8a8a8a;
-      --state-climate-fan_only-color: #8a8a8a;
-      --state-climate-dry-color: #efbd07;
-      --state-climate-idle-color: #8a8a8a;
 
       /* energy */
       --energy-grid-consumption-color: #488fc2;
@@ -108,70 +86,99 @@ documentContainer.innerHTML = `<custom-style>
       /* rgb */
       --rgb-primary-color: 3, 169, 244;
       --rgb-accent-color: 255, 152, 0;
-      --rgb-disabled-color: 189, 189, 189;
       --rgb-primary-text-color: 33, 33, 33;
       --rgb-secondary-text-color: 114, 114, 114;
       --rgb-text-primary-color: 255, 255, 255;
       --rgb-card-background-color: 255, 255, 255;
-      --rgb-red-color: 244, 67, 54;
-      --rgb-pink-color: 233, 30, 99;
-      --rgb-purple-color: 156, 39, 176;
-      --rgb-deep-purple-color: 103, 58, 183;
-      --rgb-indigo-color: 63, 81, 181;
-      --rgb-blue-color: 33, 150, 243;
-      --rgb-light-blue-color: 3, 169, 244;
-      --rgb-cyan-color: 0, 188, 212;
-      --rgb-teal-color: 0, 150, 136;
-      --rgb-green-color: 76, 175, 80;
-      --rgb-light-green-color: 139, 195, 74;
-      --rgb-lime-color: 205, 220, 57;
-      --rgb-yellow-color: 255, 235, 59;
-      --rgb-amber-color: 255, 193, 7;
-      --rgb-orange-color: 255, 152, 0;
-      --rgb-deep-orange-color: 255, 87, 34;
-      --rgb-brown-color: 121, 85, 72;
-      --rgb-grey-color: 158, 158, 158;
-      --rgb-blue-grey-color: 96, 125, 139;
-      --rgb-black-color: 0, 0, 0;
-      --rgb-white-color: 255, 255, 255;
 
-      /* rgb state color */
-      --rgb-state-default-color: 68, 115, 158;
-      --rgb-state-alarm-armed-color: var(--rgb-red-color);
-      --rgb-state-alarm-pending-color: var(--rgb-orange-color);
-      --rgb-state-alarm-arming-color: var(--rgb-orange-color);
-      --rgb-state-alarm-triggered-color: var(--rgb-red-color);
-      --rgb-state-binary-sensor-color: var(--rgb-primary-color);
-      --rgb-state-binary-sensor-alerting-color: var(--rgb-red-color);
-      --rgb-state-cover-color: var(--rgb-purple-color);
-      --rgb-state-fan-color: var(--rgb-cyan-color);
-      --rgb-state-humidifier-color: var(--rgb-blue-color);
-      --rgb-state-light-color: var(--rgb-amber-color);
-      --rgb-state-lock-jammed-color: var(--rgb-red-color);
-      --rgb-state-lock-locked-color: var(--rgb-red-color);
-      --rgb-state-lock-pending-color: var(--rgb-orange-color);
-      --rgb-state-media-player-color: var(--rgb-indigo-color);
-      --rgb-state-person-home-color: var(--rgb-green-color);
-      --rgb-state-person-not-home-color: var(--rgb-red-color);
-      --rgb-state-person-zone-color: var(--rgb-blue-color);
-      --rgb-state-sensor-battery-high-color: var(--rgb-green-color);
-      --rgb-state-sensor-battery-low-color: var(--rgb-red-color);
-      --rgb-state-sensor-battery-medium-color: var(--rgb-orange-color);
-      --rgb-state-sensor-battery-unknown-color: var(--rgb-disabled-color);
-      --rgb-state-siren-color: var(--rgb-red-color);
-      --rgb-state-sun-day-color: var(--rgb-amber-color);
-      --rgb-state-sun-night-color: var(--rgb-deep-purple-color);
-      --rgb-state-switch-color: var(--rgb-amber-color);
-      --rgb-state-update-color: var(--rgb-green-color);
-      --rgb-state-update-installing-color: var(--rgb-orange-color);
-      --rgb-state-vacuum-color: var(--rgb-teal-color);
-      --rgb-state-climate-auto-color: var(--rgb-green-color);
-      --rgb-state-climate-cool-color: var(--rgb-blue-color);
-      --rgb-state-climate-dry-color: var(--rgb-orange-color);
-      --rgb-state-climate-fan-only-color: var(--rgb-cyan-color);
-      --rgb-state-climate-heat-color: var(--rgb-deep-orange-color);
-      --rgb-state-climate-heat-cool-color: var(--rgb-state-default-color);
-      --rgb-state-climate-idle-color: var(--rgb-disabled-color);
+      /* color */
+      --disabled-color: #bdbdbd;
+      --red-color: #f44336;
+      --pink-color: #e91e63;
+      --purple-color: #926bc7;
+      --deep-purple-color: #6e41ab;
+      --indigo-color: #3f51b5;
+      --blue-color: #2196f3;
+      --light-blue-color: #03a9f4;
+      --cyan-color: #00bcd4;
+      --teal-color: #009688;
+      --green-color: #4caf50;
+      --light-green-color: #8bc34a;
+      --lime-color: #cddc39;
+      --yellow-color: #ffeb3b;
+      --amber-color: #ffc107;
+      --orange-color: #ff9800;
+      --deep-orange-color: #ff5722;
+      --brown-color: #795548;
+      --light-grey-color: #bdbdbd;
+      --grey-color: #9e9e9e;
+      --dark-grey-color: #606060;
+      --blue-grey-color: #607d8b;
+      --black-color: #000000;
+      --white-color: #ffffff;
+
+      /* state color */
+      --state-active-color: var(--amber-color);
+      --state-inactive-color: var(--grey-color);
+      --state-unavailable-color: var(--disabled-color);
+
+      /* state domain colors */
+      --state-alarm_control_panel-armed_away-color: var(--green-color);
+      --state-alarm_control_panel-armed_custom_bypass-color: var(--green-color);
+      --state-alarm_control_panel-armed_home-color: var(--green-color);
+      --state-alarm_control_panel-armed_night-color: var(--green-color);
+      --state-alarm_control_panel-armed_vacation-color: var(--green-color);
+      --state-alarm_control_panel-arming-color: var(--orange-color);
+      --state-alarm_control_panel-disarming-color: var(--orange-color);
+      --state-alarm_control_panel-pending-color: var(--orange-color);
+      --state-alarm_control_panel-triggered-color: var(--red-color);
+      --state-alert-off-color: var(--orange-color);
+      --state-alert-on-color: var(--red-color);
+      --state-binary_sensor-active-color: var(--amber-color);
+      --state-binary_sensor-battery-on-color: var(--red-color);
+      --state-binary_sensor-carbon_monoxide-on-color: var(--red-color);
+      --state-binary_sensor-gas-on-color: var(--red-color);
+      --state-binary_sensor-heat-on-color: var(--red-color);
+      --state-binary_sensor-lock-on-color: var(--red-color);
+      --state-binary_sensor-moisture-on-color: var(--red-color);
+      --state-binary_sensor-problem-on-color: var(--red-color);
+      --state-binary_sensor-safety-on-color: var(--red-color);
+      --state-binary_sensor-smoke-on-color: var(--red-color);
+      --state-binary_sensor-sound-on-color: var(--red-color);
+      --state-binary_sensor-tamper-on-color: var(--red-color);
+      --state-climate-auto-color: var(--green-color);
+      --state-climate-cool-color: var(--blue-color);
+      --state-climate-dry-color: var(--orange-color);
+      --state-climate-fan_only-color: var(--cyan-color);
+      --state-climate-heat-color: var(--deep-orange-color);
+      --state-climate-heat-cool-color: var(--amber-color);
+      --state-cover-active-color: var(--purple-color);
+      --state-device_tracker-active-color: var(--blue-color);
+      --state-device_tracker-home-color: var(--green-color);
+      --state-fan-active-color: var(--cyan-color);
+      --state-humidifier-active-color: var(--blue-color);
+      --state-light-active-color: var(--amber-color);
+      --state-lock-jammed-color: var(--red-color);
+      --state-lock-locked-color: var(--green-color);
+      --state-lock-pending-color: var(--orange-color);
+      --state-lock-unlocked-color: var(--red-color);
+      --state-media_player-active-color: var(--light-blue-color);
+      --state-person-active-color: var(--blue-color);
+      --state-person-home-color: var(--green-color);
+      --state-plant-active-color: var(--red-color);
+      --state-siren-active-color: var(--red-color);
+      --state-sun-above_horizon-color: var(--amber-color);
+      --state-sun-below_horizon-color: var(--indigo-color);
+      --state-switch-active-color: var(--amber-color);
+      --state-update-active-color: var(--orange-color);
+      --state-vacuum-active-color: var(--teal-color);
+      --state-sensor-battery-high-color: var(--green-color);
+      --state-sensor-battery-low-color: var(--red-color);
+      --state-sensor-battery-medium-color: var(--orange-color);
+
+      /* history colors */
+      --history-unavailable-color: transparent;
+      --history-unknown-color: var(--dark-grey-color);
 
       /* input components */
       --input-idle-line-color: rgba(0, 0, 0, 0.42);
@@ -192,6 +199,214 @@ documentContainer.innerHTML = `<custom-style>
       --material-small-font-size: 0.875rem;
       --material-caption-font-size: 0.75rem;
       --material-button-font-size: 0.875rem;
+
+      /* Paper shadow */
+      --shadow-transition: {
+        transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      };
+
+      --shadow-none: {
+        box-shadow: none;
+      };
+
+      /* from http://codepen.io/shyndman/pen/c5394ddf2e8b2a5c9185904b57421cdb */
+
+      --shadow-elevation-2dp: {
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+                    0 1px 5px 0 rgba(0, 0, 0, 0.12),
+                    0 3px 1px -2px rgba(0, 0, 0, 0.2);
+      };
+
+      --shadow-elevation-3dp: {
+        box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14),
+                    0 1px 8px 0 rgba(0, 0, 0, 0.12),
+                    0 3px 3px -2px rgba(0, 0, 0, 0.4);
+      };
+
+      --shadow-elevation-4dp: {
+        box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14),
+                    0 1px 10px 0 rgba(0, 0, 0, 0.12),
+                    0 2px 4px -1px rgba(0, 0, 0, 0.4);
+      };
+
+      --shadow-elevation-6dp: {
+        box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14),
+                    0 1px 18px 0 rgba(0, 0, 0, 0.12),
+                    0 3px 5px -1px rgba(0, 0, 0, 0.4);
+      };
+
+      --shadow-elevation-8dp: {
+        box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                    0 3px 14px 2px rgba(0, 0, 0, 0.12),
+                    0 5px 5px -3px rgba(0, 0, 0, 0.4);
+      };
+
+      --shadow-elevation-12dp: {
+        box-shadow: 0 12px 16px 1px rgba(0, 0, 0, 0.14),
+                    0 4px 22px 3px rgba(0, 0, 0, 0.12),
+                    0 6px 7px -4px rgba(0, 0, 0, 0.4);
+      };
+
+      --shadow-elevation-16dp: {
+        box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14),
+                    0  6px 30px 5px rgba(0, 0, 0, 0.12),
+                    0  8px 10px -5px rgba(0, 0, 0, 0.4);
+      };
+
+      --shadow-elevation-24dp: {
+        box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14),
+                    0 9px 46px 8px rgba(0, 0, 0, 0.12),
+                    0 11px 15px -7px rgba(0, 0, 0, 0.4);
+      };
+
+      /* Paper typography Styles */
+      --paper-font-common-base: {
+        font-family: 'Roboto', 'Noto', sans-serif;
+        -webkit-font-smoothing: antialiased;
+      };
+
+      --paper-font-common-code: {
+        font-family: 'Roboto Mono', 'Consolas', 'Menlo', monospace;
+        -webkit-font-smoothing: antialiased;
+      };
+
+      --paper-font-common-expensive-kerning: {
+        text-rendering: optimizeLegibility;
+      };
+
+      --paper-font-common-nowrap: {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      };
+
+      /* Material Font Styles */
+
+      --paper-font-display4: {
+        @apply --paper-font-common-base;
+        @apply --paper-font-common-nowrap;
+
+        font-size: 112px;
+        font-weight: 300;
+        letter-spacing: -.044em;
+        line-height: 120px;
+      };
+
+      --paper-font-display3: {
+        @apply --paper-font-common-base;
+        @apply --paper-font-common-nowrap;
+
+        font-size: 56px;
+        font-weight: 400;
+        letter-spacing: -.026em;
+        line-height: 60px;
+      };
+
+      --paper-font-display2: {
+        @apply --paper-font-common-base;
+
+        font-size: 45px;
+        font-weight: 400;
+        letter-spacing: -.018em;
+        line-height: 48px;
+      };
+
+      --paper-font-display1: {
+        @apply --paper-font-common-base;
+
+        font-size: 34px;
+        font-weight: 400;
+        letter-spacing: -.01em;
+        line-height: 40px;
+      };
+
+      --paper-font-headline: {
+        @apply --paper-font-common-base;
+
+        font-size: 24px;
+        font-weight: 400;
+        letter-spacing: -.012em;
+        line-height: 32px;
+      };
+
+      --paper-font-title: {
+        @apply --paper-font-common-base;
+        @apply --paper-font-common-nowrap;
+
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 28px;
+      };
+
+      --paper-font-subhead: {
+        @apply --paper-font-common-base;
+
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 24px;
+      };
+
+      --paper-font-body2: {
+        @apply --paper-font-common-base;
+
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 24px;
+      };
+
+      --paper-font-body1: {
+        @apply --paper-font-common-base;
+
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+      };
+
+      --paper-font-caption: {
+        @apply --paper-font-common-base;
+        @apply --paper-font-common-nowrap;
+
+        font-size: 12px;
+        font-weight: 400;
+        letter-spacing: 0.011em;
+        line-height: 20px;
+      };
+
+      --paper-font-menu: {
+        @apply --paper-font-common-base;
+        @apply --paper-font-common-nowrap;
+
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 24px;
+      };
+
+      --paper-font-button: {
+        @apply --paper-font-common-base;
+        @apply --paper-font-common-nowrap;
+
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.018em;
+        line-height: 24px;
+        text-transform: uppercase;
+      };
+
+      --paper-font-code2: {
+        @apply --paper-font-common-code;
+
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 20px;
+      };
+
+      --paper-font-code1: {
+        @apply --paper-font-common-code;
+
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 20px;
+      };
 
       ${Object.entries(derivedStyles)
         .map(([key, value]) => `--${key}: ${value};`)

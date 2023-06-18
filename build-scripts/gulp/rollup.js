@@ -1,13 +1,14 @@
 // Tasks to run Rollup
-const path = require("path");
-const gulp = require("gulp");
-const rollup = require("rollup");
-const handler = require("serve-handler");
-const http = require("http");
-const log = require("fancy-log");
-const open = require("open");
-const rollupConfig = require("../rollup");
-const paths = require("../paths");
+
+import log from "fancy-log";
+import gulp from "gulp";
+import http from "http";
+import open from "open";
+import path from "path";
+import { rollup } from "rollup";
+import handler from "serve-handler";
+import paths from "../paths.cjs";
+import rollupConfig from "../rollup.cjs";
 
 const bothBuilds = (createConfigFunc, params) =>
   gulp.series(
@@ -46,7 +47,7 @@ function createServer(serveOptions) {
   );
 }
 
-function watchRollup(createConfig, extraWatchSrc = [], serveOptions) {
+function watchRollup(createConfig, extraWatchSrc = [], serveOptions = null) {
   const { inputOptions, outputOptions } = createConfig({
     isProdBuild: false,
     latestBuild: true,

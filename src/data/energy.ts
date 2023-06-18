@@ -4,17 +4,15 @@ import {
   addMilliseconds,
   addMonths,
   differenceInDays,
-  endOfToday,
-  endOfYesterday,
-  startOfToday,
-  startOfYesterday,
+  endOfDay,
+  startOfDay,
 } from "date-fns/esm";
 import { Collection, getCollection } from "home-assistant-js-websocket";
+import { calcDate } from "../common/datetime/calc_date";
+import { formatTime24h } from "../common/datetime/format_time";
 import { groupBy } from "../common/util/group-by";
-import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
 import { ConfigEntry, getConfigEntries } from "./config_entries";
-import { subscribeEntityRegistry } from "./entity_registry";
 import {
   fetchStatistics,
   getStatisticMetadata,
@@ -186,8 +184,8 @@ export interface EnergyInfo {
 
 export interface EnergyValidationIssue {
   type: string;
-  identifier: string;
-  value?: unknown;
+  affected_entities: [string, unknown][];
+  translation_placeholders: Record<string, string>;
 }
 
 export interface EnergyPreferencesValidation {
@@ -200,10 +198,12 @@ export const getEnergyInfo = (hass: HomeAssistant) =>
     type: "energy/info",
   });
 
-export const getEnergyPreferenceValidation = (hass: HomeAssistant) =>
-  hass.callWS<EnergyPreferencesValidation>({
+export const getEnergyPreferenceValidation = async (hass: HomeAssistant) => {
+  await hass.loadBackendTranslation("issues", "energy");
+  return hass.callWS<EnergyPreferencesValidation>({
     type: "energy/validate",
   });
+};
 
 export const getEnergyPreferences = (hass: HomeAssistant) =>
   hass.callWS<EnergyPreferences>({
@@ -339,9 +339,8 @@ const getEnergyData = async (
   end?: Date,
   compare?: boolean
 ): Promise<EnergyData> => {
-  const [configEntries, entityRegistryEntries, info] = await Promise.all([
+  const [configEntries, info] = await Promise.all([
     getConfigEntries(hass, { domain: "co2signal" }),
-    subscribeOne(hass.connection, subscribeEntityRegistry),
     getEnergyInfo(hass),
   ]);
 
@@ -350,15 +349,14 @@ const getEnergyData = async (
     : undefined;
 
   let co2SignalEntity: string | undefined;
-
   if (co2SignalConfigEntry) {
-    for (const entry of entityRegistryEntries) {
-      if (entry.config_entry_id !== co2SignalConfigEntry.entry_id) {
+    for (const entity of Object.values(hass.entities)) {
+      if (entity.platform !== "co2signal") {
         continue;
       }
 
       // The integration offers 2 entities. We want the % one.
-      const co2State = hass.states[entry.entity_id];
+      const co2State = hass.states[entity.entity_id];
       if (!co2State || co2State.attributes.unit_of_measurement !== "%") {
         continue;
       }
@@ -391,9 +389,6 @@ const getEnergyData = async (
   const period =
     dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
 
-  // Subtract 1 hour from start to get starting point data
-  const startMinHour = addHours(start, -1);
-
   const lengthUnit = hass.config.unit_system.length || "";
   const energyUnits: StatisticsUnitConfiguration = {
     energy: "kWh",
@@ -403,30 +398,23 @@ const getEnergyData = async (
     volume: lengthUnit === "km" ? "L" : "gal",
   };
 
-  const stats = {
-    ...(await fetchStatistics(
-      hass!,
-      startMinHour,
-      end,
-      energyStatIds,
-      period,
-      energyUnits,
-      ["sum"]
-    )),
-    ...(await fetchStatistics(
-      hass!,
-      startMinHour,
-      end,
-      waterStatIds,
-      period,
-      waterUnits,
-      ["sum"]
-    )),
-  };
+  const _energyStats: Statistics | Promise<Statistics> = energyStatIds.length
+    ? fetchStatistics(hass!, start, end, energyStatIds, period, energyUnits, [
+        "change",
+      ])
+    : {};
+  const _waterStats: Statistics | Promise<Statistics> = waterStatIds.length
+    ? fetchStatistics(hass!, start, end, waterStatIds, period, waterUnits, [
+        "change",
+      ])
+    : {};
 
   let statsCompare;
   let startCompare;
   let endCompare;
+  let _energyStatsCompare: Statistics | Promise<Statistics> = {};
+  let _waterStatsCompare: Statistics | Promise<Statistics> = {};
+
   if (compare) {
     if (dayDifference > 27 && dayDifference < 32) {
       // When comparing a month, we want to start at the begining of the month
@@ -434,37 +422,37 @@ const getEnergyData = async (
     } else {
       startCompare = addDays(start, (dayDifference + 1) * -1);
     }
-
-    const compareStartMinHour = addHours(startCompare, -1);
     endCompare = addMilliseconds(start, -1);
-
-    statsCompare = {
-      ...(await fetchStatistics(
+    if (energyStatIds.length) {
+      _energyStatsCompare = fetchStatistics(
         hass!,
-        compareStartMinHour,
+        startCompare,
         endCompare,
         energyStatIds,
         period,
         energyUnits,
-        ["sum"]
-      )),
-      ...(await fetchStatistics(
+        ["change"]
+      );
+    }
+    if (waterStatIds.length) {
+      _waterStatsCompare = fetchStatistics(
         hass!,
-        compareStartMinHour,
-        end,
+        startCompare,
+        endCompare,
         waterStatIds,
         period,
         waterUnits,
-        ["sum"]
-      )),
-    };
+        ["change"]
+      );
+    }
   }
 
-  let fossilEnergyConsumption: FossilEnergyConsumption | undefined;
-  let fossilEnergyConsumptionCompare: FossilEnergyConsumption | undefined;
-
+  let _fossilEnergyConsumption: undefined | Promise<FossilEnergyConsumption>;
+  let _fossilEnergyConsumptionCompare:
+    | undefined
+    | Promise<FossilEnergyConsumption>;
   if (co2SignalEntity !== undefined) {
-    fossilEnergyConsumption = await getFossilEnergyConsumption(
+    _fossilEnergyConsumption = getFossilEnergyConsumption(
       hass!,
       start,
       consumptionStatIDs,
@@ -473,7 +461,7 @@ const getEnergyData = async (
       dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
     );
     if (compare) {
-      fossilEnergyConsumptionCompare = await getFossilEnergyConsumption(
+      _fossilEnergyConsumptionCompare = getFossilEnergyConsumption(
         hass!,
         startCompare,
         consumptionStatIDs,
@@ -484,24 +472,38 @@ const getEnergyData = async (
     }
   }
 
-  Object.values(stats).forEach((stat) => {
-    // if the start of the first value is after the requested period, we have the first data point, and should add a zero point
-    if (stat.length && new Date(stat[0].start) > startMinHour) {
-      stat.unshift({
-        ...stat[0],
-        start: startMinHour.getTime(),
-        end: startMinHour.getTime(),
-        sum: 0,
-        state: 0,
-      });
-    }
-  });
-
-  const statsMetadataArray = await getStatisticMetadata(hass, allStatIDs);
   const statsMetadata: Record<string, StatisticsMetaData> = {};
-  statsMetadataArray.forEach((x) => {
-    statsMetadata[x.statistic_id] = x;
-  });
+  const _getStatisticMetadata:
+    | Promise<StatisticsMetaData[]>
+    | StatisticsMetaData[] = allStatIDs.length
+    ? getStatisticMetadata(hass, allStatIDs)
+    : [];
+  const [
+    energyStats,
+    waterStats,
+    energyStatsCompare,
+    waterStatsCompare,
+    statsMetadataArray,
+    fossilEnergyConsumption,
+    fossilEnergyConsumptionCompare,
+  ] = await Promise.all([
+    _energyStats,
+    _waterStats,
+    _energyStatsCompare,
+    _waterStatsCompare,
+    _getStatisticMetadata,
+    _fossilEnergyConsumption,
+    _fossilEnergyConsumptionCompare,
+  ]);
+  const stats = { ...energyStats, ...waterStats };
+  if (compare) {
+    statsCompare = { ...energyStatsCompare, ...waterStatsCompare };
+  }
+  if (allStatIDs.length) {
+    statsMetadataArray.forEach((x) => {
+      statsMetadata[x.statistic_id] = x;
+    });
+  }
 
   const data: EnergyData = {
     start,
@@ -624,18 +626,40 @@ export const getEnergyDataCollection = (
   collection._active = 0;
   collection.prefs = options.prefs;
   const now = new Date();
+  const hour = formatTime24h(now, hass.locale, hass.config).split(":")[0];
   // Set start to start of today if we have data for today, otherwise yesterday
-  collection.start = now.getHours() > 0 ? startOfToday() : startOfYesterday();
-  collection.end = now.getHours() > 0 ? endOfToday() : endOfYesterday();
+  collection.start = calcDate(
+    hour === "0" ? addDays(now, -1) : now,
+    startOfDay,
+    hass.locale,
+    hass.config
+  );
+  collection.end = calcDate(
+    hour === "0" ? addDays(now, -1) : now,
+    endOfDay,
+    hass.locale,
+    hass.config
+  );
 
   const scheduleUpdatePeriod = () => {
     collection._updatePeriodTimeout = window.setTimeout(
       () => {
-        collection.start = startOfToday();
-        collection.end = endOfToday();
+        collection.start = calcDate(
+          new Date(),
+          startOfDay,
+          hass.locale,
+          hass.config
+        );
+        collection.end = calcDate(
+          new Date(),
+          endOfDay,
+          hass.locale,
+          hass.config
+        );
         scheduleUpdatePeriod();
       },
-      addHours(endOfToday(), 1).getTime() - Date.now() // Switch to next day an hour after the day changed
+      addHours(calcDate(now, endOfDay, hass.locale, hass.config), 1).getTime() -
+        Date.now() // Switch to next day an hour after the day changed
     );
   };
   scheduleUpdatePeriod();
@@ -647,8 +671,10 @@ export const getEnergyDataCollection = (
     collection.start = newStart;
     collection.end = newEnd;
     if (
-      collection.start.getTime() === startOfToday().getTime() &&
-      collection.end?.getTime() === endOfToday().getTime() &&
+      collection.start.getTime() ===
+        calcDate(new Date(), startOfDay, hass.locale, hass.config).getTime() &&
+      collection.end?.getTime() ===
+        calcDate(new Date(), endOfDay, hass.locale, hass.config).getTime() &&
       !collection._updatePeriodTimeout
     ) {
       scheduleUpdatePeriod();
@@ -669,7 +695,7 @@ export const getEnergySolarForecasts = (hass: HomeAssistant) =>
   });
 
 const energyGasUnitClass = ["volume", "energy"] as const;
-export type EnergyGasUnitClass = typeof energyGasUnitClass[number];
+export type EnergyGasUnitClass = (typeof energyGasUnitClass)[number];
 
 export const getEnergyGasUnitClass = (
   prefs: EnergyPreferences,

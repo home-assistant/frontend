@@ -1,4 +1,4 @@
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-code-editor";
 import { ZHADevice } from "../../../../../data/zha";
@@ -28,9 +28,9 @@ class ZHADeviceZigbeeInfo extends LitElement {
     super.updated(changedProperties);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._signature) {
-      return html``;
+      return nothing;
     }
 
     return html`

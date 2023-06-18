@@ -1,9 +1,11 @@
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/entity/ha-entity-toggle";
+import { HumidifierEntity } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { EntityConfig, LovelaceRow } from "./types";
 
@@ -25,12 +27,12 @@ class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
-    const stateObj = this.hass.states[this._config.entity];
+    const stateObj = this.hass.states[this._config.entity] as HumidifierEntity;
 
     if (!stateObj) {
       return html`
@@ -48,11 +50,14 @@ class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {
           ? `${this.hass!.localize("ui.card.humidifier.humidity")}:
             ${stateObj.attributes.humidity} %${
               stateObj.attributes.mode
-                ? ` (${
-                    this.hass!.localize(
-                      `state_attributes.humidifier.mode.${stateObj.attributes.mode}`
-                    ) || stateObj.attributes.mode
-                  })`
+                ? ` (${computeAttributeValueDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    this.hass.config,
+                    this.hass.entities,
+                    "mode"
+                  )})`
                 : ""
             }`
           : ""}

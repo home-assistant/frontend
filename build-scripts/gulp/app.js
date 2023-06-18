@@ -1,19 +1,16 @@
-// Run HA develop mode
-const gulp = require("gulp");
-
-const env = require("../env");
-
-require("./clean.js");
-require("./translations.js");
-require("./locale-data.js");
-require("./gen-icons-json.js");
-require("./gather-static.js");
-require("./compress.js");
-require("./webpack.js");
-require("./service-worker.js");
-require("./entry-html.js");
-require("./rollup.js");
-require("./wds.js");
+import gulp from "gulp";
+import env from "../env.cjs";
+import "./clean.js";
+import "./compress.js";
+import "./entry-html.js";
+import "./gather-static.js";
+import "./gen-icons-json.js";
+import "./locale-data.js";
+import "./rollup.js";
+import "./service-worker.js";
+import "./translations.js";
+import "./wds.js";
+import "./webpack.js";
 
 gulp.task(
   "develop-app",
@@ -25,8 +22,7 @@ gulp.task(
     gulp.parallel(
       "gen-service-worker-app-dev",
       "gen-icons-json",
-      "gen-pages-dev",
-      "gen-index-app-dev",
+      "gen-pages-app-dev",
       "build-translations",
       "build-locale-data"
     ),
@@ -50,11 +46,7 @@ gulp.task(
     "copy-static-app",
     env.useRollup() ? "rollup-prod-app" : "webpack-prod-app",
     // Don't compress running tests
-    ...(env.isTest() ? [] : ["compress-app"]),
-    gulp.parallel(
-      "gen-pages-prod",
-      "gen-index-app-prod",
-      "gen-service-worker-app-prod"
-    )
+    ...(env.isTestBuild() ? [] : ["compress-app"]),
+    gulp.parallel("gen-pages-app-prod", "gen-service-worker-app-prod")
   )
 );

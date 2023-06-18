@@ -5,6 +5,7 @@ import {
   LitElement,
   PropertyValues,
   TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -17,7 +18,7 @@ import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-relative-time";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import {
   ActionHandlerEvent,
   CallServiceActionConfig,
@@ -145,9 +146,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     return false;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
     const { title } = this._config;
 
@@ -315,7 +316,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                 ${computeDomain(entityConf.entity) === "sensor" &&
                 stateObj.attributes.device_class ===
                   SENSOR_DEVICE_CLASS_TIMESTAMP &&
-                !UNAVAILABLE_STATES.includes(stateObj.state)
+                !isUnavailableState(stateObj.state)
                   ? html`
                       <hui-timestamp-display
                         .hass=${this.hass}
@@ -335,7 +336,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                   : computeStateDisplay(
                       this.hass!.localize,
                       stateObj,
-                      this.hass!.locale
+                      this.hass!.locale,
+                      this.hass!.config,
+                      this.hass!.entities
                     )}
               </div>
             `

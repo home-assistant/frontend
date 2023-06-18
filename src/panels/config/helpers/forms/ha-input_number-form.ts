@@ -1,14 +1,14 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-radio";
+import type { HaRadio } from "../../../../components/ha-radio";
 import "../../../../components/ha-textfield";
 import { InputNumber } from "../../../../data/input_number";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-radio";
-import type { HaRadio } from "../../../../components/ha-radio";
 
 @customElement("ha-input_number-form")
 class HaInputNumberForm extends LitElement {
@@ -67,9 +67,9 @@ class HaInputNumberForm extends LitElement {
     );
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
     const nameInvalid = !this._name || this._name.trim() === "";
 

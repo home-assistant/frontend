@@ -6,7 +6,7 @@ import { UiColorSelector } from "../../data/selector";
 import "../../panels/lovelace/components/hui-color-picker";
 import { HomeAssistant } from "../../types";
 
-@customElement("ha-selector-ui-color")
+@customElement("ha-selector-ui_color")
 export class HaSelectorUiColor extends LitElement {
   @property() public hass!: HomeAssistant;
 

@@ -79,7 +79,7 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         .header=${this.hass.localize("ui.panel.config.repairs.caption")}
       >
         <div slot="toolbar-icon">
-          <ha-button-menu corner="BOTTOM_START" multi>
+          <ha-button-menu multi>
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
@@ -117,7 +117,7 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         <div class="content">
           <ha-card outlined>
             <div class="card-content">
-              ${this._repairsIssues.length
+              ${issues.length
                 ? html`
                     <ha-config-repairs
                       .hass=${this.hass}

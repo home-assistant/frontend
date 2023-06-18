@@ -1,20 +1,27 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "module": "esnext",
+    // Language Options
+    "target": "ES2021",
+    "lib": ["ES2021", "DOM", "DOM.Iterable", "WebWorker"],
+    "experimentalDecorators": true,
+    // Modules
+    "module": "ESNext",
     "moduleResolution": "node",
-    "lib": ["es2017", "dom", "dom.iterable", "WebWorker"],
+    "resolveJsonModule": true,
+    // Babel handles transpiling and no need for declaration files
     "noEmit": true,
+    // Type checking options
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "strict": true,
     "noImplicitAny": false,
+    // Do not check type declaration files
     "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
+    // Interop with CommonJS and other tools
+    "esModuleInterop": true,
+    "isolatedModules": true,
     "plugins": [
       {
         "name": "ts-lit-plugin",

@@ -2,8 +2,11 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+import { stateActive } from "../common/entity/state_active";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { blankBeforePercent } from "../common/translations/blank_before_percent";
 import { UNAVAILABLE } from "./entity";
+import { FrontendLocaleData } from "./translation";
 
 export const enum CoverEntityFeature {
   OPEN = 1,
@@ -105,4 +108,21 @@ interface CoverEntityAttributes extends HassEntityAttributeBase {
 
 export interface CoverEntity extends HassEntityBase {
   attributes: CoverEntityAttributes;
+}
+
+export function computeCoverPositionStateDisplay(
+  stateObj: CoverEntity,
+  locale: FrontendLocaleData,
+  position?: number
+) {
+  const statePosition = stateActive(stateObj)
+    ? stateObj.attributes.current_position ??
+      stateObj.attributes.current_tilt_position
+    : undefined;
+
+  const currentPosition = position ?? statePosition;
+
+  return currentPosition && currentPosition !== 100
+    ? `${Math.round(currentPosition)}${blankBeforePercent(locale)}%`
+    : "";
 }

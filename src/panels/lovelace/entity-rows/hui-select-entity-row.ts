@@ -5,10 +5,11 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -40,9 +41,9 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.hass.states[this._config.entity] as
@@ -76,15 +77,15 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
             ? stateObj.attributes.options.map(
                 (option) =>
                   html`
-                    <mwc-list-item .value=${option}
-                      >${(stateObj.attributes.device_class &&
-                        this.hass!.localize(
-                          `component.select.state.${stateObj.attributes.device_class}.${option}`
-                        )) ||
-                      this.hass!.localize(
-                        `component.select.state._.${option}`
-                      ) ||
-                      option}
+                    <mwc-list-item .value=${option}>
+                      ${computeStateDisplay(
+                        this.hass!.localize,
+                        stateObj,
+                        this.hass!.locale,
+                        this.hass!.config,
+                        this.hass!.entities,
+                        option
+                      )}
                     </mwc-list-item>
                   `
               )
@@ -102,6 +103,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
       }
       ha-select {
         width: 100%;
+        --ha-select-min-width: 0;
       }
     `;
   }

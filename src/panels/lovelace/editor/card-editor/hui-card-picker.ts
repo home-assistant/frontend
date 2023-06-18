@@ -8,6 +8,7 @@ import {
   LitElement,
   PropertyValues,
   TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -15,9 +16,9 @@ import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/search-input";
 import "../../../../components/ha-circular-progress";
-import { UNAVAILABLE_STATES } from "../../../../data/entity";
+import "../../../../components/search-input";
+import { isUnavailableState } from "../../../../data/entity";
 import type {
   LovelaceCardConfig,
   LovelaceConfig,
@@ -86,14 +87,14 @@ export class HuiCardPicker extends LitElement {
     }
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (
       !this.hass ||
       !this.lovelace ||
       !this._unusedEntities ||
       !this._usedEntities
     ) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -163,12 +164,12 @@ export class HuiCardPicker extends LitElement {
     this._usedEntities = [...usedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !UNAVAILABLE_STATES.includes(this.hass!.states[eid].state)
+        !isUnavailableState(this.hass!.states[eid].state)
     );
     this._unusedEntities = [...unusedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !UNAVAILABLE_STATES.includes(this.hass!.states[eid].state)
+        !isUnavailableState(this.hass!.states[eid].state)
     );
 
     this._loadCards();

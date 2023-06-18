@@ -9,13 +9,6 @@
         script.src = src;
         return script;
       }
-      window.Polymer = {
-        lazyRegister: true,
-        useNativeCSSProperties: true,
-        dom: "shadow",
-        suppressTemplateNotifications: true,
-        suppressBindingNotifications: true,
-      };
       window.polymerSkipLoadingFontRoboto = true;
       if (!("customElements" in window &&
             "content" in document.createElement("template"))) {

@@ -1,7 +1,7 @@
 import { mdiInformation } from "@mdi/js";
-import "@polymer/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import "../../../../components/ha-card";
@@ -50,9 +50,9 @@ class HuiEnergySolarGaugeCard
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     if (!this._data) {
@@ -65,7 +65,7 @@ class HuiEnergySolarGaugeCard
     const types = energySourcesByType(prefs);
 
     if (!types.solar) {
-      return html``;
+      return nothing;
     }
 
     const totalSolarProduction = calculateStatisticsSumGrowth(
@@ -93,7 +93,7 @@ class HuiEnergySolarGaugeCard
         ${value !== undefined
           ? html`
               <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
-              <paper-tooltip animation-delay="0" for="info" position="left">
+              <simple-tooltip animation-delay="0" for="info" position="left">
                 <span>
                   ${this.hass.localize(
                     "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used"
@@ -103,12 +103,12 @@ class HuiEnergySolarGaugeCard
                     "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used_charge_home_bat"
                   )}
                 </span>
-              </paper-tooltip>
+              </simple-tooltip>
               <ha-gauge
                 min="0"
                 max="100"
                 .value=${value}
-                .locale=${this.hass!.locale}
+                .locale=${this.hass.locale}
                 label="%"
                 style=${styleMap({
                   "--gauge-color": this._computeSeverity(value),
@@ -175,11 +175,11 @@ class HuiEnergySolarGaugeCard
         top: 4px;
         color: var(--secondary-text-color);
       }
-      paper-tooltip > span {
+      simple-tooltip > span {
         font-size: 12px;
         line-height: 12px;
       }
-      paper-tooltip {
+      simple-tooltip {
         width: 80%;
         max-width: 250px;
         top: 8px !important;

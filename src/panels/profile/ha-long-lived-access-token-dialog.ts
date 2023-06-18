@@ -1,12 +1,19 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-textfield";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { LongLivedAccessTokenDialogParams } from "./show-long-lived-access-token-dialog";
-import "../../components/ha-textfield";
 
 const QR_LOGO_URL = "/static/icons/favicon-192x192.png";
 
@@ -28,9 +35,9 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params || !this._params.token) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -77,7 +84,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
     await new Promise((resolve) => {
       imageObj.onload = resolve;
     });
-    context.drawImage(
+    context?.drawImage(
       imageObj,
       canvas.width / 3,
       canvas.height / 3,
@@ -85,7 +92,14 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
       canvas.height / 3
     );
 
-    this._qrCode = html`<img src=${canvas.toDataURL()}></img>`;
+    this._qrCode = html`<img
+        alt=${this.hass.localize(
+          "ui.panel.profile.long_lived_access_tokens.qr_code_image",
+          "name",
+          this._params!.name
+        )}
+        src=${canvas.toDataURL()}
+      ></img>`;
   }
 
   static get styles(): CSSResultGroup {

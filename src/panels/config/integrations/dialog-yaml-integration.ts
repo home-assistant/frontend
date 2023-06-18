@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
@@ -21,9 +21,9 @@ export class DialogYamlIntegration extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     const manifest = this._params.manifest;
     const docLink = manifest.is_built_in
@@ -75,8 +75,6 @@ export class DialogYamlIntegration extends LitElement {
         text-decoration: none;
       }
       ha-dialog {
-        --mdc-dialog-heading-ink-color: var(--primary-text-color);
-        --mdc-dialog-content-ink-color: var(--primary-text-color);
         /* Place above other dialogs */
         --dialog-z-index: 104;
       }

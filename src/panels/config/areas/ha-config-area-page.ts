@@ -6,7 +6,7 @@ import {
   HassEntity,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket/dist/types";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -43,6 +43,8 @@ import { ScriptEntity } from "../../../data/script";
 import { findRelated, RelatedResult } from "../../../data/search";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import "../../../layouts/hass-error-screen";
+import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -51,8 +53,6 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
-import "../../../layouts/hass-error-screen";
-import "../../../layouts/hass-subpage";
 
 declare type NameAndEntity<EntityType extends HassEntity> = {
   name: string;
@@ -164,9 +164,9 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._areas || !this._devices || !this._entities) {
-      return html``;
+      return nothing;
     }
 
     const area = this._area(this.areaId, this._areas);
@@ -192,13 +192,13 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
       devices.forEach((entry) => {
         entry.name = computeDeviceName(entry, this.hass);
       });
-      sortDeviceRegistryByName(devices);
+      sortDeviceRegistryByName(devices, this.hass.locale.language);
     }
     if (entities) {
       entities.forEach((entry) => {
         entry.name = computeEntityRegistryName(this.hass, entry);
       });
-      sortEntityRegistryByName(entities);
+      sortEntityRegistryByName(entities, this.hass.locale.language);
     }
 
     // Group entities by domain
@@ -258,7 +258,8 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
           <div class="column">
             ${area.picture
               ? html`<div class="img-container">
-                  <img src=${area.picture} /><ha-icon-button
+                  <img alt=${area.name} src=${area.picture} />
+                  <ha-icon-button
                     .path=${mdiPencil}
                     .entry=${area}
                     @click=${this._showSettings}
@@ -507,7 +508,11 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
         }
       });
       groupedEntities.sort((entry1, entry2) =>
-        caseInsensitiveStringCompare(entry1.name!, entry2.name!)
+        caseInsensitiveStringCompare(
+          entry1.name!,
+          entry2.name!,
+          this.hass.locale.language
+        )
       );
     }
     if (relatedEntityIds?.length) {
@@ -521,7 +526,11 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
         }
       });
       relatedEntities.sort((entry1, entry2) =>
-        caseInsensitiveStringCompare(entry1.name!, entry2.name!)
+        caseInsensitiveStringCompare(
+          entry1.name!,
+          entry2.name!,
+          this.hass.locale.language
+        )
       );
     }
 
@@ -544,9 +553,9 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
       </a>
       ${!entityState.attributes.id
         ? html`
-            <paper-tooltip animation-delay="0">
+            <simple-tooltip animation-delay="0">
               ${this.hass.localize("ui.panel.config.devices.cant_edit")}
-            </paper-tooltip>
+            </simple-tooltip>
           `
         : ""}
     </div>`;
@@ -568,16 +577,23 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
       </a>
       ${!entityState.attributes.id
         ? html`
-            <paper-tooltip animation-delay="0">
+            <simple-tooltip animation-delay="0">
               ${this.hass.localize("ui.panel.config.devices.cant_edit")}
-            </paper-tooltip>
+            </simple-tooltip>
           `
         : ""}
     </div>`;
   }
 
   private _renderScript(name: string, entityState: ScriptEntity) {
-    return html`<a href=${`/config/script/edit/${entityState.entity_id}`}>
+    const entry = this._entities.find(
+      (e) => e.entity_id === entityState.entity_id
+    );
+    let url = `/config/script/show/${entityState.entity_id}`;
+    if (entry) {
+      url = `/config/script/edit/${entry.unique_id}`;
+    }
+    return html`<a href=${url}>
       <paper-item>
         <paper-item-body> ${name} </paper-item-body>
         <ha-icon-next></ha-icon-next>

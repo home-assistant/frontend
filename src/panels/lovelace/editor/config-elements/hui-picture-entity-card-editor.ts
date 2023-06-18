@@ -1,7 +1,8 @@
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { PictureEntityCardConfig } from "../../cards/types";
@@ -9,7 +10,6 @@ import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { configElementStyle } from "./config-elements-style";
-import "../../../../components/ha-form/ha-form";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -61,11 +61,11 @@ const SCHEMA = [
   { name: "theme", selector: { theme: {} } },
   {
     name: "tap_action",
-    selector: { "ui-action": {} },
+    selector: { ui_action: {} },
   },
   {
     name: "hold_action",
-    selector: { "ui-action": {} },
+    selector: { ui_action: {} },
   },
 ] as const;
 
@@ -83,9 +83,9 @@ export class HuiPictureEntityCardEditor
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const data = {

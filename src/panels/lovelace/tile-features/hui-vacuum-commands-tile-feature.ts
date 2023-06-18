@@ -8,10 +8,12 @@ import {
   mdiTargetVariant,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/tile/ha-tile-button";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   canReturnHome,
@@ -40,7 +42,7 @@ export const VACUUM_COMMANDS_FEATURES: Record<
   VacuumCommand,
   VacuumEntityFeature[]
 > = {
-  start_pause: [VacuumEntityFeature.PAUSE],
+  start_pause: [VacuumEntityFeature.PAUSE, VacuumEntityFeature.START],
   stop: [VacuumEntityFeature.STOP],
   clean_spot: [VacuumEntityFeature.CLEAN_SPOT],
   locate: [VacuumEntityFeature.LOCATE],
@@ -85,7 +87,7 @@ export const VACUUM_COMMANDS_BUTTONS: Record<
           translationKey: "start",
           icon: mdiPlay,
           serviceName: "start",
-          disabled: canStart(stateObj),
+          disabled: !canStart(stateObj),
         };
   },
   stop: (stateObj) => ({
@@ -110,6 +112,14 @@ export const VACUUM_COMMANDS_BUTTONS: Record<
     serviceName: "return_to_base",
     disabled: !canReturnHome(stateObj),
   }),
+};
+
+export const supportsVacuumCommandTileFeature = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "vacuum" &&
+    VACUUM_COMMANDS.some((c) => supportsVacuumCommand(stateObj, c))
+  );
 };
 
 @customElement("hui-vacuum-commands-tile-feature")
@@ -159,15 +169,20 @@ class HuiVacuumCommandTileFeature
     });
   }
 
-  protected render(): TemplateResult {
-    if (!this._config || !this.hass || !this.stateObj) {
-      return html``;
+  protected render() {
+    if (
+      !this._config ||
+      !this.hass ||
+      !this.stateObj ||
+      !supportsVacuumCommandTileFeature(this.stateObj)
+    ) {
+      return nothing;
     }
 
     const stateObj = this.stateObj as VacuumEntity;
 
     return html`
-      <div class="container">
+      <ha-control-button-group>
         ${VACUUM_COMMANDS.filter(
           (command) =>
             supportsVacuumCommand(stateObj, command) &&
@@ -175,7 +190,7 @@ class HuiVacuumCommandTileFeature
         ).map((command) => {
           const button = VACUUM_COMMANDS_BUTTONS[command](stateObj);
           return html`
-            <ha-tile-button
+            <ha-control-button
               .entry=${button}
               .label=${this.hass!.localize(
                 // @ts-ignore
@@ -185,29 +200,18 @@ class HuiVacuumCommandTileFeature
               .disabled=${button.disabled || stateObj.state === UNAVAILABLE}
             >
               <ha-svg-icon .path=${button.icon}></ha-svg-icon>
-            </ha-tile-button>
+            </ha-control-button>
           `;
         })}
-      </div>
+      </ha-control-button-group>
     `;
   }
 
   static get styles() {
     return css`
-      .container {
-        display: flex;
-        flex-direction: row;
-        padding: 0 12px 12px 12px;
-        width: auto;
-      }
-      ha-tile-button {
-        flex: 1;
-      }
-      ha-tile-button:not(:last-child) {
-        margin-right: 12px;
-        margin-inline-end: 12px;
-        margin-inline-start: initial;
-        direction: var(--direction);
+      ha-control-button-group {
+        margin: 0 12px 12px 12px;
+        --control-button-group-spacing: 12px;
       }
     `;
   }

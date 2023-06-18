@@ -71,7 +71,7 @@ export const computeInitialHaFormData = (
         data[field.name] = "00:00:00";
       } else if ("date" in selector || "datetime" in selector) {
         const now = new Date().toISOString().slice(0, 10);
-        data[field.name] = `${now} 00:00:00`;
+        data[field.name] = `${now}T00:00:00`;
       } else if ("color_rgb" in selector) {
         data[field.name] = [0, 0, 0];
       } else if ("color_temp" in selector) {

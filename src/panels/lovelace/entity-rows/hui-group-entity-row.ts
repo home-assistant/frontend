@@ -1,4 +1,4 @@
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -40,9 +40,9 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.hass.states[this._config.entity];
@@ -69,7 +69,9 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
                 ${computeStateDisplay(
                   this.hass!.localize,
                   stateObj,
-                  this.hass.locale
+                  this.hass.locale,
+                  this.hass.config,
+                  this.hass.entities
                 )}
               </div>
             `}

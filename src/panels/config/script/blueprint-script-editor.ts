@@ -102,7 +102,12 @@ export class HaBlueprintScriptEditor extends LitElement {
                     ([key, value]) =>
                       html`<ha-settings-row .narrow=${this.narrow}>
                         <span slot="heading">${value?.name || key}</span>
-                        <span slot="description">${value?.description}</span>
+                        <ha-markdown
+                          slot="description"
+                          class="card-content"
+                          breaks
+                          .content=${value?.description}
+                        ></ha-markdown>
                         ${value?.selector
                           ? html`<ha-selector
                               .hass=${this.hass}
@@ -158,7 +163,7 @@ export class HaBlueprintScriptEditor extends LitElement {
     ev.stopPropagation();
     const target = ev.target as any;
     const key = target.key;
-    const value = ev.detail?.value ?? target.value;
+    const value = ev.detail ? ev.detail.value : target.value;
     if (
       (this.config.use_blueprint.input &&
         this.config.use_blueprint.input[key] === value) ||
@@ -168,7 +173,14 @@ export class HaBlueprintScriptEditor extends LitElement {
     }
     const input = { ...this.config.use_blueprint.input, [key]: value };
 
-    if (value === "" || value === undefined) {
+    const blueprint = this._blueprint;
+    const metaValue =
+      !blueprint || "error" in blueprint
+        ? undefined
+        : blueprint?.metadata.input && blueprint?.metadata?.input[key];
+    const keyDefault = metaValue && metaValue.default;
+
+    if ((value === "" && !keyDefault) || value === undefined) {
       delete input[key];
     }
 

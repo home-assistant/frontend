@@ -16,7 +16,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -206,9 +206,9 @@ export class HaSceneEditor extends SubscribeMixin(
     ];
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
     const { devices, entities } = this._getEntitiesDevices(
       this._entities,
@@ -228,7 +228,6 @@ export class HaSceneEditor extends SubscribeMixin(
           : this.hass.localize("ui.panel.config.scene.editor.default_name")}
       >
         <ha-button-menu
-          corner="BOTTOM_START"
           slot="toolbar-icon"
           @action=${this._handleMenuAction}
           activatable
@@ -239,13 +238,7 @@ export class HaSceneEditor extends SubscribeMixin(
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <mwc-list-item
-            .disabled=${!this.sceneId}
-            aria-label=${this.hass.localize(
-              "ui.panel.config.scene.picker.duplicate_scene"
-            )}
-            graphic="icon"
-          >
+          <mwc-list-item .disabled=${!this.sceneId} graphic="icon">
             ${this.hass.localize(
               "ui.panel.config.scene.picker.duplicate_scene"
             )}
@@ -257,9 +250,6 @@ export class HaSceneEditor extends SubscribeMixin(
 
           <mwc-list-item
             .disabled=${!this.sceneId}
-            aria-label=${this.hass.localize(
-              "ui.panel.config.scene.picker.delete_scene"
-            )}
             class=${classMap({ warning: Boolean(this.sceneId) })}
             graphic="icon"
           >
@@ -351,7 +341,7 @@ export class HaSceneEditor extends SubscribeMixin(
                           ${device.entities.map((entityId) => {
                             const entityStateObj = this.hass.states[entityId];
                             if (!entityStateObj) {
-                              return html``;
+                              return nothing;
                             }
                             return html`
                               <paper-icon-item
@@ -417,7 +407,7 @@ export class HaSceneEditor extends SubscribeMixin(
                                   const entityStateObj =
                                     this.hass.states[entityId];
                                   if (!entityStateObj) {
-                                    return html``;
+                                    return nothing;
                                   }
                                   return html`
                                     <paper-icon-item

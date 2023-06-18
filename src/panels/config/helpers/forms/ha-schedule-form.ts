@@ -1,31 +1,28 @@
-// @ts-ignore
-import fullcalendarStyle from "@fullcalendar/common/main.css";
 import { Calendar, CalendarOptions } from "@fullcalendar/core";
 import allLocales from "@fullcalendar/core/locales-all";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
-// @ts-ignore
-import timegridStyle from "@fullcalendar/timegrid/main.css";
-import { isSameDay } from "date-fns";
+import { addDays, isSameDay, isSameWeek, nextDay } from "date-fns";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
-  unsafeCSS,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { firstWeekdayIndex } from "../../../../common/datetime/first_weekday";
 import { formatTime24h } from "../../../../common/datetime/format_time";
 import { useAmPm } from "../../../../common/datetime/use_am_pm";
-import { firstWeekdayIndex } from "../../../../common/datetime/first_weekday";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
 import { Schedule, ScheduleDay, weekdays } from "../../../../data/schedule";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
+import { loadPolyfillIfNeeded } from "../../../../resources/resize-observer.polyfill";
 
 const defaultFullCalendarConfig: CalendarOptions = {
   plugins: [timeGridPlugin, interactionPlugin],
@@ -71,6 +68,8 @@ class HaScheduleForm extends LitElement {
 
   private _item?: Schedule;
 
+  private _resizeObserver?: ResizeObserver;
+
   set item(item: Schedule) {
     this._item = item;
     if (item) {
@@ -104,9 +103,43 @@ class HaScheduleForm extends LitElement {
     );
   }
 
-  protected render(): TemplateResult {
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.updateComplete.then(() => this._attachObserver());
+  }
+
+  public disconnectedCallback(): void {
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+    }
+  }
+
+  private _measureForm() {
+    const form = this.shadowRoot!.querySelector(".form");
+    if (!form) {
+      return;
+    }
+
+    this.calendar?.updateSize();
+  }
+
+  private async _attachObserver(): Promise<void> {
+    if (!this._resizeObserver) {
+      await loadPolyfillIfNeeded();
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measureForm(), 250, false)
+      );
+    }
+    const form = this.shadowRoot!.querySelector(".form");
+    if (!form) {
+      return;
+    }
+    this._resizeObserver.observe(form);
+  }
+
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
     const nameInvalid = !this._name || this._name.trim() === "";
 
@@ -207,8 +240,6 @@ class HaScheduleForm extends LitElement {
 
   private get _events() {
     const events: any[] = [];
-    const currentDay = new Date().getDay();
-    const baseDay = currentDay === 0 ? 7 : currentDay;
 
     for (const [i, day] of weekdays.entries()) {
       if (!this[`_${day}`].length) {
@@ -216,11 +247,15 @@ class HaScheduleForm extends LitElement {
       }
 
       this[`_${day}`].forEach((item: ScheduleDay, index: number) => {
-        // Add 7 to 0 because we start the calendar on Monday
-        const distance = i - baseDay + (i === 0 ? 7 : 0);
-
-        const start = new Date();
-        start.setDate(start.getDate() + distance);
+        let date = nextDay(new Date(), i as Day);
+        if (
+          !isSameWeek(date, new Date(), {
+            weekStartsOn: firstWeekdayIndex(this.hass.locale),
+          })
+        ) {
+          date = addDays(date, -7);
+        }
+        const start = new Date(date);
         const start_tokens = item.from.split(":");
         start.setHours(
           parseInt(start_tokens[0]),
@@ -229,8 +264,7 @@ class HaScheduleForm extends LitElement {
           0
         );
 
-        const end = new Date();
-        end.setDate(end.getDate() + distance);
+        const end = new Date(date);
         const end_tokens = item.to.split(":");
         end.setHours(parseInt(end_tokens[0]), parseInt(end_tokens[1]), 0, 0);
 
@@ -252,9 +286,9 @@ class HaScheduleForm extends LitElement {
     const value = [...this[`_${day}`]];
     const newValue = { ...this._item };
 
-    const endFormatted = formatTime24h(end);
+    const endFormatted = formatTime24h(end, this.hass.locale, this.hass.config);
     value.push({
-      from: formatTime24h(start),
+      from: formatTime24h(start, this.hass.locale, this.hass.config),
       to:
         !isSameDay(start, end) || endFormatted === "0:00"
           ? "24:00"
@@ -279,7 +313,7 @@ class HaScheduleForm extends LitElement {
     const value = this[`_${day}`][parseInt(index)];
     const newValue = { ...this._item };
 
-    const endFormatted = formatTime24h(end);
+    const endFormatted = formatTime24h(end, this.hass.locale, this.hass.config);
     newValue[day][index] = {
       from: value.from,
       to:
@@ -304,9 +338,9 @@ class HaScheduleForm extends LitElement {
     const newDay = weekdays[start.getDay()];
     const newValue = { ...this._item };
 
-    const endFormatted = formatTime24h(end);
+    const endFormatted = formatTime24h(end, this.hass.locale, this.hass.config);
     const event = {
-      from: formatTime24h(start),
+      from: formatTime24h(start, this.hass.locale, this.hass.config),
       to:
         !isSameDay(start, end) || endFormatted === "0:00"
           ? "24:00"
@@ -370,8 +404,6 @@ class HaScheduleForm extends LitElement {
     return [
       haStyle,
       css`
-        ${unsafeCSS(fullcalendarStyle)}
-        ${unsafeCSS(timegridStyle)}
         .form {
           color: var(--primary-text-color);
         }
@@ -388,12 +420,59 @@ class HaScheduleForm extends LitElement {
           -webkit-user-select: none;
           -ms-user-select: none;
           user-select: none;
+          --fc-border-color: var(--divider-color);
+          --fc-event-border-color: var(--divider-color);
         }
-        .fc-scroller {
-          overflow-x: visible !important;
-        }
+
         .fc-v-event .fc-event-time {
           white-space: inherit;
+        }
+        .fc-theme-standard .fc-scrollgrid {
+          border: 1px solid var(--divider-color);
+          border-radius: var(--mdc-shape-small, 4px);
+        }
+
+        .fc-scrollgrid-section-header td {
+          border: none;
+        }
+        :host([narrow]) .fc-scrollgrid-sync-table {
+          overflow: hidden;
+        }
+        table.fc-scrollgrid-sync-table
+          tbody
+          tr:first-child
+          .fc-daygrid-day-top {
+          padding-top: 0;
+        }
+        .fc-scroller::-webkit-scrollbar {
+          width: 0.4rem;
+          height: 0.4rem;
+        }
+        .fc-scroller::-webkit-scrollbar-thumb {
+          -webkit-border-radius: 4px;
+          border-radius: 4px;
+          background: var(--scrollbar-thumb-color);
+        }
+        .fc-scroller {
+          overflow-y: auto;
+          scrollbar-color: var(--scrollbar-thumb-color) transparent;
+          scrollbar-width: thin;
+        }
+
+        .fc-timegrid-event-short .fc-event-time:after {
+          content: ""; /* prevent trailing dash in half hour events since we do not have event titles */
+        }
+
+        a {
+          color: inherit !important;
+        }
+
+        th.fc-col-header-cell.fc-day {
+          background-color: var(--table-header-background-color);
+          color: var(--primary-text-color);
+          font-size: 11px;
+          font-weight: bold;
+          text-transform: uppercase;
         }
       `,
     ];

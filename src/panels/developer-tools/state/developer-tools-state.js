@@ -114,6 +114,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           direction: rtl;
         }
 
+        :host([rtl]) .filters {
+          direction: rtl;
+        }
+
         .entities tr {
           vertical-align: top;
           direction: ltr;
@@ -189,8 +193,9 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               value="{{_entityId}}"
               on-change="entityIdChanged"
               allow-custom-entity
+              item-label-path="entity_id"
             ></ha-entity-picker>
-            <ha-tip>[[localize('ui.tips.key_e_hint')]]</ha-tip>
+            <ha-tip hass="[[hass]]">[[localize('ui.tips.key_e_hint')]]</ha-tip>
             <ha-textfield
               label="[[localize('ui.panel.developer-tools.tabs.states.state')]]"
               required

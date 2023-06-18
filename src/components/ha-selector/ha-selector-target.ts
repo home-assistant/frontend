@@ -1,24 +1,19 @@
-import {
-  HassEntity,
-  HassServiceTarget,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket";
+import { HassEntity, HassServiceTarget } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../common/array/ensure-array";
 import {
   DeviceRegistryEntry,
   getDeviceIntegrationLookup,
 } from "../../data/device_registry";
-import type { EntityRegistryEntry } from "../../data/entity_registry";
-import { subscribeEntityRegistry } from "../../data/entity_registry";
 import {
   EntitySources,
   fetchEntitySourcesWithCache,
@@ -28,12 +23,11 @@ import {
   filterSelectorEntities,
   TargetSelector,
 } from "../../data/selector";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../types";
 import "../ha-target-picker";
 
 @customElement("ha-selector-target")
-export class HaTargetSelector extends SubscribeMixin(LitElement) {
+export class HaTargetSelector extends LitElement {
   @property() public hass!: HomeAssistant;
 
   @property() public selector!: TargetSelector;
@@ -48,24 +42,26 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
 
   @state() private _entitySources?: EntitySources;
 
-  @state() private _entities?: EntityRegistryEntry[];
-
   private _deviceIntegrationLookup = memoizeOne(getDeviceIntegrationLookup);
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entities = entities.filter((entity) => entity.device_id !== null);
-      }),
-    ];
+  private _hasIntegration(selector: TargetSelector) {
+    return (
+      (selector.target?.entity &&
+        ensureArray(selector.target.entity).some(
+          (filter) => filter.integration
+        )) ||
+      (selector.target?.device &&
+        ensureArray(selector.target.device).some(
+          (device) => device.integration
+        ))
+    );
   }
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (
       changedProperties.has("selector") &&
-      (this.selector.target?.device?.integration ||
-        this.selector.target?.entity?.integration) &&
+      this._hasIntegration(this.selector) &&
       !this._entitySources
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {
@@ -74,13 +70,9 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected render(): TemplateResult {
-    if (
-      (this.selector.target?.device?.integration ||
-        this.selector.target?.entity?.integration) &&
-      !this._entitySources
-    ) {
-      return html``;
+  protected render() {
+    if (this._hasIntegration(this.selector) && !this._entitySources) {
+      return nothing;
     }
 
     return html`<ha-target-picker
@@ -98,10 +90,8 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
       return true;
     }
 
-    return filterSelectorEntities(
-      this.selector.target.entity,
-      entity,
-      this._entitySources
+    return ensureArray(this.selector.target.entity).some((filter) =>
+      filterSelectorEntities(filter, entity, this._entitySources)
     );
   };
 
@@ -110,15 +100,15 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
       return true;
     }
 
-    const deviceIntegrations =
-      this._entitySources && this._entities
-        ? this._deviceIntegrationLookup(this._entitySources, this._entities)
-        : undefined;
+    const deviceIntegrations = this._entitySources
+      ? this._deviceIntegrationLookup(
+          this._entitySources,
+          Object.values(this.hass.entities)
+        )
+      : undefined;
 
-    return filterSelectorDevices(
-      this.selector.target.device,
-      device,
-      deviceIntegrations
+    return ensureArray(this.selector.target.device).some((filter) =>
+      filterSelectorDevices(filter, device, deviceIntegrations)
     );
   };
 

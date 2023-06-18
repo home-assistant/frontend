@@ -5,11 +5,12 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -29,9 +30,9 @@ class MoreInfoHumidifier extends LitElement {
 
   private _resizeDebounce?: number;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     const hass = this.hass;
@@ -78,9 +79,15 @@ class MoreInfoHumidifier extends LitElement {
                 ${stateObj.attributes.available_modes!.map(
                   (mode) => html`
                     <mwc-list-item .value=${mode}>
-                      ${hass.localize(
-                        `state_attributes.humidifier.mode.${mode}`
-                      ) || mode}
+                      ${computeAttributeValueDisplay(
+                        hass.localize,
+                        stateObj,
+                        hass.locale,
+                        this.hass.config,
+                        hass.entities,
+                        "mode",
+                        mode
+                      )}
                     </mwc-list-item>
                   `
                 )}
@@ -147,7 +154,9 @@ class MoreInfoHumidifier extends LitElement {
     // We reset stateObj to re-sync the inputs with the state. It will be out
     // of sync if our service call did not result in the entity to be turned
     // on. Since the state is not changing, the resync is not called automatic.
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => {
+      setTimeout(resolve, 2000);
+    });
 
     // No need to resync if we received a new state.
     if (this.stateObj !== curState) {

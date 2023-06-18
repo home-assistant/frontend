@@ -1,5 +1,6 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-subpage";
 import { HomeAssistant, PanelInfo } from "../../types";
@@ -35,11 +36,12 @@ class HaPanelIframe extends LitElement {
         main-page
       >
         <iframe
+          title=${ifDefined(
+            this.panel.title === null ? undefined : this.panel.title
+          )}
           src=${this.panel.config.url}
           sandbox="allow-forms allow-popups allow-pointer-lock allow-same-origin allow-scripts allow-modals allow-downloads"
-          allowfullscreen="true"
-          webkitallowfullscreen="true"
-          mozallowfullscreen="true"
+          allow="fullscreen"
         ></iframe>
       </hass-subpage>
     `;

@@ -1,7 +1,7 @@
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
@@ -46,7 +46,7 @@ class HaConfigPerson extends LitElement {
 
   private _usersLoad?: Promise<User[]>;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (
       !this.hass ||
       this._storageItems === undefined ||
@@ -113,7 +113,7 @@ class HaConfigPerson extends LitElement {
                     >
                   </div>
                 `
-              : html``}
+              : nothing}
           </ha-card>
           ${this._configItems.length > 0
             ? html`
@@ -156,10 +156,10 @@ class HaConfigPerson extends LitElement {
     const personData = await fetchPersons(this.hass!);
 
     this._storageItems = personData.storage.sort((ent1, ent2) =>
-      stringCompare(ent1.name, ent2.name)
+      stringCompare(ent1.name, ent2.name, this.hass!.locale.language)
     );
     this._configItems = personData.config.sort((ent1, ent2) =>
-      stringCompare(ent1.name, ent2.name)
+      stringCompare(ent1.name, ent2.name, this.hass!.locale.language)
     );
     this._openDialogIfPersonSpecifiedInRoute();
   }
@@ -221,7 +221,8 @@ class HaConfigPerson extends LitElement {
       createEntry: async (values) => {
         const created = await createPerson(this.hass!, values);
         this._storageItems = this._storageItems!.concat(created).sort(
-          (ent1, ent2) => stringCompare(ent1.name, ent2.name)
+          (ent1, ent2) =>
+            stringCompare(ent1.name, ent2.name, this.hass!.locale.language)
         );
       },
       updateEntry: async (values) => {

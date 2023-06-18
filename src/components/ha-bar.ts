@@ -44,7 +44,6 @@ export class HaBar extends LitElement {
       }
       rect:last-child {
         fill: var(--ha-bar-primary-color, var(--primary-color));
-        rx: var(--ha-bar-border-radius, 4px);
       }
       svg {
         border-radius: var(--ha-bar-border-radius, 4px);

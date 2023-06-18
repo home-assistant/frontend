@@ -29,7 +29,6 @@ import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { navigate } from "../../../../src/common/navigate";
-import "../../../../src/components/buttons/ha-call-api-button";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
@@ -47,6 +46,7 @@ import {
   HassioAddonSetOptionParams,
   HassioAddonSetSecurityParams,
   installHassioAddon,
+  rebuildLocalAddon,
   restartHassioAddon,
   setHassioAddonOption,
   setHassioAddonSecurity,
@@ -404,6 +404,7 @@ class HassioAddonInfo extends LitElement {
                 ? html`
                     <img
                       class="logo"
+                      alt=""
                       src="/api/hassio/addons/${this.addon.slug}/logo"
                     />
                   `
@@ -639,13 +640,12 @@ class HassioAddonInfo extends LitElement {
                   </ha-progress-button>
                   ${this.addon.build
                     ? html`
-                        <ha-call-api-button
+                        <ha-progress-button
                           class="warning"
-                          .hass=${this.hass}
-                          .path="hassio/addons/${this.addon.slug}/rebuild"
+                          @click=${this._rebuildClicked}
                         >
                           ${this.supervisor.localize("addon.dashboard.rebuild")}
-                        </ha-call-api-button>
+                        </ha-progress-button>
                       `
                     : ""}`
               : ""}
@@ -659,6 +659,7 @@ class HassioAddonInfo extends LitElement {
               <div class="card-content">
                 <ha-markdown
                   .content=${this.addon.long_description}
+                  lazy-images
                 ></ha-markdown>
               </div>
             </ha-card>
@@ -965,6 +966,21 @@ class HassioAddonInfo extends LitElement {
     button.progress = false;
   }
 
+  private async _rebuildClicked(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
+    button.progress = true;
+
+    try {
+      await rebuildLocalAddon(this.hass, this.addon.slug);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.supervisor.localize("addon.dashboard.action_error.rebuild"),
+        text: extractApiErrorMessage(err),
+      });
+    }
+    button.progress = false;
+  }
+
   private async _startClicked(ev: CustomEvent): Promise<void> {
     const button = ev.currentTarget as any;
     button.progress = true;
@@ -1122,10 +1138,6 @@ class HassioAddonInfo extends LitElement {
         }
         ha-svg-icon.stopped {
           color: var(--error-color);
-        }
-        ha-call-api-button {
-          font-weight: 500;
-          color: var(--primary-color);
         }
         protection-enable mwc-button {
           --mdc-theme-primary: white;

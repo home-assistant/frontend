@@ -7,7 +7,6 @@ on:
 
 env:
   PYTHON_VERSION: "3.10"
-  NODE_VERSION: 16
   NODE_OPTIONS: --max_old_space_size=6144
 
 permissions:
@@ -21,17 +20,17 @@ jobs:
       contents: write
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.5.3
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3.6.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: ".nvmrc"
           cache: yarn
 
       - name: Install dependencies
@@ -43,7 +42,7 @@ jobs:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
 
       - name: Bump version
-        run: script/version_bump.js nightly
+        run: script/version_bump.cjs nightly
 
       - name: Build nightly Python wheels
         run: |

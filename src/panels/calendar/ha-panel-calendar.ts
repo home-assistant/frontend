@@ -1,8 +1,6 @@
 import "@material/mwc-checkbox";
 import "@material/mwc-formfield";
 import { mdiRefresh } from "@mdi/js";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   css,
   CSSResultGroup,
@@ -15,22 +13,20 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
+import { computeStateName } from "../../common/entity/compute_state_name";
 import "../../components/ha-card";
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
 import {
   Calendar,
+  CalendarEvent,
   fetchCalendarEvents,
   getCalendars,
 } from "../../data/calendar";
-import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
-import type {
-  CalendarEvent,
-  CalendarViewChanged,
-  HomeAssistant,
-} from "../../types";
+import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import "./ha-full-calendar";
+import "../../components/ha-top-app-bar-fixed";
 
 @customElement("ha-panel-calendar")
 class PanelCalendar extends LitElement {
@@ -42,6 +38,8 @@ class PanelCalendar extends LitElement {
   @state() private _calendars: Calendar[] = [];
 
   @state() private _events: CalendarEvent[] = [];
+
+  @state() private _error?: string = undefined;
 
   @LocalStorage("deSelectedCalendars", true)
   private _deSelectedCalendars: string[] = [];
@@ -59,21 +57,19 @@ class PanelCalendar extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-app-layout>
-        <app-header fixed slot="header">
-          <app-toolbar>
-            <ha-menu-button
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-menu-button>
-            <div main-title>${this.hass.localize("panel.calendar")}</div>
-            <ha-icon-button
-              .path=${mdiRefresh}
-              .label=${this.hass.localize("ui.common.refresh")}
-              @click=${this._handleRefresh}
-            ></ha-icon-button>
-          </app-toolbar>
-        </app-header>
+      <ha-top-app-bar-fixed>
+        <ha-menu-button
+          slot="navigationIcon"
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+        ></ha-menu-button>
+        <div slot="title">${this.hass.localize("panel.calendar")}</div>
+        <ha-icon-button
+          slot="actionItems"
+          .path=${mdiRefresh}
+          .label=${this.hass.localize("ui.common.refresh")}
+          @click=${this._handleRefresh}
+        ></ha-icon-button>
         <div class="content">
           <div class="calendar-list">
             <div class="calendar-list-header">
@@ -101,12 +97,14 @@ class PanelCalendar extends LitElement {
           </div>
           <ha-full-calendar
             .events=${this._events}
+            .calendars=${this._calendars}
             .narrow=${this.narrow}
             .hass=${this.hass}
+            .error=${this._error}
             @view-changed=${this._handleViewChanged}
           ></ha-full-calendar>
         </div>
-      </ha-app-layout>
+      </ha-top-app-bar-fixed>
     `;
   }
 
@@ -120,9 +118,9 @@ class PanelCalendar extends LitElement {
     start: Date,
     end: Date,
     calendars: Calendar[]
-  ): Promise<CalendarEvent[]> {
+  ): Promise<{ events: CalendarEvent[]; errors: string[] }> {
     if (!calendars.length) {
-      return [];
+      return { events: [], errors: [] };
     }
 
     return fetchCalendarEvents(this.hass, start, end, calendars);
@@ -137,8 +135,9 @@ class PanelCalendar extends LitElement {
       const checked = ev.target.checked;
 
       if (checked) {
-        const events = await this._fetchEvents(this._start!, this._end!, [cal]);
-        this._events = [...this._events, ...events];
+        const result = await this._fetchEvents(this._start!, this._end!, [cal]);
+        this._events = [...this._events, ...result.events];
+        this._handleErrors(result.errors);
         this._deSelectedCalendars = this._deSelectedCalendars.filter(
           (deCal) => deCal !== cal.entity_id
         );
@@ -163,19 +162,40 @@ class PanelCalendar extends LitElement {
   ): Promise<void> {
     this._start = ev.detail.start;
     this._end = ev.detail.end;
-    this._events = await this._fetchEvents(
+    const result = await this._fetchEvents(
       this._start,
       this._end,
       this._selectedCalendars
     );
+    this._events = result.events;
+    this._handleErrors(result.errors);
   }
 
   private async _handleRefresh(): Promise<void> {
-    this._events = await this._fetchEvents(
+    const result = await this._fetchEvents(
       this._start!,
       this._end!,
       this._selectedCalendars
     );
+    this._events = result.events;
+    this._handleErrors(result.errors);
+  }
+
+  private _handleErrors(error_entity_ids: string[]) {
+    this._error = undefined;
+    if (error_entity_ids.length > 0) {
+      const nameList = error_entity_ids
+        .map((error_entity_id) =>
+          this.hass!.states[error_entity_id]
+            ? computeStateName(this.hass!.states[error_entity_id])
+            : error_entity_id
+        )
+        .join(", ");
+
+      this._error = `${this.hass!.localize(
+        "ui.components.calendar.event_retrieval_error"
+      )} ${nameList}`;
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -198,7 +218,8 @@ class PanelCalendar extends LitElement {
           padding-inline-start: initial;
           min-width: 170px;
           flex: 0 0 15%;
-          overflow: hidden;
+          overflow-x: hidden;
+          overflow-y: auto;
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
           direction: var(--direction);
         }

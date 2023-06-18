@@ -70,7 +70,7 @@ class HassSubpage extends LitElement {
               ></ha-icon-button-arrow-prev>
             `}
 
-        <div class="main-title">${this.header}</div>
+        <div class="main-title"><slot name="header">${this.header}</slot></div>
         <slot name="toolbar-icon"></slot>
       </div>
       <div class="content" @scroll=${this._saveScrollPos}><slot></slot></div>
@@ -99,6 +99,8 @@ class HassSubpage extends LitElement {
         display: block;
         height: 100%;
         background-color: var(--primary-background-color);
+        overflow: hidden;
+        position: relative;
       }
 
       :host([narrow]) {
@@ -111,13 +113,18 @@ class HassSubpage extends LitElement {
         align-items: center;
         font-size: 20px;
         height: var(--header-height);
-        padding: 0 16px;
+        padding: 8px 12px;
         pointer-events: none;
         background-color: var(--app-header-background-color);
         font-weight: 400;
         color: var(--app-header-text-color, white);
         border-bottom: var(--app-header-border-bottom, none);
         box-sizing: border-box;
+      }
+      @media (max-width: 599px) {
+        .toolbar {
+          padding: 4px;
+        }
       }
       .toolbar a {
         color: var(--sidebar-text-color);
@@ -147,7 +154,7 @@ class HassSubpage extends LitElement {
       }
 
       #fab {
-        position: fixed;
+        position: absolute;
         right: calc(16px + env(safe-area-inset-right));
         bottom: calc(16px + env(safe-area-inset-bottom));
         z-index: 1;

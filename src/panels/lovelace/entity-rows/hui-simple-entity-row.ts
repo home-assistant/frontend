@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
@@ -32,9 +32,9 @@ class HuiSimpleEntityRow extends LitElement implements LovelaceRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.hass.states[this._config.entity];
@@ -49,7 +49,13 @@ class HuiSimpleEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${computeStateDisplay(this.hass!.localize, stateObj, this.hass.locale)}
+        ${computeStateDisplay(
+          this.hass!.localize,
+          stateObj,
+          this.hass.locale,
+          this.hass.config,
+          this.hass.entities
+        )}
       </hui-generic-entity-row>
     `;
   }

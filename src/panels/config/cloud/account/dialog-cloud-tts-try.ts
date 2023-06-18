@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiPlayCircleOutline, mdiRobot } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { LocalStorage } from "../../../../common/decorators/local-storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -14,7 +14,7 @@ import "../../../../components/ha-select";
 import "../../../../components/ha-textarea";
 import type { HaTextArea } from "../../../../components/ha-textarea";
 import { showAutomationEditor } from "../../../../data/automation";
-import { SUPPORT_PLAY_MEDIA } from "../../../../data/media-player";
+import { MediaPlayerEntityFeature } from "../../../../data/media-player";
 import { convertTextToSpeech } from "../../../../data/tts";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -44,9 +44,9 @@ export class DialogTryTts extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     const target = this._target || "browser";
     return html`
@@ -94,7 +94,7 @@ export class DialogTryTts extends LitElement {
               .filter(
                 (entity) =>
                   computeStateDomain(entity) === "media_player" &&
-                  supportsFeature(entity, SUPPORT_PLAY_MEDIA)
+                  supportsFeature(entity, MediaPlayerEntityFeature.PLAY_MEDIA)
               )
               .map(
                 (entity) => html`

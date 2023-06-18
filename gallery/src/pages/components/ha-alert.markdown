@@ -1,5 +1,5 @@
 ---
-title: Alerts
+title: Alert
 subtitle: An alert displays a short, important message in a way that attracts the user's attention without interrupting the user's task.
 ---
 
@@ -155,18 +155,6 @@ The `title ` option should not be used without a description.
 **Slotted icon**
 
 *Documentation coming soon*
-
-**Right to left**
-
-<ha-alert alert-type="success" rtl>
-  This is an info alert — check it out!
-</ha-alert>
-
-```html
-<ha-alert alert-type="success" rtl>
-  This is an info alert — check it out!
-</ha-alert>
-```
 
 ### API
 **Properties/Attributes**

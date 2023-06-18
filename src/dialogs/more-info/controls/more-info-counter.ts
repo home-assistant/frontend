@@ -1,8 +1,8 @@
 import "@material/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-counter")
@@ -11,12 +11,12 @@ class MoreInfoCounter extends LitElement {
 
   @property() public stateObj?: HassEntity;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return html``;
+      return nothing;
     }
 
-    const disabled = UNAVAILABLE_STATES.includes(this.stateObj!.state);
+    const disabled = isUnavailableState(this.stateObj!.state);
 
     return html`
       <div class="actions">

@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "./ha-markdown-element";
 
@@ -15,15 +15,19 @@ export class HaMarkdown extends LitElement {
 
   @property({ type: Boolean }) public breaks = false;
 
-  protected render(): TemplateResult {
+  @property({ type: Boolean, attribute: "lazy-images" }) public lazyImages =
+    false;
+
+  protected render() {
     if (!this.content) {
-      return html``;
+      return nothing;
     }
 
     return html`<ha-markdown-element
       .content=${this.content}
       .allowSvg=${this.allowSvg}
       .breaks=${this.breaks}
+      .lazyImages=${this.lazyImages}
     ></ha-markdown-element>`;
   }
 

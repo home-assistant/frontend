@@ -3,14 +3,17 @@ import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
   mdiContentDuplicate,
+  mdiContentCopy,
+  mdiContentCut,
   mdiDelete,
   mdiDotsVertical,
   mdiPlay,
   mdiPlayCircleOutline,
   mdiRenameBox,
-  mdiStopCircleOutline,
   mdiSort,
+  mdiStopCircleOutline,
 } from "@mdi/js";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -24,8 +27,13 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import { ACTION_TYPES } from "../../../../data/action";
+import { ACTION_TYPES, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
 import { validateConfig } from "../../../../data/config";
+import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../../../data/entity_registry";
+import { Clipboard } from "../../../../data/automation";
 import { Action, getActionType } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
 import { callExecuteScript } from "../../../../data/service";
@@ -52,7 +60,7 @@ import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
 
-const getType = (action: Action | undefined) => {
+export const getType = (action: Action | undefined) => {
   if (!action) {
     return undefined;
   }
@@ -107,6 +115,10 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public reOrderMode = false;
 
+  @property() public clipboard?: Clipboard;
+
+  @state() private _entityReg: EntityRegistryEntry[] = [];
+
   @state() private _warnings?: string[];
 
   @state() private _uiModeAvailable = true;
@@ -115,11 +127,21 @@ export default class HaAutomationActionRow extends LitElement {
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this._entityReg = entities;
+      }),
+    ];
+  }
+
   protected willUpdate(changedProperties: PropertyValues) {
     if (!changedProperties.has("action")) {
       return;
     }
-    this._uiModeAvailable = getType(this.action) !== undefined;
+    const type = getType(this.action);
+    this._uiModeAvailable =
+      type !== undefined && !YAML_ONLY_ACTION_TYPES.has(type as any);
     if (!this._uiModeAvailable && !this._yamlMode) {
       this._yamlMode = true;
     }
@@ -156,7 +178,9 @@ export default class HaAutomationActionRow extends LitElement {
               class="action-icon"
               .path=${ACTION_TYPES[type!]}
             ></ha-svg-icon>
-            ${capitalizeFirstLetter(describeAction(this.hass, this.action))}
+            ${capitalizeFirstLetter(
+              describeAction(this.hass, this._entityReg, this.action)
+            )}
           </h3>
 
           <slot name="icons" slot="icons"></slot>
@@ -165,10 +189,9 @@ export default class HaAutomationActionRow extends LitElement {
             : html`
                 <ha-button-menu
                   slot="icons"
-                  fixed
-                  corner="BOTTOM_START"
                   @action=${this._handleAction}
                   @click=${preventDefault}
+                  fixed
                 >
                   <ha-icon-button
                     slot="trigger"
@@ -197,6 +220,9 @@ export default class HaAutomationActionRow extends LitElement {
                     )}
                     <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
                   </mwc-list-item>
+
+                  <li divider role="separator"></li>
+
                   <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.actions.duplicate"
@@ -204,6 +230,26 @@ export default class HaAutomationActionRow extends LitElement {
                     <ha-svg-icon
                       slot="graphic"
                       .path=${mdiContentDuplicate}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.copy"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiContentCopy}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.cut"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiContentCut}
                     ></ha-svg-icon>
                   </mwc-list-item>
 
@@ -327,6 +373,7 @@ export default class HaAutomationActionRow extends LitElement {
                       narrow: this.narrow,
                       reOrderMode: this.reOrderMode,
                       disabled: this.disabled,
+                      clipboard: this.clipboard,
                     })}
                   </div>
                 `}
@@ -361,17 +408,24 @@ export default class HaAutomationActionRow extends LitElement {
         fireEvent(this, "duplicate");
         break;
       case 4:
+        fireEvent(this, "set-clipboard", { action: this.action });
+        break;
+      case 5:
+        fireEvent(this, "set-clipboard", { action: this.action });
+        fireEvent(this, "value-changed", { value: null });
+        break;
+      case 6:
         this._switchUiMode();
         this.expand();
         break;
-      case 5:
+      case 7:
         this._switchYamlMode();
         this.expand();
         break;
-      case 6:
+      case 8:
         this._onDisable();
         break;
-      case 7:
+      case 9:
         this._onDelete();
         break;
     }
@@ -465,22 +519,24 @@ export default class HaAutomationActionRow extends LitElement {
       ),
       inputType: "string",
       placeholder: capitalizeFirstLetter(
-        describeAction(this.hass, this.action, undefined, true)
+        describeAction(this.hass, this._entityReg, this.action, undefined, true)
       ),
       defaultValue: this.action.alias,
       confirmText: this.hass.localize("ui.common.submit"),
     });
-    const value = { ...this.action };
-    if (!alias) {
-      delete value.alias;
-    } else {
-      value.alias = alias;
-    }
-    fireEvent(this, "value-changed", {
-      value,
-    });
-    if (this._yamlMode) {
-      this._yamlEditor?.setValue(value);
+    if (alias !== null) {
+      const value = { ...this.action };
+      if (alias === "") {
+        delete value.alias;
+      } else {
+        value.alias = alias;
+      }
+      fireEvent(this, "value-changed", {
+        value,
+      });
+      if (this._yamlMode) {
+        this._yamlEditor?.setValue(value);
+      }
     }
   }
 

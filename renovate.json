@@ -1,0 +1,32 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    ":ignoreModulesAndTests",
+    ":label(dependencies)",
+    ":pinVersions",
+    ":prConcurrentLimit10",
+    ":semanticCommitsDisabled",
+    "group:monorepos",
+    "group:recommended",
+    "npm:unpublishSafe"
+  ],
+  "enabledManagers": ["npm"],
+  "postUpdateOptions": ["yarnDedupeHighest"],
+  "lockFileMaintenance": {
+    "description": ["Run after patch releases but before next beta"],
+    "enabled": true,
+    "schedule": ["on the 19th day of the month"]
+  },
+  "packageRules": [
+    {
+      "description": ["MDC packages are pinned to the same version as MWC"],
+      "extends": ["monorepo:material-components-web"],
+      "enabled": false
+    },
+    {
+      "description": ["Vue is only used by date range which is only v2"],
+      "matchPackageNames": ["vue"],
+      "allowedVersions": "< 3"
+    }
+  ]
+}

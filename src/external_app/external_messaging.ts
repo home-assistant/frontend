@@ -42,12 +42,6 @@ type EMOutgoingMessageWithAnswer = {
     request: EMOutgoingMessageConfigGet;
     response: ExternalConfig;
   };
-  "matter/commission": {
-    request: EMOutgoingMessageMatterCommission;
-    response: {
-      code: string;
-    };
-  };
 };
 
 interface EMOutgoingMessageExoplayerPlayHLS extends EMMessage {
@@ -101,18 +95,28 @@ interface EMOutgoingMessageSidebarShow extends EMMessage {
   type: "sidebar/show";
 }
 
+interface EMOutgoingMessageAssistShow extends EMMessage {
+  type: "assist/show";
+  payload?: {
+    pipeline_id?: string;
+    start_listening?: boolean;
+  };
+}
+
 type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageHaptic
   | EMOutgoingMessageConnectionStatus
   | EMOutgoingMessageAppConfiguration
   | EMOutgoingMessageTagWrite
   | EMOutgoingMessageSidebarShow
+  | EMOutgoingMessageAssistShow
   | EMOutgoingMessageExoplayerPlayHLS
   | EMOutgoingMessageExoplayerResize
   | EMOutgoingMessageExoplayerStop
   | EMOutgoingMessageThemeUpdate
   | EMMessageResultSuccess
-  | EMMessageResultError;
+  | EMMessageResultError
+  | EMOutgoingMessageMatterCommission;
 
 interface EMIncomingMessageRestart {
   id: number;
@@ -126,9 +130,23 @@ interface EMIncomingMessageShowNotifications {
   command: "notifications/show";
 }
 
+interface EMIncomingMessageToggleSidebar {
+  id: number;
+  type: "command";
+  command: "sidebar/toggle";
+}
+
+interface EMIncomingMessageShowSidebar {
+  id: number;
+  type: "command";
+  command: "sidebar/show";
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
-  | EMIncomingMessageShowNotifications;
+  | EMIncomingMessageShowNotifications
+  | EMIncomingMessageToggleSidebar
+  | EMIncomingMessageShowSidebar;
 
 type EMIncomingMessage =
   | EMMessageResultSuccess
@@ -143,6 +161,7 @@ export interface ExternalConfig {
   canWriteTag: boolean;
   hasExoPlayer: boolean;
   canCommissionMatter: boolean;
+  hasAssist: boolean;
 }
 
 export class ExternalMessaging {

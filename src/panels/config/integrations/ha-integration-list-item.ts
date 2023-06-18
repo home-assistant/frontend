@@ -4,9 +4,9 @@ import {
 } from "@material/mwc-list/mwc-list-item-base";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
 import { mdiCloudOutline, mdiOpenInNew, mdiPackageVariant } from "@mdi/js";
-import { css, CSSResultGroup, html } from "lit";
-import { classMap } from "lit/directives/class-map";
+import { css, CSSResultGroup, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { domainToName } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -24,18 +24,20 @@ export class HaIntegrationListItem extends ListItemBase {
 
   @property({ type: Boolean }) brand = false;
 
-  renderSingleLine() {
+  // @ts-expect-error
+  protected override renderSingleLine() {
     if (!this.integration) {
-      return html``;
+      return nothing;
     }
     return html`${this.integration.name ||
     domainToName(this.hass.localize, this.integration.domain)}
     ${this.integration.is_helper ? " (helper)" : ""}`;
   }
 
-  protected renderGraphic() {
+  // @ts-expect-error
+  protected override renderGraphic() {
     if (!this.integration) {
-      return html``;
+      return nothing;
     }
     const graphicClasses = {
       multi: this.multipleGraphics,
@@ -47,6 +49,7 @@ export class HaIntegrationListItem extends ListItemBase {
       )}"
     >
       <img
+        alt=""
         loading="lazy"
         src=${brandsUrl({
           domain: this.integration.domain,
@@ -60,28 +63,29 @@ export class HaIntegrationListItem extends ListItemBase {
     </span>`;
   }
 
-  protected renderMeta() {
+  // @ts-expect-error
+  protected override renderMeta() {
     if (!this.integration) {
-      return html``;
+      return nothing;
     }
     return html`<span class="mdc-deprecated-list-item__meta material-icons">
       ${this.integration.cloud
         ? html`<span
             ><ha-svg-icon .path=${mdiCloudOutline}></ha-svg-icon
-            ><paper-tooltip animation-delay="0" position="left"
+            ><simple-tooltip animation-delay="0" position="left"
               >${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.depends_on_cloud"
-              )}</paper-tooltip
+              )}</simple-tooltip
             ></span
           >`
         : ""}
       ${!this.integration.is_built_in
         ? html`<span
             ><ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon
-            ><paper-tooltip animation-delay="0" position="left"
+            ><simple-tooltip animation-delay="0" position="left"
               >${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.provided_by_custom_integration"
-              )}</paper-tooltip
+                "ui.panel.config.integrations.config_entry.custom_integration"
+              )}</simple-tooltip
             ></span
           >`
         : ""}
@@ -89,10 +93,10 @@ export class HaIntegrationListItem extends ListItemBase {
       !this.integration.integrations &&
       !this.integration.iot_standards
         ? html`<span
-            ><paper-tooltip animation-delay="0" position="left"
+            ><simple-tooltip animation-delay="0" position="left"
               >${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.yaml_only"
-              )}</paper-tooltip
+              )}</simple-tooltip
             ><ha-svg-icon
               .path=${mdiOpenInNew}
               class="open-in-new"

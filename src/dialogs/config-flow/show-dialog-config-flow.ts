@@ -24,6 +24,7 @@ export const showConfigFlowDialog = (
       const [step] = await Promise.all([
         createConfigFlow(hass, handler),
         hass.loadBackendTranslation("config", handler),
+        hass.loadBackendTranslation("selector", handler),
         // Used as fallback if no header defined for step
         hass.loadBackendTranslation("title", handler),
       ]);
@@ -32,6 +33,7 @@ export const showConfigFlowDialog = (
     fetchFlow: async (hass, flowId) => {
       const step = await fetchConfigFlow(hass, flowId);
       await hass.loadBackendTranslation("config", step.handler);
+      await hass.loadBackendTranslation("selector", step.handler);
       return step;
     },
     handleFlowStep: handleConfigFlowStep,
@@ -53,7 +55,8 @@ export const showConfigFlowDialog = (
     renderShowFormStepHeader(hass, step) {
       return (
         hass.localize(
-          `component.${step.handler}.config.step.${step.step_id}.title`
+          `component.${step.handler}.config.step.${step.step_id}.title`,
+          step.description_placeholders
         ) || hass.localize(`component.${step.handler}.title`)
       );
     },
@@ -92,6 +95,23 @@ export const showConfigFlowDialog = (
           `component.${step.handler}.config.error.${error}`,
           step.description_placeholders
         ) || error
+      );
+    },
+
+    renderShowFormStepFieldLocalizeValue(hass, step, key) {
+      return hass.localize(`component.${step.handler}.selector.${key}`);
+    },
+
+    renderShowFormStepSubmitButton(hass, step) {
+      return (
+        hass.localize(
+          `component.${step.handler}.config.step.${step.step_id}.submit`
+        ) ||
+        hass.localize(
+          `ui.panel.config.integrations.config_flow.${
+            step.last_step === false ? "next" : "submit"
+          }`
+        )
       );
     },
 

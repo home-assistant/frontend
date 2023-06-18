@@ -21,46 +21,6 @@
       "unavailable": "Unavailable"
     }
   },
-  "state_attributes": {
-    "climate": {
-      "fan_mode": {
-        "off": "Off",
-        "on": "On",
-        "auto": "Auto"
-      },
-      "preset_mode": {
-        "none": "None",
-        "eco": "Eco",
-        "away": "Away",
-        "boost": "Boost",
-        "comfort": "Comfort",
-        "home": "Home",
-        "sleep": "Sleep",
-        "activity": "Activity"
-      },
-      "hvac_action": {
-        "off": "Off",
-        "heating": "Heating",
-        "cooling": "Cooling",
-        "drying": "Drying",
-        "idle": "Idle",
-        "fan": "Fan"
-      }
-    },
-    "humidifier": {
-      "mode": {
-        "normal": "Normal",
-        "eco": "Eco",
-        "away": "Away",
-        "boost": "Boost",
-        "comfort": "Comfort",
-        "home": "Home",
-        "sleep": "Sleep",
-        "auto": "Auto",
-        "baby": "Baby"
-      }
-    }
-  },
   "state_badge": {
     "default": {
       "unknown": "Unk",
@@ -140,7 +100,6 @@
       "climate": {
         "currently": "Currently",
         "on_off": "On / off",
-        "target_temperature": "Target temperature",
         "target_temperature_entity": "{name} target temperature",
         "target_temperature_mode": "{name} target temperature {mode}",
         "current_temperature": "{name} current temperature",
@@ -148,13 +107,8 @@
         "cooling": "{name} cooling",
         "high": "high",
         "low": "low",
-        "target_humidity": "Target humidity",
         "operation": "Operation",
-        "fan_mode": "Fan mode",
-        "swing_mode": "Swing mode",
-        "preset_mode": "Preset",
-        "away_mode": "Away mode",
-        "aux_heat": "Aux heat"
+        "away_mode": "Away mode"
       },
       "counter": {
         "actions": {
@@ -324,6 +278,7 @@
       "edit": "Edit",
       "submit": "Submit",
       "rename": "Rename",
+      "ok": "OK",
       "yes": "Yes",
       "no": "No",
       "not_now": "Not now",
@@ -431,9 +386,29 @@
       "config-entry-picker": {
         "config_entry": "Integration"
       },
+      "coversation-agent-picker": {
+        "conversation_agent": "Conversation agent",
+        "none": "None"
+      },
+      "pipeline-picker": {
+        "pipeline": "Assistant",
+        "preferred": "Preferred assistant ({preferred})"
+      },
       "theme-picker": {
         "theme": "Theme",
         "no_theme": "No theme"
+      },
+      "language-picker": {
+        "language": "Language",
+        "no_languages": "No languages available"
+      },
+      "tts-picker": {
+        "tts": "Text-to-speech",
+        "none": "None"
+      },
+      "tts-voice-picker": {
+        "voice": "Voice",
+        "none": "None"
       },
       "user-picker": {
         "no_user": "No user",
@@ -478,15 +453,21 @@
       "addon-picker": {
         "addon": "Add-on",
         "error": {
-          "no_supervisor": {
-            "title": "No Supervisor",
-            "description": "Add-ons are not supported."
-          },
-          "fetch_addons": {
-            "title": "Error loading add-ons",
-            "description": "There was an error loading add-ons."
-          }
+          "no_supervisor": "Add-ons are not supported on your installation.",
+          "fetch_addons": "There was an error loading add-ons."
         }
+      },
+      "mount-picker": {
+        "mount": "Location",
+        "use_datadisk": "Use data disk for backup",
+        "error": {
+          "no_supervisor": "Storage is not supported on your installation.",
+          "fetch_mounts": "There was an error loading the locations."
+        }
+      },
+      "stt-picker": {
+        "stt": "Speech-to-text",
+        "none": "None"
       },
       "related-filter-menu": {
         "filter": "Filter",
@@ -515,10 +496,18 @@
       "relative_time": {
         "never": "Never"
       },
+      "absolute_time": {
+        "never": "[%key:ui::components::relative_time::never%]"
+      },
       "history_charts": {
         "history_disabled": "History integration disabled",
         "loading_history": "Loading state history…",
-        "no_history_found": "No state history found."
+        "no_history_found": "No state history found.",
+        "error": "Unable to load history",
+        "duration": "Duration"
+      },
+      "map": {
+        "error": "Unable to load map"
       },
       "statistics_charts": {
         "loading_statistics": "Loading statistics…",
@@ -551,7 +540,8 @@
         "group": "Part of the following groups",
         "scene": "Part of the following scenes",
         "script": "Part of the following scripts",
-        "automation": "Part of the following automations"
+        "automation": "Part of the following automations",
+        "blueprint": "Using blueprint"
       },
       "data-table": {
         "search": "Search",
@@ -604,7 +594,9 @@
           "uploading": "Uploading {count} {count, plural,\n  one {file}\n  other {files}\n}",
           "confirm_delete": "Do you want to delete {count} {count, plural,\n  one {file}\n  other {files}\n}?",
           "delete": "Delete {count}",
-          "deleting": "Deleting {count}"
+          "deleting": "Deleting {count}",
+          "tip_media_storage": "[%key:ui::panel::config::tips::media_storage%]",
+          "tip_storage_panel": "[%key:ui::panel::config::storage::caption%]"
         },
         "class": {
           "album": "Album",
@@ -631,8 +623,105 @@
         "media_player_unavailable": "The selected media player is unavailable."
       },
       "calendar": {
+        "label": "Calendar",
         "my_calendars": "My Calendars",
-        "today": "Today"
+        "today": "Today",
+        "event_retrieval_error": "Could not retrieve events for calendars:",
+        "event": {
+          "add": "Add Event",
+          "delete": "Delete Event",
+          "edit": "Edit Event",
+          "save": "Save Event",
+          "all_day": "All Day",
+          "start": "Start",
+          "end": "End",
+          "invalid_duration": "The duration of the event is not valid. Please check start and end date.",
+          "not_all_required_fields": "Not all required fields are filled in",
+          "end_auto_adjusted": "Event end was adjusted to prevent negative duration",
+          "confirm_delete": {
+            "delete": "Delete Event",
+            "delete_this": "Delete Only This Event",
+            "delete_future": "Delete All Future Events",
+            "prompt": "Do you want to delete this event?",
+            "recurring_prompt": "Do you want to delete only this event, or this and all future occurrences of the event?"
+          },
+          "confirm_update": {
+            "update": "Update Event",
+            "update_this": "Update Only This Event",
+            "update_future": "Update All Future Events",
+            "recurring_prompt": "Do you want to update only this event, or this and all future occurrences of the event?"
+          },
+          "repeat": {
+            "label": "Repeat",
+            "freq": {
+              "none": "No repeat",
+              "label": "Repeat",
+              "yearly": "Yearly",
+              "monthly": "Monthly",
+              "weekly": "Weekly",
+              "daily": "Daily"
+            },
+            "interval": {
+              "label": "Repeat interval",
+              "monthly": "months",
+              "weekly": "weeks",
+              "daily": "days"
+            },
+            "monthly": {
+              "label": "Repeat Monthly"
+            },
+            "weekly": {
+              "weekday": {
+                "su": "Sun",
+                "mo": "Mon",
+                "tu": "Tue",
+                "we": "Wed",
+                "th": "Thu",
+                "fr": "Fri",
+                "sa": "Sat"
+              }
+            },
+            "end": {
+              "label": "End",
+              "never": "Never",
+              "after": "After",
+              "on": "On"
+            },
+            "end_on": {
+              "label": "End On"
+            },
+            "end_after": {
+              "label": "End After",
+              "ocurrences": "ocurrences"
+            }
+          },
+          "rrule": {
+            "every": "every",
+            "years": "years",
+            "year": "year",
+            "months": "months",
+            "month": "month",
+            "weeks": "weeks",
+            "week": "week",
+            "weekdays": "weekdays",
+            "weekday": "weekday",
+            "days": "days",
+            "day": "day",
+            "until": "until",
+            "for": "for",
+            "in": "in",
+            "on": "on",
+            "on the": "on the",
+            "and": "and",
+            "or": "or",
+            "at": "at",
+            "last": "last",
+            "time": "time",
+            "times": "times"
+          },
+          "summary": "Summary",
+          "description": "Description"
+        }
       },
       "attributes": {
         "expansion_header": "Attributes"
@@ -653,6 +742,7 @@
       "quick-bar": {
         "commands": {
           "reload": {
+            "all": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::all%]",
             "reload": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::reload%]",
             "core": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::core%]",
             "group": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::group%]",
@@ -736,12 +826,19 @@
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
+        "title": "Assist",
         "did_not_hear": "Home Assistant did not hear anything",
+        "did_not_understand": "Didn't quite get that",
         "found": "I found the following for you:",
         "error": "Oops, an error has occurred",
-        "how_can_i_help": "How can I help?",
-        "label": "Type a question and press 'Enter'",
-        "label_voice": "Type and press 'Enter' or tap the microphone to speak"
+        "how_can_i_help": "How can I assist?",
+        "input_label": "Enter a request",
+        "send_text": "Send text",
+        "start_listening": "Start listening",
+        "manage_assistants": "Manage assistants",
+        "not_supported_microphone_browser": "Your connection to Home Assistant is not secured using HTTPS. This causes browsers to block Home Assistant from accessing the microphone.",
+        "not_supported_microphone_documentation": "Visit {documentation_link} to learn how to use a secure URL",
+        "not_supported_microphone_documentation_link": "the documentation"
       },
       "generic": {
         "cancel": "Cancel",
@@ -750,20 +847,29 @@
         "close": "Close"
       },
       "image_cropper": {
-        "crop": "Crop"
+        "crop": "Crop",
+        "crop_image": "Picture to crop"
+      },
+      "date-picker": {
+        "today": "Today"
       },
       "more_info_control": {
         "dismiss": "Dismiss dialog",
         "settings": "Settings",
         "edit": "Edit entity",
         "details": "Details",
-        "info": "Info",
+        "back_to_info": "Back to info",
         "related": "Related",
         "history": "History",
         "logbook": "Logbook",
+        "device_info": "Device info",
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "show_more": "Show more",
+        "turn_on": "Turn on",
+        "turn_off": "Turn off",
+        "toggle": "Toggle",
+        "exit_edit_mode": "Exit edit mode",
         "script": {
           "last_action": "Last action",
           "last_triggered": "Last triggered"
@@ -811,10 +917,67 @@
           "close_cover": "Close cover",
           "open_tilt_cover": "Open cover tilt",
           "close_tilt_cover": "Close cover tilt",
-          "stop_cover": "Stop cover"
+          "stop_cover": "Stop cover",
+          "switch_mode": {
+            "button": "Switch to button mode",
+            "position": "Switch to position mode"
+          }
         },
         "zone": {
-          "graph_unit": "People home"
+          "graph_unit": "People in zone"
+        },
+        "light": {
+          "edit_mode": "Edit favorite colors",
+          "toggle": "Toggle",
+          "change_color": "Change color",
+          "change_color_temp": "Change color temperature",
+          "set_white": "Set white",
+          "select_effect": "Select effect",
+          "brightness": "Brightness",
+          "color_picker": {
+            "title": "Change color",
+            "mode": {
+              "color": "Color",
+              "color_temp": "Temperature"
+            }
+          },
+          "favorite_color": {
+            "set": "Set favorite color {number}",
+            "edit": "Edit favorite color {number}",
+            "delete": "Delete favorite color {number}",
+            "delete_confirm_title": "Delete favorite color?",
+            "delete_confirm_text": "This favorite color will be permanently deleted.",
+            "delete_confirm_action": "Delete",
+            "add": "Add new favorite color",
+            "edit_title": "Edit favorite color",
+            "add_title": "Add favorite color"
+          }
+        },
+        "fan": {
+          "set_forward_direction": "Set forward direction",
+          "set_reverse_direction": "Set reverse direction",
+          "turn_on_oscillating": "Turn on oscillating",
+          "turn_off_oscillating": "Turn off oscillating",
+          "speed": {
+            "low": "Low",
+            "medium": "Medium",
+            "high": "High"
+          }
+        },
+        "alarm_control_panel": {
+          "modes_label": "Modes",
+          "modes": {
+            "armed_away": "Away",
+            "armed_home": "Home",
+            "armed_night": "Night",
+            "armed_vacation": "Vacation",
+            "armed_custom_bypass": "Custom",
+            "disarmed": "Disarmed"
+          },
+          "disarm_title": "Disarm",
+          "disarm_action": "Disarm",
+          "arm_title": "Arm",
+          "arm_action": "Arm"
         }
       },
       "entity_registry": {
@@ -828,14 +991,19 @@
           "name": "Name",
           "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
+          "default_code": "Default code",
+          "default_code_error": "Code does not match code format",
           "entity_id": "Entity ID",
           "unit_of_measurement": "Unit of Measurement",
           "precipitation_unit": "Precipitation unit",
+          "precision": "Display precision",
+          "precision_default": "Default ({value})",
           "pressure_unit": "Barometric pressure unit",
           "temperature_unit": "Temperature unit",
           "visibility_unit": "Visibility unit",
           "wind_speed_unit": "Wind speed unit",
           "device_class": "Show as",
+          "switch_as_x": "Show switch as",
           "device_classes": {
             "binary_sensor": {
               "door": "Door",
@@ -880,8 +1048,7 @@
               "shutter": "Shutter"
             },
             "switch": {
-              "outlet": "Outlet",
-              "switch": "Switch"
+              "outlet": "Outlet"
             }
           },
           "unavailable": "This entity is unavailable.",
@@ -890,27 +1057,28 @@
           "enabled_label": "Enabled",
           "disabled_label": "Disabled",
           "enabled_cause": "Cannot change status. Disabled by {cause}.",
-          "hidden_label": "Hidden",
+          "visible_label": "Visible",
           "hidden_cause": "Hidden by {cause}.",
           "device_disabled": "The device of this entity is disabled.",
           "entity_disabled": "This entity is disabled.",
           "enable_entity": "Enable",
           "open_device_settings": "Open device settings",
           "switch_as_x_confirm": "This switch will be hidden and a new {domain} will be added. Your existing configurations using the switch will continue to work.",
+          "switch_as_x_remove_confirm": "This {domain} will be removed and the original switch will be visible again. Your existing configurations using the {domain} will no longer work!",
+          "switch_as_x_change_confirm": "This {domain_1} will be removed and will be replaced by a new {domain_2}. Your existing configurations using the {domain_1} will no longer work!",
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
           "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
-          "hidden_description": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with services.",
+          "hidden_description": "Hidden entities will not be shown on your dashboard or included when indirectly referenced (ie via an area or device). Their history is still tracked and you can still interact with them with services.",
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entity?",
           "update": "Update",
           "note": "Note: This might not work yet with all integrations.",
-          "advanced": "Advanced settings",
-          "area": "Set entity area only",
-          "area_note": "By default the entities of a device are in the same area as the device. If you change the area of this entity, it will no longer follow the area of the device.",
-          "follow_device_area": "Follow device area",
-          "change_device_area": "Change device area",
+          "use_device_area": "Use device area",
+          "change_device_settings": "You can {link} in the device settings",
+          "change_device_area_link": "change the device area",
           "configure_state": "{integration} options",
+          "configure_state_secondary": "Specific options for {integration}",
           "stream": {
             "preload_stream": "Preload camera stream",
             "preload_stream_description": "This keeps the camera stream open in the background so it shows quicker. Warning! This is device intensive.",
@@ -924,8 +1092,65 @@
             "stream_orientation_6": "Rotate left",
             "stream_orientation_7": "Rotate right and flip",
             "stream_orientation_8": "Rotate right"
-          }
+          },
+          "no_aliases": "Configure aliases and expose settings for voice assistants"
         }
+      },
+      "voice-settings": {
+        "expose_header": "Expose",
+        "aliases_header": "Aliases",
+        "aliases_description": "Aliases are supported by Assist and Google Assistant.",
+        "aliases_no_unique_id": "Aliases are not supported for entities without an unique id. See the {faq_link} for more detail.",
+        "ask_pin": "Ask for PIN",
+        "manual_config": "Managed in configuration.yaml",
+        "unsupported": "Unsupported",
+        "view_entity": "More info about entity"
+      },
+      "restart": {
+        "heading": "Restart Home Assistant",
+        "advanced_options": "Advanced options",
+        "reload": {
+          "title": "Quick reload",
+          "description": "Load new YAML configurations without a restart.",
+          "reloading": "Reloading configuration",
+          "failed": "Failed to reload configuration"
+        },
+        "restart": {
+          "title": "Restart Home Assistant",
+          "description": "Interrupts all running automations and scripts.",
+          "confirm_title": "Restart Home Assistant?",
+          "confirm_description": "This will interrupt all running automations and scripts.",
+          "confirm_action": "Restart",
+          "failed": "Failed to restart Home Assistant"
+        },
+        "reboot": {
+          "title": "Reboot system",
+          "description": "Restart the system running Home Assistant and all Add-ons.",
+          "confirm_title": "Reboot system?",
+          "confirm_description": "This will reboot the complete system which includes Home Assistant and all the Add-ons.",
+          "confirm_action": "Reboot",
+          "rebooting": "Rebooting system",
+          "failed": "Failed to reboot system"
+        },
+        "shutdown": {
+          "title": "Shut down system",
+          "description": "Shut down the system running Home Assistant and all Add-ons.",
+          "confirm_title": "Shut down system?",
+          "confirm_description": "This will shut down the complete system which includes Home Assistant and all Add-ons.",
+          "confirm_action": "Shut down",
+          "shutting_down": "Shutting down system",
+          "failed": "Failed to shut down system"
+        }
+      },
+      "aliases": {
+        "heading": "{name} aliases",
+        "remove_alias": "Remove alias {number}",
+        "input_label": "Alias {number}",
+        "save": "Save",
+        "add_alias": "Add alias",
+        "no_aliases": "No aliases have been added yet",
+        "update": "Update",
+        "unknown_error": "Unknown error"
       },
       "helper_settings": {
         "platform_not_loaded": "The {platform} integration is not loaded. Please add it to your configuration either by adding 'default_config:' or ''{platform}:''.",
@@ -947,7 +1172,8 @@
           "mode": "Display mode",
           "text": "Text",
           "password": "Password",
-          "pattern": "Regex pattern for client-side validation"
+          "pattern_label": "Regex pattern",
+          "pattern_helper": "Used for client-side validation"
         },
         "input_number": {
           "min": "Minimum value",
@@ -1066,10 +1292,6 @@
           "device_name_placeholder": "Change device name"
         }
       },
-      "domain_toggler": {
-        "title": "Toggle Domains",
-        "reset_entities": "Reset Entity overrides"
-      },
       "mqtt_device_debug_info": {
         "title": "{device} debug info",
         "deserialize": "Attempt to parse MQTT messages as JSON",
@@ -1121,6 +1343,17 @@
         "release_items": "This includes beta releases for:",
         "view_documentation": "View documentation",
         "join": "Join"
+      },
+      "enter_code": {
+        "title": "Enter code",
+        "input_label": "Code"
+      },
+      "tts-try": {
+        "header": "Try text-to-speech",
+        "message": "Message",
+        "message_example": "Hello. How can I assist?",
+        "message_placeholder": "Enter a sentence to speak.",
+        "play": "Play"
       }
     },
     "duration": {
@@ -1222,6 +1455,10 @@
             "main": "Dashboards",
             "secondary": "Organize how you interact with your home"
           },
+          "voice_assistants": {
+            "main": "Voice assistants",
+            "secondary": "Manage your voice assistants"
+          },
           "energy": {
             "main": "Energy",
             "secondary": "Monitor your energy production and consumption"
@@ -1249,6 +1486,9 @@
           "about": {
             "main": "About",
             "secondary": "Version information, credits and more"
+          },
+          "cloud": {
+            "secondary": "Loading..."
           }
         },
         "common": {
@@ -1332,7 +1572,11 @@
             "area_id": "Area ID",
             "unknown_error": "Unknown error",
             "linked_entities_caption": "Entities",
-            "no_linked_entities": "There are no entities linked to this area."
+            "no_linked_entities": "There are no entities linked to this area.",
+            "aliases_section": "Aliases",
+            "no_aliases": "No configured aliases",
+            "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
+            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this area."
           },
           "delete": {
             "confirmation_title": "Delete {name}?",
@@ -1378,6 +1622,7 @@
           "confirm_remove_title": "Remove tag?",
           "confirm_remove": "Are you sure you want to remove tag {tag}?",
           "automation_title": "Tag {name} is scanned",
+          "qr_code_image": "QR code for tag {name}",
           "headers": {
             "icon": "Icon",
             "name": "Name",
@@ -1424,30 +1669,30 @@
               "from": {
                 "header": "Configure grid consumption",
                 "paragraph": "Grid consumption is the energy that flows from the energy grid to your home.",
-                "energy_stat": "Consumed Energy (kWh)",
+                "entity_para": "Pick a sensor which measures grid consumption in either of {unit}.",
+                "energy_stat": "Consumed Energy",
                 "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
                 "no_cost": "Do not track costs",
                 "cost_stat": "Use an entity tracking the total costs",
-                "cost_stat_input": "Total Costs Entity",
+                "cost_stat_input": "Entity with the total costs",
                 "cost_entity": "Use an entity with current price",
                 "cost_entity_input": "Entity with the current price",
                 "cost_number": "Use a static price",
-                "cost_number_input": "Price per kWh",
-                "cost_number_suffix": "{currency}/kWh"
+                "cost_number_input": "Price"
               },
               "to": {
                 "header": "Configure grid production",
                 "paragraph": "Grid production is the energy that flows from your solar panels to the grid.",
-                "energy_stat": "Energy returned to the grid (kWh)",
+                "entity_para": "Pick a sensor which measures grid production in either of {unit}.",
+                "energy_stat": "Energy returned to the grid",
                 "cost_para": "Do you get money back when you return energy to the grid?",
                 "no_cost": "I do not get money back",
-                "cost_stat": "Use an entity tracking the total recieved money",
-                "cost_stat_input": "Total Compensation Entity",
+                "cost_stat": "Use an entity tracking the total received money",
+                "cost_stat_input": "Entity with the total compensation",
                 "cost_entity": "Use an entity with current rate",
                 "cost_entity_input": "Entity with the current rate",
                 "cost_number": "Use a static rate",
-                "cost_number_input": "Rate per kWh",
-                "cost_number_suffix": "{currency}/kWh"
+                "cost_number_input": "Rate"
               }
             }
           },
@@ -1464,7 +1709,8 @@
             "stat_predicted_production": "Prediction of your solar energy production",
             "dialog": {
               "header": "Configure solar panels",
-              "solar_production_energy": "Solar production energy (kWh)",
+              "entity_para": "Pick a sensor which measures solar energy production in either of {unit}.",
+              "solar_production_energy": "Solar production energy",
               "solar_production_forecast": "Solar production forecast",
               "solar_production_forecast_description": "Adding solar production forecast information will allow you to quickly see your expected production for today.",
               "dont_forecast_production": "Don't forecast production",
@@ -1482,8 +1728,9 @@
             "add_battery_system": "Add battery system",
             "dialog": {
               "header": "Configure battery system",
-              "energy_into_battery": "Energy going in to the battery (kWh)",
-              "energy_out_of_battery": "Energy coming out of the battery (kWh)"
+              "entity_para": "Pick sensors which measure energy going in to and out of the battery in either of {unit}.",
+              "energy_into_battery": "Energy going in to the battery",
+              "energy_out_of_battery": "Energy coming out of the battery"
             }
           },
           "gas": {
@@ -1496,18 +1743,18 @@
             "add_gas_source": "Add gas source",
             "dialog": {
               "header": "Configure gas consumption",
-              "paragraph": "Gas consumption is the volume of gas that flows to your home.",
-              "energy_stat": "Consumed Energy (m³)",
-              "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
-              "no_cost": "Do not track costs",
-              "cost_stat": "Use an entity tracking the total costs",
-              "cost_stat_input": "Total Costs Entity",
-              "cost_entity": "Use an entity with current price",
-              "cost_entity_input": "Entity with the current price per {unit}",
-              "cost_number": "Use a static price",
-              "cost_number_input": "Price per {unit}",
-              "gas_usage": "Gas usage",
-              "m3_or_kWh": "ft³, m³, Wh, kWh, MWh or GJ"
+              "paragraph": "Gas consumption is measured either as the volume of gas that flows to your home or as the amount of energy contained in the gas.",
+              "entity_para": "Pick a sensor which measures gas consumption in either of {unit}.",
+              "note_para": "Note: It is not possible to add both sensors measuring a volume of gas and sensors measuring the amount of energy contained in the gas.",
+              "cost_para": "Select how Home Assistant should keep track of the costs of the consumed gas.",
+              "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
+              "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
+              "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
+              "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
+              "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
+              "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "gas_usage": "Gas usage"
             }
           },
           "water": {
@@ -1521,16 +1768,16 @@
             "dialog": {
               "header": "Configure water consumption",
               "paragraph": "Water consumption is the volume of water that flows to your home.",
-              "energy_stat": "Consumed water (m³ or gl)",
+              "entity_para": "Pick a sensor which measures water consumption in either of {unit}.",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed water.",
-              "no_cost": "Do not track costs",
-              "cost_stat": "Use an entity tracking the total costs",
-              "cost_stat_input": "Total Costs Entity",
-              "cost_entity": "Use an entity with current price",
-              "cost_entity_input": "Entity with the current price per m³ or gl",
-              "cost_number": "Use a static price",
-              "cost_number_input": "Price per m³ or gl",
-              "water_usage": "Water usage (m³ or gl)"
+              "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
+              "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
+              "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
+              "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
+              "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
+              "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "water_usage": "Water usage"
             }
           },
           "device_consumption": {
@@ -1543,68 +1790,8 @@
             "add_device": "Add device",
             "dialog": {
               "header": "Add a device",
-              "device_consumption_energy": "Device consumption energy (kWh)",
-              "selected_stat_intro": "Select the entity that represents the device energy usage."
-            }
-          },
-          "validation": {
-            "issues": {
-              "entity_not_defined": {
-                "title": "Entity not defined",
-                "description": "Check the integration or your configuration that provides:"
-              },
-              "recorder_untracked": {
-                "title": "Entity not tracked",
-                "description": "The recorder has been configured to exclude these configured entities:"
-              },
-              "entity_unavailable": {
-                "title": "Entity unavailable",
-                "description": "The state of these configured entities are currently not available:"
-              },
-              "entity_state_non_numeric": {
-                "title": "Entity has non-numeric state",
-                "description": "The following entities have a state that cannot be parsed as a number:"
-              },
-              "entity_negative_state": {
-                "title": "Entity has a negative state",
-                "description": "The following entities have a negative state while a positive state is expected:"
-              },
-              "entity_unexpected_unit_energy": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh', 'MWh' or 'GJ':"
-              },
-              "entity_unexpected_unit_gas": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh', 'MWh' or 'GJ' for an energy sensor or 'm³' or 'ft³' for a gas sensor:"
-              },
-              "entity_unexpected_unit_water": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'm³' or 'ft³' for a water sensor:"
-              },
-              "entity_unexpected_unit_energy_price": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh'' or ''{currency}/GJ'':"
-              },
-              "entity_unexpected_unit_gas_price": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh'', ''{currency}/GJ'', ''{currency}/m³'' or ''{currency}/ft³'':"
-              },
-              "entity_unexpected_unit_water_price": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''{currency}/m³'' or ''{currency}/ft³'':"
-              },
-              "entity_unexpected_state_class": {
-                "title": "Unexpected state class",
-                "description": "The following entities do not have the expected state class:"
-              },
-              "entity_unexpected_device_class": {
-                "title": "Unexpected device class",
-                "description": "The following entities do not have the expected device class:"
-              },
-              "entity_state_class_measurement_no_last_reset": {
-                "title": "Last reset missing",
-                "description": "The following entities have state class 'measurement' but 'last_reset' is missing:"
-              }
+              "device_consumption_energy": "Device consumption energy",
+              "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}."
             }
           }
         },
@@ -1665,7 +1852,14 @@
                 "save_button": "Save",
                 "currency": "Currency",
                 "edit_location": "Edit location",
-                "edit_location_description": "Location can be changed in zone settings"
+                "edit_location_description": "Location can be changed in zone settings",
+                "update_units_label": "Update the unit of all sensors",
+                "update_units_text_1": "The unit system has been changed, and the unit of some sensors like distance and speed can be updated.",
+                "update_units_text_2": "The unit of sensors where the unit has been edited from the UI or which can't be edited from the UI will not be updated.",
+                "update_units_text_3": "Note: The unit of temperature sensors is always updated.",
+                "update_units_confirm_title": "The unit of sensors will be updated",
+                "update_units_confirm_text": "The unit system has been changed, and the unit of some sensors like distance and speed will be updated.",
+                "update_units_confirm_update": "Update"
               }
             }
           }
@@ -1696,24 +1890,17 @@
             "id": "ID",
             "attributes": "Attributes"
           },
+          "reboot_moved_title": "Reboot and shutdown moved",
+          "reboot_moved_description": "Reboot and shutdown actions has been moved to system page.",
+          "reboot_moved_link": "Go to system page.",
           "processor": "Processor",
           "memory": "Memory",
-          "rebooting_host": "Rebooting system",
-          "reboot": "Reboot",
-          "reboot_host": "Reboot system",
-          "reboot_host_title": "Reboot system?",
-          "reboot_host_text": "This will reboot the complete system which includes the Core and all Add-ons.",
-          "failed_to_reboot_host": "Failed to reboot system",
-          "host_shutting_down": "system shutting down",
-          "shutdown": "Shutdown",
-          "shutdown_host": "Shutdown system",
-          "shutdown_host_title": "Shutdown system?",
-          "shutdown_host_text": "This will shutdown the complete system which includes the Core and all Add-ons.",
-          "failed_to_shutdown_host": "Failed to shutdown system",
-          "board": "Board",
+          "generic_hardware": "Generic Hardware",
           "documentation": "Documentation",
           "configure": "Configure",
-          "documentation_description": "Find extra information about your device"
+          "documentation_description": "Find extra information about your device",
+          "restart_homeassistant": "[%key:ui::panel::config::system_dashboard::restart_homeassistant%]",
+          "loading_system_data": "Loading processor and memory data..."
         },
         "info": {
           "caption": "About",
@@ -1858,6 +2045,98 @@
             }
           }
         },
+        "voice_assistants": {
+          "assistants": {
+            "caption": "Assistants",
+            "pipeline": {
+              "add_assistant": "Add assistant",
+              "exposed_entities": "[%key:ui::panel::config::cloud::account::google::exposed_entities%]",
+              "delete": {
+                "confirm_title": "Delete {name}?",
+                "confirm_text": "{name} will be permanently deleted."
+              },
+              "detail": {
+                "update_assistant_action": "Update",
+                "add_assistant_title": "Add assistant",
+                "add_assistant_action": "Create",
+                "try_tts": "Try voice",
+                "debug": "Debug",
+                "set_as_preferred": "Set as preferred",
+                "form": {
+                  "name": "Name",
+                  "conversation_engine": "Conversation agent",
+                  "conversation_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
+                  "language": "Language",
+                  "stt_engine": "Speech-to-text",
+                  "stt_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
+                  "tts_engine": "Text-to-speech",
+                  "tts_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
+                  "tts_voice": "Voice"
+                },
+                "steps": {
+                  "config": {
+                    "title": "Configuration",
+                    "description": "Give your assistant a name and select your language. Depending on this language, you may be able to choose region specific variants below."
+                  },
+                  "conversation": {
+                    "title": "Conversation agent",
+                    "description": "The conversation agent is the brains of your assistant and will process the incoming text commands."
+                  },
+                  "stt": {
+                    "title": "Speech-to-text",
+                    "description": "When you are controlling your assistant with voice, the speech-to-text engine turns your voice command into text."
+                  },
+                  "tts": {
+                    "title": "Text-to-speech",
+                    "description": "When you are controlling your assistant with voice, the text-to-speech engine turns the conversation text responses into audio."
+                  }
+                },
+                "no_cloud_message": "You should have an active cloud subscription to use cloud speech services.",
+                "no_cloud_action": "Subscribe"
+              }
+            },
+            "cloud": {
+              "title": "Get the best assistant with {home_assistant_cloud}",
+              "features": {
+                "assistants": {
+                  "title": "Google Assistant and Amazon Alexa",
+                  "text": "Control all your Home Assistant devices via any Google Assistant-enabled or Alexa-enabled device."
+                },
+                "speech": {
+                  "title": "Amazing speech options for Assist",
+                  "text": "Bring personality to your home by having it speak to you using our neural-network powered speech-to-text and text-to-speech services."
+                }
+              },
+              "and_more": "And more",
+              "try_one_month": "Try 1 month for free",
+              "sign_in": "Sign in"
+            }
+          },
+          "expose": {
+            "caption": "Expose",
+            "headers": {
+              "name": "Name",
+              "area": "Area",
+              "assistants": "Assistants",
+              "aliases": "Aliases"
+            },
+            "aliases": "{count} aliases",
+            "expose": "Expose",
+            "unexpose": "Unexpose",
+            "add": "Expose entities",
+            "expose_confirm_title": "Expose selected entities?",
+            "expose_confirm_text": "Do you want to expose {entities} entities to {assistants}?",
+            "unexpose_confirm_title": "Stop exposing selected entities?",
+            "unexpose_confirm_text": "Do you want to stop exposing {entities} entities to {assistants}?",
+            "manually_configured": "Configured in YAML, not editable in UI",
+            "not_supported": "Not supported by this assistant",
+            "expose_dialog": {
+              "header": "Expose entities",
+              "expose_to": "to {assistants}",
+              "expose_entities": "Expose {count} {count, plural,\n  one {entity}\n  other {entities}\n}"
+            }
+          }
+        },
         "automation": {
           "caption": "Automations",
           "description": "Create custom behavior rules for your home",
@@ -1878,6 +2157,7 @@
             "delete_confirm_text": "{name} will be permanently deleted.",
             "duplicate": "[%key:ui::common::duplicate%]",
             "disabled": "Disabled",
+            "filtered_by_blueprint": "blueprint: {name}",
             "headers": {
               "toggle": "Enable/disable",
               "name": "Name",
@@ -1887,25 +2167,24 @@
             }
           },
           "dialog_new": {
-            "header": "Create a new automation",
-            "how": "How do you want to create your new automation?",
-            "blueprint": {
-              "use_blueprint": "Use a blueprint"
+            "header": "Create automation",
+            "create_empty": "Create new automation",
+            "create_empty_description": "Start with an empty automation from scratch",
+            "create_blueprint": "Create from blueprint",
+            "create_blueprint_description": "Discover community blueprints",
+            "blueprint_source": {
+              "author": "By {author}",
+              "local": "By you",
+              "community": "By the community",
+              "homeassistant": "By Home Assistant"
             },
-            "thingtalk": {
-              "header": "Describe the automation you want to create",
-              "intro": "And we will try to create it for you. For example: Turn the lights off when I leave.",
-              "input_label": "What should this automation do?",
-              "create": "Create"
-            },
-            "start_empty": "Start with an empty automation",
-            "start_empty_description": "Create a new automation from scratch"
+            "discover_blueprint_tip": "Discover more community blueprints"
           },
           "editor": {
             "enable": "[%key:ui::common::enable%]",
             "disable": "[%key:ui::common::disable%]",
             "disabled": "Automation is disabled",
-            "read_only": "This automation can not be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
+            "read_only": "This automation cannot be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
@@ -1971,6 +2250,9 @@
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "Re-order",
               "rename": "Rename",
+              "cut": "Cut",
+              "copy": "Copy",
+              "paste": "Paste",
               "change_alias": "Rename trigger",
               "alias": "Trigger name",
               "delete": "[%key:ui::common::delete%]",
@@ -2019,7 +2301,8 @@
                   "attribute": "Attribute (optional)",
                   "from": "From (optional)",
                   "for": "For",
-                  "to": "To (optional)"
+                  "to": "To (optional)",
+                  "any_state_ignore_attributes": "Any state (ignoring attribute changes)"
                 },
                 "homeassistant": {
                   "label": "Home Assistant",
@@ -2036,7 +2319,11 @@
                   "label": "Numeric state",
                   "above": "Above",
                   "below": "Below",
-                  "value_template": "Value template"
+                  "mode_above": "Above mode",
+                  "mode_below": "Below mode",
+                  "value_template": "Value template",
+                  "type_value": "Fixed number",
+                  "type_input": "Numeric value of another entity"
                 },
                 "sun": {
                   "label": "Sun",
@@ -2050,11 +2337,12 @@
                 },
                 "template": {
                   "label": "Template",
-                  "value_template": "Value template"
+                  "value_template": "Value template",
+                  "for": "For"
                 },
                 "time": {
                   "type_value": "Fixed time",
-                  "type_input": "Value of a date/time helper",
+                  "type_input": "Value of a date/time helper or timestamp-class sensor",
                   "label": "Time",
                   "at": "At time",
                   "mode": "Mode"
@@ -2068,8 +2356,10 @@
                 "webhook": {
                   "copy_url": "Copy URL to Clipboard",
                   "label": "Webhook",
+                  "local_only": "Only accessible from the local network",
                   "webhook_id": "Webhook ID",
-                  "webhook_id_helper": "Treat this ID like a password: keep it secret, and make it hard to guess."
+                  "webhook_id_helper": "Treat this ID like a password: keep it secret, and make it hard to guess.",
+                  "webhook_settings": "Webhook Settings"
                 },
                 "zone": {
                   "label": "Zone",
@@ -2093,6 +2383,9 @@
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
+              "cut": "[%key:ui::panel::config::automation::editor::triggers::cut%]",
+              "copy": "[%key:ui::panel::config::automation::editor::triggers::copy%]",
+              "paste": "[%key:ui::panel::config::automation::editor::triggers::paste%]",
               "change_alias": "Rename condition",
               "alias": "Condition name",
               "delete": "[%key:ui::common::delete%]",
@@ -2119,9 +2412,13 @@
                   "label": "Not"
                 },
                 "numeric_state": {
+                  "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::type_value%]",
+                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::type_input%]",
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::label%]",
                   "above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::above%]",
                   "below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::below%]",
+                  "mode_above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_above%]",
+                  "mode_below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_below%]",
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]"
                 },
                 "or": {
@@ -2186,6 +2483,9 @@
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
+              "cut": "[%key:ui::panel::config::automation::editor::triggers::cut%]",
+              "copy": "[%key:ui::panel::config::automation::editor::triggers::copy%]",
+              "paste": "[%key:ui::panel::config::automation::editor::triggers::paste%]",
               "change_alias": "Rename action",
               "alias": "Action name",
               "enable": "Enable",
@@ -2287,6 +2587,9 @@
                 },
                 "parallel": {
                   "label": "Run in parallel"
+                },
+                "variables": {
+                  "label": "Define variables"
                 }
               }
             }
@@ -2331,12 +2634,22 @@
               "automation": "Automation",
               "script": "Script"
             },
+            "types_plural": {
+              "automation": "automations",
+              "script": "scripts"
+            },
+            "error": "{path} could not be loaded",
+            "blueprint_in_use_title": "This blueprint is in use, and can not be deleted",
+            "blueprint_in_use_text": "Please remove all below {type} that use this blueprint before deleting it. {list}",
+            "blueprint_in_use_view": "view {type}",
             "confirm_delete_title": "Delete blueprint?",
             "confirm_delete_text": "{name} will be permanently deleted.",
             "add_blueprint": "Import blueprint",
             "no_blueprints": "[%key:ui::panel::config::automation::editor::blueprint::no_blueprints%]",
             "create_automation": "Create automation",
             "create_script": "Create script",
+            "view_automation": "Show automations using this blueprint",
+            "view_script": "Show scripts using this blueprint",
             "delete_blueprint": "Delete blueprint",
             "share_blueprint": "Share blueprint",
             "share_blueprint_no_url": "Unable to share blueprint: no source url",
@@ -2371,6 +2684,7 @@
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
+            "filtered_by_blueprint": "[%key:ui::panel::config::automation::picker::filtered_by_blueprint%]",
             "headers": {
               "name": "Name",
               "state": "State"
@@ -2387,7 +2701,7 @@
             "introduction": "Use scripts to run a sequence of actions.",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
-            "read_only": "This script can not be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
+            "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "header": "Script: {name}",
@@ -2490,7 +2804,9 @@
             "start_trial": "Start your free 1 month trial",
             "trial_info": "No payment information necessary",
             "alert_password_change_required": "You need to change your password before logging in.",
-            "alert_email_confirm_necessary": "You need to confirm your email before logging in."
+            "alert_email_confirm_necessary": "You need to confirm your email before logging in.",
+            "cloud_pipeline_title": "Want to use Home Assistant Cloud for your voice assistant?",
+            "cloud_pipeline_text": "We created a new assistant for you, using the superior text-to-speech and speech-to-text engines from Home Assistant Cloud. Would you like to set this assistant as the preferred assistant?"
           },
           "forgot_password": {
             "title": "Forgot password",
@@ -2535,20 +2851,19 @@
             "integrations_introduction": "Integrations for Home Assistant Cloud allow you to connect with services in the cloud without having to expose your Home Assistant instance publicly on the internet.",
             "integrations_introduction2": "Check the website for ",
             "integrations_link_all_features": " all available features",
+            "tip_moved_voice_assistants": "Looking for Google Assistant and Amazon Alexa settings? They are moved to the new voice assistants page.",
             "connected": "Connected",
             "connecting": "Connecting…",
             "not_connected": "Not Connected",
             "fetching_subscription": "Fetching subscription…",
             "tts": {
-              "title": "Text to Speech",
-              "info": "Bring personality to your home by having it speak to you by using our Text-to-Speech services. You can use this in automations and scripts by using the {service} service.",
+              "title": "Text-to-speech",
+              "info": "Bring personality to your home by having it speak to you by using our text-to-speech services. You can use this in automations and scripts by using the {service} service.",
               "default_language": "Default language to use",
               "default_gender": "Default gender to use",
-              "male": "Male",
-              "female": "Female",
               "try": "Try",
               "dialog": {
-                "header": "Try Text to Speech",
+                "header": "Try text-to-speech",
                 "example_message": "Hello {name}, you can play any text on any supported media player!",
                 "target": "Target",
                 "target_browser": "Browser",
@@ -2562,6 +2877,9 @@
               "not_connected": "Not Connected",
               "reconnecting": "Not connected. Trying to reconnect.",
               "access_is_being_prepared": "Remote control is being prepared. We will notify you when it's ready.",
+              "cerificate_loading": "Your certificate is loading.",
+              "cerificate_loaded": "Your certificate is loaded, waiting for validation.",
+              "cerificate_error": "There was an error generating the certificate, check your logs.",
               "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
               "instance_is_available": "Your instance is available at your",
               "instance_will_be_available": "Your instance will be available at your",
@@ -2577,31 +2895,39 @@
               "enable_state_reporting": "Enable State Reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
               "state_reporting_error": "Unable to {enable_disable} report state.",
-              "manage_entities": "Manage Entities",
+              "show_entities": "[%key:ui::panel::config::cloud::account::google::show_entities%]",
+              "exposed_entities": "[%key:ui::panel::config::cloud::account::google::exposed_entities%]",
+              "manual_config": "[%key:ui::panel::config::cloud::account::google::manual_config%]",
               "enable": "enable",
               "disable": "disable",
-              "not_configured_title": "Alexa is not activated",
+              "not_configured_title": "Continue setting up Alexa",
               "not_configured_text": "Before you can use Alexa, you need to activate the Home Assistant skill for Alexa in the Alexa app.",
-              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]"
+              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
+              "expose_new_entities": "[%key:ui::panel::config::cloud::account::google::expose_new_entities%]",
+              "expose_new_entities_info": "Should new entities be exposed to Alexa automatically? Exposes supported devices that are not classified as security devices."
             },
             "google": {
               "title": "Google Assistant",
-              "info": "With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
+              "info": "With the Google Assistant integration for Home Assistant Cloud, you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
               "http_use_ssl_warning_title": "Local communication unavailable",
-              "http_use_ssl_warning_text": "Google devices will not be able to talk locally with Home Assistant because you have configured an SSL certificate for your HTTP integration.",
+              "http_use_ssl_warning_text": "Google devices will not be able to talk locally with Home Assistant, because you have configured an SSL certificate for your HTTP integration.",
               "enable_ha_skill": "Activate the Home Assistant Cloud skill for Google Assistant",
               "config_documentation": "Configuration documentation",
-              "enable_state_reporting": "Enable State Reporting",
+              "enable_state_reporting": "Enable state reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This speeds up voice commands and allows you to always see the latest states in the Google app.",
-              "security_devices": "Security Devices",
-              "enter_pin_info": "Please enter a PIN to interact with security devices. Security devices are doors, garage doors and locks. You will be asked to say/enter this PIN when interacting with such devices via Google Assistant.",
+              "security_devices": "Security devices",
+              "enter_pin_info": "Please enter a PIN to interact with security devices. Security devices are doors, garage doors, and locks. You will be asked to say/enter this PIN when interacting with security devices via Google Assistant.",
               "devices_pin": "Security Devices PIN",
               "enter_pin_hint": "Enter a PIN to use security devices",
-              "manage_entities": "Manage Entities",
+              "show_entities": "Show Entities",
+              "exposed_entities": "{number} {number, plural,\n  one {entity}\n  other {entities}\n} exposed",
+              "manual_config": "Editing which entities are exposed via the UI is disabled because you have configured entity filters in configuration.yaml.",
               "enter_pin_error": "Unable to store PIN:",
-              "not_configured_title": "Google Assistant is not activated",
+              "not_configured_title": "Continue setting up Google Assistant",
               "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
-              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]"
+              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
+              "expose_new_entities": "Expose new entities",
+              "expose_new_entities_info": "Should new entities be exposed to Google Assistant automatically? Exposes supported devices that are not classified as security devices."
             },
             "webhooks": {
               "title": "Webhooks",
@@ -2616,50 +2942,12 @@
               "disable_hook_error_msg": "Failed to disable webhook:"
             }
           },
-          "alexa": {
-            "title": "Alexa",
-            "banner": "[%key:ui::panel::config::cloud::google::banner%]",
-            "exposed_entities": "[%key:ui::panel::config::cloud::google::exposed_entities%]",
-            "not_exposed_entities": "[%key:ui::panel::config::cloud::google::not_exposed_entities%]",
-            "manage_defaults": "[%key:ui::panel::config::cloud::google::manage_defaults%]",
-            "manage_defaults_dialog_description": "[%key:ui::panel::config::cloud::google::manage_defaults_dialog_description%]",
-            "expose_entity": "[%key:ui::panel::config::cloud::google::expose_entity%]",
-            "dont_expose_entity": "[%key:ui::panel::config::cloud::google::dont_expose_entity%]",
-            "follow_domain": "[%key:ui::panel::config::cloud::google::follow_domain%]",
-            "exposed": "[%key:ui::panel::config::cloud::google::exposed%]",
-            "not_exposed": "[%key:ui::panel::config::cloud::google::not_exposed%]",
-            "expose": "Expose to Alexa",
-            "sync_entities": "Synchronize entities",
-            "sync_entities_error": "Failed to sync entities:"
-          },
           "dialog_certificate": {
             "certificate_information": "Certificate Information",
             "certificate_expiration_date": "Certificate expiration date:",
             "will_be_auto_renewed": "will be automatically renewed",
             "fingerprint": "Certificate fingerprint:",
             "close": "Close"
-          },
-          "google": {
-            "title": "Google Assistant",
-            "expose": "Expose to Google Assistant",
-            "disable_2FA": "Disable two factor authentication",
-            "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
-            "exposed_entities": "Exposed entities",
-            "not_exposed_entities": "Not exposed entities",
-            "manage_defaults": "Manage defaults",
-            "manage_defaults_dialog_description": "Entities can be exposed by default based on their type.",
-            "expose_entity": "Expose entity",
-            "dont_expose_entity": "Don't expose entity",
-            "follow_domain": "Follow domain",
-            "exposed": "{selected} exposed",
-            "not_exposed": "{selected} not exposed",
-            "sync_to_google": "Synchronizing changes to Google.",
-            "sync_entities": "Synchronize entities",
-            "sync_entities_error": "Failed to sync entities:",
-            "not_configured_title": "[%key:ui::panel::config::cloud::account::google::not_configured_title%]",
-            "not_configured_text": "[%key:ui::panel::config::cloud::account::google::not_configured_text%]",
-            "sync_failed_title": "Syncing failed",
-            "sync_failed_text": "Syncing your entities failed, try again or check the logs."
           },
           "dialog_cloudhook": {
             "webhook_for": "Webhook for {name}",
@@ -2774,7 +3062,8 @@
             "battery": "Battery",
             "disabled_by": "Disabled",
             "no_devices": "No devices",
-            "no_integration": "No integration"
+            "no_integration": "No integration",
+            "unknown": "unknown"
           },
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this device?",
@@ -2797,6 +3086,7 @@
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
             "search": "Search entities",
+            "unnamed_entity": "Unnamed entity",
             "filter": {
               "filter": "Filter",
               "show_hidden": "Show hidden entities",
@@ -2944,6 +3234,7 @@
           "search_brand": "Search for a brand name",
           "add_zwave_js_device": "Add Z-Wave device",
           "add_zha_device": "Add Zigbee device",
+          "add_matter_device": "Add Matter device",
           "disable": {
             "show_disabled": "Show disabled integrations",
             "disabled_integrations": "{number} disabled",
@@ -2959,6 +3250,22 @@
             "confirm_delete_ignore": "This will make the integration appear in your discovered integrations again when it gets discovered. This might require a restart or take some time.",
             "stop_ignore": "Stop ignoring"
           },
+          "integration_page": {
+            "entries": "Integration entries",
+            "entries_device": "Devices",
+            "entries_hub": "Hubs",
+            "entries_service": "Services",
+            "entries_helper": "Helpers",
+            "entries_hardware": "Hardware",
+            "no_entries": "No entries",
+            "attention_entries": "Needs attention",
+            "add_entry": "Add entry",
+            "add_device": "Add device",
+            "add_hub": "Add hub",
+            "add_service": "Add service",
+            "add_helper": "Add helper",
+            "add_hardware": "Add hardware"
+          },
           "config_entry": {
             "application_credentials": {
               "delete_title": "Application Credentials",
@@ -2971,15 +3278,18 @@
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
+            "entries": "{count} {count, plural,\n  one {entry}\n  other {entries}\n}",
             "rename": "Rename",
             "configure": "Configure",
             "system_options": "System options",
             "documentation": "Documentation",
             "download_diagnostics": "Download diagnostics",
+            "disable_debug_logging": "Disable debug logging",
             "known_issues": "Known issues",
             "delete": "Delete",
             "delete_confirm_title": "Delete {title}?",
             "delete_confirm_text": "Its devices and entities will be permanently deleted.",
+            "enable_debug_logging": "Enable debug logging",
             "reload": "Reload",
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "reload_confirm": "The integration was reloaded",
@@ -3010,10 +3320,11 @@
                 "device": "device"
               }
             },
-            "provided_by_custom_integration": "Provided by a custom integration",
+            "custom_integration": "Custom integration",
             "depends_on_cloud": "Depends on the cloud",
             "yaml_only": "Needs manual configuration",
             "disabled_polling": "Automatic polling for updated data disabled",
+            "debug_logging_enabled": "Debug logging enabled",
             "state": {
               "loaded": "Loaded",
               "setup_error": "Failed to set up",
@@ -3034,7 +3345,7 @@
             "submit": "Submit",
             "next": "Next",
             "found_following_devices": "We found the following devices",
-            "yaml_only_title": "This device can not be added from the UI",
+            "yaml_only_title": "This device cannot be added from the UI",
             "yaml_only": "You can add this device by adding it to your ''configuration.yaml''. See the documentation for more information.",
             "open_documentation": "Open documentation",
             "no_config_flow": "This integration does not support configuration via the UI. If you followed this link from the Home Assistant website, make sure you run the latest version of Home Assistant.",
@@ -3054,8 +3365,10 @@
             "could_not_load": "Config flow could not be loaded",
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
             "supported_brand_flow": "Support for {supported_brand} devices is provided by {flow_domain_name}. Do you want to continue?",
-            "missing_zwave_zigbee": "To add a {brand} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
             "missing_zwave_zigbee_title": "{integration} is not setup",
+            "missing_zwave_zigbee": "To add a {brand} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
+            "missing_matter": "To add a {brand} device, you first need the {integration} integration and {supported_hardware_link}. Do you want to proceed with the setup of {integration}?",
+            "matter_mobile_app": "You need to use the Home Assistant Companion app on your mobile phone to commission Matter devices.",
             "supported_hardware": "supported hardware",
             "proceed": "Proceed"
           }
@@ -3155,16 +3468,47 @@
         },
         "mqtt": {
           "title": "MQTT",
+          "settings_title": "MQTT settings",
+          "reconfigure": "Re-configure MQTT",
           "description_publish": "Publish a packet",
-          "topic": "topic",
+          "topic": "Topic",
           "payload": "Payload (template allowed)",
+          "payload_no_template": "Payload",
+          "allow_template": "Allow template",
           "publish": "Publish",
           "description_listen": "Listen to a topic",
+          "json_formatting": "Format JSON content",
           "listening_to": "Listening to",
           "subscribe_to": "Topic to subscribe to",
           "start_listening": "Start listening",
           "stop_listening": "Stop listening",
-          "message_received": "Message {id} received on {topic} at {time}:"
+          "message_received": "Message {id} received on {topic} at {time}:",
+          "qos": "QoS",
+          "retain": "Retain"
+        },
+        "thread": {
+          "other_networks": "Other networks",
+          "my_network": "My network",
+          "no_preferred_network": "You don't have a preferred network yet.",
+          "add_open_thread_border_router": "Add an OpenThread border router",
+          "reset_border_router": "Reset border router",
+          "add_to_my_network": "Add to my network",
+          "no_routers_otbr_network": "No border routers where found, maybe the border router is not configured correctly. You can try to reset it to the factory settings.",
+          "add_dataset_from_tlv": "Add dataset from TLV",
+          "add_dataset": "Add Thread dataset",
+          "add_dataset_label": "Operational dataset TLV",
+          "add_dataset_button": "Add dataset",
+          "confirm_reset_border_router": "Reset border router?",
+          "confirm_reset_border_router_text": "This will reset the Home Assistant border router to its factory defaults and form a new Thread network. The old network may no longer be available, and any devices that were attached to this network may need to be recomissioned.",
+          "confirm_set_dataset_border_router": "Reconfigure border router?",
+          "confirm_set_dataset_border_router_text": "This will reconfigure the Home Assistant border router to use a different Thread network. The old network may no longer be available, and any devices that were attached to this network may need to be recomissioned.",
+          "otbr_config_failed": "Failed to configure the border router",
+          "confirm_delete_dataset": "Delete {name} dataset?",
+          "confirm_delete_dataset_text": "This network will be removed from Home Assistant.",
+          "no_border_routers": "No border routers found",
+          "border_routers": "{count} border {count, plural,\n  one {router}\n  other {routers}\n}",
+          "managed_by_home_assistant": "Managed by Home Assistant",
+          "operational_dataset": "Operational dataset"
         },
         "zha": {
           "common": {
@@ -3177,7 +3521,12 @@
             "update_button": "Update Configuration",
             "download_backup": "Download Backup",
             "migrate_radio": "Migrate Radio",
-            "network_settings_title": "Network Settings"
+            "network_settings_title": "Network Settings",
+            "change_channel": "Change channel",
+            "channel_dialog": {
+              "title": "Multiprotocol addon in use",
+              "text": "Zigbee and Thread share the same radio and must use the same channel. Change the channel of both networks by reconfiguring multiprotocol from the hardware menu."
+            }
           },
           "add_device_page": {
             "spinner": "Searching for Zigbee devices…",
@@ -3271,6 +3620,14 @@
             "lqi": "LQI",
             "relationship": "Relationship",
             "depth": "Depth"
+          },
+          "change_channel_dialog": {
+            "title": "Change network channel",
+            "new_channel": "New channel",
+            "change_channel": "Change channel",
+            "migration_warning": "Zigbee channel migration is an experimental feature and relies on devices on your network to support it. Device support for this feature varies and only a portion of your network may end up migrating!",
+            "channel_has_been_changed": "Network channel has been changed",
+            "devices_will_rejoin": "Devices will re-join the network over time. This may take a few minutes."
           }
         },
         "zwave_js": {
@@ -3440,6 +3797,7 @@
             "header": "Z-Wave Device Configuration",
             "introduction": "Manage and adjust device specific configuration parameters for the selected device",
             "attribution": "Device configuration parameters and descriptions are provided by the {device_database}",
+            "endpoint": "Endpoint {endpoint}",
             "zwave_js_device_database": "Z-Wave JS Device Database",
             "battery_device_notice": "Battery devices must be awake to update their config. Please refer to your device manual for instructions on how to wake the device.",
             "parameter_is_read_only": "This parameter is read-only.",
@@ -3447,7 +3805,8 @@
             "set_param_accepted": "The parameter has been updated.",
             "set_param_queued": "The parameter change has been queued, and will be updated when the device wakes up.",
             "set_param_error": "An error occurred.",
-            "parameter": "Parameter"
+            "parameter": "Parameter",
+            "bitmask": "Bitmask"
           },
           "node_status": {
             "unknown": "Unknown",
@@ -3561,10 +3920,12 @@
           "update_firmware": {
             "title": "Update Device Firmware",
             "warning": "WARNING: Firmware updates can brick your device if you do not correctly follow the manufacturer's guidance. The Home Assistant and Z-Wave JS teams do not take any responsibility for any damages to your device as a result of the firmware update and will not be able to help you if you brick your device. Would you still like to continue?",
+            "warning_controller": "WARNING: Firmware updates can brick your controller if you do not use the right firmware files, or if you attempt to stop the firmware update before it completes. The Home Assistant and Z-Wave JS teams do not take any responsibility for any damages to your controller as a result of the firmware update and will not be able to help you if you brick your controller. Would you still like to continue?",
             "introduction": "Select the firmware file you would like to use to update {device}.",
-            "upload_firmware": "Upload Firmware",
-            "firmware_target_intro": "Select the firmware target (0 for the Z-Wave chip, ≥1 for other chips if they exist) for this update, or uncheck the box to have the driver attempt to figure it out from the firmware file.",
+            "introduction_controller": "Select the firmware file you would like to use to update {device}. Note that once you start a firmware update, you MUST wait for the update to complete.",
+            "firmware_target_intro": "Select the firmware target (0 for the Z-Wave chip, ≥1 for other chips if they exist) for this update.",
             "firmware_target": "Firmware Target (chip)",
+            "upload_firmware": "Upload Firmware",
             "upload_failed": "Upload Failed",
             "begin_update": "Begin Firmware Update",
             "queued": "The firmware update is ready to be sent to {device} but the device is asleep, wake the device to start the update.",
@@ -3576,10 +3937,11 @@
             "abort_failed": "Abort Failed",
             "confirm_abort": "Are you sure you want to abort the firmware update on {device}?",
             "finished_status": {
-              "ok": "Successfully updated firmware on {device}: {message}.",
+              "success": "Successfully updated firmware on {device}: {message}.",
               "error": "Unable to update firmware on {device}: {message}.",
               "try_again": "To attempt the firmware update again, select the new firmware file you would like to use.",
               "done": "The firmware update is complete! If you want to attempt another firmware update on this device, please wait until it gets re-interviewed.",
+              "done_controller": "The firmware update is complete! Your controller is being restarted and your network will temporarily be unavailable.",
               "Error_Timeout": "Timed Out",
               "Error_Checksum": "Checksum Error",
               "Error_TransmissionFailed": "Transmission Failed",
@@ -3590,9 +3952,13 @@
               "Error_InvalidHeaderFormat": "Invalid Header Format",
               "Error_InsufficientMemory": "Insufficient Memory",
               "Error_InvalidHardwareVersion": "Invalid Hardware Version",
-              "OK_WaitingForActivation": "Waiting for Activiation",
+              "OK_WaitingForActivation": "Waiting for Activation",
               "OK_NoRestart": "No Restart",
-              "OK_RestartPending": "Restart Pending"
+              "OK_RestartPending": "Restart Pending",
+              "Error_RetryLimitReached": "Retry Limit Reached",
+              "Error_Aborted": "Update Aborted by Bootloader",
+              "Error_NotSupported": "Firmware Updates Not Supported",
+              "OK": "Success"
             }
           },
           "logs": {
@@ -3605,11 +3971,33 @@
         },
         "tips": {
           "tip": "Tip!",
-          "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}"
+          "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}",
+          "media_storage": "You can add network storage to your Home Assistant instance in the {storage} panel."
         },
         "analytics": {
           "caption": "Analytics",
-          "description": "Learn how to share data to improve Home Assistant"
+          "description": "Learn how to share data to improve Home Assistant",
+          "preferences": {
+            "base": {
+              "title": "Basic analytics",
+              "description": "This includes information about your system."
+            },
+            "usage": {
+              "title": "Usage",
+              "description": "Details of what you use with Home Assistant"
+            },
+            "statistics": {
+              "title": "Statistical data",
+              "description": "Counts containing total number of datapoints."
+            },
+            "diagnostics": {
+              "title": "Diagnostics",
+              "description": "Share crash reports when unexpected errors occur."
+            }
+          },
+          "need_base_enabled": "You need to enable basic analytics for this option to be available",
+          "learn_more": "How we process your data",
+          "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features."
         },
         "network": {
           "caption": "Network",
@@ -3620,18 +4008,26 @@
             "title": "Configure network interfaces",
             "connected_to": "Connected to {ssid}",
             "scan_ap": "Scan for access points",
+            "signal_strength": "Signal strength",
             "open": "Open",
             "wep": "WEP",
             "wpa": "wpa-psk",
+            "wifi": "Wi-Fi",
+            "wifi_password": "Wi-Fi password",
             "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
             "static": "Static",
-            "dhcp": "DHCP",
+            "auto": "Automatic",
             "disabled": "Disabled",
             "ip_netmask": "IP address/Netmask",
             "gateway": "Gateway address",
             "dns_servers": "DNS Servers",
             "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
-            "failed_to_change": "Failed to change network settings"
+            "failed_to_change": "Failed to change network settings",
+            "hostname": {
+              "title": "Host Name",
+              "description": "The name your instance will have on your network",
+              "failed_to_set_hostname": "Setting hostname failed"
+            }
           }
         },
         "storage": {
@@ -3639,18 +4035,85 @@
           "description": "{percent_used} used - {free_space} free",
           "used_space": "Used Space",
           "emmc_lifetime_used": "eMMC Lifetime Used",
+          "disk_metrics": "Disk metrics",
           "datadisk": {
-            "title": "Move datadisk",
-            "description": "You are currently using ''{current_path}'' as datadisk. Moving data disks will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
-            "select_device": "Select new datadisk",
+            "title": "Move data disk",
+            "description": "You are currently using ''{current_path}'' as data disk. Moving the data disk will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
+            "extra_information": "Size: {size}, S/N: {serial}",
+            "select_device": "Select new data disk",
             "no_devices_title": "No suitable storage found",
             "no_devices_text": "There is no suitable external device found. The storage capacity of the external data disk must be larger than the storage capacity of the existing disk",
-            "moving_desc": "Rebooting and moving datadisk. Please have patience",
-            "moving": "Moving datadisk",
+            "moving_desc": "Rebooting and moving data disk. Please have patience",
+            "moving": "Moving data disk",
             "loading_devices": "Loading devices",
             "cancel": "[%key:ui::common::cancel%]",
-            "failed_to_move": "Failed to move datadisk",
+            "failed_to_move": "Failed to move data disk",
             "move": "Move"
+          },
+          "network_mounts": {
+            "title": "Network storage",
+            "add_title": "Add network storage",
+            "update_title": "Update network storage",
+            "no_mounts": "No connected network storage",
+            "not_supported": {
+              "title": "The operating system does not support network storage",
+              "supervised": "Network storage is not supported on this host",
+              "os": "To use network storage you need to run at least Home Assistant Operating System {version}",
+              "navigate_to_updates": "Go to updates"
+            },
+            "mount_usage": {
+              "backup": "Backup",
+              "media": "Media",
+              "share": "Share"
+            },
+            "mount_type": {
+              "nfs": "Network File Share (NFS)",
+              "cifs": "Samba/Windows (CIFS)"
+            },
+            "options": {
+              "name": {
+                "title": "Name",
+                "description": "This name will be shown to you in the UI, and will also be the name of the folder created on your system"
+              },
+              "share": {
+                "title": "Remote share",
+                "description": "This is the name of the share you created on your storage server"
+              },
+              "server": {
+                "title": "Server",
+                "description": "This is the domain name (FQDN) or IP address of the storage server you want to connect to"
+              },
+              "default_backup_mount": {
+                "title": "Default backup location",
+                "description": "This will be the default location for backups"
+              },
+              "path": {
+                "title": "Remote share path",
+                "description": "This is the path of the remote share on your storage server"
+              },
+              "type": {
+                "title": "Protocol",
+                "description": "This determines how to communicate with the storage server"
+              },
+              "usage": {
+                "title": "Usage",
+                "description": "This determines how the share is intended to be used"
+              },
+              "username": {
+                "title": "Username",
+                "description": "This is your username for the samba share"
+              },
+              "password": {
+                "title": "Password",
+                "description": "This is your password for the samba share"
+              }
+            },
+            "connect": "Connect",
+            "update": "Update",
+            "errors": {
+              "reload": "Could not reload mount {mount}",
+              "invalid_name": "Invalid name, can only contain alphanumeric characters and underscores"
+            }
           }
         },
         "system_health": {
@@ -3663,10 +4126,7 @@
           "integration_start_time": "Integration Startup Time"
         },
         "system_dashboard": {
-          "confirm_restart_text": "This will stop all your active dashboards, automations and scripts.",
-          "confirm_restart_title": "Restart Home Assistant?",
-          "restart_homeassistant_short": "Restart",
-          "restart_error": "Failed to restart Home Assistant"
+          "restart_homeassistant": "Restart Home Assistant"
         }
       },
       "lovelace": {
@@ -3737,6 +4197,7 @@
             "energy_sources_table": {
               "grid_total": "Grid total",
               "gas_total": "Gas total",
+              "solar_total": "Solar total",
               "water_total": "Water total",
               "source": "Source",
               "energy": "Energy",
@@ -3813,7 +4274,7 @@
           "configure_ui": "Edit Dashboard",
           "help": "Help",
           "search": "Search",
-          "start_conversation": "Start conversation",
+          "assist": "Assist",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
           "close": "Close"
@@ -3824,6 +4285,7 @@
         },
         "editor": {
           "header": "Edit UI",
+          "yaml_unsupported": "The edit UI is not available when in YAML mode.",
           "menu": {
             "open": "Open dashboard menu",
             "raw_editor": "Raw configuration editor",
@@ -3971,8 +4433,9 @@
               "calendar_entities": "Calendar Entities",
               "views": {
                 "dayGridMonth": "Month",
+                "dayGridWeek": "Week",
                 "dayGridDay": "Day",
-                "list": "List"
+                "listWeek": "List (7 days)"
               }
             },
             "conditional": {
@@ -4089,7 +4552,8 @@
                 "5minute": "5 Minutes"
               },
               "pick_statistic": "Add a statistic",
-              "picked_statistic": "Statistic"
+              "picked_statistic": "Statistic",
+              "hide_legend": "Hide legend"
             },
             "statistic": {
               "name": "Statistic",
@@ -4130,6 +4594,7 @@
               "description": "The Light card allows you to change the brightness of the light."
             },
             "generic": {
+              "alt_text": "Alternative Text",
               "aspect_ratio": "Aspect Ratio",
               "attribute": "Attribute",
               "camera_image": "Camera Entity",
@@ -4224,6 +4689,7 @@
               "appearance": "Appearance",
               "default_color": "Default color (state)",
               "show_entity_picture": "Show entity picture",
+              "vertical": "Vertical",
               "features": {
                 "name": "Features",
                 "not_compatible": "Not compatible",
@@ -4237,6 +4703,21 @@
                   },
                   "cover-tilt": {
                     "label": "Cover tilt"
+                  },
+                  "fan-speed": {
+                    "label": "Fan speed"
+                  },
+                  "alarm-modes": {
+                    "label": "Alarm modes",
+                    "modes": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes_label%]",
+                    "modes_list": {
+                      "armed_away": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_away%]",
+                      "armed_home": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_home%]",
+                      "armed_night": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_night%]",
+                      "armed_vacation": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_vacation%]",
+                      "armed_custom_bypass": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_custom_bypass%]",
+                      "disarmed": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::disarmed%]"
+                    }
                   },
                   "light-brightness": {
                     "label": "Light brightness"
@@ -4279,6 +4760,7 @@
               "primary": "Primary",
               "accent": "Accent",
               "disabled": "Disabled",
+              "inactive": "Inactive",
               "red": "Red",
               "pink": "Pink",
               "purple": "Purple",
@@ -4296,13 +4778,14 @@
               "orange": "Orange",
               "deep-orange": "Deep orange",
               "brown": "Brown",
+              "light-grey": "Light grey",
               "grey": "Grey",
+              "dark-grey": "Dark grey",
               "blue-grey": "Blue grey",
               "black": "Black",
               "white": "White"
             }
           },
-
           "cardpicker": {
             "no_description": "No description available.",
             "custom_card": "Custom",
@@ -4445,6 +4928,27 @@
             "24": "24 hours"
           }
         },
+        "time_zone": {
+          "header": "Time Zone",
+          "dropdown_label": "Time zone",
+          "description": "Choose the time zone to use for displaying times.",
+          "options": {
+            "local": "Use your local time zone ({timezone})",
+            "server": "Use server time zone ({timezone})"
+          }
+        },
+        "date_format": {
+          "header": "Date Format",
+          "dropdown_label": "Date format",
+          "description": "Choose how dates are formatted.",
+          "formats": {
+            "language": "Auto (use language setting)",
+            "system": "Use system locale",
+            "DMY": "Day-Month-Year",
+            "MDY": "Month-Day-Year",
+            "YMD": "Year-Month-Day"
+          }
+        },
         "first_weekday": {
           "header": "First day of the week",
           "dropdown_label": "First day of the week",
@@ -4472,7 +4976,9 @@
           },
           "primary_color": "Primary color",
           "accent_color": "Accent color",
-          "reset": "Reset"
+          "reset": "Reset",
+          "backend-selected": "Use backend preferred theme",
+          "default": "Default"
         },
         "dashboard": {
           "header": "Dashboard",
@@ -4532,7 +5038,8 @@
           "name": "Name",
           "prompt_name": "Give the token a name",
           "prompt_copy_token": "Copy your access token. It will not be shown again.",
-          "empty_state": "You have no long-lived access tokens yet."
+          "empty_state": "You have no long-lived access tokens yet.",
+          "qr_code_image": "QR code for token {name}"
         }
       },
       "shopping_list": {
@@ -4773,7 +5280,14 @@
                 "clear": "Delete all old statistic data for this entity"
               }
             },
-            "adjust_sum": "Adjust sum"
+            "adjust_sum": "Adjust sum",
+            "data_table": {
+              "name": "Name",
+              "statistic_id": "Statistic id",
+              "statistics_unit": "Statistics unit",
+              "source": "Source",
+              "issue": "Issue"
+            }
           },
           "yaml": {
             "title": "YAML",
@@ -4786,6 +5300,7 @@
                 "invalid": "Configuration invalid!"
               },
               "reloading": {
+                "all": "All YAML configuration",
                 "heading": "YAML configuration reloading",
                 "introduction": "Some parts of Home Assistant can reload without requiring a restart. Clicking one of the options below will unload their current YAML configuration and load the new one.",
                 "reload": "{domain}",
@@ -4825,8 +5340,6 @@
               },
               "server_management": {
                 "heading": "Home Assistant",
-                "confirm_restart_text": "Restarting Home Assistant will stop all your active dashboards, automations and scripts.",
-                "confirm_restart_title": "Restart Home Assistant?",
                 "restart": "Restart",
                 "stop": "Stop",
                 "confirm_stop": "Are you sure you want to stop Home Assistant?",
@@ -4869,7 +5382,28 @@
           "finish": "Finish"
         },
         "analytics": {
-          "finish": "Next"
+          "finish": "Next",
+          "preferences": {
+            "base": {
+              "title": "[%key:ui::panel::config::analytics::preferences::base::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::base::description%]"
+            },
+            "usage": {
+              "title": "[%key:ui::panel::config::analytics::preferences::usage::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::usage::description%]"
+            },
+            "statistics": {
+              "title": "[%key:ui::panel::config::analytics::preferences::statistics::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::statistics::description%]"
+            },
+            "diagnostics": {
+              "title": "[%key:ui::panel::config::analytics::preferences::diagnostics::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::diagnostics::description%]"
+            }
+          },
+          "need_base_enabled": "[%key:ui::panel::config::analytics::need_base_enabled%]",
+          "learn_more": "[%key:ui::panel::config::analytics::learn_more%]",
+          "intro": "[%key:ui::panel::config::analytics::intro%]"
         },
         "restore": {
           "description": "Alternatively you can restore from a previous backup.",
@@ -4949,7 +5483,7 @@
         "log": "Log"
       },
       "configuration": {
-        "no_configuration": "This add-on does not expose configuration for you to mess with…",
+        "no_configuration": "This add-on has no configuration.",
         "audio": {
           "header": "Audio",
           "default": "Default",
@@ -5092,6 +5626,7 @@
           "uninstall": "Failed to uninstall add-on",
           "install": "Failed to install add-on",
           "stop": "Failed to stop add-on",
+          "rebuild": "Failed to rebuild add-on",
           "restart": "Failed to restart add-on",
           "start": "Failed to start add-on",
           "go_to_config": "Edit Config",
@@ -5162,7 +5697,8 @@
       "addon_running": "Add-on is running",
       "addon_stopped": "Add-on is stopped",
       "addons": "Installed add-ons",
-      "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!"
+      "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!",
+      "search_addons": "Search add-ons"
     },
     "store": {
       "missing_addons": "Missing add-ons? Enable advanced mode in your user profile page",
@@ -5249,7 +5785,7 @@
         "failed_to_shutdown": "Failed to shutdown the host",
         "failed_to_set_hostname": "Setting hostname failed",
         "failed_to_import_from_usb": "Failed to import from USB",
-        "failed_to_move": "Failed to move datadisk",
+        "failed_to_move": "Failed to move data disk",
         "used_space": "Used space",
         "hostname": "Hostname",
         "change_hostname": "Change Hostname",
@@ -5266,7 +5802,7 @@
         "shutdown_host": "Shutdown host",
         "hardware": "Hardware",
         "import_from_usb": "Import from USB",
-        "move_datadisk": "Move datadisk"
+        "move_datadisk": "Move data disk"
       },
       "core": {
         "cpu_usage": "Core CPU Usage",
@@ -5288,6 +5824,8 @@
       "download_backup": "Download backup",
       "create_backup": "Create backup",
       "create": "Create",
+      "location": "Location",
+      "data_disk": "Data disk",
       "created": "Created",
       "name": "Backup name",
       "type": "Backup type",
@@ -5309,12 +5847,15 @@
         "title": "Network settings",
         "connected_to": "Connected to {ssid}",
         "scan_ap": "Scan for access points",
+        "signal_strength": "[%key:ui::panel::config::network::supervisor::signal_strength%]",
         "open": "Open",
         "wep": "WEP",
         "wpa": "wpa-psk",
+        "wifi": "[%key:ui::panel::config::network::supervisor::wifi%]",
+        "wifi_password": "[%key:ui::panel::config::network::supervisor::wifi_password%]",
         "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
         "static": "Static",
-        "dhcp": "DHCP",
+        "auto": "Automatic",
         "disabled": "Disabled",
         "ip_netmask": "IP address/Netmask",
         "gateway": "Gateway address",
@@ -5359,13 +5900,22 @@
         "attributes": "Attributes",
         "device_path": "Device path"
       },
+      "backup_location": {
+        "title": "Change default backup location",
+        "options": {
+          "default_backup_mount": {
+            "name": "Default backup location",
+            "description": "The default location for backups."
+          }
+        }
+      },
       "datadisk_move": {
         "title": "[%key:supervisor::system::host::move_datadisk%]",
-        "description": "You are currently using ''{current_path}'' as datadisk. Moving data disks will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
-        "select_device": "Select new datadisk",
+        "description": "You are currently using ''{current_path}'' as data disk. Moving data disks will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
+        "select_device": "Select new data disk",
         "no_devices": "No suitable attached devices found",
-        "moving_desc": "Rebooting and moving datadisk. Please have patience",
-        "moving": "Moving datadisk",
+        "moving_desc": "Rebooting and moving data disk. Please have patience",
+        "moving": "Moving data disk",
         "loading_devices": "Loading devices",
         "cancel": "[%key:ui::common::cancel%]",
         "move": "Move"

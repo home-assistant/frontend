@@ -9,9 +9,10 @@ import {
   mdiVolumeOff,
   mdiVolumePlus,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-icon-button";
@@ -25,13 +26,8 @@ import {
   handleMediaControlClick,
   MediaPickedEvent,
   MediaPlayerEntity,
+  MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
-  SUPPORT_BROWSE_MEDIA,
-  SUPPORT_SELECT_SOUND_MODE,
-  SUPPORT_SELECT_SOURCE,
-  SUPPORT_VOLUME_BUTTONS,
-  SUPPORT_VOLUME_MUTE,
-  SUPPORT_VOLUME_SET,
 } from "../../../data/media-player";
 import { HomeAssistant } from "../../../types";
 
@@ -41,9 +37,9 @@ class MoreInfoMediaPlayer extends LitElement {
 
   @property({ attribute: false }) public stateObj?: MediaPlayerEntity;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.stateObj;
@@ -68,7 +64,7 @@ class MoreInfoMediaPlayer extends LitElement {
                 `
               )}
         </div>
-        ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
+        ${supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
           ? html`
               <mwc-button
                 .label=${this.hass.localize(
@@ -85,12 +81,12 @@ class MoreInfoMediaPlayer extends LitElement {
             `
           : ""}
       </div>
-      ${(supportsFeature(stateObj, SUPPORT_VOLUME_SET) ||
-        supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)) &&
+      ${(supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET) ||
+        supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_BUTTONS)) &&
       ![UNAVAILABLE, UNKNOWN, "off"].includes(stateObj.state)
         ? html`
             <div class="volume">
-              ${supportsFeature(stateObj, SUPPORT_VOLUME_MUTE)
+              ${supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_MUTE)
                 ? html`
                     <ha-icon-button
                       .path=${stateObj.attributes.is_volume_muted
@@ -107,7 +103,10 @@ class MoreInfoMediaPlayer extends LitElement {
                     ></ha-icon-button>
                   `
                 : ""}
-              ${supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
+              ${supportsFeature(
+                stateObj,
+                MediaPlayerEntityFeature.VOLUME_BUTTONS
+              )
                 ? html`
                     <ha-icon-button
                       action="volume_down"
@@ -127,7 +126,7 @@ class MoreInfoMediaPlayer extends LitElement {
                     ></ha-icon-button>
                   `
                 : ""}
-              ${supportsFeature(stateObj, SUPPORT_VOLUME_SET)
+              ${supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
                 ? html`
                     <ha-slider
                       id="input"
@@ -143,7 +142,7 @@ class MoreInfoMediaPlayer extends LitElement {
           `
         : ""}
       ${![UNAVAILABLE, UNKNOWN, "off"].includes(stateObj.state) &&
-      supportsFeature(stateObj, SUPPORT_SELECT_SOURCE) &&
+      supportsFeature(stateObj, MediaPlayerEntityFeature.SELECT_SOURCE) &&
       stateObj.attributes.source_list?.length
         ? html`
             <div class="source-input">
@@ -159,7 +158,17 @@ class MoreInfoMediaPlayer extends LitElement {
                 ${stateObj.attributes.source_list!.map(
                   (source) =>
                     html`
-                      <mwc-list-item .value=${source}>${source}</mwc-list-item>
+                      <mwc-list-item .value=${source}
+                        >${computeAttributeValueDisplay(
+                          this.hass.localize,
+                          stateObj,
+                          this.hass.locale,
+                          this.hass.config,
+                          this.hass.entities,
+                          "source",
+                          source
+                        )}</mwc-list-item
+                      >
                     `
                 )}
                 <ha-svg-icon .path=${mdiLoginVariant} slot="icon"></ha-svg-icon>
@@ -168,7 +177,7 @@ class MoreInfoMediaPlayer extends LitElement {
           `
         : ""}
       ${![UNAVAILABLE, UNKNOWN, "off"].includes(stateObj.state) &&
-      supportsFeature(stateObj, SUPPORT_SELECT_SOUND_MODE) &&
+      supportsFeature(stateObj, MediaPlayerEntityFeature.SELECT_SOUND_MODE) &&
       stateObj.attributes.sound_mode_list?.length
         ? html`
             <div class="sound-input">
@@ -183,7 +192,17 @@ class MoreInfoMediaPlayer extends LitElement {
               >
                 ${stateObj.attributes.sound_mode_list.map(
                   (mode) => html`
-                    <mwc-list-item .value=${mode}>${mode}</mwc-list-item>
+                    <mwc-list-item .value=${mode}
+                      >${computeAttributeValueDisplay(
+                        this.hass.localize,
+                        stateObj,
+                        this.hass.locale,
+                        this.hass.config,
+                        this.hass.entities,
+                        "sound_mode",
+                        mode
+                      )}</mwc-list-item
+                    >
                   `
                 )}
                 <ha-svg-icon .path=${mdiMusicNote} slot="icon"></ha-svg-icon>

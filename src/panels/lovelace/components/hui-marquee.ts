@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property } from "lit/decorators";
 
@@ -46,9 +46,9 @@ class HuiMarquee extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.text) {
-      return html``;
+      return nothing;
     }
 
     return html`

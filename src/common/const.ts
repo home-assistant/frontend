@@ -1,7 +1,6 @@
 /** Constants to be used in the frontend. */
 
 import {
-  mdiAccount,
   mdiAirFilter,
   mdiAlert,
   mdiAngleAcute,
@@ -21,8 +20,9 @@ import {
   mdiCommentAlert,
   mdiCounter,
   mdiCurrentAc,
+  mdiDatabase,
+  mdiEarHearing,
   mdiEye,
-  mdiFan,
   mdiFlash,
   mdiFlower,
   mdiFormatListBulleted,
@@ -47,23 +47,23 @@ import {
   mdiProgressClock,
   mdiRayVertex,
   mdiRemote,
-  mdiRobot,
   mdiRobotVacuum,
   mdiScriptText,
   mdiSineWave,
+  mdiSpeakerMessage,
   mdiSpeedometer,
+  mdiSunWireless,
   mdiThermometer,
+  mdiThermometerLines,
   mdiThermostat,
   mdiTimerOutline,
-  mdiVideo,
+  mdiTransmissionTower,
   mdiWater,
   mdiWaterPercent,
-  mdiWeatherCloudy,
   mdiWeatherPouring,
   mdiWeatherRainy,
   mdiWeatherWindy,
   mdiWeight,
-  mdiWhiteBalanceSunny,
   mdiWifi,
 } from "@mdi/js";
 
@@ -76,17 +76,16 @@ export const DEFAULT_DOMAIN_ICON = mdiBookmark;
 
 /** Icons for each domain */
 export const FIXED_DOMAIN_ICONS = {
-  alert: mdiAlert,
   air_quality: mdiAirFilter,
-  automation: mdiRobot,
+  alert: mdiAlert,
   calendar: mdiCalendar,
-  camera: mdiVideo,
   climate: mdiThermostat,
   configurator: mdiCog,
   conversation: mdiMicrophoneMessage,
   counter: mdiCounter,
+  datetime: mdiCalendarClock,
+  date: mdiCalendar,
   demo: mdiHomeAssistant,
-  fan: mdiFan,
   google_assistant: mdiGoogleAssistant,
   group: mdiGoogleCirclesCommunities,
   homeassistant: mdiHomeAssistant,
@@ -102,7 +101,6 @@ export const FIXED_DOMAIN_ICONS = {
   notify: mdiCommentAlert,
   number: mdiRayVertex,
   persistent_notification: mdiBell,
-  person: mdiAccount,
   plant: mdiFlower,
   proximity: mdiAppleSafari,
   remote: mdiRemote,
@@ -111,25 +109,28 @@ export const FIXED_DOMAIN_ICONS = {
   script: mdiScriptText,
   select: mdiFormatListBulleted,
   sensor: mdiEye,
-  siren: mdiBullhorn,
   simple_alarm: mdiBell,
-  sun: mdiWhiteBalanceSunny,
+  siren: mdiBullhorn,
+  stt: mdiMicrophoneMessage,
   text: mdiFormTextbox,
+  time: mdiClock,
   timer: mdiTimerOutline,
+  tts: mdiSpeakerMessage,
   updater: mdiCloudUpload,
   vacuum: mdiRobotVacuum,
-  water_heater: mdiThermometer,
-  weather: mdiWeatherCloudy,
   zone: mdiMapMarkerRadius,
 };
 
 export const FIXED_DEVICE_CLASS_ICONS = {
   apparent_power: mdiFlash,
   aqi: mdiAirFilter,
+  atmospheric_pressure: mdiThermometerLines,
   // battery: mdiBattery, => not included by design since `sensorIcon()` will dynamically determine the icon
   carbon_dioxide: mdiMoleculeCo2,
   carbon_monoxide: mdiMoleculeCo,
   current: mdiCurrentAc,
+  data_rate: mdiTransmissionTower,
+  data_size: mdiDatabase,
   date: mdiCalendar,
   distance: mdiArrowLeftRight,
   duration: mdiProgressClock,
@@ -138,6 +139,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   gas: mdiMeterGas,
   humidity: mdiWaterPercent,
   illuminance: mdiBrightness5,
+  irradiance: mdiSunWireless,
   moisture: mdiWaterPercent,
   monetary: mdiCash,
   nitrogen_dioxide: mdiMolecule,
@@ -154,11 +156,13 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   pressure: mdiGauge,
   reactive_power: mdiFlash,
   signal_strength: mdiWifi,
+  sound_pressure: mdiEarHearing,
   speed: mdiSpeedometer,
   sulphur_dioxide: mdiMolecule,
   temperature: mdiThermometer,
   timestamp: mdiClock,
   volatile_organic_compounds: mdiMolecule,
+  volatile_organic_compounds_parts: mdiMolecule,
   voltage: mdiSineWave,
   volume: mdiCarCoolantLevel,
   water: mdiWater,
@@ -188,6 +192,15 @@ export const DOMAINS_WITH_CARD = [
   "water_heater",
 ];
 
+export const SENSOR_ENTITIES = [
+  "sensor",
+  "binary_sensor",
+  "calendar",
+  "camera",
+  "device_tracker",
+  "weather",
+];
+
 /** Domains that render an input element instead of a text value when displayed in a row.
  *  Those rows should then not show a cursor pointer when hovered (which would normally
  *  be the default) unless the element itself enforces it (e.g. a button). Also those elements
@@ -199,6 +212,8 @@ export const DOMAINS_INPUT_ROW = [
   "automation",
   "button",
   "cover",
+  "date",
+  "datetime",
   "fan",
   "group",
   "humidifier",
@@ -217,6 +232,7 @@ export const DOMAINS_INPUT_ROW = [
   "select",
   "switch",
   "text",
+  "time",
   "vacuum",
 ];
 

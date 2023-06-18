@@ -39,8 +39,10 @@ export class HaNumberSelector extends LitElement {
               <ha-slider
                 .min=${this.selector.number?.min}
                 .max=${this.selector.number?.max}
-                .value=${this._value}
-                .step=${this.selector.number?.step ?? 1}
+                .value=${this.value ?? ""}
+                .step=${this.selector.number?.step === "any"
+                  ? undefined
+                  : this.selector.number?.step ?? 1}
                 .disabled=${this.disabled}
                 .required=${this.required}
                 pin
@@ -51,7 +53,8 @@ export class HaNumberSelector extends LitElement {
             `
           : ""}
         <ha-textfield
-          .inputMode=${(this.selector.number?.step || 1) % 1 !== 0
+          .inputMode=${this.selector.number?.step === "any" ||
+          (this.selector.number?.step ?? 1) % 1 !== 0
             ? "decimal"
             : "numeric"}
           .label=${this.selector.number?.mode !== "box"
@@ -81,17 +84,11 @@ export class HaNumberSelector extends LitElement {
     `;
   }
 
-  private get _value() {
-    return this.value ?? (this.selector.number?.min || 0);
-  }
-
   private _handleInputChange(ev) {
     ev.stopPropagation();
     const value =
       ev.target.value === "" || isNaN(ev.target.value)
-        ? this.required
-          ? this.selector.number?.min || 0
-          : undefined
+        ? undefined
         : Number(ev.target.value);
     if (this.value === value) {
       return;

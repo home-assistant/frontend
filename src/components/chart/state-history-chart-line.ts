@@ -2,6 +2,8 @@ import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
 import { getGraphColorByIndex } from "../../common/color/colors";
+import { fireEvent } from "../../common/dom/fire_event";
+import { computeRTL } from "../../common/util/compute_rtl";
 import {
   formatNumber,
   numberFormatToLocale,
@@ -20,43 +22,56 @@ class StateHistoryChartLine extends LitElement {
 
   @property({ attribute: false }) public data: LineChartEntity[] = [];
 
-  @property() public names: boolean | Record<string, string> = false;
+  @property() public names?: Record<string, string>;
 
   @property() public unit?: string;
 
   @property() public identifier?: string;
 
-  @property({ type: Boolean }) public isSingleDevice = false;
+  @property({ type: Boolean }) public showNames = true;
 
   @property({ attribute: false }) public endTime!: Date;
+
+  @property({ type: Number }) public paddingYAxis = 0;
+
+  @property({ type: Number }) public chartIndex?;
 
   @state() private _chartData?: ChartData<"line">;
 
   @state() private _chartOptions?: ChartOptions;
+
+  @state() private _yWidth = 0;
 
   private _chartTime: Date = new Date();
 
   protected render() {
     return html`
       <ha-chart-base
+        .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
+        .paddingYAxis=${this.paddingYAxis - this._yWidth}
         chart-type="line"
       ></ha-chart-base>
     `;
   }
 
   public willUpdate(changedProps: PropertyValues) {
-    if (!this.hasUpdated) {
+    if (!this.hasUpdated || changedProps.has("showNames")) {
       this._chartOptions = {
         parsing: false,
         animation: false,
+        interaction: {
+          mode: "nearest",
+          axis: "xy",
+        },
         scales: {
           x: {
             type: "time",
             adapters: {
               date: {
                 locale: this.hass.locale,
+                config: this.hass.config,
               },
             },
             suggestedMax: this.endTime,
@@ -84,11 +99,20 @@ class StateHistoryChartLine extends LitElement {
               display: true,
               text: this.unit,
             },
+            afterUpdate: (y) => {
+              if (this._yWidth !== Math.floor(y.width)) {
+                this._yWidth = Math.floor(y.width);
+                fireEvent(this, "y-width-changed", {
+                  value: this._yWidth,
+                  chartIndex: this.chartIndex,
+                });
+              }
+            },
+            position: computeRTL(this.hass) ? "right" : "left",
           },
         },
         plugins: {
           tooltip: {
-            mode: "nearest",
             callbacks: {
               label: (context) =>
                 `${context.dataset.label}: ${formatNumber(
@@ -101,14 +125,11 @@ class StateHistoryChartLine extends LitElement {
             propagate: true,
           },
           legend: {
-            display: !this.isSingleDevice,
+            display: this.showNames,
             labels: {
               usePointStyle: true,
             },
           },
-        },
-        hover: {
-          mode: "nearest",
         },
         elements: {
           line: {
@@ -116,7 +137,7 @@ class StateHistoryChartLine extends LitElement {
             borderWidth: 1.5,
           },
           point: {
-            hitRadius: 5,
+            hitRadius: 50,
           },
         },
         // @ts-expect-error
@@ -355,6 +376,9 @@ class StateHistoryChartLine extends LitElement {
             lastNullDate = date;
           }
         });
+        if (lastNullDate !== null) {
+          pushData(lastNullDate, [null]);
+        }
       }
 
       // Add an entry for final values

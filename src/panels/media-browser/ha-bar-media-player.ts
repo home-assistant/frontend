@@ -11,14 +11,13 @@ import {
   mdiStop,
   mdiVolumeHigh,
 } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -29,11 +28,11 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { supportsFeature } from "../../common/entity/supports-feature";
+import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
 import { UNAVAILABLE } from "../../data/entity";
-import { subscribeEntityRegistry } from "../../data/entity_registry";
 import {
   BROWSER_PLAYER,
   cleanupMediaTitle,
@@ -44,13 +43,9 @@ import {
   getCurrentProgress,
   handleMediaControlClick,
   MediaPlayerEntity,
+  MediaPlayerEntityFeature,
   MediaPlayerItem,
   setMediaPlayerVolume,
-  SUPPORT_BROWSE_MEDIA,
-  SUPPORT_PAUSE,
-  SUPPORT_PLAY,
-  SUPPORT_STOP,
-  SUPPORT_VOLUME_SET,
 } from "../../data/media-player";
 import { ResolvedMediaSource } from "../../data/media_source";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
@@ -86,9 +81,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   @state() private _newMediaExpected = false;
 
   @state() private _browserPlayer?: BrowserMediaPlayer;
-
-  @state()
-  private _hiddenEntities = new Set<string>();
 
   private _progressInterval?: number;
 
@@ -159,13 +151,15 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     this._newMediaExpected = false;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this._newMediaExpected) {
       return html`
         <div class="controls-progress">
           ${until(
             // Only show spinner after 500ms
-            new Promise((resolve) => setTimeout(resolve, 500)).then(
+            new Promise((resolve) => {
+              setTimeout(resolve, 500);
+            }).then(
               () => html`<ha-circular-progress active></ha-circular-progress>`
             )
           )}
@@ -183,13 +177,13 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     const controls: ControlButton[] | undefined = !this.narrow
       ? computeMediaControls(stateObj, true)
       : (stateObj.state === "playing" &&
-          (supportsFeature(stateObj, SUPPORT_PAUSE) ||
-            supportsFeature(stateObj, SUPPORT_STOP))) ||
+          (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE) ||
+            supportsFeature(stateObj, MediaPlayerEntityFeature.STOP))) ||
         ((stateObj.state === "paused" || stateObj.state === "idle") &&
-          supportsFeature(stateObj, SUPPORT_PLAY)) ||
+          supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) ||
         (stateObj.state === "on" &&
-          (supportsFeature(stateObj, SUPPORT_PLAY) ||
-            supportsFeature(stateObj, SUPPORT_PAUSE)))
+          (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY) ||
+            supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)))
       ? [
           {
             icon:
@@ -197,13 +191,13 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                 ? mdiPlayPause
                 : stateObj.state !== "playing"
                 ? mdiPlay
-                : supportsFeature(stateObj, SUPPORT_PAUSE)
+                : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
                 ? mdiPause
                 : mdiStop,
             action:
               stateObj.state !== "playing"
                 ? "media_play"
-                : supportsFeature(stateObj, SUPPORT_PAUSE)
+                : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
                 ? "media_pause"
                 : "media_stop",
           },
@@ -212,7 +206,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     const mediaDescription = computeMediaDescription(stateObj);
     const mediaDuration = formatMediaTime(stateObj.attributes.media_duration);
     const mediaTitleClean = cleanupMediaTitle(
-      stateObj.attributes.media_title || ""
+      stateObj.attributes.media_title || stateObj.attributes.media_content_id
     );
     const mediaArt =
       stateObj.attributes.entity_picture_local ||
@@ -227,12 +221,13 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         })}
         @click=${this._openMoreInfo}
       >
-        ${mediaArt ? html`<img src=${this.hass.hassUrl(mediaArt)} />` : ""}
+        ${mediaArt
+          ? html`<img alt="" src=${this.hass.hassUrl(mediaArt)} />`
+          : ""}
         <div class="media-info">
           <hui-marquee
             .text=${mediaTitleClean ||
             mediaDescription ||
-            cleanupMediaTitle(stateObj.attributes.media_content_id) ||
             (stateObj.state !== "playing" && stateObj.state !== "on"
               ? this.hass.localize(`ui.card.media_player.nothing_playing`)
               : "")}
@@ -246,7 +241,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         </div>
       </div>
       <div class="controls-progress">
-        ${this._browserPlayer?.buffering
+        ${stateObj.state === "buffering"
           ? html` <ha-circular-progress active></ha-circular-progress> `
           : html`
               <div class="controls">
@@ -267,7 +262,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                     )}
               </div>
               ${stateObj.attributes.media_duration === Infinity
-                ? html``
+                ? nothing
                 : this.narrow
                 ? html`<mwc-linear-progress></mwc-linear-progress>`
                 : html`
@@ -290,9 +285,9 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       ${
         !this.narrow &&
         stateObj &&
-        supportsFeature(stateObj, SUPPORT_VOLUME_SET)
+        supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
           ? html`
-              <ha-button-menu corner="BOTTOM_START" y="0" x="76">
+              <ha-button-menu y="0" x="76">
                 <ha-icon-button
                   slot="trigger"
                   .path=${mdiVolumeHigh}
@@ -310,7 +305,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
           : ""
       }
 
-          <ha-button-menu corner="BOTTOM_START">
+          <ha-button-menu >
             ${
               this.narrow
                 ? html`
@@ -322,7 +317,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                     ></ha-icon-button>
                   `
                 : html`
-                    <mwc-button
+                    <ha-button
                       slot="trigger"
                       .label=${this.narrow
                         ? ""
@@ -343,7 +338,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                         slot="trailingIcon"
                         .path=${mdiChevronDown}
                       ></ha-svg-icon>
-                    </mwc-button>
+                    </ha-button>
                   `
             }
             <mwc-list-item
@@ -468,8 +463,8 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     return Object.values(this.hass!.states).filter(
       (entity) =>
         computeStateDomain(entity) === "media_player" &&
-        supportsFeature(entity, SUPPORT_BROWSE_MEDIA) &&
-        !this._hiddenEntities.has(entity.entity_id)
+        supportsFeature(entity, MediaPlayerEntityFeature.BROWSE_MEDIA) &&
+        !this.hass.entities[entity.entity_id].hidden
     );
   }
 
@@ -493,28 +488,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     if (this._currentProgress) {
       this._currentProgress.innerHTML = formatMediaTime(currentProgress);
     }
-  }
-
-  protected override hassSubscribe(): (
-    | UnsubscribeFunc
-    | Promise<UnsubscribeFunc>
-  )[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection, (entries) => {
-        const hiddenEntities = new Set<string>();
-
-        for (const entry of entries) {
-          if (
-            entry.hidden_by &&
-            computeDomain(entry.entity_id) === "media_player"
-          ) {
-            hiddenEntities.add(entry.entity_id);
-          }
-        }
-
-        this._hiddenEntities = hiddenEntities;
-      }),
-    ];
   }
 
   private _handleControlClick(e: MouseEvent): void {
@@ -719,11 +692,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         font-weight: bold;
       }
 
-      ha-svg-icon[slot="icon"] {
-        margin-inline-start: 8px !important;
-        margin-inline-end: 8px !important;
-        direction: var(--direction);
-      }
       ha-svg-icon[slot="trailingIcon"] {
         margin-inline-start: 8px !important;
         margin-inline-end: 0px !important;

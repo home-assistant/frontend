@@ -1,4 +1,4 @@
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -85,15 +85,14 @@ export class HuiViewEditor extends LitElement {
       : this._config.type || DEFAULT_VIEW_LAYOUT;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
 
     const schema = this._schema(this.hass.localize);
 
     const data = {
-      theme: "Backend-selected",
       ...this._config,
       type: this._type,
     };

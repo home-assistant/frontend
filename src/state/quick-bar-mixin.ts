@@ -1,5 +1,5 @@
 import type { PropertyValues } from "lit";
-import tinykeys from "tinykeys";
+import { tinykeys } from "tinykeys";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { mainWindow } from "../common/dom/get_main_window";
 import {
@@ -133,13 +133,13 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _canOverrideAlphanumericInput(e: KeyboardEvent) {
-      const el = e.composedPath()[0] as any;
+      const el = e.composedPath()[0] as Element;
 
       if (el.tagName === "TEXTAREA") {
         return false;
       }
 
-      if (el.parentElement.tagName === "HA-SELECT") {
+      if (el.parentElement?.tagName === "HA-SELECT") {
         return false;
       }
 
@@ -147,7 +147,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         return true;
       }
 
-      switch (el.type) {
+      switch ((el as HTMLInputElement).type) {
         case "button":
         case "checkbox":
         case "hidden":

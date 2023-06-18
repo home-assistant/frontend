@@ -1,3 +1,4 @@
+import { arrayLiteralIncludes } from "../../../common/array/literal-includes";
 import type { Counter } from "../../../data/counter";
 import type { InputBoolean } from "../../../data/input_boolean";
 import type { InputButton } from "../../../data/input_button";
@@ -18,7 +19,10 @@ export const HELPER_DOMAINS = [
   "counter",
   "timer",
   "schedule",
-];
+] as const;
+
+export type HelperDomain = (typeof HELPER_DOMAINS)[number];
+export const isHelperDomain = arrayLiteralIncludes(HELPER_DOMAINS);
 
 export type Helper =
   | InputBoolean

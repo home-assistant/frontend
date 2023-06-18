@@ -12,29 +12,19 @@ export class HaIntegrationOverflowMenu extends LitElement {
 
   protected render() {
     return html`
-      <ha-button-menu activatable corner="BOTTOM_START">
+      <ha-button-menu activatable>
         <ha-icon-button
           slot="trigger"
           .label=${this.hass.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
-        <ha-clickable-list-item
-          @click=${this._entryClicked}
-          href="/config/application_credentials"
-          aria-label=${this.hass.localize(
-            "ui.panel.config.application_credentials.caption"
-          )}
-        >
+        <ha-clickable-list-item href="/config/application_credentials">
           ${this.hass.localize(
             "ui.panel.config.application_credentials.caption"
           )}
         </ha-clickable-list-item>
       </ha-button-menu>
     `;
-  }
-
-  private _entryClicked(ev) {
-    ev.currentTarget.blur();
   }
 }
 

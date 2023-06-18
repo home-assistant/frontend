@@ -1,6 +1,4 @@
-import "../../../../components/entity/ha-entities-picker";
-import "../../../../components/ha-form/ha-form";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
@@ -15,6 +13,8 @@ import {
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/entity/ha-entities-picker";
+import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { CalendarCardConfig } from "../../cards/types";
@@ -31,7 +31,7 @@ const cardConfigStruct = assign(
   })
 );
 
-const views = ["dayGridMonth", "dayGridDay", "list"] as const;
+const views = ["dayGridMonth", "dayGridDay", "listWeek"] as const;
 
 @customElement("hui-calendar-card-editor")
 export class HuiCalendarCardEditor
@@ -75,9 +75,9 @@ export class HuiCalendarCardEditor
       ] as const
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const schema = this._schema(this.hass.localize);

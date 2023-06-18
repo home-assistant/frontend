@@ -44,6 +44,9 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
+import { findRelated } from "../../../data/search";
+import { fetchBlueprints } from "../../../data/blueprint";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
@@ -57,7 +60,11 @@ class HaScriptPicker extends LitElement {
 
   @property() public route!: Route;
 
-  @property() private _activeFilters?: string[];
+  @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
+
+  @state() private _searchParms = new URLSearchParams(window.location.search);
+
+  @state() private _activeFilters?: string[];
 
   @state() private _filteredScripts?: string[] | null;
 
@@ -111,7 +118,11 @@ class HaScriptPicker extends LitElement {
                   ${this.hass.localize("ui.card.automation.last_triggered")}:
                   ${script.attributes.last_triggered
                     ? dayDifference > 3
-                      ? formatShortDateTime(date, this.hass.locale)
+                      ? formatShortDateTime(
+                          date,
+                          this.hass.locale,
+                          this.hass.config
+                        )
                       : relativeTime(date, this.hass.locale)
                     : this.hass.localize("ui.components.relative_time.never")}
                 </div>
@@ -132,7 +143,7 @@ class HaScriptPicker extends LitElement {
           return html`
             ${last_triggered
               ? dayDifference > 3
-                ? formatShortDateTime(date, this.hass.locale)
+                ? formatShortDateTime(date, this.hass.locale, this.hass.config)
                 : relativeTime(date, this.hass.locale)
               : this.hass.localize("ui.components.relative_time.never")}
           `;
@@ -224,7 +235,6 @@ class HaScriptPicker extends LitElement {
         ></ha-icon-button>
         <ha-button-related-filter-menu
           slot="filter-menu"
-          corner="BOTTOM_START"
           .narrow=${this.narrow}
           .hass=${this.hass}
           .value=${this._filterValue}
@@ -249,6 +259,34 @@ class HaScriptPicker extends LitElement {
     `;
   }
 
+  firstUpdated() {
+    if (this._searchParms.has("blueprint")) {
+      this._filterBlueprint();
+    }
+  }
+
+  private async _filterBlueprint() {
+    const blueprint = this._searchParms.get("blueprint");
+    if (!blueprint) {
+      return;
+    }
+    const [related, blueprints] = await Promise.all([
+      findRelated(this.hass, "script_blueprint", blueprint),
+      fetchBlueprints(this.hass, "script"),
+    ]);
+    this._filteredScripts = related.script || [];
+    const blueprintMeta = blueprints[blueprint];
+    this._activeFilters = [
+      this.hass.localize(
+        "ui.panel.config.script.picker.filtered_by_blueprint",
+        "name",
+        !blueprintMeta || "error" in blueprintMeta
+          ? blueprint
+          : blueprintMeta.metadata.name || blueprint
+      ),
+    ];
+  }
+
   private _relatedFilterChanged(ev: CustomEvent) {
     this._filterValue = ev.detail.value;
     if (!this._filterValue) {
@@ -266,7 +304,7 @@ class HaScriptPicker extends LitElement {
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    const entry = this.hass.entities[ev.detail.id];
+    const entry = this.entityRegistry.find((e) => e.entity_id === ev.detail.id);
     if (entry) {
       navigate(`/config/script/edit/${entry.unique_id}`);
     } else {
@@ -275,7 +313,12 @@ class HaScriptPicker extends LitElement {
   }
 
   private _runScript = async (script: any) => {
-    const entry = this.hass.entities[script.entity_id];
+    const entry = this.entityRegistry.find(
+      (e) => e.entity_id === script.entity_id
+    );
+    if (!entry) {
+      return;
+    }
     await triggerScript(this.hass, entry.unique_id);
     showToast(this, {
       message: this.hass.localize(
@@ -291,7 +334,9 @@ class HaScriptPicker extends LitElement {
   }
 
   private _showTrace(script: any) {
-    const entry = this.hass.entities[script.entity_id];
+    const entry = this.entityRegistry.find(
+      (e) => e.entity_id === script.entity_id
+    );
     if (entry) {
       navigate(`/config/script/trace/${entry.unique_id}`);
     }
@@ -317,7 +362,12 @@ class HaScriptPicker extends LitElement {
 
   private async _duplicate(script: any) {
     try {
-      const entry = this.hass.entities[script.entity_id];
+      const entry = this.entityRegistry.find(
+        (e) => e.entity_id === script.entity_id
+      );
+      if (!entry) {
+        return;
+      }
       const config = await fetchScriptFileConfig(this.hass, entry.unique_id);
       showScriptEditor({
         ...config,
@@ -362,8 +412,12 @@ class HaScriptPicker extends LitElement {
 
   private async _delete(script: any) {
     try {
-      const entry = this.hass.entities[script.entity_id];
-      await deleteScript(this.hass, entry.unique_id);
+      const entry = this.entityRegistry.find(
+        (e) => e.entity_id === script.entity_id
+      );
+      if (entry) {
+        await deleteScript(this.hass, entry.unique_id);
+      }
     } catch (err: any) {
       await showAlertDialog(this, {
         text:

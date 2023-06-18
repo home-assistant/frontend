@@ -7,7 +7,7 @@ import {
   mdiPlay,
   mdiPlus,
 } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -45,7 +45,7 @@ import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
@@ -116,9 +116,13 @@ class HaSceneDashboard extends LitElement {
             const now = new Date();
             const dayDifference = differenceInDays(now, date);
             return html`
-              ${last_activated && !UNAVAILABLE_STATES.includes(last_activated)
+              ${last_activated && !isUnavailableState(last_activated)
                 ? dayDifference > 3
-                  ? formatShortDateTime(date, this.hass.locale)
+                  ? formatShortDateTime(
+                      date,
+                      this.hass.locale,
+                      this.hass.config
+                    )
                   : relativeTime(date, this.hass.locale)
                 : this.hass.localize("ui.components.relative_time.never")}
             `;
@@ -131,11 +135,11 @@ class HaSceneDashboard extends LitElement {
         template: (_info, scene: any) =>
           !scene.attributes.id
             ? html`
-                <paper-tooltip animation-delay="0" position="left">
+                <simple-tooltip animation-delay="0" position="left">
                   ${this.hass.localize(
                     "ui.panel.config.scene.picker.only_editable"
                   )}
-                </paper-tooltip>
+                </simple-tooltip>
                 <ha-svg-icon
                   .path=${mdiPencilOff}
                   style="color: var(--secondary-text-color)"
@@ -225,7 +229,6 @@ class HaSceneDashboard extends LitElement {
         ></ha-icon-button>
         <ha-button-related-filter-menu
           slot="filter-menu"
-          corner="BOTTOM_START"
           .narrow=${this.narrow}
           .hass=${this.hass}
           .value=${this._filterValue}

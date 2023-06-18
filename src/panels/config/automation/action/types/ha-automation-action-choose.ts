@@ -2,9 +2,10 @@ import { mdiDelete, mdiPlus } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { ensureArray } from "../../../../../common/ensure-array";
+import { ensureArray } from "../../../../../common/array/ensure-array";
 import "../../../../../components/ha-icon-button";
-import { Condition } from "../../../../../data/automation";
+import "../../../../../components/ha-button";
+import { Condition, Clipboard } from "../../../../../data/automation";
 import { Action, ChooseAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
@@ -21,6 +22,8 @@ export class HaChooseAction extends LitElement implements ActionElement {
   @property({ type: Boolean }) public reOrderMode = false;
 
   @state() private _showDefault = false;
+
+  @property() public clipboard?: Clipboard;
 
   public static get defaultConfig() {
     return { choose: [{ conditions: [], sequence: [] }] };
@@ -62,6 +65,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
               .hass=${this.hass}
               .idx=${idx}
               @value-changed=${this._conditionChanged}
+              .clipboard=${this.clipboard}
             ></ha-automation-condition>
             <h3>
               ${this.hass.localize(
@@ -76,11 +80,12 @@ export class HaChooseAction extends LitElement implements ActionElement {
               .hass=${this.hass}
               .idx=${idx}
               @value-changed=${this._actionChanged}
+              .clipboard=${this.clipboard}
             ></ha-automation-action>
           </div>
         </ha-card>`
       )}
-      <mwc-button
+      <ha-button
         outlined
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.choose.add_option"
@@ -89,7 +94,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
         @click=${this._addOption}
       >
         <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-      </mwc-button>
+      </ha-button>
       ${this._showDefault || action.default
         ? html`
             <h2>
@@ -104,6 +109,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
               .disabled=${this.disabled}
               @value-changed=${this._defaultChanged}
               .hass=${this.hass}
+              .clipboard=${this.clipboard}
             ></ha-automation-action>
           `
         : html`<div class="link-button-row">
@@ -196,6 +202,9 @@ export class HaChooseAction extends LitElement implements ActionElement {
         ha-icon-button {
           position: absolute;
           right: 0;
+          inset-inline-start: initial;
+          inset-inline-end: 0;
+          direction: var(--direction);
           padding: 4px;
         }
         ha-svg-icon {

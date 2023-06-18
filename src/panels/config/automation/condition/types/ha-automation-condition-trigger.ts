@@ -3,7 +3,7 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { ensureArray } from "../../../../../common/ensure-array";
+import { ensureArray } from "../../../../../common/array/ensure-array";
 import "../../../../../components/ha-select";
 import type {
   AutomationConfig,

@@ -3,9 +3,11 @@ import { styles } from "@material/mwc-dialog/mwc-dialog.css";
 import { mdiClose } from "@mdi/js";
 import { css, html, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
-import type { HomeAssistant } from "../types";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
+
+const SUPPRESS_DEFAULT_PRESS_SELECTOR = ["button", "ha-list-item"];
 
 export const createCloseHeading = (
   hass: HomeAssistant,
@@ -32,12 +34,45 @@ export class HaDialog extends DialogBase {
     return html`<slot name="heading"> ${super.renderHeading()} </slot>`;
   }
 
+  protected firstUpdated(): void {
+    super.firstUpdated();
+    this.suppressDefaultPressSelector = [
+      this.suppressDefaultPressSelector,
+      SUPPRESS_DEFAULT_PRESS_SELECTOR,
+    ].join(", ");
+    this._updateScrolledAttribute();
+    this.contentElement?.addEventListener("scroll", this._onScroll, {
+      passive: true,
+    });
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.contentElement.removeEventListener("scroll", this._onScroll);
+  }
+
+  private _onScroll = () => {
+    this._updateScrolledAttribute();
+  };
+
+  private _updateScrolledAttribute() {
+    if (!this.contentElement) return;
+    this.toggleAttribute("scrolled", this.contentElement.scrollTop !== 0);
+  }
+
   static override styles = [
     styles,
     css`
+      :host([scrolled]) ::slotted(ha-dialog-header) {
+        border-bottom: 1px solid
+          var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+      }
       .mdc-dialog {
-        --mdc-dialog-scroll-divider-color: var(--divider-color);
-        z-index: var(--dialog-z-index, 7);
+        --mdc-dialog-scroll-divider-color: var(
+          --dialog-scroll-divider-color,
+          var(--divider-color)
+        );
+        z-index: var(--dialog-z-index, 8);
         -webkit-backdrop-filter: var(--dialog-backdrop-filter, none);
         backdrop-filter: var(--dialog-backdrop-filter, none);
         --mdc-dialog-box-shadow: var(--dialog-box-shadow, none);
@@ -61,7 +96,7 @@ export class HaDialog extends DialogBase {
         padding: 24px 24px 0 24px;
       }
       .mdc-dialog__actions {
-        padding: 0 24px 24px 24px;
+        padding: 12px 24px 12px 24px;
       }
       .mdc-dialog__title::before {
         display: block;
@@ -88,13 +123,6 @@ export class HaDialog extends DialogBase {
         display: flex;
         flex-direction: column;
       }
-      .header_button {
-        position: absolute;
-        right: 16px;
-        top: 14px;
-        text-decoration: none;
-        color: inherit;
-      }
       .header_title {
         margin-right: 32px;
         margin-inline-end: 32px;
@@ -102,6 +130,11 @@ export class HaDialog extends DialogBase {
         direction: var(--direction);
       }
       .header_button {
+        position: absolute;
+        right: 16px;
+        top: 14px;
+        text-decoration: none;
+        color: inherit;
         inset-inline-start: initial;
         inset-inline-end: 16px;
         direction: var(--direction);

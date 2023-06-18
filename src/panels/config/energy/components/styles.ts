@@ -36,6 +36,8 @@ export const energyCardStyles = css`
   }
   .row .content {
     flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   ha-icon-button {
     color: var(--secondary-text-color);

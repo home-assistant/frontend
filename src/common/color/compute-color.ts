@@ -1,5 +1,3 @@
-import { hex2rgb } from "./convert-color";
-
 export const THEME_COLORS = new Set([
   "primary",
   "accent",
@@ -21,22 +19,17 @@ export const THEME_COLORS = new Set([
   "orange",
   "deep-orange",
   "brown",
+  "light-grey",
   "grey",
+  "dark-grey",
   "blue-grey",
   "black",
   "white",
 ]);
 
-export function computeRgbColor(color: string): string {
+export function computeCssColor(color: string): string {
   if (THEME_COLORS.has(color)) {
-    return `var(--rgb-${color}-color)`;
-  }
-  if (color.startsWith("#")) {
-    try {
-      return hex2rgb(color).join(", ");
-    } catch (err) {
-      return "";
-    }
+    return `var(--${color}-color)`;
   }
   return color;
 }

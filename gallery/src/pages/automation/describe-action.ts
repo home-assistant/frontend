@@ -1,5 +1,5 @@
 import { dump } from "js-yaml";
-import { html, css, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-yaml-editor";
@@ -127,16 +127,16 @@ export class DemoAutomationDescribeAction extends LitElement {
 
   @state() _action = initialAction;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-card header="Actions">
         <div class="action">
           <span>
             ${this._action
-              ? describeAction(this.hass, this._action)
+              ? describeAction(this.hass, [], this._action)
               : "<invalid YAML>"}
           </span>
           <ha-yaml-editor
@@ -149,7 +149,7 @@ export class DemoAutomationDescribeAction extends LitElement {
         ${ACTIONS.map(
           (conf) => html`
             <div class="action">
-              <span>${describeAction(this.hass, conf as any)}</span>
+              <span>${describeAction(this.hass, [], conf as any)}</span>
               <pre>${dump(conf)}</pre>
             </div>
           `

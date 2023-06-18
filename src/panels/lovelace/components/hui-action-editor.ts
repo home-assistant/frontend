@@ -1,9 +1,10 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-help-tooltip";
+import "../../../components/ha-navigation-picker";
 import "../../../components/ha-service-control";
 import {
   ActionConfig,
@@ -14,7 +15,6 @@ import {
 import { ServiceAction } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
-import "../../../components/ha-navigation-picker";
 
 export type UiAction = Exclude<ActionConfig["action"], "fire-dom-event">;
 
@@ -57,14 +57,16 @@ export class HuiActionEditor extends LitElement {
   private _serviceAction = memoizeOne(
     (config: CallServiceActionConfig): ServiceAction => ({
       service: this._service,
-      data: config.data ?? config.service_data,
+      ...(config.data || config.service_data
+        ? { data: config.data ?? config.service_data }
+        : null),
       target: config.target,
     })
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
 
     const actions = this.actions ?? DEFAULT_ACTIONS;
@@ -196,9 +198,12 @@ export class HuiActionEditor extends LitElement {
     const value = {
       ...this.config!,
       service: ev.detail.value.service || "",
-      data: ev.detail.value.data || {},
+      data: ev.detail.value.data,
       target: ev.detail.value.target || {},
     };
+    if (!ev.detail.value.data) {
+      delete value.data;
+    }
     // "service_data" is allowed for backwards compatibility but replaced with "data" on write
     if ("service_data" in value) {
       delete value.service_data;

@@ -10,7 +10,7 @@ import {
 import { LocalizeFunc } from "./common/translations/localize";
 import { AreaRegistryEntry } from "./data/area_registry";
 import { DeviceRegistryEntry } from "./data/device_registry";
-import { EntityRegistryEntry } from "./data/entity_registry";
+import { EntityRegistryDisplayEntry } from "./data/entity_registry";
 import { CoreFrontendUserData } from "./data/frontend";
 import { FrontendLocaleData, getHassTranslations } from "./data/translation";
 import { Themes } from "./data/ws-themes";
@@ -40,18 +40,32 @@ declare global {
       getComputedStyleValue(element, propertyName);
     };
   }
+
   // for fire event
   interface HASSDomEvents {
     "value-changed": {
       value: unknown;
     };
     change: undefined;
+    "hass-logout": undefined;
+    "iron-resize": undefined;
+    "config-refresh": undefined;
+    "hass-api-called": {
+      success: boolean;
+      response: unknown;
+    };
   }
 
   // For loading workers in webpack
   interface ImportMeta {
     url: string;
   }
+}
+
+export interface ValueChangedEvent<T> extends CustomEvent {
+  detail: {
+    value: T;
+  };
 }
 
 export type Constructor<T = any> = new (...args: any[]) => T;
@@ -112,17 +126,6 @@ export interface Panels {
   [name: string]: PanelInfo;
 }
 
-export interface CalendarEvent {
-  summary: string;
-  title: string;
-  start: string;
-  end?: string;
-  backgroundColor?: string;
-  borderColor?: string;
-  calendar: string;
-  [key: string]: any;
-}
-
 export interface CalendarViewChanged {
   end: Date;
   start: Date;
@@ -133,7 +136,7 @@ export type FullCalendarView =
   | "dayGridMonth"
   | "dayGridWeek"
   | "dayGridDay"
-  | "list";
+  | "listWeek";
 
 export interface ToggleButton {
   label: string;
@@ -200,7 +203,7 @@ export interface HomeAssistant {
   connection: Connection;
   connected: boolean;
   states: HassEntities;
-  entities: { [id: string]: EntityRegistryEntry };
+  entities: { [id: string]: EntityRegistryDisplayEntry };
   devices: { [id: string]: DeviceRegistryEntry };
   areas: { [id: string]: AreaRegistryEntry };
   services: HassServices;

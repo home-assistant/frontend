@@ -1,4 +1,3 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/ha-circular-progress";
@@ -61,13 +60,18 @@ class HassLoadingScreen extends LitElement {
           align-items: center;
           font-size: 20px;
           height: var(--header-height);
-          padding: 0 16px;
+          padding: 8px 12px;
           pointer-events: none;
           background-color: var(--app-header-background-color);
           font-weight: 400;
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           box-sizing: border-box;
+        }
+        @media (max-width: 599px) {
+          .toolbar {
+            padding: 4px;
+          }
         }
         ha-menu-button,
         ha-icon-button-arrow-prev {

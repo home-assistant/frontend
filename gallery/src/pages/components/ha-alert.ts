@@ -98,7 +98,9 @@ const alerts: {
     description: "Alert with slotted image",
     type: "warning",
     iconSlot: html`<span slot="icon" class="image"
-      ><img src="https://www.home-assistant.io/images/home-assistant-logo.svg"
+      ><img
+        alt="Home Assistant logo"
+        src="https://www.home-assistant.io/images/home-assistant-logo.svg"
     /></span>`,
   },
   {

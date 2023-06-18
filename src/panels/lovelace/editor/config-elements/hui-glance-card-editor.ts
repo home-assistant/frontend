@@ -1,26 +1,26 @@
-import "../../../../components/ha-form/ha-form";
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   array,
   assert,
+  assign,
   boolean,
   number,
   object,
   optional,
   string,
   union,
-  assign,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import { ConfigEntity, GlanceCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import type { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
-import { entitiesConfigStruct } from "../structs/entities-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import { entitiesConfigStruct } from "../structs/entities-struct";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -76,9 +76,9 @@ export class HuiGlanceCardEditor
     this._configEntities = processEditorEntities(config.entities);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const data = {

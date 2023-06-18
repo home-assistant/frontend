@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import { mdiContentCopy, mdiHelpCircle } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
@@ -24,17 +24,21 @@ export class CloudRemotePref extends LitElement {
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.cloudStatus) {
-      return html``;
+      return nothing;
     }
 
     const { remote_enabled } = this.cloudStatus.prefs;
 
-    const { remote_connected, remote_domain, remote_certificate } =
-      this.cloudStatus;
+    const {
+      remote_connected,
+      remote_domain,
+      remote_certificate,
+      remote_certificate_status,
+    } = this.cloudStatus;
 
-    if (!remote_certificate) {
+    if (!remote_certificate || remote_certificate_status !== "ready") {
       return html`
         <ha-card
           outlined
@@ -43,9 +47,21 @@ export class CloudRemotePref extends LitElement {
           )}
         >
           <div class="preparing">
-            ${this.hass.localize(
-              "ui.panel.config.cloud.account.remote.access_is_being_prepared"
-            )}
+            ${remote_certificate_status === "error"
+              ? this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.cerificate_error"
+                )
+              : remote_certificate_status === "loading"
+              ? this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.cerificate_loading"
+                )
+              : remote_certificate_status === "loaded"
+              ? this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.cerificate_loaded"
+                )
+              : this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.access_is_being_prepared"
+                )}
           </div>
         </ha-card>
       `;

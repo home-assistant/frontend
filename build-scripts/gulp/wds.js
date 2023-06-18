@@ -1,8 +1,7 @@
-// Tasks to run Rollup
-const gulp = require("gulp");
-const { startDevServer } = require("@web/dev-server");
+import gulp from "gulp";
+import { startDevServer } from "@web/dev-server";
 
-gulp.task("wds-watch-app", () => {
+gulp.task("wds-watch-app", async () => {
   startDevServer({
     config: {
       watch: true,

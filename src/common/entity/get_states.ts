@@ -2,7 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { computeStateDomain } from "./compute_state_domain";
 import { UNAVAILABLE_STATES } from "../../data/entity";
 
-const FIXED_DOMAIN_STATES = {
+export const FIXED_DOMAIN_STATES = {
   alarm_control_panel: [
     "armed_away",
     "armed_custom_bypass",
@@ -57,7 +57,7 @@ const FIXED_DOMAIN_STATES = {
     "windy-variant",
     "windy",
   ],
-};
+} as const;
 
 const FIXED_DOMAIN_ATTRIBUTE_STATES = {
   alarm_control_panel: {
@@ -118,24 +118,40 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "window",
     ],
   },
+  device_tracker: {
+    source_type: ["bluetooth", "bluetooth_le", "gps", "router"],
+  },
+  fan: {
+    direction: ["forward", "reverse"],
+  },
   humidifier: {
     device_class: ["humidifier", "dehumidifier"],
   },
   media_player: {
     device_class: ["tv", "speaker", "receiver"],
     media_content_type: [
+      "album",
       "app",
+      "artist",
       "channel",
+      "channels",
+      "composer",
+      "contibuting_artist",
       "episode",
       "game",
+      "genre",
       "image",
       "movie",
       "music",
       "playlist",
+      "podcast",
+      "season",
+      "track",
       "tvshow",
       "url",
       "video",
     ],
+    repeat: ["off", "one", "all"],
   },
   number: {
     device_class: ["temperature"],
@@ -172,6 +188,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "temperature",
       "timestamp",
       "volatile_organic_compounds",
+      "volatile_organic_compounds_parts",
       "voltage",
     ],
     state_class: ["measurement", "total", "total_increasing"],
@@ -259,6 +276,11 @@ export const getStates = (
     case "remote":
       if (attribute === "current_activity") {
         result.push(...state.attributes.activity_list);
+      }
+      break;
+    case "sensor":
+      if (!attribute && state.attributes.device_class === "enum") {
+        result.push(...state.attributes.options);
       }
       break;
     case "vacuum":

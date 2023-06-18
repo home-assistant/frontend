@@ -31,7 +31,7 @@ export class HaExpansionPanel extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="top">
+      <div class="top ${classMap({ expanded: this.expanded })}">
         <div
           id="summary"
           @click=${this._toggleContainer}
@@ -147,6 +147,12 @@ export class HaExpansionPanel extends LitElement {
       .top {
         display: flex;
         align-items: center;
+        border-radius: var(--ha-card-border-radius, 12px);
+      }
+
+      .top.expanded {
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
       }
 
       .top.focused {

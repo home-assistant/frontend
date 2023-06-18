@@ -1,21 +1,25 @@
 import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiDotsVertical } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 import { slugify } from "../../../../src/common/string/slugify";
+import "../../../../src/components/ha-dialog";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-icon-button";
 import { getSignedPath } from "../../../../src/data/auth";
-import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   fetchHassioBackupInfo,
   HassioBackupDetail,
+  removeBackup,
 } from "../../../../src/data/hassio/backup";
+import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -27,8 +31,6 @@ import { fileDownload } from "../../../../src/util/file_download";
 import "../../components/supervisor-backup-content";
 import type { SupervisorBackupContent } from "../../components/supervisor-backup-content";
 import { HassioBackupDialogParams } from "./show-dialog-hassio-backup";
-import { atLeastVersion } from "../../../../src/common/config/version";
-import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 
 @customElement("dialog-hassio-backup")
 class HassioBackupDialog
@@ -62,9 +64,9 @@ class HassioBackupDialog
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._dialogParams || !this._backup) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-dialog
@@ -286,24 +288,15 @@ class HassioBackupDialog
       return;
     }
 
-    this.hass!.callApi(
-      atLeastVersion(this.hass!.config.version, 2021, 9) ? "DELETE" : "POST",
-      `hassio/${
-        atLeastVersion(this.hass!.config.version, 2021, 9)
-          ? `backups/${this._backup!.slug}`
-          : `snapshots/${this._backup!.slug}/remove`
-      }`
-    ).then(
-      () => {
-        if (this._dialogParams!.onDelete) {
-          this._dialogParams!.onDelete();
-        }
-        this.closeDialog();
-      },
-      (error) => {
-        this._error = error.body.message;
+    try {
+      await removeBackup(this.hass!, this._backup!.slug);
+      if (this._dialogParams!.onDelete) {
+        this._dialogParams!.onDelete();
       }
-    );
+      this.closeDialog();
+    } catch (err: any) {
+      this._error = err.body.message;
+    }
   }
 
   private async _downloadClicked() {

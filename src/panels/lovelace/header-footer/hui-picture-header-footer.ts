@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -57,9 +57,9 @@ export class HuiPictureHeaderFooter
     return true;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     const clickable = Boolean(
@@ -68,6 +68,7 @@ export class HuiPictureHeaderFooter
 
     return html`
       <img
+        alt=${this._config!.alt_text}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),

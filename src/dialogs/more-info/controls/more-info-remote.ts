@@ -1,12 +1,13 @@
-import { html, LitElement, TemplateResult } from "lit";
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list-item";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import { RemoteEntity, REMOTE_SUPPORT_ACTIVITY } from "../../../data/remote";
 import { HomeAssistant } from "../../../types";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-list/mwc-list";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 
 const filterExtraAttributes = "activity_list,current_activity";
 
@@ -16,9 +17,9 @@ class MoreInfoRemote extends LitElement {
 
   @property() public stateObj?: RemoteEntity;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.stateObj;
@@ -38,7 +39,17 @@ class MoreInfoRemote extends LitElement {
             >
               ${stateObj.attributes.activity_list!.map(
                 (activity) => html`
-                  <mwc-list-item .value=${activity}>${activity}</mwc-list-item>
+                  <mwc-list-item .value=${activity}>
+                    ${computeAttributeValueDisplay(
+                      this.hass.localize,
+                      stateObj,
+                      this.hass.locale,
+                      this.hass.config,
+                      this.hass.entities,
+                      "activity",
+                      activity
+                    )}
+                  </mwc-list-item>
                 `
               )}
             </mwc-list>

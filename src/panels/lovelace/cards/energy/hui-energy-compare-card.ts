@@ -1,6 +1,6 @@
 import { differenceInDays, endOfDay } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../../common/datetime/format_date";
 import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
@@ -46,9 +46,9 @@ export class HuiEnergyCompareCard
     ];
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._startCompare || !this._endCompare) {
-      return html``;
+      return nothing;
     }
 
     const dayDifference = differenceInDays(
@@ -60,18 +60,27 @@ export class HuiEnergyCompareCard
       <ha-alert dismissable @alert-dismissed-clicked=${this._stopCompare}>
         ${this.hass.localize("ui.panel.energy.compare.info", {
           start: html`<b
-            >${formatDate(this._start!, this.hass.locale)}${dayDifference > 0
+            >${formatDate(
+              this._start!,
+              this.hass.locale,
+              this.hass.config
+            )}${dayDifference > 0
               ? ` -
-          ${formatDate(this._end || endOfDay(new Date()), this.hass.locale)}`
+          ${formatDate(
+            this._end || endOfDay(new Date()),
+            this.hass.locale,
+            this.hass.config
+          )}`
               : ""}</b
           >`,
           end: html`<b
             >${formatDate(
               this._startCompare,
-              this.hass.locale
+              this.hass.locale,
+              this.hass.config
             )}${dayDifference > 0
               ? ` -
-          ${formatDate(this._endCompare, this.hass.locale)}`
+          ${formatDate(this._endCompare, this.hass.locale, this.hass.config)}`
               : ""}</b
           >`,
         })}

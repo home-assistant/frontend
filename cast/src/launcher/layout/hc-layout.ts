@@ -22,7 +22,11 @@ class HcLayout extends LitElement {
     return html`
       <ha-card>
         <div class="layout">
-          <img class="hero" src="/images/google-nest-hub.png" />
+          <img
+            class="hero"
+            alt="A Google Nest Hub with a Home Assistant dashboard on its screen"
+            src="/images/google-nest-hub.png"
+          />
           <h1 class="card-header">
             Home Assistant Cast${this.subtitle ? ` – ${this.subtitle}` : ""}
             ${this.auth

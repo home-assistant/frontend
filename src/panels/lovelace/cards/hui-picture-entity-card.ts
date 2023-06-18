@@ -5,6 +5,7 @@ import {
   LitElement,
   PropertyValues,
   TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -102,9 +103,9 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.hass.states[this._config.entity];
@@ -121,7 +122,9 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     const entityState = computeStateDisplay(
       this.hass!.localize,
       stateObj,
-      this.hass.locale
+      this.hass.locale,
+      this.hass.config,
+      this.hass.entities
     );
 
     let footer: TemplateResult | string = "";

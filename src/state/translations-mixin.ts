@@ -1,4 +1,5 @@
 import { atLeastVersion } from "../common/config/version";
+import { fireEvent } from "../common/dom/fire_event";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 import {
   computeRTLDirection,
@@ -12,18 +13,19 @@ import {
   NumberFormat,
   saveTranslationPreferences,
   TimeFormat,
+  DateFormat,
   TranslationCategory,
+  TimeZone,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, HomeAssistant } from "../types";
-import { storeState } from "../util/ha-pref-storage";
 import {
   getLocalLanguage,
   getTranslation,
   getUserLocale,
 } from "../util/common-translation";
+import { storeState } from "../util/ha-pref-storage";
 import { HassBaseEl } from "./hass-base-mixin";
-import { fireEvent } from "../common/dom/fire_event";
 
 declare global {
   // for fire event
@@ -36,6 +38,12 @@ declare global {
     };
     "hass-time-format-select": {
       time_format: TimeFormat;
+    };
+    "hass-date-format-select": {
+      date_format: DateFormat;
+    };
+    "hass-time-zone-select": {
+      time_zone: TimeZone;
     };
     "hass-first-weekday-select": {
       first_weekday: FirstWeekday;
@@ -52,6 +60,8 @@ interface LoadedTranslationCategory {
   // if
   configFlow: boolean;
 }
+
+let updateResourcesIteration = 0;
 
 /*
  * superClass needs to contain `this.hass` and `this._updateHass`.
@@ -79,6 +89,12 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       });
       this.addEventListener("hass-time-format-select", (e) => {
         this._selectTimeFormat((e as CustomEvent).detail, true);
+      });
+      this.addEventListener("hass-date-format-select", (e) => {
+        this._selectDateFormat((e as CustomEvent).detail, true);
+      });
+      this.addEventListener("hass-time-zone-select", (e) => {
+        this._selectTimeZone((e as CustomEvent).detail, true);
       });
       this.addEventListener("hass-first-weekday-select", (e) => {
         this._selectFirstWeekday((e as CustomEvent).detail, true);
@@ -120,6 +136,20 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         ) {
           // We just got time_format from backend, no need to save back
           this._selectTimeFormat(locale.time_format, false);
+        }
+        if (
+          locale?.date_format &&
+          this.hass!.locale.date_format !== locale.date_format
+        ) {
+          // We just got date_format from backend, no need to save back
+          this._selectDateFormat(locale.date_format, false);
+        }
+        if (
+          locale?.time_zone &&
+          this.hass!.locale.time_zone !== locale.time_zone
+        ) {
+          // We just got time_zone from backend, no need to save back
+          this._selectTimeZone(locale.time_zone, false);
         }
         if (
           locale?.first_weekday &&
@@ -169,6 +199,27 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     private _selectTimeFormat(time_format: TimeFormat, saveToBackend: boolean) {
       this._updateHass({
         locale: { ...this.hass!.locale, time_format: time_format },
+      });
+      if (saveToBackend) {
+        saveTranslationPreferences(this.hass!, this.hass!.locale);
+      }
+    }
+
+    private _selectDateFormat(date_format: DateFormat, saveToBackend: boolean) {
+      this._updateHass({
+        locale: {
+          ...this.hass!.locale,
+          date_format: date_format,
+        },
+      });
+      if (saveToBackend) {
+        saveTranslationPreferences(this.hass!, this.hass!.locale);
+      }
+    }
+
+    private _selectTimeZone(time_zone: TimeZone, saveToBackend: boolean) {
+      this._updateHass({
+        locale: { ...this.hass!.locale, time_zone },
       });
       if (saveToBackend) {
         saveTranslationPreferences(this.hass!, this.hass!.locale);
@@ -250,8 +301,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           return this.hass!.localize;
         }
 
-        await this._updateResources(language, resources);
-        return this.hass!.localize;
+        return this._updateResources(language, resources);
       }
 
       let alreadyLoaded: LoadedTranslationCategory;
@@ -312,8 +362,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         return this.hass!.localize;
       }
 
-      await this._updateResources(language, resources);
-      return this.hass!.localize;
+      return this._updateResources(language, resources);
     }
 
     private async _loadFragmentTranslations(
@@ -342,8 +391,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
       this.__loadedFragmetTranslations.add(fragment);
       const result = await getTranslation(fragment, language);
-      await this._updateResources(result.language, result.data);
-      return this.hass!.localize;
+      return this._updateResources(result.language, result.data);
     }
 
     private async _loadCoreTranslations(language: string) {
@@ -361,7 +409,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
     }
 
-    private async _updateResources(language: string, data: any) {
+    private async _updateResources(
+      language: string,
+      data: any
+    ): Promise<LocalizeFunc> {
+      updateResourcesIteration++;
+      const i = updateResourcesIteration;
+
       // Update the language in hass, and update the resources with the newly
       // loaded resources. This merges the new data on top of the old data for
       // this language, so that the full translation set can be loaded across
@@ -373,11 +427,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // overwritten when we call _updateHass the second time!
 
       // Allow hass to be updated
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
 
       if (language !== (this.hass ?? this._pendingHass).language) {
         // the language was changed, abort
-        return;
+        return (this.hass ?? this._pendingHass).localize!;
       }
 
       const resources = {
@@ -392,12 +448,20 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       const localize = await computeLocalize(this, language, resources);
 
-      if (language === (this.hass ?? this._pendingHass).language) {
-        this._updateHass({
-          localize,
-        });
+      if (
+        updateResourcesIteration !== i ||
+        language !== (this.hass ?? this._pendingHass).language
+      ) {
+        // if a new iteration has started or the language changed, abort
+        return localize;
       }
+
+      this._updateHass({
+        localize,
+      });
       fireEvent(this, "translations-updated");
+
+      return localize;
     }
 
     private _refetchCachedHassTranslations(

@@ -14,16 +14,18 @@ declare global {
   }
 }
 
+export type ActionConfigParams = {
+  entity?: string;
+  camera_image?: string;
+  hold_action?: ActionConfig;
+  tap_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+};
+
 export const handleAction = async (
   node: HTMLElement,
   hass: HomeAssistant,
-  config: {
-    entity?: string;
-    camera_image?: string;
-    hold_action?: ActionConfig;
-    tap_action?: ActionConfig;
-    double_tap_action?: ActionConfig;
-  },
+  config: ActionConfigParams,
   action: string
 ): Promise<void> => {
   let actionConfig: ActionConfig | undefined;
@@ -46,7 +48,7 @@ export const handleAction = async (
     actionConfig.confirmation &&
     (!actionConfig.confirmation.exemptions ||
       !actionConfig.confirmation.exemptions.some(
-        (e) => e.user === hass!.user!.id
+        (e) => e.user === hass!.user?.id
       ))
   ) {
     forwardHaptic("warning");

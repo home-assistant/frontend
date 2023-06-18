@@ -12,7 +12,7 @@ import { property, state } from "lit/decorators";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { UNAVAILABLE, UNAVAILABLE_STATES, UNKNOWN } from "../../data/entity";
+import { isUnavailableState, UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
 import { HomeAssistant } from "../../types";
 import "../ha-formfield";
@@ -22,7 +22,7 @@ import "../ha-switch";
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined &&
   !STATES_OFF.includes(stateObj.state) &&
-  !UNAVAILABLE_STATES.includes(stateObj.state);
+  !isUnavailableState(stateObj.state);
 
 export class HaEntityToggle extends LitElement {
   // hass is not a property so that we only re-render on stateObj changes

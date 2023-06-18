@@ -1,5 +1,5 @@
 import { mdiPencilOff, mdiPlus } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -35,7 +35,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
-import { HELPER_DOMAINS } from "./const";
+import { HelperDomain, isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 
 // This groups items by a key but only returns last entry per key.
@@ -118,7 +118,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         sortable: true,
         width: "25%",
         filterable: true,
-        template: (type, row) =>
+        template: (type: HelperDomain, row) =>
           row.configEntry
             ? domainToName(localize, type)
             : html`
@@ -139,11 +139,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                   style="display:inline-block; position: relative;"
                 >
                   <ha-svg-icon .path=${mdiPencilOff}></ha-svg-icon>
-                  <paper-tooltip animation-delay="0" position="left">
+                  <simple-tooltip animation-delay="0" position="left">
                     ${this.hass.localize(
                       "ui.panel.config.entities.picker.status.readonly"
                     )}
-                  </paper-tooltip>
+                  </simple-tooltip>
                 </div>
               `
             : ""}
@@ -243,7 +243,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     if (!domain) {
       return;
     }
-    if (HELPER_DOMAINS.includes(domain)) {
+    if (isHelperDomain(domain)) {
       showHelperDetailDialog(this, {
         domain,
       });
@@ -330,7 +330,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     const newStates = Object.values(this.hass!.states).filter(
       (entity) =>
         extraEntities.has(entity.entity_id) ||
-        HELPER_DOMAINS.includes(computeStateDomain(entity))
+        isHelperDomain(computeStateDomain(entity))
     );
 
     if (
@@ -358,10 +358,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private async _openEditDialog(ev: CustomEvent): Promise<void> {
     const entityId = (ev.detail as RowClickedEvent).id;
-    showMoreInfoDialog(this, {
-      entityId,
-      tab: "settings",
-    });
+    showMoreInfoDialog(this, { entityId });
   }
 
   private _createHelpler() {

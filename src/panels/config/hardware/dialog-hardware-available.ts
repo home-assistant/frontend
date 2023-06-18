@@ -1,5 +1,5 @@
 import { mdiClose } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -20,7 +20,12 @@ import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 
 const _filterDevices = memoizeOne(
-  (showAdvanced: boolean, hardware: HassioHardwareInfo, filter: string) =>
+  (
+    showAdvanced: boolean,
+    hardware: HassioHardwareInfo,
+    filter: string,
+    language: string
+  ) =>
     hardware.devices
       .filter(
         (device) =>
@@ -33,7 +38,7 @@ const _filterDevices = memoizeOne(
               .toLocaleLowerCase()
               .includes(filter))
       )
-      .sort((a, b) => stringCompare(a.name, b.name))
+      .sort((a, b) => stringCompare(a.name, b.name, language))
 );
 
 @customElement("ha-dialog-hardware-available")
@@ -62,15 +67,16 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._hardware) {
-      return html``;
+      return nothing;
     }
 
     const devices = _filterDevices(
       this.hass.userData?.showAdvanced || false,
       this._hardware,
-      (this._filter || "").toLowerCase()
+      (this._filter || "").toLowerCase(),
+      this.hass.locale.language
     );
 
     return html`

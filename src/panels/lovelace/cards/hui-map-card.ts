@@ -1,4 +1,6 @@
-import { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import { mdiImageFilterCenterFocus } from "@mdi/js";
+import { isToday } from "date-fns";
+import { HassEntities } from "home-assistant-js-websocket";
 import { LatLngTuple } from "leaflet";
 import {
   css,
@@ -6,27 +8,45 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { mdiImageFilterCenterFocus } from "@mdi/js";
 import memoizeOne from "memoize-one";
+import { getColorByIndex } from "../../../common/color/colors";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
+import {
+  formatTimeWithSeconds,
+  formatTimeWeekday,
+} from "../../../common/datetime/format_time";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
+import "../../../components/ha-alert";
 import "../../../components/ha-icon-button";
-import { fetchRecent } from "../../../data/history";
+import "../../../components/map/ha-map";
+import type {
+  HaMap,
+  HaMapPathPoint,
+  HaMapPaths,
+} from "../../../components/map/ha-map";
+import {
+  HistoryStates,
+  subscribeHistoryStatesTimeWindow,
+} from "../../../data/history";
+import {
+  hasConfigChanged,
+  hasConfigOrEntitiesChanged,
+} from "../common/has-changed";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { MapCardConfig } from "./types";
-import "../../../components/map/ha-map";
-import type { HaMap, HaMapPaths } from "../../../components/map/ha-map";
-import { getColorByIndex } from "../../../common/color/colors";
 
-const MINUTE = 60000;
+export const DEFAULT_HOURS_TO_SHOW = 0;
+export const DEFAULT_ZOOM = 14;
 
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
@@ -35,8 +55,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
 
-  @state()
-  private _history?: HassEntity[][];
+  @state() private _stateHistory?: HistoryStates;
 
   @state()
   private _config?: MapCardConfig;
@@ -44,13 +63,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   @query("ha-map")
   private _map?: HaMap;
 
-  private _date?: Date;
-
   private _configEntities?: string[];
 
   private _colorDict: Record<string, string> = {};
 
   private _colorIndex = 0;
+
+  @state() private _error?: { code: string; message: string };
+
+  private _subscribed?: Promise<(() => Promise<void>) | void>;
 
   public setConfig(config: MapCardConfig): void {
     if (!config) {
@@ -69,7 +90,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       config.geo_location_sources &&
       !Array.isArray(config.geo_location_sources)
     ) {
-      throw new Error("Geo_location_sources needs to be an array");
+      throw new Error("Parameter geo_location_sources needs to be an array");
     }
 
     this._config = config;
@@ -78,8 +99,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         ? processConfigEntities<EntityConfig>(config.entities)
         : []
     ).map((entity) => entity.entity);
-
-    this._cleanupHistory();
   }
 
   public getCardSize(): number {
@@ -92,6 +111,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ratio && ratio.w > 0 && ratio.h > 0
         ? `${((100 * ratio.h) / ratio.w).toFixed(2)}`
         : "100";
+
     return 1 + Math.floor(Number(ar) / 25) || 3;
   }
 
@@ -118,9 +138,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return { type: "map", entities: foundEntities };
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config) {
-      return html``;
+      return nothing;
+    }
+    if (this._error) {
+      return html`<ha-alert alert-type="error">
+        ${this.hass.localize("ui.components.map.error")}: ${this._error.message}
+        (${this._error.code})
+      </ha-alert>`;
     }
     return html`
       <ha-card id="card" .header=${this._config.title}>
@@ -132,10 +158,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               this._config,
               this._configEntities
             )}
-            .zoom=${this._config.default_zoom ?? 14}
-            .paths=${this._getHistoryPaths(this._config, this._history)}
+            .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
+            .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit}
             .darkMode=${this._config.dark_mode}
+            interactiveZones
+            renderPassive
           ></ha-map>
           <ha-icon-button
             .label=${this.hass!.localize(
@@ -165,20 +193,84 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return true;
     }
 
-    // Check if any state has changed
-    for (const entity of this._configEntities) {
-      if (oldHass.states[entity] !== this.hass!.states[entity]) {
+    if (changedProps.has("_stateHistory")) {
+      return true;
+    }
+
+    if (this._config?.geo_location_sources) {
+      if (oldHass.states !== this.hass.states) {
         return true;
       }
     }
 
-    return false;
+    return this._config?.entities
+      ? hasConfigOrEntitiesChanged(this, changedProps)
+      : hasConfigChanged(this, changedProps);
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    const root = this.shadowRoot!.getElementById("root");
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated && this._configEntities?.length) {
+      this._subscribeHistory();
+    }
+  }
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribeHistory();
+  }
+
+  private _subscribeHistory() {
+    if (
+      !isComponentLoaded(this.hass!, "history") ||
+      this._subscribed ||
+      !(this._config?.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)
+    ) {
+      return;
+    }
+    this._subscribed = subscribeHistoryStatesTimeWindow(
+      this.hass!,
+      (combinedHistory) => {
+        if (!this._subscribed) {
+          // Message came in before we had a chance to unload
+          return;
+        }
+        this._stateHistory = combinedHistory;
+      },
+      this._config!.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW,
+      this._configEntities!,
+      false,
+      false,
+      false
+    ).catch((err) => {
+      this._subscribed = undefined;
+      this._error = err;
+    });
+  }
+
+  private _unsubscribeHistory() {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub?.());
+      this._subscribed = undefined;
+    }
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    if (this._configEntities?.length) {
+      if (!this._subscribed || changedProps.has("_config")) {
+        this._unsubscribeHistory();
+        this._subscribeHistory();
+      }
+    } else {
+      this._unsubscribeHistory();
+    }
+    if (changedProps.has("_config")) {
+      this._computePadding();
+    }
+  }
+
+  private _computePadding(): void {
+    const root = this.shadowRoot!.getElementById("root");
     if (!this._config || this.isPanel || !root) {
       return;
     }
@@ -188,22 +280,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return;
     }
 
+    root.style.height = "auto";
+
     const ratio = parseAspectRatio(this._config.aspect_ratio);
 
     root.style.paddingBottom =
       ratio && ratio.w > 0 && ratio.h > 0
         ? `${((100 * ratio.h) / ratio.w).toFixed(2)}%`
         : (root.style.paddingBottom = "100%");
-  }
-
-  protected updated(changedProps: PropertyValues): void {
-    if (this._config?.hours_to_show && this._configEntities?.length) {
-      if (changedProps.has("_config")) {
-        this._getHistory();
-      } else if (Date.now() - this._date!.getTime() >= MINUTE) {
-        this._getHistory();
-      }
-    }
   }
 
   private _fitMap() {
@@ -260,34 +344,55 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _getHistoryPaths = memoizeOne(
     (
       config: MapCardConfig,
-      history?: HassEntity[][]
+      history?: HistoryStates
     ): HaMapPaths[] | undefined => {
-      if (!config.hours_to_show || !history) {
+      if (!history || !(config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)) {
         return undefined;
       }
 
       const paths: HaMapPaths[] = [];
 
-      for (const entityStates of history) {
-        if (entityStates?.length <= 1) {
+      for (const entityId of Object.keys(history)) {
+        if (computeDomain(entityId) === "zone") {
+          continue;
+        }
+        const entityStates = history[entityId];
+        if (!entityStates?.length) {
           continue;
         }
         // filter location data from states and remove all invalid locations
-        const points = entityStates.reduce(
-          (accumulator: LatLngTuple[], entityState) => {
-            const latitude = entityState.attributes.latitude;
-            const longitude = entityState.attributes.longitude;
-            if (latitude && longitude) {
-              accumulator.push([latitude, longitude] as LatLngTuple);
-            }
-            return accumulator;
-          },
-          []
-        ) as LatLngTuple[];
-
+        const points: HaMapPathPoint[] = [];
+        for (const entityState of entityStates) {
+          const latitude = entityState.a.latitude;
+          const longitude = entityState.a.longitude;
+          if (!latitude || !longitude) {
+            continue;
+          }
+          const p = {} as HaMapPathPoint;
+          p.point = [latitude, longitude] as LatLngTuple;
+          const t = new Date(entityState.lu * 1000);
+          if ((config.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW) > 144) {
+            // if showing > 6 days in the history trail, show the full
+            // date and time
+            p.tooltip = formatDateTime(t, this.hass.locale, this.hass.config);
+          } else if (isToday(t)) {
+            p.tooltip = formatTimeWithSeconds(
+              t,
+              this.hass.locale,
+              this.hass.config
+            );
+          } else {
+            p.tooltip = formatTimeWeekday(
+              t,
+              this.hass.locale,
+              this.hass.config
+            );
+          }
+          points.push(p);
+        }
         paths.push({
           points,
-          color: this._getColor(entityStates[0].entity_id),
+          color: this._getColor(entityId),
           gradualOpacity: 0.8,
         });
       }
@@ -295,64 +400,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
   );
 
-  private async _getHistory(): Promise<void> {
-    this._date = new Date();
-
-    if (!this._configEntities) {
-      return;
-    }
-
-    const entityIds = this._configEntities!.join(",");
-    const endTime = new Date();
-    const startTime = new Date();
-    startTime.setHours(endTime.getHours() - this._config!.hours_to_show!);
-    const skipInitialState = false;
-    const significantChangesOnly = false;
-    const minimalResponse = false;
-
-    const stateHistory = await fetchRecent(
-      this.hass,
-      entityIds,
-      startTime,
-      endTime,
-      skipInitialState,
-      significantChangesOnly,
-      minimalResponse
-    );
-
-    if (stateHistory.length < 1) {
-      return;
-    }
-    this._history = stateHistory;
-  }
-
-  private _cleanupHistory() {
-    if (!this._history) {
-      return;
-    }
-    if (this._config!.hours_to_show! <= 0) {
-      this._history = undefined;
-    } else {
-      // remove unused entities
-      this._history = this._history!.reduce(
-        (accumulator: HassEntity[][], entityStates) => {
-          const entityId = entityStates[0].entity_id;
-          if (this._configEntities?.includes(entityId)) {
-            accumulator.push(entityStates);
-          }
-          return accumulator;
-        },
-        []
-      ) as HassEntity[][];
-    }
-  }
-
   static get styles(): CSSResultGroup {
     return css`
       ha-card {
         overflow: hidden;
         width: 100%;
         height: 100%;
+        display: flex;
+        flex-direction: column;
       }
 
       ha-map {

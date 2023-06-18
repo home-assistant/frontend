@@ -3,17 +3,15 @@ import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
-import "../../../components/ha-header-bar";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-radio";
-import "../../../components/ha-related-items";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
@@ -43,31 +41,32 @@ export class HassioHostname extends LitElement {
     this._hostname = hostInfo.hostname;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._hostname) {
-      return html``;
+      return nothing;
     }
 
     return html`
       <ha-card
         class="no-padding"
         outlined
-        .header=${this.hass.localize("ui.panel.config.network.hostname.title")}
+        .header=${this.hass.localize(
+          "ui.panel.config.network.supervisor.hostname.title"
+        )}
       >
-        <div>
-          <ha-settings-row .narrow=${this.narrow}>
-            <span slot="heading">Hostname</span>
-            <span slot="description"
-              >The name your instance will have on your network</span
-            >
-            <ha-textfield
-              .disabled=${this._processing}
-              .value=${this._hostname}
-              @change=${this._handleChange}
-              placeholder="homeassistant"
-            >
-            </ha-textfield>
-          </ha-settings-row>
+        <div class="card-content">
+          <p>
+            ${this.hass.localize(
+              "ui.panel.config.network.supervisor.hostname.description"
+            )}
+          </p>
+          <ha-textfield
+            .disabled=${this._processing}
+            .value=${this._hostname}
+            @change=${this._handleChange}
+            placeholder="homeassistant"
+          >
+          </ha-textfield>
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._save} .disabled=${this._processing}>
@@ -92,7 +91,7 @@ export class HassioHostname extends LitElement {
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
-          "ui.panel.config.network.hostname.failed_to_set_hostname"
+          "ui.panel.config.network.supervisor.hostname.failed_to_set_hostname"
         ),
         text: extractApiErrorMessage(err),
       });
@@ -111,8 +110,8 @@ export class HassioHostname extends LitElement {
       justify-content: space-between;
       align-items: center;
     }
-    ha-settings-row {
-      border-top: none;
+    .card-content > p {
+      padding-bottom: 1em;
     }
   `;
 }

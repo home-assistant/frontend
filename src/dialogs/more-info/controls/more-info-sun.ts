@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatTime } from "../../../common/datetime/format_time";
 import { formatNumber } from "../../../common/number/format_number";
@@ -12,9 +12,9 @@ class MoreInfoSun extends LitElement {
 
   @property() public stateObj?: HassEntity;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     const risingDate = new Date(this.stateObj.attributes.next_rising);
@@ -44,7 +44,8 @@ class MoreInfoSun extends LitElement {
             <div class="value">
               ${formatTime(
                 item === "ris" ? risingDate : settingDate,
-                this.hass.locale
+                this.hass.locale,
+                this.hass.config
               )}
             </div>
           </div>

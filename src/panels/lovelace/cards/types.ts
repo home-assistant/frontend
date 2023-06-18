@@ -246,6 +246,7 @@ export interface HumidifierCardConfig extends LovelaceCardConfig {
 }
 
 export interface IframeCardConfig extends LovelaceCardConfig {
+  allow_open_top_navigation?: boolean;
   aspect_ratio?: string;
   title?: string;
   url: string;
@@ -298,8 +299,8 @@ export interface MediaControlCardConfig extends LovelaceCardConfig {
 export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   entities: Array<EntityConfig | string>;
   hours_to_show?: number;
-  refresh_interval?: number;
   title?: string;
+  show_names?: boolean;
 }
 
 export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
@@ -310,6 +311,7 @@ export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   period?: "5minute" | "hour" | "day" | "month";
   stat_types?: StatisticType | StatisticType[];
   chart_type?: "line" | "bar";
+  hide_legend?: boolean;
 }
 
 export interface StatisticCardConfig extends LovelaceCardConfig {
@@ -330,6 +332,7 @@ export interface PictureCardConfig extends LovelaceCardConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   theme?: string;
+  alt_text?: string;
 }
 
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
@@ -500,6 +503,7 @@ export interface TileCardConfig extends LovelaceCardConfig {
   icon?: string;
   color?: string;
   show_entity_picture?: string;
+  vertical?: boolean;
   tap_action?: ActionConfig;
   icon_tap_action?: ActionConfig;
   features?: LovelaceTileFeatureConfig[];

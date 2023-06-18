@@ -19,8 +19,10 @@ import {
   startOfYear,
 } from "date-fns/esm";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { calcDate } from "../../../common/datetime/calc_date";
+import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import {
   formatDate,
   formatDateMonthYear,
@@ -28,15 +30,14 @@ import {
   formatDateYear,
 } from "../../../common/datetime/format_date";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-button-toggle-group";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-button-next";
+import "../../../components/ha-icon-button-prev";
 import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, ToggleButton } from "../../../types";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
@@ -44,7 +45,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   @property() public collectionKey?: string;
 
-  @property({ type: Boolean, reflect: true }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow?;
 
   @state() _startDate?: Date;
 
@@ -56,7 +57,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   public connectedCallback() {
     super.connectedCallback();
-    toggleAttribute(this, "narrow", this.offsetWidth < 600);
+    if (this.narrow !== false) {
+      toggleAttribute(this, "narrow", this.offsetWidth < 600);
+    }
   }
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -67,9 +70,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._startDate) {
-      return html``;
+      return nothing;
     }
 
     const viewButtons: ToggleButton[] = [
@@ -103,17 +106,27 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       <div class="row">
         <div class="label">
           ${this._period === "day"
-            ? formatDate(this._startDate, this.hass.locale)
+            ? formatDate(this._startDate, this.hass.locale, this.hass.config)
             : this._period === "month"
-            ? formatDateMonthYear(this._startDate, this.hass.locale)
+            ? formatDateMonthYear(
+                this._startDate,
+                this.hass.locale,
+                this.hass.config
+              )
             : this._period === "year"
-            ? formatDateYear(this._startDate, this.hass.locale)
+            ? formatDateYear(
+                this._startDate,
+                this.hass.locale,
+                this.hass.config
+              )
             : `${formatDateShort(
                 this._startDate,
-                this.hass.locale
+                this.hass.locale,
+                this.hass.config
               )} – ${formatDateShort(
                 this._endDate || new Date(),
-                this.hass.locale
+                this.hass.locale,
+                this.hass.config
               )}`}
           <ha-icon-button-prev
             .label=${this.hass.localize(
@@ -184,12 +197,14 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
     this._setDate(
       this._period === "day"
-        ? startOfDay(start)
+        ? calcDate(start, startOfDay, this.hass.locale, this.hass.config)
         : this._period === "week"
-        ? startOfWeek(start, { weekStartsOn })
+        ? calcDate(start, startOfWeek, this.hass.locale, this.hass.config, {
+            weekStartsOn,
+          })
         : this._period === "month"
-        ? startOfMonth(start)
-        : startOfYear(start)
+        ? calcDate(start, startOfMonth, this.hass.locale, this.hass.config)
+        : calcDate(start, startOfYear, this.hass.locale, this.hass.config)
     );
   }
 
@@ -198,12 +213,20 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
     this._setDate(
       this._period === "day"
-        ? startOfToday()
+        ? calcDate(new Date(), startOfDay, this.hass.locale, this.hass.config)
         : this._period === "week"
-        ? startOfWeek(new Date(), { weekStartsOn })
+        ? calcDate(
+            new Date(),
+            startOfWeek,
+            this.hass.locale,
+            this.hass.config,
+            {
+              weekStartsOn,
+            }
+          )
         : this._period === "month"
-        ? startOfMonth(new Date())
-        : startOfYear(new Date())
+        ? calcDate(new Date(), startOfMonth, this.hass.locale, this.hass.config)
+        : calcDate(new Date(), startOfYear, this.hass.locale, this.hass.config)
     );
   }
 
@@ -236,12 +259,14 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
     const endDate =
       this._period === "day"
-        ? endOfDay(startDate)
+        ? calcDate(startDate, endOfDay, this.hass.locale, this.hass.config)
         : this._period === "week"
-        ? endOfWeek(startDate, { weekStartsOn })
+        ? calcDate(startDate, endOfWeek, this.hass.locale, this.hass.config, {
+            weekStartsOn,
+          })
         : this._period === "month"
-        ? endOfMonth(startDate)
-        : endOfYear(startDate);
+        ? calcDate(startDate, endOfMonth, this.hass.locale, this.hass.config)
+        : calcDate(startDate, endOfYear, this.hass.locale, this.hass.config);
 
     const energyCollection = getEnergyDataCollection(this.hass, {
       key: this.collectionKey,
@@ -270,7 +295,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   private _toggleCompare() {
     this._compare = !this._compare;
     const energyCollection = getEnergyDataCollection(this.hass, {
-      key: "energy_dashboard",
+      key: this.collectionKey,
     });
     energyCollection.setCompare(this._compare);
     energyCollection.refresh();

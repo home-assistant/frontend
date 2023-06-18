@@ -1,5 +1,5 @@
 import { mdiClose, mdiDrag, mdiPencil } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import type { SortableEvent } from "sortablejs";
@@ -48,9 +48,9 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     return this._entityKeys.get(action)!;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.entities || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     return html`

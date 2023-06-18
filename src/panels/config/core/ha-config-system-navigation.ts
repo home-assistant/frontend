@@ -1,11 +1,13 @@
+import { mdiPower } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../common/datetime/relative_time";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-navigation-list";
-import "../../../components/ha-tip";
 import { BackupContent, fetchBackupInfo } from "../../../data/backup";
 import { CloudStatus, fetchCloudStatus } from "../../../data/cloud";
 import { BOARD_NAMES, HardwareInfo } from "../../../data/hardware";
@@ -16,10 +18,7 @@ import {
   HassioHassOSInfo,
   HassioHostInfo,
 } from "../../../data/hassio/host";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../../dialogs/generic/show-dialog-box";
+import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -84,7 +83,7 @@ class HaConfigSystemNavigation extends LitElement {
                   "percent_used",
                   `${Math.round(
                     (this._storageInfo.used / this._storageInfo.total) * 100
-                  )}%`,
+                  )}${blankBeforePercent(this.hass.locale)}%`,
                   "free_space",
                   `${this._storageInfo.free} GB`
                 )
@@ -120,13 +119,14 @@ class HaConfigSystemNavigation extends LitElement {
         back-path="/config"
         .header=${this.hass.localize("ui.panel.config.dashboard.system.main")}
       >
-        <mwc-button
+        <ha-icon-button
           slot="toolbar-icon"
+          .path=${mdiPower}
           .label=${this.hass.localize(
-            "ui.panel.config.system_dashboard.restart_homeassistant_short"
+            "ui.panel.config.system_dashboard.restart_homeassistant"
           )}
-          @click=${this._restart}
-        ></mwc-button>
+          @click=${this._showRestartDialog}
+        ></ha-icon-button>
         <ha-config-section
           .narrow=${this.narrow}
           .isWide=${this.isWide}
@@ -158,31 +158,6 @@ class HaConfigSystemNavigation extends LitElement {
     if (isHassioLoaded) {
       this._fetchStorageInfo();
     }
-  }
-
-  private _restart() {
-    showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.system_dashboard.confirm_restart_title"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.system_dashboard.confirm_restart_text"
-      ),
-      confirmText: this.hass.localize(
-        "ui.panel.config.system_dashboard.restart_homeassistant_short"
-      ),
-      confirm: () => {
-        this.hass.callService("homeassistant", "restart").catch((reason) => {
-          showAlertDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.config.system_dashboard.restart_error"
-            ),
-            text: reason.message,
-          });
-        });
-      },
-      destructive: true,
-    });
   }
 
   private async _fetchBackupInfo(isHassioLoaded: boolean) {
@@ -237,6 +212,10 @@ class HaConfigSystemNavigation extends LitElement {
     this._externalAccess = this.hass.config.external_url !== null;
   }
 
+  private async _showRestartDialog() {
+    showRestartDialog(this);
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -268,6 +247,14 @@ class HaConfigSystemNavigation extends LitElement {
           padding-bottom: 0;
         }
 
+        .restart-section {
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          justify-content: center;
+          margin-bottom: 24px;
+        }
+
         @media all and (max-width: 600px) {
           ha-card {
             border-width: 1px 0;
@@ -281,9 +268,6 @@ class HaConfigSystemNavigation extends LitElement {
 
         ha-navigation-list {
           --navigation-list-item-title-font-size: 16px;
-        }
-        ha-tip {
-          margin-bottom: max(env(safe-area-inset-bottom), 8px);
         }
       `,
     ];

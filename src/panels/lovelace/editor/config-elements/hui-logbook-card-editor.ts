@@ -1,5 +1,4 @@
-import "../../../../components/ha-form/ha-form";
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   array,
@@ -12,12 +11,14 @@ import {
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entities-picker";
+import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
+import { filterLogbookCompatibleEntities } from "../../../../data/logbook";
 import type { HomeAssistant } from "../../../../types";
 import type { LogbookCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { filterLogbookCompatibleEntities } from "../../../../data/logbook";
+import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-logbook-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -36,7 +37,11 @@ const SCHEMA = [
     type: "grid",
     schema: [
       { name: "theme", selector: { theme: {} } },
-      { name: "hours_to_show", selector: { number: { mode: "box", min: 1 } } },
+      {
+        name: "hours_to_show",
+        default: DEFAULT_HOURS_TO_SHOW,
+        selector: { number: { mode: "box", min: 1 } },
+      },
     ],
   },
 ] as const;
@@ -59,9 +64,9 @@ export class HuiLogbookCardEditor
     return this._config!.entities || [];
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     return html`

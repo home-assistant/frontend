@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import "../components/entity/state-badge";
-import { UNAVAILABLE, UNAVAILABLE_STATES } from "../data/entity";
+import { isUnavailableState, UNAVAILABLE } from "../data/entity";
 import { TextEntity, setValue } from "../data/text";
 import type { HomeAssistant } from "../types";
 
@@ -37,7 +37,7 @@ class StateCardText extends LitElement {
     const value = ev.target.value;
 
     // Filter out invalid text states
-    if (value && UNAVAILABLE_STATES.includes(value)) {
+    if (value && isUnavailableState(value)) {
       ev.target.value = this.stateObj.state;
       return;
     }

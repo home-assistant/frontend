@@ -2,8 +2,15 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+import { FIXED_DOMAIN_STATES } from "../common/entity/get_states";
+import { UNAVAILABLE_STATES } from "./entity";
+
+type HumidifierState =
+  | (typeof FIXED_DOMAIN_STATES.humidifier)[number]
+  | (typeof UNAVAILABLE_STATES)[number];
 
 export type HumidifierEntity = HassEntityBase & {
+  state: HumidifierState;
   attributes: HassEntityAttributeBase & {
     humidity?: number;
     min_humidity?: number;

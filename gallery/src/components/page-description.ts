@@ -1,4 +1,4 @@
-import { html, css } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
 import { HaMarkdown } from "../../../src/components/ha-markdown";
@@ -10,7 +10,7 @@ class PageDescription extends HaMarkdown {
 
   render() {
     if (!PAGES[this.page].description) {
-      return html``;
+      return nothing;
     }
 
     return html`

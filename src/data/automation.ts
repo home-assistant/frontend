@@ -8,7 +8,7 @@ import { BlueprintInput } from "./blueprint";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
 import { Action, MODES } from "./script";
 
-export const AUTOMATION_DEFAULT_MODE: typeof MODES[number] = "single";
+export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
 export const AUTOMATION_DEFAULT_MAX = 10;
 
 export interface AutomationEntity extends HassEntityBase {
@@ -29,7 +29,7 @@ export interface ManualAutomationConfig {
   trigger: Trigger | Trigger[];
   condition?: Condition | Condition[];
   action: Action | Action[];
-  mode?: typeof MODES[number];
+  mode?: (typeof MODES)[number];
   max?: number;
   max_exceeded?:
     | "silent"
@@ -123,6 +123,8 @@ export interface TimePatternTrigger extends BaseTrigger {
 export interface WebhookTrigger extends BaseTrigger {
   platform: "webhook";
   webhook_id: string;
+  allowed_methods?: string[];
+  local_only?: boolean;
 }
 
 export interface ZoneTrigger extends BaseTrigger {
@@ -146,6 +148,7 @@ export interface TimeTrigger extends BaseTrigger {
 export interface TemplateTrigger extends BaseTrigger {
   platform: "template";
   value_template: string;
+  for?: string | number | ForDict;
 }
 
 export interface EventTrigger extends BaseTrigger {
@@ -196,6 +199,7 @@ export interface StateCondition extends BaseCondition {
   attribute?: string;
   state: string | number | string[];
   for?: string | number | ForDict;
+  match?: "all" | "any";
 }
 
 export interface NumericStateCondition extends BaseCondition {
@@ -375,3 +379,9 @@ export const testCondition = (
     condition,
     variables,
   });
+
+export type Clipboard = {
+  trigger?: Trigger;
+  condition?: Condition;
+  action?: Action;
+};

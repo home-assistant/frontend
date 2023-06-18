@@ -7,16 +7,21 @@ import {
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../common/array/ensure-array";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
+import { supportsFeature } from "../common/entity/supports-feature";
 import {
   fetchIntegrationManifest,
   IntegrationManifest,
 } from "../data/integration";
-import { Selector } from "../data/selector";
-import { PolymerChangedEvent } from "../polymer-types";
-import { HomeAssistant } from "../types";
+import {
+  expandAreaTarget,
+  expandDeviceTarget,
+  Selector,
+} from "../data/selector";
+import { ValueChangedEvent, HomeAssistant } from "../types";
 import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
 import "./ha-icon-button";
@@ -25,6 +30,16 @@ import "./ha-service-picker";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
+
+const attributeFilter = (values: any[], attribute: any) => {
+  if (typeof attribute === "object") {
+    if (Array.isArray(attribute)) {
+      return attribute.some((item) => values.includes(item));
+    }
+    return false;
+  }
+  return values.includes(attribute);
+};
 
 const showOptionalToggle = (field) =>
   field.selector &&
@@ -40,6 +55,10 @@ interface ExtHassService extends Omit<HassService, "fields"> {
     advanced?: boolean;
     default?: any;
     example?: any;
+    filter?: {
+      supported_features?: number[];
+      attribute?: Record<string, any[]>;
+    };
     selector?: Selector;
   }[];
   hasSelector: string[];
@@ -136,6 +155,7 @@ export class HaServiceControl extends LitElement {
     if (oldValue?.service !== this.value?.service) {
       let updatedDefaultValue = false;
       if (this._value && serviceData) {
+        const loadDefaults = this.value && !("data" in this.value);
         // Set mandatory bools without a default value to false
         if (!this._value.data) {
           this._value.data = {};
@@ -150,6 +170,15 @@ export class HaServiceControl extends LitElement {
           ) {
             updatedDefaultValue = true;
             this._value!.data![field.key] = false;
+          }
+          if (
+            loadDefaults &&
+            field.selector &&
+            field.default !== undefined &&
+            this._value!.data![field.key] === undefined
+          ) {
+            updatedDefaultValue = true;
+            this._value!.data![field.key] = field.default;
           }
         });
       }
@@ -204,6 +233,87 @@ export class HaServiceControl extends LitElement {
     }
   );
 
+  private _filterFields = memoizeOne(
+    (serviceData: ExtHassService | undefined, value: this["value"]) =>
+      serviceData?.fields?.filter(
+        (field) =>
+          !field.filter ||
+          this._filterField(serviceData.target, field.filter, value)
+      )
+  );
+
+  private _filterField(
+    target: ExtHassService["target"],
+    filter: ExtHassService["fields"][number]["filter"],
+    value: this["value"]
+  ) {
+    const targetSelector = target ? { target } : { target: {} };
+    const targetEntities =
+      ensureArray(value?.target?.entity_id || value?.data?.entity_id) || [];
+    const targetDevices =
+      ensureArray(value?.target?.device_id || value?.data?.device_id) || [];
+    const targetAreas = ensureArray(
+      value?.target?.area_id || value?.data?.area_id
+    );
+    if (targetAreas) {
+      targetAreas.forEach((areaId) => {
+        const expanded = expandAreaTarget(
+          this.hass,
+          areaId,
+          this.hass.devices,
+          this.hass.entities,
+          targetSelector
+        );
+        targetEntities.push(...expanded.entities);
+        targetDevices.push(...expanded.devices);
+      });
+    }
+    if (targetDevices.length) {
+      targetDevices.forEach((deviceId) => {
+        targetEntities.push(
+          ...expandDeviceTarget(
+            this.hass,
+            deviceId,
+            this.hass.entities,
+            targetSelector
+          ).entities
+        );
+      });
+    }
+    if (!targetEntities.length) {
+      return false;
+    }
+    if (
+      targetEntities.some((entityId) => {
+        const entityState = this.hass.states[entityId];
+        if (!entityState) {
+          return false;
+        }
+        if (
+          filter!.supported_features?.some((feature) =>
+            supportsFeature(entityState, feature)
+          )
+        ) {
+          return true;
+        }
+        if (
+          filter!.attribute &&
+          Object.entries(filter!.attribute).some(
+            ([attribute, values]) =>
+              attribute in entityState.attributes &&
+              attributeFilter(values, entityState.attributes[attribute])
+          )
+        ) {
+          return true;
+        }
+        return false;
+      })
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   protected render() {
     const serviceData = this._getServiceInfo(
       this._value?.service,
@@ -225,6 +335,8 @@ export class HaServiceControl extends LitElement {
       !shouldRenderServiceDataYaml &&
         serviceData?.fields.some((field) => showOptionalToggle(field))
     );
+
+    const filteredFields = this._filterFields(serviceData, this._value);
 
     return html`<ha-service-picker
         .hass=${this.hass}
@@ -300,7 +412,7 @@ export class HaServiceControl extends LitElement {
             .defaultValue=${this._value?.data}
             @value-changed=${this._dataChanged}
           ></ha-yaml-editor>`
-        : serviceData?.fields.map((dataField) => {
+        : filteredFields?.map((dataField) => {
             const showOptional = showOptionalToggle(dataField);
             return dataField.selector &&
               (!dataField.advanced ||
@@ -333,10 +445,10 @@ export class HaServiceControl extends LitElement {
                     .selector=${dataField.selector}
                     .key=${dataField.key}
                     @value-changed=${this._serviceDataChanged}
-                    .value=${this._value?.data &&
-                    this._value.data[dataField.key] !== undefined
+                    .value=${this._value?.data
                       ? this._value.data[dataField.key]
-                      : dataField.default}
+                      : undefined}
+                    .placeholder=${dataField.default}
                   ></ha-selector>
                 </ha-settings-row>`
               : "";
@@ -350,11 +462,22 @@ export class HaServiceControl extends LitElement {
 
     if (checked) {
       this._checkedKeys.add(key);
-      const defaultValue = this._getServiceInfo(
+      const field = this._getServiceInfo(
         this._value?.service,
         this.hass.services
-      )?.fields.find((field) => field.key === key)?.default;
-      if (defaultValue) {
+      )?.fields.find((_field) => _field.key === key);
+
+      let defaultValue = field?.default;
+
+      if (
+        defaultValue == null &&
+        field?.selector &&
+        "constant" in field.selector
+      ) {
+        defaultValue = field.selector.constant?.value;
+      }
+
+      if (defaultValue != null) {
         data = {
           ...this._value?.data,
           [key]: defaultValue,
@@ -376,7 +499,7 @@ export class HaServiceControl extends LitElement {
     this.requestUpdate("_checkedKeys");
   }
 
-  private _serviceChanged(ev: PolymerChangedEvent<string>) {
+  private _serviceChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     if (ev.detail.value === this._value?.service) {
       return;

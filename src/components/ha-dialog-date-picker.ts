@@ -1,14 +1,19 @@
 import "@material/mwc-button/mwc-button";
 import "app-datepicker";
-import { css, html, LitElement } from "lit";
+import { format } from "date-fns";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { nextRender } from "../common/util/render-status";
 import { haStyleDialog } from "../resources/styles";
+import { HomeAssistant } from "../types";
 import { datePickerDialogParams } from "./ha-date-input";
 import "./ha-dialog";
 
 @customElement("ha-dialog-date-picker")
 export class HaDialogDatePicker extends LitElement {
+  @property() public hass!: HomeAssistant;
+
   @property() public value?: string;
 
   @property({ type: Boolean }) public disabled = false;
@@ -19,7 +24,10 @@ export class HaDialogDatePicker extends LitElement {
 
   @state() private _value?: string;
 
-  public showDialog(params: datePickerDialogParams): void {
+  public async showDialog(params: datePickerDialogParams): Promise<void> {
+    // app-datepicker has a bug, that it removes its handlers when disconnected, but doesn't add them back when reconnected.
+    // So we need to wait for the next render to make sure the element is removed and re-created so the handlers are added.
+    await nextRender();
     this._params = params;
     this._value = params.value;
   }
@@ -31,7 +39,7 @@ export class HaDialogDatePicker extends LitElement {
 
   render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     return html`<ha-dialog open @closed=${this.closeDialog}>
       <app-datepicker
@@ -42,13 +50,15 @@ export class HaDialogDatePicker extends LitElement {
         @datepicker-value-updated=${this._valueChanged}
         .firstDayOfWeek=${this._params.firstWeekday}
       ></app-datepicker>
-      <mwc-button slot="secondaryAction" @click=${this._setToday}
-        >today</mwc-button
-      >
-      <mwc-button slot="primaryAction" dialogaction="cancel" class="cancel-btn">
-        cancel
+      <mwc-button slot="secondaryAction" @click=${this._setToday}>
+        ${this.hass.localize("ui.dialogs.date-picker.today")}
       </mwc-button>
-      <mwc-button slot="primaryAction" @click=${this._setValue}>ok</mwc-button>
+      <mwc-button slot="primaryAction" dialogaction="cancel" class="cancel-btn">
+        ${this.hass.localize("ui.common.cancel")}
+      </mwc-button>
+      <mwc-button slot="primaryAction" @click=${this._setValue}>
+        ${this.hass.localize("ui.common.ok")}
+      </mwc-button>
     </ha-dialog>`;
   }
 
@@ -57,11 +67,16 @@ export class HaDialogDatePicker extends LitElement {
   }
 
   private _setToday() {
-    // en-CA locale used for date format YYYY-MM-DD
-    this._value = new Date().toLocaleDateString("en-CA");
+    const today = new Date();
+    this._value = format(today, "yyyy-MM-dd");
   }
 
   private _setValue() {
+    if (!this._value) {
+      // Date picker opens to today if value is undefined. If user click OK
+      // without changing the date, should return todays date, not undefined.
+      this._setToday();
+    }
     this._params?.onChange(this._value!);
     this.closeDialog();
   }
@@ -86,6 +101,9 @@ export class HaDialogDatePicker extends LitElement {
       }
       app-datepicker::part(calendar-day):focus {
         outline: none;
+      }
+      app-datepicker::part(body) {
+        direction: ltr;
       }
       @media all and (min-width: 450px) {
         ha-dialog {

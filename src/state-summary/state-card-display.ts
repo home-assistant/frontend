@@ -1,4 +1,3 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -7,7 +6,7 @@ import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeRTL } from "../common/util/compute_rtl";
 import "../components/entity/state-info";
-import { UNAVAILABLE_STATES } from "../data/entity";
+import { isUnavailableState } from "../data/entity";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../data/sensor";
 import "../panels/lovelace/components/hui-timestamp-display";
 import { haStyle } from "../resources/styles";
@@ -42,8 +41,8 @@ export class StateCardDisplay extends LitElement {
           ${computeDomain(this.stateObj.entity_id) === "sensor" &&
           this.stateObj.attributes.device_class ===
             SENSOR_DEVICE_CLASS_TIMESTAMP &&
-          !UNAVAILABLE_STATES.includes(this.stateObj.state)
-            ? html` <hui-timestamp-display
+          !isUnavailableState(this.stateObj.state)
+            ? html`<hui-timestamp-display
                 .hass=${this.hass}
                 .ts=${new Date(this.stateObj.state)}
                 format="datetime"
@@ -52,7 +51,9 @@ export class StateCardDisplay extends LitElement {
             : computeStateDisplay(
                 this.hass!.localize,
                 this.stateObj,
-                this.hass.locale
+                this.hass.locale,
+                this.hass.config,
+                this.hass.entities
               )}
         </div>
       </div>

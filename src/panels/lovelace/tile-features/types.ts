@@ -1,3 +1,5 @@
+import { AlarmMode } from "../../../data/alarm_control_panel";
+
 export interface CoverOpenCloseTileFeatureConfig {
   type: "cover-open-close";
 }
@@ -10,6 +12,15 @@ export interface LightBrightnessTileFeatureConfig {
   type: "light-brightness";
 }
 
+export interface FanSpeedTileFeatureConfig {
+  type: "fan-speed";
+}
+
+export interface AlarmModesFileFeatureConfig {
+  type: "alarm-modes";
+  modes?: AlarmMode[];
+}
+
 export const VACUUM_COMMANDS = [
   "start_pause",
   "stop",
@@ -18,7 +29,7 @@ export const VACUUM_COMMANDS = [
   "return_home",
 ] as const;
 
-export type VacuumCommand = typeof VACUUM_COMMANDS[number];
+export type VacuumCommand = (typeof VACUUM_COMMANDS)[number];
 
 export interface VacuumCommandsTileFeatureConfig {
   type: "vacuum-commands";
@@ -29,7 +40,9 @@ export type LovelaceTileFeatureConfig =
   | CoverOpenCloseTileFeatureConfig
   | CoverTiltTileFeatureConfig
   | LightBrightnessTileFeatureConfig
-  | VacuumCommandsTileFeatureConfig;
+  | VacuumCommandsTileFeatureConfig
+  | FanSpeedTileFeatureConfig
+  | AlarmModesFileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
   entity_id?: string;

@@ -1,19 +1,21 @@
 import "@material/mwc-button/mwc-button";
+import { mdiCheck, mdiDotsHorizontal } from "@mdi/js";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiCheck, mdiDotsHorizontal } from "@mdi/js";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { LocalizeFunc } from "../common/translations/localize";
-import { ConfigEntry, getConfigEntries } from "../data/config_entries";
+import { ConfigEntry, subscribeConfigEntries } from "../data/config_entries";
 import {
   getConfigFlowInProgressCollection,
   localizeConfigFlowTitle,
@@ -26,6 +28,8 @@ import {
   loadConfigFlowDialog,
   showConfigFlowDialog,
 } from "../dialogs/config-flow/show-dialog-config-flow";
+import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { showAddIntegrationDialog } from "../panels/config/integrations/show-add-integration-dialog";
 import { HomeAssistant } from "../types";
 import "./action-badge";
 import "./integration-badge";
@@ -39,44 +43,70 @@ const HIDDEN_DOMAINS = new Set([
 ]);
 
 @customElement("onboarding-integrations")
-class OnboardingIntegrations extends LitElement {
+class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public onboardingLocalize!: LocalizeFunc;
 
-  @state() private _entries?: ConfigEntry[];
+  @state() private _entries: ConfigEntry[] = [];
 
   @state() private _discovered?: DataEntryFlowProgress[];
 
-  private _unsubEvents?: () => void;
-
-  public connectedCallback() {
-    super.connectedCallback();
-    this.hass.loadBackendTranslation("title", undefined, true);
-    this._unsubEvents = subscribeConfigFlowInProgress(this.hass, (flows) => {
-      this._discovered = flows;
-      const integrations: Set<string> = new Set();
-      for (const flow of flows) {
-        // To render title placeholders
-        if (flow.context.title_placeholders) {
-          integrations.add(flow.handler);
+  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
+    return [
+      subscribeConfigFlowInProgress(this.hass, (flows) => {
+        this._discovered = flows;
+        const integrations: Set<string> = new Set();
+        for (const flow of flows) {
+          // To render title placeholders
+          if (flow.context.title_placeholders) {
+            integrations.add(flow.handler);
+          }
         }
-      }
-      this.hass.loadBackendTranslation("config", Array.from(integrations));
-    });
+        this.hass.loadBackendTranslation("config", Array.from(integrations));
+      }),
+      subscribeConfigEntries(
+        this.hass,
+        (messages) => {
+          let fullUpdate = false;
+          const newEntries: ConfigEntry[] = [];
+          messages.forEach((message) => {
+            if (message.type === null || message.type === "added") {
+              if (HIDDEN_DOMAINS.has(message.entry.domain)) {
+                return;
+              }
+              newEntries.push(message.entry);
+              if (message.type === null) {
+                fullUpdate = true;
+              }
+            } else if (message.type === "removed") {
+              this._entries = this._entries!.filter(
+                (entry) => entry.entry_id !== message.entry.entry_id
+              );
+            } else if (message.type === "updated") {
+              if (HIDDEN_DOMAINS.has(message.entry.domain)) {
+                return;
+              }
+              const newEntry = message.entry;
+              this._entries = this._entries!.map((entry) =>
+                entry.entry_id === newEntry.entry_id ? newEntry : entry
+              );
+            }
+          });
+          if (!newEntries.length && !fullUpdate) {
+            return;
+          }
+          const existingEntries = fullUpdate ? [] : this._entries;
+          this._entries = [...existingEntries!, ...newEntries];
+        },
+        { type: ["device", "hub", "service"] }
+      ),
+    ];
   }
 
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._unsubEvents) {
-      this._unsubEvents();
-      this._unsubEvents = undefined;
-    }
-  }
-
-  protected render(): TemplateResult {
-    if (!this._entries || !this._discovered) {
-      return html``;
+  protected render() {
+    if (!this._discovered) {
+      return nothing;
     }
     // Render discovered and existing entries together sorted by localized title.
     const entries: Array<[string, TemplateResult]> = this._entries.map(
@@ -117,7 +147,7 @@ class OnboardingIntegrations extends LitElement {
       }
     );
     const content = [...entries, ...discovered]
-      .sort((a, b) => stringCompare(a[0], b[0]))
+      .sort((a, b) => stringCompare(a[0], b[0], this.hass.locale.language))
       .map((item) => item[1]);
 
     return html`
@@ -148,25 +178,19 @@ class OnboardingIntegrations extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    this.hass.loadBackendTranslation("title", undefined, true);
     this._scanUSBDevices();
     loadConfigFlowDialog();
-    this._loadConfigEntries();
   }
 
   private _createFlow() {
-    showConfigFlowDialog(this, {
-      dialogClosedCallback: () => {
-        this._loadConfigEntries();
-        getConfigFlowInProgressCollection(this.hass!.connection).refresh();
-      },
-    });
+    showAddIntegrationDialog(this);
   }
 
   private _continueFlow(ev) {
     showConfigFlowDialog(this, {
       continueFlowId: ev.currentTarget.flowId,
       dialogClosedCallback: () => {
-        this._loadConfigEntries();
         getConfigFlowInProgressCollection(this.hass!.connection).refresh();
       },
     });
@@ -177,18 +201,6 @@ class OnboardingIntegrations extends LitElement {
       return;
     }
     await scanUSBDevices(this.hass);
-  }
-
-  private async _loadConfigEntries() {
-    const entries = await getConfigEntries(this.hass!, {
-      type: ["device", "hub", "service"],
-    });
-    // We filter out the config entries that are automatically created during onboarding.
-    // It is one that we create automatically and it will confuse the user
-    // if it starts showing up during onboarding.
-    this._entries = entries.filter(
-      (entry) => !HIDDEN_DOMAINS.has(entry.domain)
-    );
   }
 
   private async _finish() {

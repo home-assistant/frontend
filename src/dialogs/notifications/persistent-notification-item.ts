@@ -1,6 +1,6 @@
 import "@material/mwc-button";
-import "@polymer/paper-tooltip/paper-tooltip";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-markdown";
@@ -15,9 +15,9 @@ export class HuiPersistentNotificationItem extends LitElement {
 
   @property() public notification?: PersistentNotification;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.notification) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -33,9 +33,9 @@ export class HuiPersistentNotificationItem extends LitElement {
               .datetime=${this.notification.created_at}
               capitalize
             ></ha-relative-time>
-            <paper-tooltip animation-delay="0">
+            <simple-tooltip animation-delay="0">
               ${this._computeTooltip(this.hass, this.notification)}
-            </paper-tooltip>
+            </simple-tooltip>
           </span>
         </div>
 
@@ -82,7 +82,7 @@ export class HuiPersistentNotificationItem extends LitElement {
     }
 
     const d = new Date(notification.created_at!);
-    return formatDateTime(d, hass.locale);
+    return formatDateTime(d, hass.locale, hass.config);
   }
 }
 

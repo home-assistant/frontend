@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -35,10 +35,11 @@ import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { installResizeObserver } from "../common/install-resize-observer";
+import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { WeatherForecastCardConfig } from "./types";
+import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 
 const DAY_IN_MILLISECONDS = 86400000;
 
@@ -144,9 +145,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.hass.states[this._config.entity] as WeatherEntity;
@@ -221,7 +222,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                       ${computeStateDisplay(
                         this.hass.localize,
                         stateObj,
-                        this.hass.locale
+                        this.hass.locale,
+                        this.hass.config,
+                        this.hass.entities
                       )}
                     </div>
                     <div class="name" .title=${name}>${name}</div>
@@ -318,13 +321,15 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                               ? html`
                                   ${formatTime(
                                     new Date(item.datetime),
-                                    this.hass!.locale
+                                    this.hass!.locale,
+                                    this.hass!.config
                                   )}
                                 `
                               : html`
-                                  ${new Date(item.datetime).toLocaleDateString(
-                                    this.hass!.language,
-                                    { weekday: "short" }
+                                  ${formatDateWeekdayShort(
+                                    new Date(item.datetime),
+                                    this.hass!.locale,
+                                    this.hass!.config
                                   )}
                                 `}
                           </div>
@@ -376,7 +381,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await installResizeObserver();
+      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measureCard(), 250, false)
       );

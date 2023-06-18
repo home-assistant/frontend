@@ -1,23 +1,23 @@
-import "@lit-labs/virtualizer";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
-  TemplateResult,
 } from "lit";
-import { customElement, property, state, eventOptions } from "lit/decorators";
+import { customElement, eventOptions, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { restoreScroll } from "../../common/decorators/restore-scroll";
 import {
   HistoryResult,
   LineChartUnit,
   TimelineEntity,
 } from "../../data/history";
+import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
-import { restoreScroll } from "../../common/decorators/restore-scroll";
 
 const CANVAS_TIMELINE_ROWS_CHUNK = 10; // Split up the canvases to avoid hitting the render limit
 
@@ -31,15 +31,21 @@ const chunkData = (inputArray: any[], chunks: number) =>
     return results;
   }, []);
 
+declare global {
+  interface HASSDomEvents {
+    "y-width-changed": { value: number; chartIndex: number };
+  }
+}
+
 @customElement("state-history-charts")
-class StateHistoryCharts extends LitElement {
+export class StateHistoryCharts extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public historyData!: HistoryResult;
 
   @property() public narrow!: boolean;
 
-  @property({ type: Boolean }) public names = false;
+  @property() public names?: Record<string, string>;
 
   @property({ type: Boolean, attribute: "virtualize", reflect: true })
   public virtualize = false;
@@ -48,7 +54,7 @@ class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean, attribute: "up-to-now" }) public upToNow = false;
 
-  @property({ type: Boolean, attribute: "no-single" }) public noSingle = false;
+  @property({ type: Boolean }) public showNames = true;
 
   @property({ type: Boolean }) public isLoadingData = false;
 
@@ -56,11 +62,16 @@ class StateHistoryCharts extends LitElement {
 
   @state() private _computedEndTime!: Date;
 
+  @state() private _maxYWidth = 0;
+
+  @state() private _childYWidths: number[] = [];
+
+  @state() private _chartCount = 0;
+
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
-  @eventOptions({ passive: true })
-  protected render(): TemplateResult {
+  protected render() {
     if (!isComponentLoaded(this.hass, "history")) {
       return html`<div class="info">
         ${this.hass.localize("ui.components.history_charts.history_disabled")}
@@ -99,6 +110,8 @@ class StateHistoryCharts extends LitElement {
         ).concat(this.historyData.line)
       : this.historyData.line;
 
+    this._chartCount = combinedItems.length;
+
     return this.virtualize
       ? html`<div class="container ha-scrollbar" @scroll=${this._saveScrollPos}>
           <lit-virtualizer
@@ -117,9 +130,9 @@ class StateHistoryCharts extends LitElement {
   private _renderHistoryItem = (
     item: TimelineEntity[] | LineChartUnit,
     index: number
-  ): TemplateResult => {
+  ) => {
     if (!item || index === undefined) {
-      return html``;
+      return nothing;
     }
     if (!Array.isArray(item)) {
       return html`<div class="entry-container">
@@ -128,10 +141,12 @@ class StateHistoryCharts extends LitElement {
           .unit=${item.unit}
           .data=${item.data}
           .identifier=${item.identifier}
-          .isSingleDevice=${!this.noSingle &&
-          this.historyData.line?.length === 1}
+          .showNames=${this.showNames}
           .endTime=${this._computedEndTime}
+          .paddingYAxis=${this._maxYWidth}
           .names=${this.names}
+          .chartIndex=${index}
+          @y-width-changed=${this._yWidthChanged}
         ></state-history-chart-line>
       </div> `;
     }
@@ -141,17 +156,39 @@ class StateHistoryCharts extends LitElement {
         .data=${item}
         .startTime=${this._computedStartTime}
         .endTime=${this._computedEndTime}
-        .isSingleDevice=${!this.noSingle &&
-        this.historyData.timeline?.length === 1}
+        .showNames=${this.showNames}
         .names=${this.names}
         .narrow=${this.narrow}
         .chunked=${this.virtualize}
+        .paddingYAxis=${this._maxYWidth}
+        .chartIndex=${index}
+        @y-width-changed=${this._yWidthChanged}
       ></state-history-chart-timeline>
     </div> `;
   };
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return !(changedProps.size === 1 && changedProps.has("hass"));
+  }
+
+  protected willUpdate() {
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("_chartCount")) {
+      if (this._chartCount < this._childYWidths.length) {
+        this._childYWidths.length = this._chartCount;
+        this._maxYWidth = Math.max(...Object.values(this._childYWidths), 0);
+      }
+    }
+  }
+
+  private _yWidthChanged(e: CustomEvent<HASSDomEvents["y-width-changed"]>) {
+    this._childYWidths[e.detail.chartIndex] = e.detail.value;
+    this._maxYWidth = Math.max(...Object.values(this._childYWidths), 0);
   }
 
   private _isHistoryEmpty(): boolean {

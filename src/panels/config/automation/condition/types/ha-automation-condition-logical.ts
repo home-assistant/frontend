@@ -1,7 +1,10 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { LogicalCondition } from "../../../../../data/automation";
+import type {
+  LogicalCondition,
+  Clipboard,
+} from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-automation-condition";
 import type { ConditionElement } from "../ha-automation-condition-row";
@@ -15,6 +18,8 @@ export class HaLogicalCondition extends LitElement implements ConditionElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public reOrderMode = false;
+
+  @property() public clipboard?: Clipboard;
 
   public static get defaultConfig() {
     return {
@@ -30,6 +35,7 @@ export class HaLogicalCondition extends LitElement implements ConditionElement {
         @value-changed=${this._valueChanged}
         .hass=${this.hass}
         .disabled=${this.disabled}
+        .clipboard=${this.clipboard}
         .reOrderMode=${this.reOrderMode}
       ></ha-automation-condition>
     `;
