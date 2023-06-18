@@ -63,7 +63,10 @@ export class HaIntegrationCard extends LitElement {
           "debug-logging": Boolean(debugLoggingEnabled),
         })}
       >
-        <a href=${`/config/integrations/integration/${this.domain}`} class="header-link">
+        <a
+          href=${`/config/integrations/integration/${this.domain}`}
+          class="header-link"
+        >
           <ha-integration-header
             .hass=${this.hass}
             .domain=${this.domain}
