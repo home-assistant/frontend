@@ -74,11 +74,16 @@ class HaMenuButton extends LitElement {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    const oldNarrow =
-      changedProps.get("narrow") ||
-      (oldHass && oldHass.dockedSidebar === "always_hidden");
-    const newNarrow =
-      this.narrow || this.hass.dockedSidebar === "always_hidden";
+
+    let oldNarrow: boolean | undefined;
+    let newNarrow: boolean | undefined;
+    if (changedProps.has("narrow")) {
+      oldNarrow = changedProps.get("narrow");
+      newNarrow = this.narrow;
+    } else if (oldHass) {
+      oldNarrow = oldHass.dockedSidebar === "always_hidden";
+      newNarrow = this.hass.dockedSidebar === "always_hidden";
+    }
 
     if (oldNarrow === newNarrow) {
       return;
@@ -98,6 +103,9 @@ class HaMenuButton extends LitElement {
   }
 
   private _subscribeNotifications() {
+    if (this._unsubNotifications) {
+      throw new Error("Already subscribed");
+    }
     this._unsubNotifications = subscribeNotifications(
       this.hass.connection,
       (notifications) => {
