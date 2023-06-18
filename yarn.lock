@@ -3166,16 +3166,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mrmlnc/readdir-enhanced@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "@mrmlnc/readdir-enhanced@npm:2.2.1"
-  dependencies:
-    call-me-maybe: ^1.0.1
-    glob-to-regexp: ^0.3.0
-  checksum: d3b82b29368821154ce8e10bef5ccdbfd070d3e9601643c99ea4607e56f3daeaa4e755dd6d2355da20762c695c1b0570543d9f84b48f70c211ec09c4aaada2e1
-  languageName: node
-  linkType: hard
-
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -3190,13 +3180,6 @@ __metadata:
   version: 2.0.5
   resolution: "@nodelib/fs.stat@npm:2.0.5"
   checksum: 012480b5ca9d97bff9261571dbbec7bbc6033f69cc92908bc1ecfad0792361a5a1994bc48674b9ef76419d056a03efadfce5a6cf6dbc0a36559571a7a483f6f0
-  languageName: node
-  linkType: hard
-
-"@nodelib/fs.stat@npm:^1.1.2":
-  version: 1.1.3
-  resolution: "@nodelib/fs.stat@npm:1.1.3"
-  checksum: 318deab369b518a34778cdaa0054dd28a4381c0c78e40bbd20252f67d084b1d7bf9295fea4423de2c19ac8e1a34f120add9125f481b2a710f7068bcac7e3e305
   languageName: node
   linkType: hard
 
@@ -5065,6 +5048,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vscode/web-custom-data@npm:^0.4.2":
+  version: 0.4.6
+  resolution: "@vscode/web-custom-data@npm:0.4.6"
+  checksum: 2d87f3e50dc6eeacdbbca224f1c8837154acd6e1588f733ff812423e72f0a14d819740bbb91732a9c09978faa0fcfe1be339a17fd0beb130e51784752cef4b4f
+  languageName: node
+  linkType: hard
+
 "@vue/compiler-sfc@npm:2.7.14":
   version: 2.7.14
   resolution: "@vue/compiler-sfc@npm:2.7.14"
@@ -6469,13 +6459,6 @@ __metadata:
     function-bind: ^1.1.1
     get-intrinsic: ^1.0.2
   checksum: f8e31de9d19988a4b80f3e704788c4a2d6b6f3d17cfec4f57dc29ced450c53a49270dc66bf0fbd693329ee948dd33e6c90a329519aef17474a4d961e8d6426b0
-  languageName: node
-  linkType: hard
-
-"call-me-maybe@npm:^1.0.1":
-  version: 1.0.2
-  resolution: "call-me-maybe@npm:1.0.2"
-  checksum: 42ff2d0bed5b207e3f0122589162eaaa47ba618f79ad2382fe0ba14d9e49fbf901099a6227440acc5946f86a4953e8aa2d242b330b0a5de4d090bb18f8935cae
   languageName: node
   linkType: hard
 
@@ -8494,20 +8477,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^2.2.6":
-  version: 2.2.7
-  resolution: "fast-glob@npm:2.2.7"
-  dependencies:
-    "@mrmlnc/readdir-enhanced": ^2.2.1
-    "@nodelib/fs.stat": ^1.1.2
-    glob-parent: ^3.1.0
-    is-glob: ^4.0.0
-    merge2: ^1.2.3
-    micromatch: ^3.1.10
-  checksum: 304ccff1d437fcc44ae0168b0c3899054b92e0fd6af6ad7c3ccc82ab4ddd210b99c7c739d60ee3686da2aa165cd1a31810b31fd91f7c2a575d297342a9fc0534
-  languageName: node
-  linkType: hard
-
 "fast-glob@npm:^3.2.11, fast-glob@npm:^3.2.2, fast-glob@npm:^3.2.9":
   version: 3.2.12
   resolution: "fast-glob@npm:3.2.12"
@@ -9141,13 +9110,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob-to-regexp@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "glob-to-regexp@npm:0.3.0"
-  checksum: d34b3219d860042d508c4893b67617cd16e2668827e445ff39cff9f72ef70361d3dc24f429e003cdfb6607c75c9664b8eadc41d2eeb95690af0b0d3113c1b23b
-  languageName: node
-  linkType: hard
-
 "glob-to-regexp@npm:^0.4.1":
   version: 0.4.1
   resolution: "glob-to-regexp@npm:0.4.1"
@@ -9763,7 +9725,7 @@ __metadata:
     leaflet-draw: 1.0.4
     lint-staged: 13.2.2
     lit: 2.7.5
-    lit-analyzer: 1.2.1
+    lit-analyzer: 2.0.0-pre.3
     lodash.template: 4.5.0
     magic-string: 0.30.0
     map-stream: 0.0.7
@@ -9796,7 +9758,7 @@ __metadata:
     tar: 6.1.15
     terser-webpack-plugin: 5.3.9
     tinykeys: 2.1.0
-    ts-lit-plugin: 1.2.1
+    ts-lit-plugin: 2.0.0-pre.1
     tsparticles-engine: 2.10.1
     tsparticles-preset-links: 2.10.1
     typescript: 4.9.5
@@ -11367,21 +11329,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-analyzer@npm:1.2.1":
-  version: 1.2.1
-  resolution: "lit-analyzer@npm:1.2.1"
+"lit-analyzer@npm:2.0.0-pre.3, lit-analyzer@npm:^2.0.0-pre.3":
+  version: 2.0.0-pre.3
+  resolution: "lit-analyzer@npm:2.0.0-pre.3"
   dependencies:
+    "@vscode/web-custom-data": ^0.4.2
     chalk: ^2.4.2
     didyoumean2: 4.1.0
-    fast-glob: ^2.2.6
+    fast-glob: ^3.2.11
     parse5: 5.1.0
-    ts-simple-type: ~1.0.5
+    ts-simple-type: ~2.0.0-next.0
     vscode-css-languageservice: 4.3.0
     vscode-html-languageservice: 3.1.0
-    web-component-analyzer: ~1.1.1
+    web-component-analyzer: ^2.0.0-next.5
   bin:
     lit-analyzer: cli.js
-  checksum: b89646033b45262a863bf32d8bf177bfa4f22cde4e2c3f2cd006abdd68aeab434505f67c3c5ed213d8a5936d063ec2845efb15b0968ec9cf9e0863e53e6c118c
+  checksum: c6dcf657a0030342d183fcd9d550753bd5dd0692b478aff271085a5a0e7e08aff39cc6dde3d547ffca72897975ef07aac7de8a97e0060d2db70a85350412efae
   languageName: node
   linkType: hard
 
@@ -11798,7 +11761,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"merge2@npm:^1.2.3, merge2@npm:^1.3.0, merge2@npm:^1.4.1":
+"merge2@npm:^1.3.0, merge2@npm:^1.4.1":
   version: 1.4.1
   resolution: "merge2@npm:1.4.1"
   checksum: 7268db63ed5169466540b6fb947aec313200bcf6d40c5ab722c22e242f651994619bcd85601602972d3c85bd2cc45a358a4c61937e9f11a061919a1da569b0c2
@@ -15215,19 +15178,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-lit-plugin@npm:1.2.1":
-  version: 1.2.1
-  resolution: "ts-lit-plugin@npm:1.2.1"
+"ts-lit-plugin@npm:2.0.0-pre.1":
+  version: 2.0.0-pre.1
+  resolution: "ts-lit-plugin@npm:2.0.0-pre.1"
   dependencies:
-    lit-analyzer: 1.2.1
-  checksum: 3ba191d8924b18ba1aa1072db82cd10bca19f20693d98735dc1bbf3692ec759f2d4c728b789a1c1ade4d96e5ddf25e574fdba7c5e42b557c7e82da7a1ad298d7
+    lit-analyzer: ^2.0.0-pre.3
+    web-component-analyzer: ^2.0.0-next.5
+  checksum: d9c8b3c0d8867e9564c7a3083accaf9f8b48b04c8f42e32c224806a7a606983abb3b7acb912e57d0d8f90ff650745bb1af18b1e379316b433838e37eddccfe1e
   languageName: node
   linkType: hard
 
-"ts-simple-type@npm:~1.0.5":
-  version: 1.0.7
-  resolution: "ts-simple-type@npm:1.0.7"
-  checksum: 3cffb45eab7ab7fd963e2765914c41488d9611dc0619334ac1cf01bc2b02cf9746adf12172d785894474c6c5f3cfbf8212e675e456362373a0c2a61441ad8572
+"ts-simple-type@npm:2.0.0-next.0, ts-simple-type@npm:~2.0.0-next.0":
+  version: 2.0.0-next.0
+  resolution: "ts-simple-type@npm:2.0.0-next.0"
+  checksum: 025c5c1e4f2f7f2627300b2605a0346d5007f9c3d20d075807b01b3ae8179261e6be2d471f74948f3bae3208ca042203d97e80b984d6cb133396c5c4a3af5301
   languageName: node
   linkType: hard
 
@@ -15450,13 +15414,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^3.8.3":
-  version: 3.9.10
-  resolution: "typescript@npm:3.9.10"
+"typescript@npm:~4.4.3":
+  version: 4.4.4
+  resolution: "typescript@npm:4.4.4"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 46c842e2cd4797b88b66ef06c9c41dd21da48b95787072ccf39d5f2aa3124361bc4c966aa1c7f709fae0509614d76751455b5231b12dbb72eb97a31369e1ff92
+  checksum: 89ecb8436bb48ef5594d49289f5f89103071716b6e4844278f4fb3362856e31203e187a9c76d205c3f0b674d221a058fd28310dbcbcf5d95e9a57229bb5203f1
   languageName: node
   linkType: hard
 
@@ -15470,13 +15434,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^3.8.3#~builtin<compat/typescript>":
-  version: 3.9.10
-  resolution: "typescript@patch:typescript@npm%3A3.9.10#~builtin<compat/typescript>::version=3.9.10&hash=3bd3d3"
+"typescript@patch:typescript@~4.4.3#~builtin<compat/typescript>":
+  version: 4.4.4
+  resolution: "typescript@patch:typescript@npm%3A4.4.4#~builtin<compat/typescript>::version=4.4.4&hash=bbeadb"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: dc7141ab555b23a8650a6787f98845fc11692063d02b75ff49433091b3af2fe3d773650dea18389d7c21f47d620fb3b110ea363dab4ab039417a6ccbbaf96fc2
+  checksum: 3d1b04449662193544b81d055479d03b4c5dca95f1a82f8922596f089d894c9fefbe16639d1d9dfe26a7054419645530cef44001bc17aed1fe1eb3c237e9b3c7
   languageName: node
   linkType: hard
 
@@ -15978,18 +15942,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-component-analyzer@npm:~1.1.1":
-  version: 1.1.7
-  resolution: "web-component-analyzer@npm:1.1.7"
+"web-component-analyzer@npm:^2.0.0-next.5":
+  version: 2.0.0-next.5
+  resolution: "web-component-analyzer@npm:2.0.0-next.5"
   dependencies:
     fast-glob: ^3.2.2
-    ts-simple-type: ~1.0.5
-    typescript: ^3.8.3
+    ts-simple-type: 2.0.0-next.0
+    typescript: ~4.4.3
     yargs: ^15.3.1
   bin:
     wca: cli.js
     web-component-analyzer: cli.js
-  checksum: 6c36521b7b79d5547ffdbc359029651ad1d929df6e09f8adfbafb2a34c23199712b7080f08f941f056b6a989718c11eb9221171d97ad397ed8a20cf08dd78e4b
+  checksum: bc8eaf57884b81d378014376bcab92bce6b127971952831dd5bb06803b590cc99fb6fa17c7476c02ee014dfccfcee80e670d7fdc7aff4aae6aebc2e262055a65
   languageName: node
   linkType: hard
 
