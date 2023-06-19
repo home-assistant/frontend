@@ -2286,7 +2286,10 @@
                   "event_data": "Event data",
                   "context_users": "Limit to events triggered by",
                   "context_user_picked": "User firing event",
-                  "context_user_pick": "Select user"
+                  "context_user_pick": "Select user",
+                  "description": {
+                    "full": "When {eventTypes} event is fired"
+                  }
                 },
                 "geo_location": {
                   "label": "Geolocation",
@@ -2308,12 +2311,20 @@
                   "label": "Home Assistant",
                   "event": "Event:",
                   "start": "Start",
-                  "shutdown": "Shutdown"
+                  "shutdown": "Shutdown",
+                  "description": {
+                    "full": "When Home Assistant is {startedOrShutdown}",
+                    "started": "started",
+                    "shutdown": "shutdown"
+                  }
                 },
                 "mqtt": {
                   "label": "MQTT",
                   "topic": "Topic",
-                  "payload": "Payload (optional)"
+                  "payload": "Payload (optional)",
+                  "description": {
+                    "full": "When an MQTT message has been received"
+                  }
                 },
                 "numeric_state": {
                   "label": "Numeric state",
@@ -2330,22 +2341,38 @@
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
-                  "offset": "Offset (optional)"
+                  "offset": "Offset (optional)",
+                  "description": {
+                    "full": "When the sun {setsOrRises} {optionalOffset}",
+                    "sets": "sets",
+                    "rises": "rises",
+                    "offset": "offset by {offset}"
+                  }
                 },
                 "tag": {
-                  "label": "Tag"
+                  "label": "Tag",
+                  "description": {
+                    "full": "When a tag is scanned"
+                  }
                 },
                 "template": {
                   "label": "Template",
                   "value_template": "Value template",
-                  "for": "For"
+                  "for": "For",
+                  "description": {
+                    "full": "When a template triggers {optionalForDuration}",
+                    "for_duration": "for {duration}"
+                  }
                 },
                 "time": {
                   "type_value": "Fixed time",
                   "type_input": "Value of a date/time helper or timestamp-class sensor",
                   "label": "Time",
                   "at": "At time",
-                  "mode": "Mode"
+                  "mode": "Mode",
+                  "description": {
+                    "full": "When the time is equal to {time}"
+                  }
                 },
                 "time_pattern": {
                   "label": "Time Pattern",
@@ -2359,7 +2386,10 @@
                   "local_only": "Only accessible from the local network",
                   "webhook_id": "Webhook ID",
                   "webhook_id_helper": "Treat this ID like a password: keep it secret, and make it hard to guess.",
-                  "webhook_settings": "Webhook Settings"
+                  "webhook_settings": "Webhook Settings",
+                  "description": {
+                    "full": "When a Webhook payload has been received"
+                  }
                 },
                 "zone": {
                   "label": "Zone",

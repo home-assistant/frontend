@@ -24,6 +24,9 @@ import { EntityRegistryEntry } from "./entity_registry";
 import "../resources/intl-polyfill";
 import { FrontendLocaleData } from "./translation";
 
+const triggerTranslationBaseKey =
+  "ui.panel.config.automation.editor.triggers.type";
+
 const describeDuration = (forTime: number | string | ForDict) => {
   let duration: string | null;
   if (typeof forTime === "number") {
@@ -101,14 +104,24 @@ export const describeTrigger = (
     }
 
     const eventTypesString = disjunctionFormatter.format(eventTypes);
-    return `When ${eventTypesString} event is fired`;
+    return hass.localize(
+      `${triggerTranslationBaseKey}.event.description.full`,
+      "eventTypes",
+      eventTypesString
+    );
   }
 
   // Home Assistant Trigger
   if (trigger.platform === "homeassistant" && trigger.event) {
-    return `When Home Assistant is ${
-      trigger.event === "start" ? "started" : "shutdown"
-    }`;
+    return hass.localize(
+      `${triggerTranslationBaseKey}.homeassistant.description.full`,
+      "startedOrShutdown",
+      hass.localize(
+        trigger.event === "start"
+          ? `${triggerTranslationBaseKey}.homeassistant.description.started`
+          : `${triggerTranslationBaseKey}.homeassistant.description.shutdown`
+      )
+    );
   }
 
   // Numeric State Trigger
@@ -329,29 +342,39 @@ export const describeTrigger = (
 
   // Sun Trigger
   if (trigger.platform === "sun" && trigger.event) {
-    let base = `When the sun ${trigger.event === "sunset" ? "sets" : "rises"}`;
+    let setsOrRises =
+      trigger.event === "sunset"
+        ? hass.localize(`${triggerTranslationBaseKey}.sun.description.sets`)
+        : hass.localize(`${triggerTranslationBaseKey}.sun.description.rises`);
 
+    let duration = "";
     if (trigger.offset) {
-      let duration = "";
-
-      if (trigger.offset) {
-        if (typeof trigger.offset === "number") {
-          duration = ` offset by ${secondsToDuration(trigger.offset)!}`;
-        } else if (typeof trigger.offset === "string") {
-          duration = ` offset by ${trigger.offset}`;
-        } else {
-          duration = ` offset by ${JSON.stringify(trigger.offset)}`;
-        }
+      if (typeof trigger.offset === "number") {
+        duration = secondsToDuration(trigger.offset)!;
+      } else if (typeof trigger.offset === "string") {
+        duration = trigger.offset;
+      } else {
+        duration = JSON.stringify(trigger.offset);
       }
-      base += duration;
+      duration = hass.localize(
+        `${triggerTranslationBaseKey}.sun.description.offset`,
+        "offset",
+        duration
+      );
     }
 
-    return base;
+    return hass.localize(
+      `${triggerTranslationBaseKey}.sun.description.full`,
+      "setsOrRises",
+      setsOrRises,
+      "optionalOffset",
+      duration
+    );
   }
 
   // Tag Trigger
   if (trigger.platform === "tag") {
-    return "When a tag is scanned";
+    return hass.localize(`${triggerTranslationBaseKey}.tag.description.full`);
   }
 
   // Time Trigger
@@ -364,10 +387,11 @@ export const describeTrigger = (
         : localizeTimeString(at, hass.locale, hass.config)
     );
 
-    const last = result.splice(-1, 1)[0];
-    return `When the time is equal to ${
-      result.length ? `${result.join(", ")} or ` : ""
-    }${last}`;
+    return hass.localize(
+      `${triggerTranslationBaseKey}.time.description.full`,
+      "time",
+      disjunctionFormatter.format(result)
+    );
   }
 
   // Time Pattern Trigger
@@ -561,24 +585,36 @@ export const describeTrigger = (
 
   // MQTT Trigger
   if (trigger.platform === "mqtt") {
-    return "When an MQTT message has been received";
+    return hass.localize(`${triggerTranslationBaseKey}.mqtt.description.full`);
   }
 
   // Template Trigger
   if (trigger.platform === "template") {
-    let base = "When a template triggers";
+    let forDuration = "";
+
     if (trigger.for) {
-      const duration = describeDuration(trigger.for);
-      if (duration) {
-        base += ` for ${duration}`;
+      let forDuration = describeDuration(trigger.for);
+      if (forDuration) {
+        forDuration = hass.localize(
+          `${triggerTranslationBaseKey}.template.description.for_duration`,
+          "duration",
+          forDuration
+        );
       }
     }
-    return base;
+
+    return hass.localize(
+      `${triggerTranslationBaseKey}.template.description.full`,
+      "optionalForDuration",
+      forDuration
+    );
   }
 
   // Webhook Trigger
   if (trigger.platform === "webhook") {
-    return "When a Webhook payload has been received";
+    return hass.localize(
+      `${triggerTranslationBaseKey}.webhook.description.full`
+    );
   }
 
   if (trigger.platform === "device") {
