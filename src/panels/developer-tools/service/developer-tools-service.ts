@@ -346,7 +346,27 @@ class HaPanelDevService extends LitElement {
   }
 
   private _checkUiSupported() {
-    if (this._serviceData && hasTemplate(this._serviceData)) {
+    const fields = this._fields(
+      this.hass.services,
+      this._serviceData?.service
+    ).fields;
+    if (
+      this._serviceData &&
+      (Object.entries(this._serviceData).some(
+        ([key, val]) => key !== "data" && hasTemplate(val)
+      ) ||
+        (this._serviceData.data &&
+          Object.entries(this._serviceData.data).some(([key, val]) => {
+            const field = fields.find((f) => f.key === key);
+            if (
+              field?.selector &&
+              ("template" in field.selector || "object" in field.selector)
+            ) {
+              return false;
+            }
+            return hasTemplate(val);
+          })))
+    ) {
       this._yamlMode = true;
       this._uiAvailable = false;
     } else {
