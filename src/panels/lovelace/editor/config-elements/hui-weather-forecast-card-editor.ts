@@ -54,7 +54,10 @@ export class HuiWeatherForecastCardEditor
         config: { ...config, show_current: true, show_forecast: false },
       });
     }
-    if (!config.forecast_type) {
+    if (
+      !config.forecast_type ||
+      !this._forecastSupported(config.forecast_type)
+    ) {
       let forecastType = "legacy";
       if (this._forecastTwiceDaily === true) {
         forecastType = "twice_daily";
@@ -87,6 +90,23 @@ export class HuiWeatherForecastCardEditor
         stateObj.attributes.forecast_hourly?.length ||
         stateObj.attributes.forecast_twice_daily?.length
       );
+    }
+    return undefined;
+  }
+
+  private _forecastSupported(forecastType: string): boolean | undefined {
+    const stateObj = this._stateObj as WeatherEntity;
+    if (forecastType === "legacy") {
+      return !!stateObj.attributes.forecast?.length;
+    }
+    if (forecastType === "twice_daily") {
+      return !!stateObj.attributes.forecast_twice_daily?.length;
+    }
+    if (forecastType === "hourly") {
+      return !!stateObj.attributes.forecast_hourly?.length;
+    }
+    if (forecastType === "daily") {
+      return !!stateObj.attributes.forecast_daily?.length;
     }
     return undefined;
   }
