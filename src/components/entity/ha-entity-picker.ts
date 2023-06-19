@@ -173,14 +173,22 @@ export class HaEntityPicker extends LitElement {
           this.includeEntities!.includes(entityId)
         );
 
-        return entityIds.map((key) => {
-          const friendly_name = computeStateName(hass!.states[key]) || key;
-          return {
-            ...hass!.states[key],
-            friendly_name,
-            strings: [key, friendly_name],
-          };
-        });
+        return entityIds
+          .map((key) => {
+            const friendly_name = computeStateName(hass!.states[key]) || key;
+            return {
+              ...hass!.states[key],
+              friendly_name,
+              strings: [key, friendly_name],
+            };
+          })
+          .sort((entityA, entityB) =>
+            caseInsensitiveStringCompare(
+              entityA.friendly_name,
+              entityB.friendly_name,
+              this.hass.locale.language
+            )
+          );
       }
 
       if (excludeEntities) {
