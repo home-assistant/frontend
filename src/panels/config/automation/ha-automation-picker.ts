@@ -478,7 +478,7 @@ class HaAutomationPicker extends LitElement {
 
   private _createNew() {
     if (isComponentLoaded(this.hass, "blueprint")) {
-      showNewAutomationDialog(this, false);
+      showNewAutomationDialog(this, "automation");
     } else {
       navigate("/config/automation/edit/new");
     }

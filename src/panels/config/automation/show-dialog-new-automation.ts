@@ -4,9 +4,9 @@ export const loadNewAutomationDialog = () => import("./dialog-new-automation");
 
 export const showNewAutomationDialog = (
   element: HTMLElement,
-  script: boolean
+  mode: "script" | "automation"
 ): void => {
-  const params = script ? { script: true } : {};
+  const params = mode === "script" ? { script: true } : {};
   fireEvent(element, "show-dialog", {
     dialogTag: "ha-dialog-new-automation",
     dialogImport: loadNewAutomationDialog,
