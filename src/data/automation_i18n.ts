@@ -600,6 +600,12 @@ export const describeTrigger = (
     return "When a Webhook payload has been received";
   }
 
+  // Persistent Notification Trigger
+  if (trigger.platform === "persistent_notification") {
+    return "When a persistent_notification is updated";
+  }
+
+  // Device Trigger
   if (trigger.platform === "device") {
     if (!trigger.device_id) {
       return "Device trigger";

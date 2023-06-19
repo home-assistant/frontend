@@ -41,6 +41,7 @@ const triggers = [
   { platform: "sun", event: "sunset" },
   { platform: "time_pattern" },
   { platform: "webhook" },
+  { platform: "persistent_notification" },
   {
     platform: "zone",
     entity_id: "person.person",
