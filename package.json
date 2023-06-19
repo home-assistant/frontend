@@ -158,7 +158,7 @@
     "@koa/cors": "4.0.0",
     "@octokit/auth-oauth-device": "5.0.0",
     "@octokit/plugin-retry": "5.0.3",
-    "@octokit/rest": "19.0.11",
+    "@octokit/rest": "19.0.12",
     "@open-wc/dev-server-hmr": "0.1.4",
     "@rollup/plugin-babel": "6.0.3",
     "@rollup/plugin-commonjs": "25.0.1",
