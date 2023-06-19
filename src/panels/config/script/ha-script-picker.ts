@@ -312,7 +312,7 @@ class HaScriptPicker extends LitElement {
 
   private _createNew() {
     if (isComponentLoaded(this.hass, "blueprint")) {
-      showNewAutomationDialog(this, "script");
+      showNewAutomationDialog(this, { mode: "script" });
     } else {
       navigate("/config/script/edit/new");
     }

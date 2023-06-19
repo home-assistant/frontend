@@ -48,13 +48,10 @@ class DialogNewAutomation extends LitElement implements HassDialog {
 
   @state() public blueprints?: Blueprints;
 
-  public showDialog(params): void {
+  public showDialog(params: { mode: "script" | "automation" }): void {
     this._opened = true;
-    if (params?.script) {
-      this._mode = "script";
-    } else {
-      this._mode = "automation";
-    }
+    this._mode = params?.mode || "automation";
+
     fetchBlueprints(this.hass!, this._mode).then((blueprints) => {
       this.blueprints = blueprints;
     });
