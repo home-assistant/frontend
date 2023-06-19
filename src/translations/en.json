@@ -929,8 +929,8 @@
         "light": {
           "edit_mode": "Edit favorite colors",
           "toggle": "Toggle",
-          "change_color": "Change color",
-          "change_color_temp": "Change color temperature",
+          "color": "Color",
+          "color_temp": "Temperature",
           "set_white": "Set white",
           "select_effect": "Select effect",
           "brightness": "Brightness",
