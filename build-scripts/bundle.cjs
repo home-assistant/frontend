@@ -146,7 +146,7 @@ module.exports.babelOptions = ({
       "@babel/plugin-proposal-decorators",
       { version: "2018-09", decoratorsBeforeExport: true },
     ],
-    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-transform-class-properties",
   ].filter(Boolean),
   exclude: [
     // \\ for Windows, / for Mac OS and Linux
