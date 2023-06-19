@@ -212,6 +212,10 @@ export class HuiWeatherForecastCardEditor
                   },
                 },
               },
+            ] as const)
+          : []),
+        ...(hasForecast
+          ? ([
               {
                 name: "forecast",
                 selector: {
