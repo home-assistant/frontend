@@ -1,5 +1,5 @@
-import { mdiInformation } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import { mdiInformation } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -17,16 +17,16 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import { severityMap } from "../hui-gauge-card";
-import type { EnergySolarGaugeCardConfig } from "../types";
+import type { EnergySelfSufficiencyGaugeCardConfig } from "../types";
 
-@customElement("hui-energy-solar-consumed-gauge-card")
-class HuiEnergySolarGaugeCard
+@customElement("hui-energy-self-sufficiency-gauge-card")
+class HuiEnergySelfSufficiencyGaugeCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: EnergySolarGaugeCardConfig;
+  @state() private _config?: EnergySelfSufficiencyGaugeCardConfig;
 
   @state() private _data?: EnergyData;
 
@@ -46,7 +46,7 @@ class HuiEnergySolarGaugeCard
     return 4;
   }
 
-  public setConfig(config: EnergySolarGaugeCardConfig): void {
+  public setConfig(config: EnergySelfSufficiencyGaugeCardConfig): void {
     this._config = config;
   }
 
@@ -64,29 +64,98 @@ class HuiEnergySolarGaugeCard
     const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
 
-    if (!types.solar) {
-      return nothing;
-    }
+    // The strategy only includes this card if we have a grid.
+    const hasConsumption = true;
 
-    const totalSolarProduction =
+    const hasSolarProduction = types.solar !== undefined;
+    const hasBattery = types.battery !== undefined;
+    const hasReturnToGrid = hasConsumption && types.grid![0].flow_to.length > 0;
+
+    const totalFromGrid =
       calculateStatisticsSumGrowth(
         this._data.stats,
-        types.solar.map((source) => source.stat_energy_from)
-      ) || 0;
+        types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
+      ) ?? 0;
 
-    const productionReturnedToGrid = calculateStatisticsSumGrowth(
-      this._data.stats,
-      types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
+    let totalSolarProduction: number | null = null;
+
+    if (hasSolarProduction) {
+      totalSolarProduction =
+        calculateStatisticsSumGrowth(
+          this._data.stats,
+          types.solar!.map((source) => source.stat_energy_from)
+        ) || 0;
+    }
+
+    let totalBatteryIn: number | null = null;
+    let totalBatteryOut: number | null = null;
+
+    if (hasBattery) {
+      totalBatteryIn =
+        calculateStatisticsSumGrowth(
+          this._data.stats,
+          types.battery!.map((source) => source.stat_energy_to)
+        ) || 0;
+      totalBatteryOut =
+        calculateStatisticsSumGrowth(
+          this._data.stats,
+          types.battery!.map((source) => source.stat_energy_from)
+        ) || 0;
+    }
+
+    let returnedToGrid: number | null = null;
+
+    if (hasReturnToGrid) {
+      returnedToGrid =
+        calculateStatisticsSumGrowth(
+          this._data.stats,
+          types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
+        ) || 0;
+    }
+
+    let solarConsumption: number | null = null;
+    if (hasSolarProduction) {
+      solarConsumption =
+        (totalSolarProduction || 0) -
+        (returnedToGrid || 0) -
+        (totalBatteryIn || 0);
+    }
+
+    let batteryFromGrid: null | number = null;
+    let batteryToGrid: null | number = null;
+    if (solarConsumption !== null && solarConsumption < 0) {
+      // What we returned to the grid and what went in to the battery is more than produced,
+      // so we have used grid energy to fill the battery
+      // or returned battery energy to the grid
+      if (hasBattery) {
+        batteryFromGrid = solarConsumption * -1;
+        if (batteryFromGrid > totalFromGrid) {
+          batteryToGrid = Math.min(0, batteryFromGrid - totalFromGrid);
+          batteryFromGrid = totalFromGrid;
+        }
+      }
+      solarConsumption = 0;
+    }
+
+    let batteryConsumption: number | null = null;
+    if (hasBattery) {
+      batteryConsumption = (totalBatteryOut || 0) - (batteryToGrid || 0);
+    }
+
+    const gridConsumption = Math.max(0, totalFromGrid - (batteryFromGrid || 0));
+
+    const totalHomeConsumption = Math.max(
+      0,
+      gridConsumption + (solarConsumption || 0) + (batteryConsumption || 0)
     );
 
     let value: number | undefined;
-
-    if (productionReturnedToGrid !== null && totalSolarProduction) {
-      const consumedSolar = Math.max(
-        0,
-        totalSolarProduction - productionReturnedToGrid
-      );
-      value = (consumedSolar / totalSolarProduction) * 100;
+    if (
+      totalFromGrid !== null &&
+      totalHomeConsumption !== null &&
+      totalHomeConsumption > 0
+    ) {
+      value = (1 - totalFromGrid / totalHomeConsumption) * 100;
     }
 
     return html`
@@ -97,11 +166,7 @@ class HuiEnergySolarGaugeCard
               <simple-tooltip animation-delay="0" for="info" position="left">
                 <span>
                   ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used"
-                  )}
-                  <br /><br />
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used_charge_home_bat"
+                    "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.card_indicates_self_sufficiency_quota"
                   )}
                 </span>
               </simple-tooltip>
@@ -117,16 +182,12 @@ class HuiEnergySolarGaugeCard
               ></ha-gauge>
               <div class="name">
                 ${this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_energy"
+                  "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.self_sufficiency_quota"
                 )}
               </div>
             `
-          : totalSolarProduction === 0
-          ? this.hass.localize(
-              "ui.panel.lovelace.cards.energy.solar_consumed_gauge.not_produced_solar_energy"
-            )
           : this.hass.localize(
-              "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_could_not_calc"
+              "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.self_sufficiency_could_not_calc"
             )}
       </ha-card>
     `;
@@ -191,6 +252,6 @@ class HuiEnergySolarGaugeCard
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-energy-solar-consumed-gauge-card": HuiEnergySolarGaugeCard;
+    "hui-energy-self-sufficiency-gauge-card": HuiEnergySelfSufficiencyGaugeCard;
   }
 }
