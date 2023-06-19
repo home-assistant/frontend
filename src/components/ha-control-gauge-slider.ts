@@ -35,10 +35,11 @@ type SelectedDualSlider = "start" | "end";
 
 declare global {
   interface HASSDomEvents {
-    "start-value-changed": { value: unknown };
-    "end-value-changed": { value: unknown };
-    "start-cursor-moved": { value: unknown };
-    "end-cursor-moved": { value: unknown };
+    "value-changing": { value: unknown };
+    "start-changing": { value: unknown };
+    "start-changed": { value: unknown };
+    "end-changing": { value: unknown };
+    "end-changed": { value: unknown };
   }
 }
 
@@ -55,11 +56,11 @@ export class HaControlGaugeSlider extends LitElement {
   @property({ type: Number })
   public value?: number;
 
-  @property({ type: Number, attribute: "start-value" })
-  public startValue?: number;
+  @property({ type: Number, attribute: "start" })
+  public start?: number;
 
-  @property({ type: Number, attribute: "end-value" })
-  public endValue?: number;
+  @property({ type: Number, attribute: "end" })
+  public end?: number;
 
   @property({ type: Number })
   public step = 1;
@@ -110,8 +111,8 @@ export class HaControlGaugeSlider extends LitElement {
   private _interaction;
 
   private _findNearestValue(value: number): SelectedDualSlider {
-    const startDistance = Math.abs(value - (this.startValue ?? 0));
-    const endDistance = Math.abs(value - (this.endValue ?? 1));
+    const startDistance = Math.abs(value - (this.start ?? 0));
+    const endDistance = Math.abs(value - (this.end ?? 1));
     return startDistance < endDistance ? "start" : "end";
   }
 
@@ -139,9 +140,9 @@ export class HaControlGaugeSlider extends LitElement {
       ) => {
         if (this.dual) {
           if (forceSelectedSlider === "end" || selectedValue === "end") {
-            this.endValue = value;
+            this.end = value;
           } else {
-            this.startValue = value;
+            this.start = value;
           }
         } else {
           this.value = value;
@@ -149,7 +150,7 @@ export class HaControlGaugeSlider extends LitElement {
       };
 
       const fireValueEvent = (
-        event: "value-changed" | "cursor-moved",
+        event: "changed" | "changing",
         params: { value: number | undefined },
         forceSelectedSlider?: SelectedDualSlider
       ) => {
@@ -161,7 +162,7 @@ export class HaControlGaugeSlider extends LitElement {
             fireEvent(this, eventName, params);
           }
         } else {
-          fireEvent(this, event, params);
+          fireEvent(this, `value-${event}`, params);
         }
       };
 
@@ -173,7 +174,7 @@ export class HaControlGaugeSlider extends LitElement {
         if (this.disabled) return;
         const value = this._getPercentageFromEvent(e);
         this.pressed = true;
-        savedValue = this.startValue;
+        savedValue = this.start;
         if (this.dual) {
           selectedValue = this._findNearestValue(value);
         }
@@ -190,14 +191,14 @@ export class HaControlGaugeSlider extends LitElement {
         if (this.disabled) return;
         const value = this._getPercentageFromEvent(e);
         setValue(value);
-        fireValueEvent("cursor-moved", { value });
+        fireValueEvent("changing", { value });
       });
       this._mc.on("panend", (e) => {
         if (this.disabled) return;
         const value = this._getPercentageFromEvent(e);
         setValue(value);
-        fireValueEvent("value-changed", { value });
-        fireValueEvent("cursor-moved", { value: undefined });
+        fireValueEvent("changed", { value });
+        fireValueEvent("changing", { value: undefined });
         if (this.dual) {
           selectedValue = undefined;
         }
@@ -208,7 +209,7 @@ export class HaControlGaugeSlider extends LitElement {
         const value = this._getPercentageFromEvent(e);
         const selected = this._findNearestValue(value);
         setValue(value, selected);
-        fireValueEvent("value-changed", { value }, selected);
+        fireValueEvent("changed", { value }, selected);
       });
     }
   }
@@ -228,8 +229,8 @@ export class HaControlGaugeSlider extends LitElement {
     const maxRatio = MAX_ANGLE / 360;
 
     const f = 150 * 2 * Math.PI;
-    const startValue = (this.dual ? this.startValue : this.value) ?? 0;
-    const endValue = this.endValue ?? 1;
+    const startValue = (this.dual ? this.start : this.value) ?? 0;
+    const endValue = this.end ?? 1;
 
     const startArcLength = startValue * f * maxRatio;
     const startStrokeDasharray = `${startArcLength} ${f - startArcLength}`;
