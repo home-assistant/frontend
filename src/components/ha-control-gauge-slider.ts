@@ -1,10 +1,16 @@
-import { DIRECTION_ALL, Manager, Pan, Tap } from "@egjs/hammerjs";
+import {
+  DIRECTION_ALL,
+  Manager,
+  Pan,
+  Tap,
+  TouchMouseInput,
+} from "@egjs/hammerjs";
 import {
   css,
   CSSResultGroup,
-  svg,
   LitElement,
   PropertyValues,
+  svg,
   TemplateResult,
 } from "lit";
 import { customElement, property, query } from "lit/decorators";
@@ -23,8 +29,8 @@ function rad2deg(rad: number) {
   return (rad / (2 * Math.PI)) * 360;
 }
 
-@customElement("ha-control-round-slider")
-export class HaControlRoundSlider extends LitElement {
+@customElement("ha-control-gauge-slider")
+export class HaControlGaugeSlider extends LitElement {
   @property({ type: Boolean, reflect: true })
   public disabled = false;
 
@@ -32,7 +38,10 @@ export class HaControlRoundSlider extends LitElement {
   public vertical = false;
 
   @property({ type: Number })
-  public value?: number;
+  public leftValue?: number;
+
+  @property({ type: Number })
+  public rightValue?: number;
 
   @property({ type: Number })
   public step = 1;
@@ -49,10 +58,6 @@ export class HaControlRoundSlider extends LitElement {
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
     this._setupListeners();
-    this.setAttribute("role", "slider");
-    if (!this.hasAttribute("tabindex")) {
-      this.setAttribute("tabindex", "0");
-    }
   }
 
   connectedCallback(): void {
@@ -86,48 +91,86 @@ export class HaControlRoundSlider extends LitElement {
     );
   };
 
-  @query("#interaction")
-  private _interaction;
-
   @query("#slider")
   private _slider;
 
+  @query("#interaction")
+  private _interaction;
+
+  private _findNearestValue(value: number): "left" | "right" {
+    const leftDistance = Math.abs(value - (this.leftValue ?? 0));
+    const rightDistance = Math.abs(value - (this.rightValue ?? 1));
+    return leftDistance < rightDistance ? "left" : "right";
+  }
+
   _setupListeners() {
     if (this._interaction && !this._mc) {
-      this._mc = new Manager(this._interaction);
+      this._mc = new Manager(this._interaction, {
+        inputClass: TouchMouseInput,
+      });
       this._mc.add(
         new Pan({
           direction: DIRECTION_ALL,
           enable: true,
+          threshold: 0,
         })
       );
 
       this._mc.add(new Tap({ event: "singletap" }));
 
       let savedValue;
-      this._mc.on("panstart", () => {
+      let selectedValue: "left" | "right" | undefined;
+
+      this._mc.on("pan", (e) => {
+        e.srcEvent.stopPropagation();
+        e.srcEvent.preventDefault();
+      });
+      this._mc.on("panstart", (e) => {
         if (this.disabled) return;
+        const value = this._getAngleFromEvent(e);
         this.pressed = true;
-        savedValue = this.value;
+        selectedValue = this._findNearestValue(value);
+        savedValue = this.leftValue;
       });
       this._mc.on("pancancel", () => {
         if (this.disabled) return;
         this.pressed = false;
-        this.value = savedValue;
+        if (selectedValue === "right") {
+          this.rightValue = savedValue;
+        } else {
+          this.leftValue = savedValue;
+        }
       });
       this._mc.on("panmove", (e) => {
         if (this.disabled) return;
-        this.value = this._getAngleFromEvent(e);
+        const value = this._getAngleFromEvent(e);
+        if (selectedValue === "right") {
+          this.rightValue = value;
+        } else {
+          this.leftValue = value;
+        }
       });
       this._mc.on("panend", (e) => {
         if (this.disabled) return;
-        this.value = this._getAngleFromEvent(e);
+        const value = this._getAngleFromEvent(e);
+        if (selectedValue === "right") {
+          this.rightValue = value;
+        } else {
+          this.leftValue = value;
+        }
+        selectedValue = undefined;
         this.pressed = false;
       });
 
       this._mc.on("singletap", (e) => {
         if (this.disabled) return;
-        this.value = this._getAngleFromEvent(e);
+        const value = this._getAngleFromEvent(e);
+        const _selectedValue = this._findNearestValue(value);
+        if (_selectedValue === "right") {
+          this.rightValue = value;
+        } else {
+          this.leftValue = value;
+        }
       });
     }
   }
@@ -145,11 +188,11 @@ export class HaControlRoundSlider extends LitElement {
     const trackPath = arc({ x: 0, y: 0, start: 0, end: MAX_ANGLE, r: 150 });
 
     const f = 150 * 2 * Math.PI;
-    const leftValue = this.value ?? 0;
+    const leftValue = this.leftValue ?? 0;
 
     const startStrokeDasharray = `${leftValue * f} ${(1 - leftValue) * f}`;
 
-    const rightValue = 0;
+    const rightValue = 0.75 - (this.rightValue ?? 0.75);
     const endStrokeDasharray = `${rightValue * f} ${(1 - rightValue) * f}`;
     const endStrokeDashOffset = `${(rightValue + 0.25) * f}`;
 
@@ -159,10 +202,12 @@ export class HaControlRoundSlider extends LitElement {
           id="container"
           transform="translate(200 200) rotate(${ROTATE_ANGLE})"
         >
-          <path id="interaction" d=${trackPath} ></path>
+          <path id="interaction" d=${trackPath} />
           <g id="display">
-            <path id="background" d=${trackPath} ></path>
+            <path id="background" d=${trackPath} />
             <circle
+              role="slider"
+              tabindex="0"
               class="track"
               id="start"
               cx="0"
@@ -170,8 +215,10 @@ export class HaControlRoundSlider extends LitElement {
               r="150"
               stroke-dasharray=${startStrokeDasharray}
               stroke-dashoffset="0"
-            ></circle>
+            />
             <circle
+              role="slider"
+              tabindex="0"
               class="track"
               id="end"
               cx="0"
@@ -179,9 +226,9 @@ export class HaControlRoundSlider extends LitElement {
               r="150"
               stroke-dasharray=${endStrokeDasharray}
               stroke-dashoffset=${endStrokeDashOffset}
-            ></circle>
+            />
             <g transform="rotate(${currentAngle})">
-              <circle cx="150" cy="0" r="8" fill="white"></circle>
+              <circle cx="150" cy="0" r="8" fill="white" />
             </g>
           </g>
         </g>
@@ -197,14 +244,11 @@ export class HaControlRoundSlider extends LitElement {
       }
       #interaction {
         fill: none;
-        stroke: rgba(139, 145, 151, 0.1);
+        stroke: transparent;
         stroke-linecap: round;
         stroke-width: 48px;
         cursor: pointer;
-        display: block;
-      }
-      #display {
-        pointer-events: none;
+        display: flex;
       }
       #background {
         fill: none;
@@ -213,13 +257,19 @@ export class HaControlRoundSlider extends LitElement {
         stroke-width: 24px;
         cursor: pointer;
       }
-
+      #display {
+        pointer-events: none;
+      }
       .track {
+        outline: none;
         fill: none;
         stroke-linecap: round;
         stroke-width: 24px;
         transition: stroke-dasharray 300ms ease-in-out,
-          stroke-dashoffset 300ms ease-in-out;
+          stroke-dashoffset 300ms ease-in-out, stroke-width 300ms ease-in-out;
+      }
+      .track:focus-visible {
+        stroke-width: 32px;
       }
       :host([pressed]) .track {
         transition: none;
@@ -240,6 +290,6 @@ export class HaControlRoundSlider extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-control-round-slider": HaControlRoundSlider;
+    "ha-control-gauge-slider": HaControlGaugeSlider;
   }
 }

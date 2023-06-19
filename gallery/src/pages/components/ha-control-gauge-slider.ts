@@ -1,14 +1,14 @@
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-control-round-slider";
+import "../../../../src/components/ha-control-gauge-slider";
 
-@customElement("demo-components-ha-control-round-slider")
-export class DemoHaRoundSlider extends LitElement {
+@customElement("demo-components-ha-control-gauge-slider")
+export class DemoHaGaugeSlider extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card>
-        <ha-control-round-slider></ha-control-round-slider>
+        <ha-control-gauge-slider></ha-control-gauge-slider>
       </ha-card>
     `;
   }
@@ -25,6 +25,6 @@ export class DemoHaRoundSlider extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-components-ha-round-slider": DemoHaRoundSlider;
+    "demo-components-ha-control-gauge-slider": DemoHaGaugeSlider;
   }
 }
