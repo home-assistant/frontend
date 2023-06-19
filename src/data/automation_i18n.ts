@@ -90,22 +90,18 @@ export const describeTrigger = (
 
   // Event Trigger
   if (trigger.platform === "event" && trigger.event_type) {
-    let eventTypes = "";
+    const eventTypes: string[] = [];
 
     if (Array.isArray(trigger.event_type)) {
-      for (const [index, state] of trigger.event_type.entries()) {
-        eventTypes += `${index > 0 ? "," : ""} ${
-          trigger.event_type.length > 1 &&
-          index === trigger.event_type.length - 1
-            ? "or"
-            : ""
-        } ${state}`;
+      for (const state of trigger.event_type.values()) {
+        eventTypes.push(state);
       }
     } else {
-      eventTypes = trigger.event_type.toString();
+      eventTypes.push(trigger.event_type);
     }
 
-    return `When ${eventTypes} event is fired`;
+    const eventTypesString = disjunctionFormatter.format(eventTypes);
+    return `When ${eventTypesString} event is fired`;
   }
 
   // Home Assistant Trigger
@@ -157,7 +153,7 @@ export const describeTrigger = (
   // State Trigger
   if (trigger.platform === "state") {
     let base = "When";
-    let entities = "";
+    const entities: string[] = [];
     const states = hass.states;
 
     if (trigger.attribute) {
@@ -173,25 +169,22 @@ export const describeTrigger = (
     }
 
     if (Array.isArray(trigger.entity_id)) {
-      for (const [index, entity] of trigger.entity_id.entries()) {
+      for (const entity of trigger.entity_id.values()) {
         if (states[entity]) {
-          entities += `${index > 0 ? "," : ""} ${
-            trigger.entity_id.length > 1 &&
-            index === trigger.entity_id.length - 1
-              ? "or"
-              : ""
-          } ${computeStateName(states[entity]) || entity}`;
+          entities.push(computeStateName(states[entity]) || entity);
         }
       }
     } else if (trigger.entity_id) {
-      entities = states[trigger.entity_id]
-        ? computeStateName(states[trigger.entity_id])
-        : trigger.entity_id;
+      entities.push(
+        states[trigger.entity_id]
+          ? computeStateName(states[trigger.entity_id])
+          : trigger.entity_id
+      );
     }
 
-    if (!entities) {
+    if (entities.length === 0) {
       // no entity_id or empty array
-      entities = "something";
+      entities.push("something");
     }
 
     base += ` ${entities} changes`;
@@ -208,13 +201,9 @@ export const describeTrigger = (
           base += " from any state";
         }
       } else if (Array.isArray(trigger.from)) {
-        let from = "";
-        for (const [index, state] of trigger.from.entries()) {
-          from += `${index > 0 ? "," : ""} ${
-            trigger.from.length > 1 && index === trigger.from.length - 1
-              ? "or"
-              : ""
-          } '${
+        const from: string[] = [];
+        for (const state of trigger.from.values()) {
+          from.push(
             trigger.attribute
               ? computeAttributeValueDisplay(
                   hass.localize,
@@ -224,7 +213,7 @@ export const describeTrigger = (
                   hass.entities,
                   trigger.attribute,
                   state
-                )
+                ).toString()
               : computeStateDisplay(
                   hass.localize,
                   stateObj,
@@ -233,13 +222,14 @@ export const describeTrigger = (
                   hass.entities,
                   state
                 )
-          }'`;
+          );
         }
-        if (from) {
-          base += ` from ${from}`;
+        if (from.length !== 0) {
+          const fromString = disjunctionFormatter.format(from);
+          base += ` from ${fromString}`;
         }
       } else {
-        base += ` from '${
+        base += ` from ${
           trigger.attribute
             ? computeAttributeValueDisplay(
                 hass.localize,
@@ -258,7 +248,7 @@ export const describeTrigger = (
                 hass.entities,
                 trigger.from.toString()
               ).toString()
-        }'`;
+        }`;
       }
     }
 
@@ -268,11 +258,9 @@ export const describeTrigger = (
           base += " to any state";
         }
       } else if (Array.isArray(trigger.to)) {
-        let to = "";
-        for (const [index, state] of trigger.to.entries()) {
-          to += `${index > 0 ? "," : ""} ${
-            trigger.to.length > 1 && index === trigger.to.length - 1 ? "or" : ""
-          } '${
+        const to: string[] = [];
+        for (const state of trigger.to.values()) {
+          to.push(
             trigger.attribute
               ? computeAttributeValueDisplay(
                   hass.localize,
@@ -291,13 +279,14 @@ export const describeTrigger = (
                   hass.entities,
                   state
                 ).toString()
-          }'`;
+          );
         }
-        if (to) {
-          base += ` to ${to}`;
+        if (to.length !== 0) {
+          const toString = disjunctionFormatter.format(to);
+          base += ` to ${toString}`;
         }
       } else {
-        base += ` to '${
+        base += ` to ${
           trigger.attribute
             ? computeAttributeValueDisplay(
                 hass.localize,
@@ -315,8 +304,8 @@ export const describeTrigger = (
                 hass.config,
                 hass.entities,
                 trigger.to.toString()
-              ).toString()
-        }'`;
+              )
+        }`;
       }
     }
 
@@ -501,9 +490,9 @@ export const describeTrigger = (
     const states = hass.states;
 
     if (Array.isArray(trigger.entity_id)) {
-      for (const [entity] of trigger.entity_id.entries()) {
+      for (const entity of trigger.entity_id.values()) {
         if (states[entity]) {
-          entities.push(`${computeStateName(states[entity]) || entity}`);
+          entities.push(computeStateName(states[entity]) || entity);
         }
       }
     } else {
@@ -515,9 +504,9 @@ export const describeTrigger = (
     }
 
     if (Array.isArray(trigger.zone)) {
-      for (const [zone] of trigger.zone.entries()) {
+      for (const zone of trigger.zone.values()) {
         if (states[zone]) {
-          zones.push(`${computeStateName(states[zone]) || zone}`);
+          zones.push(computeStateName(states[zone]) || zone);
         }
       }
     } else {
@@ -537,47 +526,39 @@ export const describeTrigger = (
 
   // Geo Location Trigger
   if (trigger.platform === "geo_location" && trigger.source && trigger.zone) {
-    let sources = "";
-    let zones = "";
-    let zonesPlural = false;
+    const sources: string[] = [];
+    const zones: string[] = [];
     const states = hass.states;
 
     if (Array.isArray(trigger.source)) {
-      for (const [index, source] of trigger.source.entries()) {
-        sources += `${index > 0 ? "," : ""} ${
-          trigger.source.length > 1 && index === trigger.source.length - 1
-            ? "or"
-            : ""
-        } ${source}`;
+      for (const source of trigger.source.values()) {
+        sources.push(source);
       }
     } else {
-      sources = trigger.source;
+      sources.push(trigger.source);
     }
 
     if (Array.isArray(trigger.zone)) {
-      if (trigger.zone.length > 1) {
-        zonesPlural = true;
-      }
-
-      for (const [index, zone] of trigger.zone.entries()) {
+      for (const zone of trigger.zone.values()) {
         if (states[zone]) {
-          zones += `${index > 0 ? "," : ""} ${
-            trigger.zone.length > 1 && index === trigger.zone.length - 1
-              ? "or"
-              : ""
-          } ${computeStateName(states[zone]) || zone}`;
+          zones.push(computeStateName(states[zone]) || zone);
         }
       }
     } else {
-      zones = states[trigger.zone]
-        ? computeStateName(states[trigger.zone])
-        : trigger.zone;
+      zones.push(
+        states[trigger.zone]
+          ? computeStateName(states[trigger.zone])
+          : trigger.zone
+      );
     }
 
-    return `When ${sources} ${trigger.event}s ${zones} ${
-      zonesPlural ? "zones" : "zone"
+    const sourcesString = disjunctionFormatter.format(sources);
+    const zonesString = disjunctionFormatter.format(zones);
+    return `When ${sourcesString} ${trigger.event}s ${zonesString} ${
+      zones.length > 1 ? "zones" : "zone"
     }`;
   }
+
   // MQTT Trigger
   if (trigger.platform === "mqtt") {
     return "When an MQTT message has been received";
@@ -634,6 +615,10 @@ export const describeCondition = (
     return condition.alias;
   }
 
+  const conjunctionFormatter = new Intl.ListFormat("en", {
+    style: "long",
+    type: "conjunction",
+  });
   const disjunctionFormatter = new Intl.ListFormat("en", {
     style: "long",
     type: "disjunction",
@@ -708,21 +693,20 @@ export const describeCondition = (
     }
 
     if (Array.isArray(condition.entity_id)) {
-      let entities = "";
-      for (const [index, entity] of condition.entity_id.entries()) {
+      const entities: string[] = [];
+      for (const entity of condition.entity_id.values()) {
         if (hass.states[entity]) {
-          entities += `${index > 0 ? "," : ""} ${
-            condition.entity_id.length > 1 &&
-            index === condition.entity_id.length - 1
-              ? condition.match === "any"
-                ? "or"
-                : "and"
-              : ""
-          } ${computeStateName(hass.states[entity]) || entity}`;
+          entities.push(computeStateName(hass.states[entity]) || entity);
         }
       }
-      if (entities) {
-        base += ` ${entities} ${condition.entity_id.length > 1 ? "are" : "is"}`;
+      if (entities.length !== 0) {
+        const entitiesString =
+          condition.match === "any"
+            ? disjunctionFormatter.format(entities)
+            : conjunctionFormatter.format(entities);
+        base += ` ${entitiesString} ${
+          condition.entity_id.length > 1 ? "are" : "is"
+        }`;
       } else {
         // no entity_id or empty array
         base += " an entity";
@@ -735,7 +719,7 @@ export const describeCondition = (
       } is`;
     }
 
-    let states = "";
+    const states: string[] = [];
     const stateObj =
       hass.states[
         Array.isArray(condition.entity_id)
@@ -743,12 +727,8 @@ export const describeCondition = (
           : condition.entity_id
       ];
     if (Array.isArray(condition.state)) {
-      for (const [index, state] of condition.state.entries()) {
-        states += `${index > 0 ? "," : ""} ${
-          condition.state.length > 1 && index === condition.state.length - 1
-            ? "or"
-            : ""
-        } '${
+      for (const state of condition.state.values()) {
+        states.push(
           condition.attribute
             ? computeAttributeValueDisplay(
                 hass.localize,
@@ -758,7 +738,7 @@ export const describeCondition = (
                 hass.entities,
                 condition.attribute,
                 state
-              )
+              ).toString()
             : computeStateDisplay(
                 hass.localize,
                 stateObj,
@@ -767,10 +747,10 @@ export const describeCondition = (
                 hass.entities,
                 state
               )
-        }'`;
+        );
       }
     } else if (condition.state !== "") {
-      states = `'${
+      states.push(
         condition.attribute
           ? computeAttributeValueDisplay(
               hass.localize,
@@ -788,15 +768,16 @@ export const describeCondition = (
               hass.config,
               hass.entities,
               condition.state.toString()
-            ).toString()
-      }'`;
+            )
+      );
     }
 
-    if (!states) {
-      states = "a state";
+    if (states.length === 0) {
+      states.push("a state");
     }
 
-    base += ` ${states}`;
+    const statesString = disjunctionFormatter.format(states);
+    base += ` ${statesString}`;
 
     if (condition.for) {
       const duration = describeDuration(condition.for);
@@ -885,17 +866,7 @@ export const describeCondition = (
             `ui.panel.config.automation.editor.conditions.type.time.weekdays.${d}`
           )
         );
-        const last = localizedDays.pop();
-
-        result += " day is " + localizedDays.join(", ");
-
-        if (localizedDays.length) {
-          if (localizedDays.length > 1) {
-            result += ",";
-          }
-          result += " or ";
-        }
-        result += last;
+        result += " day is " + disjunctionFormatter.format(localizedDays);
       }
 
       return result;
@@ -947,9 +918,9 @@ export const describeCondition = (
     const states = hass.states;
 
     if (Array.isArray(condition.entity_id)) {
-      for (const [entity] of condition.entity_id.entries()) {
+      for (const entity of condition.entity_id.values()) {
         if (states[entity]) {
-          entities.push(`${computeStateName(states[entity]) || entity}`);
+          entities.push(computeStateName(states[entity]) || entity);
         }
       }
     } else {
@@ -961,9 +932,9 @@ export const describeCondition = (
     }
 
     if (Array.isArray(condition.zone)) {
-      for (const [zone] of condition.zone.entries()) {
+      for (const zone of condition.zone.values()) {
         if (states[zone]) {
-          zones.push(`${computeStateName(states[zone]) || zone}`);
+          zones.push(computeStateName(states[zone]) || zone);
         }
       }
     } else {
