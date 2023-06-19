@@ -169,7 +169,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     );
 
     const data = {
-      ...(!useBlueprint && { mode: MODES[0] }),
+      ...(!this._config.mode && !useBlueprint && { mode: MODES[0] }),
       icon: undefined,
       max: this._config.mode && isMaxMode(this._config.mode) ? 10 : undefined,
       ...this._config,
