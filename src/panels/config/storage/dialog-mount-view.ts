@@ -153,7 +153,13 @@ class ViewMountDialog extends LitElement {
         open
         scrimClickAction
         escapeKeyAction
-        .heading=${true}
+        .heading=${this._existing
+          ? this.hass.localize(
+              "ui.panel.config.storage.network_mounts.update_title"
+            )
+          : this.hass.localize(
+              "ui.panel.config.storage.network_mounts.add_title"
+            )}
         @closed=${this.closeDialog}
       >
         <ha-dialog-header slot="heading">
