@@ -125,13 +125,14 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       deviceFilter: this["deviceFilter"],
       entityFilter: this["entityFilter"],
       excludeDevices: this["excludeDevices"]
-    ): Device[] => {
+    ): ScorableDevice[] => {
       if (!devices.length) {
         return [
           {
             id: "no_devices",
             area: "",
             name: this.hass.localize("ui.components.device-picker.no_devices"),
+            strings: [],
           },
         ];
       }
@@ -241,6 +242,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
           device.area_id && areaLookup[device.area_id]
             ? areaLookup[device.area_id].name
             : this.hass.localize("ui.components.device-picker.no_area"),
+        strings: [device.name || ""],
       }));
       if (!outputDevices.length) {
         return [
@@ -248,6 +250,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
             id: "no_devices",
             area: "",
             name: this.hass.localize("ui.components.device-picker.no_match"),
+            strings: [],
           },
         ];
       }
@@ -300,9 +303,9 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         this.deviceFilter,
         this.entityFilter,
         this.excludeDevices
-      ).map((device) => ({ ...device, strings: [device.name] }));
-      (this.comboBox as any).items = devices;
-      (this.comboBox as any).filteredItems = devices;
+      );
+      this.comboBox.items = devices;
+      this.comboBox.filteredItems = devices;
     }
   }
 
@@ -332,11 +335,11 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
   }
 
   private _filterChanged(ev: CustomEvent): void {
+    const target = ev.target as HaComboBox;
     const filterString = ev.detail.value.toLowerCase();
-    (this.comboBox as any).filteredItems = fuzzyFilterSort<ScorableDevice>(
-      filterString,
-      this.comboBox?.items || []
-    );
+    target.filteredItems = filterString.length
+      ? fuzzyFilterSort<ScorableDevice>(filterString, target.items || [])
+      : target.items;
   }
 
   private _deviceChanged(ev: ValueChangedEvent<string>) {

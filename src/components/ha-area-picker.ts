@@ -316,8 +316,8 @@ export class HaAreaPicker extends LitElement {
         ...area,
         strings: [area.area_id, ...area.aliases, area.name],
       }));
-      (this.comboBox as any).items = areas;
-      (this.comboBox as any).filteredItems = areas;
+      this.comboBox.items = areas;
+      this.comboBox.filteredItems = areas;
     }
   }
 
@@ -419,7 +419,7 @@ export class HaAreaPicker extends LitElement {
             name,
           });
           const areas = [...Object.values(this.hass.areas), area];
-          (this.comboBox as any).filteredItems = this._getAreas(
+          this.comboBox.filteredItems = this._getAreas(
             areas,
             Object.values(this.hass.devices)!,
             Object.values(this.hass.entities)!,

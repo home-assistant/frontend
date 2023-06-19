@@ -17,6 +17,7 @@ import type { HaComboBox } from "../ha-combo-box";
 import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./state-badge";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 
 interface HassEntityWithCachedName extends HassEntity, ScorableTextItem {
   friendly_name: string;
@@ -200,14 +201,22 @@ export class HaEntityPicker extends LitElement {
         );
       }
 
-      states = entityIds.map((key) => {
-        const friendly_name = computeStateName(hass!.states[key]) || key;
-        return {
-          ...hass!.states[key],
-          friendly_name,
-          strings: [key, friendly_name],
-        };
-      });
+      states = entityIds
+        .map((key) => {
+          const friendly_name = computeStateName(hass!.states[key]) || key;
+          return {
+            ...hass!.states[key],
+            friendly_name,
+            strings: [key, friendly_name],
+          };
+        })
+        .sort((entityA, entityB) =>
+          caseInsensitiveStringCompare(
+            entityA.friendly_name,
+            entityB.friendly_name,
+            this.hass.locale.language
+          )
+        );
 
       if (includeDeviceClasses) {
         states = states.filter(
@@ -290,7 +299,7 @@ export class HaEntityPicker extends LitElement {
         this.excludeEntities
       );
       if (this._initedStates) {
-        (this.comboBox as any).filteredItems = this._states;
+        this.comboBox.filteredItems = this._states;
       }
       this._initedStates = true;
     }
@@ -337,9 +346,11 @@ export class HaEntityPicker extends LitElement {
   }
 
   private _filterChanged(ev: CustomEvent): void {
+    const target = ev.target as HaComboBox;
     const filterString = ev.detail.value.toLowerCase();
-    (this.comboBox as any).filteredItems =
-      fuzzyFilterSort<HassEntityWithCachedName>(filterString, this._states);
+    target.filteredItems = filterString.length
+      ? fuzzyFilterSort<HassEntityWithCachedName>(filterString, this._states)
+      : this._states;
   }
 
   private _setValue(value: string) {
