@@ -15,6 +15,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
 import { arc } from "../resources/svg-arc";
 
 const MAX_ANGLE = 270;
@@ -30,7 +31,16 @@ function rad2deg(rad: number) {
   return (rad / (2 * Math.PI)) * 360;
 }
 
-type SelectedSlider = "start" | "end";
+type SelectedDualSlider = "start" | "end";
+
+declare global {
+  interface HASSDomEvents {
+    "start-value-changed": { value: unknown };
+    "end-value-changed": { value: unknown };
+    "start-cursor-moved": { value: unknown };
+    "end-cursor-moved": { value: unknown };
+  }
+}
 
 @customElement("ha-control-gauge-slider")
 export class HaControlGaugeSlider extends LitElement {
@@ -99,7 +109,7 @@ export class HaControlGaugeSlider extends LitElement {
   @query("#interaction")
   private _interaction;
 
-  private _findNearestValue(value: number): SelectedSlider {
+  private _findNearestValue(value: number): SelectedDualSlider {
     const startDistance = Math.abs(value - (this.startValue ?? 0));
     const endDistance = Math.abs(value - (this.endValue ?? 1));
     return startDistance < endDistance ? "start" : "end";
@@ -121,18 +131,38 @@ export class HaControlGaugeSlider extends LitElement {
       this._mc.add(new Tap({ event: "singletap" }));
 
       let savedValue;
-      let selectedValue: SelectedSlider | undefined;
+      let selectedValue: SelectedDualSlider | undefined;
 
-      const setValue = (value: number, force?: SelectedSlider) => {
+      const setValue = (
+        value: number,
+        forceSelectedSlider?: SelectedDualSlider
+      ) => {
         if (this.dual) {
-          if (force === "end" || selectedValue === "end") {
+          if (forceSelectedSlider === "end" || selectedValue === "end") {
             this.endValue = value;
           } else {
             this.startValue = value;
           }
-          return;
+        } else {
+          this.value = value;
         }
-        this.value = value;
+      };
+
+      const fireValueEvent = (
+        event: "value-changed" | "cursor-moved",
+        params: { value: number | undefined },
+        forceSelectedSlider?: SelectedDualSlider
+      ) => {
+        if (this.dual) {
+          if (selectedValue || forceSelectedSlider) {
+            const eventName = `${
+              forceSelectedSlider ?? (selectedValue as SelectedDualSlider)
+            }-${event}` as const;
+            fireEvent(this, eventName, params);
+          }
+        } else {
+          fireEvent(this, event, params);
+        }
       };
 
       this._mc.on("pan", (e) => {
@@ -160,11 +190,14 @@ export class HaControlGaugeSlider extends LitElement {
         if (this.disabled) return;
         const value = this._getPercentageFromEvent(e);
         setValue(value);
+        fireValueEvent("cursor-moved", { value });
       });
       this._mc.on("panend", (e) => {
         if (this.disabled) return;
         const value = this._getPercentageFromEvent(e);
         setValue(value);
+        fireValueEvent("value-changed", { value });
+        fireValueEvent("cursor-moved", { value: undefined });
         if (this.dual) {
           selectedValue = undefined;
         }
@@ -173,7 +206,9 @@ export class HaControlGaugeSlider extends LitElement {
       this._mc.on("singletap", (e) => {
         if (this.disabled) return;
         const value = this._getPercentageFromEvent(e);
-        setValue(value, this._findNearestValue(value));
+        const selected = this._findNearestValue(value);
+        setValue(value, selected);
+        fireValueEvent("value-changed", { value }, selected);
       });
     }
   }
