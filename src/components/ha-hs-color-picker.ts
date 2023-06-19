@@ -186,9 +186,8 @@ class HaHsColorPicker extends LitElement {
     }
     if (changedProps.has("value")) {
       if (
-        this.value !== undefined &&
-        (this._localValue?.[0] !== this.value[0] ||
-          this._localValue?.[1] !== this.value[1])
+        this._localValue?.[0] !== this.value?.[0] ||
+        this._localValue?.[1] !== this.value?.[1]
       ) {
         this._resetPosition();
       }
@@ -243,7 +242,11 @@ class HaHsColorPicker extends LitElement {
   }
 
   private _resetPosition() {
-    if (this.value === undefined) return;
+    if (this.value === undefined) {
+      this._cursorPosition = undefined;
+      this._localValue = undefined;
+      return;
+    }
     this._cursorPosition = this._getCoordsFromValue(this.value);
     this._localValue = this.value;
   }
@@ -384,6 +387,7 @@ class HaHsColorPicker extends LitElement {
       canvas {
         width: 100%;
         height: 100%;
+        object-fit: contain;
         border-radius: 50%;
         cursor: pointer;
       }
