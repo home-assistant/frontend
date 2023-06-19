@@ -590,12 +590,12 @@ export const describeTrigger = (
 
   // Template Trigger
   if (trigger.platform === "template") {
-    let forDuration = "";
+    let optionalForDuration = "";
 
     if (trigger.for) {
       let forDuration = describeDuration(trigger.for);
       if (forDuration) {
-        forDuration = hass.localize(
+        optionalForDuration = hass.localize(
           `${triggerTranslationBaseKey}.template.description.for_duration`,
           "duration",
           forDuration
@@ -606,7 +606,7 @@ export const describeTrigger = (
     return hass.localize(
       `${triggerTranslationBaseKey}.template.description.full`,
       "optionalForDuration",
-      forDuration
+      optionalForDuration
     );
   }
 
