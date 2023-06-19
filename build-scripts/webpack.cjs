@@ -167,6 +167,8 @@ const createWebpackConfig = ({
         "lit/polyfill-support$": "lit/polyfill-support.js",
         "@lit-labs/virtualizer/layouts/grid":
           "@lit-labs/virtualizer/layouts/grid.js",
+        "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver":
+          "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver.js",
       },
     },
     output: {
