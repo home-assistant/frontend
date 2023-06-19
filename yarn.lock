@@ -3285,15 +3285,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-paginate-rest@npm:^6.1.2":
-  version: 6.1.2
-  resolution: "@octokit/plugin-paginate-rest@npm:6.1.2"
+"@octokit/plugin-paginate-rest@npm:^7.0.0":
+  version: 7.1.2
+  resolution: "@octokit/plugin-paginate-rest@npm:7.1.2"
   dependencies:
-    "@octokit/tsconfig": ^1.0.2
-    "@octokit/types": ^9.2.3
+    "@octokit/tsconfig": ^2.0.0
+    "@octokit/types": ^9.3.2
   peerDependencies:
     "@octokit/core": ">=4"
-  checksum: a7b3e686c7cbd27ec07871cde6e0b1dc96337afbcef426bbe3067152a17b535abd480db1861ca28c88d93db5f7bfdbcadd0919ead19818c28a69d0e194038065
+  checksum: dcff1593fd0635cff3a6add6bfa375316cce5071b540da55075d1fe4aa0ddf04e0a798707857db229f0705e91398a8a59cb07bdac4c95bda7e2eda48370b00c1
   languageName: node
   linkType: hard
 
@@ -3366,22 +3366,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/rest@npm:19.0.11":
-  version: 19.0.11
-  resolution: "@octokit/rest@npm:19.0.11"
+"@octokit/rest@npm:19.0.12":
+  version: 19.0.12
+  resolution: "@octokit/rest@npm:19.0.12"
   dependencies:
     "@octokit/core": ^4.2.1
-    "@octokit/plugin-paginate-rest": ^6.1.2
+    "@octokit/plugin-paginate-rest": ^7.0.0
     "@octokit/plugin-request-log": ^1.0.4
     "@octokit/plugin-rest-endpoint-methods": ^7.1.2
-  checksum: 147518ad51d214ead88adc717b5fdc4f33317949d58c124f4069bdf07d2e6b49fa66861036b9e233aed71fcb88ff367a6da0357653484e466175ab4fb7183b3b
+  checksum: 6e42a3d951461128a26f9634a0d3ac9e1955231286dc0637ae952db06c6296b19279217e6d58071e88bb0675c5bbb84fba5b4847c757ac98f4e3559a102bd93d
   languageName: node
   linkType: hard
 
-"@octokit/tsconfig@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@octokit/tsconfig@npm:1.0.2"
-  checksum: 74d56f3e9f326a8dd63700e9a51a7c75487180629c7a68bbafee97c612fbf57af8347369bfa6610b9268a3e8b833c19c1e4beb03f26db9a9dce31f6f7a19b5b1
+"@octokit/tsconfig@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@octokit/tsconfig@npm:2.0.0"
+  checksum: c19b1c8a316682322a6bee26faf0225b59926770fa796833c7211521f464f915dd6950ab29c7a7996711ccf8986b5c0a088cc5a1c2b4d8848d503682537bccf2
   languageName: node
   linkType: hard
 
@@ -3394,7 +3394,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/types@npm:^9.0.0, @octokit/types@npm:^9.2.3":
+"@octokit/types@npm:^9.0.0, @octokit/types@npm:^9.3.2":
   version: 9.3.2
   resolution: "@octokit/types@npm:9.3.2"
   dependencies:
@@ -9629,7 +9629,7 @@ __metadata:
     "@mdi/svg": 7.2.96
     "@octokit/auth-oauth-device": 5.0.0
     "@octokit/plugin-retry": 5.0.3
-    "@octokit/rest": 19.0.11
+    "@octokit/rest": 19.0.12
     "@open-wc/dev-server-hmr": 0.1.4
     "@polymer/app-layout": 3.1.0
     "@polymer/iron-flex-layout": 3.0.1
