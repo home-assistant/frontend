@@ -6,31 +6,31 @@ import "../../../../src/components/ha-control-gauge-slider";
 @customElement("demo-components-ha-control-gauge-slider")
 export class DemoHaGaugeSlider extends LitElement {
   @state()
-  private primary = 0.25;
+  private value = 0.25;
 
   @state()
-  private secondary = 0.75;
+  private high = 0.75;
 
   @state()
-  private draftPrimary?: number;
+  private draftValue?: number;
 
   @state()
-  private draftSecondary?: number;
+  private draftHigh?: number;
 
   private _valueChanged(ev) {
-    this.primary = ev.detail.value;
+    this.value = ev.detail.value;
   }
 
-  private _draftValueChanged(ev) {
-    this.draftPrimary = ev.detail.value;
+  private _valueChanging(ev) {
+    this.draftValue = ev.detail.value;
   }
 
-  private _endValueChanged(ev) {
-    this.secondary = ev.detail.value;
+  private _highChanged(ev) {
+    this.high = ev.detail.value;
   }
 
-  private _draftEndValueChanged(ev) {
-    this.draftSecondary = ev.detail.value;
+  private _highChanging(ev) {
+    this.draftHigh = ev.detail.value;
   }
 
   protected render(): TemplateResult {
@@ -38,31 +38,31 @@ export class DemoHaGaugeSlider extends LitElement {
       <ha-card>
         <ha-control-gauge-slider
           @value-changed=${this._valueChanged}
-          @cursor-moved=${this._draftValueChanged}
-          .value=${this.primary}
+          @value-changing=${this._valueChanging}
+          .value=${this.value}
         ></ha-control-gauge-slider>
         <code>
-          Value: ${this.primary}
+          Value: ${this.value}
           <br />
-          Position: ${this.draftPrimary ?? "-"}
+          Position: ${this.draftValue ?? "-"}
         </code>
         <ha-control-gauge-slider
           dual
-          @start-value-changed=${this._valueChanged}
-          @start-cursor-moved=${this._draftValueChanged}
-          @end-value-changed=${this._endValueChanged}
-          @end-cursor-moved=${this._draftEndValueChanged}
-          .startValue=${this.primary}
-          .endValue=${this.secondary}
+          @start-changed=${this._valueChanged}
+          @start-changing=${this._valueChanging}
+          @end-changed=${this._highChanged}
+          @end-changing=${this._highChanging}
+          .start=${this.value}
+          .end=${this.high}
         ></ha-control-gauge-slider>
         <code>
-          Start value: ${this.primary}
+          Low value: ${this.value}
           <br />
-          Start position: ${this.draftPrimary ?? "-"}
+          Low changing: ${this.draftValue ?? "-"}
           <br />
-          End value: ${this.secondary}
+          High value: ${this.high}
           <br />
-          End position: ${this.draftSecondary ?? "-"}
+          High changing: ${this.draftHigh ?? "-"}
         </code>
       </ha-card>
     `;
@@ -73,7 +73,6 @@ export class DemoHaGaugeSlider extends LitElement {
       ha-card {
         max-width: 600px;
         margin: 24px auto;
-        padding: 0 12px;
       }
       ha-control-gauge-slider {
         --control-gauge-slider-color: #ff9800;
