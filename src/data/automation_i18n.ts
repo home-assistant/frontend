@@ -342,7 +342,7 @@ export const describeTrigger = (
 
   // Sun Trigger
   if (trigger.platform === "sun" && trigger.event) {
-    let setsOrRises =
+    const setsOrRises =
       trigger.event === "sunset"
         ? hass.localize(`${triggerTranslationBaseKey}.sun.description.sets`)
         : hass.localize(`${triggerTranslationBaseKey}.sun.description.rises`);
@@ -593,7 +593,7 @@ export const describeTrigger = (
     let optionalForDuration = "";
 
     if (trigger.for) {
-      let forDuration = describeDuration(trigger.for);
+      const forDuration = describeDuration(trigger.for);
       if (forDuration) {
         optionalForDuration = hass.localize(
           `${triggerTranslationBaseKey}.template.description.for_duration`,
