@@ -1,7 +1,7 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
-  mdiBugPlay,
+  mdiAlertCircleCheck,
   mdiCheck,
   mdiContentDuplicate,
   mdiContentCopy,
@@ -197,12 +197,15 @@ export default class HaAutomationActionRow extends LitElement {
 
           <slot name="icons" slot="icons"></slot>
           ${type !== "condition" &&
-          type !== "check_condition" &&
           (this.action as NonConditionAction).continue_on_error === true
-            ? html` <ha-svg-icon
-                .path=${mdiBugPlay}
-                slot="icons"
-              ></ha-svg-icon>`
+            ? html`<div slot="icons">
+                <ha-svg-icon .path=${mdiAlertCircleCheck}></ha-svg-icon>
+                <simple-tooltip animation-delay="0">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.continue_on_error"
+                  )}
+                </simple-tooltip>
+              </div> `
             : nothing}
           ${this.hideMenu
             ? ""
