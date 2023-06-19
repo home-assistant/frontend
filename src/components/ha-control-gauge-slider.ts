@@ -9,6 +9,7 @@ import {
   css,
   CSSResultGroup,
   LitElement,
+  nothing,
   PropertyValues,
   svg,
   TemplateResult,
@@ -16,8 +17,8 @@ import {
 import { customElement, property, query } from "lit/decorators";
 import { arc } from "../resources/svg-arc";
 
-const ROTATE_ANGLE = 135;
 const MAX_ANGLE = 270;
+const ROTATE_ANGLE = 360 - MAX_ANGLE / 2 - 90;
 
 function xy2polar(x: number, y: number) {
   const r = Math.sqrt(x * x + y * y);
@@ -29,6 +30,8 @@ function rad2deg(rad: number) {
   return (rad / (2 * Math.PI)) * 360;
 }
 
+type SelectedSlider = "start" | "end";
+
 @customElement("ha-control-gauge-slider")
 export class HaControlGaugeSlider extends LitElement {
   @property({ type: Boolean, reflect: true })
@@ -37,11 +40,16 @@ export class HaControlGaugeSlider extends LitElement {
   @property({ type: Boolean, reflect: true })
   public vertical = false;
 
-  @property({ type: Number })
-  public leftValue?: number;
+  @property({ type: Boolean }) dual?: boolean;
 
   @property({ type: Number })
-  public rightValue?: number;
+  public value?: number;
+
+  @property({ type: Number, attribute: "start-value" })
+  public startValue?: number;
+
+  @property({ type: Number, attribute: "end-value" })
+  public endValue?: number;
 
   @property({ type: Number })
   public step = 1;
@@ -71,7 +79,7 @@ export class HaControlGaugeSlider extends LitElement {
 
   private _mc?: HammerManager;
 
-  private _getAngleFromEvent = (e: HammerInput) => {
+  private _getPercentageFromEvent = (e: HammerInput) => {
     const bound = this._slider.getBoundingClientRect();
     const x = (2 * (e.center.x - bound.left - bound.width / 2)) / bound.width;
     const y = (2 * (e.center.y - bound.top - bound.height / 2)) / bound.height;
@@ -80,15 +88,9 @@ export class HaControlGaugeSlider extends LitElement {
 
     const offset = (360 - MAX_ANGLE) / 2;
 
-    return (
-      Math.max(
-        Math.min(
-          ((rad2deg(phi) + offset - ROTATE_ANGLE + 360) % 360) - offset,
-          MAX_ANGLE
-        ),
-        0
-      ) / 360
-    );
+    const angle = ((rad2deg(phi) + offset - ROTATE_ANGLE + 360) % 360) - offset;
+
+    return Math.max(Math.min(angle / MAX_ANGLE, 1), 0);
   };
 
   @query("#slider")
@@ -97,10 +99,10 @@ export class HaControlGaugeSlider extends LitElement {
   @query("#interaction")
   private _interaction;
 
-  private _findNearestValue(value: number): "left" | "right" {
-    const leftDistance = Math.abs(value - (this.leftValue ?? 0));
-    const rightDistance = Math.abs(value - (this.rightValue ?? 1));
-    return leftDistance < rightDistance ? "left" : "right";
+  private _findNearestValue(value: number): SelectedSlider {
+    const startDistance = Math.abs(value - (this.startValue ?? 0));
+    const endDistance = Math.abs(value - (this.endValue ?? 1));
+    return startDistance < endDistance ? "start" : "end";
   }
 
   _setupListeners() {
@@ -119,7 +121,19 @@ export class HaControlGaugeSlider extends LitElement {
       this._mc.add(new Tap({ event: "singletap" }));
 
       let savedValue;
-      let selectedValue: "left" | "right" | undefined;
+      let selectedValue: SelectedSlider | undefined;
+
+      const setValue = (value: number, force?: SelectedSlider) => {
+        if (this.dual) {
+          if (force === "end" || selectedValue === "end") {
+            this.endValue = value;
+          } else {
+            this.startValue = value;
+          }
+          return;
+        }
+        this.value = value;
+      };
 
       this._mc.on("pan", (e) => {
         e.srcEvent.stopPropagation();
@@ -127,50 +141,39 @@ export class HaControlGaugeSlider extends LitElement {
       });
       this._mc.on("panstart", (e) => {
         if (this.disabled) return;
-        const value = this._getAngleFromEvent(e);
+        const value = this._getPercentageFromEvent(e);
         this.pressed = true;
-        selectedValue = this._findNearestValue(value);
-        savedValue = this.leftValue;
+        savedValue = this.startValue;
+        if (this.dual) {
+          selectedValue = this._findNearestValue(value);
+        }
       });
       this._mc.on("pancancel", () => {
         if (this.disabled) return;
         this.pressed = false;
-        if (selectedValue === "right") {
-          this.rightValue = savedValue;
-        } else {
-          this.leftValue = savedValue;
+        setValue(savedValue);
+        if (this.dual) {
+          selectedValue = undefined;
         }
       });
       this._mc.on("panmove", (e) => {
         if (this.disabled) return;
-        const value = this._getAngleFromEvent(e);
-        if (selectedValue === "right") {
-          this.rightValue = value;
-        } else {
-          this.leftValue = value;
-        }
+        const value = this._getPercentageFromEvent(e);
+        setValue(value);
       });
       this._mc.on("panend", (e) => {
         if (this.disabled) return;
-        const value = this._getAngleFromEvent(e);
-        if (selectedValue === "right") {
-          this.rightValue = value;
-        } else {
-          this.leftValue = value;
+        const value = this._getPercentageFromEvent(e);
+        setValue(value);
+        if (this.dual) {
+          selectedValue = undefined;
         }
-        selectedValue = undefined;
         this.pressed = false;
       });
-
       this._mc.on("singletap", (e) => {
         if (this.disabled) return;
-        const value = this._getAngleFromEvent(e);
-        const _selectedValue = this._findNearestValue(value);
-        if (_selectedValue === "right") {
-          this.rightValue = value;
-        } else {
-          this.leftValue = value;
-        }
+        const value = this._getPercentageFromEvent(e);
+        setValue(value, this._findNearestValue(value));
       });
     }
   }
@@ -187,14 +190,18 @@ export class HaControlGaugeSlider extends LitElement {
 
     const trackPath = arc({ x: 0, y: 0, start: 0, end: MAX_ANGLE, r: 150 });
 
+    const maxRatio = MAX_ANGLE / 360;
+
     const f = 150 * 2 * Math.PI;
-    const leftValue = this.leftValue ?? 0;
+    const startValue = (this.dual ? this.startValue : this.value) ?? 0;
+    const endValue = this.endValue ?? 1;
 
-    const startStrokeDasharray = `${leftValue * f} ${(1 - leftValue) * f}`;
+    const startArcLength = startValue * f * maxRatio;
+    const startStrokeDasharray = `${startArcLength} ${f - startArcLength}`;
 
-    const rightValue = 0.75 - (this.rightValue ?? 0.75);
-    const endStrokeDasharray = `${rightValue * f} ${(1 - rightValue) * f}`;
-    const endStrokeDashOffset = `${(rightValue + 0.25) * f}`;
+    const endArcLength = (1 - endValue) * f * maxRatio;
+    const endStrokeDasharray = `${endArcLength} ${f - endArcLength}`;
+    const endStrokeDashOffset = `${endArcLength + f * (1 - maxRatio)}`;
 
     return svg`
       <svg id="slider" viewBox="0 0 400 400" overflow="visible">
@@ -216,17 +223,23 @@ export class HaControlGaugeSlider extends LitElement {
               stroke-dasharray=${startStrokeDasharray}
               stroke-dashoffset="0"
             />
-            <circle
-              role="slider"
-              tabindex="0"
-              class="track"
-              id="end"
-              cx="0"
-              cy="0"
-              r="150"
-              stroke-dasharray=${endStrokeDasharray}
-              stroke-dashoffset=${endStrokeDashOffset}
-            />
+            ${
+              this.dual
+                ? svg`
+                    <circle
+                      role="slider"
+                      tabindex="0"
+                      class="track"
+                      id="end"
+                      cx="0"
+                      cy="0"
+                      r="150"
+                      stroke-dasharray=${endStrokeDasharray}
+                      stroke-dashoffset=${endStrokeDashOffset}
+                    />
+                  `
+                : nothing
+            }
             <g transform="rotate(${currentAngle})">
               <circle cx="150" cy="0" r="8" fill="white" />
             </g>
@@ -238,6 +251,13 @@ export class HaControlGaugeSlider extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      :host {
+        --control-gauge-slider-color: var(--primary-color);
+        --control-gauge-slider-background: #8b97a3;
+        --control-gauge-slider-background-opacity: 0.3;
+        --control-gauge-slider-start-color: var(--control-gauge-slider-color);
+        --control-gauge-slider-end-color: var(--control-gauge-slider-color);
+      }
       svg {
         width: 400px;
         display: block;
@@ -252,7 +272,8 @@ export class HaControlGaugeSlider extends LitElement {
       }
       #background {
         fill: none;
-        stroke: rgba(139, 145, 151, 0.3);
+        stroke: var(--control-gauge-slider-background);
+        opacity: var(--control-gauge-slider-background-opacity);
         stroke-linecap: round;
         stroke-width: 24px;
         cursor: pointer;
@@ -276,12 +297,12 @@ export class HaControlGaugeSlider extends LitElement {
       }
 
       #start {
-        stroke: #ff9800;
+        stroke: var(--control-gauge-slider-start-color);
         pointer-events: none;
       }
 
       #end {
-        stroke: #2196f3;
+        stroke: var(--control-gauge-slider-end-color);
         pointer-events: none;
       }
     `;

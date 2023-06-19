@@ -9,6 +9,7 @@ export class DemoHaGaugeSlider extends LitElement {
     return html`
       <ha-card>
         <ha-control-gauge-slider></ha-control-gauge-slider>
+        <ha-control-gauge-slider dual></ha-control-gauge-slider>
       </ha-card>
     `;
   }
@@ -18,6 +19,16 @@ export class DemoHaGaugeSlider extends LitElement {
       ha-card {
         max-width: 600px;
         margin: 24px auto;
+      }
+      ha-control-gauge-slider {
+        --control-gauge-slider-color: #926bc7;
+        --control-gauge-slider-background: #926bc7;
+        --control-gauge-slider-background-opacity: 0.3;
+      }
+      ha-control-gauge-slider[dual] {
+        --control-gauge-slider-end-color: #2196f3;
+        --control-gauge-slider-start-color: #ff9800;
+        --control-gauge-slider-background: var(--disabled-color);
       }
     `;
   }
