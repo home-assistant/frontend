@@ -346,7 +346,7 @@ export interface TemplateSelector {
 
 export interface ThemeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  theme: {} | null;
+  theme: { include_default?: boolean } | null;
 }
 export interface TimeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
