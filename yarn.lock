@@ -1582,10 +1582,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:8.42.0":
-  version: 8.42.0
-  resolution: "@eslint/js@npm:8.42.0"
-  checksum: 750558843ac458f7da666122083ee05306fc087ecc1e5b21e7e14e23885775af6c55bcc92283dff1862b7b0d8863ec676c0f18c7faf1219c722fe91a8ece56b6
+"@eslint/js@npm:8.43.0":
+  version: 8.43.0
+  resolution: "@eslint/js@npm:8.43.0"
+  checksum: 580487a09c82ac169744d36e4af77bc4f582c9a37749d1e9481eb93626c8f3991b2390c6e4e69e5642e3b6e870912b839229a0e23594fae348156ea5a8ed7e2e
   languageName: node
   linkType: hard
 
@@ -2088,13 +2088,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/virtualizer@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@lit-labs/virtualizer@npm:2.0.2"
+"@lit-labs/virtualizer@npm:2.0.3":
+  version: 2.0.3
+  resolution: "@lit-labs/virtualizer@npm:2.0.3"
   dependencies:
     lit: ^2.7.0
     tslib: ^2.0.3
-  checksum: 419aedf72f2b08f8fda43d9729810d5c7f34f470484bd9dff2df49d42cc56e57fcdfd98f69dd84e582d07fd2f372b90077cf42e12c4464b2c04c83755eebb495
+  checksum: 594b89aca53210a6c0127c331fd05b795074df41aba086b63cb13ad5990e6962b86ca8403fe3a673e3bf46735e2def75d5412afe582702346fbd92a3331d34e1
   languageName: node
   linkType: hard
 
@@ -8127,14 +8127,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:8.42.0":
-  version: 8.42.0
-  resolution: "eslint@npm:8.42.0"
+"eslint@npm:8.43.0":
+  version: 8.43.0
+  resolution: "eslint@npm:8.43.0"
   dependencies:
     "@eslint-community/eslint-utils": ^4.2.0
     "@eslint-community/regexpp": ^4.4.0
     "@eslint/eslintrc": ^2.0.3
-    "@eslint/js": 8.42.0
+    "@eslint/js": 8.43.0
     "@humanwhocodes/config-array": ^0.11.10
     "@humanwhocodes/module-importer": ^1.0.1
     "@nodelib/fs.walk": ^1.2.8
@@ -8172,7 +8172,7 @@ __metadata:
     text-table: ^0.2.0
   bin:
     eslint: bin/eslint.js
-  checksum: 07105397b5f2ff4064b983b8971e8c379ec04b1dfcc9d918976b3e00377189000161dac991d82ba14f8759e466091b8c71146f602930ca810c290ee3fcb3faf0
+  checksum: 55654ce00b0d128822b57526e40473d0497c7c6be3886afdc0b41b6b0dfbd34d0eae8159911b18451b4db51a939a0e6d2e117e847ae419086884fc3d4fe23c7c
   languageName: node
   linkType: hard
 
@@ -9597,7 +9597,7 @@ __metadata:
     "@lezer/highlight": 1.1.6
     "@lit-labs/context": 0.3.2
     "@lit-labs/motion": 1.0.3
-    "@lit-labs/virtualizer": 2.0.2
+    "@lit-labs/virtualizer": 2.0.3
     "@lrnwebcomponents/simple-tooltip": 7.0.2
     "@material/chips": =14.0.0-canary.53b3cad2f.0
     "@material/data-table": =14.0.0-canary.53b3cad2f.0
@@ -9689,7 +9689,7 @@ __metadata:
     deep-clone-simple: 1.1.1
     deep-freeze: 0.0.1
     del: 7.0.0
-    eslint: 8.42.0
+    eslint: 8.43.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
