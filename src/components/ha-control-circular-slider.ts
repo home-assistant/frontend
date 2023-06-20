@@ -255,7 +255,7 @@ export class HaControlCircularSlider extends LitElement {
   private _handleKeyDown(e: KeyboardEvent) {
     if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
-    this._activeSlider = e.currentTarget?.id as ActiveSlider;
+    this._activeSlider = (e.currentTarget as any).id as ActiveSlider;
 
     const value = this._getActiveValue();
 
@@ -299,8 +299,7 @@ export class HaControlCircularSlider extends LitElement {
 
   _handleKeyUp(e: KeyboardEvent) {
     if (!A11Y_KEY_CODES.has(e.code)) return;
-    this._activeSlider =
-      (e.currentTarget?.id as "low" | "high" | undefined) ?? "value";
+    this._activeSlider = (e.currentTarget as any).id as ActiveSlider;
     e.preventDefault();
     fireEvent(this, "value-changed", { value: this.value });
     this._activeSlider = undefined;
