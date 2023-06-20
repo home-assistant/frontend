@@ -397,7 +397,7 @@
       "theme-picker": {
         "theme": "Theme",
         "no_theme": "No theme",
-        "default": "Default"
+        "default": "[%key:ui::panel::profile::themes::default%]"
       },
       "language-picker": {
         "language": "Language",

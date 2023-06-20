@@ -13,6 +13,8 @@ import { stopPropagation } from "../common/dom/stop_propagation";
 import { HomeAssistant } from "../types";
 import "./ha-select";
 
+const DEFAULT_THEME = "default";
+
 @customElement("ha-theme-picker")
 export class HaThemePicker extends LitElement {
   @property() public value?: string;
@@ -46,7 +48,7 @@ export class HaThemePicker extends LitElement {
           )}</mwc-list-item
         >
         ${this.includeDefault
-          ? html` <mwc-list-item value="default"
+          ? html`<mwc-list-item .value=${DEFAULT_THEME}
               >${this.hass!.localize(
                 "ui.components.theme-picker.default"
               )}</mwc-list-item
