@@ -110,10 +110,18 @@ export class HaControlGaugeSlider extends LitElement {
   @query("#interaction")
   private _interaction;
 
-  private _findNearestValue(value: number): SelectedDualSlider {
-    const lowDistance = Math.abs(value - (this.low ?? 0));
-    const highDistance = Math.abs(value - (this.high ?? 1));
-    return lowDistance < highDistance ? "low" : "high";
+  private _findSelectedDualSlider(value: number): SelectedDualSlider {
+    const low = this.low ?? 0;
+    const high = this.high ?? 1;
+    if (low >= value) {
+      return "low";
+    }
+    if (high <= value) {
+      return "high";
+    }
+    const lowDistance = Math.abs(value - low);
+    const highDistance = Math.abs(value - high);
+    return lowDistance <= highDistance ? "low" : "high";
   }
 
   _setupListeners() {
@@ -176,7 +184,7 @@ export class HaControlGaugeSlider extends LitElement {
         this.pressed = true;
         savedValue = this.low;
         if (this.dual) {
-          selectedValue = this._findNearestValue(value);
+          selectedValue = this._findSelectedDualSlider(value);
         }
       });
       this._mc.on("pancancel", () => {
@@ -207,7 +215,7 @@ export class HaControlGaugeSlider extends LitElement {
       this._mc.on("singletap", (e) => {
         if (this.disabled) return;
         const value = this._getPercentageFromEvent(e);
-        const selected = this._findNearestValue(value);
+        const selected = this._findSelectedDualSlider(value);
         setValue(value, selected);
         fireValueEvent("changed", { value }, selected);
       });
