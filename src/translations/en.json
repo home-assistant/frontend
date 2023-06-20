@@ -4103,7 +4103,7 @@
                 "title": "Usage",
                 "description": "This determines how the share is intended to be used"
               },
-              "cifs_version": {
+              "version": {
                 "title": "Samba/Windows (CIFS) version",
                 "description": "This choses the version of the protocol to use"
               },

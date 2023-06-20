@@ -90,7 +90,7 @@ const mountSchema = memoizeOne(
             ...(showCIFSVersion
               ? ([
                   {
-                    name: "cifs_version",
+                    name: "version",
                     required: true,
                     selector: {
                       select: {
@@ -170,7 +170,8 @@ class ViewMountDialog extends LitElement {
     this._reloadMounts = dialogParams.reloadMounts;
     if (
       dialogParams.mount?.type === "cifs" &&
-      dialogParams.mount.cifs_version !== "auto"
+      dialogParams.mount.version &&
+      dialogParams.mount.version !== "auto"
     ) {
       this._showCIFSVersion = true;
     }
@@ -289,15 +290,15 @@ class ViewMountDialog extends LitElement {
     if (this._data?.name && !/^\w+$/.test(this._data.name)) {
       this._validationError.name = "invalid_name";
     }
-    if (this._data?.type === "cifs" && !this._data.cifs_version) {
-      this._data.cifs_version = "auto";
+    if (this._data?.type === "cifs" && !this._data.version) {
+      this._data.version = "auto";
     }
     if (
       this._data?.type === "cifs" &&
-      this._data.cifs_version &&
-      ["1.0", "2.0"].includes(this._data.cifs_version)
+      this._data.version &&
+      ["1.0", "2.0"].includes(this._data.version)
     ) {
-      this._validationWarning.cifs_version = "not_recomeded_cifs_version";
+      this._validationWarning.version = "not_recomeded_cifs_version";
     }
   }
 
