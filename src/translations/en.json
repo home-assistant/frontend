@@ -2358,8 +2358,8 @@
                   "value_template": "Value template",
                   "for": "For",
                   "description": {
-                    "full": "When a template triggers {optionalForDuration}",
-                    "for_duration": "for {duration}"
+                    "full": "When a template triggers{optionalForDuration}",
+                    "for_duration": " for {duration}"
                   }
                 },
                 "time": {
