@@ -6,24 +6,26 @@ import {
   TouchMouseInput,
 } from "@egjs/hammerjs";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
-  svg,
   TemplateResult,
+  css,
+  html,
+  nothing,
+  svg,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
+import { clamp } from "../common/number/clamp";
 import { arc } from "../resources/svg-arc";
 
 const MAX_ANGLE = 270;
 const ROTATE_ANGLE = 360 - MAX_ANGLE / 2 - 90;
+const RADIUS = 145;
 
 function xy2polar(x: number, y: number) {
   const r = Math.sqrt(x * x + y * y);
@@ -100,7 +102,9 @@ export class HaControlCircularSlider extends LitElement {
   public _activeSlider?: ActiveSlider;
 
   private _valueToPercentage(value: number) {
-    return (this._boundedValue(value) - this.min) / (this.max - this.min);
+    return (
+      (clamp(value, this.min, this.max) - this.min) / (this.max - this.min)
+    );
   }
 
   private _percentageToValue(value: number) {
@@ -318,11 +322,11 @@ export class HaControlCircularSlider extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const trackPath = arc({ x: 0, y: 0, start: 0, end: MAX_ANGLE, r: 150 });
+    const trackPath = arc({ x: 0, y: 0, start: 0, end: MAX_ANGLE, r: RADIUS });
 
     const maxRatio = MAX_ANGLE / 360;
 
-    const f = 150 * 2 * Math.PI;
+    const f = RADIUS * 2 * Math.PI;
     const lowValue = this.dual ? this.low : this.value;
     const highValue = this.high;
     const lowPercentage = this._valueToPercentage(lowValue ?? this.min);
@@ -341,7 +345,7 @@ export class HaControlCircularSlider extends LitElement {
     return html`
       <svg
         id="slider"
-        viewBox="0 0 400 400"
+        viewBox="0 0 320 320"
         overflow="visible"
         class=${classMap({
           pressed: Boolean(this._activeSlider),
@@ -349,7 +353,7 @@ export class HaControlCircularSlider extends LitElement {
       >
         <g
           id="container"
-          transform="translate(200 200) rotate(${ROTATE_ANGLE})"
+          transform="translate(160 160) rotate(${ROTATE_ANGLE})"
         >
           <path id="interaction" d=${trackPath} />
           <g id="display">
@@ -359,7 +363,7 @@ export class HaControlCircularSlider extends LitElement {
               class="track"
               cx="0"
               cy="0"
-              r="150"
+              r=${RADIUS}
               stroke-dasharray=${lowStrokeDasharray}
               stroke-dashoffset="0"
               role="slider"
@@ -381,7 +385,7 @@ export class HaControlCircularSlider extends LitElement {
                       class="track"
                       cx="0"
                       cy="0"
-                      r="150"
+                      r=${RADIUS}
                       stroke-dasharray=${highStrokeDasharray}
                       stroke-dashoffset=${highStrokeDashOffset}
                       role="slider"
@@ -406,11 +410,17 @@ export class HaControlCircularSlider extends LitElement {
                 style=${styleMap({ "--current-angle": `${currentAngle}deg` })}
                 class="current"
               >
-                <line x1="130" y1="0" x2="138" y2="0" stroke-width="4" />
+                <line 
+                  x1=${RADIUS - 12} 
+                  y1="0" 
+                  x2=${RADIUS - 15} 
+                  y2="0" 
+                  stroke-width="4" 
+                />
                 <line
-                  x1="130"
+                  x1=${RADIUS - 15}
                   y1="0"
-                  x2="134"
+                  x2=${RADIUS - 20}
                   y2="0"
                   stroke-linecap="round"
                   stroke-width="4"
@@ -438,7 +448,7 @@ export class HaControlCircularSlider extends LitElement {
         );
       }
       svg {
-        width: 400px;
+        width: 320px;
         display: block;
       }
       #interaction {
@@ -472,7 +482,7 @@ export class HaControlCircularSlider extends LitElement {
         pointer-events: none;
       }
       .track:focus-visible {
-        stroke-width: 32px;
+        stroke-width: 28px;
       }
       .pressed .track {
         transition: none;

@@ -44,56 +44,69 @@ export class DemoHaCircularSlider extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card>
-        <div class="field">
-          <p>Current</p>
-          <ha-slider
+        <div class="card-content">
+          <p class="title"><b>Config</b></p>
+          <div class="field">
+            <p>Current</p>
+            <ha-slider
+              min="10"
+              max="30"
+              .value=${this.current}
+              @change=${this._currentChanged}
+              pin
+            ></ha-slider>
+            <p>${this.current} °C</p>
+          </div>
+        </div>
+      </ha-card>
+      <ha-card>
+        <div class="card-content">
+          <p class="title"><b>Single</b></p>
+          <ha-control-circular-slider
+            @value-changed=${this._valueChanged}
+            @value-changing=${this._valueChanging}
+            .value=${this.value}
+            .current=${this.current}
+            step="1"
             min="10"
             max="30"
-            .value=${this.current}
-            @change=${this._currentChanged}
-            pin
-          ></ha-slider>
-          <p>${this.current} °C</p>
+          ></ha-control-circular-slider>
+          <div>
+            Value: ${this.value} °C
+            <br />
+            Changing:
+            ${this.changingValue != null ? `${this.changingValue} °C` : "-"}
+          </div>
         </div>
-        <ha-control-circular-slider
-          @value-changed=${this._valueChanged}
-          @value-changing=${this._valueChanging}
-          .value=${this.value}
-          .current=${this.current}
-          step="1"
-          min="10"
-          max="30"
-        ></ha-control-circular-slider>
-        <code>
-          Value: ${this.value} °C
-          <br />
-          Changing:
-          ${this.changingValue != null ? `${this.changingValue} °C` : "-"}
-        </code>
-        <ha-control-circular-slider
-          dual
-          @low-changed=${this._valueChanged}
-          @low-changing=${this._valueChanging}
-          @high-changed=${this._highChanged}
-          @high-changing=${this._highChanging}
-          .low=${this.value}
-          .high=${this.high}
-          .current=${this.current}
-          step="1"
-          min="10"
-          max="30"
-        ></ha-control-circular-slider>
-        <code>
-          Low value: ${this.value} °C
-          <br />
-          Low changing:
-          ${this.changingValue != null ? `${this.changingValue} °C` : "-"}
-          <br />
-          High value: ${this.high} °C
-          <br />
-          High changing:
-          ${this.changingHigh != null ? `${this.changingHigh} °C` : "-"}
-        </code>
+      </ha-card>
+      <ha-card>
+        <div class="card-content">
+          <p class="title"><b>Dual</b></p>
+          <ha-control-circular-slider
+            dual
+            @low-changed=${this._valueChanged}
+            @low-changing=${this._valueChanging}
+            @high-changed=${this._highChanged}
+            @high-changing=${this._highChanging}
+            .low=${this.value}
+            .high=${this.high}
+            .current=${this.current}
+            step="1"
+            min="10"
+            max="30"
+          ></ha-control-circular-slider>
+          <div>
+            Low value: ${this.value} °C
+            <br />
+            Low changing:
+            ${this.changingValue != null ? `${this.changingValue} °C` : "-"}
+            <br />
+            High value: ${this.high} °C
+            <br />
+            High changing:
+            ${this.changingHigh != null ? `${this.changingHigh} °C` : "-"}
+          </div>
+        </div>
       </ha-card>
     `;
   }
@@ -103,6 +116,16 @@ export class DemoHaCircularSlider extends LitElement {
       ha-card {
         max-width: 600px;
         margin: 24px auto;
+      }
+      pre {
+        margin-top: 0;
+        margin-bottom: 8px;
+      }
+      p {
+        margin: 0;
+      }
+      p.title {
+        margin-bottom: 12px;
       }
       ha-control-circular-slider {
         --control-circular-slider-color: #ff9800;
