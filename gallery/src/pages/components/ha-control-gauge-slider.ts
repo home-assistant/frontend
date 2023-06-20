@@ -6,10 +6,10 @@ import "../../../../src/components/ha-control-gauge-slider";
 @customElement("demo-components-ha-control-gauge-slider")
 export class DemoHaGaugeSlider extends LitElement {
   @state()
-  private value = 0.25;
+  private value = 19;
 
   @state()
-  private high = 0.75;
+  private high = 25;
 
   @state()
   private changingValue?: number;
@@ -40,11 +40,15 @@ export class DemoHaGaugeSlider extends LitElement {
           @value-changed=${this._valueChanged}
           @value-changing=${this._valueChanging}
           .value=${this.value}
+          step="1"
+          min="10"
+          max="30"
         ></ha-control-gauge-slider>
         <code>
-          Value: ${this.value}
+          Value: ${this.value} °C
           <br />
-          Changing: ${this.changingValue ?? "-"}
+          Changing:
+          ${this.changingValue != null ? `${this.changingValue} °C` : "-"}
         </code>
         <ha-control-gauge-slider
           dual
@@ -54,15 +58,20 @@ export class DemoHaGaugeSlider extends LitElement {
           @high-changing=${this._highChanging}
           .low=${this.value}
           .high=${this.high}
+          step="1"
+          min="10"
+          max="30"
         ></ha-control-gauge-slider>
         <code>
-          Low value: ${this.value}
+          Low value: ${this.value} °C
           <br />
-          Low changing: ${this.changingValue ?? "-"}
+          Low changing:
+          ${this.changingValue != null ? `${this.changingValue} °C` : "-"}
           <br />
-          High value: ${this.high}
+          High value: ${this.high} °C
           <br />
-          High changing: ${this.changingHigh ?? "-"}
+          High changing:
+          ${this.changingHigh != null ? `${this.changingHigh} °C` : "-"}
         </code>
       </ha-card>
     `;
