@@ -8,6 +8,7 @@ import {
 import {
   css,
   CSSResultGroup,
+  html,
   LitElement,
   nothing,
   PropertyValues,
@@ -332,11 +333,11 @@ export class HaControlCircularSlider extends LitElement {
     const highStrokeDasharray = `${highArcLength} ${f - highArcLength}`;
     const highStrokeDashOffset = `${highArcLength + f * (1 - maxRatio)}`;
 
-    return svg`
-      <svg 
-        id="slider" 
-        viewBox="0 0 400 400" 
-        overflow="visible" 
+    return html`
+      <svg
+        id="slider"
+        viewBox="0 0 400 400"
+        overflow="visible"
         class=${classMap({
           pressed: Boolean(this._activeSlider),
         })}
@@ -360,17 +361,16 @@ export class HaControlCircularSlider extends LitElement {
               tabindex="0"
               aria-valuemin=${this.min}
               aria-valuemax=${this.max}
-              aria-valuenow=${
-                lowValue != null ? this._steppedValue(lowValue) : undefined
-              }
+              aria-valuenow=${lowValue != null
+                ? this._steppedValue(lowValue)
+                : undefined}
               aria-disabled=${this.disabled}
               aria-label=${ifDefined(this.lowLabel ?? this.label)}
               @keydown=${this._handleKeyDown}
               @keyup=${this._handleKeyUp}
             />
-            ${
-              this.dual
-                ? svg`
+            ${this.dual
+              ? svg`
                     <circle
                       id="high"
                       class="track"
@@ -394,8 +394,7 @@ export class HaControlCircularSlider extends LitElement {
                       @keyup=${this._handleKeyUp}
                     />
                   `
-                : nothing
-            }
+              : nothing}
             <g transform="rotate(${currentAngle})">
               <circle cx="150" cy="0" r="8" fill="white" />
             </g>
