@@ -171,6 +171,19 @@ export class HaControlCircularSlider extends LitElement {
         }
       };
 
+      const limitValue = (
+        value: number,
+        forceSelectedSlider?: SelectedDualSlider
+      ) => {
+        if (this.dual) {
+          if (forceSelectedSlider === "high" || selectedValue === "high") {
+            return Math.max(this.low ?? this.min, value);
+          }
+          return Math.min(this.high ?? this.max, value);
+        }
+        return value;
+      };
+
       const fireValueEvent = (
         event: "changed" | "changing",
         params: { value: number | undefined },
@@ -214,15 +227,18 @@ export class HaControlCircularSlider extends LitElement {
         if (this.disabled) return;
         const percentage = this._getPercentageFromEvent(e);
         const rawValue = this._percentageToValue(percentage);
-        setValue(rawValue);
-        const value = this._steppedValue(rawValue);
+        const limitedValue = limitValue(rawValue);
+        setValue(limitedValue);
+        const value = this._steppedValue(limitedValue);
         fireValueEvent("changing", { value });
       });
       this._mc.on("panend", (e) => {
         if (this.disabled) return;
         this.pressed = false;
         const percentage = this._getPercentageFromEvent(e);
-        const value = this._steppedValue(this._percentageToValue(percentage));
+        const rawValue = this._percentageToValue(percentage);
+        const limitedValue = limitValue(rawValue);
+        const value = this._steppedValue(limitedValue);
         setValue(value);
         fireValueEvent("changed", { value });
         fireValueEvent("changing", { value: undefined });
@@ -233,8 +249,10 @@ export class HaControlCircularSlider extends LitElement {
       this._mc.on("singletap", (e) => {
         if (this.disabled) return;
         const percentage = this._getPercentageFromEvent(e);
-        const value = this._steppedValue(this._percentageToValue(percentage));
-        const selected = this._findSelectedDualSlider(value);
+        const rawValue = this._percentageToValue(percentage);
+        const selected = this._findSelectedDualSlider(rawValue);
+        const limitedValue = limitValue(rawValue, selected);
+        const value = this._steppedValue(limitedValue);
         setValue(value, selected);
         fireValueEvent("changed", { value }, selected);
       });
