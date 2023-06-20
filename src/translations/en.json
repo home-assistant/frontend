@@ -2501,6 +2501,7 @@
               "delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
               "unsupported_action": "No visual editor support for action: {action}",
               "type_select": "Action type",
+              "continue_on_error": "Continue on error",
               "type": {
                 "service": {
                   "label": "Call service"
