@@ -43,8 +43,8 @@ declare global {
   }
 }
 
-@customElement("ha-control-gauge-slider")
-export class HaControlGaugeSlider extends LitElement {
+@customElement("ha-control-circular-slider")
+export class HaControlCircularSlider extends LitElement {
   @property({ type: Boolean, reflect: true })
   public disabled = false;
 
@@ -317,11 +317,15 @@ export class HaControlGaugeSlider extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        --control-gauge-slider-color: var(--primary-color);
-        --control-gauge-slider-background: #8b97a3;
-        --control-gauge-slider-background-opacity: 0.3;
-        --control-gauge-slider-low-color: var(--control-gauge-slider-color);
-        --control-gauge-slider-high-color: var(--control-gauge-slider-color);
+        --control-circular-slider-color: var(--primary-color);
+        --control-circular-slider-background: #8b97a3;
+        --control-circular-slider-background-opacity: 0.3;
+        --control-circular-slider-low-color: var(
+          --control-circular-slider-color
+        );
+        --control-circular-slider-high-color: var(
+          --control-circular-slider-color
+        );
       }
       svg {
         width: 400px;
@@ -340,8 +344,8 @@ export class HaControlGaugeSlider extends LitElement {
       }
       #background {
         fill: none;
-        stroke: var(--control-gauge-slider-background);
-        opacity: var(--control-gauge-slider-background-opacity);
+        stroke: var(--control-circular-slider-background);
+        opacity: var(--control-circular-slider-background-opacity);
         stroke-linecap: round;
         stroke-width: 24px;
       }
@@ -364,12 +368,12 @@ export class HaControlGaugeSlider extends LitElement {
       }
 
       #low {
-        stroke: var(--control-gauge-slider-low-color);
+        stroke: var(--control-circular-slider-low-color);
         pointer-events: none;
       }
 
       #high {
-        stroke: var(--control-gauge-slider-high-color);
+        stroke: var(--control-circular-slider-high-color);
         pointer-events: none;
       }
     `;
@@ -378,6 +382,6 @@ export class HaControlGaugeSlider extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-control-gauge-slider": HaControlGaugeSlider;
+    "ha-control-circular-slider": HaControlCircularSlider;
   }
 }

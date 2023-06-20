@@ -1,3 +1,0 @@
----
-title: Control Gauge Slider
----

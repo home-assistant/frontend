@@ -1,10 +1,10 @@
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-control-gauge-slider";
+import "../../../../src/components/ha-control-circular-slider";
 
-@customElement("demo-components-ha-control-gauge-slider")
-export class DemoHaGaugeSlider extends LitElement {
+@customElement("demo-components-ha-control-circular-slider")
+export class DemoHaCircularSlider extends LitElement {
   @state()
   private value = 19;
 
@@ -36,21 +36,21 @@ export class DemoHaGaugeSlider extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card>
-        <ha-control-gauge-slider
+        <ha-control-circular-slider
           @value-changed=${this._valueChanged}
           @value-changing=${this._valueChanging}
           .value=${this.value}
           step="1"
           min="10"
           max="30"
-        ></ha-control-gauge-slider>
+        ></ha-control-circular-slider>
         <code>
           Value: ${this.value} °C
           <br />
           Changing:
           ${this.changingValue != null ? `${this.changingValue} °C` : "-"}
         </code>
-        <ha-control-gauge-slider
+        <ha-control-circular-slider
           dual
           @low-changed=${this._valueChanged}
           @low-changing=${this._valueChanging}
@@ -61,7 +61,7 @@ export class DemoHaGaugeSlider extends LitElement {
           step="1"
           min="10"
           max="30"
-        ></ha-control-gauge-slider>
+        ></ha-control-circular-slider>
         <code>
           Low value: ${this.value} °C
           <br />
@@ -83,15 +83,15 @@ export class DemoHaGaugeSlider extends LitElement {
         max-width: 600px;
         margin: 24px auto;
       }
-      ha-control-gauge-slider {
-        --control-gauge-slider-color: #ff9800;
-        --control-gauge-slider-background: #ff9800;
-        --control-gauge-slider-background-opacity: 0.3;
+      ha-control-circular-slider {
+        --control-circular-slider-color: #ff9800;
+        --control-circular-slider-background: #ff9800;
+        --control-circular-slider-background-opacity: 0.3;
       }
-      ha-control-gauge-slider[dual] {
-        --control-gauge-slider-high-color: #2196f3;
-        --control-gauge-slider-low-color: #ff9800;
-        --control-gauge-slider-background: var(--disabled-color);
+      ha-control-circular-slider[dual] {
+        --control-circular-slider-high-color: #2196f3;
+        --control-circular-slider-low-color: #ff9800;
+        --control-circular-slider-background: var(--disabled-color);
       }
     `;
   }
@@ -99,6 +99,6 @@ export class DemoHaGaugeSlider extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-components-ha-control-gauge-slider": DemoHaGaugeSlider;
+    "demo-components-ha-control-circular-slider": DemoHaCircularSlider;
   }
 }
