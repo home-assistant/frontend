@@ -31,6 +31,7 @@ import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import type { NewAutomationDialogParams } from "./show-dialog-new-automation";
 
 const SOURCE_TYPE_ICONS: Record<BlueprintSourceType, string> = {
   local: mdiFile,
@@ -48,7 +49,7 @@ class DialogNewAutomation extends LitElement implements HassDialog {
 
   @state() public blueprints?: Blueprints;
 
-  public showDialog(params: { mode: "script" | "automation" }): void {
+  public showDialog(params: NewAutomationDialogParams): void {
     this._opened = true;
     this._mode = params?.mode || "automation";
 
