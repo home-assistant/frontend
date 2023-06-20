@@ -106,21 +106,16 @@ export const describeTrigger = (
     const eventTypesString = disjunctionFormatter.format(eventTypes);
     return hass.localize(
       `${triggerTranslationBaseKey}.event.description.full`,
-      "eventTypes",
-      eventTypesString
+      { eventTypes: eventTypesString }
     );
   }
 
   // Home Assistant Trigger
   if (trigger.platform === "homeassistant" && trigger.event) {
     return hass.localize(
-      `${triggerTranslationBaseKey}.homeassistant.description.full`,
-      "startedOrShutdown",
-      hass.localize(
-        trigger.event === "start"
-          ? `${triggerTranslationBaseKey}.homeassistant.description.started`
-          : `${triggerTranslationBaseKey}.homeassistant.description.shutdown`
-      )
+      trigger.event === "start"
+        ? `${triggerTranslationBaseKey}.homeassistant.description.started`
+        : `${triggerTranslationBaseKey}.homeassistant.description.shutdown`
     );
   }
 
@@ -342,11 +337,6 @@ export const describeTrigger = (
 
   // Sun Trigger
   if (trigger.platform === "sun" && trigger.event) {
-    const setsOrRises =
-      trigger.event === "sunset"
-        ? hass.localize(`${triggerTranslationBaseKey}.sun.description.sets`)
-        : hass.localize(`${triggerTranslationBaseKey}.sun.description.rises`);
-
     let duration = "";
     if (trigger.offset) {
       if (typeof trigger.offset === "number") {
@@ -358,17 +348,15 @@ export const describeTrigger = (
       }
       duration = hass.localize(
         `${triggerTranslationBaseKey}.sun.description.offset`,
-        "offset",
-        duration
+        { offset: duration }
       );
     }
 
     return hass.localize(
-      `${triggerTranslationBaseKey}.sun.description.full`,
-      "setsOrRises",
-      setsOrRises,
-      "optionalOffset",
-      duration
+      trigger.event === "sunset"
+        ? `${triggerTranslationBaseKey}.sun.description.sets`
+        : `${triggerTranslationBaseKey}.sun.description.rises`,
+      { optionalOffset: duration }
     );
   }
 
@@ -387,11 +375,9 @@ export const describeTrigger = (
         : localizeTimeString(at, hass.locale, hass.config)
     );
 
-    return hass.localize(
-      `${triggerTranslationBaseKey}.time.description.full`,
-      "time",
-      disjunctionFormatter.format(result)
-    );
+    return hass.localize(`${triggerTranslationBaseKey}.time.description.full`, {
+      time: disjunctionFormatter.format(result),
+    });
   }
 
   // Time Pattern Trigger
@@ -597,16 +583,14 @@ export const describeTrigger = (
       if (forDuration) {
         optionalForDuration = hass.localize(
           `${triggerTranslationBaseKey}.template.description.for_duration`,
-          "duration",
-          forDuration
+          { duration: forDuration }
         );
       }
     }
 
     return hass.localize(
       `${triggerTranslationBaseKey}.template.description.full`,
-      "optionalForDuration",
-      optionalForDuration
+      { optionalForDuration }
     );
   }
 

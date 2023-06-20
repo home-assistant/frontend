@@ -2313,9 +2313,8 @@
                   "start": "Start",
                   "shutdown": "Shutdown",
                   "description": {
-                    "full": "When Home Assistant is {startedOrShutdown}",
-                    "started": "started",
-                    "shutdown": "shutdown"
+                    "started": "When Home Assistant is started",
+                    "shutdown": "When Home Assistant is shutdown"
                   }
                 },
                 "mqtt": {
@@ -2343,10 +2342,9 @@
                   "sunset": "Sunset",
                   "offset": "Offset (optional)",
                   "description": {
-                    "full": "When the sun {setsOrRises} {optionalOffset}",
-                    "sets": "sets",
-                    "rises": "rises",
-                    "offset": "offset by {offset}"
+                    "sets": "When the sun sets{optionalOffset}",
+                    "rises": "When the sun rises{optionalOffset}",
+                    "offset": " offset by {offset}"
                   }
                 },
                 "tag": {
