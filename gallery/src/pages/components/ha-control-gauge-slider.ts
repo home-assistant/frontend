@@ -12,17 +12,17 @@ export class DemoHaGaugeSlider extends LitElement {
   private high = 0.75;
 
   @state()
-  private draftValue?: number;
+  private changingValue?: number;
 
   @state()
-  private draftHigh?: number;
+  private changingHigh?: number;
 
   private _valueChanged(ev) {
     this.value = ev.detail.value;
   }
 
   private _valueChanging(ev) {
-    this.draftValue = ev.detail.value;
+    this.changingValue = ev.detail.value;
   }
 
   private _highChanged(ev) {
@@ -30,7 +30,7 @@ export class DemoHaGaugeSlider extends LitElement {
   }
 
   private _highChanging(ev) {
-    this.draftHigh = ev.detail.value;
+    this.changingHigh = ev.detail.value;
   }
 
   protected render(): TemplateResult {
@@ -44,25 +44,25 @@ export class DemoHaGaugeSlider extends LitElement {
         <code>
           Value: ${this.value}
           <br />
-          Position: ${this.draftValue ?? "-"}
+          Changing: ${this.changingValue ?? "-"}
         </code>
         <ha-control-gauge-slider
           dual
-          @start-changed=${this._valueChanged}
-          @start-changing=${this._valueChanging}
-          @end-changed=${this._highChanged}
-          @end-changing=${this._highChanging}
-          .start=${this.value}
-          .end=${this.high}
+          @low-changed=${this._valueChanged}
+          @low-changing=${this._valueChanging}
+          @high-changed=${this._highChanged}
+          @high-changing=${this._highChanging}
+          .low=${this.value}
+          .high=${this.high}
         ></ha-control-gauge-slider>
         <code>
           Low value: ${this.value}
           <br />
-          Low changing: ${this.draftValue ?? "-"}
+          Low changing: ${this.changingValue ?? "-"}
           <br />
           High value: ${this.high}
           <br />
-          High changing: ${this.draftHigh ?? "-"}
+          High changing: ${this.changingHigh ?? "-"}
         </code>
       </ha-card>
     `;
@@ -80,8 +80,8 @@ export class DemoHaGaugeSlider extends LitElement {
         --control-gauge-slider-background-opacity: 0.3;
       }
       ha-control-gauge-slider[dual] {
-        --control-gauge-slider-end-color: #2196f3;
-        --control-gauge-slider-start-color: #ff9800;
+        --control-gauge-slider-high-color: #2196f3;
+        --control-gauge-slider-low-color: #ff9800;
         --control-gauge-slider-background: var(--disabled-color);
       }
     `;

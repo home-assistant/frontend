@@ -31,15 +31,15 @@ function rad2deg(rad: number) {
   return (rad / (2 * Math.PI)) * 360;
 }
 
-type SelectedDualSlider = "start" | "end";
+type SelectedDualSlider = "low" | "high";
 
 declare global {
   interface HASSDomEvents {
     "value-changing": { value: unknown };
-    "start-changing": { value: unknown };
-    "start-changed": { value: unknown };
-    "end-changing": { value: unknown };
-    "end-changed": { value: unknown };
+    "low-changing": { value: unknown };
+    "low-changed": { value: unknown };
+    "high-changing": { value: unknown };
+    "high-changed": { value: unknown };
   }
 }
 
@@ -56,11 +56,11 @@ export class HaControlGaugeSlider extends LitElement {
   @property({ type: Number })
   public value?: number;
 
-  @property({ type: Number, attribute: "start" })
-  public start?: number;
+  @property({ type: Number })
+  public low?: number;
 
-  @property({ type: Number, attribute: "end" })
-  public end?: number;
+  @property({ type: Number })
+  public high?: number;
 
   @property({ type: Number })
   public step = 1;
@@ -111,9 +111,9 @@ export class HaControlGaugeSlider extends LitElement {
   private _interaction;
 
   private _findNearestValue(value: number): SelectedDualSlider {
-    const startDistance = Math.abs(value - (this.start ?? 0));
-    const endDistance = Math.abs(value - (this.end ?? 1));
-    return startDistance < endDistance ? "start" : "end";
+    const lowDistance = Math.abs(value - (this.low ?? 0));
+    const highDistance = Math.abs(value - (this.high ?? 1));
+    return lowDistance < highDistance ? "low" : "high";
   }
 
   _setupListeners() {
@@ -139,10 +139,10 @@ export class HaControlGaugeSlider extends LitElement {
         forceSelectedSlider?: SelectedDualSlider
       ) => {
         if (this.dual) {
-          if (forceSelectedSlider === "end" || selectedValue === "end") {
-            this.end = value;
+          if (forceSelectedSlider === "high" || selectedValue === "high") {
+            this.high = value;
           } else {
-            this.start = value;
+            this.low = value;
           }
         } else {
           this.value = value;
@@ -174,7 +174,7 @@ export class HaControlGaugeSlider extends LitElement {
         if (this.disabled) return;
         const value = this._getPercentageFromEvent(e);
         this.pressed = true;
-        savedValue = this.start;
+        savedValue = this.low;
         if (this.dual) {
           selectedValue = this._findNearestValue(value);
         }
@@ -229,15 +229,15 @@ export class HaControlGaugeSlider extends LitElement {
     const maxRatio = MAX_ANGLE / 360;
 
     const f = 150 * 2 * Math.PI;
-    const startValue = (this.dual ? this.start : this.value) ?? 0;
-    const endValue = this.end ?? 1;
+    const lowValue = (this.dual ? this.low : this.value) ?? 0;
+    const highValue = this.high ?? 1;
 
-    const startArcLength = startValue * f * maxRatio;
-    const startStrokeDasharray = `${startArcLength} ${f - startArcLength}`;
+    const lowArcLength = lowValue * f * maxRatio;
+    const lowStrokeDasharray = `${lowArcLength} ${f - lowArcLength}`;
 
-    const endArcLength = (1 - endValue) * f * maxRatio;
-    const endStrokeDasharray = `${endArcLength} ${f - endArcLength}`;
-    const endStrokeDashOffset = `${endArcLength + f * (1 - maxRatio)}`;
+    const highArcLength = (1 - highValue) * f * maxRatio;
+    const highStrokeDasharray = `${highArcLength} ${f - highArcLength}`;
+    const highStrokeDashOffset = `${highArcLength + f * (1 - maxRatio)}`;
 
     return svg`
       <svg id="slider" viewBox="0 0 400 400" overflow="visible">
@@ -252,11 +252,11 @@ export class HaControlGaugeSlider extends LitElement {
               role="slider"
               tabindex="0"
               class="track"
-              id="start"
+              id="low"
               cx="0"
               cy="0"
               r="150"
-              stroke-dasharray=${startStrokeDasharray}
+              stroke-dasharray=${lowStrokeDasharray}
               stroke-dashoffset="0"
             />
             ${
@@ -266,12 +266,12 @@ export class HaControlGaugeSlider extends LitElement {
                       role="slider"
                       tabindex="0"
                       class="track"
-                      id="end"
+                      id="high"
                       cx="0"
                       cy="0"
                       r="150"
-                      stroke-dasharray=${endStrokeDasharray}
-                      stroke-dashoffset=${endStrokeDashOffset}
+                      stroke-dasharray=${highStrokeDasharray}
+                      stroke-dashoffset=${highStrokeDashOffset}
                     />
                   `
                 : nothing
@@ -291,8 +291,8 @@ export class HaControlGaugeSlider extends LitElement {
         --control-gauge-slider-color: var(--primary-color);
         --control-gauge-slider-background: #8b97a3;
         --control-gauge-slider-background-opacity: 0.3;
-        --control-gauge-slider-start-color: var(--control-gauge-slider-color);
-        --control-gauge-slider-end-color: var(--control-gauge-slider-color);
+        --control-gauge-slider-low-color: var(--control-gauge-slider-color);
+        --control-gauge-slider-high-color: var(--control-gauge-slider-color);
       }
       svg {
         width: 400px;
@@ -332,13 +332,13 @@ export class HaControlGaugeSlider extends LitElement {
         transition: none;
       }
 
-      #start {
-        stroke: var(--control-gauge-slider-start-color);
+      #low {
+        stroke: var(--control-gauge-slider-low-color);
         pointer-events: none;
       }
 
-      #end {
-        stroke: var(--control-gauge-slider-end-color);
+      #high {
+        stroke: var(--control-gauge-slider-high-color);
         pointer-events: none;
       }
     `;
