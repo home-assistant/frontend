@@ -18,6 +18,7 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { arc } from "../resources/svg-arc";
 
@@ -76,6 +77,9 @@ export class HaControlCircularSlider extends LitElement {
 
   @property({ type: Number })
   public value?: number;
+
+  @property({ type: Number })
+  public current?: number;
 
   @property({ type: Number })
   public low?: number;
@@ -314,8 +318,6 @@ export class HaControlCircularSlider extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const currentAngle = 160;
-
     const trackPath = arc({ x: 0, y: 0, start: 0, end: MAX_ANGLE, r: 150 });
 
     const maxRatio = MAX_ANGLE / 360;
@@ -332,6 +334,9 @@ export class HaControlCircularSlider extends LitElement {
     const highArcLength = (1 - highPercentage) * f * maxRatio;
     const highStrokeDasharray = `${highArcLength} ${f - highArcLength}`;
     const highStrokeDashOffset = `${highArcLength + f * (1 - maxRatio)}`;
+
+    const currentPercentage = this._valueToPercentage(this.current ?? 0);
+    const currentAngle = currentPercentage * MAX_ANGLE;
 
     return html`
       <svg
@@ -395,9 +400,24 @@ export class HaControlCircularSlider extends LitElement {
                     />
                   `
               : nothing}
-            <g transform="rotate(${currentAngle})">
-              <circle cx="150" cy="0" r="8" fill="white" />
-            </g>
+            ${this.current != null
+              ? svg`
+                <g
+                style=${styleMap({ "--current-angle": `${currentAngle}deg` })}
+                class="current"
+              >
+                <line x1="130" y1="0" x2="138" y2="0" stroke-width="4" />
+                <line
+                  x1="130"
+                  y1="0"
+                  x2="134"
+                  y2="0"
+                  stroke-linecap="round"
+                  stroke-width="4"
+                />
+              </g>
+            `
+              : nothing}
           </g>
         </g>
       </svg>
@@ -456,6 +476,11 @@ export class HaControlCircularSlider extends LitElement {
       }
       .pressed .track {
         transition: none;
+      }
+      .current {
+        stroke: var(--primary-text-color);
+        transform: rotate(var(--current-angle, 0));
+        transition: transform 300ms ease-in-out;
       }
 
       #value {

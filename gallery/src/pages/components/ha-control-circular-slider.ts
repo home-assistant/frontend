@@ -2,9 +2,13 @@ import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-control-circular-slider";
+import "../../../../src/components/ha-slider";
 
 @customElement("demo-components-ha-control-circular-slider")
 export class DemoHaCircularSlider extends LitElement {
+  @state()
+  private current = 22;
+
   @state()
   private value = 19;
 
@@ -33,13 +37,29 @@ export class DemoHaCircularSlider extends LitElement {
     this.changingHigh = ev.detail.value;
   }
 
+  private _currentChanged(ev) {
+    this.current = ev.currentTarget.value;
+  }
+
   protected render(): TemplateResult {
     return html`
       <ha-card>
+        <div class="field">
+          <p>Current</p>
+          <ha-slider
+            min="10"
+            max="30"
+            .value=${this.current}
+            @change=${this._currentChanged}
+            pin
+          ></ha-slider>
+          <p>${this.current} °C</p>
+        </div>
         <ha-control-circular-slider
           @value-changed=${this._valueChanged}
           @value-changing=${this._valueChanging}
           .value=${this.value}
+          .current=${this.current}
           step="1"
           min="10"
           max="30"
@@ -58,6 +78,7 @@ export class DemoHaCircularSlider extends LitElement {
           @high-changing=${this._highChanging}
           .low=${this.value}
           .high=${this.high}
+          .current=${this.current}
           step="1"
           min="10"
           max="30"
@@ -92,6 +113,11 @@ export class DemoHaCircularSlider extends LitElement {
         --control-circular-slider-high-color: #2196f3;
         --control-circular-slider-low-color: #ff9800;
         --control-circular-slider-background: var(--disabled-color);
+      }
+      .field {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
       }
     `;
   }
