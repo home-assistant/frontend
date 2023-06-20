@@ -56,8 +56,8 @@ class MoreInfoWeather extends LitElement {
     }
 
     const forecastData = getForecast(this.stateObj.attributes);
-    const forecast = forecastData?.[0];
-    const hourly = forecastData?.[1] === "hourly";
+    const forecast = forecastData?.forecast;
+    const hourly = forecastData?.type === "hourly";
 
     return html`
       ${this._showValue(this.stateObj.attributes.temperature)

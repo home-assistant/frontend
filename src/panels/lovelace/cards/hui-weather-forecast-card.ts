@@ -175,13 +175,13 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       this._config?.forecast_type
     );
     const forecast =
-      this._config?.show_forecast !== false && forecastData?.[0]?.length
-        ? forecastData[0].slice(0, this._veryVeryNarrow ? 3 : 5)
+      this._config?.show_forecast !== false && forecastData?.forecast?.length
+        ? forecastData.forecast.slice(0, this._veryVeryNarrow ? 3 : 5)
         : undefined;
     const weather = !forecast || this._config?.show_current !== false;
 
-    const hourly = forecastData?.[1];
-    const dayNight = forecastData?.[2];
+    const hourly = forecastData?.type === "hourly";
+    const dayNight = forecastData?.type === "twice_daily";
 
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
     const name = this._config.name ?? computeStateName(stateObj);

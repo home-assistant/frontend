@@ -7,7 +7,7 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import { UNAVAILABLE } from "../../../../data/entity";
-import type { WeatherEntity } from "../../../../data/weather";
+import type { ForecastType, WeatherEntity } from "../../../../data/weather";
 import type { HomeAssistant } from "../../../../types";
 import type { WeatherForecastCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
@@ -58,15 +58,15 @@ export class HuiWeatherForecastCardEditor
       !config.forecast_type ||
       !this._forecastSupported(config.forecast_type)
     ) {
-      let forecastType = "legacy";
-      if (this._forecastTwiceDaily === true) {
-        forecastType = "twice_daily";
-      }
-      if (this.__forecastHourly === true) {
-        forecastType = "hourly";
-      }
-      if (this._forecastDaily === true) {
+      let forecastType: string | undefined;
+      if (this._forecastSupported("daily")) {
         forecastType = "daily";
+      } else if (this._forecastSupported("twice_daily")) {
+        forecastType = "twice_daily";
+      } else if (this._forecastSupported("hourly")) {
+        forecastType = "hourly";
+      } else if (this._forecastSupported("legacy")) {
+        forecastType = "legacy";
       }
       fireEvent(this, "config-changed", {
         config: { ...config, forecast_type: forecastType },
@@ -94,59 +94,17 @@ export class HuiWeatherForecastCardEditor
     return undefined;
   }
 
-  private _forecastSupported(forecastType: string): boolean | undefined {
+  private _forecastSupported(forecastType: ForecastType): boolean {
     const stateObj = this._stateObj as WeatherEntity;
     if (forecastType === "legacy") {
       return !!stateObj.attributes.forecast?.length;
     }
-    if (forecastType === "twice_daily") {
-      return !!stateObj.attributes.forecast_twice_daily?.length;
-    }
-    if (forecastType === "hourly") {
-      return !!stateObj.attributes.forecast_hourly?.length;
-    }
-    if (forecastType === "daily") {
-      return !!stateObj.attributes.forecast_daily?.length;
-    }
-    return undefined;
-  }
-
-  private get _forecastLegacy(): boolean | undefined {
-    const stateObj = this._stateObj as WeatherEntity;
-    if (stateObj && stateObj.state !== UNAVAILABLE) {
-      return !!stateObj.attributes.forecast?.length;
-    }
-    return undefined;
-  }
-
-  private get _forecastDaily(): boolean | undefined {
-    const stateObj = this._stateObj as WeatherEntity;
-    if (stateObj && stateObj.state !== UNAVAILABLE) {
-      return !!stateObj.attributes.forecast_daily?.length;
-    }
-    return undefined;
-  }
-
-  private get __forecastHourly(): boolean | undefined {
-    const stateObj = this._stateObj as WeatherEntity;
-    if (stateObj && stateObj.state !== UNAVAILABLE) {
-      return !!stateObj.attributes.forecast_hourly?.length;
-    }
-    return undefined;
-  }
-
-  private get _forecastTwiceDaily(): boolean | undefined {
-    const stateObj = this._stateObj as WeatherEntity;
-    if (stateObj && stateObj.state !== UNAVAILABLE) {
-      return !!stateObj.attributes.forecast_twice_daily?.length;
-    }
-    return undefined;
+    return !!stateObj?.attributes[`forecast_${forecastType}`]?.length;
   }
 
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
-      hasForecast?: boolean,
       hasForecastLegacy?: boolean,
       hasForecastDaily?: boolean,
       hasForecastHourly?: boolean,
@@ -171,7 +129,8 @@ export class HuiWeatherForecastCardEditor
             { name: "theme", selector: { theme: {} } },
           ],
         },
-        ...(hasForecast && hasForecastLegacy === false
+        ...(!hasForecastLegacy &&
+        (hasForecastDaily || hasForecastHourly || hasForecastTwiceDaily)
           ? ([
               {
                 name: "forecast_type",
@@ -214,7 +173,10 @@ export class HuiWeatherForecastCardEditor
               },
             ] as const)
           : []),
-        ...(hasForecast
+        ...(hasForecastDaily ||
+        hasForecastHourly ||
+        hasForecastTwiceDaily ||
+        hasForecastLegacy
           ? ([
               {
                 name: "forecast",
@@ -255,11 +217,10 @@ export class HuiWeatherForecastCardEditor
 
     const schema = this._schema(
       this.hass.localize,
-      this._hasForecast,
-      this._forecastLegacy,
-      this._forecastDaily,
-      this.__forecastHourly,
-      this._forecastTwiceDaily
+      this._forecastSupported("legacy"),
+      this._forecastSupported("daily"),
+      this._forecastSupported("hourly"),
+      this._forecastSupported("twice_daily")
     );
 
     const data: WeatherForecastCardConfig = {

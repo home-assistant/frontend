@@ -28,6 +28,8 @@ import { formatNumber } from "../common/number/format_number";
 import "../components/ha-svg-icon";
 import type { HomeAssistant } from "../types";
 
+export type ForecastType = "legacy" | "hourly" | "daily" | "twice_daily";
+
 interface ForecastAttribute {
   temperature: number;
   datetime: string;
@@ -547,49 +549,41 @@ export const getWeatherConvertibleUnits = (
 
 export const getForecast = (
   weather_attributes?: WeatherEntityAttributes | undefined,
-  forecast_type?: string | undefined
+  forecast_type?: ForecastType | undefined
 ):
-  | [
-      forecast: ForecastAttribute[],
-      type: "daily" | "hourly" | "twice_daily",
-      dayNight: boolean
-    ]
+  | {
+      forecast: ForecastAttribute[];
+      type: "daily" | "hourly" | "twice_daily";
+    }
   | undefined => {
-  let dayNight: boolean | undefined;
-
   if (
     forecast_type === "daily" &&
-    weather_attributes &&
     weather_attributes?.forecast_daily &&
-    weather_attributes?.forecast_daily?.length &&
-    weather_attributes?.forecast_daily?.length > 2
+    weather_attributes.forecast_daily.length > 2
   ) {
-    return [weather_attributes.forecast_daily, "daily", false];
+    return { forecast: weather_attributes.forecast_daily, type: "daily" };
   }
   if (
     forecast_type === "hourly" &&
-    weather_attributes &&
     weather_attributes?.forecast_hourly &&
-    weather_attributes?.forecast_hourly?.length &&
-    weather_attributes?.forecast_hourly?.length > 2
+    weather_attributes.forecast_hourly.length > 2
   ) {
-    return [weather_attributes.forecast_hourly, "hourly", false];
+    return { forecast: weather_attributes.forecast_hourly, type: "hourly" };
   }
   if (
     forecast_type === "twice_daily" &&
-    weather_attributes &&
     weather_attributes?.forecast_twice_daily &&
-    weather_attributes?.forecast_twice_daily?.length &&
-    weather_attributes?.forecast_twice_daily?.length > 2
+    weather_attributes.forecast_twice_daily.length > 2
   ) {
-    return [weather_attributes.forecast_twice_daily, "twice_daily", true];
+    return {
+      forecast: weather_attributes.forecast_twice_daily,
+      type: "twice_daily",
+    };
   }
   if (
     forecast_type === "legacy" &&
-    weather_attributes &&
     weather_attributes?.forecast &&
-    weather_attributes?.forecast?.length &&
-    weather_attributes?.forecast?.length > 2
+    weather_attributes.forecast.length > 2
   ) {
     const hourly = isForecastHourly(weather_attributes.forecast);
     if (hourly === true) {
@@ -600,37 +594,39 @@ export const getForecast = (
         ].datetime
       );
       const dayDiff = datelast.getTime() - dateFirst.getTime();
-      dayNight = dayDiff > DAY_IN_MILLISECONDS;
-      return [weather_attributes.forecast, "hourly", dayNight];
+      const dayNight = dayDiff > DAY_IN_MILLISECONDS;
+      return {
+        forecast: weather_attributes.forecast,
+        type: dayNight ? "twice_daily" : "hourly",
+      };
     }
-    return [weather_attributes.forecast, "daily", false];
+    return { forecast: weather_attributes.forecast, type: "daily" };
   }
   if (forecast_type === undefined) {
     if (
-      weather_attributes &&
-      weather_attributes?.forecast_daily?.length &&
-      weather_attributes?.forecast_daily?.length > 2
+      weather_attributes?.forecast_daily &&
+      weather_attributes.forecast_daily.length > 2
     ) {
-      return [weather_attributes.forecast_daily, "daily", false];
+      return { forecast: weather_attributes.forecast_daily, type: "daily" };
     }
     if (
-      weather_attributes &&
-      weather_attributes?.forecast_hourly?.length &&
-      weather_attributes?.forecast_hourly?.length > 2
+      weather_attributes?.forecast_hourly &&
+      weather_attributes.forecast_hourly.length > 2
     ) {
-      return [weather_attributes.forecast_hourly, "hourly", false];
+      return { forecast: weather_attributes.forecast_hourly, type: "hourly" };
     }
     if (
-      weather_attributes &&
-      weather_attributes?.forecast_twice_daily?.length &&
-      weather_attributes?.forecast_twice_daily?.length > 2
+      weather_attributes?.forecast_twice_daily &&
+      weather_attributes.forecast_twice_daily.length > 2
     ) {
-      return [weather_attributes.forecast_twice_daily, "twice_daily", true];
+      return {
+        forecast: weather_attributes.forecast_twice_daily,
+        type: "twice_daily",
+      };
     }
     if (
-      weather_attributes &&
-      weather_attributes?.forecast?.length &&
-      weather_attributes?.forecast?.length > 2
+      weather_attributes?.forecast &&
+      weather_attributes.forecast.length > 2
     ) {
       const hourly = isForecastHourly(weather_attributes.forecast);
       if (hourly === true) {
@@ -641,10 +637,13 @@ export const getForecast = (
           ].datetime
         );
         const dayDiff = datelast.getTime() - dateFirst.getTime();
-        dayNight = dayDiff > DAY_IN_MILLISECONDS;
-        return [weather_attributes.forecast, "hourly", dayNight];
+        const dayNight = dayDiff > DAY_IN_MILLISECONDS;
+        return {
+          forecast: weather_attributes.forecast,
+          type: dayNight ? "twice_daily" : "hourly",
+        };
       }
-      return [weather_attributes.forecast, "daily", false];
+      return { forecast: weather_attributes.forecast, type: "daily" };
     }
   }
 
