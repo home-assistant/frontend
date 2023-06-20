@@ -978,6 +978,11 @@
           "disarm_action": "Disarm",
           "arm_title": "Arm",
           "arm_action": "Arm"
+        },
+        "lock": {
+          "open": "Open",
+          "lock": "Lock",
+          "unlock": "Unlock"
         }
       },
       "entity_registry": {
