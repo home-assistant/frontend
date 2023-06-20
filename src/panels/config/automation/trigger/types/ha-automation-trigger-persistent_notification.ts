@@ -10,31 +10,7 @@ import { PersistentNotificationTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
-const SUPPORTED_UPDATE_TYPES: {
-  value: string;
-  label: string;
-}[] = [
-  {
-    value: "added",
-    label:
-      "ui.panel.config.automation.editor.triggers.type.persistent_notification.update_types.added",
-  },
-  {
-    value: "removed",
-    label:
-      "ui.panel.config.automation.editor.triggers.type.persistent_notification.update_types.removed",
-  },
-  {
-    value: "current",
-    label:
-      "ui.panel.config.automation.editor.triggers.type.persistent_notification.update_types.current",
-  },
-  {
-    value: "updated",
-    label:
-      "ui.panel.config.automation.editor.triggers.type.persistent_notification.update_types.updated",
-  },
-];
+const SUPPORTED_UPDATE_TYPES = ["added", "removed", "current", "updated"];
 const DEFAULT_UPDATE_TYPES = ["added", "removed"];
 const DEFAULT_NOTIFICATION_ID = "";
 
@@ -77,11 +53,13 @@ export class HaPersistentNotificationTrigger extends LitElement {
             (update_type) => html`
               <ha-check-list-item
                 left
-                .value=${update_type.value}
+                .value=${update_type}
                 @request-selected=${this._updateTypeChanged}
-                .selected=${updateTypes!.includes(update_type.value)}
+                .selected=${updateTypes!.includes(update_type)}
               >
-                ${update_type.label}
+              ${this.hass.localize(
+                `ui.panel.config.automation.editor.triggers.type.persistent_notification.update_types.${update_type}`
+              )}
               </ha-check-list-item>
           </ha-formfield>
         </div>
@@ -105,7 +83,6 @@ export class HaPersistentNotificationTrigger extends LitElement {
       return;
     }
 
-    const updateTypes = this.trigger.update_type ?? [];
     const newUpdateTypes = this.trigger.update_type
       ? [...this.trigger.update_type]
       : [];
