@@ -2498,25 +2498,52 @@
               "type_select": "Action type",
               "type": {
                 "service": {
-                  "label": "Call service"
+                  "label": "Call service",
+                  "description": {
+                    "service_based_on_template": "Call a service based on a template",
+                    "service_based_on_name": "Call service: {service}",
+                    "service": "Call a service",
+                    "target_template": "templated {name}",
+                    "target_unknown_entity": "unknown entity",
+                    "target_unknown_device": "unknown device",
+                    "target_unknown_area": "unknown area"
+                  }
                 },
                 "play_media": {
-                  "label": "Play media"
+                  "label": "Play media",
+                  "description": {
+                    "full": "Play {media} on {media_player}",
+                    "media": "media",
+                    "media_player": "a media player"
+                  }
                 },
                 "delay": {
                   "label": "Wait for time to pass (delay)",
-                  "delay": "Duration"
+                  "delay": "Duration",
+                  "description": {
+                    "full": "Delay {duration}",
+                    "duration_string": "for {string}",
+                    "duration_template": "based on a template",
+                    "duration_unknown": "a duration"
+                  }
                 },
                 "wait_template": {
                   "label": "Wait for a template",
                   "wait_template": "Wait Template",
                   "timeout": "Timeout (optional)",
-                  "continue_timeout": "Continue on timeout"
+                  "continue_timeout": "Continue on timeout",
+                  "description": {
+                    "full": "Wait for a template to render true"
+                  }
                 },
                 "wait_for_trigger": {
                   "label": "Wait for a trigger",
                   "timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::timeout%]",
-                  "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]"
+                  "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]",
+                  "description": {
+                    "wait_for_a_trigger": "Wait for a trigger",
+                    "wait_for_triggers_with_name": "Wait for {triggers}"
+                  }
                 },
                 "condition": {
                   "label": "Condition"
@@ -2524,7 +2551,11 @@
                 "event": {
                   "label": "Event",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::label%]",
-                  "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]"
+                  "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
+                  "description": {
+                    "full": "Fire event {name}",
+                    "template": "based on a template"
+                  }
                 },
                 "device_id": {
                   "label": "Device",
@@ -2543,7 +2574,11 @@
                 },
                 "activate_scene": {
                   "label": "Scene",
-                  "scene": "Scene"
+                  "scene": "Scene",
+                  "description": {
+                    "activate_scene": "Activate a scene",
+                    "activate_scene_with_name": "Activate scene {name}"
+                  }
                 },
                 "repeat": {
                   "label": "Repeat",
@@ -2561,7 +2596,14 @@
                       "conditions": "Until conditions"
                     }
                   },
-                  "sequence": "Actions"
+                  "sequence": "Actions",
+                  "description": {
+                    "full": "Repeat an action {chosenAction}",
+                    "count": "{count} {count, plural,\n time\n times\n}",
+                    "while": "while {conditions} is true",
+                    "until": "until {conditions} is true",
+                    "for_each": "for every item: {items}"
+                  }
                 },
                 "choose": {
                   "label": "Choose",
@@ -2571,7 +2613,11 @@
                   "add_option": "Add option",
                   "remove_option": "Remove option",
                   "conditions": "Conditions",
-                  "sequence": "Actions"
+                  "sequence": "Actions",
+                  "description": {
+                    "full": "Choose between {number} {number, plural,\n action\n  actions\n}",
+                    "no_action": "Choose an action"
+                  }
                 },
                 "if": {
                   "label": "If-then",
@@ -2583,13 +2629,23 @@
                 "stop": {
                   "label": "Stop",
                   "stop": "Reason for stopping",
-                  "error": "Stop because of an unexpected error"
+                  "error": "Stop because of an unexpected error",
+                  "description": {
+                    "full": "Stop {reason}",
+                    "reason": "because: {reason}"
+                  }
                 },
                 "parallel": {
-                  "label": "Run in parallel"
+                  "label": "Run in parallel",
+                  "description": {
+                    "full": "Run {number} {number, plural,\n action\n  actions\n} in parallel"
+                  }
                 },
                 "variables": {
-                  "label": "Define variables"
+                  "label": "Define variables",
+                  "description": {
+                    "full": "Define variables {names}"
+                  }
                 }
               }
             }
