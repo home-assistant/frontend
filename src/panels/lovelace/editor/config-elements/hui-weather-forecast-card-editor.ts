@@ -61,10 +61,10 @@ export class HuiWeatherForecastCardEditor
       let forecastType: string | undefined;
       if (this._forecastSupported("daily")) {
         forecastType = "daily";
-      } else if (this._forecastSupported("twice_daily")) {
-        forecastType = "twice_daily";
       } else if (this._forecastSupported("hourly")) {
         forecastType = "hourly";
+      } else if (this._forecastSupported("twice_daily")) {
+        forecastType = "twice_daily";
       } else if (this._forecastSupported("legacy")) {
         forecastType = "legacy";
       }
