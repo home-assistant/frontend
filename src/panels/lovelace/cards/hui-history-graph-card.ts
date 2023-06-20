@@ -205,6 +205,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                   .historyData=${this._stateHistory}
                   .names=${this._names}
                   up-to-now
+                  .hoursToShow=${this._hoursToShow}
                   .showNames=${this._config.show_names !== undefined
                     ? this._config.show_names
                     : true}
