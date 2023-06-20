@@ -2342,9 +2342,8 @@
                   "sunset": "Sunset",
                   "offset": "Offset (optional)",
                   "description": {
-                    "sets": "When the sun sets{optionalOffset}",
-                    "rises": "When the sun rises{optionalOffset}",
-                    "offset": " offset by {offset}"
+                    "sets": "When the sun sets{hasDuration, select, \n true { offset by {duration}} \n other {}\n }",
+                    "rises": "When the sun rises{hasDuration, select, \n true { offset by {duration}} \n other {}\n }"
                   }
                 },
                 "tag": {
@@ -2358,8 +2357,7 @@
                   "value_template": "Value template",
                   "for": "For",
                   "description": {
-                    "full": "When a template triggers{optionalForDuration}",
-                    "for_duration": " for {duration}"
+                    "full": "When a template triggers{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
                 "time": {

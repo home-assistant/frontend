@@ -346,17 +346,13 @@ export const describeTrigger = (
       } else {
         duration = JSON.stringify(trigger.offset);
       }
-      duration = hass.localize(
-        `${triggerTranslationBaseKey}.sun.description.offset`,
-        { offset: duration }
-      );
     }
 
     return hass.localize(
       trigger.event === "sunset"
         ? `${triggerTranslationBaseKey}.sun.description.sets`
         : `${triggerTranslationBaseKey}.sun.description.rises`,
-      { optionalOffset: duration }
+      { hasDuration: duration !== "", duration: duration }
     );
   }
 
@@ -576,21 +572,14 @@ export const describeTrigger = (
 
   // Template Trigger
   if (trigger.platform === "template") {
-    let optionalForDuration = "";
-
+    let duration = "";
     if (trigger.for) {
-      const forDuration = describeDuration(trigger.for);
-      if (forDuration) {
-        optionalForDuration = hass.localize(
-          `${triggerTranslationBaseKey}.template.description.for_duration`,
-          { duration: forDuration }
-        );
-      }
+      duration = describeDuration(trigger.for) ?? "";
     }
 
     return hass.localize(
       `${triggerTranslationBaseKey}.template.description.full`,
-      { optionalForDuration }
+      { hasDuration: duration !== "", duration: duration }
     );
   }
 
