@@ -41,7 +41,7 @@ export class HaSelectSelector extends LitElement {
 
   protected render() {
     const options =
-      this.selector.select?.options.map((option) =>
+      this.selector.select?.options?.map((option) =>
         typeof option === "object"
           ? (option as SelectOption)
           : ({ value: option, label: option } as SelectOption)
