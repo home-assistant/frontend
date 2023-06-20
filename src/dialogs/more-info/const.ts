@@ -22,6 +22,7 @@ export const DOMAINS_WITH_NEW_MORE_INFO = [
   "fan",
   "input_boolean",
   "light",
+  "lock",
   "siren",
   "switch",
 ];
