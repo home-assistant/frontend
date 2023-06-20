@@ -83,6 +83,8 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _stt_binary_handler_id?: number | null;
 
+  private _pipelinePromise?: Promise<AssistPipeline>;
+
   public async showDialog(params?: VoiceCommandDialogParams): Promise<void> {
     if (params?.pipeline_id) {
       this._pipelineId = params?.pipeline_id;
@@ -98,6 +100,7 @@ export class HaVoiceCommandDialog extends LitElement {
     await this.updateComplete;
     this._scrollMessagesBottom();
 
+    await this._pipelinePromise;
     if (params?.start_listening && this._pipeline?.stt_engine) {
       this._toggleListening();
     }
@@ -284,7 +287,8 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private async _getPipeline() {
     try {
-      this._pipeline = await getAssistPipeline(this.hass, this._pipelineId);
+      this._pipelinePromise = getAssistPipeline(this.hass, this._pipelineId);
+      this._pipeline = await this._pipelinePromise;
     } catch (e: any) {
       if (e.code === "not_found") {
         this._pipelineId = undefined;
