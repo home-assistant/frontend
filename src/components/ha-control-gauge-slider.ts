@@ -48,9 +48,6 @@ export class HaControlGaugeSlider extends LitElement {
   @property({ type: Boolean, reflect: true })
   public disabled = false;
 
-  @property({ type: Boolean, reflect: true })
-  public vertical = false;
-
   @property({ type: Boolean }) dual?: boolean;
 
   @property({ type: Number })
@@ -73,6 +70,22 @@ export class HaControlGaugeSlider extends LitElement {
 
   @property({ type: Boolean, reflect: true })
   public pressed = false;
+
+  private _valueToPercentage(value: number) {
+    return (this._boundedValue(value) - this.min) / (this.max - this.min);
+  }
+
+  private _percentageToValue(value: number) {
+    return (this.max - this.min) * value + this.min;
+  }
+
+  private _steppedValue(value: number) {
+    return Math.round(value / this.step) * this.step;
+  }
+
+  private _boundedValue(value: number) {
+    return Math.min(Math.max(value, this.min), this.max);
+  }
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -111,8 +124,9 @@ export class HaControlGaugeSlider extends LitElement {
   private _interaction;
 
   private _findSelectedDualSlider(value: number): SelectedDualSlider {
-    const low = this.low ?? 0;
-    const high = this.high ?? 1;
+    const low = Math.max(this.low ?? this.min, this.min);
+    const high = Math.min(this.high ?? this.max, this.max);
+
     if (low >= value) {
       return "low";
     }
@@ -180,11 +194,12 @@ export class HaControlGaugeSlider extends LitElement {
       });
       this._mc.on("panstart", (e) => {
         if (this.disabled) return;
-        const value = this._getPercentageFromEvent(e);
+        const percentage = this._getPercentageFromEvent(e);
+        const rawValue = this._percentageToValue(percentage);
         this.pressed = true;
         savedValue = this.low;
         if (this.dual) {
-          selectedValue = this._findSelectedDualSlider(value);
+          selectedValue = this._findSelectedDualSlider(rawValue);
         }
       });
       this._mc.on("pancancel", () => {
@@ -197,24 +212,28 @@ export class HaControlGaugeSlider extends LitElement {
       });
       this._mc.on("panmove", (e) => {
         if (this.disabled) return;
-        const value = this._getPercentageFromEvent(e);
-        setValue(value);
+        const percentage = this._getPercentageFromEvent(e);
+        const rawValue = this._percentageToValue(percentage);
+        setValue(rawValue);
+        const value = this._steppedValue(rawValue);
         fireValueEvent("changing", { value });
       });
       this._mc.on("panend", (e) => {
         if (this.disabled) return;
-        const value = this._getPercentageFromEvent(e);
+        this.pressed = false;
+        const percentage = this._getPercentageFromEvent(e);
+        const value = this._steppedValue(this._percentageToValue(percentage));
         setValue(value);
         fireValueEvent("changed", { value });
         fireValueEvent("changing", { value: undefined });
         if (this.dual) {
           selectedValue = undefined;
         }
-        this.pressed = false;
       });
       this._mc.on("singletap", (e) => {
         if (this.disabled) return;
-        const value = this._getPercentageFromEvent(e);
+        const percentage = this._getPercentageFromEvent(e);
+        const value = this._steppedValue(this._percentageToValue(percentage));
         const selected = this._findSelectedDualSlider(value);
         setValue(value, selected);
         fireValueEvent("changed", { value }, selected);
@@ -237,13 +256,15 @@ export class HaControlGaugeSlider extends LitElement {
     const maxRatio = MAX_ANGLE / 360;
 
     const f = 150 * 2 * Math.PI;
-    const lowValue = (this.dual ? this.low : this.value) ?? 0;
-    const highValue = this.high ?? 1;
+    const lowValue = this.dual ? this.low : this.value;
+    const highValue = this.high;
+    const lowPercentage = this._valueToPercentage(lowValue ?? this.min);
+    const highPercentage = this._valueToPercentage(highValue ?? this.max);
 
-    const lowArcLength = lowValue * f * maxRatio;
+    const lowArcLength = lowPercentage * f * maxRatio;
     const lowStrokeDasharray = `${lowArcLength} ${f - lowArcLength}`;
 
-    const highArcLength = (1 - highValue) * f * maxRatio;
+    const highArcLength = (1 - highPercentage) * f * maxRatio;
     const highStrokeDasharray = `${highArcLength} ${f - highArcLength}`;
     const highStrokeDashOffset = `${highArcLength + f * (1 - maxRatio)}`;
 
@@ -307,12 +328,15 @@ export class HaControlGaugeSlider extends LitElement {
         display: block;
       }
       #interaction {
+        display: flex;
         fill: none;
         stroke: transparent;
         stroke-linecap: round;
         stroke-width: 48px;
         cursor: pointer;
-        display: flex;
+      }
+      :host([disabled]) #interaction {
+        cursor: initial;
       }
       #background {
         fill: none;
@@ -320,7 +344,6 @@ export class HaControlGaugeSlider extends LitElement {
         opacity: var(--control-gauge-slider-background-opacity);
         stroke-linecap: round;
         stroke-width: 24px;
-        cursor: pointer;
       }
       #display {
         pointer-events: none;
