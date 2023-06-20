@@ -2328,7 +2328,13 @@
                 "persistent_notification": {
                   "label": "Persistent notification",
                   "notification_id": "Notification Id",
-                  "update_type": "Update type"
+                  "update_type": "Update type",
+                  "update_types": {
+                    "added": "added",
+                    "removed": "removed",
+                    "current": "current",
+                    "updated": "updated"
+                  }
                 },
                 "sun": {
                   "label": "Sun",

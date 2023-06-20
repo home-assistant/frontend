@@ -602,7 +602,7 @@ export const describeTrigger = (
 
   // Persistent Notification Trigger
   if (trigger.platform === "persistent_notification") {
-    return "When a persistent_notification is updated";
+    return "When a persistent notification is updated";
   }
 
   // Device Trigger
