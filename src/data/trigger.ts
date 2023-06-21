@@ -8,6 +8,7 @@ import {
   mdiHomeAssistant,
   mdiMapMarker,
   mdiMapMarkerRadius,
+  mdiMessageAlert,
   mdiNfcVariant,
   mdiNumeric,
   mdiStateMachine,
@@ -31,5 +32,6 @@ export const TRIGGER_TYPES = {
   time: mdiClockOutline,
   time_pattern: mdiAvTimer,
   webhook: mdiWebhook,
+  persistent_notification: mdiMessageAlert,
   zone: mdiMapMarkerRadius,
 };
