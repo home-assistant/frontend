@@ -16,6 +16,7 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { isUnavailableState } from "../../../data/entity";
@@ -124,7 +125,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         <text x="50%" dx="1" y="73%" text-anchor="middle" id="main-humidity">
           ${curHumidity
             ? svg`
-                      ${curHumidity}
+                      ${formatNumber(curHumidity, this.hass.locale)}
                       <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
                         %
                       </tspan>
@@ -134,7 +135,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
               setHumidity === null
             ? ""
             : svg`
-                        ${setHumidity.toFixed()}
+                        ${formatNumber(setHumidity.toFixed(), this.hass.locale)}
                         <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
                           %
                         </tspan>
@@ -151,7 +152,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
               setHumidity === undefined ||
               setHumidity === null
               ? ""
-              : svg`${setHumidity.toFixed()}`
+              : svg`${formatNumber(setHumidity.toFixed(), this.hass.locale)}`
             : ""}
         </text>
       </svg>
