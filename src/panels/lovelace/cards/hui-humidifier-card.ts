@@ -135,7 +135,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
               setHumidity === null
             ? ""
             : svg`
-                        ${formatNumber(setHumidity.toFixed(), this.hass.locale)}
+                        ${formatNumber(setHumidity, this.hass.locale, {
+                          maximumFractionDigits: 0,
+                        })}
                         <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
                           %
                         </tspan>
@@ -152,7 +154,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
               setHumidity === undefined ||
               setHumidity === null
               ? ""
-              : svg`${formatNumber(setHumidity.toFixed(), this.hass.locale)}`
+              : svg`${formatNumber(setHumidity, this.hass.locale, {
+                  maximumFractionDigits: 0,
+                })}`
             : ""}
         </text>
       </svg>
