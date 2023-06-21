@@ -100,6 +100,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     const name =
       this._config!.name ||
       computeStateName(this.hass!.states[this._config!.entity]);
+
     const targetHumidity =
       stateObj.attributes.humidity !== null &&
       Number.isFinite(Number(stateObj.attributes.humidity))
@@ -107,6 +108,15 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         : stateObj.attributes.min_humidity;
 
     const setHumidity = this._setHum ? this._setHum : targetHumidity;
+
+    const curHumidity = stateObjCurrentHumidity
+      ? isUnavailableState(stateObjCurrentHumidity.state)
+        ? undefined
+        : stateObjCurrentHumidity.state
+      : stateObj.attributes.current_humidity !== null &&
+        Number.isFinite(Number(stateObj.attributes.current_humidity))
+      ? stateObj.attributes.current_humidity
+      : undefined
 
     const rtlDirection = computeRTLDirection(this.hass);
 
@@ -128,11 +138,11 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     const mainHumidity = html`
       <svg viewBox="0 0 30 20">
         <text x="50%" dx="1" y="73%" text-anchor="middle" id="main-humidity">
-          ${stateObjCurrentHumidity
-            ? isUnavailableState(stateObjCurrentHumidity.state)
+          ${stateObjCurrentHumidity || curHumidity
+            ? curHumidity === undefined
               ? ""
               : svg`
-                        ${stateObjCurrentHumidity.state}
+                        ${curHumidity}
                         <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
                           %
                         </tspan>
