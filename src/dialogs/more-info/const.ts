@@ -40,6 +40,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   "fan",
   "group",
   "humidifier",
+  "image",
   "input_boolean",
   "input_datetime",
   "light",

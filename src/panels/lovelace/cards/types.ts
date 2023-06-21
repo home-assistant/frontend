@@ -335,6 +335,7 @@ export interface StatisticCardConfig extends LovelaceCardConfig {
 
 export interface PictureCardConfig extends LovelaceCardConfig {
   image?: string;
+  image_entity?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
@@ -345,6 +346,7 @@ export interface PictureCardConfig extends LovelaceCardConfig {
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
   title?: string;
   image?: string;
+  image_entity?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: Record<string, unknown>;
