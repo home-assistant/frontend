@@ -99,6 +99,10 @@ export class HaTextField extends TextFieldBase {
         direction: var(--direction);
       }
 
+      .mdc-text-field__icon--trailing {
+        padding: var(--textfield-icon-trailing-padding, 12px);
+      }
+
       .mdc-floating-label:not(.mdc-floating-label--float-above) {
         text-overflow: ellipsis;
         width: inherit;

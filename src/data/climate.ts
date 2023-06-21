@@ -16,6 +16,7 @@ export const CLIMATE_PRESET_NONE = "none";
 
 export type HvacAction =
   | "off"
+  | "preheating"
   | "heating"
   | "cooling"
   | "drying"
@@ -77,6 +78,7 @@ export const HVAC_ACTION_TO_MODE: Record<HvacAction, HvacMode> = {
   cooling: "cool",
   drying: "dry",
   fan: "fan_only",
+  preheating: "heat",
   heating: "heat",
   idle: "off",
   off: "off",

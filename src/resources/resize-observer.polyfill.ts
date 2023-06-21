@@ -5,7 +5,7 @@ export const loadPolyfillIfNeeded = async () => {
   } catch (e) {
     window.ResizeObserver = (
       await import(
-        "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver.js"
+        "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver"
       )
     ).default;
   }

@@ -159,6 +159,13 @@ export interface EnergySolarGaugeCardConfig extends LovelaceCardConfig {
   collection_key?: string;
 }
 
+export interface EnergySelfSufficiencyGaugeCardConfig
+  extends LovelaceCardConfig {
+  type: "energy-self-sufficiency-gauge";
+  title?: string;
+  collection_key?: string;
+}
+
 export interface EnergyGridGaugeCardConfig extends LovelaceCardConfig {
   type: "energy-grid-result-gauge";
   title?: string;

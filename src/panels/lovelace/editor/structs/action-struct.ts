@@ -51,6 +51,12 @@ const actionConfigStructNavigate = object({
   confirmation: optional(actionConfigStructConfirmation),
 });
 
+const actionConfigStructAssist = type({
+  action: literal("assist"),
+  pipeline_id: optional(string()),
+  start_listening: optional(boolean()),
+});
+
 const actionConfigStructCustom = type({
   action: literal("fire-dom-event"),
 });
@@ -63,6 +69,7 @@ export const actionConfigStructType = object({
     "call-service",
     "url",
     "navigate",
+    "assist",
   ]),
   confirmation: optional(actionConfigStructConfirmation),
 });
@@ -81,6 +88,9 @@ export const actionConfigStruct = dynamic<any>((value) => {
       }
       case "url": {
         return actionConfigStructUrl;
+      }
+      case "assist": {
+        return actionConfigStructAssist;
       }
     }
   }

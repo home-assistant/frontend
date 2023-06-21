@@ -160,14 +160,16 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       return nothing;
     }
 
+    const useBlueprint = "use_blueprint" in this._config;
+
     const schema = this._schema(
       !!this.scriptId,
-      "use_blueprint" in this._config,
+      useBlueprint,
       this._config.mode
     );
 
     const data = {
-      mode: MODES[0],
+      ...(!this._config.mode && !useBlueprint && { mode: MODES[0] }),
       icon: undefined,
       max: this._config.mode && isMaxMode(this._config.mode) ? 10 : undefined,
       ...this._config,
@@ -332,7 +334,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                           </ha-card>
                         </div>
 
-                        ${"use_blueprint" in this._config
+                        ${useBlueprint
                           ? html`
                               <blueprint-script-editor
                                 .hass=${this.hass}

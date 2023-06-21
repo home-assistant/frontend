@@ -7,8 +7,8 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-outlined-button";
 import { AlarmControlPanelEntity } from "../../../data/alarm_control_panel";
 import type { HomeAssistant } from "../../../types";
+import { showEnterCodeDialogDialog } from "../../enter-code/show-enter-code-dialog";
 import "../components/alarm_control_panel/ha-more-info-alarm_control_panel-modes";
-import { showEnterCodeDialogDialog } from "../components/alarm_control_panel/show-enter-code-dialog";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 
