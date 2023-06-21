@@ -387,7 +387,7 @@ export const testCondition = (
     variables,
   });
 
-export type Clipboard = {
+export type AutomationClipboard = {
   trigger?: Trigger;
   condition?: Condition;
   action?: Action;

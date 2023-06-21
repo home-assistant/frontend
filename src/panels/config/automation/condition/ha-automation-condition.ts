@@ -3,9 +3,9 @@ import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiArrowDown,
   mdiArrowUp,
+  mdiContentPaste,
   mdiDrag,
   mdiPlus,
-  mdiContentPaste,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
@@ -13,8 +13,8 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -24,7 +24,10 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-svg-icon";
-import type { Condition, Clipboard } from "../../../../data/automation";
+import type {
+  AutomationClipboard,
+  Condition,
+} from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
@@ -49,6 +52,7 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
+import { storage } from "../../../../common/decorators/storage";
 
 const PASTE_VALUE = "__paste__";
 
@@ -64,7 +68,13 @@ export default class HaAutomationCondition extends LitElement {
 
   @property({ type: Boolean }) public reOrderMode = false;
 
-  @property() public clipboard?: Clipboard;
+  @storage({
+    key: "automationClipboard",
+    state: true,
+    subscribe: true,
+    storage: "sessionStorage",
+  })
+  public _clipboard?: AutomationClipboard;
 
   private _focusLastConditionOnChange = false;
 
@@ -157,7 +167,6 @@ export default class HaAutomationCondition extends LitElement {
               @move-condition=${this._move}
               @value-changed=${this._conditionChanged}
               @re-order=${this._enterReOrderMode}
-              .clipboard=${this.clipboard}
               .hass=${this.hass}
             >
               ${this.reOrderMode
@@ -206,13 +215,13 @@ export default class HaAutomationCondition extends LitElement {
         >
           <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
         </ha-button>
-        ${this.clipboard?.condition
+        ${this._clipboard?.condition
           ? html` <mwc-list-item .value=${PASTE_VALUE} graphic="icon">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.paste"
               )}
               (${this.hass.localize(
-                `ui.panel.config.automation.editor.conditions.type.${this.clipboard.condition.condition}.label`
+                `ui.panel.config.automation.editor.conditions.type.${this._clipboard.condition.condition}.label`
               )})
               <ha-svg-icon slot="graphic" .path=${mdiContentPaste}></ha-svg-icon
             ></mwc-list-item>`
@@ -281,7 +290,9 @@ export default class HaAutomationCondition extends LitElement {
 
     let conditions: Condition[];
     if (value === PASTE_VALUE) {
-      conditions = this.conditions.concat(deepClone(this.clipboard!.condition));
+      conditions = this.conditions.concat(
+        deepClone(this._clipboard!.condition)
+      );
     } else {
       const condition = value as Condition["condition"];
 
