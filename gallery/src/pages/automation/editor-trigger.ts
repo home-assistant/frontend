@@ -75,7 +75,12 @@ const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
 
   {
     name: "Persistent Notification",
-    triggers: [{ platform: "persistent_notification", ...HaPersistentNotificationTrigger.defaultConfig }],
+    triggers: [
+      {
+        platform: "persistent_notification",
+        ...HaPersistentNotificationTrigger.defaultConfig,
+      },
+    ],
   },
 
   {
