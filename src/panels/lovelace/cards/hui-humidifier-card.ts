@@ -205,14 +205,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    const oldHass = changedProps.get("hass") as HomeAssistant;
-
-    return (
-      hasConfigOrEntityChanged(this, changedProps) ||
-      (this._config!.current_humidity_sensor !== undefined &&
-        oldHass.states[this._config!.current_humidity_sensor] !==
-          this.hass!.states[this._config!.current_humidity_sensor])
-    );
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected updated(changedProps: PropertyValues): void {
