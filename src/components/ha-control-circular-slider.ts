@@ -101,6 +101,9 @@ export class HaControlCircularSlider extends LitElement {
   @state()
   public _activeSlider?: ActiveSlider;
 
+  @state()
+  public _lastSlider?: ActiveSlider;
+
   private _valueToPercentage(value: number) {
     return (
       (clamp(value, this.min, this.max) - this.min) / (this.max - this.min)
@@ -208,6 +211,8 @@ export class HaControlCircularSlider extends LitElement {
         const percentage = this._getPercentageFromEvent(e);
         const raw = this._percentageToValue(percentage);
         this._activeSlider = this._findActiveSlider(raw);
+        this._lastSlider = this._activeSlider;
+        this.shadowRoot?.getElementById("#slider")?.focus();
       });
       this._mc.on("pancancel", () => {
         if (this.disabled) return;
@@ -252,6 +257,8 @@ export class HaControlCircularSlider extends LitElement {
           });
           fireEvent(this, `${this._activeSlider}-changed`, { value: stepped });
         }
+        this._lastSlider = this._activeSlider;
+        this.shadowRoot?.getElementById("#slider")?.focus();
         this._activeSlider = undefined;
       });
     }
@@ -264,7 +271,12 @@ export class HaControlCircularSlider extends LitElement {
   private _handleKeyDown(e: KeyboardEvent) {
     if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
-    this._activeSlider = (e.currentTarget as any).id as ActiveSlider;
+    if (this._lastSlider) {
+      this.shadowRoot?.getElementById(this._lastSlider)?.focus();
+    }
+    this._activeSlider =
+      this._lastSlider ?? ((e.currentTarget as any).id as ActiveSlider);
+    this._lastSlider = undefined;
 
     const value = this._getActiveValue();
 
@@ -302,7 +314,9 @@ export class HaControlCircularSlider extends LitElement {
         this._setActiveValue(this._boundedValue(this.max));
         break;
     }
-    fireEvent(this, `${this._activeSlider}-changing`, { value: this.value });
+    fireEvent(this, `${this._activeSlider}-changing`, {
+      value: this._getActiveValue(),
+    });
     this._activeSlider = undefined;
   }
 
@@ -310,7 +324,12 @@ export class HaControlCircularSlider extends LitElement {
     if (!A11Y_KEY_CODES.has(e.code)) return;
     this._activeSlider = (e.currentTarget as any).id as ActiveSlider;
     e.preventDefault();
-    fireEvent(this, "value-changed", { value: this.value });
+    fireEvent(this, `${this._activeSlider}-changing`, {
+      value: undefined,
+    });
+    fireEvent(this, `${this._activeSlider}-changed`, {
+      value: this._getActiveValue(),
+    });
     this._activeSlider = undefined;
   }
 
@@ -350,14 +369,18 @@ export class HaControlCircularSlider extends LitElement {
         class=${classMap({
           pressed: Boolean(this._activeSlider),
         })}
+        @keydown=${this._handleKeyDown}
+        tabindex=${this._lastSlider ? "0" : "-1"}
       >
         <g
           id="container"
           transform="translate(160 160) rotate(${ROTATE_ANGLE})"
         >
-          <path id="interaction" d=${trackPath} />
+          <g id="interaction">
+            <path d=${trackPath} />
+          </g>
           <g id="display">
-            <path id="background" d=${trackPath} />
+            <path class="background" d=${trackPath} />
             <circle
               .id=${this.dual ? "low" : "value"}
               class="track"
@@ -407,25 +430,25 @@ export class HaControlCircularSlider extends LitElement {
             ${this.current != null
               ? svg`
                 <g
-                style=${styleMap({ "--current-angle": `${currentAngle}deg` })}
-                class="current"
-              >
-                <line 
-                  x1=${RADIUS - 12} 
-                  y1="0" 
-                  x2=${RADIUS - 15} 
-                  y2="0" 
-                  stroke-width="4" 
-                />
-                <line
-                  x1=${RADIUS - 15}
-                  y1="0"
-                  x2=${RADIUS - 20}
-                  y2="0"
-                  stroke-linecap="round"
-                  stroke-width="4"
-                />
-              </g>
+                  style=${styleMap({ "--current-angle": `${currentAngle}deg` })}
+                  class="current"
+                >
+                  <line 
+                    x1=${RADIUS - 12} 
+                    y1="0" 
+                    x2=${RADIUS - 15} 
+                    y2="0" 
+                    stroke-width="4" 
+                  />
+                  <line
+                    x1=${RADIUS - 15}
+                    y1="0"
+                    x2=${RADIUS - 20}
+                    y2="0"
+                    stroke-linecap="round"
+                    stroke-width="4"
+                  />
+                </g>
             `
               : nothing}
           </g>
@@ -451,6 +474,9 @@ export class HaControlCircularSlider extends LitElement {
         width: 320px;
         display: block;
       }
+      #slider {
+        outline: none;
+      }
       #interaction {
         display: flex;
         fill: none;
@@ -459,34 +485,39 @@ export class HaControlCircularSlider extends LitElement {
         stroke-width: 48px;
         cursor: pointer;
       }
+      #display {
+        pointer-events: none;
+      }
       :host([disabled]) #interaction {
         cursor: initial;
       }
-      #background {
+
+      .background {
         fill: none;
         stroke: var(--control-circular-slider-background);
         opacity: var(--control-circular-slider-background-opacity);
         stroke-linecap: round;
         stroke-width: 24px;
       }
-      #display {
-        pointer-events: none;
-      }
+
       .track {
         outline: none;
         fill: none;
         stroke-linecap: round;
         stroke-width: 24px;
-        transition: stroke-dasharray 300ms ease-in-out,
-          stroke-dashoffset 300ms ease-in-out, stroke-width 300ms ease-in-out;
-        pointer-events: none;
+        transition: stroke-width 300ms ease-in-out,
+          stroke-dasharray 300ms ease-in-out,
+          stroke-dashoffset 300ms ease-in-out;
       }
+
       .track:focus-visible {
         stroke-width: 28px;
       }
+
       .pressed .track {
-        transition: none;
+        transition: stroke-width 300ms ease-in-out;
       }
+
       .current {
         stroke: var(--primary-text-color);
         transform: rotate(var(--current-angle, 0));
