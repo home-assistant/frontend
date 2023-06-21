@@ -20,7 +20,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
 import "./trigger/ha-automation-trigger";
-import { LocalStorage } from "../../../common/decorators/local-storage";
+import { Storage } from "../../../common/decorators/storage";
 
 @customElement("manual-automation-editor")
 export class HaManualAutomationEditor extends LitElement {
@@ -36,7 +36,12 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @LocalStorage("automationClipboard", true, false, window.sessionStorage)
+  @Storage({
+    storageKey: "automationClipboard",
+    property: true,
+    subscribe: false,
+    storage: window.sessionStorage,
+  })
   private _clipboard: Clipboard = {};
 
   protected render() {
