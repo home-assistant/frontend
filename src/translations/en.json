@@ -4417,12 +4417,15 @@
           "action-editor": {
             "navigation_path": "Navigation Path",
             "url_path": "URL Path",
+            "start_listening": "Start listening",
+            "pipeline_id": "Assistant",
             "actions": {
               "default_action": "Default Action",
               "call-service": "Call Service",
               "more-info": "More Info",
               "toggle": "Toggle",
               "navigate": "Navigate",
+              "assist": "Assist",
               "url": "URL",
               "none": "No Action"
             }
