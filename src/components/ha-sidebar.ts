@@ -218,9 +218,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     key: "sidebarPanelOrder",
     state: true,
     subscribe: true,
-    stateOptions: {
-      attribute: false,
-    },
   })
   private _panelOrder: string[] = [];
 
@@ -228,9 +225,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     key: "sidebarHiddenPanels",
     state: true,
     subscribe: true,
-    stateOptions: {
-      attribute: false,
-    },
   })
   private _hiddenPanels: string[] = [];
 
