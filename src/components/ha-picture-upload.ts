@@ -2,7 +2,7 @@ import { mdiImagePlus } from "@mdi/js";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { createImage, generateImageThumbnailUrl } from "../data/image";
+import { createImage, generateImageThumbnailUrl } from "../data/image_upload";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import {
   CropOptions,

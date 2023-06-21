@@ -176,7 +176,7 @@ export class HaControlSlider extends LitElement {
       this._mc = undefined;
     }
     this.removeEventListener("keydown", this._handleKeyDown);
-    this.removeEventListener("keyup", this._handleKeyDown);
+    this.removeEventListener("keyup", this._handleKeyUp);
   }
 
   private get _tenPercentStep() {

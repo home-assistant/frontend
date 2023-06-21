@@ -260,10 +260,10 @@ export const calculateStatisticsSumGrowth = (
 export const statisticsHaveType = (
   stats: StatisticValue[],
   type: StatisticType
-) => stats.some((stat) => stat[type] !== null);
+) => stats.some((stat) => stat[type] !== undefined && stat[type] !== null);
 
 const mean_stat_types: readonly StatisticType[] = ["mean", "min", "max"];
-const sum_stat_types: readonly StatisticType[] = ["sum"];
+const sum_stat_types: readonly StatisticType[] = ["sum", "state", "change"];
 
 export const statisticsMetaHasType = (
   metadata: StatisticsMetaData,

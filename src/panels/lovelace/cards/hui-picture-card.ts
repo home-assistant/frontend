@@ -3,19 +3,22 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
+import { computeImageUrl, ImageEntity } from "../../../data/image";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
+import { hasConfigChanged } from "../common/has-changed";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { PictureCardConfig } from "./types";
 
@@ -30,8 +33,6 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     return {
       type: "picture",
       image: "https://demo.home-assistant.io/stub_config/t-shirt-promo.png",
-      tap_action: { action: "none" },
-      hold_action: { action: "none" },
     };
   }
 
@@ -44,7 +45,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: PictureCardConfig): void {
-    if (!config || !config.image) {
+    if (!config || (!config.image && !config.image_entity)) {
       throw new Error("Image required");
     }
 
@@ -52,10 +53,21 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.size === 1 && changedProps.has("hass")) {
-      return !changedProps.get("hass");
+    if (!this._config || hasConfigChanged(this, changedProps)) {
+      return true;
     }
-    return true;
+    if (this._config.image_entity && changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (
+        !oldHass ||
+        oldHass.states[this._config.image_entity] !==
+          this.hass!.states[this._config.image_entity]
+      ) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -83,6 +95,17 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
+    let stateObj: ImageEntity | undefined;
+
+    if (this._config.image_entity) {
+      stateObj = this.hass.states[this._config.image_entity] as ImageEntity;
+      if (!stateObj) {
+        return html`<hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.image_entity)}
+        </hui-warning>`;
+      }
+    }
+
     return html`
       <ha-card
         @action=${this._handleAction}
@@ -91,19 +114,29 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
         tabindex=${ifDefined(
-          hasAction(this._config.tap_action) ? "0" : undefined
+          hasAction(this._config.tap_action) || this._config.image_entity
+            ? "0"
+            : undefined
         )}
         class=${classMap({
           clickable: Boolean(
-            this._config.tap_action ||
-              this._config.hold_action ||
-              this._config.double_tap_action
+            (this._config.image_entity && !this._config.tap_action) ||
+              (this._config.tap_action &&
+                this._config.tap_action.action !== "none") ||
+              (this._config.hold_action &&
+                this._config.hold_action.action !== "none") ||
+              (this._config.double_tap_action &&
+                this._config.double_tap_action.action !== "none")
           ),
         })}
       >
         <img
-          alt=${this._config.alt_text}
-          src=${this.hass.hassUrl(this._config.image)}
+          alt=${ifDefined(
+            this._config.alt_text || stateObj?.attributes.friendly_name
+          )}
+          src=${this.hass.hassUrl(
+            stateObj ? computeImageUrl(stateObj) : this._config.image
+          )}
         />
       </ha-card>
     `;

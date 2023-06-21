@@ -42,6 +42,7 @@ export interface ImageElementConfig extends LovelaceElementConfigBase {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   image?: string;
+  image_entity?: string;
   state_image?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];

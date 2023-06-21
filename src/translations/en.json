@@ -147,7 +147,8 @@
       "lock": {
         "code": "[%key:ui::card::alarm_control_panel::code%]",
         "lock": "Lock",
-        "unlock": "Unlock"
+        "unlock": "Unlock",
+        "open": "Open"
       },
       "media_player": {
         "source": "Source",
@@ -4666,6 +4667,7 @@
               "aspect_ratio": "Aspect Ratio",
               "attribute": "Attribute",
               "camera_image": "Camera Entity",
+              "image_entity": "Image Entity",
               "camera_view": "Camera View",
               "double_tap_action": "Double Tap Action",
               "entities": "Entities",

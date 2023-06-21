@@ -20,6 +20,7 @@ import {
   AlarmPanelCardConfig,
   EntitiesCardConfig,
   HumidifierCardConfig,
+  PictureCardConfig,
   PictureEntityCardConfig,
   ThermostatCardConfig,
 } from "../cards/types";
@@ -123,6 +124,12 @@ export const computeCards = (
       const cardConfig: PictureEntityCardConfig = {
         type: "picture-entity",
         entity: entityId,
+      };
+      cards.push(cardConfig);
+    } else if (domain === "image") {
+      const cardConfig: PictureCardConfig = {
+        type: "picture",
+        image_entity: entityId,
       };
       cards.push(cardConfig);
     } else if (domain === "climate") {
