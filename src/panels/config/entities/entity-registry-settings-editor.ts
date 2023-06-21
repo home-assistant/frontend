@@ -11,6 +11,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { mdiContentCopy } from "@mdi/js";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -80,6 +81,8 @@ import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { showToast } from "../../../util/toast";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -683,7 +686,14 @@ export class EntityRegistrySettingsEditor extends LitElement {
         .disabled=${this.disabled}
         required
         @input=${this._entityIdChanged}
-      ></ha-textfield>
+        iconTrailing
+      >
+        <ha-icon-button
+          @click=${this._copyEntityId}
+          slot="trailingIcon"
+          .path=${mdiContentCopy}
+        ></ha-icon-button>
+      </ha-textfield>
       ${!this.entry.device_id
         ? html`<ha-area-picker
             .hass=${this.hass}
@@ -1161,6 +1171,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._icon = ev.detail.value;
   }
 
+  private _copyEntityId(): void {
+    await copyToClipboard(this._entityId);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
+  }
+
   private _entityIdChanged(ev): void {
     fireEvent(this, "change");
     this._entityId = `${computeDomain(this._origEntityId)}.${ev.target.value}`;
@@ -1345,6 +1362,17 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
         ha-textfield.entityId {
           --text-field-prefix-padding-right: 0;
+          --textfield-icon-trailing-padding: 0;
+        }
+        ha-textfield.entityId > ha-icon-button {
+          position: relative;
+          right: -8px;
+          --mdc-icon-button-size: 36px;
+          --mdc-icon-size: 20px;
+          color: var(--secondary-text-color);
+          inset-inline-start: initial;
+          inset-inline-end: -8px;
+          direction: var(--direction);
         }
         ha-switch {
           margin-right: 16px;
