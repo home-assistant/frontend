@@ -200,7 +200,7 @@ export class AssistPipelineDebug extends LitElement {
             <ha-card>
               <div class="card-content">
                 <div class="row heading">
-                  <span>Speech-to-Text</span>
+                  <span>Speech-to-text</span>
                   ${renderProgress(this.hass, this.pipelineRun, "stt")}
                 </div>
                 ${this.pipelineRun.stt
@@ -274,7 +274,7 @@ export class AssistPipelineDebug extends LitElement {
             <ha-card>
               <div class="card-content">
                 <div class="row heading">
-                  <span>Text-to-Speech</span>
+                  <span>Text-to-speech</span>
                   ${renderProgress(this.hass, this.pipelineRun, "tts")}
                 </div>
                 ${this.pipelineRun.tts
