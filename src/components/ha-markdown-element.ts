@@ -3,6 +3,8 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { renderMarkdown } from "../resources/render-markdown";
 
+const _blockQuoteToAlert = { Note: "info", Warning: "warning" };
+
 @customElement("ha-markdown-element")
 class HaMarkdownElement extends ReactiveElement {
   @property() public content?;
@@ -65,6 +67,34 @@ class HaMarkdownElement extends ReactiveElement {
           node.loading = "lazy";
         }
         node.addEventListener("load", this._resize);
+      } else if (node instanceof HTMLQuoteElement) {
+        // Map GitHub blockquote elements to our ha-alert element
+        const firstElementChild = node.firstElementChild;
+        const quoteTitleElement = firstElementChild?.firstElementChild;
+        const quoteType =
+          quoteTitleElement?.textContent &&
+          _blockQuoteToAlert[quoteTitleElement.textContent];
+
+        // GitHub is strict on how these are defined, we need to make sure we know what we have before starting to replace it
+        if (quoteTitleElement?.nodeName === "STRONG" && quoteType) {
+          const alertNote = document.createElement("ha-alert");
+          alertNote.alertType = quoteType;
+          alertNote.title =
+            (firstElementChild!.childNodes[1].nodeName === "#text" &&
+              firstElementChild!.childNodes[1].textContent?.trimStart()) ||
+            "";
+
+          const childNodes = Array.from(firstElementChild!.childNodes);
+          for (const child of childNodes.slice(
+            childNodes.findIndex(
+              // There is always a line break between the title and the content, we want to skip that
+              (childNode) => childNode instanceof HTMLBRElement
+            ) + 1
+          )) {
+            alertNote.appendChild(child);
+          }
+          node.firstElementChild!.replaceWith(alertNote);
+        }
       }
     }
   }
