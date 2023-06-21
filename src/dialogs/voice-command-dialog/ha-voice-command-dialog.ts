@@ -18,7 +18,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { Storage } from "../../common/decorators/storage";
+import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../../components/ha-button";
@@ -57,9 +57,9 @@ export class HaVoiceCommandDialog extends LitElement {
 
   @state() private _opened = false;
 
-  @Storage({
-    storageKey: "AssistPipelineId",
-    property: true,
+  @storage({
+    key: "AssistPipelineId",
+    state: true,
     subscribe: false,
   })
   private _pipelineId?: string;

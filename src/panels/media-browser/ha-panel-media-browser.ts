@@ -9,7 +9,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { Storage } from "../../common/decorators/storage";
+import { storage } from "../../common/decorators/storage";
 import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
@@ -71,9 +71,9 @@ class PanelMediaBrowser extends LitElement {
     },
   ];
 
-  @Storage({
-    storageKey: "mediaBrowseEntityId",
-    property: true,
+  @storage({
+    key: "mediaBrowseEntityId",
+    state: true,
     subscribe: false,
   })
   private _entityId = BROWSER_PLAYER;

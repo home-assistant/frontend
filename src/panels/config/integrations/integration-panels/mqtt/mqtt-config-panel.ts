@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { Storage } from "../../../../../common/decorators/storage";
+import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-formfield";
@@ -21,37 +21,37 @@ class HaPanelDevMqtt extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @Storage({
-    storageKey: "panel-dev-mqtt-topic-ls",
-    property: true,
+  @storage({
+    key: "panel-dev-mqtt-topic-ls",
+    state: true,
     subscribe: false,
   })
   private _topic = "";
 
-  @Storage({
-    storageKey: "panel-dev-mqtt-payload-ls",
-    property: true,
+  @storage({
+    key: "panel-dev-mqtt-payload-ls",
+    state: true,
     subscribe: false,
   })
   private _payload = "";
 
-  @Storage({
-    storageKey: "panel-dev-mqtt-qos-ls",
-    property: true,
+  @storage({
+    key: "panel-dev-mqtt-qos-ls",
+    state: true,
     subscribe: false,
   })
   private _qos = "0";
 
-  @Storage({
-    storageKey: "panel-dev-mqtt-retain-ls",
-    property: true,
+  @storage({
+    key: "panel-dev-mqtt-retain-ls",
+    state: true,
     subscribe: false,
   })
   private _retain = false;
 
-  @Storage({
-    storageKey: "panel-dev-mqtt-allow-template-ls",
-    property: true,
+  @storage({
+    key: "panel-dev-mqtt-allow-template-ls",
+    state: true,
     subscribe: false,
   })
   private _allowTemplate = false;

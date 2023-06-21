@@ -1,7 +1,7 @@
 import "@material/mwc-list/mwc-list-item";
 import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { Storage } from "../../common/decorators/storage";
+import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
   MediaPlayerBrowseAction,
@@ -43,9 +43,9 @@ class BrowseMediaTTS extends LitElement {
 
   @state() private _provider?: TTSEngine;
 
-  @Storage({
-    storageKey: "TtsMessage",
-    property: true,
+  @storage({
+    key: "TtsMessage",
+    state: true,
     subscribe: false,
   })
   private _message!: string;

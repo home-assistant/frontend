@@ -1,5 +1,6 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { PropertyDeclaration, ReactiveElement } from "lit";
+import { ReactiveElement } from "lit";
+import { InternalPropertyDeclaration } from "lit/decorators";
 import type { ClassElement } from "../../types";
 
 type Callback = (oldValue: any, newValue: any) => void;
@@ -100,58 +101,56 @@ class StorageClass {
 
 const storages: Record<string, StorageClass> = {};
 
-export const Storage =
+export const storage =
   (options: {
-    storageKey?: string;
-    property?: boolean;
+    key?: string;
+    storage?: "localStorage" | "sessionStorage";
     subscribe?: boolean;
-    storage?: globalThis.Storage;
-    propertyOptions?: PropertyDeclaration;
+    state?: boolean;
+    stateOptions?: InternalPropertyDeclaration;
   }): any =>
   (clsElement: ClassElement) => {
-    const storageName =
-      !options.storage || options.storage === window.localStorage
-        ? "localStorage"
-        : options.storage === window.sessionStorage
-        ? "sessionStorage"
-        : undefined;
+    const storageName = options.storage || "localStorage";
 
-    let storage: StorageClass;
+    let storageInstance: StorageClass;
     if (storageName && storageName in storages) {
-      storage = storages[storageName];
-    } else if (storageName) {
-      storage = new StorageClass(options.storage);
-      storages[storageName] = storage;
+      storageInstance = storages[storageName];
     } else {
-      storage = new StorageClass(options.storage);
+      storageInstance = new StorageClass(window[storageName]);
+      storages[storageName] = storageInstance;
     }
 
     const key = String(clsElement.key);
-    const storageKey = options.storageKey || String(clsElement.key);
+    const storageKey = options.key || String(clsElement.key);
     const initVal = clsElement.initializer
       ? clsElement.initializer()
       : undefined;
 
-    storage.addFromStorage(storageKey);
+    storageInstance.addFromStorage(storageKey);
 
     const subscribeChanges =
       options.subscribe !== false
         ? (el: ReactiveElement): UnsubscribeFunc =>
-            storage.subscribeChanges(storageKey!, (oldValue, _newValue) => {
-              el.requestUpdate(clsElement.key, oldValue);
-            })
+            storageInstance.subscribeChanges(
+              storageKey!,
+              (oldValue, _newValue) => {
+                el.requestUpdate(clsElement.key, oldValue);
+              }
+            )
         : undefined;
 
     const getValue = (): any =>
-      storage.hasKey(storageKey!) ? storage.getValue(storageKey!) : initVal;
+      storageInstance.hasKey(storageKey!)
+        ? storageInstance.getValue(storageKey!)
+        : initVal;
 
     const setValue = (el: ReactiveElement, value: any) => {
       let oldValue: unknown | undefined;
-      if (options.property) {
+      if (options.state) {
         oldValue = getValue();
       }
-      storage.setValue(storageKey!, value);
-      if (options.property) {
+      storageInstance.setValue(storageKey!, value);
+      if (options.state) {
         el.requestUpdate(clsElement.key, oldValue);
       }
     };
@@ -171,7 +170,7 @@ export const Storage =
         configurable: true,
       },
       finisher(cls: typeof ReactiveElement) {
-        if (options.property && options.subscribe) {
+        if (options.state && options.subscribe) {
           const connectedCallback = cls.prototype.connectedCallback;
           const disconnectedCallback = cls.prototype.disconnectedCallback;
           cls.prototype.connectedCallback = function () {
@@ -184,10 +183,10 @@ export const Storage =
             this[`__unbsubLocalStorage${key}`] = undefined;
           };
         }
-        if (options.property) {
+        if (options.state) {
           cls.createProperty(clsElement.key, {
             noAccessor: true,
-            ...options.propertyOptions,
+            ...options.stateOptions,
           });
         }
       },

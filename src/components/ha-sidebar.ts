@@ -35,7 +35,7 @@ import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { guard } from "lit/directives/guard";
 import memoizeOne from "memoize-one";
-import { Storage } from "../common/decorators/storage";
+import { storage } from "../common/decorators/storage";
 import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
@@ -214,21 +214,21 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private sortableStyleLoaded = false;
 
-  @Storage({
-    storageKey: "sidebarPanelOrder",
-    property: true,
+  @storage({
+    key: "sidebarPanelOrder",
+    state: true,
     subscribe: true,
-    propertyOptions: {
+    stateOptions: {
       attribute: false,
     },
   })
   private _panelOrder: string[] = [];
 
-  @Storage({
-    storageKey: "sidebarHiddenPanels",
-    property: true,
+  @storage({
+    key: "sidebarHiddenPanels",
+    state: true,
     subscribe: true,
-    propertyOptions: {
+    stateOptions: {
       attribute: false,
     },
   })

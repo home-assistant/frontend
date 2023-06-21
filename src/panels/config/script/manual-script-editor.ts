@@ -3,7 +3,7 @@ import { mdiHelpCircle } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { Storage } from "../../../common/decorators/storage";
+import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -26,11 +26,11 @@ export class HaManualScriptEditor extends LitElement {
 
   @property({ attribute: false }) public config!: ScriptConfig;
 
-  @Storage({
-    storageKey: "automationClipboard",
-    property: true,
+  @storage({
+    key: "automationClipboard",
+    state: true,
     subscribe: false,
-    storage: window.sessionStorage,
+    storage: "sessionStorage",
   })
   private _clipboard: Clipboard = {};
 

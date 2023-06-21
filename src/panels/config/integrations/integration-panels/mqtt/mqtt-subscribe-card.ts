@@ -8,7 +8,7 @@ import { formatTime } from "../../../../../common/datetime/format_time";
 import { MQTTMessage, subscribeMQTTTopic } from "../../../../../data/mqtt";
 import { HomeAssistant } from "../../../../../types";
 import "@material/mwc-list/mwc-list-item";
-import { Storage } from "../../../../../common/decorators/storage";
+import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-switch";
 
@@ -18,23 +18,23 @@ const qosLevel = ["0", "1", "2"];
 class MqttSubscribeCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @Storage({
-    storageKey: "panel-dev-mqtt-topic-subscribe",
-    property: true,
+  @storage({
+    key: "panel-dev-mqtt-topic-subscribe",
+    state: true,
     subscribe: false,
   })
   private _topic = "";
 
-  @Storage({
-    storageKey: "panel-dev-mqtt-qos-subscribe",
-    property: true,
+  @storage({
+    key: "panel-dev-mqtt-qos-subscribe",
+    state: true,
     subscribe: false,
   })
   private _qos = "0";
 
-  @Storage({
-    storageKey: "panel-dev-mqtt-json-format",
-    property: true,
+  @storage({
+    key: "panel-dev-mqtt-json-format",
+    state: true,
     subscribe: false,
   })
   private _json_format = false;

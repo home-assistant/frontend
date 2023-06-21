@@ -7,7 +7,7 @@ import {
 import { css, html, LitElement, PropertyValues } from "lit";
 import { property, query, state } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
-import { Storage } from "../../common/decorators/storage";
+import { storage } from "../../common/decorators/storage";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -58,9 +58,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   @state() private _endDate: Date;
 
-  @Storage({
-    storageKey: "historyPickedValue",
-    property: true,
+  @storage({
+    key: "historyPickedValue",
+    state: true,
     subscribe: false,
   })
   private _targetPickerValue?: HassServiceTarget;
