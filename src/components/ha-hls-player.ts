@@ -109,7 +109,7 @@ class HaHLSPlayer extends LitElement {
   private async _startHls(): Promise<void> {
     const masterPlaylistPromise = fetch(this.url);
 
-    const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.mjs"))
+    const Hls: typeof HlsType = (await import("hls.js/dist/hls.mjs"))
       .default;
 
     if (!this.isConnected) {
@@ -144,12 +144,15 @@ class HaHLSPlayer extends LitElement {
       /#EXT-X-STREAM-INF:.*?(?:CODECS=".*?(hev1|hvc1)?\..*?".*?)?(?:\n|\r\n)(.+)/g;
     const match = playlistRegexp.exec(masterPlaylist);
     const matchTwice = playlistRegexp.exec(masterPlaylist);
+    // Audio and Subtitles can be part of dedicated playlists #EXT-X-MEDIA
+    const altMediaRegexp = /#EXT-X-MEDIA:/g
+    const matchAltMedia = altMediaRegexp.exec(masterPlaylist);
 
     // Get the regular playlist url from the input (master) playlist, falling back to the input playlist if necessary
     // This avoids the player having to load and parse the master playlist again before loading the regular playlist
     let playlist_url: string;
-    if (match !== null && matchTwice === null) {
-      // Only send the regular playlist url if we match exactly once
+    if (match !== null && matchTwice === null && matchAltMedia === null) {
+      // Only send the regular playlist url if we match exactly once and no alternate media
       playlist_url = new URL(match[2], this.url).href;
     } else {
       playlist_url = this.url;
