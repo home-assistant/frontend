@@ -2341,6 +2341,17 @@
                   "type_value": "Fixed number",
                   "type_input": "Numeric value of another entity"
                 },
+                "persistent_notification": {
+                  "label": "Persistent notification",
+                  "notification_id": "Notification Id",
+                  "update_type": "Update type",
+                  "update_types": {
+                    "added": "added",
+                    "removed": "removed",
+                    "current": "current",
+                    "updated": "updated"
+                  }
+                },
                 "sun": {
                   "label": "Sun",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",

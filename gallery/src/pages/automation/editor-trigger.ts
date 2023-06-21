@@ -19,6 +19,7 @@ import { HaTemplateTrigger } from "../../../../src/panels/config/automation/trig
 import { HaTimeTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-time";
 import { HaTimePatternTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-time_pattern";
 import { HaWebhookTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-webhook";
+import { HaPersistentNotificationTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-persistent_notification";
 import { HaZoneTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-zone";
 import { HaDeviceTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-device";
 import { HaStateTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-state";
@@ -70,6 +71,16 @@ const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
   {
     name: "Webhook",
     triggers: [{ platform: "webhook", ...HaWebhookTrigger.defaultConfig }],
+  },
+
+  {
+    name: "Persistent Notification",
+    triggers: [
+      {
+        platform: "persistent_notification",
+        ...HaPersistentNotificationTrigger.defaultConfig,
+      },
+    ],
   },
 
   {

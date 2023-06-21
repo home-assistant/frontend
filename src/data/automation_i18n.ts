@@ -590,6 +590,12 @@ export const describeTrigger = (
     );
   }
 
+  // Persistent Notification Trigger
+  if (trigger.platform === "persistent_notification") {
+    return "When a persistent notification is updated";
+  }
+
+  // Device Trigger
   if (trigger.platform === "device") {
     if (!trigger.device_id) {
       return "Device trigger";

@@ -127,6 +127,12 @@ export interface WebhookTrigger extends BaseTrigger {
   local_only?: boolean;
 }
 
+export interface PersistentNotificationTrigger extends BaseTrigger {
+  platform: "persistent_notification";
+  notification_id?: string;
+  update_type?: string[];
+}
+
 export interface ZoneTrigger extends BaseTrigger {
   platform: "zone";
   entity_id: string;
@@ -174,6 +180,7 @@ export type Trigger =
   | SunTrigger
   | TimePatternTrigger
   | WebhookTrigger
+  | PersistentNotificationTrigger
   | ZoneTrigger
   | TagTrigger
   | TimeTrigger
