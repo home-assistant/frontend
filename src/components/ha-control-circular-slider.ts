@@ -178,13 +178,13 @@ export class HaControlCircularSlider extends LitElement {
   }
 
   private _setActiveValue(value: number) {
-    const type = this._activeSlider ?? "value";
-    this[type] = value;
+    if (!this._activeSlider) return;
+    this[this._activeSlider] = value;
   }
 
   private _getActiveValue(): number | undefined {
-    const type = this._activeSlider ?? "value";
-    return this[type];
+    if (!this._activeSlider) return undefined;
+    return this[this._activeSlider];
   }
 
   _setupListeners() {
