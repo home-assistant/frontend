@@ -28,7 +28,7 @@ import type {
   LovelaceConfigForm,
   LovelaceGenericElementEditor,
 } from "../types";
-import { HuiGenericEditor } from "./config-elements/hui-generic-editor";
+import type { HuiFormEditor } from "./config-elements/hui-form-editor";
 import "./config-elements/hui-generic-entity-row-editor";
 import { GUISupportError } from "./gui-support-error";
 import { EditSubElementEvent, GUIModeChangedEvent } from "./types";
@@ -339,18 +339,18 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
         if (!configElement) {
           const form = await this.getConfigForm();
           if (form) {
-            await import("./config-elements/hui-generic-editor");
-            configElement = document.createElement("hui-generic-editor");
+            await import("./config-elements/hui-form-editor");
+            configElement = document.createElement("hui-form-editor");
             const { schema, assertConfig, computeLabel, computeHelper } = form;
-            (configElement as HuiGenericEditor).schema = schema;
+            (configElement as HuiFormEditor).schema = schema;
             if (computeLabel) {
-              (configElement as HuiGenericEditor).computeLabel = computeLabel;
+              (configElement as HuiFormEditor).computeLabel = computeLabel;
             }
             if (computeHelper) {
-              (configElement as HuiGenericEditor).computeHelper = computeHelper;
+              (configElement as HuiFormEditor).computeHelper = computeHelper;
             }
             if (assertConfig) {
-              (configElement as HuiGenericEditor).assertConfig = assertConfig;
+              (configElement as HuiFormEditor).assertConfig = assertConfig;
             }
           }
         }

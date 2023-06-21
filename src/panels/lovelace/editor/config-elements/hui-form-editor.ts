@@ -10,8 +10,8 @@ import type { HomeAssistant } from "../../../../types";
 import type { LovelaceGenericElementEditor } from "../../types";
 import { configElementStyle } from "./config-elements-style";
 
-@customElement("hui-generic-editor")
-export class HuiGenericEditor
+@customElement("hui-form-editor")
+export class HuiFormEditor
   extends LitElement
   implements LovelaceGenericElementEditor
 {
@@ -77,6 +77,6 @@ export class HuiGenericEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-generic-editor": HuiGenericEditor;
+    "hui-form-editor": HuiFormEditor;
   }
 }
