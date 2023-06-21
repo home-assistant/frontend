@@ -1,4 +1,6 @@
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import memoizeOne from "memoize-one";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -9,18 +11,48 @@ import "../../../../../components/ha-textfield";
 import { PersistentNotificationTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
+import type { TriggerElement } from "../ha-automation-trigger-row";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 const SUPPORTED_UPDATE_TYPES = ["added", "removed", "current", "updated"];
 const DEFAULT_UPDATE_TYPES = ["added", "removed"];
 const DEFAULT_NOTIFICATION_ID = "";
 
 @customElement("ha-automation-trigger-persistent_notification")
-export class HaPersistentNotificationTrigger extends LitElement {
+export class HaPersistentNotificationTrigger
+  extends LitElement
+  implements TriggerElement
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: PersistentNotificationTrigger;
 
   @property({ type: Boolean }) public disabled = false;
+
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        {
+          name: "notification_id",
+          required: false,
+          selector: { text: {} },
+        },
+        {
+          name: "update_type",
+          type: "multi_select",
+          required: true,
+          options: [
+            SUPPORTED_UPDATE_TYPES.map((update_type) => [
+              update_type,
+              localize(
+                `ui.panel.config.automation.editor.triggers.type.persistent_notification.update_types.${update_type}`
+              ),
+            ]),
+          ],
+        },
+      ] as const
+  );
 
   public static get defaultConfig() {
     return {
@@ -30,49 +62,29 @@ export class HaPersistentNotificationTrigger extends LitElement {
   }
 
   protected render() {
-    const { update_type: updateTypes, notification_id: notificationId } =
-      this.trigger;
-
+    const schema = this._schema(this.hass.localize);
     return html`
-      <div class="form">
-        <ha-textfield
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.type.persistent_notification.notification_id"
-          )}
-          name="notification_id"
-          .value=${notificationId}
-          .disabled=${this.disabled}
-          @change=${this._valueChanged}
-        ></ha-textfield>
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.type.persistent_notification.update_type"
-          )}
-        >
-          ${SUPPORTED_UPDATE_TYPES.map(
-            (update_type) => html`
-              <ha-check-list-item
-                left
-                .value=${update_type}
-                @request-selected=${this._updateTypeChanged}
-                .selected=${updateTypes!.includes(update_type)}
-              >
-              ${this.hass.localize(
-                `ui.panel.config.automation.editor.triggers.type.persistent_notification.update_types.${update_type}`
-              )}
-              </ha-check-list-item>
-          </ha-formfield>
-        </div>
-        `
-          )}
-        </ha-formfield>
-      </div>
+      <ha-form
+        .schema=${schema}
+        .data=${this.trigger}
+        .hass=${this.hass}
+        .disabled=${this.disabled}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
     handleChangeEvent(this, ev);
   }
+
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string =>
+    this.hass.localize(
+      `ui.panel.config.automation.editor.triggers.type.persistent_notification.${schema.name}`
+    );
 
   private _updateTypeChanged(ev: CustomEvent<RequestSelectedDetail>): void {
     ev.stopPropagation();
