@@ -116,7 +116,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       : stateObj.attributes.current_humidity !== null &&
         Number.isFinite(Number(stateObj.attributes.current_humidity))
       ? stateObj.attributes.current_humidity
-      : undefined
+      : undefined;
 
     const rtlDirection = computeRTLDirection(this.hass);
 
