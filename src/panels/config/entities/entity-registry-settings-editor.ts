@@ -1171,7 +1171,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._icon = ev.detail.value;
   }
 
-  private _copyEntityId(): void {
+  private async _copyEntityId(): Promise<void> {
     await copyToClipboard(this._entityId);
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
