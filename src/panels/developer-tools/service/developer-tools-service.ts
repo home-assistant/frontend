@@ -4,7 +4,7 @@ import { load } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { LocalStorage } from "../../../common/decorators/local-storage";
+import { storage } from "../../../common/decorators/storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { hasTemplate } from "../../../common/string/has-template";
@@ -38,10 +38,18 @@ class HaPanelDevService extends LitElement {
 
   @state() private _uiAvailable = true;
 
-  @LocalStorage("panel-dev-service-state-service-data", true, false)
+  @storage({
+    key: "panel-dev-service-state-service-data",
+    state: true,
+    subscribe: false,
+  })
   private _serviceData?: ServiceAction = { service: "", target: {}, data: {} };
 
-  @LocalStorage("panel-dev-service-state-yaml-mode", true, false)
+  @storage({
+    key: "panel-dev-service-state-yaml-mode",
+    state: true,
+    subscribe: false,
+  })
   private _yamlMode = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;

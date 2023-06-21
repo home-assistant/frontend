@@ -1,7 +1,7 @@
 import { mdiPlayCircleOutline } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { LocalStorage } from "../../common/decorators/local-storage";
+import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
 import { createCloseHeading } from "../../components/ha-dialog";
@@ -25,10 +25,12 @@ export class TTSTryDialog extends LitElement {
 
   @query("#message") private _messageInput?: HaTextArea;
 
-  @LocalStorage("ttsTryMessages", false, false) private _messages?: Record<
-    string,
-    string
-  >;
+  @storage({
+    key: "ttsTryMessages",
+    state: false,
+    subscribe: false,
+  })
+  private _messages?: Record<string, string>;
 
   public showDialog(params: TTSTryDialogParams) {
     this._params = params;
