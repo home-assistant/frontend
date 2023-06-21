@@ -1,4 +1,4 @@
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { array, assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -51,11 +51,11 @@ const SCHEMA = [
   { name: "theme", selector: { theme: {} } },
   {
     name: "tap_action",
-    selector: { "ui-action": {} },
+    selector: { ui_action: {} },
   },
   {
     name: "hold_action",
-    selector: { "ui-action": {} },
+    selector: { ui_action: {} },
   },
 ] as const;
 
@@ -84,9 +84,9 @@ export class HuiPictureGlanceCardEditor
     return this._config!.hold_action || { action: "more-info" };
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const data = { camera_view: "auto", ...this._config };

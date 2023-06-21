@@ -8,12 +8,13 @@ import {
   LitElement,
   PropertyValues,
   svg,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-card";
@@ -70,9 +71,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
     const stateObj = this.hass.states[this._config.entity] as HumidifierEntity;
 
@@ -135,9 +136,14 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
           ${stateObj.attributes.mode && !isUnavailableState(stateObj.state)
             ? html`
                 -
-                ${this.hass!.localize(
-                  `state_attributes.humidifier.mode.${stateObj.attributes.mode}`
-                ) || stateObj.attributes.mode}
+                ${computeAttributeValueDisplay(
+                  this.hass.localize,
+                  stateObj,
+                  this.hass.locale,
+                  this.hass.config,
+                  this.hass.entities,
+                  "mode"
+                )}
               `
             : ""}
         </text>
@@ -294,6 +300,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         justify-content: center;
         padding: 16px;
         position: relative;
+        direction: ltr;
       }
 
       #slider {

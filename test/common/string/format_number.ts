@@ -11,6 +11,8 @@ import {
   NumberFormat,
   TimeFormat,
   FirstWeekday,
+  DateFormat,
+  TimeZone,
 } from "../../../src/data/translation";
 
 describe("formatNumber", () => {
@@ -19,10 +21,12 @@ describe("formatNumber", () => {
     language: "en",
     number_format: NumberFormat.language,
     time_format: TimeFormat.language,
+    date_format: DateFormat.language,
+    time_zone: TimeZone.local,
     first_weekday: FirstWeekday.language,
   };
 
-  // Node only ships with English support for `Intl`, so we can not test for other number formats here.
+  // Node only ships with English support for `Intl`, so we cannot test for other number formats here.
   it("Formats English numbers", () => {
     assert.strictEqual(formatNumber(1234.5, defaultLocale), "1,234.5");
   });
@@ -66,6 +70,33 @@ describe("formatNumber", () => {
         minimumFractionDigits: 2,
       }),
       "1,234.50"
+    );
+  });
+
+  it("Formats number with fraction digits options if number format is none", () => {
+    assert.strictEqual(
+      formatNumber(
+        1234.5,
+        { ...defaultLocale, number_format: NumberFormat.none },
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }
+      ),
+      "1234.50"
+    );
+  });
+
+  it("Do not formats number with others options if number format is none", () => {
+    assert.strictEqual(
+      formatNumber(
+        1234.5,
+        { ...defaultLocale, number_format: NumberFormat.none },
+        {
+          useGrouping: true,
+        }
+      ),
+      "1234.5"
     );
   });
 
@@ -126,8 +157,7 @@ describe("formatNumber", () => {
       getNumberFormatOptions({
         state: "3.0",
         attributes: { step: 0.5 },
-      } as unknown as HassEntity),
-      undefined
+      } as unknown as HassEntity)
     );
   });
 

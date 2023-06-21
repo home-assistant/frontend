@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -20,6 +20,8 @@ import "../components/hui-warning";
 import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { LogbookCardConfig } from "./types";
+
+export const DEFAULT_HOURS_TO_SHOW = 24;
 
 @customElement("hui-logbook-card")
 export class HuiLogbookCard extends LitElement implements LovelaceCard {
@@ -66,7 +68,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     }
 
     this._config = {
-      hours_to_show: 24,
+      hours_to_show: DEFAULT_HOURS_TO_SHOW,
       ...config,
     };
     this._time = {
@@ -96,9 +98,9 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     if (!isComponentLoaded(this.hass, "logbook")) {

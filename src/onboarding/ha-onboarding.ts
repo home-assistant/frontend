@@ -5,7 +5,7 @@ import {
   getAuth,
   subscribeConfig,
 } from "home-assistant-js-websocket";
-import { html, PropertyValues, TemplateResult } from "lit";
+import { html, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../common/dom/fire_event";
@@ -68,11 +68,11 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   @state() private _steps?: OnboardingStep[];
 
-  protected render(): TemplateResult {
+  protected render() {
     const step = this._curStep()!;
 
     if (this._loading || !step) {
-      return html` <onboarding-loading></onboarding-loading> `;
+      return html`<onboarding-loading></onboarding-loading> `;
     }
     if (step.step === "user") {
       return html`
@@ -118,7 +118,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         ></onboarding-integrations>
       `;
     }
-    return html``;
+    return nothing;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -323,7 +323,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     // Load config strings for integrations
     (this as any)._loadFragmentTranslations(this.hass!.language, "config");
     // Make sure hass is initialized + the config/user callbacks have called.
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
   }
 }
 

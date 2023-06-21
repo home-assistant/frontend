@@ -5,6 +5,7 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   TemplateResult,
 } from "lit";
@@ -21,16 +22,16 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../search-input";
 import { debounce } from "../../common/util/debounce";
 import { nextRender } from "../../common/util/render-status";
 import { haStyleScrollbar } from "../../resources/styles";
+import { loadVirtualizer } from "../../resources/virtualizer";
+import { HomeAssistant } from "../../types";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
+import "../search-input";
 import { filterData, sortData } from "./sort-filter";
-import { HomeAssistant } from "../../types";
-import "@lit-labs/virtualizer";
 
 declare global {
   // for fire event
@@ -72,8 +73,8 @@ export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
   main?: boolean;
   title: TemplateResult | string;
   label?: TemplateResult | string;
-  type?: "numeric" | "icon" | "icon-button" | "overflow-menu";
-  template?: (data: any, row: T) => TemplateResult | string;
+  type?: "numeric" | "icon" | "icon-button" | "overflow-menu" | "flex";
+  template?: (data: any, row: T) => TemplateResult | string | typeof nothing;
   width?: string;
   maxWidth?: string;
   grows?: boolean;
@@ -183,6 +184,10 @@ export class HaDataTable extends LitElement {
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
+
     if (properties.has("columns")) {
       this._filterable = Object.values(this.columns).some(
         (column) => column.filterable
@@ -200,7 +205,6 @@ export class HaDataTable extends LitElement {
       Object.values(clonedColumns).forEach(
         (column: ClonedDataTableColumnData) => {
           delete column.title;
-          delete column.type;
           delete column.template;
         }
       );
@@ -353,19 +357,16 @@ export class HaDataTable extends LitElement {
     `;
   }
 
-  private _renderRow = (
-    row: DataTableRowData,
-    index: number
-  ): TemplateResult => {
+  private _renderRow = (row: DataTableRowData, index: number) => {
     // not sure how this happens...
     if (!row) {
-      return html``;
+      return nothing;
     }
     if (row.append) {
-      return html` <div class="mdc-data-table__row">${row.content}</div> `;
+      return html`<div class="mdc-data-table__row">${row.content}</div>`;
     }
     if (row.empty) {
-      return html` <div class="mdc-data-table__row"></div> `;
+      return html`<div class="mdc-data-table__row"></div>`;
     }
     return html`
       <div
@@ -409,6 +410,7 @@ export class HaDataTable extends LitElement {
             <div
               role=${column.main ? "rowheader" : "cell"}
               class="mdc-data-table__cell ${classMap({
+                "mdc-data-table__cell--flex": column.type === "flex",
                 "mdc-data-table__cell--numeric": column.type === "numeric",
                 "mdc-data-table__cell--icon": column.type === "icon",
                 "mdc-data-table__cell--icon-button":
@@ -462,7 +464,9 @@ export class HaDataTable extends LitElement {
     const elapsed = curTime - startTime;
 
     if (elapsed < 100) {
-      await new Promise((resolve) => setTimeout(resolve, 100 - elapsed));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 100 - elapsed);
+      });
     }
     if (this.curRequest !== curRequest) {
       return;
@@ -486,7 +490,7 @@ export class HaDataTable extends LitElement {
   }
 
   private _memFilterData = memoizeOne(
-    async (
+    (
       data: DataTableRowData[],
       columns: SortableColumnContainer,
       filter: string
@@ -662,6 +666,11 @@ export class HaDataTable extends LitElement {
           text-overflow: ellipsis;
           flex-shrink: 0;
           box-sizing: border-box;
+        }
+
+        .mdc-data-table__cell.mdc-data-table__cell--flex {
+          display: flex;
+          overflow: initial;
         }
 
         .mdc-data-table__cell.mdc-data-table__cell--icon {
@@ -980,6 +989,7 @@ export class HaDataTable extends LitElement {
         }
         lit-virtualizer {
           contain: size layout !important;
+          overscroll-behavior: contain;
         }
       `,
     ];

@@ -63,7 +63,14 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
         {
           name: "after",
           selector: inputModeAfter
-            ? { entity: { domain: "input_datetime" } }
+            ? {
+                entity: {
+                  filter: [
+                    { domain: "input_datetime" },
+                    { domain: "sensor", device_class: "timestamp" },
+                  ],
+                },
+              }
             : { time: {} },
         },
         {
@@ -88,7 +95,14 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
         {
           name: "before",
           selector: inputModeBefore
-            ? { entity: { domain: "input_datetime" } }
+            ? {
+                entity: {
+                  filter: [
+                    { domain: "input_datetime" },
+                    { domain: "sensor", device_class: "timestamp" },
+                  ],
+                },
+              }
             : { time: {} },
         },
         {
@@ -111,10 +125,12 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
   protected render() {
     const inputModeBefore =
       this._inputModeBefore ??
-      this.condition.before?.startsWith("input_datetime.");
+      (this.condition.before?.startsWith("input_datetime.") ||
+        this.condition.before?.startsWith("sensor."));
     const inputModeAfter =
       this._inputModeAfter ??
-      this.condition.after?.startsWith("input_datetime.");
+      (this.condition.after?.startsWith("input_datetime.") ||
+        this.condition.after?.startsWith("sensor."));
 
     const schema = this._schema(
       this.hass.localize,
@@ -152,7 +168,9 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
     delete newValue.mode_before;
 
     Object.keys(newValue).forEach((key) =>
-      newValue[key] === undefined || newValue[key] === ""
+      newValue[key] === undefined ||
+      newValue[key] === "" ||
+      (Array.isArray(newValue[key]) && newValue[key].length === 0)
         ? delete newValue[key]
         : {}
     );

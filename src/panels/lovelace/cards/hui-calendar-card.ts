@@ -4,9 +4,9 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -26,7 +26,7 @@ import type {
 import "../../calendar/ha-full-calendar";
 import type { HAFullCalendar } from "../../calendar/ha-full-calendar";
 import { findEntities } from "../common/find-entities";
-import { installResizeObserver } from "../common/install-resize-observer";
+import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { CalendarCardConfig } from "./types";
@@ -118,9 +118,9 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass || !this._calendars.length) {
-      return html``;
+      return nothing;
     }
 
     const views: FullCalendarView[] = this._veryNarrow
@@ -215,7 +215,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await installResizeObserver();
+      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measureCard(), 250, false)
       );

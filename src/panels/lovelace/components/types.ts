@@ -16,4 +16,4 @@ export const TIMESTAMP_RENDERING_FORMATS = [
 ] as const;
 
 export type TimestampRenderingFormat =
-  typeof TIMESTAMP_RENDERING_FORMATS[number];
+  (typeof TIMESTAMP_RENDERING_FORMATS)[number];

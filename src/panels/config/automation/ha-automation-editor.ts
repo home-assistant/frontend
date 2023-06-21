@@ -14,8 +14,6 @@ import {
   mdiStopCircleOutline,
   mdiTransitConnection,
 } from "@mdi/js";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -48,12 +46,15 @@ import {
   saveAutomationConfig,
   showAutomationEditor,
   triggerAutomationActions,
+  Trigger,
+  Condition,
 } from "../../../data/automation";
+import { Action } from "../../../data/script";
+import { fetchEntityRegistry } from "../../../data/entity_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/ha-app-layout";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -78,6 +79,11 @@ declare global {
     "ui-mode-not-available": Error;
     duplicate: undefined;
     "re-order": undefined;
+    "set-clipboard": {
+      trigger?: Trigger;
+      condition?: Condition;
+      action?: Action;
+    };
   }
 }
 
@@ -143,7 +149,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               </mwc-button>
             `
           : ""}
-        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+        <ha-button-menu slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
@@ -479,7 +485,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       this._readOnly = false;
       this._config = this._normalizeConfig(config);
     } catch (err: any) {
-      const entity = Object.values(this.hass.entities).find(
+      const entityRegistry = await fetchEntityRegistry(this.hass.connection);
+      const entity = entityRegistry.find(
         (ent) =>
           ent.platform === "automation" && ent.unique_id === this.automationId
       );

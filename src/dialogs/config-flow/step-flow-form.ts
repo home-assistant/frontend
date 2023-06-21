@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   css,
   CSSResultGroup,
@@ -21,6 +21,7 @@ import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+import { isNavigationClick } from "../../common/dom/is-navigation-click";
 
 @customElement("step-flow-form")
 class StepFlowForm extends LitElement {
@@ -36,13 +37,18 @@ class StepFlowForm extends LitElement {
 
   @state() private _errorMsg?: string;
 
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removeEventListener("keydown", this._handleKeyDown);
+  }
+
   protected render(): TemplateResult {
     const step = this.step;
     const stepData = this._stepDataProcessed;
 
     return html`
       <h2>${this.flowConfig.renderShowFormStepHeader(this.hass, this.step)}</h2>
-      <div class="content">
+      <div class="content" @click=${this._clickHandler}>
         ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
         ${this._errorMsg
           ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
@@ -57,6 +63,7 @@ class StepFlowForm extends LitElement {
           .computeLabel=${this._labelCallback}
           .computeHelper=${this._helperCallback}
           .computeError=${this._errorCallback}
+          .localizeValue=${this._localizeValueCallback}
         ></ha-form>
       </div>
       <div class="buttons">
@@ -69,10 +76,9 @@ class StepFlowForm extends LitElement {
           : html`
               <div>
                 <mwc-button @click=${this._submitStep}>
-                  ${this.hass.localize(
-                    `ui.panel.config.integrations.config_flow.${
-                      this.step.last_step === false ? "next" : "submit"
-                    }`
+                  ${this.flowConfig.renderShowFormStepSubmitButton(
+                    this.hass,
+                    this.step
                   )}
                 </mwc-button>
               </div>
@@ -84,12 +90,22 @@ class StepFlowForm extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     setTimeout(() => this.shadowRoot!.querySelector("ha-form")!.focus(), 0);
-    this.addEventListener("keypress", (ev) => {
-      if (ev.keyCode === 13) {
-        this._submitStep();
-      }
-    });
+    this.addEventListener("keydown", this._handleKeyDown);
   }
+
+  private _clickHandler(ev: MouseEvent) {
+    if (isNavigationClick(ev, false)) {
+      fireEvent(this, "flow-update", {
+        step: undefined,
+      });
+    }
+  }
+
+  private _handleKeyDown = (ev: KeyboardEvent) => {
+    if (ev.key === "Enter") {
+      this._submitStep();
+    }
+  };
 
   private get _stepDataProcessed() {
     if (this._stepData !== undefined) {
@@ -173,6 +189,13 @@ class StepFlowForm extends LitElement {
 
   private _errorCallback = (error: string) =>
     this.flowConfig.renderShowFormStepFieldError(this.hass, this.step, error);
+
+  private _localizeValueCallback = (key: string) =>
+    this.flowConfig.renderShowFormStepFieldLocalizeValue(
+      this.hass,
+      this.step,
+      key
+    );
 
   static get styles(): CSSResultGroup {
     return [

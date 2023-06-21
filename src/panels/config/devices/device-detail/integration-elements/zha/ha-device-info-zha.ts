@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/ha-expansion-panel";
@@ -37,9 +37,9 @@ export class HaDeviceActionsZha extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._zhaDevice) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-expansion-panel header="Zigbee info">

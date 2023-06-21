@@ -26,6 +26,9 @@ export class Gauge extends LitElement {
 
   @property({ type: Number }) public value = 0;
 
+  @property({ attribute: false })
+  public formatOptions?: Intl.NumberFormatOptions;
+
   @property({ type: String }) public valueText?: string;
 
   @property() public locale!: FrontendLocaleData;
@@ -132,7 +135,8 @@ export class Gauge extends LitElement {
           ${
             this._segment_label
               ? this._segment_label
-              : this.valueText || formatNumber(this.value, this.locale)
+              : this.valueText ||
+                formatNumber(this.value, this.locale, this.formatOptions)
           }${
       this._segment_label
         ? ""
@@ -207,6 +211,7 @@ export class Gauge extends LitElement {
         font-size: 50px;
         fill: var(--primary-text-color);
         text-anchor: middle;
+        direction: ltr;
       }
     `;
   }

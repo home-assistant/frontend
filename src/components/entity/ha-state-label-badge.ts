@@ -22,6 +22,7 @@ import {
   isNumericState,
 } from "../../common/number/format_number";
 import { isUnavailableState, UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { timerTimeRemaining } from "../../data/timer";
 import { HomeAssistant } from "../../types";
 import "../ha-label-badge";
@@ -34,9 +35,9 @@ const TRUNCATED_DOMAINS = [
   "person",
 ] as const satisfies ReadonlyArray<keyof typeof FIXED_DOMAIN_STATES>;
 
-type TruncatedDomain = typeof TRUNCATED_DOMAINS[number];
+type TruncatedDomain = (typeof TRUNCATED_DOMAINS)[number];
 type TruncatedKey = {
-  [T in TruncatedDomain]: `${T}.${typeof FIXED_DOMAIN_STATES[T][number]}`;
+  [T in TruncatedDomain]: `${T}.${(typeof FIXED_DOMAIN_STATES)[T][number]}`;
 }[TruncatedDomain];
 
 const getTruncatedKey = (domainKey: string, stateKey: string) => {
@@ -103,8 +104,10 @@ export class HaStateLabelBadge extends LitElement {
     // 4. Icon determined via entity state
     // 5. Value string as fallback
     const domain = computeStateDomain(entityState);
+    const entry = this.hass?.entities[entityState.entity_id];
 
-    const showIcon = this.icon || this._computeShowIcon(domain, entityState);
+    const showIcon =
+      this.icon || this._computeShowIcon(domain, entityState, entry);
     const image = this.icon
       ? ""
       : this.image
@@ -112,7 +115,9 @@ export class HaStateLabelBadge extends LitElement {
       : entityState.attributes.entity_picture_local ||
         entityState.attributes.entity_picture;
     const value =
-      !image && !showIcon ? this._computeValue(domain, entityState) : undefined;
+      !image && !showIcon
+        ? this._computeValue(domain, entityState, entry)
+        : undefined;
 
     return html`
       <ha-label-badge
@@ -152,7 +157,11 @@ export class HaStateLabelBadge extends LitElement {
     }
   }
 
-  private _computeValue(domain: string, entityState: HassEntity) {
+  private _computeValue(
+    domain: string,
+    entityState: HassEntity,
+    entry?: EntityRegistryDisplayEntry
+  ) {
     switch (domain) {
       case "alarm_control_panel":
       case "binary_sensor":
@@ -165,7 +174,7 @@ export class HaStateLabelBadge extends LitElement {
         return null;
       // @ts-expect-error we don't break and go to default
       case "sensor":
-        if (entityState.attributes.device_class === "moon__phase") {
+        if (entry?.platform === "moon") {
           return null;
         }
       // eslint-disable-next-line: disable=no-fallthrough
@@ -177,18 +186,23 @@ export class HaStateLabelBadge extends LitElement {
           ? formatNumber(
               entityState.state,
               this.hass!.locale,
-              getNumberFormatOptions(entityState)
+              getNumberFormatOptions(entityState, entry)
             )
           : computeStateDisplay(
               this.hass!.localize,
               entityState,
               this.hass!.locale,
+              this.hass!.config,
               this.hass!.entities
             );
     }
   }
 
-  private _computeShowIcon(domain: string, entityState: HassEntity): boolean {
+  private _computeShowIcon(
+    domain: string,
+    entityState: HassEntity,
+    entry?: EntityRegistryDisplayEntry
+  ): boolean {
     if (entityState.state === UNAVAILABLE) {
       return false;
     }
@@ -204,7 +218,7 @@ export class HaStateLabelBadge extends LitElement {
       case "timer":
         return true;
       case "sensor":
-        return entityState.attributes.device_class === "moon__phase";
+        return entry?.platform === "moon";
       default:
         return false;
     }
@@ -222,6 +236,10 @@ export class HaStateLabelBadge extends LitElement {
     const domainStateKey = getTruncatedKey(domain, entityState.state);
     if (domainStateKey) {
       return this.hass!.localize(`state_badge.${domainStateKey}`);
+    }
+    // Person and device tracker state can be zone name
+    if (domain === "person" || domain === "device_tracker") {
+      return entityState.state;
     }
     if (domain === "timer") {
       return secondsToDuration(_timerTimeRemaining);
@@ -263,7 +281,7 @@ export class HaStateLabelBadge extends LitElement {
         font-size: 70%;
       }
       ha-label-badge {
-        --ha-label-badge-color: var(--label-badge-red, #df4c1e);
+        --ha-label-badge-color: var(--label-badge-red);
       }
       ha-label-badge.has-unit_of_measurement {
         --ha-label-badge-label-text-transform: none;
@@ -271,31 +289,31 @@ export class HaStateLabelBadge extends LitElement {
 
       ha-label-badge.binary_sensor,
       ha-label-badge.updater {
-        --ha-label-badge-color: var(--label-badge-blue, #039be5);
+        --ha-label-badge-color: var(--label-badge-blue);
       }
 
       .red {
-        --ha-label-badge-color: var(--label-badge-red, #df4c1e);
+        --ha-label-badge-color: var(--label-badge-red);
       }
 
       .blue {
-        --ha-label-badge-color: var(--label-badge-blue, #039be5);
+        --ha-label-badge-color: var(--label-badge-blue);
       }
 
       .green {
-        --ha-label-badge-color: var(--label-badge-green, #0da035);
+        --ha-label-badge-color: var(--label-badge-green);
       }
 
       .yellow {
-        --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
+        --ha-label-badge-color: var(--label-badge-yellow);
       }
 
       .grey {
-        --ha-label-badge-color: var(--label-badge-grey, var(--paper-grey-500));
+        --ha-label-badge-color: var(--label-badge-grey);
       }
 
       .warning {
-        --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
+        --ha-label-badge-color: var(--label-badge-yellow);
       }
     `;
   }

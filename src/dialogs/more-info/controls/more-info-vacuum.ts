@@ -9,9 +9,11 @@ import {
   mdiStop,
   mdiTargetVariant,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon";
@@ -90,9 +92,9 @@ class MoreInfoVacuum extends LitElement {
 
   @property() public stateObj?: VacuumEntity;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.stateObj;
@@ -113,11 +115,21 @@ class MoreInfoVacuum extends LitElement {
                     </span>
                     <span>
                       <strong>
-                        ${stateObj.attributes.status ||
-                        this.hass.localize(
-                          `component.vacuum.state._.${stateObj.state}`
+                        ${computeAttributeValueDisplay(
+                          this.hass.localize,
+                          stateObj,
+                          this.hass.locale,
+                          this.hass.config,
+                          this.hass.entities,
+                          "status"
                         ) ||
-                        stateObj.state}
+                        computeStateDisplay(
+                          this.hass.localize,
+                          stateObj,
+                          this.hass.locale,
+                          this.hass.config,
+                          this.hass.entities
+                        )}
                       </strong>
                     </span>
                   </div>
@@ -186,7 +198,17 @@ class MoreInfoVacuum extends LitElement {
                 >
                   ${stateObj.attributes.fan_speed_list!.map(
                     (mode) => html`
-                      <mwc-list-item .value=${mode}>${mode}</mwc-list-item>
+                      <mwc-list-item .value=${mode}>
+                        ${computeAttributeValueDisplay(
+                          this.hass.localize,
+                          stateObj,
+                          this.hass.locale,
+                          this.hass.config,
+                          this.hass.entities,
+                          "fan_speed",
+                          mode
+                        )}
+                      </mwc-list-item>
                     `
                   )}
                 </ha-select>
@@ -195,7 +217,14 @@ class MoreInfoVacuum extends LitElement {
                 >
                   <span>
                     <ha-svg-icon .path=${mdiFan}></ha-svg-icon>
-                    ${stateObj.attributes.fan_speed}
+                    ${computeAttributeValueDisplay(
+                      this.hass.localize,
+                      stateObj,
+                      this.hass.locale,
+                      this.hass.config,
+                      this.hass.entities,
+                      "fan_speed"
+                    )}
                   </span>
                 </div>
               </div>

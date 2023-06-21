@@ -32,12 +32,7 @@ import {
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 
-export type ExtendedStatisticType = StatisticType | "change";
-
-export const supportedStatTypeMap: Record<
-  ExtendedStatisticType,
-  StatisticType
-> = {
+export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
   min: "min",
   max: "max",
@@ -46,33 +41,24 @@ export const supportedStatTypeMap: Record<
   change: "sum",
 };
 
-export const statTypeMap: Record<ExtendedStatisticType, StatisticType> = {
-  mean: "mean",
-  min: "min",
-  max: "max",
-  sum: "sum",
-  state: "state",
-  change: "sum",
-};
-
 @customElement("statistics-chart")
 class StatisticsChart extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public statisticsData!: Statistics;
+  @property({ attribute: false }) public statisticsData?: Statistics;
 
   @property({ attribute: false }) public metadata?: Record<
     string,
     StatisticsMetaData
   >;
 
-  @property() public names: boolean | Record<string, string> = false;
+  @property() public names?: Record<string, string>;
 
   @property() public unit?: string;
 
   @property({ attribute: false }) public endTime?: Date;
 
-  @property({ type: Array }) public statTypes: Array<ExtendedStatisticType> = [
+  @property({ type: Array }) public statTypes: Array<StatisticType> = [
     "sum",
     "min",
     "mean",
@@ -99,7 +85,12 @@ class StatisticsChart extends LitElement {
     if (!this.hasUpdated || changedProps.has("unit")) {
       this._createOptions();
     }
-    if (changedProps.has("statisticsData") || changedProps.has("statTypes")) {
+    if (
+      changedProps.has("statisticsData") ||
+      changedProps.has("statTypes") ||
+      changedProps.has("chartType") ||
+      changedProps.has("hideLegend")
+    ) {
       this._generateData();
     }
   }
@@ -133,6 +124,7 @@ class StatisticsChart extends LitElement {
 
     return html`
       <ha-chart-base
+        .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
         .chartType=${this.chartType}
@@ -144,12 +136,17 @@ class StatisticsChart extends LitElement {
     this._chartOptions = {
       parsing: false,
       animation: false,
+      interaction: {
+        mode: "nearest",
+        axis: "x",
+      },
       scales: {
         x: {
           type: "time",
           adapters: {
             date: {
               locale: this.hass.locale,
+              config: this.hass.config,
             },
           },
           ticks: {
@@ -181,7 +178,6 @@ class StatisticsChart extends LitElement {
       },
       plugins: {
         tooltip: {
-          mode: "nearest",
           callbacks: {
             label: (context) =>
               `${context.dataset.label}: ${formatNumber(
@@ -203,9 +199,6 @@ class StatisticsChart extends LitElement {
           },
         },
       },
-      hover: {
-        mode: "nearest",
-      },
       elements: {
         line: {
           tension: 0.4,
@@ -214,7 +207,7 @@ class StatisticsChart extends LitElement {
         },
         bar: { borderWidth: 1.5, borderRadius: 4 },
         point: {
-          hitRadius: 5,
+          hitRadius: 50,
         },
       },
       // @ts-expect-error
@@ -311,6 +304,7 @@ class StatisticsChart extends LitElement {
         }
         statDataSets.forEach((d, i) => {
           if (
+            this.chartType === "line" &&
             prevEndTime &&
             prevValues &&
             prevEndTime.getTime() !== start.getTime()
@@ -327,7 +321,10 @@ class StatisticsChart extends LitElement {
         prevEndTime = end;
       };
 
-      const color = getGraphColorByIndex(colorIndex, this._computedStyle!);
+      const color = getGraphColorByIndex(
+        colorIndex,
+        this._computedStyle || getComputedStyle(this)
+      );
       colorIndex++;
 
       const statTypes: this["statTypes"] = [];
@@ -348,7 +345,7 @@ class StatisticsChart extends LitElement {
         : this.statTypes;
 
       sortedTypes.forEach((type) => {
-        if (statisticsHaveType(stats, statTypeMap[type])) {
+        if (statisticsHaveType(stats, type)) {
           const band = drawBands && (type === "min" || type === "max");
           statTypes.push(type);
           statDataSets.push({
@@ -381,7 +378,6 @@ class StatisticsChart extends LitElement {
       let prevDate: Date | null = null;
       // Process chart data.
       let firstSum: number | null | undefined = null;
-      let prevSum: number | null | undefined = null;
       stats.forEach((stat) => {
         const startDate = new Date(stat.start);
         if (prevDate === startDate) {
@@ -398,13 +394,6 @@ class StatisticsChart extends LitElement {
             } else {
               val = (stat.sum || 0) - firstSum;
             }
-          } else if (type === "change") {
-            if (prevSum === null || prevSum === undefined) {
-              prevSum = stat.sum;
-              return;
-            }
-            val = (stat.sum || 0) - prevSum;
-            prevSum = stat.sum;
           } else {
             val = stat[type];
           }

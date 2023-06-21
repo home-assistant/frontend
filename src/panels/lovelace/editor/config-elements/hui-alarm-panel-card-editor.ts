@@ -1,15 +1,15 @@
-import "../../../../components/ha-form/ha-form";
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { array, assert, assign, object, optional, string } from "superstruct";
 import memoizeOne from "memoize-one";
+import { array, assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { AlarmPanelCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -70,9 +70,9 @@ export class HuiAlarmPanelCardEditor
       ] as const
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     return html`

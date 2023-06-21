@@ -1,5 +1,12 @@
 import { mdiDelete, mdiPlus } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -147,7 +154,7 @@ export class HaConfigApplicationCredentials extends LitElement {
                 </div>
               </div>
             `
-          : html``}
+          : nothing}
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(

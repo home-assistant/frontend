@@ -1,10 +1,10 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
-import type { PolymerChangedEvent } from "../../polymer-types";
-import type { HomeAssistant } from "../../types";
+import type { ValueChangedEvent, HomeAssistant } from "../../types";
 import "./ha-entity-picker";
 import type { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
 
@@ -75,9 +75,9 @@ class HaEntitiesPickerLight extends LitElement {
 
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
 
     const currentEntities = this._currentEntities;
@@ -95,7 +95,10 @@ class HaEntitiesPickerLight extends LitElement {
               .excludeEntities=${this.excludeEntities}
               .includeDeviceClasses=${this.includeDeviceClasses}
               .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
-              .entityFilter=${this._entityFilter}
+              .entityFilter=${this._getEntityFilter(
+                this.value,
+                this.entityFilter
+              )}
               .value=${entityId}
               .label=${this.pickedEntityLabel}
               .disabled=${this.disabled}
@@ -114,7 +117,7 @@ class HaEntitiesPickerLight extends LitElement {
           .excludeEntities=${this.excludeEntities}
           .includeDeviceClasses=${this.includeDeviceClasses}
           .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
-          .entityFilter=${this._entityFilter}
+          .entityFilter=${this._getEntityFilter(this.value, this.entityFilter)}
           .label=${this.pickEntityLabel}
           .helper=${this.helper}
           .disabled=${this.disabled}
@@ -125,11 +128,15 @@ class HaEntitiesPickerLight extends LitElement {
     `;
   }
 
-  private _entityFilter: HaEntityPickerEntityFilterFunc = (
-    stateObj: HassEntity
-  ) =>
-    (!this.value || !this.value.includes(stateObj.entity_id)) &&
-    (!this.entityFilter || this.entityFilter(stateObj));
+  private _getEntityFilter = memoizeOne(
+    (
+        value: string[] | undefined,
+        entityFilter: HaEntityPickerEntityFilterFunc | undefined
+      ): HaEntityPickerEntityFilterFunc =>
+      (stateObj: HassEntity) =>
+        (!value || !value.includes(stateObj.entity_id)) &&
+        (!entityFilter || entityFilter(stateObj))
+  );
 
   private get _currentEntities() {
     return this.value || [];
@@ -143,7 +150,7 @@ class HaEntitiesPickerLight extends LitElement {
     });
   }
 
-  private _entityChanged(event: PolymerChangedEvent<string>) {
+  private _entityChanged(event: ValueChangedEvent<string>) {
     event.stopPropagation();
     const curValue = (event.currentTarget as any).curValue;
     const newValue = event.detail.value;
@@ -163,7 +170,7 @@ class HaEntitiesPickerLight extends LitElement {
     );
   }
 
-  private async _addEntity(event: PolymerChangedEvent<string>) {
+  private async _addEntity(event: ValueChangedEvent<string>) {
     event.stopPropagation();
     const toAdd = event.detail.value;
     if (!toAdd) {

@@ -1,14 +1,14 @@
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import "../../../components/ha-textfield";
 import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
-import { TextEntity, setValue } from "../../../data/text";
+import { setValue, TextEntity } from "../../../data/text";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { EntityConfig, LovelaceRow } from "./types";
-import "../../../components/ha-textfield";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 
 @customElement("hui-text-entity-row")
 class HuiTextEntityRow extends LitElement implements LovelaceRow {
@@ -27,9 +27,9 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.hass.states[this._config.entity] as

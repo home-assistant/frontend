@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -18,8 +18,7 @@ import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import { CloudStatus, fetchCloudStatus } from "../../../data/cloud";
 import { saveCoreConfig } from "../../../data/core";
-import type { PolymerChangedEvent } from "../../../polymer-types";
-import type { HomeAssistant } from "../../../types";
+import type { ValueChangedEvent, HomeAssistant } from "../../../types";
 
 @customElement("ha-config-url-form")
 class ConfigUrlForm extends LitElement {
@@ -39,14 +38,14 @@ class ConfigUrlForm extends LitElement {
 
   @state() private _showCustomInternalUrl = false;
 
-  protected render(): TemplateResult {
+  protected render() {
     const canEdit = ["storage", "default"].includes(
       this.hass.config.config_source
     );
     const disabled = this._working || !canEdit;
 
     if (!this.hass.userData?.showAdvanced || this._cloudStatus === undefined) {
-      return html``;
+      return nothing;
     }
 
     const internalUrl = this._internalUrlValue;
@@ -229,7 +228,7 @@ class ConfigUrlForm extends LitElement {
                       ? "info"
                       : "warning"}
                     .title=${this.hass.localize(
-                      "ui.panel.config.url.intenral_url_https_error_title"
+                      "ui.panel.config.url.internal_url_https_error_title"
                     )}
                   >
                     ${this.hass.localize(
@@ -291,7 +290,7 @@ class ConfigUrlForm extends LitElement {
     this._showCustomInternalUrl = !ev.currentTarget.checked;
   }
 
-  private _handleChange(ev: PolymerChangedEvent<string>) {
+  private _handleChange(ev: ValueChangedEvent<string>) {
     const target = ev.currentTarget as HaTextField;
     this[`_${target.name}`] = target.value || null;
   }
@@ -344,7 +343,8 @@ class ConfigUrlForm extends LitElement {
       }
 
       .card-actions {
-        text-align: right;
+        display: flex;
+        flex-direction: row-reverse;
       }
 
       a {

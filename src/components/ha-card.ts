@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-card")
@@ -70,11 +70,11 @@ export class HaCard extends LitElement {
     `;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     return html`
       ${this.header
         ? html`<h1 class="card-header">${this.header}</h1>`
-        : html``}
+        : nothing}
       <slot></slot>
     `;
   }

@@ -15,7 +15,7 @@ import {
 } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
+import { loadPolyfillIfNeeded } from "../../resources/resize-observer.polyfill";
 import { HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "./ha-entity-marker";
@@ -49,6 +49,10 @@ export class HaMap extends ReactiveElement {
   @property({ attribute: false }) public layers?: Layer[];
 
   @property({ type: Boolean }) public autoFit = false;
+
+  @property({ type: Boolean }) public renderPassive = false;
+
+  @property({ type: Boolean }) public interactiveZones = false;
 
   @property({ type: Boolean }) public fitZones?: boolean;
 
@@ -321,6 +325,10 @@ export class HaMap extends ReactiveElement {
 
     const computedStyles = getComputedStyle(this);
     const zoneColor = computedStyles.getPropertyValue("--accent-color");
+    const passiveZoneColor = computedStyles.getPropertyValue(
+      "--secondary-text-color"
+    );
+
     const darkPrimaryColor = computedStyles.getPropertyValue(
       "--dark-primary-color"
     );
@@ -350,7 +358,7 @@ export class HaMap extends ReactiveElement {
 
       if (computeStateDomain(stateObj) === "zone") {
         // DRAW ZONE
-        if (passive) {
+        if (passive && !this.renderPassive) {
           continue;
         }
 
@@ -374,7 +382,7 @@ export class HaMap extends ReactiveElement {
               iconSize: [24, 24],
               className,
             }),
-            interactive: false,
+            interactive: this.interactiveZones,
             title,
           })
         );
@@ -383,7 +391,7 @@ export class HaMap extends ReactiveElement {
         this._mapZones.push(
           Leaflet.circle([latitude, longitude], {
             interactive: false,
-            color: zoneColor,
+            color: passive ? passiveZoneColor : zoneColor,
             radius,
           })
         );
@@ -442,7 +450,7 @@ export class HaMap extends ReactiveElement {
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await installResizeObserver();
+      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(() => {
         this.leafletMap?.invalidateSize({ debounceMoveend: true });
       });
@@ -462,6 +470,11 @@ export class HaMap extends ReactiveElement {
       #map.dark {
         background: #090909;
         --map-filter: invert(0.9) hue-rotate(170deg) grayscale(0.7);
+      }
+      #map:active {
+        cursor: grabbing;
+        cursor: -moz-grabbing;
+        cursor: -webkit-grabbing;
       }
       .light {
         color: #000000;

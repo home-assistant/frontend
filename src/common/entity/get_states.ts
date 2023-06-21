@@ -102,7 +102,15 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
     frontend_stream_type: ["hls", "web_rtc"],
   },
   climate: {
-    hvac_action: ["off", "idle", "heating", "cooling", "drying", "fan"],
+    hvac_action: [
+      "off",
+      "idle",
+      "preheating",
+      "heating",
+      "cooling",
+      "drying",
+      "fan",
+    ],
   },
   cover: {
     device_class: [
@@ -118,24 +126,40 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "window",
     ],
   },
+  device_tracker: {
+    source_type: ["bluetooth", "bluetooth_le", "gps", "router"],
+  },
+  fan: {
+    direction: ["forward", "reverse"],
+  },
   humidifier: {
     device_class: ["humidifier", "dehumidifier"],
   },
   media_player: {
     device_class: ["tv", "speaker", "receiver"],
     media_content_type: [
+      "album",
       "app",
+      "artist",
       "channel",
+      "channels",
+      "composer",
+      "contibuting_artist",
       "episode",
       "game",
+      "genre",
       "image",
       "movie",
       "music",
       "playlist",
+      "podcast",
+      "season",
+      "track",
       "tvshow",
       "url",
       "video",
     ],
+    repeat: ["off", "one", "all"],
   },
   number: {
     device_class: ["temperature"],
@@ -172,6 +196,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "temperature",
       "timestamp",
       "volatile_organic_compounds",
+      "volatile_organic_compounds_parts",
       "voltage",
     ],
     state_class: ["measurement", "total", "total_increasing"],

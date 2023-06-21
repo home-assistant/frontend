@@ -5,14 +5,10 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import {
-  ExtendedStatisticType,
-  statTypeMap,
-} from "../../../components/chart/statistics-chart";
 import "../../../components/ha-card";
 import {
   fetchStatistics,
@@ -20,6 +16,7 @@ import {
   getStatisticMetadata,
   Statistics,
   StatisticsMetaData,
+  StatisticType,
 } from "../../../data/recorder";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
@@ -27,6 +24,8 @@ import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import { LovelaceCard } from "../types";
 import { StatisticsGraphCardConfig } from "./types";
+
+export const DEFAULT_DAYS_TO_SHOW = 30;
 
 @customElement("hui-statistics-graph-card")
 export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
@@ -72,7 +71,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   private _interval?: number;
 
-  private _statTypes?: Array<ExtendedStatisticType>;
+  private _statTypes?: Array<StatisticType>;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -91,7 +90,11 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return this._config?.title ? 2 : 0 + 2 * (this._entities?.length || 1);
+    return (
+      5 +
+      (this._config?.title ? 2 : 0) +
+      (!this._config?.hide_legend ? this._entities?.length || 0 : 0)
+    );
   }
 
   public setConfig(config: StatisticsGraphCardConfig): void {
@@ -118,7 +121,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     if (typeof config.stat_types === "string") {
       this._statTypes = [config.stat_types];
     } else if (!config.stat_types) {
-      this._statTypes = ["state", "sum", "min", "max", "mean"];
+      this._statTypes = ["change", "state", "sum", "min", "max", "mean"];
     } else {
       this._statTypes = config.stat_types;
     }
@@ -173,9 +176,9 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     );
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -194,6 +197,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .statTypes=${this._statTypes!}
             .names=${this._names}
             .unit=${this._unit}
+            .hideLegend=${this._config.hide_legend || false}
           ></statistics-chart>
         </div>
       </ha-card>
@@ -220,7 +224,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     const startDate = new Date();
     startDate.setTime(
       startDate.getTime() -
-        1000 * 60 * 60 * (24 * (this._config!.days_to_show || 30) + 1)
+        1000 *
+          60 *
+          60 *
+          (24 * (this._config!.days_to_show || DEFAULT_DAYS_TO_SHOW) + 1)
     );
     try {
       let unitClass;
@@ -244,15 +251,22 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
           : undefined;
       }
       const unitconfig = unitClass ? { [unitClass]: this._unit } : undefined;
-      this._statistics = await fetchStatistics(
+      const statistics = await fetchStatistics(
         this.hass!,
         startDate,
         undefined,
         this._entities,
         this._config!.period,
         unitconfig,
-        this._statTypes?.map((stat_type) => statTypeMap[stat_type])
+        this._statTypes
       );
+
+      this._statistics = {};
+      this._entities.forEach((id) => {
+        if (id in statistics) {
+          this._statistics![id] = statistics[id];
+        }
+      });
     } catch (err) {
       this._statistics = undefined;
     }

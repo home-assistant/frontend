@@ -143,7 +143,7 @@ export class HaConfigLovelaceRescources extends LitElement {
       createResource: async (values) => {
         const created = await createResource(this.hass!, values);
         this._resources = this._resources!.concat(created).sort((res1, res2) =>
-          stringCompare(res1.url, res2.url)
+          stringCompare(res1.url, res2.url, this.hass!.locale.language)
         );
         loadLovelaceResources([created], this.hass!.auth.data.hassUrl);
       },

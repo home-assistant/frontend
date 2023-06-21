@@ -1,5 +1,12 @@
 import "@material/mwc-button/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, state } from "lit/decorators";
 import { computeStateName } from "../../../../../../common/entity/compute_state_name";
 import { computeRTLDirection } from "../../../../../../common/util/compute_rtl";
@@ -39,9 +46,9 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
     });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params || !this._debugInfo) {
-      return html``;
+      return nothing;
     }
 
     const dir = computeRTLDirection(this.hass!);
@@ -243,8 +250,18 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
-          --mdc-dialog-max-width: 95%;
-          --mdc-dialog-min-width: 640px;
+          --mdc-dialog-max-width: 95vw;
+          --mdc-dialog-min-width: min(640px, 95vw);
+        }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-dialog {
+            --mdc-dialog-min-width: calc(
+              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+            );
+            --mdc-dialog-max-width: calc(
+              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+            );
+          }
         }
         ha-switch {
           margin: 16px;

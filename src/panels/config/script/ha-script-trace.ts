@@ -39,6 +39,7 @@ import { HomeAssistant, Route } from "../../../types";
 import "../../../layouts/hass-subpage";
 import "../../../components/ha-button-menu";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {
@@ -53,6 +54,8 @@ export class HaScriptTrace extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
   @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
 
   @state() private _entityId?: string;
 
@@ -113,7 +116,7 @@ export class HaScriptTrace extends LitElement {
             `
           : ""}
 
-        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+        <ha-button-menu slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
@@ -188,7 +191,8 @@ export class HaScriptTrace extends LitElement {
                       html`<option value=${trace.run_id}>
                         ${formatDateTimeWithSeconds(
                           new Date(trace.timestamp.start),
-                          this.hass.locale
+                          this.hass.locale,
+                          this.hass.config
                         )}
                       </option>`
                   )}
@@ -318,7 +322,7 @@ export class HaScriptTrace extends LitElement {
     const params = new URLSearchParams(location.search);
     this._loadTraces(params.get("run_id") || undefined);
 
-    this._entityId = Object.values(this.hass.entities).find(
+    this._entityId = this.entityRegistry.find(
       (entry) => entry.unique_id === this.scriptId
     )?.entity_id;
   }
@@ -335,7 +339,7 @@ export class HaScriptTrace extends LitElement {
       if (this.scriptId) {
         this._loadTraces();
 
-        this._entityId = Object.values(this.hass.entities).find(
+        this._entityId = this.entityRegistry.find(
           (entry) => entry.unique_id === this.scriptId
         )?.entity_id;
       }
@@ -505,7 +509,7 @@ export class HaScriptTrace extends LitElement {
         }
 
         .main {
-          height: calc(100% - 56px);
+          min-height: calc(100% - var(--header-height));
           display: flex;
           background-color: var(--card-background-color);
         }
@@ -527,14 +531,9 @@ export class HaScriptTrace extends LitElement {
         :host([narrow]) .graph {
           max-width: 100%;
         }
-
         .info {
           flex: 1;
           background-color: var(--card-background-color);
-        }
-
-        .linkButton {
-          color: var(--primary-text-color);
         }
         .trace-link {
           text-decoration: none;

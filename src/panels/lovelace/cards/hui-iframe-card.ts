@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -49,9 +49,9 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     let padding = "";
@@ -80,6 +80,11 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    let sandbox_user_params = "";
+    if (this._config.allow_open_top_navigation) {
+      sandbox_user_params += "allow-top-navigation-by-user-activation";
+    }
+
     return html`
       <ha-card .header=${this._config.title}>
         <div
@@ -91,7 +96,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
           <iframe
             title=${ifDefined(this._config.title)}
             src=${this._config.url}
-            sandbox="allow-forms allow-modals allow-popups allow-pointer-lock allow-same-origin allow-scripts"
+            sandbox="${sandbox_user_params} allow-forms allow-modals allow-popups allow-pointer-lock allow-same-origin allow-scripts"
             allow="fullscreen"
           ></iframe>
         </div>

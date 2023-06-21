@@ -33,6 +33,7 @@ export const isMaxMode = arrayLiteralIncludes(MODES_MAX);
 
 export const baseActionStruct = object({
   alias: optional(string()),
+  continue_on_error: optional(boolean()),
   enabled: optional(boolean()),
 });
 
@@ -77,7 +78,7 @@ const activateSceneActionStruct: Describe<ServiceSceneAction> = assign(
 export interface ScriptEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
     last_triggered: string;
-    mode: typeof MODES[number];
+    mode: (typeof MODES)[number];
     current?: number;
     max?: number;
   };
@@ -89,7 +90,7 @@ export interface ManualScriptConfig {
   alias: string;
   sequence: Action | Action[];
   icon?: string;
-  mode?: typeof MODES[number];
+  mode?: (typeof MODES)[number];
   max?: number;
 }
 
@@ -99,6 +100,7 @@ export interface BlueprintScriptConfig extends ManualScriptConfig {
 
 interface BaseAction {
   alias?: string;
+  continue_on_error?: boolean;
   enabled?: boolean;
 }
 
@@ -230,14 +232,10 @@ interface UnknownAction extends BaseAction {
   [key: string]: unknown;
 }
 
-export type Action =
+export type NonConditionAction =
   | EventAction
   | DeviceAction
   | ServiceAction
-  | Condition
-  | ShorthandAndCondition
-  | ShorthandOrCondition
-  | ShorthandNotCondition
   | DelayAction
   | SceneAction
   | WaitAction
@@ -250,6 +248,13 @@ export type Action =
   | StopAction
   | ParallelAction
   | UnknownAction;
+
+export type Action =
+  | NonConditionAction
+  | Condition
+  | ShorthandAndCondition
+  | ShorthandOrCondition
+  | ShorthandNotCondition;
 
 export interface ActionTypes {
   delay: DelayAction;

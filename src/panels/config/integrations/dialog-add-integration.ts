@@ -1,13 +1,24 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
 import Fuse from "fuse.js";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { HassConfig } from "home-assistant-js-websocket";
+import {
+  css,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { protocolIntegrationPicked } from "../../../common/integrations/protocolIntegrationPicked";
+import {
+  protocolIntegrationPicked,
+  PROTOCOL_INTEGRATIONS,
+} from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
@@ -34,6 +45,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
+import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
 import "./ha-domain-integrations";
 import "./ha-integration-list-item";
@@ -82,14 +94,24 @@ class AddIntegrationDialog extends LitElement {
 
   private _height?: number;
 
-  public showDialog(params?: AddIntegrationDialogParams): void {
-    this._load();
+  public async showDialog(params?: AddIntegrationDialogParams): Promise<void> {
+    const loadPromise = this._load();
     this._open = true;
     this._pickedBrand = params?.brand;
     this._initialFilter = params?.initialFilter;
     this._narrow = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
+    if (params?.domain) {
+      this._createFlow(params.domain);
+    }
+    if (params?.brand) {
+      await loadPromise;
+      const brand = this._integrations?.[params.brand];
+      if (brand && "integrations" in brand && brand.integrations) {
+        this._fetchFlowsInProgress(Object.keys(brand.integrations));
+      }
+    }
   }
 
   public closeDialog() {
@@ -107,6 +129,11 @@ class AddIntegrationDialog extends LitElement {
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
+
     if (this._filter === undefined && this._initialFilter !== undefined) {
       this._filter = this._initialFilter;
     }
@@ -132,14 +159,13 @@ class AddIntegrationDialog extends LitElement {
     (
       i: Brands,
       h: Integrations,
-      components: HomeAssistant["config"]["components"],
+      components: HassConfig["components"],
       localize: LocalizeFunc,
       filter?: string
     ): IntegrationListItem[] => {
-      const addDeviceRows: IntegrationListItem[] = (
-        ["zha", "zwave_js"] as const
+      const addDeviceRows: IntegrationListItem[] = PROTOCOL_INTEGRATIONS.filter(
+        (domain) => components.includes(domain)
       )
-        .filter((domain) => components.includes(domain))
         .map((domain) => ({
           name: localize(`ui.panel.config.integrations.add_${domain}_device`),
           domain,
@@ -147,7 +173,13 @@ class AddIntegrationDialog extends LitElement {
           is_built_in: true,
           is_add: true,
         }))
-        .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name));
+        .sort((a, b) =>
+          caseInsensitiveStringCompare(
+            a.name,
+            b.name,
+            this.hass.locale.language
+          )
+        );
 
       const integrations: IntegrationListItem[] = [];
       const yamlIntegrations: IntegrationListItem[] = [];
@@ -209,10 +241,10 @@ class AddIntegrationDialog extends LitElement {
       if (filter) {
         const options: Fuse.IFuseOptions<IntegrationListItem> = {
           keys: [
-            "name",
-            "domain",
+            { name: "name", weight: 5 },
+            { name: "domain", weight: 5 },
+            { name: "integrations", weight: 2 },
             "supported_by",
-            "integrations",
             "iot_standards",
           ],
           isCaseSensitive: false,
@@ -242,7 +274,11 @@ class AddIntegrationDialog extends LitElement {
       return [
         ...addDeviceRows,
         ...integrations.sort((a, b) =>
-          caseInsensitiveStringCompare(a.name || "", b.name || "")
+          caseInsensitiveStringCompare(
+            a.name || "",
+            b.name || "",
+            this.hass.locale.language
+          )
         ),
       ];
     }
@@ -258,9 +294,9 @@ class AddIntegrationDialog extends LitElement {
     );
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._open) {
-      return html``;
+      return nothing;
     }
     const integrations = this._integrations
       ? this._getIntegrations()
@@ -361,7 +397,7 @@ class AddIntegrationDialog extends LitElement {
       ),
       confirm: () => {
         this.closeDialog();
-        if (["zha", "zwave_js"].includes(integration.supported_by)) {
+        if (PROTOCOL_INTEGRATIONS.includes(integration.supported_by)) {
           protocolIntegrationPicked(this, this.hass, integration.supported_by);
           return;
         }
@@ -416,7 +452,7 @@ class AddIntegrationDialog extends LitElement {
 
   private _renderRow = (integration: IntegrationListItem) => {
     if (!integration) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-integration-list-item
@@ -509,7 +545,9 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (
-      ["zha", "zwave_js"].includes(integration.domain) &&
+      (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+        integration.domain
+      ) &&
       isComponentLoaded(this.hass, integration.domain)
     ) {
       this._pickedBrand = integration.domain;
@@ -522,7 +560,7 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (integration.config_flow) {
-      this._createFlow(integration);
+      this._createFlow(integration.domain);
       return;
     }
 
@@ -542,25 +580,20 @@ class AddIntegrationDialog extends LitElement {
     showYamlIntegrationDialog(this, { manifest });
   }
 
-  private async _createFlow(integration: IntegrationListItem) {
-    const flowsInProgress = await this._fetchFlowsInProgress([
-      integration.domain,
-    ]);
+  private async _createFlow(domain: string) {
+    const flowsInProgress = await this._fetchFlowsInProgress([domain]);
 
     if (flowsInProgress?.length) {
-      this._pickedBrand = integration.domain;
+      this._pickedBrand = domain;
       return;
     }
 
-    const manifest = await fetchIntegrationManifest(
-      this.hass,
-      integration.domain
-    );
+    const manifest = await fetchIntegrationManifest(this.hass, domain);
 
     this.closeDialog();
 
     showConfigFlowDialog(this, {
-      startFlowHandler: integration.domain,
+      startFlowHandler: domain,
       showAdvanced: this.hass.userData?.showAdvanced,
       manifest,
     });

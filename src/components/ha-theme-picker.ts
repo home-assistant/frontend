@@ -1,17 +1,27 @@
-import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  nothing,
+  LitElement,
+  TemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { HomeAssistant } from "../types";
 import "./ha-select";
 
+const DEFAULT_THEME = "default";
+
 @customElement("ha-theme-picker")
 export class HaThemePicker extends LitElement {
   @property() public value?: string;
 
   @property() public label?: string;
+
+  @property() includeDefault?: boolean = false;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -37,6 +47,13 @@ export class HaThemePicker extends LitElement {
             "ui.components.theme-picker.no_theme"
           )}</mwc-list-item
         >
+        ${this.includeDefault
+          ? html`<mwc-list-item .value=${DEFAULT_THEME}
+              >${this.hass!.localize(
+                "ui.components.theme-picker.default"
+              )}</mwc-list-item
+            >`
+          : nothing}
         ${Object.keys(this.hass!.themes.themes)
           .sort()
           .map(

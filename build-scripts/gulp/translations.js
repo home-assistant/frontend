@@ -1,19 +1,24 @@
-const crypto = require("crypto");
-const del = require("del");
-const path = require("path");
-const source = require("vinyl-source-stream");
-const vinylBuffer = require("vinyl-buffer");
-const gulp = require("gulp");
-const fs = require("fs");
-const flatmap = require("gulp-flatmap");
-const merge = require("gulp-merge-json");
-const rename = require("gulp-rename");
-const transform = require("gulp-json-transform");
-const { mapFiles } = require("../util");
-const env = require("../env");
-const paths = require("../paths");
-
-require("./fetch-nightly_translations");
+import { createHash } from "crypto";
+import { deleteSync } from "del";
+import {
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  writeFile,
+} from "fs";
+import gulp from "gulp";
+import flatmap from "gulp-flatmap";
+import transform from "gulp-json-transform";
+import merge from "gulp-merge-json";
+import rename from "gulp-rename";
+import path from "path";
+import vinylBuffer from "vinyl-buffer";
+import source from "vinyl-source-stream";
+import env from "../env.cjs";
+import paths from "../paths.cjs";
+import { mapFiles } from "../util.cjs";
+import "./fetch-nightly-translations.js";
 
 const inFrontendDir = "translations/frontend";
 const inBackendDir = "translations/backend";
@@ -33,7 +38,12 @@ gulp.task(
 
 // Panel translations which should be split from the core translations.
 const TRANSLATION_FRAGMENTS = Object.keys(
-  require("../../src/translations/en.json").ui.panel
+  JSON.parse(
+    readFileSync(
+      path.resolve(paths.polymer_dir, "src/translations/en.json"),
+      "utf-8"
+    )
+  ).ui.panel
 );
 
 function recursiveFlatten(prefix, data) {
@@ -120,17 +130,14 @@ function lokaliseTransform(data, original, file) {
   return output;
 }
 
-gulp.task("clean-translations", () => del([workDir]));
+gulp.task("clean-translations", async () => deleteSync([workDir]));
 
-gulp.task("ensure-translations-build-dir", (done) => {
-  if (!fs.existsSync(workDir)) {
-    fs.mkdirSync(workDir, { recursive: true });
-  }
-  done();
+gulp.task("ensure-translations-build-dir", async () => {
+  mkdirSync(workDir, { recursive: true });
 });
 
 gulp.task("create-test-metadata", (cb) => {
-  fs.writeFile(
+  writeFile(
     workDir + "/testMetadata.json",
     JSON.stringify({
       test: {
@@ -303,15 +310,14 @@ const fingerprints = {};
 
 gulp.task("build-translation-fingerprints", () => {
   // Fingerprint full file of each language
-  const files = fs.readdirSync(fullDir);
+  const files = readdirSync(fullDir);
 
   for (let i = 0; i < files.length; i++) {
     fingerprints[files[i].split(".")[0]] = {
       // In dev we create fake hashes
       hash: env.isProdBuild()
-        ? crypto
-            .createHash("md5")
-            .update(fs.readFileSync(path.join(fullDir, files[i]), "utf-8"))
+        ? createHash("md5")
+            .update(readFileSync(path.join(fullDir, files[i]), "utf-8"))
             .digest("hex")
         : "dev",
     };
@@ -327,7 +333,7 @@ gulp.task("build-translation-fingerprints", () => {
         throw new Error(`Unable to find hash for ${filename}`);
       }
 
-      fs.renameSync(
+      renameSync(
         filename,
         `${parsed.dir}/${parsed.name}-${fingerprints[parsed.name].hash}${
           parsed.ext

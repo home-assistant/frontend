@@ -140,7 +140,12 @@ class HassioAddonConfig extends LitElement {
           ? {
               name: entry.name,
               required: entry.required,
-              selector: { number: { mode: "box" } },
+              selector: {
+                number: {
+                  mode: "box",
+                  step: entry.type === "float" ? "any" : undefined,
+                },
+              },
             }
           : entry
       )
@@ -168,7 +173,7 @@ class HassioAddonConfig extends LitElement {
             ${this.supervisor.localize("addon.configuration.options.header")}
           </h2>
           <div class="card-menu">
-            <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+            <ha-button-menu @action=${this._handleAction}>
               <ha-icon-button
                 .label=${this.supervisor.localize("common.menu")}
                 .path=${mdiDotsVertical}

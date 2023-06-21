@@ -12,13 +12,13 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { debounce } from "../../../../../common/util/debounce";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
@@ -27,6 +27,7 @@ import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
 import "../../../../../components/ha-textfield";
+import { groupBy } from "../../../../../common/util/group-by";
 import {
   computeDeviceName,
   DeviceRegistryEntry,
@@ -36,10 +37,13 @@ import {
   fetchZwaveNodeConfigParameters,
   fetchZwaveNodeMetadata,
   setZwaveNodeConfigParameter,
+  ZWaveJSNodeConfigParam,
   ZWaveJSNodeConfigParams,
   ZwaveJSNodeMetadata,
   ZWaveJSSetConfigParamResult,
 } from "../../../../../data/zwave_js";
+import "../../../../../layouts/hass-error-screen";
+import "../../../../../layouts/hass-loading-screen";
 import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
@@ -170,29 +174,61 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               </em>
             </p>
           </div>
-          <ha-card>
-            ${Object.entries(this._config).map(
-              ([id, item]) => html` <ha-settings-row
-                class="config-item"
-                .configId=${id}
-                .narrow=${this.narrow}
-              >
-                ${this._generateConfigBox(id, item)}
-              </ha-settings-row>`
-            )}
-          </ha-card>
+          ${Object.entries(
+            groupBy(Object.entries(this._config), ([_, item]) =>
+              item.endpoint.toString()
+            )
+          ).map(
+            ([endpoint, configParamEntries]) => html`<div class="content">
+              <h3>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.node_config.endpoint",
+                  "endpoint",
+                  endpoint
+                )}
+              </h3>
+              <ha-card>
+                ${configParamEntries
+                  .sort(([_, paramA], [__, paramB]) =>
+                    paramA.property !== paramB.property
+                      ? paramA.property - paramB.property
+                      : paramA.property_key! - paramB.property_key!
+                  )
+                  .map(
+                    ([id, item]) => html` <ha-settings-row
+                      class="config-item"
+                      .configId=${id}
+                      .narrow=${this.narrow}
+                    >
+                      ${this._generateConfigBox(id, item)}
+                    </ha-settings-row>`
+                  )}
+              </ha-card>
+            </div>`
+          )}
         </ha-config-section>
       </hass-tabs-subpage>
     `;
   }
 
-  private _generateConfigBox(id, item): TemplateResult {
+  private _generateConfigBox(
+    id: string,
+    item: ZWaveJSNodeConfigParam
+  ): TemplateResult {
     const result = this._results[id];
     const labelAndDescription = html`
       <span slot="prefix" class="prefix">
         ${this.hass.localize("ui.panel.config.zwave_js.node_config.parameter")}
         <br />
         <span>${item.property}</span>
+        ${item.property_key !== null
+          ? html`<br />
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.node_config.bitmask"
+              )}
+              <br />
+              <span>${item.property_key.toString(16)}</span>`
+          : nothing}
       </span>
       <span slot="heading" class="heading" .title=${item.metadata.label}>
         ${item.metadata.label}
@@ -201,16 +237,16 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         ${item.metadata.description || item.metadata.label}
         ${item.metadata.description !== null && !item.metadata.writeable
           ? html`<br />`
-          : ""}
+          : nothing}
         ${!item.metadata.writeable
           ? html`<em>
               ${this.hass.localize(
                 "ui.panel.config.zwave_js.node_config.parameter_is_read_only"
               )}
             </em>`
-          : ""}
+          : nothing}
         ${result?.status
-          ? html` <p
+          ? html`<p
               class="result ${classMap({
                 [result.status]: true,
               })}"
@@ -225,9 +261,9 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               )}
               ${result.status === "error" && result.error
                 ? html` <br /><em>${result.error}</em> `
-                : ""}
+                : nothing}
             </p>`
-          : ""}
+          : nothing}
       </span>
     `;
 
@@ -243,6 +279,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         <div class="switch">
           <ha-switch
             .property=${item.property}
+            .endpoint=${item.endpoint}
             .propertyKey=${item.property_key}
             .checked=${item.value === 1}
             .key=${id}
@@ -261,14 +298,13 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
           .min=${item.metadata.min}
           .max=${item.metadata.max}
           .property=${item.property}
+          .endpoint=${item.endpoint}
           .propertyKey=${item.property_key}
           .key=${id}
           .disabled=${!item.metadata.writeable}
-          @input=${this._numericInputChanged}
+          @change=${this._numericInputChanged}
+          .suffix=${item.metadata.unit}
         >
-          ${item.metadata.unit
-            ? html`<span slot="suffix">${item.metadata.unit}</span>`
-            : ""}
         </ha-textfield>`;
     }
 
@@ -280,6 +316,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
           .value=${item.value?.toString()}
           .key=${id}
           .property=${item.property}
+          .endpoint=${item.endpoint}
           .propertyKey=${item.property_key}
           @selected=${this._dropdownSelected}
         >
@@ -296,7 +333,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       <p>${item.value}</p>`;
   }
 
-  private _isEnumeratedBool(item): boolean {
+  private _isEnumeratedBool(item: ZWaveJSNodeConfigParam): boolean {
     // Some Z-Wave config values use a states list with two options where index 0 = Disabled and 1 = Enabled
     // We want those to be considered boolean and show a toggle switch
     const disabledStates = ["disable", "disabled"];
@@ -340,12 +377,6 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     this._updateConfigParameter(ev.target, Number(ev.target.value));
   }
 
-  private debouncedUpdate = debounce((target, value) => {
-    this._config![target.key].value = value;
-
-    this._updateConfigParameter(target, value);
-  }, 1000);
-
   private _numericInputChanged(ev) {
     if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
@@ -355,7 +386,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return;
     }
     this.setResult(ev.target.key, undefined);
-    this.debouncedUpdate(ev.target, value);
+    this._updateConfigParameter(ev.target, value);
   }
 
   private async _updateConfigParameter(target, value) {
@@ -364,6 +395,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         this.hass,
         this._device!.id,
         target.property,
+        target.endpoint,
         value,
         target.propertyKey ? target.propertyKey : undefined
       );

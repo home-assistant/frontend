@@ -1,5 +1,5 @@
 import { dump } from "js-yaml";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-yaml-editor";
@@ -53,9 +53,9 @@ export class DemoAutomationDescribeCondition extends LitElement {
 
   @state() _condition = initialCondition;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -63,7 +63,7 @@ export class DemoAutomationDescribeCondition extends LitElement {
         <div class="condition">
           <span>
             ${this._condition
-              ? describeCondition(this._condition, this.hass)
+              ? describeCondition(this._condition, this.hass, [])
               : "<invalid YAML>"}
           </span>
           <ha-yaml-editor
@@ -76,7 +76,7 @@ export class DemoAutomationDescribeCondition extends LitElement {
         ${conditions.map(
           (conf) => html`
             <div class="condition">
-              <span>${describeCondition(conf as any, this.hass)}</span>
+              <span>${describeCondition(conf as any, this.hass, [])}</span>
               <pre>${dump(conf)}</pre>
             </div>
           `

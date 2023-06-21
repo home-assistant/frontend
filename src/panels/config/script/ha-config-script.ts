@@ -1,9 +1,12 @@
+import { consume } from "@lit-labs/context";
 import { HassEntities } from "home-assistant-js-websocket";
 import { PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { debounce } from "../../../common/util/debounce";
+import { fullEntitiesContext } from "../../../data/context";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { ScriptEntity } from "../../../data/script";
 import {
   HassRouterPage,
@@ -31,6 +34,10 @@ class HaConfigScript extends HassRouterPage {
   @property() public showAdvanced!: boolean;
 
   @property() public scripts: ScriptEntity[] = [];
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
@@ -78,6 +85,7 @@ class HaConfigScript extends HassRouterPage {
     pageEl.isWide = this.isWide;
     pageEl.route = this.routeTail;
     pageEl.showAdvanced = this.showAdvanced;
+    pageEl.entityRegistry = this._entityReg;
 
     if (this.hass) {
       if (!pageEl.scripts || !changedProps) {

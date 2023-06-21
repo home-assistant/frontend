@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -78,9 +78,9 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -101,7 +101,10 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
           ),
         })}
       >
-        <img src=${this.hass.hassUrl(this._config.image)} />
+        <img
+          alt=${this._config.alt_text}
+          src=${this.hass.hassUrl(this._config.image)}
+        />
       </ha-card>
     `;
   }

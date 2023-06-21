@@ -56,7 +56,7 @@ export class EnergyStrategy {
       (source) => source.type === "water"
     );
 
-    if (info.narrow) {
+    if (info.narrow || info.view.strategy?.options?.show_date_selection) {
       view.cards!.push({
         type: "energy-date-selection",
         collection_key: "energy_dashboard",
@@ -138,6 +138,11 @@ export class EnergyStrategy {
     if (hasSolar && hasReturn) {
       view.cards!.push({
         type: "energy-solar-consumed-gauge",
+        view_layout: { position: "sidebar" },
+        collection_key: "energy_dashboard",
+      });
+      view.cards!.push({
+        type: "energy-self-sufficiency-gauge",
         view_layout: { position: "sidebar" },
         collection_key: "energy_dashboard",
       });

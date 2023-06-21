@@ -1,14 +1,19 @@
-import { CSSResultGroup, html, css, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, html, css, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 
 @customElement("ha-tile-image")
 export class HaTileImage extends LitElement {
   @property() public imageUrl?: string;
 
-  protected render(): TemplateResult {
+  @property() public imageAlt?: string;
+
+  protected render() {
     return html`
       <div class="image">
-        ${this.imageUrl ? html`<img src=${this.imageUrl} />` : null}
+        ${this.imageUrl
+          ? html`<img alt=${ifDefined(this.imageAlt)} src=${this.imageUrl} />`
+          : nothing}
       </div>
     `;
   }

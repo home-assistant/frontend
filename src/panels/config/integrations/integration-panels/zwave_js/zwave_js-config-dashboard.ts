@@ -7,17 +7,30 @@ import {
   mdiPlus,
   mdiRefresh,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { computeRTL } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-help-tooltip";
+import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-svg-icon";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  ConfigEntry,
+  ERROR_STATES,
+  getConfigEntries,
+} from "../../../../../data/config_entries";
 import {
   fetchZwaveDataCollectionStatus,
   fetchZwaveNetworkStatus,
@@ -32,12 +45,9 @@ import {
   ZWaveJSNetwork,
   ZwaveJSProvisioningEntry,
 } from "../../../../../data/zwave_js";
-import {
-  ConfigEntry,
-  getConfigEntries,
-  ERROR_STATES,
-} from "../../../../../data/config_entries";
+import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import "../../../../../layouts/hass-tabs-subpage";
+import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
@@ -45,9 +55,6 @@ import { showZWaveJSAddNodeDialog } from "./show-dialog-zwave_js-add-node";
 import { showZWaveJSHealNetworkDialog } from "./show-dialog-zwave_js-heal-network";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
-import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
-import { computeRTL } from "../../../../../common/util/compute_rtl";
-import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
@@ -97,9 +104,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._configEntry) {
-      return html``;
+      return nothing;
     }
 
     if (ERROR_STATES.includes(this._configEntry.state)) {

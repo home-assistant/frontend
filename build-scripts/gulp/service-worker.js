@@ -1,11 +1,12 @@
 // Generate service worker.
 // Based on manifest, create a file with the content as service_worker.js
-const gulp = require("gulp");
-const path = require("path");
-const fs = require("fs-extra");
-const workboxBuild = require("workbox-build");
-const sourceMapUrl = require("source-map-url");
-const paths = require("../paths.js");
+
+import fs from "fs-extra";
+import gulp from "gulp";
+import path from "path";
+import sourceMapUrl from "source-map-url";
+import workboxBuild from "workbox-build";
+import paths from "../paths.cjs";
 
 const swDest = path.resolve(paths.app_output_root, "service_worker.js");
 
@@ -28,10 +29,9 @@ self.addEventListener('install', (event) => {
 
 gulp.task("gen-service-worker-app-prod", async () => {
   // Read bundled source file
-  const bundleManifestLatest = require(path.resolve(
-    paths.app_output_latest,
-    "manifest.json"
-  ));
+  const bundleManifestLatest = fs.readJsonSync(
+    path.resolve(paths.app_output_latest, "manifest.json")
+  );
   let serviceWorkerContent = fs.readFileSync(
     paths.app_output_root + bundleManifestLatest["service_worker.js"],
     "utf-8"
@@ -46,10 +46,9 @@ gulp.task("gen-service-worker-app-prod", async () => {
   );
 
   // Remove ES5
-  const bundleManifestES5 = require(path.resolve(
-    paths.app_output_es5,
-    "manifest.json"
-  ));
+  const bundleManifestES5 = fs.readJsonSync(
+    path.resolve(paths.app_output_es5, "manifest.json")
+  );
   fs.removeSync(paths.app_output_root + bundleManifestES5["service_worker.js"]);
   fs.removeSync(
     paths.app_output_root + bundleManifestES5["service_worker.js.map"]

@@ -1,9 +1,10 @@
 import { startOfYesterday } from "date-fns/esm";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import { createSearchParam } from "../../common/url/search-params";
 import "../../panels/logbook/ha-logbook";
 import type { HomeAssistant } from "../../types";
 
@@ -19,14 +20,14 @@ export class MoreInfoLogbook extends LitElement {
 
   private _entityIdAsList = memoizeOne((entityId: string) => [entityId]);
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!isComponentLoaded(this.hass, "logbook") || !this.entityId) {
-      return html``;
+      return nothing;
     }
     const stateObj = this.hass.states[this.entityId];
 
     if (!stateObj) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -55,9 +56,13 @@ export class MoreInfoLogbook extends LitElement {
     super.willUpdate(changedProps);
 
     if (changedProps.has("entityId") && this.entityId) {
-      this._showMoreHref = `/logbook?entity_id=${
-        this.entityId
-      }&start_date=${startOfYesterday().toISOString()}`;
+      const params = {
+        entity_id: this.entityId,
+        start_date: startOfYesterday().toISOString(),
+        back: "1",
+      };
+
+      this._showMoreHref = `/logbook?${createSearchParam(params)}`;
     }
   }
 

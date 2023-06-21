@@ -11,8 +11,7 @@ import {
   getStatisticLabel,
   StatisticsMetaData,
 } from "../../data/recorder";
-import { PolymerChangedEvent } from "../../polymer-types";
-import { HomeAssistant } from "../../types";
+import { ValueChangedEvent, HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
@@ -29,6 +28,9 @@ export class HaStatisticPicker extends LitElement {
 
   @property({ attribute: "statistic-types" })
   public statisticTypes?: "mean" | "sum";
+
+  @property({ type: Boolean, attribute: "allow-custom-entity" })
+  public allowCustomEntity;
 
   @property({ type: Array }) public statisticIds?: StatisticsMetaData[];
 
@@ -177,7 +179,9 @@ export class HaStatisticPicker extends LitElement {
       }
 
       if (output.length > 1) {
-        output.sort((a, b) => stringCompare(a.name || "", b.name || ""));
+        output.sort((a, b) =>
+          stringCompare(a.name || "", b.name || "", this.hass.locale.language)
+        );
       }
 
       output.push({
@@ -243,6 +247,7 @@ export class HaStatisticPicker extends LitElement {
         .value=${this._value}
         .renderer=${this._rowRenderer}
         .disabled=${this.disabled}
+        .allowCustomValue=${this.allowCustomEntity}
         item-value-path="id"
         item-id-path="id"
         item-label-path="name"
@@ -260,7 +265,7 @@ export class HaStatisticPicker extends LitElement {
     return this.value || "";
   }
 
-  private _statisticChanged(ev: PolymerChangedEvent<string>) {
+  private _statisticChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     let newValue = ev.detail.value;
     if (newValue === "__missing") {
@@ -272,7 +277,7 @@ export class HaStatisticPicker extends LitElement {
     }
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private _openedChanged(ev: ValueChangedEvent<boolean>) {
     this._opened = ev.detail.value;
   }
 

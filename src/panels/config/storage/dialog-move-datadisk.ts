@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -22,6 +22,7 @@ import {
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import { bytesToString } from "../../../util/bytes-to-string";
 import { MoveDatadiskDialogParams } from "./show-dialog-move-datadisk";
 
 const calculateMoveTime = memoizeOne((hostInfo: HassioHostInfo): number => {
@@ -39,7 +40,7 @@ class MoveDatadiskDialog extends LitElement {
 
   @state() private _selectedDevice?: string;
 
-  @state() private _devices?: DatadiskList["devices"];
+  @state() private _disks?: DatadiskList["disks"];
 
   @state() private _osInfo?: HassioHassOSInfo;
 
@@ -55,7 +56,7 @@ class MoveDatadiskDialog extends LitElement {
 
       const data = await listDatadisks(this.hass);
       if (data.devices.length > 0) {
-        this._devices = data.devices;
+        this._disks = data.disks;
       } else {
         this.closeDialog();
         await showAlertDialog(this, {
@@ -80,16 +81,16 @@ class MoveDatadiskDialog extends LitElement {
 
   public closeDialog(): void {
     this._selectedDevice = undefined;
-    this._devices = undefined;
+    this._disks = undefined;
     this._moving = false;
     this._hostInfo = undefined;
     this._osInfo = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
-    if (!this._hostInfo || !this._osInfo || !this._devices) {
-      return html``;
+  protected render() {
+    if (!this._hostInfo || !this._osInfo || !this._disks) {
+      return nothing;
     }
 
     return html`
@@ -132,10 +133,19 @@ class MoveDatadiskDialog extends LitElement {
                 dialogInitialFocus
                 fixedMenuPosition
               >
-                ${this._devices.map(
-                  (device) =>
-                    html`<mwc-list-item .value=${device}>
-                      ${device}
+                ${this._disks.map(
+                  (disk) =>
+                    html`<mwc-list-item twoline .value=${disk.id}>
+                      <span>${disk.vendor} ${disk.model}</span>
+                      <span slot="secondary">
+                        ${this.hass.localize(
+                          "ui.panel.config.storage.datadisk.extra_information",
+                          {
+                            size: bytesToString(disk.size),
+                            serial: disk.serial,
+                          }
+                        )}
+                      </span>
                     </mwc-list-item>`
                 )}
               </ha-select>

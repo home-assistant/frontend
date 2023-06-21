@@ -1,26 +1,27 @@
+import "@material/mwc-button/mwc-button";
 import { mdiSolarPower } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/entity/ha-statistic-picker";
+import "../../../../components/ha-checkbox";
+import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-radio";
+import type { HaRadio } from "../../../../components/ha-radio";
+import { ConfigEntry, getConfigEntries } from "../../../../data/config_entries";
 import {
   emptySolarEnergyPreference,
   SolarSourceTypeEnergyPreference,
 } from "../../../../data/energy";
+import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
+import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
-import { EnergySettingsSolarDialogParams } from "./show-dialogs-energy";
-import "@material/mwc-button/mwc-button";
-import "../../../../components/entity/ha-statistic-picker";
-import "../../../../components/ha-radio";
-import "../../../../components/ha-checkbox";
-import type { HaCheckbox } from "../../../../components/ha-checkbox";
-import "../../../../components/ha-formfield";
-import type { HaRadio } from "../../../../components/ha-radio";
-import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
-import { ConfigEntry, getConfigEntries } from "../../../../data/config_entries";
 import { brandsUrl } from "../../../../util/brands-url";
+import { EnergySettingsSolarDialogParams } from "./show-dialogs-energy";
 
 const energyUnitClasses = ["energy"];
 
@@ -39,6 +40,8 @@ export class DialogEnergySolarSettings
 
   @state() private _forecast?: boolean;
 
+  @state() private _energy_units?: string[];
+
   @state() private _error?: string;
 
   public async showDialog(
@@ -50,6 +53,9 @@ export class DialogEnergySolarSettings
       ? { ...params.source }
       : emptySolarEnergyPreference();
     this._forecast = this._source.config_entry_solar_forecast !== null;
+    this._energy_units = (
+      await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
+    ).units;
   }
 
   public closeDialog(): void {
@@ -59,10 +65,12 @@ export class DialogEnergySolarSettings
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params || !this._source) {
-      return html``;
+      return nothing;
     }
+
+    const pickableUnit = this._energy_units?.join(", ") || "";
 
     return html`
       <ha-dialog
@@ -75,6 +83,12 @@ export class DialogEnergySolarSettings
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
+        <div>
+          ${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.entity_para",
+            { unit: pickableUnit }
+          )}
+        </div>
 
         <ha-statistic-picker
           .hass=${this.hass}
@@ -130,6 +144,7 @@ export class DialogEnergySolarSettings
                     style="display: flex; align-items: center;"
                   >
                     <img
+                      alt=""
                       referrerpolicy="no-referrer"
                       style="height: 24px; margin-right: 16px;"
                       src=${brandsUrl({

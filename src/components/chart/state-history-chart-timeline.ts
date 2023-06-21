@@ -2,6 +2,8 @@ import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import millisecondsToDuration from "../../common/datetime/milliseconds_to_duration";
+import { fireEvent } from "../../common/dom/fire_event";
 import { numberFormatToLocale } from "../../common/number/format_number";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { TimelineEntity } from "../../data/history";
@@ -18,7 +20,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @property() public names: boolean | Record<string, string> = false;
+  @property() public names?: Record<string, string>;
 
   @property() public unit?: string;
 
@@ -32,18 +34,26 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false }) public endTime!: Date;
 
+  @property({ type: Number }) public paddingYAxis = 0;
+
+  @property({ type: Number }) public chartIndex?;
+
   @state() private _chartData?: ChartData<"timeline">;
 
   @state() private _chartOptions?: ChartOptions<"timeline">;
+
+  @state() private _yWidth = 0;
 
   private _chartTime: Date = new Date();
 
   protected render() {
     return html`
       <ha-chart-base
+        .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
         .height=${this.data.length * 30 + 30}
+        .paddingYAxis=${this.paddingYAxis - this._yWidth}
         chart-type="timeline"
       ></ha-chart-base>
     `;
@@ -55,6 +65,8 @@ export class StateHistoryChartTimeline extends LitElement {
     }
 
     if (
+      changedProps.has("startTime") ||
+      changedProps.has("endTime") ||
       changedProps.has("data") ||
       this._chartTime <
         new Date(this.endTime.getTime() - MIN_TIME_BETWEEN_UPDATES)
@@ -86,6 +98,7 @@ export class StateHistoryChartTimeline extends LitElement {
           adapters: {
             date: {
               locale: this.hass.locale,
+              config: this.hass.config,
             },
           },
           suggestedMin: this.startTime,
@@ -131,6 +144,23 @@ export class StateHistoryChartTimeline extends LitElement {
               scaleInstance.width = narrow ? 105 : 185;
             }
           },
+          afterUpdate: (y) => {
+            const yWidth = this.showNames
+              ? y.width ?? 0
+              : computeRTL(this.hass)
+              ? 0
+              : y.left ?? 0;
+            if (
+              this._yWidth !== Math.floor(yWidth) &&
+              y.ticks.length === this.data.length
+            ) {
+              this._yWidth = Math.floor(yWidth);
+              fireEvent(this, "y-width-changed", {
+                value: this._yWidth,
+                chartIndex: this.chartIndex,
+              });
+            }
+          },
           position: computeRTL(this.hass) ? "right" : "left",
         },
       },
@@ -145,10 +175,24 @@ export class StateHistoryChartTimeline extends LitElement {
             beforeBody: (context) => context[0].dataset.label || "",
             label: (item) => {
               const d = item.dataset.data[item.dataIndex] as TimeLineData;
+              const durationInMs = d.end.getTime() - d.start.getTime();
+              const formattedDuration = `${this.hass.localize(
+                "ui.components.history_charts.duration"
+              )}: ${millisecondsToDuration(durationInMs)}`;
+
               return [
                 d.label || "",
-                formatDateTimeWithSeconds(d.start, this.hass.locale),
-                formatDateTimeWithSeconds(d.end, this.hass.locale),
+                formatDateTimeWithSeconds(
+                  d.start,
+                  this.hass.locale,
+                  this.hass.config
+                ),
+                formatDateTimeWithSeconds(
+                  d.end,
+                  this.hass.locale,
+                  this.hass.config
+                ),
+                formattedDuration,
               ];
             },
             labelColor: (item) => ({

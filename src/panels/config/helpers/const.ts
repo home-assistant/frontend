@@ -21,7 +21,7 @@ export const HELPER_DOMAINS = [
   "schedule",
 ] as const;
 
-export type HelperDomain = typeof HELPER_DOMAINS[number];
+export type HelperDomain = (typeof HELPER_DOMAINS)[number];
 export const isHelperDomain = arrayLiteralIncludes(HELPER_DOMAINS);
 
 export type Helper =

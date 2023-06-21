@@ -15,16 +15,20 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   svg,
-  TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateColorCss } from "../../../common/entity/state_color";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import type { HaCard } from "../../../components/ha-card";
@@ -86,6 +90,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   @query("ha-card") private _card?: HaCard;
 
+  @state() private resyncSetpoint = false;
+
   public getCardSize(): number {
     return 7;
   }
@@ -98,9 +104,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
     const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
 
@@ -116,11 +122,23 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     const name =
       this._config!.name ||
       computeStateName(this.hass!.states[this._config!.entity]);
-    const targetTemp =
-      stateObj.attributes.temperature !== null &&
-      Number.isFinite(Number(stateObj.attributes.temperature))
-        ? stateObj.attributes.temperature
-        : stateObj.attributes.min_temp;
+    const targetTemp = this.resyncSetpoint
+      ? // If the user set position in the slider is out of sync with the entity
+        // value, then rerendering the slider with same $value a second time
+        // does not move the slider. Need to set it to a different dummy value
+        // for one update cycle to force it to rerender to the desired value.
+        stateObj.attributes.min_temp - 1
+      : stateObj.attributes.temperature !== null &&
+        Number.isFinite(Number(stateObj.attributes.temperature))
+      ? stateObj.attributes.temperature
+      : stateObj.attributes.min_temp;
+
+    const targetLow = this.resyncSetpoint
+      ? stateObj.attributes.min_temp - 1
+      : stateObj.attributes.target_temp_low;
+    const targetHigh = this.resyncSetpoint
+      ? stateObj.attributes.min_temp - 1
+      : stateObj.attributes.target_temp_high;
 
     const slider =
       stateObj.state === UNAVAILABLE
@@ -128,8 +146,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         : html`
             <round-slider
               .value=${targetTemp}
-              .low=${stateObj.attributes.target_temp_low}
-              .high=${stateObj.attributes.target_temp_high}
+              .low=${targetLow}
+              .high=${targetHigh}
               .min=${stateObj.attributes.min_temp}
               .max=${stateObj.attributes.max_temp}
               .step=${this._stepSize}
@@ -213,11 +231,20 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           >
             ${
               stateObj.attributes.hvac_action
-                ? this.hass!.localize(
-                    `state_attributes.climate.hvac_action.${stateObj.attributes.hvac_action}`
+                ? computeAttributeValueDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    this.hass.config,
+                    this.hass.entities,
+                    "hvac_action"
                   )
-                : this.hass!.localize(
-                    `component.climate.state._.${stateObj.state}`
+                : computeStateDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    this.hass.config,
+                    this.hass.entities
                   )
             }
             ${
@@ -225,9 +252,14 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
               stateObj.attributes.preset_mode !== CLIMATE_PRESET_NONE
                 ? html`
                     -
-                    ${this.hass!.localize(
-                      `state_attributes.climate.preset_mode.${stateObj.attributes.preset_mode}`
-                    ) || stateObj.attributes.preset_mode}
+                    ${computeAttributeValueDisplay(
+                      this.hass.localize,
+                      stateObj,
+                      this.hass.locale,
+                      this.hass.config,
+                      this.hass.entities,
+                      "preset_mode"
+                    )}
                   `
                 : ""
             }
@@ -238,8 +270,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        class=${classMap({
-          [mode]: true,
+        style=${styleMap({
+          "--mode-color": stateColorCss(stateObj),
         })}
       >
         <ha-icon-button
@@ -276,7 +308,10 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return hasConfigOrEntityChanged(this, changedProps);
+    return (
+      hasConfigOrEntityChanged(this, changedProps) ||
+      changedProps.has("resyncSetpoint")
+    );
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -315,7 +350,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   public willUpdate(changedProps: PropertyValues) {
-    if (!this.hass || !this._config || !changedProps.has("hass")) {
+    if (
+      !this.hass ||
+      !this._config ||
+      !(changedProps.has("hass") || changedProps.has("resyncSetpoint"))
+    ) {
       return;
     }
 
@@ -326,7 +365,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
-    if (!oldHass || oldHass.states[this._config.entity] !== stateObj) {
+    if (
+      !oldHass ||
+      oldHass.states[this._config.entity] !== stateObj ||
+      (changedProps.has("resyncSetpoint") && this.resyncSetpoint)
+    ) {
       this._setTemp = this._getSetTemp(stateObj);
     }
   }
@@ -397,28 +440,41 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
 
     if (e.detail.low) {
-      this.hass!.callService("climate", "set_temperature", {
-        entity_id: this._config!.entity,
-        target_temp_low: e.detail.low,
-        target_temp_high: stateObj.attributes.target_temp_high,
-      });
+      const newVal = e.detail.low;
+      this._callServiceHelper(
+        stateObj.attributes.target_temp_low,
+        newVal,
+        "set_temperature",
+        {
+          target_temp_low: newVal,
+          target_temp_high: stateObj.attributes.target_temp_high,
+        }
+      );
     } else if (e.detail.high) {
-      this.hass!.callService("climate", "set_temperature", {
-        entity_id: this._config!.entity,
-        target_temp_low: stateObj.attributes.target_temp_low,
-        target_temp_high: e.detail.high,
-      });
+      const newVal = e.detail.high;
+      this._callServiceHelper(
+        stateObj.attributes.target_temp_high,
+        newVal,
+        "set_temperature",
+        {
+          target_temp_low: stateObj.attributes.target_temp_low,
+          target_temp_high: newVal,
+        }
+      );
     } else {
-      this.hass!.callService("climate", "set_temperature", {
-        entity_id: this._config!.entity,
-        temperature: e.detail.value,
-      });
+      const newVal = e.detail.value;
+      this._callServiceHelper(
+        stateObj!.attributes.temperature,
+        newVal,
+        "set_temperature",
+        { temperature: newVal }
+      );
     }
   }
 
-  private _renderIcon(mode: string, currentMode: string): TemplateResult {
+  private _renderIcon(mode: string, currentMode: string) {
     if (!modeIcons[mode]) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-icon-button
@@ -427,7 +483,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         @click=${this._handleAction}
         tabindex="0"
         .path=${modeIcons[mode]}
-        .label=${this.hass!.localize(`component.climate.state._.${mode}`)}
+        .label=${this.hass!.localize(
+          `component.climate.entity_component._.state.${mode}`
+        ) || mode}
       >
       </ha-icon-button>
     `;
@@ -446,6 +504,46 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     });
   }
 
+  private async _callServiceHelper(
+    oldVal: unknown,
+    newVal: unknown,
+    service: string,
+    data: {
+      entity_id?: string;
+      [key: string]: unknown;
+    }
+  ) {
+    if (oldVal === newVal) {
+      return;
+    }
+
+    data.entity_id = this._config!.entity;
+
+    await this.hass!.callService("climate", service, data);
+
+    // After updating temperature, wait 2s and check if the values
+    // from call service are reflected in the entity. If not, resync
+    // the slider to the entity values.
+    await new Promise((resolve) => {
+      setTimeout(resolve, 2000);
+    });
+
+    const newState = this.hass!.states[this._config!.entity] as ClimateEntity;
+    delete data.entity_id;
+
+    if (
+      Object.entries(data).every(
+        ([key, value]) => newState.attributes[key] === value
+      )
+    ) {
+      return;
+    }
+
+    this.resyncSetpoint = true;
+    await this.updateComplete;
+    this.resyncSetpoint = false;
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       :host {
@@ -459,37 +557,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         --name-font-size: 1.2rem;
         --brightness-font-size: 1.2rem;
         --rail-border-color: transparent;
-      }
-      .auto,
-      .heat_cool {
-        --mode-color: var(--state-climate-auto-color);
-      }
-      .cool {
-        --mode-color: var(--state-climate-cool-color);
-      }
-      .heat {
-        --mode-color: var(--state-climate-heat-color);
-      }
-      .manual {
-        --mode-color: var(--state-climate-manual-color);
-      }
-      .off {
-        --mode-color: var(--state-climate-off-color);
-      }
-      .fan_only {
-        --mode-color: var(--state-climate-fan_only-color);
-      }
-      .eco {
-        --mode-color: var(--state-climate-eco-color);
-      }
-      .dry {
-        --mode-color: var(--state-climate-dry-color);
-      }
-      .idle {
-        --mode-color: var(--state-climate-idle-color);
-      }
-      .unknown-mode {
-        --mode-color: var(--state-unknown-color);
+        --mode-color: var(--state-inactive-color);
       }
 
       .more-info {

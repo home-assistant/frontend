@@ -19,6 +19,7 @@ class IntegrationBadge extends LitElement {
     return html`
       <div class="icon">
         <img
+          alt=""
           src=${brandsUrl({
             domain: this.domain,
             type: "icon",

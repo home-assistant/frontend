@@ -1,12 +1,11 @@
 import { mdiClose } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { guard } from "lit/directives/guard";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { fetchUsers, User } from "../../data/user";
-import type { PolymerChangedEvent } from "../../polymer-types";
-import type { HomeAssistant } from "../../types";
+import type { ValueChangedEvent, HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "./ha-user-picker";
 
@@ -34,9 +33,9 @@ class HaUsersPickerLight extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.users) {
-      return html``;
+      return nothing;
     }
 
     const notSelectedUsers = this._notSelectedUsers(this.users, this.value);
@@ -117,7 +116,7 @@ class HaUsersPickerLight extends LitElement {
     });
   }
 
-  private _userChanged(event: PolymerChangedEvent<string>) {
+  private _userChanged(event: ValueChangedEvent<string>) {
     event.stopPropagation();
     const index = (event.currentTarget as any).index;
     const newValue = event.detail.value;
@@ -130,7 +129,7 @@ class HaUsersPickerLight extends LitElement {
     this._updateUsers(newUsers);
   }
 
-  private async _addUser(event: PolymerChangedEvent<string>) {
+  private async _addUser(event: ValueChangedEvent<string>) {
     event.stopPropagation();
     const toAdd = event.detail.value;
     (event.currentTarget as any).value = "";

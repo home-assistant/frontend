@@ -100,14 +100,14 @@ export class EnergyBatterySettings extends LitElement {
                     ></ha-icon>`
                   : html`<ha-svg-icon .path=${mdiBatteryHigh}></ha-svg-icon>`}
                 <div class="content">
-                  <span
+                  <span class="label"
                     >${getStatisticLabel(
                       this.hass,
                       source.stat_energy_from,
                       this.statsMetadata?.[source.stat_energy_from]
                     )}</span
                   >
-                  <span
+                  <span class="label"
                     >${getStatisticLabel(
                       this.hass,
                       source.stat_energy_to,
@@ -212,6 +212,10 @@ export class EnergyBatterySettings extends LitElement {
         .content {
           display: flex;
           flex-direction: column;
+        }
+        .label {
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       `,
     ];

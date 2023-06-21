@@ -1,18 +1,14 @@
 import "@material/mwc-button";
 import { mdiCalendarClock, mdiClose } from "@mdi/js";
-import { addDays, isSameDay } from "date-fns/esm";
 import { toDate } from "date-fns-tz";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { addDays, isSameDay } from "date-fns/esm";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
-import { RRule, Weekday } from "rrule";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import { formatTime } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
-import { capitalizeFirstLetter } from "../../common/string/capitalize-first-letter";
 import { isDate } from "../../common/string/is_date";
-import { dayNames } from "../../common/translations/day_names";
-import { monthNames } from "../../common/translations/month_names";
 import "../../components/entity/state-info";
 import "../../components/ha-date-input";
 import "../../components/ha-time-input";
@@ -23,7 +19,7 @@ import {
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-generic-entity-row";
-import "./ha-recurrence-rule-editor";
+import { renderRRuleAsText } from "./recurrence";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import { CalendarEventDetailDialogParams } from "./show-dialog-calendar-event-detail";
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
@@ -58,9 +54,9 @@ class DialogCalendarEventDetail extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     const stateObj = this.hass.states[this._calendarId!];
     return html`
@@ -94,7 +90,7 @@ class DialogCalendarEventDetail extends LitElement {
                 ? html`<br />
                     <div class="description">${this._data.description}</div>
                     <br />`
-                : html``}
+                : nothing}
             </div>
           </div>
 
@@ -137,53 +133,15 @@ class DialogCalendarEventDetail extends LitElement {
       return "";
     }
     try {
-      const rule = RRule.fromString(`RRULE:${value}`);
-      if (rule.isFullyConvertibleToText()) {
-        return html`<div id="text">
-          ${capitalizeFirstLetter(
-            rule.toText(
-              this._translateRRuleElement,
-              {
-                dayNames: dayNames(this.hass.locale),
-                monthNames: monthNames(this.hass.locale),
-                tokens: {},
-              },
-              this._formatDate
-            )
-          )}
-        </div>`;
+      const ruleText = renderRRuleAsText(this.hass, value);
+      if (ruleText !== undefined) {
+        return html`<div id="text">${ruleText}</div>`;
       }
-
       return html`<div id="text">Cannot convert recurrence rule</div>`;
     } catch (e) {
       return "Error while processing the rule";
     }
   }
-
-  private _translateRRuleElement = (id: string | number | Weekday): string => {
-    if (typeof id === "string") {
-      return this.hass.localize(`ui.components.calendar.event.rrule.${id}`);
-    }
-
-    return "";
-  };
-
-  private _formatDate = (year: number, month: string, day: number): string => {
-    if (!year || !month || !day) {
-      return "";
-    }
-
-    // Build date so we can then format it
-    const date = new Date();
-    date.setFullYear(year);
-    // As input we already get the localized month name, so we now unfortunately
-    // need to convert it back to something Date can work with. The already localized
-    // months names are a must in the RRule.Language structure (an empty string[] would
-    // mean we get undefined months input in this method here).
-    date.setMonth(monthNames(this.hass.locale).indexOf(month));
-    date.setDate(day);
-    return formatDate(date, this.hass.locale);
-  };
 
   private _formatDateRange() {
     // Parse a dates in the browser timezone
@@ -196,23 +154,28 @@ class DialogCalendarEventDetail extends LitElement {
     if (isSameDay(start, end)) {
       if (isDate(this._data.dtstart)) {
         // Single date string only
-        return formatDate(start, this.hass.locale);
+        return formatDate(start, this.hass.locale, this.hass.config);
       }
       // Single day with a start/end time range
-      return `${formatDate(start, this.hass.locale)} ${formatTime(
+      return `${formatDate(
         start,
-        this.hass.locale
-      )} - ${formatTime(end, this.hass.locale)}`;
+        this.hass.locale,
+        this.hass.config
+      )} ${formatTime(
+        start,
+        this.hass.locale,
+        this.hass.config
+      )} - ${formatTime(end, this.hass.locale, this.hass.config)}`;
     }
     // An event across multiple dates, optionally with a time range
     return `${
       isDate(this._data.dtstart)
-        ? formatDate(start, this.hass.locale)
-        : formatDateTime(start, this.hass.locale)
+        ? formatDate(start, this.hass.locale, this.hass.config)
+        : formatDateTime(start, this.hass.locale, this.hass.config)
     } - ${
       isDate(this._data.dtend)
-        ? formatDate(end, this.hass.locale)
-        : formatDateTime(end, this.hass.locale)
+        ? formatDate(end, this.hass.locale, this.hass.config)
+        : formatDateTime(end, this.hass.locale, this.hass.config)
     }`;
   }
 

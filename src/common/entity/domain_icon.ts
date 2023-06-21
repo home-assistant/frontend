@@ -3,6 +3,8 @@ import {
   mdiAccountArrowRight,
   mdiAirHumidifier,
   mdiAirHumidifierOff,
+  mdiAudioVideo,
+  mdiAudioVideoOff,
   mdiBluetooth,
   mdiBluetoothConnect,
   mdiCalendar,
@@ -13,6 +15,8 @@ import {
   mdiCheckCircleOutline,
   mdiClock,
   mdiCloseCircleOutline,
+  mdiFan,
+  mdiFanOff,
   mdiGestureTapButton,
   mdiLanConnect,
   mdiLanDisconnect,
@@ -25,9 +29,9 @@ import {
   mdiPackageUp,
   mdiPowerPlug,
   mdiPowerPlugOff,
-  mdiAudioVideo,
-  mdiAudioVideoOff,
   mdiRestart,
+  mdiRobot,
+  mdiRobotOff,
   mdiSpeaker,
   mdiSpeakerOff,
   mdiSpeakerPause,
@@ -39,7 +43,12 @@ import {
   mdiTelevisionPlay,
   mdiToggleSwitchVariant,
   mdiToggleSwitchVariantOff,
+  mdiVideo,
+  mdiVideoOff,
+  mdiWaterBoiler,
+  mdiWaterBoilerOff,
   mdiWeatherNight,
+  mdiWhiteBalanceSunny,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { UpdateEntity, updateIsInstalling } from "../../data/update";
@@ -53,6 +62,7 @@ import { DEFAULT_DOMAIN_ICON, FIXED_DOMAIN_ICONS } from "../const";
 import { alarmPanelIcon } from "./alarm_panel_icon";
 import { binarySensorIcon } from "./binary_sensor_icon";
 import { coverIcon } from "./cover_icon";
+import { numberIcon } from "./number_icon";
 import { sensorIcon } from "./sensor_icon";
 
 export const domainIcon = (
@@ -80,6 +90,9 @@ export const domainIconWithoutDefault = (
     case "alarm_control_panel":
       return alarmPanelIcon(compareState);
 
+    case "automation":
+      return compareState === "off" ? mdiRobotOff : mdiRobot;
+
     case "binary_sensor":
       return binarySensorIcon(compareState, stateObj);
 
@@ -92,6 +105,9 @@ export const domainIconWithoutDefault = (
         default:
           return mdiGestureTapButton;
       }
+
+    case "camera":
+      return compareState === "off" ? mdiVideoOff : mdiVideo;
 
     case "cover":
       return coverIcon(compareState, stateObj);
@@ -107,8 +123,11 @@ export const domainIconWithoutDefault = (
       }
       return compareState === "not_home" ? mdiAccountArrowRight : mdiAccount;
 
+    case "fan":
+      return compareState === "off" ? mdiFanOff : mdiFan;
+
     case "humidifier":
-      return state && state === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
+      return compareState === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
 
     case "input_boolean":
       return compareState === "on"
@@ -180,6 +199,15 @@ export const domainIconWithoutDefault = (
           }
       }
 
+    case "number": {
+      const icon = numberIcon(stateObj);
+      if (icon) {
+        return icon;
+      }
+
+      break;
+    }
+
     case "person":
       return compareState === "not_home" ? mdiAccountArrowRight : mdiAccount;
 
@@ -206,7 +234,7 @@ export const domainIconWithoutDefault = (
 
     case "sun":
       return stateObj?.state === "above_horizon"
-        ? FIXED_DOMAIN_ICONS[domain]
+        ? mdiWhiteBalanceSunny
         : mdiWeatherNight;
 
     case "switch_as_x":
@@ -221,6 +249,9 @@ export const domainIconWithoutDefault = (
           ? mdiPackageDown
           : mdiPackageUp
         : mdiPackage;
+
+    case "water_heater":
+      return compareState === "off" ? mdiWaterBoilerOff : mdiWaterBoiler;
 
     case "weather":
       return weatherIcon(stateObj?.state);

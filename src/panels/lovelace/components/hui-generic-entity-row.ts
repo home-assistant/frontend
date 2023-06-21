@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -40,9 +40,9 @@ class HuiGenericEntityRow extends LitElement {
   // Default behavior is controlled by DOMAINS_INPUT_ROW.
   @property({ type: Boolean }) public catchInteraction?;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.config) {
-      return html``;
+      return nothing;
     }
     const stateObj = this.config.entity
       ? this.hass.states[this.config.entity]
@@ -85,7 +85,7 @@ class HuiGenericEntityRow extends LitElement {
         tabindex=${ifDefined(pointer ? "0" : undefined)}
       ></state-badge>
       ${!this.hideName
-        ? html` <div
+        ? html`<div
             class="info ${classMap({
               pointer,
               "text-content": !hasSecondary,
@@ -153,7 +153,7 @@ class HuiGenericEntityRow extends LitElement {
                 `
               : ""}
           </div>`
-        : html``}
+        : nothing}
       ${this.catchInteraction ?? !DOMAINS_INPUT_ROW.includes(domain)
         ? html`<div
             class="text-content value ${classMap({

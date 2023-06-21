@@ -5,14 +5,14 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { GroupEntity } from "../../../data/group";
+import { computeGroupDomain, GroupEntity } from "../../../data/group";
 import "../../../state-summary/state-card-content";
 import { HomeAssistant } from "../../../types";
+import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import {
   domainMoreInfoType,
   importMoreInfoControl,
@@ -47,20 +47,20 @@ class MoreInfoGroup extends LitElement {
     }
 
     const baseStateObj = states.find((s) => s.state === "on") || states[0];
-    const groupDomain = computeStateDomain(baseStateObj);
+
+    const groupDomain = computeGroupDomain(this.stateObj);
 
     // Groups need to be filtered out or we'll show content of
     // first child above the children of the current group
-    if (
-      groupDomain !== "group" &&
-      states.every(
-        (entityState) => groupDomain === computeStateDomain(entityState)
-      )
-    ) {
+    if (groupDomain && groupDomain !== "group") {
       this._groupDomainStateObj = {
         ...baseStateObj,
         entity_id: this.stateObj.entity_id,
-        attributes: { ...baseStateObj.attributes },
+        attributes: {
+          ...baseStateObj.attributes,
+          friendly_name: this.stateObj.attributes.friendly_name,
+          entity_id: this.stateObj.attributes.entity_id,
+        },
       };
       const type = domainMoreInfoType(groupDomain);
       importMoreInfoControl(type);
@@ -71,9 +71,9 @@ class MoreInfoGroup extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return html``;
+      return nothing;
     }
     return html`${this._moreInfoType
       ? dynamicElement(this._moreInfoType, {
@@ -96,12 +96,15 @@ class MoreInfoGroup extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      state-card-content {
-        display: block;
-        margin-top: 8px;
-      }
-    `;
+    return [
+      moreInfoControlStyle,
+      css`
+        state-card-content {
+          display: block;
+          margin-top: 8px;
+        }
+      `,
+    ];
   }
 }
 

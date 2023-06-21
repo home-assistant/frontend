@@ -32,12 +32,17 @@ class TimeFormatRow extends LitElement {
           .disabled=${this.hass.locale === undefined}
           .value=${this.hass.locale.time_format}
           @selected=${this._handleFormatSelection}
+          naturalMenuWidth
         >
           ${Object.values(TimeFormat).map((format) => {
-            const formattedTime = formatTime(date, {
-              ...this.hass.locale,
-              time_format: format,
-            });
+            const formattedTime = formatTime(
+              date,
+              {
+                ...this.hass.locale,
+                time_format: format,
+              },
+              this.hass.config
+            );
             const value = this.hass.localize(
               `ui.panel.profile.time_format.formats.${format}`
             );

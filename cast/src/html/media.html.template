@@ -22,25 +22,14 @@
     </script>
   </head>
   <body>
-    <%= renderTemplate('_js_base') %>
-
+    <%= renderTemplate("../../../src/html/_js_base.html.template") %>
     <cast-media-player></cast-media-player>
-
     <script>
-      import("<%= latestMediaJS %>");
+      <% for (const entry of latestEntryJS) { %>
+        import("<%= entry %>");
+      <% } %>
       window.latestJS = true;
     </script>
-
-    <script>
-      if (!window.latestJS) {
-        <% if (useRollup) { %>
-          _ls("/static/js/s.min.js").onload = function() {
-            System.import("<%= es5MediaJS %>");
-          };
-        <% } else { %>
-          _ls("<%= es5MediaJS %>");
-        <% } %>
-      }
-    </script>
+    <%= renderTemplate("../../../src/html/_script_load_es5.html.template") %>
   </body>
 </html>

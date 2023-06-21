@@ -12,8 +12,8 @@ import {
   isToday,
   startOfToday,
 } from "date-fns";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -39,9 +39,9 @@ import {
   getEnergyGasUnit,
 } from "../../../../data/energy";
 import {
+  getStatisticLabel,
   Statistics,
   StatisticsMetaData,
-  getStatisticLabel,
 } from "../../../../data/recorder";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -90,9 +90,9 @@ export class HuiEnergyGasGraphCard
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -106,11 +106,13 @@ export class HuiEnergyGasGraphCard
           })}"
         >
           <ha-chart-base
+            .hass=${this.hass}
             .data=${this._chartData}
             .options=${this._createOptions(
               this._start,
               this._end,
               this.hass.locale,
+              this.hass.config,
               this._unit,
               this._compareStart,
               this._compareEnd
@@ -136,6 +138,7 @@ export class HuiEnergyGasGraphCard
       start: Date,
       end: Date,
       locale: FrontendLocaleData,
+      config: HassConfig,
       unit?: string,
       compareStart?: Date,
       compareEnd?: Date
@@ -156,6 +159,9 @@ export class HuiEnergyGasGraphCard
       const options: ChartOptions = {
         parsing: false,
         animation: false,
+        interaction: {
+          mode: "x",
+        },
         scales: {
           x: {
             type: "time",
@@ -163,16 +169,14 @@ export class HuiEnergyGasGraphCard
             suggestedMax: end.getTime(),
             adapters: {
               date: {
-                locale: locale,
+                locale,
+                config,
               },
             },
             ticks: {
               maxRotation: 0,
               sampleSize: 5,
               autoSkipPadding: 20,
-              major: {
-                enabled: true,
-              },
               font: (context) =>
                 context.tick && context.tick.major
                   ? ({ weight: "bold" } as any)
@@ -212,7 +216,7 @@ export class HuiEnergyGasGraphCard
         },
         plugins: {
           tooltip: {
-            mode: "nearest",
+            position: "nearest",
             callbacks: {
               title: (datasets) => {
                 if (dayDifference > 0) {
@@ -220,10 +224,11 @@ export class HuiEnergyGasGraphCard
                 }
                 const date = new Date(datasets[0].parsed.x);
                 return `${
-                  compare ? `${formatDateShort(date, locale)}: ` : ""
-                }${formatTime(date, locale)} – ${formatTime(
+                  compare ? `${formatDateShort(date, locale, config)}: ` : ""
+                }${formatTime(date, locale, config)} – ${formatTime(
                   addHours(date, 1),
-                  locale
+                  locale,
+                  config
                 )}`;
               },
               label: (context) =>
@@ -243,13 +248,10 @@ export class HuiEnergyGasGraphCard
             },
           },
         },
-        hover: {
-          mode: "nearest",
-        },
         elements: {
           bar: { borderWidth: 1.5, borderRadius: 4 },
           point: {
-            hitRadius: 5,
+            hitRadius: 50,
           },
         },
         // @ts-expect-error
@@ -347,7 +349,6 @@ export class HuiEnergyGasGraphCard
         ? rgb2hex(lab2rgb(modifiedColor))
         : gasColor;
 
-      let prevValue: number | null = null;
       let prevStart: number | null = null;
 
       const gasConsumptionData: ScatterDataPoint[] = [];
@@ -357,24 +358,18 @@ export class HuiEnergyGasGraphCard
         const stats = statistics[source.stat_energy_from];
 
         for (const point of stats) {
-          if (point.sum === null || point.sum === undefined) {
-            continue;
-          }
-          if (prevValue === null || prevValue === undefined) {
-            prevValue = point.sum;
+          if (point.change === null || point.change === undefined) {
             continue;
           }
           if (prevStart === point.start) {
             continue;
           }
-          const value = point.sum - prevValue;
           const date = new Date(point.start);
           gasConsumptionData.push({
             x: date.getTime(),
-            y: value,
+            y: point.change,
           });
           prevStart = point.start;
-          prevValue = point.sum;
         }
       }
 

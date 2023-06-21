@@ -1,11 +1,7 @@
 import memoizeOne from "memoize-one";
 import { FrontendLocaleData } from "../../data/translation";
-import { polyfillsLoaded } from "../translations/localize";
+import "../../resources/intl-polyfill";
 import { selectUnit } from "../util/select-unit";
-
-if (__BUILD__ === "latest" && polyfillsLoaded) {
-  await polyfillsLoaded;
-}
 
 const formatRelTimeMem = memoizeOne(
   (locale: FrontendLocaleData) =>
@@ -18,7 +14,7 @@ export const relativeTime = (
   to?: Date,
   includeTense = true
 ): string => {
-  const diff = selectUnit(from, to);
+  const diff = selectUnit(from, to, locale);
   if (includeTense) {
     return formatRelTimeMem(locale).format(diff.value, diff.unit);
   }

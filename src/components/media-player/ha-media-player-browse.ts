@@ -1,11 +1,10 @@
-import "@lit-labs/virtualizer";
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { grid } from "@lit-labs/virtualizer/layouts/grid";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiArrowUpRight, mdiPlay, mdiPlus } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   css,
   CSSResultGroup,
@@ -13,6 +12,7 @@ import {
   LitElement,
   PropertyValues,
   TemplateResult,
+  nothing,
 } from "lit";
 import {
   customElement,
@@ -39,7 +39,7 @@ import {
 import { browseLocalMediaPlayer } from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
+import { loadPolyfillIfNeeded } from "../../resources/resize-observer.polyfill";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import {
@@ -58,6 +58,7 @@ import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./ha-browse-media-tts";
 import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
+import { loadVirtualizer } from "../../resources/virtualizer";
 
 declare global {
   interface HASSDomEvents {
@@ -152,6 +153,10 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
 
     if (changedProps.has("entityId")) {
       this._setError(undefined);
@@ -311,7 +316,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this._error) {
       return html`
         <div class="container">
@@ -388,7 +393,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                                     : ""}
                                 </div>
                               `
-                            : html``}
+                            : nothing}
                           <div class="header-info">
                             <div class="breadcrumb">
                               <h1 class="title">${currentItem.title}</h1>
@@ -599,8 +604,8 @@ export class HaMediaPlayerBrowse extends LitElement {
           </div>
           <div class="title">
             ${child.title}
-            <paper-tooltip fitToVisibleBounds position="top" offset="4"
-              >${child.title}</paper-tooltip
+            <simple-tooltip fitToVisibleBounds position="top" offset="4"
+              >${child.title}</simple-tooltip
             >
           </div>
         </ha-card>
@@ -749,7 +754,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private async _attachResizeObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await installResizeObserver();
+      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measureCard(), 250, false)
       );

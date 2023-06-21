@@ -1,6 +1,6 @@
 import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { property } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { navigate } from "../../../src/common/navigate";
@@ -14,7 +14,8 @@ import "../components/hassio-card-content";
 import { filterAndSort } from "../components/hassio-filter-addons";
 import { hassioStyle } from "../resources/hassio-style";
 
-class HassioAddonRepositoryEl extends LitElement {
+@customElement("hassio-addon-repository")
+export class HassioAddonRepositoryEl extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public supervisor!: Supervisor;
@@ -29,7 +30,9 @@ class HassioAddonRepositoryEl extends LitElement {
     if (filter) {
       return filterAndSort(addons, filter);
     }
-    return addons.sort((a, b) => caseInsensitiveStringCompare(a.name, b.name));
+    return addons.sort((a, b) =>
+      caseInsensitiveStringCompare(a.name, b.name, this.hass.locale.language)
+    );
   });
 
   protected render(): TemplateResult {
@@ -127,6 +130,7 @@ class HassioAddonRepositoryEl extends LitElement {
       css`
         ha-card {
           cursor: pointer;
+          overflow: hidden;
         }
         .not_available {
           opacity: 0.6;
@@ -138,5 +142,3 @@ class HassioAddonRepositoryEl extends LitElement {
     ];
   }
 }
-
-customElements.define("hassio-addon-repository", HassioAddonRepositoryEl);

@@ -1,4 +1,3 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -43,7 +42,7 @@ export class StateCardDisplay extends LitElement {
           this.stateObj.attributes.device_class ===
             SENSOR_DEVICE_CLASS_TIMESTAMP &&
           !isUnavailableState(this.stateObj.state)
-            ? html` <hui-timestamp-display
+            ? html`<hui-timestamp-display
                 .hass=${this.hass}
                 .ts=${new Date(this.stateObj.state)}
                 format="datetime"
@@ -53,6 +52,7 @@ export class StateCardDisplay extends LitElement {
                 this.hass!.localize,
                 this.stateObj,
                 this.hass.locale,
+                this.hass.config,
                 this.hass.entities
               )}
         </div>

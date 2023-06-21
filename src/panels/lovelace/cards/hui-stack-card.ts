@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
 import { LovelaceCardConfig } from "../../../data/lovelace";
@@ -68,9 +68,9 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this._cards) {
-      return html``;
+      return nothing;
     }
 
     return html`

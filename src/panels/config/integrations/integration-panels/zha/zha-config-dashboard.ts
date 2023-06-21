@@ -1,5 +1,11 @@
 import "@material/mwc-button/mwc-button";
-import { mdiFolderMultipleOutline, mdiLan, mdiNetwork, mdiPlus } from "@mdi/js";
+import {
+  mdiFolderMultipleOutline,
+  mdiLan,
+  mdiNetwork,
+  mdiPlus,
+  mdiPencil,
+} from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -16,6 +22,7 @@ import {
 import { computeRTL } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-fab";
+import "../../../../../components/ha-icon-button";
 import { fileDownload } from "../../../../../util/file_download";
 import "../../../../../components/ha-icon-next";
 import "../../../../../layouts/hass-tabs-subpage";
@@ -26,6 +33,8 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import "../../../../../components/ha-form/ha-form";
 import "../../../../../components/buttons/ha-progress-button";
+import "../../../../../components/ha-settings-row";
+import { showZHAChangeChannelDialog } from "./show-dialog-zha-change-channel";
 import {
   fetchZHAConfiguration,
   updateZHAConfiguration,
@@ -36,6 +45,8 @@ import {
   ZHANetworkBackupAndMetadata,
 } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
+
+const MULTIPROTOCOL_ADDON_URL = "socket://core-silabs-multiprotocol:9999";
 
 export const zhaTabs: PageNavigation[] = [
   {
@@ -126,31 +137,71 @@ class ZHAConfigDashboard extends LitElement {
           )}
         >
           ${this._networkSettings
-            ? html`<div class="card-content network-settings">
-                <div>
-                  <strong>PAN ID:</strong>
-                  ${this._networkSettings.settings.network_info.pan_id}
-                </div>
-                <div>
-                  <strong>Extended PAN ID:</strong>
-                  ${this._networkSettings.settings.network_info.extended_pan_id}
-                </div>
-                <div>
-                  <strong>Channel:</strong>
-                  ${this._networkSettings.settings.network_info.channel}
-                </div>
-                <div>
-                  <strong>Coordinator IEEE:</strong>
-                  ${this._networkSettings.settings.node_info.ieee}
-                </div>
-                <div>
-                  <strong>Network key:</strong>
-                  ${this._networkSettings.settings.network_info.network_key.key}
-                </div>
-                <div>
-                  <strong>Radio type:</strong>
-                  ${this._networkSettings.radio_type}
-                </div>
+            ? html`<div class="card-content">
+                <ha-settings-row>
+                  <span slot="description">PAN ID</span>
+                  <span slot="heading"
+                    >${this._networkSettings.settings.network_info.pan_id}</span
+                  >
+                </ha-settings-row>
+
+                <ha-settings-row>
+                  <span slot="heading"
+                    >${this._networkSettings.settings.network_info
+                      .extended_pan_id}</span
+                  >
+                  <span slot="description">Extended PAN ID</span>
+                </ha-settings-row>
+
+                <ha-settings-row>
+                  <span slot="description">Channel</span>
+                  <span slot="heading"
+                    >${this._networkSettings.settings.network_info
+                      .channel}</span
+                  >
+
+                  <ha-icon-button
+                    .label=${this.hass.localize(
+                      "ui.panel.config.zha.configuration_page.change_channel"
+                    )}
+                    .path=${mdiPencil}
+                    @click=${this._showChannelMigrationDialog}
+                  >
+                  </ha-icon-button>
+                </ha-settings-row>
+
+                <ha-settings-row>
+                  <span slot="description">Coordinator IEEE</span>
+                  <span slot="heading"
+                    >${this._networkSettings.settings.node_info.ieee}</span
+                  >
+                </ha-settings-row>
+
+                <ha-settings-row>
+                  <span slot="description">Radio type</span>
+                  <span slot="heading"
+                    >${this._networkSettings.radio_type}</span
+                  >
+                </ha-settings-row>
+
+                <ha-settings-row>
+                  <span slot="description">Serial port</span>
+                  <span slot="heading"
+                    >${this._networkSettings.device.path}</span
+                  >
+                </ha-settings-row>
+
+                ${this._networkSettings.device.baudrate &&
+                !this._networkSettings.device.path.startsWith("socket://")
+                  ? html`
+                      <ha-settings-row>
+                        <span slot="description">Baudrate</span>
+                        <span slot="heading"
+                          >${this._networkSettings.device.baudrate}</span
+                        >
+                      </ha-settings-row>
+                    `
+                  : ""}
               </div>`
             : ""}
           <div class="card-actions">
@@ -222,6 +273,25 @@ class ZHAConfigDashboard extends LitElement {
 
   private async _fetchSettings(): Promise<void> {
     this._networkSettings = await fetchZHANetworkSettings(this.hass!);
+  }
+
+  private async _showChannelMigrationDialog(): Promise<void> {
+    if (this._networkSettings!.device.path === MULTIPROTOCOL_ADDON_URL) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.zha.configuration_page.channel_dialog.title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.zha.configuration_page.channel_dialog.text"
+        ),
+        warning: true,
+      });
+      return;
+    }
+
+    showZHAChangeChannelDialog(this, {
+      currentChannel: this._networkSettings!.settings.network_info.channel,
+    });
   }
 
   private async _createAndDownloadBackup(): Promise<void> {
@@ -305,15 +375,23 @@ class ZHAConfigDashboard extends LitElement {
           max-width: 500px;
         }
 
-        .network-settings > div {
-          word-break: break-all;
-          margin-top: 2px;
+        .network-settings ha-settings-row {
+          padding-left: 0;
+          padding-right: 0;
+
+          --paper-item-body-two-line-min-height: 55px;
         }
 
-        .network-settings > .card-actions {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+        .network-settings ha-settings-row span[slot="heading"] {
+          white-space: normal;
+          word-break: break-all;
+          text-indent: -1em;
+          padding-left: 1em;
+        }
+
+        .network-settings ha-settings-row ha-icon-button {
+          margin-top: -16px;
+          margin-bottom: -16px;
         }
       `,
     ];

@@ -1,8 +1,8 @@
-import "../../../../components/ha-form/ha-form";
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, assign, object, optional, string } from "superstruct";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { IframeCardConfig } from "../../cards/types";
@@ -15,6 +15,7 @@ const cardConfigStruct = assign(
     title: optional(string()),
     url: optional(string()),
     aspect_ratio: optional(string()),
+    allow_open_top_navigation: optional(boolean()),
   })
 );
 
@@ -44,9 +45,9 @@ export class HuiIframeCardEditor
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     return html`

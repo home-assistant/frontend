@@ -1,6 +1,6 @@
-import "../../../../components/ha-form/ha-form";
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   array,
   assert,
@@ -11,13 +11,14 @@ import {
   optional,
   string,
 } from "superstruct";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { GaugeCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { DEFAULT_MIN, DEFAULT_MAX } from "../../cards/hui-gauge-card";
 
 const gaugeSegmentStruct = object({
   from: number(),
@@ -78,8 +79,16 @@ export class HuiGaugeCardEditor
           name: "",
           type: "grid",
           schema: [
-            { name: "min", selector: { number: { mode: "box" } } },
-            { name: "max", selector: { number: { mode: "box" } } },
+            {
+              name: "min",
+              default: DEFAULT_MIN,
+              selector: { number: { mode: "box" } },
+            },
+            {
+              name: "max",
+              default: DEFAULT_MAX,
+              selector: { number: { mode: "box" } },
+            },
           ],
         },
         {
@@ -115,9 +124,9 @@ export class HuiGaugeCardEditor
       ] as const
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const schema = this._schema(this._config!.severity !== undefined);

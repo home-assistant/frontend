@@ -6,18 +6,17 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
-import { CLIMATE_HVAC_ACTION_COLORS } from "../../common/entity/color/climate_color";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
+import { HVAC_ACTION_TO_MODE } from "../../data/climate";
 import type { HomeAssistant } from "../../types";
 import "../ha-state-icon";
 
@@ -39,6 +38,31 @@ export class StateBadge extends LitElement {
 
   @state() private _iconStyle: { [name: string]: string | undefined } = {};
 
+  connectedCallback(): void {
+    super.connectedCallback();
+    if (
+      this.hasUpdated &&
+      this.overrideImage === undefined &&
+      (this.stateObj?.attributes.entity_picture ||
+        this.stateObj?.attributes.entity_picture_local)
+    ) {
+      // Update image on connect, so we get new auth token
+      this.requestUpdate("stateObj");
+    }
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (
+      this.overrideImage === undefined &&
+      (this.stateObj?.attributes.entity_picture ||
+        this.stateObj?.attributes.entity_picture_local)
+    ) {
+      // Clear image on disconnect so we don't fetch with old auth when we reconnect
+      this.style.backgroundImage = "";
+    }
+  }
+
   private get _stateColor() {
     const domain = this.stateObj
       ? computeStateDomain(this.stateObj)
@@ -46,7 +70,7 @@ export class StateBadge extends LitElement {
     return this.stateColor || (domain === "light" && this.stateColor !== false);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     const stateObj = this.stateObj;
 
     // We either need a `stateObj` or one override
@@ -57,7 +81,7 @@ export class StateBadge extends LitElement {
     }
 
     if (!this._showIcon) {
-      return html``;
+      return nothing;
     }
 
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
@@ -112,10 +136,10 @@ export class StateBadge extends LitElement {
       } else if (this.color) {
         // Externally provided overriding color wins over state color
         iconStyle.color = this.color;
-      } else if (this._stateColor && stateActive(stateObj)) {
+      } else if (this._stateColor) {
         const color = stateColorCss(stateObj);
         if (color) {
-          iconStyle.color = `rgb(${color})`;
+          iconStyle.color = color;
         }
         if (stateObj.attributes.rgb_color) {
           iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
@@ -134,8 +158,11 @@ export class StateBadge extends LitElement {
         }
         if (stateObj.attributes.hvac_action) {
           const hvacAction = stateObj.attributes.hvac_action;
-          if (["heating", "cooling", "drying"].includes(hvacAction)) {
-            iconStyle.color = `rgb(${CLIMATE_HVAC_ACTION_COLORS[hvacAction]})`;
+          if (hvacAction in HVAC_ACTION_TO_MODE) {
+            iconStyle.color = stateColorCss(
+              stateObj,
+              HVAC_ACTION_TO_MODE[hvacAction]
+            )!;
           } else {
             delete iconStyle.color;
           }
@@ -170,6 +197,7 @@ export class StateBadge extends LitElement {
           line-height: 40px;
           vertical-align: middle;
           box-sizing: border-box;
+          --state-inactive-color: initial;
         }
         :host(:focus) {
           outline: none;

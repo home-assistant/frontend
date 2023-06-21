@@ -1,4 +1,3 @@
-import "@lit-labs/virtualizer";
 import "@material/mwc-list/mwc-list";
 import type { ListItem } from "@material/mwc-list/mwc-list-item";
 import {
@@ -9,7 +8,7 @@ import {
   mdiReload,
   mdiServerNetwork,
 } from "@mdi/js";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -30,16 +29,16 @@ import {
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-chip";
 import "../../components/ha-circular-progress";
-import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
-import "../../components/ha-textfield";
 import "../../components/ha-list-item";
+import "../../components/ha-textfield";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { configSections } from "../../panels/config/ha-panel-config";
 import { haStyleDialog, haStyleScrollbar } from "../../resources/styles";
+import { loadVirtualizer } from "../../resources/virtualizer";
 import { HomeAssistant } from "../../types";
 import {
   ConfirmationDialogParams,
@@ -123,6 +122,12 @@ export class QuickBar extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
+  protected willUpdate() {
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
+  }
+
   private _getItems = memoizeOne(
     (commandMode: boolean, commandItems, entityItems, filter: string) => {
       const items = commandMode ? commandItems : entityItems;
@@ -136,7 +141,7 @@ export class QuickBar extends LitElement {
 
   protected render() {
     if (!this._open) {
-      return html``;
+      return nothing;
     }
 
     const items: QuickBarItem[] | undefined = this._getItems(
@@ -242,7 +247,9 @@ export class QuickBar extends LitElement {
                   : ""}
               </mwc-list>
             `}
-        ${this._hint ? html`<ha-tip>${this._hint}</ha-tip>` : ""}
+        ${this._hint
+          ? html`<ha-tip .hass=${this.hass}>${this._hint}</ha-tip>`
+          : ""}
       </ha-dialog>
     `;
   }
@@ -271,9 +278,9 @@ export class QuickBar extends LitElement {
     }
   }
 
-  private _renderItem = (item: QuickBarItem, index: number): TemplateResult => {
+  private _renderItem = (item: QuickBarItem, index: number) => {
     if (!item) {
-      return html``;
+      return nothing;
     }
     return isCommandItem(item)
       ? this._renderCommandItem(item, index)
@@ -306,7 +313,7 @@ export class QuickBar extends LitElement {
                 >${item.altText}</span
               >
             `
-          : null}
+          : nothing}
       </ha-list-item>
     `;
   }
@@ -484,7 +491,11 @@ export class QuickBar extends LitElement {
         };
       })
       .sort((a, b) =>
-        caseInsensitiveStringCompare(a.primaryText, b.primaryText)
+        caseInsensitiveStringCompare(
+          a.primaryText,
+          b.primaryText,
+          this.hass.locale.language
+        )
       );
   }
 
@@ -494,7 +505,11 @@ export class QuickBar extends LitElement {
       ...this._generateServerControlCommands(),
       ...(await this._generateNavigationCommands()),
     ].sort((a, b) =>
-      caseInsensitiveStringCompare(a.strings.join(" "), b.strings.join(" "))
+      caseInsensitiveStringCompare(
+        a.strings.join(" "),
+        b.strings.join(" "),
+        this.hass.locale.language
+      )
     );
   }
 
@@ -536,6 +551,18 @@ export class QuickBar extends LitElement {
       ),
       action: () =>
         this.hass.callService("homeassistant", "reload_core_config"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.types.reload"
+      ),
+    });
+
+    // Add "homeassistant.reload_all"
+    commands.push({
+      primaryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.reload.all"
+      ),
+      action: () => this.hass.callService("homeassistant", "reload_all"),
       iconPath: mdiReload,
       categoryText: this.hass.localize(
         "ui.dialogs.quick-bar.commands.types.reload"
@@ -734,6 +761,9 @@ export class QuickBar extends LitElement {
       haStyleScrollbar,
       haStyleDialog,
       css`
+        mwc-list {
+          --mdc-list-vertical-padding: 0;
+        }
         .heading {
           display: flex;
           align-items: center;
@@ -745,7 +775,7 @@ export class QuickBar extends LitElement {
         }
 
         ha-dialog {
-          --dialog-z-index: 8;
+          --dialog-z-index: 9;
           --dialog-content-padding: 0;
         }
 

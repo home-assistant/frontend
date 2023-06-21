@@ -1,4 +1,4 @@
-import "@material/mwc-list/mwc-list-item";
+import "../ha-list-item";
 import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
@@ -7,16 +7,19 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { caseInsensitiveStringCompare } from "../../common/string/compare";
-import { PolymerChangedEvent } from "../../polymer-types";
-import { HomeAssistant } from "../../types";
+import {
+  fuzzyFilterSort,
+  ScorableTextItem,
+} from "../../common/string/filter/sequence-matching";
+import { ValueChangedEvent, HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./state-badge";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 
-interface HassEntityWithCachedName extends HassEntity {
+interface HassEntityWithCachedName extends HassEntity, ScorableTextItem {
   friendly_name: string;
 }
 
@@ -24,13 +27,13 @@ export type HaEntityPickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
 // eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<HassEntityWithCachedName> = (item) =>
-  html`<mwc-list-item graphic="avatar" .twoline=${!!item.entity_id}>
+  html`<ha-list-item graphic="avatar" .twoline=${!!item.entity_id}>
     ${item.state
       ? html`<state-badge slot="graphic" .stateObj=${item}></state-badge>`
       : ""}
     <span>${item.friendly_name}</span>
     <span slot="secondary">${item.entity_id}</span>
-  </mwc-list-item>`;
+  </ha-list-item>`;
 
 @customElement("ha-entity-picker")
 export class HaEntityPicker extends LitElement {
@@ -103,6 +106,9 @@ export class HaEntityPicker extends LitElement {
 
   @property({ type: Boolean }) public hideClearIcon = false;
 
+  @property({ attribute: "item-label-path" }) public itemLabelPath =
+    "friendly_name";
+
   @state() private _opened = false;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
@@ -157,6 +163,7 @@ export class HaEntityPicker extends LitElement {
               ),
               icon: "mdi:magnify",
             },
+            strings: [],
           },
         ];
       }
@@ -167,14 +174,19 @@ export class HaEntityPicker extends LitElement {
         );
 
         return entityIds
-          .map((key) => ({
-            ...hass!.states[key],
-            friendly_name: computeStateName(hass!.states[key]) || key,
-          }))
+          .map((key) => {
+            const friendly_name = computeStateName(hass!.states[key]) || key;
+            return {
+              ...hass!.states[key],
+              friendly_name,
+              strings: [key, friendly_name],
+            };
+          })
           .sort((entityA, entityB) =>
             caseInsensitiveStringCompare(
               entityA.friendly_name,
-              entityB.friendly_name
+              entityB.friendly_name,
+              this.hass.locale.language
             )
           );
       }
@@ -198,14 +210,19 @@ export class HaEntityPicker extends LitElement {
       }
 
       states = entityIds
-        .map((key) => ({
-          ...hass!.states[key],
-          friendly_name: computeStateName(hass!.states[key]) || key,
-        }))
+        .map((key) => {
+          const friendly_name = computeStateName(hass!.states[key]) || key;
+          return {
+            ...hass!.states[key],
+            friendly_name,
+            strings: [key, friendly_name],
+          };
+        })
         .sort((entityA, entityB) =>
           caseInsensitiveStringCompare(
             entityA.friendly_name,
-            entityB.friendly_name
+            entityB.friendly_name,
+            this.hass.locale.language
           )
         );
 
@@ -256,6 +273,7 @@ export class HaEntityPicker extends LitElement {
               ),
               icon: "mdi:magnify",
             },
+            strings: [],
           },
         ];
       }
@@ -289,7 +307,7 @@ export class HaEntityPicker extends LitElement {
         this.excludeEntities
       );
       if (this._initedStates) {
-        (this.comboBox as any).filteredItems = this._states;
+        this.comboBox.filteredItems = this._states;
       }
       this._initedStates = true;
     }
@@ -299,7 +317,7 @@ export class HaEntityPicker extends LitElement {
     return html`
       <ha-combo-box
         item-value-path="entity_id"
-        item-label-path="friendly_name"
+        .itemLabelPath=${this.itemLabelPath}
         .hass=${this.hass}
         .value=${this._value}
         .label=${this.label === undefined
@@ -323,11 +341,11 @@ export class HaEntityPicker extends LitElement {
     return this.value || "";
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private _openedChanged(ev: ValueChangedEvent<boolean>) {
     this._opened = ev.detail.value;
   }
 
-  private _valueChanged(ev: PolymerChangedEvent<string>) {
+  private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
     if (newValue !== this._value) {
@@ -336,12 +354,11 @@ export class HaEntityPicker extends LitElement {
   }
 
   private _filterChanged(ev: CustomEvent): void {
+    const target = ev.target as HaComboBox;
     const filterString = ev.detail.value.toLowerCase();
-    (this.comboBox as any).filteredItems = this._states.filter(
-      (entityState) =>
-        entityState.entity_id.toLowerCase().includes(filterString) ||
-        computeStateName(entityState).toLowerCase().includes(filterString)
-    );
+    target.filteredItems = filterString.length
+      ? fuzzyFilterSort<HassEntityWithCachedName>(filterString, this._states)
+      : this._states;
   }
 
   private _setValue(value: string) {

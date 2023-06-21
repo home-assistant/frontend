@@ -1,11 +1,13 @@
 import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
@@ -20,8 +22,6 @@ import {
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { computeClusterKey } from "./functions";
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
 import "./zha-cluster-attributes";
 import "./zha-cluster-commands";
 
@@ -50,7 +50,7 @@ export class ZHAManageClusters extends LitElement {
 
   @state() private _selectedCluster?: Cluster;
 
-  @state() private _currTab: typeof tabs[number] = "attributes";
+  @state() private _currTab: (typeof tabs)[number] = "attributes";
 
   @state() private _clustersLoaded = false;
 
@@ -74,9 +74,9 @@ export class ZHAManageClusters extends LitElement {
     super.updated(changedProperties);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.device || !this._clustersLoaded) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-card class="content">

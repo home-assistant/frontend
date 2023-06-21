@@ -58,7 +58,9 @@ class EventsList extends EventsMixin(LocalizeMixin(PolymerElement)) {
   connectedCallback() {
     super.connectedCallback();
     this.hass.callApi("GET", "events").then((events) => {
-      this.events = events.sort((e1, e2) => stringCompare(e1.event, e2.event));
+      this.events = events.sort((e1, e2) =>
+        stringCompare(e1.event, e2.event, this.hass.locale.language)
+      );
     });
   }
 

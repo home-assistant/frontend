@@ -1,5 +1,5 @@
 import { mdiStar } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   css,
   CSSResultGroup,
@@ -54,9 +54,9 @@ export class HaNetwork extends LitElement {
 
   @state() private _expanded?: boolean;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this.networkConfig === undefined) {
-      return html``;
+      return nothing;
     }
     const configured_adapters = this.networkConfig.configured_adapters || [];
     return html`

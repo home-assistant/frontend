@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -30,9 +30,9 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
     );
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -42,10 +42,13 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
         .image=${this._config.image}
         .stateImage=${this._config.state_image}
         .cameraImage=${this._config.camera_image}
+        .cameraView=${this._config.camera_view}
         .filter=${this._config.filter}
         .stateFilter=${this._config.state_filter}
         .title=${computeTooltip(this.hass, this._config)}
         .aspectRatio=${this._config.aspect_ratio}
+        .darkModeImage=${this._config.dark_mode_image}
+        .darkModeFilter=${this._config.dark_mode_filter}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),

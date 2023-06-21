@@ -5,6 +5,7 @@ import {
   LitElement,
   PropertyValues,
   TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -164,9 +165,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -256,6 +257,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             this.hass!.localize,
             stateObj,
             this.hass!.locale,
+            this.hass!.config,
             this.hass!.entities
           )}`}
         >
@@ -279,6 +281,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
                       this.hass!.localize,
                       stateObj,
                       this.hass!.locale,
+                      this.hass!.config,
                       this.hass!.entities
                     )}
               </div>

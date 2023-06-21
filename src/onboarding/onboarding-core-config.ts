@@ -1,33 +1,39 @@
 import "@material/mwc-button/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
-import { createCurrencyListEl } from "../components/currency-datalist";
+import "../components/ha-alert";
+import "../components/ha-country-picker";
+import "../components/ha-currency-picker";
+import "../components/ha-formfield";
+import "../components/ha-language-picker";
+import "../components/ha-radio";
+import type { HaRadio } from "../components/ha-radio";
+import "../components/ha-textfield";
+import type { HaTextField } from "../components/ha-textfield";
+import "../components/ha-timezone-picker";
 import "../components/map/ha-locations-editor";
 import type {
   HaLocationsEditor,
   MarkerLocation,
 } from "../components/map/ha-locations-editor";
-import { createTimezoneListEl } from "../components/timezone-datalist";
 import {
   ConfigUpdateValues,
   detectCoreConfig,
   saveCoreConfig,
 } from "../data/core";
-import { SYMBOL_TO_ISO } from "../data/currency";
 import { onboardCoreConfigStep } from "../data/onboarding";
-import type { PolymerChangedEvent } from "../polymer-types";
-import type { HomeAssistant } from "../types";
-import "../components/ha-radio";
-import "../components/ha-formfield";
-import type { HaRadio } from "../components/ha-radio";
-import type { HaTextField } from "../components/ha-textfield";
-import "../components/ha-textfield";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
-import { createCountryListEl } from "../components/country-datalist";
-import { createLanguageListEl } from "../components/language-datalist";
 
 const amsterdam: [number, number] = [52.3731339, 4.8903147];
 const mql = matchMedia("(prefers-color-scheme: dark)");
@@ -51,16 +57,26 @@ class OnboardingCoreConfig extends LitElement {
 
   @state() private _currency?: ConfigUpdateValues["currency"];
 
-  @state() private _timeZone?: string;
+  @state() private _timeZone? =
+    Intl.DateTimeFormat?.().resolvedOptions?.().timeZone;
 
-  @state() private _language?: ConfigUpdateValues["language"];
+  @state() private _language: ConfigUpdateValues["language"] =
+    getLocalLanguage();
 
   @state() private _country?: ConfigUpdateValues["country"];
+
+  @state() private _error?: string;
 
   @query("ha-locations-editor", true) private map!: HaLocationsEditor;
 
   protected render(): TemplateResult {
     return html`
+      ${
+        this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing
+      }
+
       <p>
         ${this.onboardingLocalize(
           "ui.panel.page-onboarding.core-config.intro",
@@ -112,40 +128,50 @@ class OnboardingCoreConfig extends LitElement {
       </div>
 
       <div class="row">
-        <ha-textfield
+        <ha-country-picker
           class="flex"
-          .label=${this.hass.localize(
-            "ui.panel.config.core.section.core.core_config.country"
-          )}
-          name="country"
-          .disabled=${this._working}
-          .value=${this._countryValue}
-          @change=${this._handleChange}
-        ></ha-textfield>
-
-        <ha-textfield
+          .language=${this.hass.locale.language}
+          .label=${
+            this.hass.localize(
+              "ui.panel.config.core.section.core.core_config.country"
+            ) || "Country"
+          }
+            name="country"
+            required
+            .disabled=${this._working}
+            .value=${this._countryValue}
+            @value-changed=${this._handleValueChanged}
+        >
+        </ha-country-picker>
+        <ha-language-picker
           class="flex"
+          .hass=${this.hass}
+          nativeName
           .label=${this.hass.localize(
             "ui.panel.config.core.section.core.core_config.language"
           )}
           name="language"
-          .disabled=${this._working}
+          required
           .value=${this._languageValue}
-          @change=${this._handleChange}
-        ></ha-textfield>
+          .disabled=${this._working}
+          @value-changed=${this._handleValueChanged}
+        >
+        </ha-language-picker>
       </div>
 
       <div class="row">
-        <ha-textfield
-          class="flex"
-          .label=${this.hass.localize(
-            "ui.panel.config.core.section.core.core_config.time_zone"
-          )}
-          name="timeZone"
-          .disabled=${this._working}
-          .value=${this._timeZoneValue}
-          @change=${this._handleChange}
-        ></ha-textfield>
+      <ha-timezone-picker
+      class="flex"
+
+                .label=${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.time_zone"
+                )}
+                name="timeZone"
+                .disabled=${this._working}
+                .value=${this._timeZoneValue}
+                @value-changed=${this._handleValueChanged}
+              >
+              </ha-timezone-picker>
 
         <ha-textfield
           class="flex"
@@ -224,17 +250,18 @@ class OnboardingCoreConfig extends LitElement {
                 )}</a
               >
             </div>
-
-            <ha-textfield
-              class="flex"
-              .label=${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.currency"
-              )}
-              name="currency"
-              .disabled=${this._working}
-              .value=${this._currencyValue}
-              @change=${this._handleChange}
-            ></ha-textfield>
+            <ha-currency-picker
+            class="flex"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.core.section.core.core_config.currency"
+                  )}
+                  name="currency"
+                  .disabled=${this._working}
+                  .value=${this._currencyValue}
+                  @value-changed=${this._handleValueChanged}
+                >
+</ha-currency-picker
+                >
           </div>
         </div>
 
@@ -251,44 +278,13 @@ class OnboardingCoreConfig extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     setTimeout(
-      () => this.shadowRoot!.querySelector("ha-textfield")!.focus(),
+      () => this.renderRoot.querySelector("ha-textfield")!.focus(),
       100
     );
     this.addEventListener("keypress", (ev) => {
-      if (ev.keyCode === 13) {
+      if (ev.key === "Enter") {
         this._save(ev);
       }
-    });
-    const tzInput = this.shadowRoot!.querySelector(
-      "[name=timeZone]"
-    ) as HaTextField;
-    tzInput.updateComplete.then(() => {
-      tzInput.shadowRoot!.appendChild(createTimezoneListEl());
-      tzInput.formElement.setAttribute("list", "timezones");
-    });
-
-    const curInput = this.shadowRoot!.querySelector(
-      "[name=currency]"
-    ) as HaTextField;
-    curInput.updateComplete.then(() => {
-      curInput.shadowRoot!.appendChild(createCurrencyListEl());
-      curInput.formElement.setAttribute("list", "currencies");
-    });
-
-    const countryInput = this.shadowRoot!.querySelector(
-      "[name=country]"
-    ) as HaTextField;
-    countryInput.updateComplete.then(() => {
-      countryInput.shadowRoot!.appendChild(createCountryListEl());
-      countryInput.formElement.setAttribute("list", "countries");
-    });
-
-    const langInput = this.shadowRoot!.querySelector(
-      "[name=language]"
-    ) as HaTextField;
-    langInput.updateComplete.then(() => {
-      langInput.shadowRoot!.appendChild(createLanguageListEl(this.hass));
-      langInput.formElement.setAttribute("list", "languages");
     });
   }
 
@@ -339,18 +335,14 @@ class OnboardingCoreConfig extends LitElement {
     ]
   );
 
-  private _handleChange(ev: PolymerChangedEvent<string>) {
+  private _handleValueChanged(ev: ValueChangedEvent<string>) {
+    const target = ev.currentTarget as HTMLElement;
+    this[`_${target.getAttribute("name")}`] = ev.detail.value;
+  }
+
+  private _handleChange(ev: Event) {
     const target = ev.currentTarget as HaTextField;
-
-    let value = target.value;
-
-    if (target.name === "currency" && value) {
-      if (value in SYMBOL_TO_ISO) {
-        value = SYMBOL_TO_ISO[value];
-      }
-    }
-
-    this[`_${target.name}`] = value;
+    this[`_${target.name}`] = target.value;
   }
 
   private _locationChanged(ev) {
@@ -397,7 +389,7 @@ class OnboardingCoreConfig extends LitElement {
       }
       this._language = getLocalLanguage();
     } catch (err: any) {
-      alert(`Failed to detect location information: ${err.message}`);
+      this._error = `Failed to detect location information: ${err.message}`;
     } finally {
       this._working = false;
     }
@@ -426,7 +418,7 @@ class OnboardingCoreConfig extends LitElement {
       });
     } catch (err: any) {
       this._working = false;
-      alert(`Failed to save: ${err.message}`);
+      this._error = err.message;
     }
   }
 
@@ -437,6 +429,7 @@ class OnboardingCoreConfig extends LitElement {
         flex-direction: row;
         margin: 0 -8px;
         align-items: center;
+        --ha-select-min-width: 100px;
       }
 
       .secondary {

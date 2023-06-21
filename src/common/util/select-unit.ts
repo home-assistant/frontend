@@ -1,3 +1,7 @@
+import { differenceInDays, differenceInWeeks, startOfWeek } from "date-fns/esm";
+import { FrontendLocaleData } from "../../data/translation";
+import { firstWeekdayIndex } from "../datetime/first_weekday";
+
 export type Unit =
   | "second"
   | "minute"
@@ -11,13 +15,13 @@ export type Unit =
 const MS_PER_SECOND = 1e3;
 const SECS_PER_MIN = 60;
 const SECS_PER_HOUR = SECS_PER_MIN * 60;
-const SECS_PER_DAY = SECS_PER_HOUR * 24;
-const SECS_PER_WEEK = SECS_PER_DAY * 7;
 
 // Adapted from https://github.com/formatjs/formatjs/blob/186cef62f980ec66252ee232f438a42d0b51b9f9/packages/intl-utils/src/diff.ts
 export function selectUnit(
   from: Date | number,
+  // eslint-disable-next-line @typescript-eslint/default-param-last
   to: Date | number = Date.now(),
+  locale: FrontendLocaleData,
   thresholds: Partial<Thresholds> = {}
 ): { value: number; unit: Unit } {
   const resolvedThresholds: Thresholds = {
@@ -49,29 +53,56 @@ export function selectUnit(
     };
   }
 
-  const days = secs / SECS_PER_DAY;
+  const fromDate = new Date(from);
+  const toDate = new Date(to);
+
+  // Set time component to zero, which allows us to compare only the days
+  fromDate.setHours(0, 0, 0, 0);
+  toDate.setHours(0, 0, 0, 0);
+
+  const days = differenceInDays(fromDate, toDate);
+  if (days === 0) {
+    return {
+      value: Math.round(hours),
+      unit: "hour",
+    };
+  }
   if (Math.abs(days) < resolvedThresholds.day) {
     return {
-      value: Math.round(days),
+      value: days,
       unit: "day",
     };
   }
 
-  const weeks = secs / SECS_PER_WEEK;
+  const firstWeekday = firstWeekdayIndex(locale);
+  const fromWeek = startOfWeek(fromDate, { weekStartsOn: firstWeekday });
+  const toWeek = startOfWeek(toDate, { weekStartsOn: firstWeekday });
+
+  const weeks = differenceInWeeks(fromWeek, toWeek);
+  if (weeks === 0) {
+    return {
+      value: days,
+      unit: "day",
+    };
+  }
   if (Math.abs(weeks) < resolvedThresholds.week) {
     return {
-      value: Math.round(weeks),
+      value: weeks,
       unit: "week",
     };
   }
 
-  const fromDate = new Date(from);
-  const toDate = new Date(to);
   const years = fromDate.getFullYear() - toDate.getFullYear();
   const months = years * 12 + fromDate.getMonth() - toDate.getMonth();
-  if (Math.round(Math.abs(months)) < resolvedThresholds.month) {
+  if (months === 0) {
     return {
-      value: Math.round(months),
+      value: weeks,
+      unit: "week",
+    };
+  }
+  if (Math.abs(months) < resolvedThresholds.month || years === 0) {
+    return {
+      value: months,
       unit: "month",
     };
   }

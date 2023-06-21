@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import { ComboBoxLitRenderer, comboBoxRenderer } from "@vaadin/combo-box/lit";
 import "@vaadin/combo-box/theme/material/vaadin-combo-box-light";
@@ -16,6 +15,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
+import "./ha-list-item";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
@@ -23,7 +23,7 @@ registerStyles(
   "vaadin-combo-box-item",
   css`
     :host {
-      padding: 0;
+      padding: 0 !important;
     }
     :host([focused]:not([disabled])) {
       background-color: rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.12);
@@ -211,9 +211,9 @@ export class HaComboBox extends LitElement {
   private _defaultRowRenderer: ComboBoxLitRenderer<
     string | Record<string, any>
   > = (item) =>
-    html`<mwc-list-item>
+    html`<ha-list-item>
       ${this.itemLabelPath ? item[this.itemLabelPath] : item}
-    </mwc-list-item>`;
+    </ha-list-item>`;
 
   private _clearValue(ev: Event) {
     ev.stopPropagation();
@@ -244,6 +244,7 @@ export class HaComboBox extends LitElement {
       );
 
       if (overlay) {
+        overlay.setAttribute("required-vertical-space", "0");
         this._removeInert(overlay);
       }
       this._observeBody();

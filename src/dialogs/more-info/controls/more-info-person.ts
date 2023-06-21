@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -17,9 +17,9 @@ class MoreInfoPerson extends LitElement {
 
   private _entityArray = memoizeOne((entityId: string) => [entityId]);
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -50,7 +50,7 @@ class MoreInfoPerson extends LitElement {
       <ha-attributes
         .hass=${this.hass}
         .stateObj=${this.stateObj}
-        extra-filters="id,user_id,editable"
+        extra-filters="id,user_id,editable,device_trackers"
       ></ha-attributes>
     `;
   }

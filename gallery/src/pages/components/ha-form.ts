@@ -99,16 +99,19 @@ const AREAS = [
     area_id: "backyard",
     name: "Backyard",
     picture: null,
+    aliases: [],
   },
   {
     area_id: "bedroom",
     name: "Bedroom",
     picture: null,
+    aliases: [],
   },
   {
     area_id: "livingroom",
     name: "Livingroom",
     picture: null,
+    aliases: [],
   },
 ];
 
@@ -333,7 +336,7 @@ const SCHEMAS: {
           ["and", "another_one"],
           ["option", "1000"],
         ],
-        name: "select many otions",
+        name: "select many options",
         default: "default",
       },
     ],
@@ -361,7 +364,7 @@ const SCHEMAS: {
           and: "another_one",
           option: "1000",
         },
-        name: "multi many otions",
+        name: "multi many options",
         default: ["default"],
       },
     ],

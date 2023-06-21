@@ -1,7 +1,7 @@
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list/mwc-radio-list-item";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -54,9 +54,9 @@ export class HuiDialogSelectView extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-dialog
@@ -111,7 +111,7 @@ export class HuiDialogSelectView extends LitElement {
                       <mwc-radio-list-item
                         .graphic=${this._config?.views.some(({ icon }) => icon)
                           ? "icon"
-                          : null}
+                          : nothing}
                         @click=${this._viewChanged}
                         .value=${idx.toString()}
                         .selected=${this._selectedViewIdx === idx}
@@ -185,6 +185,9 @@ export class HuiDialogSelectView extends LitElement {
       css`
         ha-select {
           width: 100%;
+        }
+        mwc-radio-list-item {
+          direction: ltr;
         }
       `,
     ];

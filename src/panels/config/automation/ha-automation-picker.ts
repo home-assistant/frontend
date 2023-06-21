@@ -10,7 +10,7 @@ import {
   mdiStopCircleOutline,
   mdiTransitConnection,
 } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -50,6 +50,8 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
+import { findRelated } from "../../../data/search";
+import { fetchBlueprints } from "../../../data/blueprint";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
@@ -64,6 +66,8 @@ class HaAutomationPicker extends LitElement {
   @property() public automations!: AutomationEntity[];
 
   @property() private _activeFilters?: string[];
+
+  @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _filteredAutomations?: string[] | null;
 
@@ -124,7 +128,11 @@ class HaAutomationPicker extends LitElement {
                     ${this.hass.localize("ui.card.automation.last_triggered")}:
                     ${automation.attributes.last_triggered
                       ? dayDifference > 3
-                        ? formatShortDateTime(date, this.hass.locale)
+                        ? formatShortDateTime(
+                            date,
+                            this.hass.locale,
+                            this.hass.config
+                          )
                         : relativeTime(date, this.hass.locale)
                       : this.hass.localize("ui.components.relative_time.never")}
                   </div>
@@ -145,7 +153,11 @@ class HaAutomationPicker extends LitElement {
             return html`
               ${last_triggered
                 ? dayDifference > 3
-                  ? formatShortDateTime(date, this.hass.locale)
+                  ? formatShortDateTime(
+                      date,
+                      this.hass.locale,
+                      this.hass.config
+                    )
                   : relativeTime(date, this.hass.locale)
                 : this.hass.localize("ui.components.relative_time.never")}
             `;
@@ -159,11 +171,11 @@ class HaAutomationPicker extends LitElement {
             template: (disabled: boolean) =>
               disabled
                 ? html`
-                    <paper-tooltip animation-delay="0" position="left">
+                    <simple-tooltip animation-delay="0" position="left">
                       ${this.hass.localize(
                         "ui.panel.config.automation.picker.disabled"
                       )}
-                    </paper-tooltip>
+                    </simple-tooltip>
                     <ha-svg-icon
                       .path=${mdiCancel}
                       style="color: var(--secondary-text-color)"
@@ -287,7 +299,6 @@ class HaAutomationPicker extends LitElement {
         ></ha-icon-button>
         <ha-button-related-filter-menu
           slot="filter-menu"
-          corner="BOTTOM_START"
           .narrow=${this.narrow}
           .hass=${this.hass}
           .value=${this._filterValue}
@@ -307,6 +318,34 @@ class HaAutomationPicker extends LitElement {
         </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
+  }
+
+  firstUpdated() {
+    if (this._searchParms.has("blueprint")) {
+      this._filterBlueprint();
+    }
+  }
+
+  private async _filterBlueprint() {
+    const blueprint = this._searchParms.get("blueprint");
+    if (!blueprint) {
+      return;
+    }
+    const [related, blueprints] = await Promise.all([
+      findRelated(this.hass, "automation_blueprint", blueprint),
+      fetchBlueprints(this.hass, "automation"),
+    ]);
+    this._filteredAutomations = related.automation || [];
+    const blueprintMeta = blueprints[blueprint];
+    this._activeFilters = [
+      this.hass.localize(
+        "ui.panel.config.automation.picker.filtered_by_blueprint",
+        "name",
+        !blueprintMeta || "error" in blueprintMeta
+          ? blueprint
+          : blueprintMeta.metadata.name || blueprint
+      ),
+    ];
   }
 
   private _relatedFilterChanged(ev: CustomEvent) {
@@ -447,7 +486,7 @@ class HaAutomationPicker extends LitElement {
 
   private _createNew() {
     if (isComponentLoaded(this.hass, "blueprint")) {
-      showNewAutomationDialog(this);
+      showNewAutomationDialog(this, { mode: "automation" });
     } else {
       navigate("/config/automation/edit/new");
     }

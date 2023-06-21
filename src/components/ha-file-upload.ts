@@ -75,7 +75,6 @@ export class HaFileUpload extends LitElement {
               ${this.icon
                 ? html`<span
                     class="mdc-text-field__icon mdc-text-field__icon--leading"
-                    tabindex="-1"
                   >
                     <ha-icon-button
                       @click=${this._openFilePicker}
@@ -95,7 +94,6 @@ export class HaFileUpload extends LitElement {
               ${this.value
                 ? html`<span
                     class="mdc-text-field__icon mdc-text-field__icon--trailing"
-                    tabindex="1"
                   >
                     <ha-icon-button
                       slot="suffix"
@@ -192,6 +190,9 @@ export class HaFileUpload extends LitElement {
           inset-inline-start: 48px !important;
           inset-inline-end: initial !important;
           direction: var(--direction);
+        }
+        .mdc-text-field__icon--trailing {
+          pointer-events: auto !important;
         }
         .dragged:before {
           position: var(--layout-fit_-_position);

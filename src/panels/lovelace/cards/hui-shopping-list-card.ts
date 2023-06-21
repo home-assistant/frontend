@@ -6,7 +6,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -105,9 +105,9 @@ class HuiShoppingListCard
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -301,7 +301,7 @@ class HuiShoppingListCard
   }
 
   private _addKeyPress(ev): void {
-    if (ev.keyCode === 13) {
+    if (ev.key === "Enter") {
       this._addItem(null);
     }
   }

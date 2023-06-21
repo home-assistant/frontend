@@ -2,12 +2,11 @@ import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { AttributeSelector } from "../../data/selector";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../types";
 import "../entity/ha-entity-attribute-picker";
 
 @customElement("ha-selector-attribute")
-export class HaSelectorAttribute extends SubscribeMixin(LitElement) {
+export class HaSelectorAttribute extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public selector!: AttributeSelector;
@@ -60,7 +59,8 @@ export class HaSelectorAttribute extends SubscribeMixin(LitElement) {
 
     if (
       !this.context ||
-      oldContext?.filter_entity === this.context.filter_entity
+      !oldContext ||
+      oldContext.filter_entity === this.context.filter_entity
     ) {
       return;
     }

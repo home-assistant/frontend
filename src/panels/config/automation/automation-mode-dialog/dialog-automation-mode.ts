@@ -1,22 +1,22 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import "@material/mwc-list/mwc-list-item";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-textfield";
 import "../../../../components/ha-select";
-import { HassDialog } from "../../../../dialogs/make-dialog-manager";
-import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { AutomationModeDialog } from "./show-dialog-automation-mode";
+import "../../../../components/ha-textfield";
 import {
   AUTOMATION_DEFAULT_MAX,
   AUTOMATION_DEFAULT_MODE,
 } from "../../../../data/automation";
-import { documentationUrl } from "../../../../util/documentation-url";
 import { isMaxMode, MODES } from "../../../../data/script";
-import "@material/mwc-list/mwc-list-item";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import { documentationUrl } from "../../../../util/documentation-url";
+import type { AutomationModeDialog } from "./show-dialog-automation-mode";
 
 @customElement("ha-dialog-automation-mode")
 class DialogAutomationMode extends LitElement implements HassDialog {
@@ -26,7 +26,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
 
   private _params!: AutomationModeDialog;
 
-  @state() private _newMode: typeof MODES[number] = AUTOMATION_DEFAULT_MODE;
+  @state() private _newMode: (typeof MODES)[number] = AUTOMATION_DEFAULT_MODE;
 
   @state() private _newMax?: number;
 
@@ -48,9 +48,9 @@ class DialogAutomationMode extends LitElement implements HassDialog {
     this._opened = false;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._opened) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -107,7 +107,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
               >
               </ha-textfield>
             `
-          : html``}
+          : nothing}
 
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
           ${this.hass.localize("ui.dialogs.generic.cancel")}

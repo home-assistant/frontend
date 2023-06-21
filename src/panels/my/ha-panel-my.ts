@@ -1,8 +1,11 @@
 import { sanitizeUrl } from "@braintree/sanitize-url";
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { protocolIntegrationPicked } from "../../common/integrations/protocolIntegrationPicked";
+import {
+  protocolIntegrationPicked,
+  PROTOCOL_INTEGRATIONS,
+} from "../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
@@ -41,6 +44,10 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   server_controls: {
     redirect: "/developer-tools/yaml",
   },
+  calendar: {
+    component: "calendar",
+    redirect: "/calendar",
+  },
   config: {
     redirect: "/config/dashboard",
   },
@@ -49,19 +56,25 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     redirect: "/config/cloud",
   },
   config_flow_start: {
-    redirect: "/config/integrations/add",
+    redirect: "/config/integrations/dashboard/add",
     params: {
       domain: "string",
     },
   },
   brand: {
-    redirect: "/config/integrations/add",
+    redirect: "/config/integrations/dashboard/add",
     params: {
       brand: "string",
     },
   },
   integrations: {
     redirect: "/config/integrations",
+  },
+  integration: {
+    redirect: "/config/integrations/integration",
+    params: {
+      domain: "string",
+    },
   },
   config_mqtt: {
     component: "mqtt",
@@ -82,6 +95,10 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   add_zwave_device: {
     component: "zwave_js",
     redirect: "/config/zwave_js/add",
+  },
+  add_matter_device: {
+    component: "matter",
+    redirect: "/config/matter/add",
   },
   config_energy: {
     component: "energy",
@@ -129,6 +146,9 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   tags: {
     component: "tag",
     redirect: "/config/tags",
+  },
+  voice_assistants: {
+    redirect: "/config/voice-assistants",
   },
   lovelace_dashboards: {
     component: "lovelace",
@@ -306,9 +326,11 @@ class HaPanelMy extends LitElement {
     ) {
       this.hass.loadBackendTranslation("title", this._redirect.component);
       this._error = "no_component";
-      if (["add_zwave_device", "add_zigbee_device"].includes(path)) {
+      const component = this._redirect.component;
+      if (
+        (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(component)
+      ) {
         const params = extractSearchParamsObject();
-        const component = this._redirect.component;
         this.hass
           .loadFragmentTranslation("config")
           .then()
@@ -393,7 +415,7 @@ class HaPanelMy extends LitElement {
         .hass=${this.hass}
       ></hass-error-screen>`;
     }
-    return html``;
+    return nothing;
   }
 
   private _createRedirectUrl(): string {

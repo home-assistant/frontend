@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -42,9 +42,6 @@ import { updateCore } from "../../../src/data/supervisor/core";
 import { StoreAddon } from "../../../src/data/supervisor/store";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
-import "../../../src/layouts/hass-loading-screen";
-import "../../../src/layouts/hass-subpage";
-import "../../../src/layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
 import { addonArchIsSupported, extractChangelog } from "../util/addon";
 
@@ -116,12 +113,12 @@ class UpdateAvailableCard extends LitElement {
       storeAddons.find((addon) => addon.slug === slug)
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (
       !this._updateType ||
       (this._updateType === "addon" && !this._addonInfo)
     ) {
-      return html``;
+      return nothing;
     }
 
     const changelog = changelogUrl(this._updateType, this._version_latest);

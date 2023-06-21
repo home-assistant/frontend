@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -42,7 +42,9 @@ export class HuiViewVisibilityEditor extends LitElement {
   @state() private _visible!: boolean | ShowViewConfig[];
 
   private _sortedUsers = memoizeOne((users: User[]) =>
-    users.sort((a, b) => stringCompare(a.name, b.name))
+    users.sort((a, b) =>
+      stringCompare(a.name, b.name, this.hass.locale.language)
+    )
   );
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -54,9 +56,9 @@ export class HuiViewVisibilityEditor extends LitElement {
     });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._users) {
-      return html``;
+      return nothing;
     }
 
     return html`

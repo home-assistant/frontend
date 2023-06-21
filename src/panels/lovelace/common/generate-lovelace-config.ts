@@ -13,7 +13,6 @@ import {
 } from "../../../data/energy";
 import { domainToName } from "../../../data/integration";
 import { LovelaceCardConfig, LovelaceViewConfig } from "../../../data/lovelace";
-import { SENSOR_DEVICE_CLASS_BATTERY } from "../../../data/sensor";
 import { computeUserInitials } from "../../../data/user";
 import { HomeAssistant } from "../../../types";
 import { HELPER_DOMAINS } from "../../config/helpers/const";
@@ -59,7 +58,7 @@ const splitByAreaDevice = (
   for (const entity of Object.values(entityEntries)) {
     const areaId =
       entity.area_id ||
-      (entity.device_id && deviceEntries[entity.device_id].area_id);
+      (entity.device_id && deviceEntries[entity.device_id]?.area_id);
     if (areaId && areaId in areaEntries && entity.entity_id in allEntities) {
       if (!(areaId in areasWithEntities)) {
         areasWithEntities[areaId] = [];
@@ -161,7 +160,7 @@ export const computeCards = (
       renderFooterEntities &&
       (domain === "scene" || domain === "script")
     ) {
-      const conf: typeof footerEntities[0] = {
+      const conf: (typeof footerEntities)[0] = {
         entity: entityId,
         show_icon: true,
         show_name: true,
@@ -179,11 +178,6 @@ export const computeCards = (
         conf.name = name;
       }
       footerEntities.push(conf);
-    } else if (
-      domain === "sensor" &&
-      stateObj?.attributes.device_class === SENSOR_DEVICE_CLASS_BATTERY
-    ) {
-      // Do nothing.
     } else {
       let name: string | undefined;
       const entityConf =
@@ -278,8 +272,8 @@ const computeDefaultViewStates = (
       .filter(
         (entry) =>
           entry.entity_category ||
-          HIDE_PLATFORM.has(entry.platform) ||
-          entry.hidden_by
+          (entry.platform && HIDE_PLATFORM.has(entry.platform)) ||
+          entry.hidden
       )
       .map((entry) => entry.entity_id)
   );

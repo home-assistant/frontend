@@ -1,13 +1,11 @@
-import "../../../../components/ha-form/ha-form";
-import type { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import { domainIcon } from "../../../../common/entity/domain_icon";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { EntitiesCardEntityConfig } from "../../cards/types";
@@ -39,73 +37,56 @@ export class HuiGenericEntityRowEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne(
-    (
-      entity: string,
-      icon: string | undefined,
-      entityState: HassEntity,
-      localize: LocalizeFunc
-    ) => {
-      const domain = computeDomain(entity);
+  private _schema = memoizeOne((entity: string, localize: LocalizeFunc) => {
+    const domain = computeDomain(entity);
 
-      return [
-        { name: "entity", required: true, selector: { entity: {} } },
-        {
-          type: "grid",
-          name: "",
-          schema: [
-            { name: "name", selector: { text: {} } },
-            {
-              name: "icon",
-              selector: {
-                icon: {
-                  placeholder: icon || entityState?.attributes.icon,
-                  fallbackPath:
-                    !icon && !entityState?.attributes.icon && entityState
-                      ? domainIcon(domain, entityState)
-                      : undefined,
-                },
-              },
+    return [
+      { name: "entity", required: true, selector: { entity: {} } },
+      {
+        type: "grid",
+        name: "",
+        schema: [
+          { name: "name", selector: { text: {} } },
+          {
+            name: "icon",
+            selector: {
+              icon: {},
             },
-          ],
-        },
-        {
-          name: "secondary_info",
-          selector: {
-            select: {
-              options: (
-                Object.keys(SecondaryInfoValues).filter(
-                  (info) =>
-                    !("domains" in SecondaryInfoValues[info]) ||
-                    ("domains" in SecondaryInfoValues[info] &&
-                      SecondaryInfoValues[info].domains!.includes(domain))
-                ) as Array<keyof typeof SecondaryInfoValues>
-              ).map((info) => ({
-                value: info,
-                label: localize(
-                  `ui.panel.lovelace.editor.card.entities.secondary_info_values.${info}`
-                ),
-              })),
+            context: {
+              icon_entity: "entity",
             },
           },
+        ],
+      },
+      {
+        name: "secondary_info",
+        selector: {
+          select: {
+            options: (
+              Object.keys(SecondaryInfoValues).filter(
+                (info) =>
+                  !("domains" in SecondaryInfoValues[info]) ||
+                  ("domains" in SecondaryInfoValues[info] &&
+                    SecondaryInfoValues[info].domains!.includes(domain))
+              ) as Array<keyof typeof SecondaryInfoValues>
+            ).map((info) => ({
+              value: info,
+              label: localize(
+                `ui.panel.lovelace.editor.card.entities.secondary_info_values.${info}`
+              ),
+            })),
+          },
         },
-      ] as const;
-    }
-  );
+      },
+    ] as const;
+  });
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
-    const entityState = this.hass.states[this._config.entity];
-
-    const schema = this._schema(
-      this._config.entity,
-      this._config.icon,
-      entityState,
-      this.hass.localize
-    );
+    const schema = this._schema(this._config.entity, this.hass.localize);
 
     return html`
       <ha-form

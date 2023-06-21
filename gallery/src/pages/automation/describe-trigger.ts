@@ -1,5 +1,5 @@
 import { dump } from "js-yaml";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-yaml-editor";
@@ -64,9 +64,9 @@ export class DemoAutomationDescribeTrigger extends LitElement {
 
   @state() _trigger = initialTrigger;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -74,7 +74,7 @@ export class DemoAutomationDescribeTrigger extends LitElement {
         <div class="trigger">
           <span>
             ${this._trigger
-              ? describeTrigger(this._trigger, this.hass)
+              ? describeTrigger(this._trigger, this.hass, [])
               : "<invalid YAML>"}
           </span>
           <ha-yaml-editor
@@ -86,7 +86,7 @@ export class DemoAutomationDescribeTrigger extends LitElement {
         ${triggers.map(
           (conf) => html`
             <div class="trigger">
-              <span>${describeTrigger(conf as any, this.hass)}</span>
+              <span>${describeTrigger(conf as any, this.hass, [])}</span>
               <pre>${dump(conf)}</pre>
             </div>
           `

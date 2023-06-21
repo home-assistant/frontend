@@ -1,5 +1,5 @@
 import { mdiPencilOff, mdiPlus } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -139,11 +139,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                   style="display:inline-block; position: relative;"
                 >
                   <ha-svg-icon .path=${mdiPencilOff}></ha-svg-icon>
-                  <paper-tooltip animation-delay="0" position="left">
+                  <simple-tooltip animation-delay="0" position="left">
                     ${this.hass.localize(
                       "ui.panel.config.entities.picker.status.readonly"
                     )}
-                  </paper-tooltip>
+                  </simple-tooltip>
                 </div>
               `
             : ""}
@@ -358,10 +358,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private async _openEditDialog(ev: CustomEvent): Promise<void> {
     const entityId = (ev.detail as RowClickedEvent).id;
-    showMoreInfoDialog(this, {
-      entityId,
-      tab: "settings",
-    });
+    showMoreInfoDialog(this, { entityId });
   }
 
   private _createHelpler() {

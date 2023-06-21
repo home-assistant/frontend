@@ -1,9 +1,9 @@
-import { HomeAssistant } from "../types";
+import { HomeAssistant, TranslationDict } from "../types";
 
 export interface LoggedError {
   name: string;
   message: [string];
-  level: string;
+  level: keyof TranslationDict["ui"]["panel"]["config"]["logs"]["level"];
   source: [string, number];
   // unix timestamp in seconds
   timestamp: number;
@@ -13,8 +13,13 @@ export interface LoggedError {
   first_occurred: number;
 }
 
-export const fetchSystemLog = (hass: HomeAssistant) =>
-  hass.callWS<LoggedError[]>({ type: "system_log/list" });
+export const fetchSystemLog = async (hass: HomeAssistant) => {
+  const log = await hass.callWS<LoggedError[]>({ type: "system_log/list" });
+  for (const error of log) {
+    error.level = error.level.toLowerCase() as LoggedError["level"];
+  }
+  return log;
+};
 
 export const getLoggedErrorIntegration = (item: LoggedError) => {
   // Try to derive from logger name

@@ -1,14 +1,13 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDisplay } from "../../common/entity/compute_state_display";
-import { PolymerChangedEvent } from "../../polymer-types";
 import { getStates } from "../../common/entity/get_states";
-import { HomeAssistant } from "../../types";
+import { computeAttributeValueDisplay } from "../../common/entity/compute_attribute_display";
+import { ValueChangedEvent, HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
-import { formatAttributeValue } from "../../data/entity_attributes";
-import { fireEvent } from "../../common/dom/fire_event";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
@@ -19,6 +18,8 @@ class HaEntityStatePicker extends LitElement {
   @property() public entityId?: string;
 
   @property() public attribute?: string;
+
+  @property() public extraOptions?: any[];
 
   @property({ type: Boolean }) public autofocus = false;
 
@@ -44,10 +45,16 @@ class HaEntityStatePicker extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("_opened") && this._opened) {
+    if (
+      (changedProps.has("_opened") && this._opened) ||
+      changedProps.has("entityId") ||
+      changedProps.has("attribute") ||
+      changedProps.has("extraOptions")
+    ) {
       const state = this.entityId ? this.hass.states[this.entityId] : undefined;
-      (this._comboBox as any).items =
-        this.entityId && state
+      (this._comboBox as any).items = [
+        ...(this.extraOptions ?? []),
+        ...(this.entityId && state
           ? getStates(state, this.attribute).map((key) => ({
               value: key,
               label: !this.attribute
@@ -55,18 +62,28 @@ class HaEntityStatePicker extends LitElement {
                     this.hass.localize,
                     state,
                     this.hass.locale,
+                    this.hass.config,
                     this.hass.entities,
                     key
                   )
-                : formatAttributeValue(this.hass, key),
+                : computeAttributeValueDisplay(
+                    this.hass.localize,
+                    state,
+                    this.hass.locale,
+                    this.hass.config,
+                    this.hass.entities,
+                    this.attribute,
+                    key
+                  ),
             }))
-          : [];
+          : []),
+      ];
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -93,11 +110,11 @@ class HaEntityStatePicker extends LitElement {
     return this.value || "";
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private _openedChanged(ev: ValueChangedEvent<boolean>) {
     this._opened = ev.detail.value;
   }
 
-  private _valueChanged(ev: PolymerChangedEvent<string>) {
+  private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
     if (newValue !== this._value) {

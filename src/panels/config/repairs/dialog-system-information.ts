@@ -1,6 +1,13 @@
 import "@material/mwc-button/mwc-button";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
@@ -9,6 +16,7 @@ import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { subscribePollingCollection } from "../../../common/util/subscribe-polling";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
+import "../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-metric";
 import { fetchHassioStats, HassioStats } from "../../../data/hassio/common";
@@ -27,7 +35,6 @@ import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
-import "../../../components/ha-circular-progress";
 
 const sortKeys = (a: string, b: string) => {
   if (a === "homeassistant") {
@@ -128,9 +135,9 @@ class DialogSystemInformation extends LitElement {
     this._supervisorStats = undefined;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._opened) {
-      return html``;
+      return nothing;
     }
 
     const sections = this._getSections();
@@ -342,7 +349,11 @@ class DialogSystemInformation extends LitElement {
                     `}
               `;
             } else if (info.type === "date") {
-              value = formatDateTime(new Date(info.value), this.hass.locale);
+              value = formatDateTime(
+                new Date(info.value),
+                this.hass.locale,
+                this.hass.config
+              );
             }
           } else {
             value = domainInfo.info[key];
@@ -418,7 +429,11 @@ class DialogSystemInformation extends LitElement {
           } else if (info.type === "failed") {
             value = `failed to load: ${info.error}`;
           } else if (info.type === "date") {
-            value = formatDateTime(new Date(info.value), this.hass.locale);
+            value = formatDateTime(
+              new Date(info.value),
+              this.hass.locale,
+              this.hass.config
+            );
           }
         } else {
           value = domainInfo.info[key];

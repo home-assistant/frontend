@@ -1,6 +1,6 @@
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -21,14 +21,14 @@ class StateInfo extends LitElement {
 
   @property() public color?: string;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     const name = computeStateName(this.stateObj);
 
-    return html` <state-badge
+    return html`<state-badge
         .stateObj=${this.stateObj}
         .stateColor=${true}
         .color=${this.color}
@@ -45,7 +45,7 @@ class StateInfo extends LitElement {
                 .datetime=${this.stateObj.last_changed}
                 capitalize
               ></ha-relative-time>
-              <paper-tooltip animation-delay="0" for="last_changed">
+              <simple-tooltip animation-delay="0" for="last_changed">
                 <div>
                   <div class="row">
                     <span class="column-name">
@@ -72,7 +72,7 @@ class StateInfo extends LitElement {
                     ></ha-relative-time>
                   </div>
                 </div>
-              </paper-tooltip>
+              </simple-tooltip>
             </div>`
           : html`<div class="extra-info"><slot></slot></div>`}
       </div>`;

@@ -11,7 +11,6 @@ on:
       - dev
 
 env:
-  NODE_VERSION: 16
   NODE_OPTIONS: --max_old_space_size=6144
 
 jobs:
@@ -22,18 +21,16 @@ jobs:
     if: github.repository == 'home-assistant/frontend' && contains(github.event.pull_request.labels.*.name, 'needs design preview')
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.5.3
 
-      - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3.6.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: ".nvmrc"
           cache: yarn
 
       - name: Install dependencies
-        run: yarn install
-        env:
-          CI: true
+        run: yarn install --immutable
 
       - name: Build Gallery
         run: ./node_modules/.bin/gulp build-gallery

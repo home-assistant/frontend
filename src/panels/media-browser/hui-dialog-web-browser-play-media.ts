@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
@@ -23,9 +23,9 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params || !this._params.sourceType || !this._params.sourceUrl) {
-      return html``;
+      return nothing;
     }
 
     const mediaType = this._params.sourceType.split("/", 1)[0];
@@ -76,7 +76,10 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
               ></ha-hls-player>
             `
           : mediaType === "image"
-          ? html`<img src=${this._params.sourceUrl} />`
+          ? html`<img
+              alt=${this._params.title || nothing}
+              src=${this._params.sourceUrl}
+            />`
           : html`${this.hass.localize(
               "ui.components.media-browser.media_not_supported"
             )}`}

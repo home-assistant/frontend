@@ -1,6 +1,6 @@
 import "@material/mwc-button";
-import "@polymer/paper-tooltip/paper-tooltip";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -51,9 +51,9 @@ class DialogUserDetail extends LitElement {
     await this.updateComplete;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     const user = this._params.entry;
     const badges = computeUserBadges(this.hass, user, true);
@@ -169,11 +169,11 @@ class DialogUserDetail extends LitElement {
           </mwc-button>
           ${user.system_generated
             ? html`
-                <paper-tooltip animation-delay="0" position="right">
+                <simple-tooltip animation-delay="0" position="right">
                   ${this.hass.localize(
                     "ui.panel.config.users.editor.system_generated_users_not_removable"
                   )}
-                </paper-tooltip>
+                </simple-tooltip>
               `
             : ""}
           ${!user.system_generated && this.hass.user?.is_owner
@@ -196,11 +196,11 @@ class DialogUserDetail extends LitElement {
           </mwc-button>
           ${user.system_generated
             ? html`
-                <paper-tooltip animation-delay="0" position="left">
+                <simple-tooltip animation-delay="0" position="left">
                   ${this.hass.localize(
                     "ui.panel.config.users.editor.system_generated_users_not_editable"
                   )}
-                </paper-tooltip>
+                </simple-tooltip>
               `
             : ""}
         </div>

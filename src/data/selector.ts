@@ -1,8 +1,15 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
+import { supportsFeature } from "../common/entity/supports-feature";
 import { UiAction } from "../panels/lovelace/components/hui-action-editor";
-import type { DeviceRegistryEntry } from "./device_registry";
-import type { EntitySources } from "./entity_sources";
+import { HomeAssistant } from "../types";
+import {
+  DeviceRegistryEntry,
+  getDeviceIntegrationLookup,
+} from "./device_registry";
+import { EntityRegistryDisplayEntry } from "./entity_registry";
+import { EntitySources } from "./entity_sources";
 
 export type Selector =
   | ActionSelector
@@ -12,27 +19,36 @@ export type Selector =
   | BooleanSelector
   | ColorRGBSelector
   | ColorTempSelector
+  | ConversationAgentSelector
   | ConfigEntrySelector
+  | ConstantSelector
   | DateSelector
   | DateTimeSelector
   | DeviceSelector
+  | LegacyDeviceSelector
   | DurationSelector
   | EntitySelector
+  | LegacyEntitySelector
   | FileSelector
   | IconSelector
+  | LanguageSelector
   | LocationSelector
   | MediaSelector
   | NavigationSelector
   | NumberSelector
   | ObjectSelector
+  | AssistPipelineSelector
   | SelectSelector
   | StateSelector
   | StatisticSelector
   | StringSelector
+  | STTSelector
   | TargetSelector
   | TemplateSelector
   | ThemeSelector
   | TimeSelector
+  | TTSSelector
+  | TTSVoiceSelector
   | UiActionSelector
   | UiColorSelector;
 
@@ -48,22 +64,10 @@ export interface AddonSelector {
   } | null;
 }
 
-export interface SelectorDevice {
-  integration?: NonNullable<DeviceSelector["device"]>["integration"];
-  manufacturer?: NonNullable<DeviceSelector["device"]>["manufacturer"];
-  model?: NonNullable<DeviceSelector["device"]>["model"];
-}
-
-export interface SelectorEntity {
-  integration?: NonNullable<EntitySelector["entity"]>["integration"];
-  domain?: NonNullable<EntitySelector["entity"]>["domain"];
-  device_class?: NonNullable<EntitySelector["entity"]>["device_class"];
-}
-
 export interface AreaSelector {
   area: {
-    entity?: SelectorEntity;
-    device?: SelectorDevice;
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+    device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
     multiple?: boolean;
   } | null;
 }
@@ -92,9 +96,21 @@ export interface ColorTempSelector {
   } | null;
 }
 
+export interface ConversationAgentSelector {
+  conversation_agent: { language?: string } | null;
+}
+
 export interface ConfigEntrySelector {
   config_entry: {
     integration?: string;
+  } | null;
+}
+
+export interface ConstantSelector {
+  constant: {
+    value: string | number | boolean;
+    label?: string;
+    translation_key?: string;
   } | null;
 }
 
@@ -108,14 +124,36 @@ export interface DateTimeSelector {
   datetime: {} | null;
 }
 
+interface DeviceSelectorFilter {
+  integration?: string;
+  manufacturer?: string;
+  model?: string;
+}
+
 export interface DeviceSelector {
   device: {
-    integration?: string;
-    manufacturer?: string;
-    model?: string;
-    entity?: SelectorEntity;
+    filter?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     multiple?: boolean;
   } | null;
+}
+
+export interface LegacyDeviceSelector {
+  device:
+    | DeviceSelector["device"] & {
+        /**
+         * @deprecated Use filter instead
+         */
+        integration?: DeviceSelectorFilter["integration"];
+        /**
+         * @deprecated Use filter instead
+         */
+        manufacturer?: DeviceSelectorFilter["manufacturer"];
+        /**
+         * @deprecated Use filter instead
+         */
+        model?: DeviceSelectorFilter["model"];
+      };
 }
 
 export interface DurationSelector {
@@ -124,15 +162,38 @@ export interface DurationSelector {
   } | null;
 }
 
+interface EntitySelectorFilter {
+  integration?: string;
+  domain?: string | readonly string[];
+  device_class?: string | readonly string[];
+  supported_features?: number | [number];
+}
+
 export interface EntitySelector {
   entity: {
-    integration?: string;
-    domain?: string | readonly string[];
-    device_class?: string;
     multiple?: boolean;
     include_entities?: string[];
     exclude_entities?: string[];
+    filter?: EntitySelectorFilter | readonly EntitySelectorFilter[];
   } | null;
+}
+
+export interface LegacyEntitySelector {
+  entity:
+    | EntitySelector["entity"] & {
+        /**
+         * @deprecated Use filter instead
+         */
+        integration?: EntitySelectorFilter["integration"];
+        /**
+         * @deprecated Use filter instead
+         */
+        domain?: EntitySelectorFilter["domain"];
+        /**
+         * @deprecated Use filter instead
+         */
+        device_class?: EntitySelectorFilter["device_class"];
+      };
 }
 
 export interface StatisticSelector {
@@ -152,6 +213,14 @@ export interface IconSelector {
   icon: {
     placeholder?: string;
     fallbackPath?: string;
+  } | null;
+}
+
+export interface LanguageSelector {
+  language: {
+    languages?: string[];
+    native_name?: boolean;
+    no_sort?: boolean;
   } | null;
 }
 
@@ -192,7 +261,7 @@ export interface NumberSelector {
   number: {
     min?: number;
     max?: number;
-    step?: number;
+    step?: number | "any";
     mode?: "box" | "slider";
     unit_of_measurement?: string;
   } | null;
@@ -201,6 +270,11 @@ export interface NumberSelector {
 export interface ObjectSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   object: {} | null;
+}
+
+export interface AssistPipelineSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  assist_pipeline: {} | null;
 }
 
 export interface SelectOption {
@@ -215,14 +289,21 @@ export interface SelectSelector {
     custom_value?: boolean;
     mode?: "list" | "dropdown";
     options: readonly string[] | readonly SelectOption[];
+    translation_key?: string;
   } | null;
 }
 
 export interface StateSelector {
   state: {
+    extra_options?: { label: string; value: any }[];
     entity_id?: string;
     attribute?: string;
   } | null;
+}
+
+export interface BackupLocationSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  backup_location: {} | null;
 }
 
 export interface StringSelector {
@@ -247,10 +328,14 @@ export interface StringSelector {
   } | null;
 }
 
+export interface STTSelector {
+  stt: { language?: string } | null;
+}
+
 export interface TargetSelector {
   target: {
-    entity?: SelectorEntity;
-    device?: SelectorDevice;
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+    device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
   } | null;
 }
 
@@ -260,29 +345,147 @@ export interface TemplateSelector {
 }
 
 export interface ThemeSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  theme: {} | null;
+  theme: { include_default?: boolean } | null;
 }
 export interface TimeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   time: {} | null;
 }
 
+export interface TTSSelector {
+  tts: { language?: string } | null;
+}
+
+export interface TTSVoiceSelector {
+  tts_voice: { engineId?: string; language?: string } | null;
+}
+
 export interface UiActionSelector {
-  "ui-action": {
+  ui_action: {
     actions?: UiAction[];
   } | null;
 }
 
 export interface UiColorSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  "ui-color": {} | null;
+  ui_color: {} | null;
 }
 
-export const filterSelectorDevices = (
-  filterDevice: SelectorDevice,
+export const expandAreaTarget = (
+  hass: HomeAssistant,
+  areaId: string,
+  devices: HomeAssistant["devices"],
+  entities: HomeAssistant["entities"],
+  targetSelector: TargetSelector,
+  entitySources?: EntitySources
+) => {
+  const newEntities: string[] = [];
+  const newDevices: string[] = [];
+  Object.values(devices).forEach((device) => {
+    if (
+      device.area_id === areaId &&
+      deviceMeetsTargetSelector(
+        hass,
+        Object.values(entities),
+        device,
+        targetSelector,
+        entitySources
+      )
+    ) {
+      newDevices.push(device.id);
+    }
+  });
+  Object.values(entities).forEach((entity) => {
+    if (
+      entity.area_id === areaId &&
+      entityMeetsTargetSelector(
+        hass.states[entity.entity_id],
+        targetSelector,
+        entitySources
+      )
+    ) {
+      newEntities.push(entity.entity_id);
+    }
+  });
+  return { devices: newDevices, entities: newEntities };
+};
+
+export const expandDeviceTarget = (
+  hass: HomeAssistant,
+  deviceId: string,
+  entities: HomeAssistant["entities"],
+  targetSelector: TargetSelector,
+  entitySources?: EntitySources
+) => {
+  const newEntities: string[] = [];
+  Object.values(entities).forEach((entity) => {
+    if (
+      entity.device_id === deviceId &&
+      entityMeetsTargetSelector(
+        hass.states[entity.entity_id],
+        targetSelector,
+        entitySources
+      )
+    ) {
+      newEntities.push(entity.entity_id);
+    }
+  });
+  return { entities: newEntities };
+};
+
+const deviceMeetsTargetSelector = (
+  hass: HomeAssistant,
+  entityRegistry: EntityRegistryDisplayEntry[],
   device: DeviceRegistryEntry,
-  deviceIntegrationLookup: Record<string, string[]> | undefined
+  targetSelector: TargetSelector,
+  entitySources?: EntitySources
+): boolean => {
+  const deviceIntegrationLookup = entitySources
+    ? getDeviceIntegrationLookup(entitySources, entityRegistry)
+    : undefined;
+
+  if (targetSelector.target?.device) {
+    if (
+      !ensureArray(targetSelector.target.device).some((filterDevice) =>
+        filterSelectorDevices(filterDevice, device, deviceIntegrationLookup)
+      )
+    ) {
+      return false;
+    }
+  }
+  if (targetSelector.target?.entity) {
+    const entities = entityRegistry.filter(
+      (reg) => reg.device_id === device.id
+    );
+    return entities.some((entity) => {
+      const entityState = hass.states[entity.entity_id];
+      return entityMeetsTargetSelector(
+        entityState,
+        targetSelector,
+        entitySources
+      );
+    });
+  }
+  return true;
+};
+
+const entityMeetsTargetSelector = (
+  entity: HassEntity,
+  targetSelector: TargetSelector,
+  entitySources?: EntitySources
+): boolean => {
+  if (targetSelector.target?.entity) {
+    return ensureArray(targetSelector.target!.entity).some((filterEntity) =>
+      filterSelectorEntities(filterEntity, entity, entitySources)
+    );
+  }
+  return true;
+};
+
+export const filterSelectorDevices = (
+  filterDevice: DeviceSelectorFilter,
+  device: DeviceRegistryEntry,
+  deviceIntegrationLookup?: Record<string, string[]> | undefined
 ): boolean => {
   const {
     manufacturer: filterManufacturer,
@@ -307,13 +510,14 @@ export const filterSelectorDevices = (
 };
 
 export const filterSelectorEntities = (
-  filterEntity: SelectorEntity,
+  filterEntity: EntitySelectorFilter,
   entity: HassEntity,
   entitySources?: EntitySources
 ): boolean => {
   const {
     domain: filterDomain,
     device_class: filterDeviceClass,
+    supported_features: filterSupportedFeature,
     integration: filterIntegration,
   } = filterEntity;
 
@@ -328,11 +532,25 @@ export const filterSelectorEntities = (
     }
   }
 
-  if (
-    filterDeviceClass &&
-    entity.attributes.device_class !== filterDeviceClass
-  ) {
-    return false;
+  if (filterDeviceClass) {
+    const entityDeviceClass = entity.attributes.device_class;
+    if (
+      entityDeviceClass && Array.isArray(filterDeviceClass)
+        ? !filterDeviceClass.includes(entityDeviceClass)
+        : entityDeviceClass !== filterDeviceClass
+    ) {
+      return false;
+    }
+  }
+
+  if (filterSupportedFeature) {
+    if (
+      !ensureArray(filterSupportedFeature).some((feature) =>
+        supportsFeature(entity, feature)
+      )
+    ) {
+      return false;
+    }
   }
 
   if (
@@ -343,4 +561,60 @@ export const filterSelectorEntities = (
   }
 
   return true;
+};
+
+export const handleLegacyEntitySelector = (
+  selector: LegacyEntitySelector | EntitySelector
+): EntitySelector => {
+  if (!selector.entity) return { entity: null };
+
+  if ("filter" in selector.entity) return selector;
+
+  const { domain, integration, device_class, ...rest } = (
+    selector as LegacyEntitySelector
+  ).entity!;
+
+  if (domain || integration || device_class) {
+    return {
+      entity: {
+        ...rest,
+        filter: {
+          domain,
+          integration,
+          device_class,
+        },
+      },
+    };
+  }
+  return {
+    entity: rest,
+  };
+};
+
+export const handleLegacyDeviceSelector = (
+  selector: LegacyDeviceSelector | DeviceSelector
+): DeviceSelector => {
+  if (!selector.device) return { device: null };
+
+  if ("filter" in selector.device) return selector;
+
+  const { integration, manufacturer, model, ...rest } = (
+    selector as LegacyDeviceSelector
+  ).device!;
+
+  if (integration || manufacturer || model) {
+    return {
+      device: {
+        ...rest,
+        filter: {
+          integration,
+          manufacturer,
+          model,
+        },
+      },
+    };
+  }
+  return {
+    device: rest,
+  };
 };

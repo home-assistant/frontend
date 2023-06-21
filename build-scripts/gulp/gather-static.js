@@ -1,9 +1,9 @@
 // Gulp task to gather all static files.
 
-const gulp = require("gulp");
-const path = require("path");
-const fs = require("fs-extra");
-const paths = require("../paths");
+import fs from "fs-extra";
+import gulp from "gulp";
+import path from "path";
+import paths from "../paths.cjs";
 
 const npmPath = (...parts) =>
   path.resolve(paths.polymer_dir, "node_modules", ...parts);
@@ -111,9 +111,10 @@ gulp.task("copy-translations-supervisor", async () => {
   copyTranslations(staticDir);
 });
 
-gulp.task("copy-locale-data-supervisor", async () => {
+gulp.task("copy-static-supervisor", async () => {
   const staticDir = paths.hassio_output_static;
   copyLocaleData(staticDir);
+  copyFonts(staticDir);
 });
 
 gulp.task("copy-static-app", async () => {

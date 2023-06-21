@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { PersistentNotification } from "../../data/persistent_notification";
 import { HomeAssistant } from "../../types";
@@ -20,9 +20,9 @@ export class HuiNotificationItem extends LitElement {
     return false;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.notification) {
-      return html``;
+      return nothing;
     }
 
     return "entity_id" in this.notification

@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -29,13 +29,10 @@ class HuiCastRow extends LitElement implements LovelaceRow {
   @state() private _noHTTPS = false;
 
   public setConfig(config: CastConfig): void {
-    if (!config || config.view === undefined || config.view === null) {
-      throw new Error("View required");
-    }
-
     this._config = {
-      icon: "hass:television",
+      icon: "mdi:television",
       name: "Home Assistant Cast",
+      view: 0,
       ...config,
     };
   }
@@ -44,9 +41,9 @@ class HuiCastRow extends LitElement implements LovelaceRow {
     return !(changedProperties.size === 1 && changedProperties.has("hass"));
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config) {
-      return html``;
+      return nothing;
     }
 
     const active =
@@ -62,7 +59,7 @@ class HuiCastRow extends LitElement implements LovelaceRow {
         ${this._noHTTPS
           ? html` Cast requires HTTPS `
           : this._castManager === undefined
-          ? html``
+          ? nothing
           : this._castManager === null
           ? html` Cast API unavailable `
           : this._castManager.castState === "NO_DEVICES_AVAILABLE"
@@ -123,7 +120,7 @@ class HuiCastRow extends LitElement implements LovelaceRow {
     castSendShowLovelaceView(
       this._castManager!,
       this.hass.auth.data.hassUrl,
-      this._config!.view,
+      this._config!.view!,
       this._config!.dashboard
     );
   }

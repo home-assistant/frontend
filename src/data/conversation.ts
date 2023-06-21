@@ -44,7 +44,7 @@ interface IntentResultError extends IntentResultBase {
   };
 }
 
-interface ConversationResult {
+export interface ConversationResult {
   conversation_id: string | null;
   response:
     | IntentResultActionDone
@@ -54,31 +54,53 @@ interface ConversationResult {
 
 export interface AgentInfo {
   attribution?: { name: string; url: string };
-  onboarding?: { text: string; url: string };
+}
+
+export interface Agent {
+  id: string;
+  name: string;
+  supported_languages: "*" | string[];
 }
 
 export const processConversationInput = (
   hass: HomeAssistant,
   text: string,
   // eslint-disable-next-line: variable-name
-  conversation_id: string
+  conversation_id: string | null,
+  language: string
 ): Promise<ConversationResult> =>
   hass.callWS({
     type: "conversation/process",
     text,
     conversation_id,
+    language,
   });
 
-export const getAgentInfo = (hass: HomeAssistant): Promise<AgentInfo> =>
+export const listAgents = (
+  hass: HomeAssistant,
+  language?: string,
+  country?: string
+): Promise<{ agents: Agent[] }> =>
+  hass.callWS({
+    type: "conversation/agent/list",
+    language,
+    country,
+  });
+
+export const getAgentInfo = (
+  hass: HomeAssistant,
+  agent_id?: string
+): Promise<AgentInfo> =>
   hass.callWS({
     type: "conversation/agent/info",
+    agent_id,
   });
 
-export const setConversationOnboarding = (
+export const prepareConversation = (
   hass: HomeAssistant,
-  value: boolean
-): Promise<boolean> =>
+  language?: string
+): Promise<void> =>
   hass.callWS({
-    type: "conversation/onboarding/set",
-    shown: value,
+    type: "conversation/prepare",
+    language,
   });

@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-markdown";
@@ -27,9 +27,9 @@ class HassioMarkdownDialog extends LitElement {
     this._opened = false;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._opened) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-dialog
@@ -50,20 +50,7 @@ class HassioMarkdownDialog extends LitElement {
       haStyleDialog,
       hassioStyle,
       css`
-        app-toolbar {
-          margin: 0;
-          padding: 0 16px;
-          color: var(--primary-text-color);
-          background-color: var(--secondary-background-color);
-        }
-        app-toolbar [main-title] {
-          margin-left: 16px;
-        }
         @media all and (max-width: 450px), all and (max-height: 500px) {
-          app-toolbar {
-            color: var(--text-primary-color);
-            background-color: var(--primary-color);
-          }
           ha-markdown {
             padding: 16px;
           }

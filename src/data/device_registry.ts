@@ -4,7 +4,10 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
 import type { HomeAssistant } from "../types";
-import type { EntityRegistryEntry } from "./entity_registry";
+import type {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+} from "./entity_registry";
 import type { EntitySources } from "./entity_sources";
 
 export interface DeviceRegistryEntry {
@@ -23,6 +26,10 @@ export interface DeviceRegistryEntry {
   entry_type: "service" | null;
   disabled_by: "user" | "integration" | "config_entry" | null;
   configuration_url: string | null;
+}
+
+export interface DeviceEntityDisplayLookup {
+  [deviceId: string]: EntityRegistryDisplayEntry[];
 }
 
 export interface DeviceEntityLookup {
@@ -123,9 +130,12 @@ export const subscribeDeviceRegistry = (
     onChange
   );
 
-export const sortDeviceRegistryByName = (entries: DeviceRegistryEntry[]) =>
+export const sortDeviceRegistryByName = (
+  entries: DeviceRegistryEntry[],
+  language: string
+) =>
   entries.sort((entry1, entry2) =>
-    caseInsensitiveStringCompare(entry1.name || "", entry2.name || "")
+    caseInsensitiveStringCompare(entry1.name || "", entry2.name || "", language)
   );
 
 export const getDeviceEntityLookup = (
@@ -144,9 +154,25 @@ export const getDeviceEntityLookup = (
   return deviceEntityLookup;
 };
 
+export const getDeviceEntityDisplayLookup = (
+  entities: EntityRegistryDisplayEntry[]
+): DeviceEntityDisplayLookup => {
+  const deviceEntityLookup: DeviceEntityDisplayLookup = {};
+  for (const entity of entities) {
+    if (!entity.device_id) {
+      continue;
+    }
+    if (!(entity.device_id in deviceEntityLookup)) {
+      deviceEntityLookup[entity.device_id] = [];
+    }
+    deviceEntityLookup[entity.device_id].push(entity);
+  }
+  return deviceEntityLookup;
+};
+
 export const getDeviceIntegrationLookup = (
   entitySources: EntitySources,
-  entities: EntityRegistryEntry[]
+  entities: EntityRegistryDisplayEntry[]
 ): Record<string, string[]> => {
   const deviceIntegrations: Record<string, string[]> = {};
 

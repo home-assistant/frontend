@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
@@ -9,7 +9,6 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import { domainToName } from "../../../data/integration";
 import type { RepairsIssue } from "../../../data/repairs";
-import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
@@ -27,9 +26,9 @@ class HaConfigRepairs extends LitElement {
   @property({ type: Number })
   public total?: number;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.repairsIssues?.length) {
-      return html``;
+      return nothing;
     }
 
     const issues = this.repairsIssues;
@@ -52,6 +51,7 @@ class HaConfigRepairs extends LitElement {
               @click=${this._openShowMoreDialog}
             >
               <img
+                alt=${domainToName(this.hass.localize, issue.domain)}
                 loading="lazy"
                 src=${brandsUrl({
                   domain: issue.issue_domain || issue.domain,

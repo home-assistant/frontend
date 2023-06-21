@@ -28,6 +28,7 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
 } from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
@@ -87,7 +88,8 @@ const panelSorter = (
   reverseSort: string[],
   defaultPanel: string,
   a: PanelInfo,
-  b: PanelInfo
+  b: PanelInfo,
+  language: string
 ) => {
   const indexA = reverseSort.indexOf(a.url_path);
   const indexB = reverseSort.indexOf(b.url_path);
@@ -97,13 +99,14 @@ const panelSorter = (
     }
     return -1;
   }
-  return defaultPanelSorter(defaultPanel, a, b);
+  return defaultPanelSorter(defaultPanel, a, b, language);
 };
 
 const defaultPanelSorter = (
   defaultPanel: string,
   a: PanelInfo,
-  b: PanelInfo
+  b: PanelInfo,
+  language: string
 ) => {
   // Put all the Lovelace at the top.
   const aLovelace = a.component_name === "lovelace";
@@ -117,7 +120,7 @@ const defaultPanelSorter = (
   }
 
   if (aLovelace && bLovelace) {
-    return stringCompare(a.title!, b.title!);
+    return stringCompare(a.title!, b.title!, language);
   }
   if (aLovelace && !bLovelace) {
     return -1;
@@ -139,7 +142,7 @@ const defaultPanelSorter = (
     return 1;
   }
   // both not built in, sort by title
-  return stringCompare(a.title!, b.title!);
+  return stringCompare(a.title!, b.title!, language);
 };
 
 const computePanels = memoizeOne(
@@ -147,7 +150,8 @@ const computePanels = memoizeOne(
     panels: HomeAssistant["panels"],
     defaultPanel: HomeAssistant["defaultPanel"],
     panelsOrder: string[],
-    hiddenPanels: string[]
+    hiddenPanels: string[],
+    locale: HomeAssistant["locale"]
   ): [PanelInfo[], PanelInfo[]] => {
     if (!panels) {
       return [[], []];
@@ -171,8 +175,12 @@ const computePanels = memoizeOne(
 
     const reverseSort = [...panelsOrder].reverse();
 
-    beforeSpacer.sort((a, b) => panelSorter(reverseSort, defaultPanel, a, b));
-    afterSpacer.sort((a, b) => panelSorter(reverseSort, defaultPanel, a, b));
+    beforeSpacer.sort((a, b) =>
+      panelSorter(reverseSort, defaultPanel, a, b, locale.language)
+    );
+    afterSpacer.sort((a, b) =>
+      panelSorter(reverseSort, defaultPanel, a, b, locale.language)
+    );
 
     return [beforeSpacer, afterSpacer];
   }
@@ -234,7 +242,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
 
     // prettier-ignore
@@ -374,7 +382,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       this.hass.panels,
       this.hass.defaultPanel,
       this._panelOrder,
-      this._hiddenPanels
+      this._hiddenPanels,
+      this.hass.locale
     );
 
     // Show the supervisor as beeing part of configuration
@@ -801,6 +810,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     }
     tooltip.innerHTML = item.querySelector(".item-text")!.innerHTML;
     tooltip.style.display = "block";
+    tooltip.style.position = "fixed";
     tooltip.style.top = `${top}px`;
     tooltip.style.left = `${item.offsetLeft + item.clientWidth + 4}px`;
   }
@@ -831,23 +841,16 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       haStyleScrollbar,
       css`
         :host {
+          overflow: visible;
           height: 100%;
           display: block;
           overflow: hidden;
           -ms-user-select: none;
           -webkit-user-select: none;
           -moz-user-select: none;
-          border-right: 1px solid var(--divider-color);
           background-color: var(--sidebar-background-color);
-          width: 56px;
-        }
-        :host([expanded]) {
-          width: 256px;
-          width: calc(256px + env(safe-area-inset-left));
-        }
-        :host([rtl]) {
-          border-right: 0;
-          border-left: 1px solid var(--divider-color);
+          width: 100%;
+          box-sizing: border-box;
         }
         .menu {
           height: var(--header-height);
@@ -1061,8 +1064,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         .notification-badge,
         .configuration-badge {
-          left: calc(var(--app-drawer-width) - 42px);
           position: absolute;
+          left: calc(var(--app-drawer-width, 248px) - 42px);
           min-width: 20px;
           box-sizing: border-box;
           border-radius: 50%;

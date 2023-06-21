@@ -1,12 +1,12 @@
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiClose, mdiContentCopy } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
 import "../../../components/ha-dialog";
-import "../../../components/ha-header-bar";
+import "../../../components/ha-dialog-header";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import {
@@ -55,9 +55,9 @@ class DialogSystemLogDetail extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     const item = this._params.item;
 
@@ -72,23 +72,21 @@ class DialogSystemLogDetail extends LitElement {
     const title = this.hass.localize(
       "ui.panel.config.logs.details",
       "level",
-      html`<span class=${item.level.toLowerCase()}
-        >${this.hass.localize(
-          `ui.panel.config.logs.level.${item.level.toLowerCase()}`
-        )}</span
+      html`<span class=${item.level}
+        >${this.hass.localize(`ui.panel.config.logs.level.${item.level}`)}</span
       >`
     );
 
     return html`
       <ha-dialog open @closed=${this.closeDialog} hideActions .heading=${title}>
-        <ha-header-bar slot="heading">
+        <ha-dialog-header slot="heading">
           <ha-icon-button
             slot="navigationIcon"
             dialogAction="cancel"
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title"> ${title} </span>
+          <span slot="title">${title}</span>
           <ha-icon-button
             id="copy"
             @click=${this._copyLog}
@@ -96,7 +94,7 @@ class DialogSystemLogDetail extends LitElement {
             .label=${this.hass.localize("ui.panel.config.logs.copy")}
             .path=${mdiContentCopy}
           ></ha-icon-button>
-        </ha-header-bar>
+        </ha-dialog-header>
         ${this.isCustomIntegration
           ? html`<ha-alert alert-type="warning">
               ${this.hass.localize(
@@ -147,12 +145,20 @@ class DialogSystemLogDetail extends LitElement {
             ${item.count > 0
               ? html`
                   First occurred:
-                  ${formatSystemLogTime(item.first_occurred, this.hass!.locale)}
+                  ${formatSystemLogTime(
+                    item.first_occurred,
+                    this.hass!.locale,
+                    this.hass!.config
+                  )}
                   (${item.count} occurrences) <br />
                 `
               : ""}
             Last logged:
-            ${formatSystemLogTime(item.timestamp, this.hass!.locale)}
+            ${formatSystemLogTime(
+              item.timestamp,
+              this.hass!.locale,
+              this.hass!.config
+            )}
           </p>
           ${item.message.length > 1
             ? html`
@@ -161,7 +167,7 @@ class DialogSystemLogDetail extends LitElement {
                 </ul>
               `
             : item.message[0]}
-          ${item.exception ? html` <pre>${item.exception}</pre> ` : html``}
+          ${item.exception ? html` <pre>${item.exception}</pre> ` : nothing}
         </div>
       </ha-dialog>
     `;
@@ -235,14 +241,6 @@ class DialogSystemLogDetail extends LitElement {
         }
         .warning {
           color: var(--warning-color);
-        }
-
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          flex-shrink: 0;
-          border-bottom: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {

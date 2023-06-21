@@ -1,14 +1,12 @@
-const gulp = require("gulp");
-
-const env = require("../env");
-
-require("./clean.js");
-require("./translations.js");
-require("./gather-static.js");
-require("./webpack.js");
-require("./service-worker.js");
-require("./entry-html.js");
-require("./rollup.js");
+import gulp from "gulp";
+import env from "../env.cjs";
+import "./clean.js";
+import "./entry-html.js";
+import "./gather-static.js";
+import "./rollup.js";
+import "./service-worker.js";
+import "./translations.js";
+import "./webpack.js";
 
 gulp.task(
   "develop-cast",
@@ -20,7 +18,7 @@ gulp.task(
     "translations-enable-merge-backend",
     gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-cast",
-    "gen-index-cast-dev",
+    "gen-pages-cast-dev",
     env.useRollup() ? "rollup-dev-server-cast" : "webpack-dev-server-cast"
   )
 );
@@ -36,6 +34,6 @@ gulp.task(
     gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-cast",
     env.useRollup() ? "rollup-prod-cast" : "webpack-prod-cast",
-    "gen-index-cast-prod"
+    "gen-pages-cast-prod"
   )
 );
