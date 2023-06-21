@@ -67,15 +67,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       throw new Error("Specify an entity from within the humidifier domain");
     }
 
-    if (
-      config.current_humidity_sensor &&
-      config.current_humidity_sensor.split(".")[0] !== "sensor"
-    ) {
-      throw new Error(
-        "Current humidity sensor must be from within the sensor domain"
-      );
-    }
-
     this._config = config;
   }
 
@@ -93,10 +84,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const stateObjCurrentHumidity = this._config!.current_humidity_sensor
-      ? this.hass.states[this._config.current_humidity_sensor]
-      : undefined;
-
     const name =
       this._config!.name ||
       computeStateName(this.hass!.states[this._config!.entity]);
@@ -109,11 +96,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
     const setHumidity = this._setHum ? this._setHum : targetHumidity;
 
-    const curHumidity = stateObjCurrentHumidity
-      ? isUnavailableState(stateObjCurrentHumidity.state)
-        ? undefined
-        : stateObjCurrentHumidity.state
-      : stateObj.attributes.current_humidity !== null &&
+    const curHumidity = stateObj.attributes.current_humidity !== null &&
         Number.isFinite(Number(stateObj.attributes.current_humidity))
       ? stateObj.attributes.current_humidity
       : undefined;
@@ -138,15 +121,13 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     const mainHumidity = html`
       <svg viewBox="0 0 30 20">
         <text x="50%" dx="1" y="73%" text-anchor="middle" id="main-humidity">
-          ${stateObjCurrentHumidity || curHumidity
-            ? curHumidity === undefined
-              ? ""
-              : svg`
-                        ${curHumidity}
-                        <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
-                          %
-                        </tspan>
-                        `
+          ${curHumidity
+            ? svg`
+                      ${curHumidity}
+                      <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
+                        %
+                      </tspan>
+                      `
             : isUnavailableState(stateObj.state) ||
               setHumidity === undefined ||
               setHumidity === null
@@ -164,7 +145,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     const secondaryHumidity = html`
       <svg viewBox="0 0 40 10" id="secondary_humidity">
         <text x="50%" y="50%" text-anchor="middle" id="secondary-humidity">
-          ${stateObjCurrentHumidity
+          ${curHumidity
             ? isUnavailableState(stateObj.state) ||
               setHumidity === undefined ||
               setHumidity === null
