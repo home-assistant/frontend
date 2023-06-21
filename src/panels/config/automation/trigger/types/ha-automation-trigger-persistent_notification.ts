@@ -1,4 +1,3 @@
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import memoizeOne from "memoize-one";
 
 import { css, html, LitElement } from "lit";
@@ -10,12 +9,10 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-textfield";
 import { PersistentNotificationTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
-import { handleChangeEvent } from "../ha-automation-trigger-row";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
-const SUPPORTED_UPDATE_TYPES = ["added", "removed", "current", "updated"];
 const DEFAULT_UPDATE_TYPES = ["added", "removed"];
 const DEFAULT_NOTIFICATION_ID = "";
 
@@ -41,14 +38,32 @@ export class HaPersistentNotificationTrigger
         {
           name: "update_type",
           type: "multi_select",
-          required: true,
+          required: false,
           options: [
-            SUPPORTED_UPDATE_TYPES.map((update_type) => [
-              update_type,
+            [
+              "added",
               localize(
-                `ui.panel.config.automation.editor.triggers.type.persistent_notification.update_types.${update_type}`
+                "ui.panel.config.automation.editor.triggers.type.persistent_notification.update_types.added"
               ),
-            ]),
+            ],
+            [
+              "removed",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.persistent_notification.update_types.removed"
+              ),
+            ],
+            [
+              "current",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.persistent_notification.update_types.current"
+              ),
+            ],
+            [
+              "updated",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.persistent_notification.update_types.updated"
+              ),
+            ],
           ],
         },
       ] as const
@@ -76,7 +91,9 @@ export class HaPersistentNotificationTrigger
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    handleChangeEvent(this, ev);
+    ev.stopPropagation();
+    const newTrigger = ev.detail.value;
+    fireEvent(this, "value-changed", { value: newTrigger });
   }
 
   private _computeLabelCallback = (
@@ -85,28 +102,6 @@ export class HaPersistentNotificationTrigger
     this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.persistent_notification.${schema.name}`
     );
-
-  private _updateTypeChanged(ev: CustomEvent<RequestSelectedDetail>): void {
-    ev.stopPropagation();
-    const updateType = (ev.target as any).value;
-    const selected = ev.detail.selected;
-
-    if (selected === this.trigger.update_type?.includes(updateType)) {
-      return;
-    }
-
-    const newUpdateTypes = this.trigger.update_type
-      ? [...this.trigger.update_type]
-      : [];
-
-    if (selected) {
-      newUpdateTypes.push(updateType);
-    } else {
-      newUpdateTypes.splice(newUpdateTypes.indexOf(updateType), 1);
-    }
-    const newTrigger = { ...this.trigger, update_type: newUpdateTypes };
-    fireEvent(this, "value-changed", { value: newTrigger });
-  }
 
   static styles = css`
     ha-textfield {
