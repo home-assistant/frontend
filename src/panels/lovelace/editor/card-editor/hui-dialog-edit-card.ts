@@ -27,10 +27,7 @@ import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import { addCard, replaceCard } from "../config-util";
 import { getCardDocumentationURL } from "../get-card-documentation-url";
-import type {
-  ConfigChangedEvent,
-  SetDashboardClipboardEvent,
-} from "../hui-element-editor";
+import type { ConfigChangedEvent } from "../hui-element-editor";
 import type { GUIModeChangedEvent } from "../types";
 import "./hui-card-element-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
@@ -80,14 +77,11 @@ export class HuiDialogEditCard
 
   @state() private _isEscapeEnabled = true;
 
-  @state() private _clipboard?: LovelaceCardConfig;
-
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     this._GUImode = true;
     this._guiModeAvailable = true;
     const [view, card] = params.path;
-    this._clipboard = params.clipboard?.card;
     this._viewConfig = params.lovelaceConfig.views[view];
     this._cardConfig =
       card !== undefined ? this._viewConfig.cards![card] : params.cardConfig;
@@ -214,10 +208,8 @@ export class HuiDialogEditCard
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
               .value=${this._cardConfig}
-              .clipboard=${this._clipboard}
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
-              @set-dashboard-clipboard=${this._handleSetClipboard}
               @editor-save=${this._save}
               dialogInitialFocus
             ></hui-card-element-editor>
@@ -300,16 +292,6 @@ export class HuiDialogEditCard
     ev.stopPropagation();
     this._GUImode = ev.detail.guiMode;
     this._guiModeAvailable = ev.detail.guiModeAvailable;
-  }
-
-  private _handleSetClipboard(
-    ev: HASSDomEvent<SetDashboardClipboardEvent>
-  ): void {
-    ev.stopPropagation();
-    if (this._params?.clipboard) {
-      this._params.clipboard.card = ev.detail.config;
-    }
-    this._clipboard = ev.detail.config;
   }
 
   private _toggleMode(): void {

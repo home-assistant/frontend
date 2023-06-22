@@ -1,13 +1,11 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
-import { DashboardClipboard } from "../../types";
 
 export interface EditCardDialogParams {
   lovelaceConfig: LovelaceConfig;
   saveConfig: (config: LovelaceConfig) => void;
   path: [number] | [number, number];
   cardConfig?: LovelaceCardConfig;
-  clipboard?: DashboardClipboard;
 }
 
 export const importEditCardDialog = () => import("./hui-dialog-edit-card");

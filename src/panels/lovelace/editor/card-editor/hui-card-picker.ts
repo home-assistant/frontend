@@ -15,6 +15,7 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
+import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/search-input";
@@ -49,7 +50,13 @@ interface CardElement {
 export class HuiCardPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public clipboard?: LovelaceCardConfig;
+  @storage({
+    key: "lovelaceClipboard",
+    state: true,
+    subscribe: true,
+    storage: "sessionStorage",
+  })
+  private _clipboard?: LovelaceCardConfig;
 
   @state() private _cards: CardElement[] = [];
 
@@ -116,12 +123,12 @@ export class HuiCardPicker extends LitElement {
         })}
       >
         <div class="cards-container">
-          ${this.clipboard
+          ${this._clipboard
             ? html`
                 ${until(
                   this._renderCardElement(
                     {
-                      type: this.clipboard.type,
+                      type: this._clipboard.type,
                       showElement: true,
                       isCustom: false,
                       name: this.hass!.localize(
@@ -130,11 +137,11 @@ export class HuiCardPicker extends LitElement {
                       description: `${this.hass!.localize(
                         "ui.panel.lovelace.editor.card.generic.paste_description",
                         {
-                          type: this.clipboard.type,
+                          type: this._clipboard.type,
                         }
                       )}`,
                     },
-                    this.clipboard
+                    this._clipboard
                   ),
                   html`
                     <div class="card spinner">

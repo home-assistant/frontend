@@ -2,6 +2,7 @@ import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import { mdiContentCopy } from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -14,6 +15,7 @@ import {
   optional,
   string,
 } from "superstruct";
+import { storage } from "../../../../common/decorators/storage";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
@@ -57,7 +59,13 @@ export class HuiConditionalCardEditor
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
-  @state() public clipboard?: LovelaceCardConfig;
+  @storage({
+    key: "lovelaceClipboard",
+    state: false,
+    subscribe: false,
+    storage: "sessionStorage",
+  })
+  protected _clipboard?: LovelaceCardConfig;
 
   @state() private _config?: ConditionalCardConfig;
 
@@ -73,10 +81,6 @@ export class HuiConditionalCardEditor
   public setConfig(config: ConditionalCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
-  }
-
-  public setClipboard(clipboard: LovelaceCardConfig | undefined): void {
-    this.clipboard = clipboard;
   }
 
   public focusYamlEditor() {
@@ -139,7 +143,6 @@ export class HuiConditionalCardEditor
                       .hass=${this.hass}
                       .value=${this._config.card}
                       .lovelace=${this.lovelace}
-                      .clipboard=${this.clipboard}
                       @config-changed=${this._handleCardChanged}
                       @GUImode-changed=${this._handleGUIModeChanged}
                     ></hui-card-element-editor>
@@ -148,7 +151,6 @@ export class HuiConditionalCardEditor
                     <hui-card-picker
                       .hass=${this.hass}
                       .lovelace=${this.lovelace}
-                      .clipboard=${this.clipboard}
                       @config-changed=${this._handleCardPicked}
                     ></hui-card-picker>
                   `}
@@ -259,8 +261,7 @@ export class HuiConditionalCardEditor
     if (!this._config) {
       return;
     }
-    this.clipboard = this._config.card;
-    fireEvent(this, "set-dashboard-clipboard", { config: this.clipboard });
+    this._clipboard = deepClone(this._config.card);
   }
 
   private _handleCardChanged(ev: HASSDomEvent<ConfigChangedEvent>): void {

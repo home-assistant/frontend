@@ -11,10 +11,12 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, queryAssignedNodes } from "lit/decorators";
+import deepClone from "deep-clone-simple";
+import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
-import { saveConfig } from "../../../data/lovelace";
+import { saveConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
 import { showSaveSuccessToast } from "../../../util/toast-saved-success";
@@ -33,6 +35,14 @@ export class HuiCardOptions extends LitElement {
   @property() public path?: [number, number];
 
   @queryAssignedNodes() private _assignedNodes?: NodeListOf<LovelaceCard>;
+
+  @storage({
+    key: "lovelaceClipboard",
+    state: false,
+    subscribe: false,
+    storage: "sessionStorage",
+  })
+  protected _clipboard?: LovelaceCardConfig;
 
   public getCardSize() {
     return this._assignedNodes ? computeCardSize(this._assignedNodes[0]) : 1;
@@ -98,12 +108,12 @@ export class HuiCardOptions extends LitElement {
                   "ui.panel.lovelace.editor.edit_card.duplicate"
                 )}</mwc-list-item
               >
-              <mwc-list-item class="copy-item"
+              <mwc-list-item
                 >${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.copy"
                 )}</mwc-list-item
               >
-              <mwc-list-item class="copy-item"
+              <mwc-list-item
                 >${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.cut"
                 )}</mwc-list-item
@@ -200,13 +210,14 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _cutCard(): void {
+    this._copyCard();
     fireEvent(this, "ll-cut-card", { path: this.path! });
   }
 
   private _copyCard(): void {
-    const path = this.path!;
-    const cardConfig = this.lovelace!.config.views[path[0]].cards![path[1]];
-    fireEvent(this, "ll-copy-card", { config: cardConfig });
+    const cardConfig =
+      this.lovelace!.config.views[this.path![0]].cards![this.path![1]];
+    this._clipboard = deepClone(cardConfig);
   }
 
   private _cardUp(): void {
