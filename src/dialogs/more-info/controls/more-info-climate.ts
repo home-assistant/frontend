@@ -1,10 +1,10 @@
 import "@material/mwc-list/mwc-list-item";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { property } from "lit/decorators";
@@ -28,6 +28,8 @@ import {
   compareClimateHvacModes,
 } from "../../../data/climate";
 import { HomeAssistant } from "../../../types";
+import "../components/climate/ha-more-info-climate-main";
+import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 
 class MoreInfoClimate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -80,6 +82,12 @@ class MoreInfoClimate extends LitElement {
     const rtlDirection = computeRTLDirection(hass);
 
     return html`
+      <div class="controls">
+        <ha-more-info-climate-main
+          .hass=${this.hass}
+          .stateObj=${this.stateObj}
+        ></ha-more-info-climate-main>
+      </div>
       <div
         class=${classMap({
           "has-current_temperature":
@@ -184,34 +192,32 @@ class MoreInfoClimate extends LitElement {
           : ""}
 
         <div class="container-hvac_modes">
-          <div class="controls">
-            <ha-select
-              .label=${hass.localize("ui.card.climate.operation")}
-              .value=${stateObj.state}
-              fixedMenuPosition
-              naturalMenuWidth
-              @selected=${this._handleOperationmodeChanged}
-              @closed=${stopPropagation}
-            >
-              ${stateObj.attributes.hvac_modes
-                .concat()
-                .sort(compareClimateHvacModes)
-                .map(
-                  (mode) => html`
-                    <mwc-list-item .value=${mode}>
-                      ${computeStateDisplay(
-                        hass.localize,
-                        stateObj,
-                        hass.locale,
-                        this.hass.config,
-                        hass.entities,
-                        mode
-                      )}
-                    </mwc-list-item>
-                  `
-                )}
-            </ha-select>
-          </div>
+          <ha-select
+            .label=${hass.localize("ui.card.climate.operation")}
+            .value=${stateObj.state}
+            fixedMenuPosition
+            naturalMenuWidth
+            @selected=${this._handleOperationmodeChanged}
+            @closed=${stopPropagation}
+          >
+            ${stateObj.attributes.hvac_modes
+              .concat()
+              .sort(compareClimateHvacModes)
+              .map(
+                (mode) => html`
+                  <mwc-list-item .value=${mode}>
+                    ${computeStateDisplay(
+                      hass.localize,
+                      stateObj,
+                      hass.locale,
+                      this.hass.config,
+                      hass.entities,
+                      mode
+                    )}
+                  </mwc-list-item>
+                `
+              )}
+          </ha-select>
         </div>
 
         ${supportPresetMode && stateObj.attributes.preset_modes
@@ -492,48 +498,51 @@ class MoreInfoClimate extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        color: var(--primary-text-color);
-      }
+    return [
+      moreInfoControlStyle,
+      css`
+        :host {
+          color: var(--primary-text-color);
+        }
 
-      ha-select {
-        width: 100%;
-        margin-top: 8px;
-      }
+        ha-select {
+          width: 100%;
+          margin-top: 8px;
+        }
 
-      ha-slider {
-        width: 100%;
-      }
+        ha-slider {
+          width: 100%;
+        }
 
-      .container-humidity .single-row {
-        display: flex;
-        height: 50px;
-      }
+        .container-humidity .single-row {
+          display: flex;
+          height: 50px;
+        }
 
-      .target-humidity {
-        width: 90px;
-        font-size: 200%;
-        margin: auto;
-        direction: ltr;
-      }
+        .target-humidity {
+          width: 90px;
+          font-size: 200%;
+          margin: auto;
+          direction: ltr;
+        }
 
-      ha-climate-control.range-control-left,
-      ha-climate-control.range-control-right {
-        float: left;
-        width: 46%;
-      }
-      ha-climate-control.range-control-left {
-        margin-right: 4%;
-      }
-      ha-climate-control.range-control-right {
-        margin-left: 4%;
-      }
+        ha-climate-control.range-control-left,
+        ha-climate-control.range-control-right {
+          float: left;
+          width: 46%;
+        }
+        ha-climate-control.range-control-left {
+          margin-right: 4%;
+        }
+        ha-climate-control.range-control-right {
+          margin-left: 4%;
+        }
 
-      .single-row {
-        padding: 8px 0;
-      }
-    `;
+        .single-row {
+          padding: 8px 0;
+        }
+      `,
+    ];
   }
 }
 
