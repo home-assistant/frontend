@@ -84,13 +84,13 @@ export class HaControlCircularSlider extends LitElement {
   public value?: number;
 
   @property({ type: Number })
-  public current?: number;
-
-  @property({ type: Number })
   public low?: number;
 
   @property({ type: Number })
   public high?: number;
+
+  @property({ type: Number })
+  public current?: number;
 
   @property({ type: Number })
   public step = 1;
@@ -100,6 +100,15 @@ export class HaControlCircularSlider extends LitElement {
 
   @property({ type: Number })
   public max = 100;
+
+  @state()
+  public _localValue?: number = this.value;
+
+  @state()
+  public _localLow?: number = this.low;
+
+  @state()
+  public _localHigh?: number = this.high;
 
   @state()
   public _activeSlider?: ActiveSlider;
@@ -123,15 +132,34 @@ export class HaControlCircularSlider extends LitElement {
 
   private _boundedValue(value: number) {
     const min =
-      this._activeSlider === "high" ? Math.min(this.low ?? this.max) : this.min;
+      this._activeSlider === "high"
+        ? Math.min(this._localLow ?? this.max)
+        : this.min;
     const max =
-      this._activeSlider === "low" ? Math.max(this.high ?? this.min) : this.max;
+      this._activeSlider === "low"
+        ? Math.max(this._localHigh ?? this.min)
+        : this.max;
     return Math.min(Math.max(value, min), max);
   }
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
-    super.firstUpdated(changedProperties);
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
     this._setupListeners();
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (!this._activeSlider) {
+      if (changedProps.has("value")) {
+        this._localValue = this.value;
+      }
+      if (changedProps.has("low")) {
+        this._localLow = this.low;
+      }
+      if (changedProps.has("high")) {
+        this._localHigh = this.high;
+      }
+    }
   }
 
   connectedCallback(): void {
@@ -167,8 +195,8 @@ export class HaControlCircularSlider extends LitElement {
 
   private _findActiveSlider(value: number): ActiveSlider {
     if (!this.dual) return "value";
-    const low = Math.max(this.low ?? this.min, this.min);
-    const high = Math.min(this.high ?? this.max, this.max);
+    const low = Math.max(this._localLow ?? this.min, this.min);
+    const high = Math.min(this._localHigh ?? this.max, this.max);
     if (low >= value) {
       return "low";
     }
@@ -181,13 +209,29 @@ export class HaControlCircularSlider extends LitElement {
   }
 
   private _setActiveValue(value: number) {
-    if (!this._activeSlider) return;
-    this[this._activeSlider] = value;
+    switch (this._activeSlider) {
+      case "high":
+        this._localHigh = value;
+        break;
+      case "low":
+        this._localLow = value;
+        break;
+      case "value":
+        this._localValue = value;
+        break;
+    }
   }
 
   private _getActiveValue(): number | undefined {
-    if (!this._activeSlider) return undefined;
-    return this[this._activeSlider];
+    switch (this._activeSlider) {
+      case "high":
+        return this._localHigh;
+      case "low":
+        return this._localLow;
+      case "value":
+        return this._localValue;
+    }
+    return undefined;
   }
 
   _setupListeners() {
@@ -365,8 +409,8 @@ export class HaControlCircularSlider extends LitElement {
   protected render(): TemplateResult {
     const trackPath = arc({ x: 0, y: 0, start: 0, end: MAX_ANGLE, r: RADIUS });
 
-    const lowValue = this.dual ? this.low : this.value;
-    const highValue = this.high;
+    const lowValue = this.dual ? this._localLow : this._localValue;
+    const highValue = this._localHigh;
     const lowPercentage = this._valueToPercentage(lowValue ?? this.min);
     const highPercentage = this._valueToPercentage(highValue ?? this.max);
 
