@@ -101,8 +101,7 @@ export const describeAction = <T extends ActionType>(
             targets.push(
               hass.localize(
                 `${actionTranslationBaseKey}.service.description.target_template`,
-                "name",
-                label
+                { name: label }
               )
             );
             break;
@@ -225,8 +224,7 @@ export const describeAction = <T extends ActionType>(
     const sceneStateObj = entityId ? hass.states[entityId] : undefined;
     return hass.localize(
       `${actionTranslationBaseKey}.activate_scene.description.activate_scene_with_name`,
-      "name",
-      sceneStateObj ? computeStateName(sceneStateObj) : entityId
+      { name: sceneStateObj ? computeStateName(sceneStateObj) : entityId }
     );
   }
 
@@ -236,19 +234,12 @@ export const describeAction = <T extends ActionType>(
     const mediaStateObj = entityId ? hass.states[entityId] : undefined;
     return hass.localize(
       `${actionTranslationBaseKey}.play_media.description.full`,
-      "media",
-      config.metadata.title ||
-        config.data.media_content_id ||
-        hass.localize(
-          `${actionTranslationBaseKey}.play_media.description.media`
-        ),
-      "media_player",
-      mediaStateObj
-        ? computeStateName(mediaStateObj)
-        : entityId ||
-            hass.localize(
-              `${actionTranslationBaseKey}.play_media.description.media_player`
-            )
+      {
+        hasMedia: config.metadata.title || config.data.media_content_id,
+        media: config.metadata.title || config.data.media_content_id,
+        hasMediaPlayer: mediaStateObj ? true : entityId === undefined,
+        mediaPlayer: mediaStateObj ? computeStateName(mediaStateObj) : entityId,
+      }
     );
   }
 
@@ -265,8 +256,7 @@ export const describeAction = <T extends ActionType>(
     );
     return hass.localize(
       `${actionTranslationBaseKey}.wait_for_trigger.description.wait_for_triggers_with_name`,
-      "triggers",
-      conjunctionFormatter.format(triggerNames)
+      { triggers: conjunctionFormatter.format(triggerNames) }
     );
   }
 
@@ -274,8 +264,9 @@ export const describeAction = <T extends ActionType>(
     const config = action as VariablesAction;
     return hass.localize(
       `${actionTranslationBaseKey}.variables.description.full`,
-      "names",
-      conjunctionFormatter.format(Object.keys(config.variables))
+      {
+        names: conjunctionFormatter.format(Object.keys(config.variables)),
+      }
     );
   }
 
@@ -284,15 +275,16 @@ export const describeAction = <T extends ActionType>(
     if (isTemplate(config.event)) {
       return hass.localize(
         `${actionTranslationBaseKey}.event.description.full`,
-        "name",
-        hass.localize(`${actionTranslationBaseKey}.event.description.template`)
+        {
+          name: hass.localize(
+            `${actionTranslationBaseKey}.event.description.template`
+          ),
+        }
       );
     }
-    return hass.localize(
-      `${actionTranslationBaseKey}.event.description.full`,
-      "name",
-      config.event
-    );
+    return hass.localize(`${actionTranslationBaseKey}.event.description.full`, {
+      name: config.event,
+    });
   }
 
   if (actionType === "wait_template") {
@@ -303,32 +295,31 @@ export const describeAction = <T extends ActionType>(
 
   if (actionType === "stop") {
     const config = action as StopAction;
-    return hass.localize(
-      `${actionTranslationBaseKey}.stop.description.full`,
-      "reason",
-      config.stop
-        ? hass.localize(
-            `${actionTranslationBaseKey}.stop.description.reason`,
-            "reason",
-            config.stop
-          )
-        : ""
-    );
+    return hass.localize(`${actionTranslationBaseKey}.stop.description.full`, {
+      hasReason: config.stop !== undefined,
+      reason: config.stop,
+    });
   }
 
   if (actionType === "if") {
     const config = action as IfAction;
-    return `Perform an action if: ${
-      !config.if
-        ? ""
-        : typeof config.if === "string"
-        ? config.if
-        : ensureArray(config.if).length > 1
-        ? `${ensureArray(config.if).length} conditions`
-        : ensureArray(config.if).length
-        ? describeCondition(ensureArray(config.if)[0], hass, entityRegistry)
-        : ""
-    }${config.else ? " (or else!)" : ""}`;
+
+    let ifConditions: string[] = [];
+    if (Array.isArray(config.if)) {
+      const conditions = ensureArray(config.if);
+      conditions.forEach((condition) => {
+        ifConditions.push(describeCondition(condition, hass, entityRegistry));
+      });
+    } else {
+      ifConditions = [config.if];
+    }
+
+    return hass.localize(`${actionTranslationBaseKey}.if.description.full`, {
+      hasElse: config.else !== undefined,
+      action: "an action",
+      conditions: ifConditions,
+      elseAction: "or else",
+    });
   }
 
   if (actionType === "choose") {
@@ -338,8 +329,7 @@ export const describeAction = <T extends ActionType>(
         ensureArray(config.choose).length + (config.default ? 1 : 0);
       return hass.localize(
         `${actionTranslationBaseKey}.choose.description.full`,
-        "number",
-        numActions
+        { number: numActions }
       );
     }
     return hass.localize(
@@ -355,8 +345,7 @@ export const describeAction = <T extends ActionType>(
       const count = config.repeat.count;
       chosenAction = hass.localize(
         `${actionTranslationBaseKey}.repeat.description.count`,
-        "count",
-        count
+        { count: count }
       );
     } else if ("while" in config.repeat) {
       const conditions = ensureArray(config.repeat.while).map((condition) =>
@@ -364,8 +353,7 @@ export const describeAction = <T extends ActionType>(
       );
       chosenAction = hass.localize(
         `${actionTranslationBaseKey}.repeat.description.while`,
-        "conditions",
-        conjunctionFormatter.format(conditions)
+        { conditions: conjunctionFormatter.format(conditions) }
       );
     } else if ("until" in config.repeat) {
       const conditions = ensureArray(config.repeat.until).map((condition) =>
@@ -373,8 +361,7 @@ export const describeAction = <T extends ActionType>(
       );
       chosenAction = hass.localize(
         `${actionTranslationBaseKey}.repeat.description.until`,
-        "conditions",
-        conjunctionFormatter.format(conditions)
+        { conditions: conjunctionFormatter.format(conditions) }
       );
     } else if ("for_each" in config.repeat) {
       const items = ensureArray(config.repeat.for_each).map((item) =>
@@ -382,14 +369,12 @@ export const describeAction = <T extends ActionType>(
       );
       chosenAction = hass.localize(
         `${actionTranslationBaseKey}.repeat.description.for_each`,
-        "items",
-        conjunctionFormatter.format(items)
+        { items: conjunctionFormatter.format(items) }
       );
     }
     return hass.localize(
       `${actionTranslationBaseKey}.repeat.description.full`,
-      "chosenAction",
-      chosenAction
+      { chosenAction: chosenAction }
     );
   }
 
@@ -414,7 +399,7 @@ export const describeAction = <T extends ActionType>(
     if (localized) {
       return localized;
     }
-    const stateObj = hass.states[config.entity_id as string];
+    const stateObj = hass.states[config.entity_id];
     return `${config.type || "Perform action with"} ${
       stateObj ? computeStateName(stateObj) : config.entity_id
     }`;
@@ -425,8 +410,7 @@ export const describeAction = <T extends ActionType>(
     const numActions = ensureArray(config.parallel).length;
     return hass.localize(
       `${actionTranslationBaseKey}.parallel.description.full`,
-      "number",
-      numActions
+      { number: numActions }
     );
   }
 

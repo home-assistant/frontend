@@ -2512,9 +2512,7 @@
                 "play_media": {
                   "label": "Play media",
                   "description": {
-                    "full": "Play {media} on {media_player}",
-                    "media": "media",
-                    "media_player": "a media player"
+                    "full": "Play {hasMedia, select, \n true {{media}} \n other {media}\n } on {hasMediaPlayer, select, \n true {{mediaPlayer}} \n other {a media player}\n }"
                   }
                 },
                 "delay": {
@@ -2615,7 +2613,7 @@
                   "conditions": "Conditions",
                   "sequence": "Actions",
                   "description": {
-                    "full": "Choose between {number} {number, plural,\n action\n  actions\n}",
+                    "full": "Choose between {number} {number, plural,\n action\n actions\n}",
                     "no_action": "Choose an action"
                   }
                 },
@@ -2624,15 +2622,17 @@
                   "if": "If",
                   "then": "Then",
                   "else": "Else",
-                  "add_else": "Add else"
+                  "add_else": "Add else",
+                  "description": {
+                    "full": "Perform {action} if {conditions}{hasElse, select, \n true { otherwise {elseAction}} \n other {}\n } "
+                  }
                 },
                 "stop": {
                   "label": "Stop",
                   "stop": "Reason for stopping",
                   "error": "Stop because of an unexpected error",
                   "description": {
-                    "full": "Stop {reason}",
-                    "reason": "because: {reason}"
+                    "full": "Stop {hasReason, select, \n true { because: {reason}} \n other {}\n }"
                   }
                 },
                 "parallel": {
