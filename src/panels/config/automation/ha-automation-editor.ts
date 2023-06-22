@@ -16,12 +16,12 @@ import {
 } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
 } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -46,10 +46,7 @@ import {
   saveAutomationConfig,
   showAutomationEditor,
   triggerAutomationActions,
-  Trigger,
-  Condition,
 } from "../../../data/automation";
-import { Action } from "../../../data/script";
 import { fetchEntityRegistry } from "../../../data/entity_registry";
 import {
   showAlertDialog,
@@ -79,11 +76,6 @@ declare global {
     "ui-mode-not-available": Error;
     duplicate: undefined;
     "re-order": undefined;
-    "set-clipboard": {
-      trigger?: Trigger;
-      condition?: Condition;
-      action?: Action;
-    };
   }
 }
 

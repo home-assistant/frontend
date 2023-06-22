@@ -1,6 +1,7 @@
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-textfield";
 import {
   Action,
   CountRepeat,
@@ -8,12 +9,10 @@ import {
   UntilRepeat,
   WhileRepeat,
 } from "../../../../../data/script";
-import type { Clipboard } from "../../../../../data/automation";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { Condition } from "../../../../lovelace/common/validate-condition";
 import "../ha-automation-action";
-import "../../../../../components/ha-textfield";
 import type { ActionElement } from "../ha-automation-action-row";
 
 const OPTIONS = ["count", "while", "until"] as const;
@@ -29,8 +28,6 @@ export class HaRepeatAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public action!: RepeatAction;
 
   @property({ type: Boolean }) public reOrderMode = false;
-
-  @property() public clipboard?: Clipboard;
 
   public static get defaultConfig() {
     return { repeat: { count: 2, sequence: [] } };
@@ -85,7 +82,6 @@ export class HaRepeatAction extends LitElement implements ActionElement {
                 .hass=${this.hass}
                 .disabled=${this.disabled}
                 @value-changed=${this._conditionChanged}
-                .clipboard=${this.clipboard}
               ></ha-automation-condition>`
           : type === "until"
           ? html` <h3>
@@ -99,7 +95,6 @@ export class HaRepeatAction extends LitElement implements ActionElement {
                 .hass=${this.hass}
                 .disabled=${this.disabled}
                 @value-changed=${this._conditionChanged}
-                .clipboard=${this.clipboard}
               ></ha-automation-condition>`
           : ""}
       </div>
@@ -114,7 +109,6 @@ export class HaRepeatAction extends LitElement implements ActionElement {
         .reOrderMode=${this.reOrderMode}
         .disabled=${this.disabled}
         @value-changed=${this._actionChanged}
-        .clipboard=${this.clipboard}
         .hass=${this.hass}
       ></ha-automation-action>
     `;

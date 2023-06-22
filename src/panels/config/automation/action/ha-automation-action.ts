@@ -29,7 +29,7 @@ import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
 import { ACTION_TYPES } from "../../../../data/action";
 import { Action } from "../../../../data/script";
-import { Clipboard } from "../../../../data/automation";
+import { AutomationClipboard } from "../../../../data/automation";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import {
   loadSortable,
@@ -52,6 +52,7 @@ import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
+import { storage } from "../../../../common/decorators/storage";
 
 const PASTE_VALUE = "__paste__";
 
@@ -69,7 +70,13 @@ export default class HaAutomationAction extends LitElement {
 
   @property({ type: Boolean }) public reOrderMode = false;
 
-  @property() public clipboard?: Clipboard;
+  @storage({
+    key: "automationClipboard",
+    state: true,
+    subscribe: true,
+    storage: "sessionStorage",
+  })
+  public _clipboard?: AutomationClipboard;
 
   private _focusLastActionOnChange = false;
 
@@ -113,7 +120,6 @@ export default class HaAutomationAction extends LitElement {
               @duplicate=${this._duplicateAction}
               @value-changed=${this._actionChanged}
               @re-order=${this._enterReOrderMode}
-              .clipboard=${this.clipboard}
               .hass=${this.hass}
             >
               ${this.reOrderMode
@@ -162,14 +168,14 @@ export default class HaAutomationAction extends LitElement {
         >
           <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
         </ha-button>
-        ${this.clipboard?.action
+        ${this._clipboard?.action
           ? html` <mwc-list-item .value=${PASTE_VALUE} graphic="icon">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.paste"
               )}
               (${this.hass.localize(
                 `ui.panel.config.automation.editor.actions.type.${getType(
-                  this.clipboard.action
+                  this._clipboard.action
                 )}.label`
               )})
               <ha-svg-icon slot="graphic" .path=${mdiContentPaste}></ha-svg-icon
@@ -260,7 +266,7 @@ export default class HaAutomationAction extends LitElement {
 
     let actions: Action[];
     if (action === PASTE_VALUE) {
-      actions = this.actions.concat(deepClone(this.clipboard!.action));
+      actions = this.actions.concat(deepClone(this._clipboard!.action));
     } else {
       const elClass = customElements.get(
         `ha-automation-action-${action}`
