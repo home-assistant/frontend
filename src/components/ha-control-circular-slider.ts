@@ -235,6 +235,7 @@ export class HaControlCircularSlider extends LitElement {
         const raw = this._percentageToValue(percentage);
         const bounded = this._boundedValue(raw);
         const stepped = this._steppedValue(bounded);
+        this._setActiveValue(stepped);
         if (this._activeSlider) {
           fireEvent(this, `${this._activeSlider}-changing`, {
             value: undefined,
