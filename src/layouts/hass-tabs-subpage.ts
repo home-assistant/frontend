@@ -19,6 +19,7 @@ import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
 import "../components/ha-tab";
 import { HomeAssistant, Route } from "../types";
+import { haStyleScrollbar } from "../resources/styles";
 
 export interface PageNavigation {
   path: string;
@@ -186,7 +187,7 @@ class HassTabsSubpage extends LitElement {
         </div>
       </div>
       <div
-        class="content ${classMap({ tabs: showTabs })}"
+        class="content ha-scrollbar ${classMap({ tabs: showTabs })}"
         @scroll=${this._saveScrollPos}
       >
         <slot></slot>
@@ -211,143 +212,146 @@ class HassTabsSubpage extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        height: 100%;
-        background-color: var(--primary-background-color);
-      }
-
-      :host([narrow]) {
-        width: 100%;
-        position: fixed;
-      }
-
-      ha-menu-button {
-        margin-right: 24px;
-      }
-
-      .toolbar {
-        display: flex;
-        align-items: center;
-        font-size: 20px;
-        height: var(--header-height);
-        background-color: var(--sidebar-background-color);
-        font-weight: 400;
-        border-bottom: 1px solid var(--divider-color);
-        padding: 8px 12px;
-        box-sizing: border-box;
-      }
-      @media (max-width: 599px) {
-        .toolbar {
-          padding: 4px;
+    return [
+      haStyleScrollbar,
+      css`
+        :host {
+          display: block;
+          height: 100%;
+          background-color: var(--primary-background-color);
         }
-      }
-      .toolbar a {
-        color: var(--sidebar-text-color);
-        text-decoration: none;
-      }
-      .bottom-bar a {
-        width: 25%;
-      }
 
-      #tabbar {
-        display: flex;
-        font-size: 14px;
-        overflow: hidden;
-      }
+        :host([narrow]) {
+          width: 100%;
+          position: fixed;
+        }
 
-      #tabbar > a {
-        overflow: hidden;
-        max-width: 45%;
-      }
+        ha-menu-button {
+          margin-right: 24px;
+        }
 
-      #tabbar.bottom-bar {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        padding: 0 16px;
-        box-sizing: border-box;
-        background-color: var(--sidebar-background-color);
-        border-top: 1px solid var(--divider-color);
-        justify-content: space-around;
-        z-index: 2;
-        font-size: 12px;
-        width: 100%;
-        padding-bottom: env(safe-area-inset-bottom);
-      }
+        .toolbar {
+          display: flex;
+          align-items: center;
+          font-size: 20px;
+          height: var(--header-height);
+          background-color: var(--sidebar-background-color);
+          font-weight: 400;
+          border-bottom: 1px solid var(--divider-color);
+          padding: 8px 12px;
+          box-sizing: border-box;
+        }
+        @media (max-width: 599px) {
+          .toolbar {
+            padding: 4px;
+          }
+        }
+        .toolbar a {
+          color: var(--sidebar-text-color);
+          text-decoration: none;
+        }
+        .bottom-bar a {
+          width: 25%;
+        }
 
-      #tabbar:not(.bottom-bar) {
-        flex: 1;
-        justify-content: center;
-      }
+        #tabbar {
+          display: flex;
+          font-size: 14px;
+          overflow: hidden;
+        }
 
-      :host(:not([narrow])) #toolbar-icon {
-        min-width: 40px;
-      }
+        #tabbar > a {
+          overflow: hidden;
+          max-width: 45%;
+        }
 
-      ha-menu-button,
-      ha-icon-button-arrow-prev,
-      ::slotted([slot="toolbar-icon"]) {
-        display: flex;
-        flex-shrink: 0;
-        pointer-events: auto;
-        color: var(--sidebar-icon-color);
-      }
+        #tabbar.bottom-bar {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          padding: 0 16px;
+          box-sizing: border-box;
+          background-color: var(--sidebar-background-color);
+          border-top: 1px solid var(--divider-color);
+          justify-content: space-around;
+          z-index: 2;
+          font-size: 12px;
+          width: 100%;
+          padding-bottom: env(safe-area-inset-bottom);
+        }
 
-      .main-title {
-        flex: 1;
-        max-height: var(--header-height);
-        line-height: 20px;
-        color: var(--sidebar-text-color);
-        margin: var(--main-title-margin, 0 0 0 24px);
-      }
+        #tabbar:not(.bottom-bar) {
+          flex: 1;
+          justify-content: center;
+        }
 
-      .content {
-        position: relative;
-        width: calc(
-          100% - env(safe-area-inset-left) - env(safe-area-inset-right)
-        );
-        margin-left: env(safe-area-inset-left);
-        margin-right: env(safe-area-inset-right);
-        height: calc(100% - 1px - var(--header-height));
-        height: calc(
-          100% - 1px - var(--header-height) - env(safe-area-inset-bottom)
-        );
-        overflow: auto;
-        -webkit-overflow-scrolling: touch;
-      }
+        :host(:not([narrow])) #toolbar-icon {
+          min-width: 40px;
+        }
 
-      :host([narrow]) .content.tabs {
-        height: calc(100% - 2 * var(--header-height));
-        height: calc(
-          100% - 2 * var(--header-height) - env(safe-area-inset-bottom)
-        );
-      }
+        ha-menu-button,
+        ha-icon-button-arrow-prev,
+        ::slotted([slot="toolbar-icon"]) {
+          display: flex;
+          flex-shrink: 0;
+          pointer-events: auto;
+          color: var(--sidebar-icon-color);
+        }
 
-      #fab {
-        position: fixed;
-        right: calc(16px + env(safe-area-inset-right));
-        bottom: calc(16px + env(safe-area-inset-bottom));
-        z-index: 1;
-      }
-      :host([narrow]) #fab.tabs {
-        bottom: calc(84px + env(safe-area-inset-bottom));
-      }
-      #fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
-      :host([rtl]) #fab {
-        right: auto;
-        left: calc(16px + env(safe-area-inset-left));
-      }
-      :host([rtl][is-wide]) #fab {
-        bottom: 24px;
-        left: 24px;
-        right: auto;
-      }
-    `;
+        .main-title {
+          flex: 1;
+          max-height: var(--header-height);
+          line-height: 20px;
+          color: var(--sidebar-text-color);
+          margin: var(--main-title-margin, 0 0 0 24px);
+        }
+
+        .content {
+          position: relative;
+          width: calc(
+            100% - env(safe-area-inset-left) - env(safe-area-inset-right)
+          );
+          margin-left: env(safe-area-inset-left);
+          margin-right: env(safe-area-inset-right);
+          height: calc(100% - 1px - var(--header-height));
+          height: calc(
+            100% - 1px - var(--header-height) - env(safe-area-inset-bottom)
+          );
+          overflow: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        :host([narrow]) .content.tabs {
+          height: calc(100% - 2 * var(--header-height));
+          height: calc(
+            100% - 2 * var(--header-height) - env(safe-area-inset-bottom)
+          );
+        }
+
+        #fab {
+          position: fixed;
+          right: calc(16px + env(safe-area-inset-right));
+          bottom: calc(16px + env(safe-area-inset-bottom));
+          z-index: 1;
+        }
+        :host([narrow]) #fab.tabs {
+          bottom: calc(84px + env(safe-area-inset-bottom));
+        }
+        #fab[is-wide] {
+          bottom: 24px;
+          right: 24px;
+        }
+        :host([rtl]) #fab {
+          right: auto;
+          left: calc(16px + env(safe-area-inset-left));
+        }
+        :host([rtl][is-wide]) #fab {
+          bottom: 24px;
+          left: 24px;
+          right: auto;
+        }
+      `,
+    ];
   }
 }
 

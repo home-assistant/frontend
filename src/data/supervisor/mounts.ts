@@ -22,6 +22,8 @@ interface MountOptions {
   default_backup_mount?: string | null;
 }
 
+export type CIFSVersion = "auto" | "1.0" | "2.0";
+
 interface SupervisorMountBase {
   name: string;
   usage: SupervisorMountUsage;
@@ -42,6 +44,7 @@ export interface SupervisorNFSMount extends SupervisorMountResponse {
 export interface SupervisorCIFSMount extends SupervisorMountResponse {
   type: SupervisorMountType.CIFS;
   share: string;
+  version?: CIFSVersion;
 }
 
 export type SupervisorMount = SupervisorNFSMount | SupervisorCIFSMount;
@@ -51,6 +54,7 @@ export type SupervisorNFSMountRequestParams = SupervisorNFSMount;
 export interface SupervisorCIFSMountRequestParams extends SupervisorCIFSMount {
   username?: string;
   password?: string;
+  version?: CIFSVersion;
 }
 
 export type SupervisorMountRequestParams =
