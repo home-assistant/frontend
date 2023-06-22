@@ -96,6 +96,7 @@ class HaBlueprintOverview extends LitElement {
               type,
               error: true,
               path,
+              fullpath: `${type}/${path}`,
             });
           } else {
             result.push({
@@ -103,6 +104,7 @@ class HaBlueprintOverview extends LitElement {
               type,
               error: false,
               path,
+              fullpath: `${type}/${path}`,
             });
           }
         })
@@ -153,6 +155,10 @@ class HaBlueprintOverview extends LitElement {
         hidden: narrow,
         direction: "asc",
         width: "25%",
+      },
+      fullpath: {
+        title: "fullpath",
+        hidden: true,
       },
       actions: {
         title: "",
@@ -233,7 +239,7 @@ class HaBlueprintOverview extends LitElement {
         .tabs=${configSections.automations}
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._processedBlueprints(this.blueprints)}
-        id="path"
+        id="fullpath"
         .noDataText=${this.hass.localize(
           "ui.panel.config.blueprint.overview.no_blueprints"
         )}
@@ -318,7 +324,7 @@ class HaBlueprintOverview extends LitElement {
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const blueprint = this._processedBlueprints(this.blueprints).find(
-      (b) => b.path === ev.detail.id
+      (b) => b.fullpath === ev.detail.id
     );
     if (blueprint.error) {
       showAlertDialog(this, {
