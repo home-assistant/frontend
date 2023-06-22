@@ -68,7 +68,7 @@ export class HaControlCircularSlider extends LitElement {
   @property({ type: Boolean })
   public dual?: boolean;
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, reflect: true })
   public inverted?: boolean;
 
   @property({ type: String })
