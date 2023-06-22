@@ -68,6 +68,9 @@ export class HaControlCircularSlider extends LitElement {
   @property({ type: Boolean })
   public dual?: boolean;
 
+  @property({ type: Boolean })
+  public inverted?: boolean;
+
   @property({ type: String })
   public label?: string;
 
@@ -341,23 +344,41 @@ export class HaControlCircularSlider extends LitElement {
     }
   }
 
+  private _strokeDashArc(
+    percentage: number,
+    inverted?: boolean
+  ): [string, string] {
+    const maxRatio = MAX_ANGLE / 360;
+    const f = RADIUS * 2 * Math.PI;
+    if (inverted) {
+      const arcLength = (1 - percentage) * f * maxRatio;
+      const strokeDasharray = `${arcLength} ${f - arcLength}`;
+      const strokeDashOffset = `${arcLength + f * (1 - maxRatio)}`;
+      return [strokeDasharray, strokeDashOffset];
+    }
+    const arcLength = percentage * f * maxRatio;
+    const strokeDasharray = `${arcLength} ${f - arcLength}`;
+    const strokeDashOffset = "0";
+    return [strokeDasharray, strokeDashOffset];
+  }
+
   protected render(): TemplateResult {
     const trackPath = arc({ x: 0, y: 0, start: 0, end: MAX_ANGLE, r: RADIUS });
 
-    const maxRatio = MAX_ANGLE / 360;
-
-    const f = RADIUS * 2 * Math.PI;
     const lowValue = this.dual ? this.low : this.value;
     const highValue = this.high;
     const lowPercentage = this._valueToPercentage(lowValue ?? this.min);
     const highPercentage = this._valueToPercentage(highValue ?? this.max);
 
-    const lowArcLength = lowPercentage * f * maxRatio;
-    const lowStrokeDasharray = `${lowArcLength} ${f - lowArcLength}`;
+    const [lowStrokeDasharray, lowStrokeDashOffset] = this._strokeDashArc(
+      lowPercentage,
+      this.inverted
+    );
 
-    const highArcLength = (1 - highPercentage) * f * maxRatio;
-    const highStrokeDasharray = `${highArcLength} ${f - highArcLength}`;
-    const highStrokeDashOffset = `${highArcLength + f * (1 - maxRatio)}`;
+    const [highStrokeDasharray, highStrokeDashOffset] = this._strokeDashArc(
+      highPercentage,
+      true
+    );
 
     const currentPercentage = this._valueToPercentage(this.current ?? 0);
     const currentAngle = currentPercentage * MAX_ANGLE;
@@ -382,27 +403,31 @@ export class HaControlCircularSlider extends LitElement {
           </g>
           <g id="display">
             <path class="background" d=${trackPath} />
-            <circle
-              .id=${this.dual ? "low" : "value"}
-              class="track"
-              cx="0"
-              cy="0"
-              r=${RADIUS}
-              stroke-dasharray=${lowStrokeDasharray}
-              stroke-dashoffset="0"
-              role="slider"
-              tabindex="0"
-              aria-valuemin=${this.min}
-              aria-valuemax=${this.max}
-              aria-valuenow=${lowValue != null
-                ? this._steppedValue(lowValue)
-                : undefined}
-              aria-disabled=${this.disabled}
-              aria-label=${ifDefined(this.lowLabel ?? this.label)}
-              @keydown=${this._handleKeyDown}
-              @keyup=${this._handleKeyUp}
-            />
-            ${this.dual
+            ${lowValue != null
+              ? svg`
+                <circle
+                  .id=${this.dual ? "low" : "value"}
+                  class="track"
+                  cx="0"
+                  cy="0"
+                  r=${RADIUS}
+                  stroke-dasharray=${lowStrokeDasharray}
+                  stroke-dashoffset=${lowStrokeDashOffset}
+                  role="slider"
+                  tabindex="0"
+                  aria-valuemin=${this.min}
+                  aria-valuemax=${this.max}
+                  aria-valuenow=${
+                    lowValue != null ? this._steppedValue(lowValue) : undefined
+                  }
+                  aria-disabled=${this.disabled}
+                  aria-label=${ifDefined(this.lowLabel ?? this.label)}
+                  @keydown=${this._handleKeyDown}
+                  @keyup=${this._handleKeyUp}
+                />
+              `
+              : nothing}
+            ${this.dual && highValue != null
               ? svg`
                     <circle
                       id="high"
