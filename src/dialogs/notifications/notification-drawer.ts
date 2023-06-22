@@ -139,11 +139,7 @@ export class HuiNotificationDrawer extends LitElement {
   }
 
   private _dismissAll() {
-    this._notifications.forEach((notification) => {
-      this.hass.callService("persistent_notification", "dismiss", {
-        notification_id: notification.notification_id,
-      });
-    });
+    this.hass.callService("persistent_notification", "dismiss_all");
     this.closeDialog();
   }
 
