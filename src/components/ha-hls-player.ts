@@ -41,6 +41,9 @@ class HaHLSPlayer extends LitElement {
   @property({ type: Boolean, attribute: "allow-exoplayer" })
   public allowExoPlayer = false;
 
+  @property({ type: Boolean, attribute: "allow-altmedia" })
+  public allowAltMedia = false;
+
   // don't cache this, as we remove it on disconnects
   @query("video") private _videoEl!: HTMLVideoElement;
 
@@ -109,8 +112,13 @@ class HaHLSPlayer extends LitElement {
   private async _startHls(): Promise<void> {
     const masterPlaylistPromise = fetch(this.url);
 
-    const Hls: typeof HlsType = (await import("hls.js/dist/hls.mjs"))
-      .default;
+    // Load Hls full module only if needed
+    let Hls: typeof HlsType;
+    if (this.allowAltMedia) {
+      Hls = (await import("hls.js/dist/hls.mjs")).default;
+    } else {
+      Hls = (await import("hls.js/dist/hls.light.mjs")).default;
+    }
 
     if (!this.isConnected) {
       return;
@@ -145,7 +153,7 @@ class HaHLSPlayer extends LitElement {
     const match = playlistRegexp.exec(masterPlaylist);
     const matchTwice = playlistRegexp.exec(masterPlaylist);
     // Audio and Subtitles can be part of dedicated playlists #EXT-X-MEDIA
-    const altMediaRegexp = /#EXT-X-MEDIA:/g
+    const altMediaRegexp = /#EXT-X-MEDIA:/g;
     const matchAltMedia = altMediaRegexp.exec(masterPlaylist);
 
     // Get the regular playlist url from the input (master) playlist, falling back to the input playlist if necessary
