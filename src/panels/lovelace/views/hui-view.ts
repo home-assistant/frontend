@@ -36,8 +36,7 @@ declare global {
   interface HASSDomEvents {
     "ll-create-card": undefined;
     "ll-edit-card": { path: [number] | [number, number] };
-    "ll-delete-card": { path: [number] | [number, number] };
-    "ll-cut-card": { path: [number] | [number, number] };
+    "ll-delete-card": { path: [number] | [number, number]; confirm: boolean };
   }
 }
 
@@ -253,12 +252,12 @@ export class HUIView extends ReactiveElement {
       });
     });
     this._layoutElement.addEventListener("ll-delete-card", (ev) => {
-      confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
-    });
-    this._layoutElement.addEventListener("ll-cut-card", (ev) => {
-      const path = ev.detail.path;
-      const newLovelace = deleteCard(this.lovelace!.config, path);
-      this.lovelace.saveConfig(newLovelace);
+      if (ev.detail.confirm) {
+        confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
+      } else {
+        const newLovelace = deleteCard(this.lovelace!.config, ev.detail.path);
+        this.lovelace.saveConfig(newLovelace);
+      }
     });
   }
 
