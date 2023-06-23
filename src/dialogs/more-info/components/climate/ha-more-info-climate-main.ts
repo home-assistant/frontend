@@ -18,6 +18,7 @@ import {
 import { UNAVAILABLE } from "../../../../data/entity";
 import { HomeAssistant } from "../../../../types";
 import { clamp } from "../../../../common/number/clamp";
+import { debounce } from "../../../../common/util/debounce";
 
 type Target = "value" | "low" | "high";
 
@@ -79,6 +80,11 @@ export class HaMoreInfoClimateMain extends LitElement {
     this._selectTargetTemperature = target as Target;
   }
 
+  private _debouncedCallService = debounce(
+    (target: Target) => this._callService(target),
+    2000
+  );
+
   private _callService(type: string) {
     if (type === "high" || type === "low") {
       this.hass.callService("climate", "set_temperature", {
@@ -94,32 +100,27 @@ export class HaMoreInfoClimateMain extends LitElement {
     });
   }
 
-  private _handleDecrease(ev) {
+  private _handleButton(ev) {
     const target = ev.currentTarget.target as Target;
+    const step = ev.currentTarget.step as number;
+
     const defaultValue = target === "high" ? this._max : this._min;
 
     let temp = this._targetTemperature[target] ?? defaultValue;
-    temp -= this._step;
+    temp += step;
     temp = clamp(temp, this._min, this._max);
+    if (target === "high" && this._targetTemperature.low != null) {
+      temp = clamp(temp, this._targetTemperature.low, this._max);
+    }
+    if (target === "low" && this._targetTemperature.high != null) {
+      temp = clamp(temp, this._min, this._targetTemperature.high);
+    }
 
     this._targetTemperature = {
       ...this._targetTemperature,
       [target]: temp,
     };
-  }
-
-  private _handleIncrease(ev) {
-    const target = ev.currentTarget.target as Target;
-    const defaultValue = target === "high" ? this._max : this._min;
-
-    let temp = this._targetTemperature[target] ?? defaultValue;
-    temp += this._step;
-    temp = clamp(temp, this._min, this._max);
-
-    this._targetTemperature = {
-      ...this._targetTemperature,
-      [target]: temp,
-    };
+    this._debouncedCallService(target);
   }
 
   private _handleSelectTemp(ev) {
@@ -165,12 +166,14 @@ export class HaMoreInfoClimateMain extends LitElement {
         <ha-icon-button
           .path=${mdiMinus}
           .target=${target}
-          @click=${this._handleDecrease}
+          .step=${-this._step}
+          @click=${this._handleButton}
         ></ha-icon-button>
         <ha-icon-button
           .path=${mdiPlus}
           .target=${target}
-          @click=${this._handleIncrease}
+          .step=${this._step}
+          @click=${this._handleButton}
         ></ha-icon-button>
       </div>
     `;
@@ -380,6 +383,9 @@ export class HaMoreInfoClimateMain extends LitElement {
       .temperature .unit {
         font-size: 24px;
         line-height: 40px;
+      }
+      .temperature.draft {
+        font-style: italic;
       }
       .mode {
         font-weight: 500;
