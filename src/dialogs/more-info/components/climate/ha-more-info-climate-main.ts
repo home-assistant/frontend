@@ -77,6 +77,38 @@ export class HaMoreInfoClimateMain extends LitElement {
     });
   }
 
+  private _renderHvacAction() {
+    return html`
+      <p class="action">
+        ${computeAttributeValueDisplay(
+          this.hass.localize,
+          this.stateObj,
+          this.hass.locale,
+          this.hass.config,
+          this.hass.entities,
+          "hvac_action"
+        )}
+      </p>
+    `;
+  }
+
+  private _renderHvacMode() {
+    return html`
+      <p class="mode">
+        <ha-svg-icon
+          .path=${CLIMATE_HVAC_MODE_ICONS[this.stateObj.state]}
+        ></ha-svg-icon>
+        ${computeStateDisplay(
+          this.hass.localize,
+          this.stateObj,
+          this.hass.locale,
+          this.hass.config,
+          this.hass.entities
+        )}
+      </p>
+    `;
+  }
+
   private _renderTemperature(temperature: number, temperatureStepSize: number) {
     const digits = temperatureStepSize.toString().split(".")?.[1]?.length ?? 0;
     const [temperatureInteger, temperatureDecimal] = temperature
@@ -117,31 +149,31 @@ export class HaMoreInfoClimateMain extends LitElement {
     const mode = this.stateObj.state;
     const action = this.stateObj.attributes.hvac_action;
 
-    const sliderColor = stateColorCss(this.stateObj);
-    let actionColor: string | undefined;
+    const mainColor = stateColorCss(this.stateObj);
+    const lowColor = stateColorCss(this.stateObj, "heat");
+    const highColor = stateColorCss(this.stateObj, "cool");
 
+    let actionColor: string | undefined;
+    let backgroundColor: string | undefined;
     if (action && action !== "idle" && action !== "off" && mode !== "off") {
       actionColor = stateColorCss(
         this.stateObj,
         CLIMATE_HVAC_ACTION_TO_MODE[action]
       );
+      backgroundColor = stateColorCss(this.stateObj, mode);
     }
 
     if (supportsTargetTemperature && this._targetTemperature != null) {
-      let backgroundColor: string | undefined;
-
-      if (action && action !== "idle" && action !== "off" && mode !== "off") {
-        backgroundColor = stateColorCss(this.stateObj, mode);
-      }
-
       return html`
-        <div class="container">
+        <div
+          class="container"
+          style=${styleMap({
+            "--main-color": mainColor,
+            "--background-color": backgroundColor,
+            "--action-color": actionColor,
+          })}
+        >
           <ha-control-circular-slider
-            style=${styleMap({
-              "--slider-color": sliderColor,
-              "--background-color": backgroundColor,
-              "--halo-color": actionColor,
-            })}
             .inverted=${this.stateObj.state === "cool"}
             .value=${this._targetTemperature}
             .min=${this.stateObj.attributes.min_temp}
@@ -154,32 +186,12 @@ export class HaMoreInfoClimateMain extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            <p class="action" style=${styleMap({ color: actionColor })}>
-              ${computeAttributeValueDisplay(
-                this.hass.localize,
-                this.stateObj,
-                this.hass.locale,
-                this.hass.config,
-                this.hass.entities,
-                "hvac_action"
-              )}
-            </p>
+            ${this._renderHvacAction()}
             ${this._renderTemperature(
               this._targetTemperature,
               temperatureStepSize
             )}
-            <p class="mode">
-              <ha-svg-icon
-                .path=${CLIMATE_HVAC_MODE_ICONS[this.stateObj.state]}
-              ></ha-svg-icon>
-              ${computeStateDisplay(
-                this.hass.localize,
-                this.stateObj,
-                this.hass.locale,
-                this.hass.config,
-                this.hass.entities
-              )}
-            </p>
+            ${this._renderHvacMode()}
           </div>
         </div>
       `;
@@ -190,17 +202,18 @@ export class HaMoreInfoClimateMain extends LitElement {
       this._targetLowTemperature != null &&
       this._targetHighTemperature != null
     ) {
-      const lowColor = stateColorCss(this.stateObj, "heat");
-      const highColor = stateColorCss(this.stateObj, "cool");
-
       return html`
-        <div class="container">
+        <div
+          class="container"
+          style=${styleMap({
+            "--low-color": lowColor,
+            "--high-color": highColor,
+            "--action-color": actionColor,
+            "--low-opacity": action === "cooling" ? 0.3 : undefined,
+            "--high-opacity": action === "heating" ? 0.3 : undefined,
+          })}
+        >
           <ha-control-circular-slider
-            style=${styleMap({
-              "--low-color": lowColor,
-              "--high-color": highColor,
-              "--halo-color": actionColor,
-            })}
             dual
             .disabled=${this.stateObj!.state === UNAVAILABLE}
             .low=${this._targetLowTemperature}
@@ -216,16 +229,7 @@ export class HaMoreInfoClimateMain extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            <p class="action" style=${styleMap({ color: actionColor })}>
-              ${computeAttributeValueDisplay(
-                this.hass.localize,
-                this.stateObj,
-                this.hass.locale,
-                this.hass.config,
-                this.hass.entities,
-                "hvac_action"
-              )}
-            </p>
+            ${this._renderHvacAction()}
             <div class="dual">
               ${this._renderTemperature(
                 this._targetLowTemperature,
@@ -236,57 +240,27 @@ export class HaMoreInfoClimateMain extends LitElement {
                 temperatureStepSize
               )}
             </div>
-            <p class="mode">
-              <ha-svg-icon
-                .path=${CLIMATE_HVAC_MODE_ICONS[this.stateObj.state]}
-              ></ha-svg-icon>
-              ${computeStateDisplay(
-                this.hass.localize,
-                this.stateObj,
-                this.hass.locale,
-                this.hass.config,
-                this.hass.entities
-              )}
-            </p>
+            ${this._renderHvacMode()}
           </div>
         </div>
       `;
     }
 
     return html`
-      <div class="container">
+      <div
+        class="container"
+        style=${styleMap({
+          "--background-color": backgroundColor,
+          "--action-color": actionColor,
+        })}
+      >
         <ha-control-circular-slider
-          style=${styleMap({
-            "--background-color": sliderColor,
-            "--halo-color": actionColor,
-          })}
           .current=${this.stateObj.attributes.current_temperature}
           disabled
         >
         </ha-control-circular-slider>
         <div class="info">
-          <p class="action" style=${styleMap({ color: actionColor })}>
-            ${computeAttributeValueDisplay(
-              this.hass.localize,
-              this.stateObj,
-              this.hass.locale,
-              this.hass.config,
-              this.hass.entities,
-              "hvac_action"
-            )}
-          </p>
-          <p class="mode">
-            <ha-svg-icon
-              .path=${CLIMATE_HVAC_MODE_ICONS[this.stateObj.state]}
-            ></ha-svg-icon>
-            ${computeStateDisplay(
-              this.hass.localize,
-              this.stateObj,
-              this.hass.locale,
-              this.hass.config,
-              this.hass.entities
-            )}
-          </p>
+          ${this._renderHvacAction()}${this._renderHvacMode()}
         </div>
       </div>
     `;
@@ -294,6 +268,7 @@ export class HaMoreInfoClimateMain extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      /* Layout */
       .container {
         position: relative;
       }
@@ -312,14 +287,11 @@ export class HaMoreInfoClimateMain extends LitElement {
         line-height: 24px;
         letter-spacing: 0.1px;
       }
-      .transparent {
-        opacity: 0;
-      }
-
       .info * {
         margin: 0;
         pointer-events: auto;
       }
+      /* Elements */
       .temperature {
         display: inline-flex;
         font-size: 58px;
@@ -334,12 +306,18 @@ export class HaMoreInfoClimateMain extends LitElement {
         font-size: 24px;
         line-height: 40px;
       }
-      .action,
       .mode {
         font-weight: 500;
         display: flex;
         flex-direction: row;
         align-items: center;
+      }
+      .action {
+        font-weight: 500;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        color: var(--action-color, initial);
       }
       .mode ha-svg-icon {
         --mdc-icon-size: 20px;
@@ -350,6 +328,7 @@ export class HaMoreInfoClimateMain extends LitElement {
         flex-direction: row;
         gap: 24px;
       }
+      /* Dual override */
       .dual .temperature {
         font-size: 45px;
         line-height: 52px;
@@ -359,6 +338,7 @@ export class HaMoreInfoClimateMain extends LitElement {
         font-size: 22px;
         line-height: 34px;
       }
+      /* Accessibility */
       .visually-hidden {
         position: absolute;
         overflow: hidden;
@@ -369,9 +349,10 @@ export class HaMoreInfoClimateMain extends LitElement {
         padding: 0;
         border: 0;
       }
+      /* Slider */
       ha-control-circular-slider {
         --control-circular-slider-color: var(
-          --slider-color,
+          --main-color,
           var(--disabled-color)
         );
         --control-circular-slider-background: var(
@@ -387,6 +368,8 @@ export class HaMoreInfoClimateMain extends LitElement {
           var(--control-circular-slider-color)
         );
         --control-circular-slider-background-opacity: 0.24;
+        --control-circular-slider-low-color-opacity: var(--low-opacity, 1);
+        --control-circular-slider-high-color-opacity: var(--high-opacity, 1);
       }
       ha-control-circular-slider::after {
         display: block;
@@ -398,7 +381,7 @@ export class HaMoreInfoClimateMain extends LitElement {
         bottom: -10%;
         background: radial-gradient(
           50% 50% at 50% 50%,
-          var(--halo-color, transparent) 0%,
+          var(--action-color, transparent) 0%,
           transparent 100%
         );
         opacity: 0.15;
