@@ -24,18 +24,3 @@ export const enum HumidifierEntityDeviceClass {
   HUMIDIFIER = "humidifier",
   DEHUMIDIFIER = "dehumidifier",
 }
-
-export function computeHumidifierStateDisplay(
-  stateObj: FanEntity,
-  locale: FrontendLocaleData,
-  speed?: number
-) {
-  const percentage = stateActive(stateObj)
-    ? stateObj.attributes.percentage
-    : undefined;
-  const currentSpeed = speed ?? percentage;
-
-  return currentSpeed
-    ? `${Math.floor(currentSpeed)}${blankBeforePercent(locale)}%`
-    : "";
-}
