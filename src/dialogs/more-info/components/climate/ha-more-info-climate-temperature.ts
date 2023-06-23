@@ -22,8 +22,8 @@ import { debounce } from "../../../../common/util/debounce";
 
 type Target = "value" | "low" | "high";
 
-@customElement("ha-more-info-climate-main")
-export class HaMoreInfoClimateMain extends LitElement {
+@customElement("ha-more-info-climate-temperature")
+export class HaMoreInfoClimateTemperature extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: ClimateEntity;
@@ -66,6 +66,7 @@ export class HaMoreInfoClimateMain extends LitElement {
       ...this._targetTemperature,
       [target]: value,
     };
+    this._selectTargetTemperature = target as Target;
     this._callService(target);
   }
 
@@ -229,6 +230,8 @@ export class HaMoreInfoClimateMain extends LitElement {
       backgroundColor = stateColorCss(this.stateObj, mode);
     }
 
+    const hvacModes = this.stateObj.attributes.hvac_modes;
+
     if (supportsTargetTemperature && this._targetTemperature.value != null) {
       return html`
         <div
@@ -240,7 +243,11 @@ export class HaMoreInfoClimateMain extends LitElement {
           })}
         >
           <ha-control-circular-slider
-            .inverted=${this.stateObj.state === "cool"}
+            .inverted=${mode === "cool" ||
+            (mode === "off" &&
+              hvacModes.length === 2 &&
+              hvacModes.includes("cool") &&
+              hvacModes.includes("off"))}
             .value=${this._targetTemperature.value}
             .min=${this._min}
             .max=${this._max}
@@ -500,6 +507,6 @@ export class HaMoreInfoClimateMain extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-climate-main": HaMoreInfoClimateMain;
+    "ha-more-info-climate-temperature": HaMoreInfoClimateTemperature;
   }
 }

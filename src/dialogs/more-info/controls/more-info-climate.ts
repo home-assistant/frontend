@@ -27,7 +27,7 @@ import {
   compareClimateHvacModes,
 } from "../../../data/climate";
 import { HomeAssistant } from "../../../types";
-import "../components/climate/ha-more-info-climate-main";
+import "../components/climate/ha-more-info-climate-temperature";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 
 class MoreInfoClimate extends LitElement {
@@ -78,10 +78,10 @@ class MoreInfoClimate extends LitElement {
 
     return html`
       <div class="controls">
-        <ha-more-info-climate-main
+        <ha-more-info-climate-temperature
           .hass=${this.hass}
           .stateObj=${this.stateObj}
-        ></ha-more-info-climate-main>
+        ></ha-more-info-climate-temperature>
       </div>
       <div
         class=${classMap({
@@ -299,42 +299,6 @@ class MoreInfoClimate extends LitElement {
       fireEvent(this, "iron-resize");
       this._resizeDebounce = undefined;
     }, 500);
-  }
-
-  private _targetTemperatureChanged(ev) {
-    const newVal = ev.target.value;
-    this._callServiceHelper(
-      this.stateObj!.attributes.temperature,
-      newVal,
-      "set_temperature",
-      { temperature: newVal }
-    );
-  }
-
-  private _targetTemperatureLowChanged(ev) {
-    const newVal = ev.currentTarget.value;
-    this._callServiceHelper(
-      this.stateObj!.attributes.target_temp_low,
-      newVal,
-      "set_temperature",
-      {
-        target_temp_low: newVal,
-        target_temp_high: this.stateObj!.attributes.target_temp_high,
-      }
-    );
-  }
-
-  private _targetTemperatureHighChanged(ev) {
-    const newVal = ev.currentTarget.value;
-    this._callServiceHelper(
-      this.stateObj!.attributes.target_temp_high,
-      newVal,
-      "set_temperature",
-      {
-        target_temp_low: this.stateObj!.attributes.target_temp_low,
-        target_temp_high: newVal,
-      }
-    );
   }
 
   private _targetHumiditySliderChanged(ev) {
