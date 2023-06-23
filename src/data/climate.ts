@@ -5,7 +5,7 @@ import {
   mdiHeatWave,
   mdiPower,
   mdiSnowflake,
-  mdiThermostat,
+  mdiSunSnowflakeVariant,
   mdiThermostatAuto,
   mdiWaterPercent,
 } from "@mdi/js";
@@ -112,5 +112,5 @@ export const CLIMATE_HVAC_MODE_ICONS: Record<HvacMode, string> = {
   auto: mdiThermostatAuto,
   heat: mdiFire,
   off: mdiPower,
-  heat_cool: mdiThermostat,
+  heat_cool: mdiSunSnowflakeVariant,
 };
