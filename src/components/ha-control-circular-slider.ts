@@ -566,6 +566,7 @@ export class HaControlCircularSlider extends LitElement {
         fill: none;
         stroke: var(--control-circular-slider-background);
         opacity: var(--control-circular-slider-background-opacity);
+        transition: stroke 180ms ease-in-out, opacity 180ms ease-in-out;
         stroke-linecap: round;
         stroke-width: 24px;
       }
@@ -577,7 +578,8 @@ export class HaControlCircularSlider extends LitElement {
         stroke-width: 24px;
         transition: stroke-width 300ms ease-in-out,
           stroke-dasharray 300ms ease-in-out,
-          stroke-dashoffset 300ms ease-in-out;
+          stroke-dashoffset 300ms ease-in-out, stroke 180ms ease-in-out,
+          opacity 180ms ease-in-out;
       }
 
       .track:focus-visible {
