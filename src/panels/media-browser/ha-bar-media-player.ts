@@ -464,7 +464,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       (entity) =>
         computeStateDomain(entity) === "media_player" &&
         supportsFeature(entity, MediaPlayerEntityFeature.BROWSE_MEDIA) &&
-        !this.hass.entities[entity.entity_id].hidden
+        !this.hass.entities[entity.entity_id]?.hidden
     );
   }
 
