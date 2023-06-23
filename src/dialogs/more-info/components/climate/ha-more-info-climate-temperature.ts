@@ -332,7 +332,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       <div
         class="container"
         style=${styleMap({
-          "--background-color": backgroundColor,
+          "--background-color": mainColor,
           "--action-color": actionColor,
         })}
       >
