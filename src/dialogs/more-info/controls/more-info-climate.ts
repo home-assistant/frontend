@@ -29,6 +29,8 @@ import {
 import { HomeAssistant } from "../../../types";
 import "../components/climate/ha-more-info-climate-temperature";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
+import { formatNumber } from "../../../common/number/format_number";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 
 class MoreInfoClimate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -76,7 +78,52 @@ class MoreInfoClimate extends LitElement {
 
     const rtlDirection = computeRTLDirection(hass);
 
+    const currentTemperature = this.stateObj.attributes.current_temperature;
+    const currentHumidity = this.stateObj.attributes.current_humidity;
+
     return html`
+      ${currentTemperature || currentHumidity
+        ? html` <div class="current">
+            ${currentTemperature != null
+              ? html`
+                  <div>
+                    <p class="label">
+                      ${computeAttributeNameDisplay(
+                        this.hass.localize,
+                        this.stateObj,
+                        this.hass.entities,
+                        "current_temperature"
+                      )}
+                    </p>
+                    <p class="value">
+                      ${formatNumber(currentTemperature, this.hass.locale)}
+                      ${this.hass.config.unit_system.temperature}
+                    </p>
+                  </div>
+                `
+              : nothing}
+            ${currentHumidity != null
+              ? html`
+                  <div>
+                    <p class="label">
+                      ${computeAttributeNameDisplay(
+                        this.hass.localize,
+                        this.stateObj,
+                        this.hass.entities,
+                        "current_humidity"
+                      )}
+                    </p>
+                    <p class="value">
+                      ${formatNumber(
+                        currentHumidity,
+                        this.hass.locale
+                      )}${blankBeforePercent(this.hass.locale)}%
+                    </p>
+                  </div>
+                `
+              : nothing}
+          </div>`
+        : nothing}
       <div class="controls">
         <ha-more-info-climate-temperature
           .hass=${this.hass}
@@ -406,6 +453,43 @@ class MoreInfoClimate extends LitElement {
           color: var(--primary-text-color);
         }
 
+        .current {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          margin-bottom: 40px;
+        }
+
+        .current div {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          flex: 1;
+        }
+
+        .current p {
+          margin: 0;
+          text-align: center;
+          color: var(--primary-text-color);
+        }
+
+        .current .label {
+          opacity: 0.8;
+          font-size: 12px;
+          line-height: 16px;
+          letter-spacing: 0.4px;
+          margin-bottom: 4px;
+        }
+
+        .current .value {
+          font-size: 22px;
+          font-weight: 500;
+          line-height: 28px;
+        }
         ha-select {
           width: 100%;
           margin-top: 8px;
