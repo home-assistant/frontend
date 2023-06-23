@@ -18,7 +18,6 @@ import {
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import "../../../components/ha-climate-control";
 import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-switch";
@@ -75,10 +74,6 @@ class MoreInfoClimate extends LitElement {
       ClimateEntityFeature.AUX_HEAT
     );
 
-    const temperatureStepSize =
-      stateObj.attributes.target_temp_step ||
-      (hass.config.unit_system.temperature.indexOf("F") === -1 ? 0.5 : 1);
-
     const rtlDirection = computeRTLDirection(hass);
 
     return html`
@@ -102,64 +97,6 @@ class MoreInfoClimate extends LitElement {
           "has-preset_mode": supportPresetMode,
         })}
       >
-        <div class="container-temperature">
-          <div class=${stateObj.state}>
-            ${supportTargetTemperature || supportTargetTemperatureRange
-              ? html`
-                  <div>
-                    ${computeAttributeNameDisplay(
-                      hass.localize,
-                      stateObj,
-                      hass.entities,
-                      "temperature"
-                    )}
-                  </div>
-                `
-              : ""}
-            ${stateObj.attributes.temperature !== undefined &&
-            stateObj.attributes.temperature !== null
-              ? html`
-                  <ha-climate-control
-                    .hass=${this.hass}
-                    .value=${stateObj.attributes.temperature}
-                    .unit=${hass.config.unit_system.temperature}
-                    .step=${temperatureStepSize}
-                    .min=${stateObj.attributes.min_temp}
-                    .max=${stateObj.attributes.max_temp}
-                    @change=${this._targetTemperatureChanged}
-                  ></ha-climate-control>
-                `
-              : ""}
-            ${(stateObj.attributes.target_temp_low !== undefined &&
-              stateObj.attributes.target_temp_low !== null) ||
-            (stateObj.attributes.target_temp_high !== undefined &&
-              stateObj.attributes.target_temp_high !== null)
-              ? html`
-                  <ha-climate-control
-                    .hass=${this.hass}
-                    .value=${stateObj.attributes.target_temp_low}
-                    .unit=${hass.config.unit_system.temperature}
-                    .step=${temperatureStepSize}
-                    .min=${stateObj.attributes.min_temp}
-                    .max=${stateObj.attributes.target_temp_high}
-                    class="range-control-left"
-                    @change=${this._targetTemperatureLowChanged}
-                  ></ha-climate-control>
-                  <ha-climate-control
-                    .hass=${this.hass}
-                    .value=${stateObj.attributes.target_temp_high}
-                    .unit=${hass.config.unit_system.temperature}
-                    .step=${temperatureStepSize}
-                    .min=${stateObj.attributes.target_temp_low}
-                    .max=${stateObj.attributes.max_temp}
-                    class="range-control-right"
-                    @change=${this._targetTemperatureHighChanged}
-                  ></ha-climate-control>
-                `
-              : ""}
-          </div>
-        </div>
-
         ${supportTargetHumidity
           ? html`
               <div class="container-humidity">
@@ -524,18 +461,6 @@ class MoreInfoClimate extends LitElement {
           font-size: 200%;
           margin: auto;
           direction: ltr;
-        }
-
-        ha-climate-control.range-control-left,
-        ha-climate-control.range-control-right {
-          float: left;
-          width: 46%;
-        }
-        ha-climate-control.range-control-left {
-          margin-right: 4%;
-        }
-        ha-climate-control.range-control-right {
-          margin-left: 4%;
         }
 
         .single-row {
