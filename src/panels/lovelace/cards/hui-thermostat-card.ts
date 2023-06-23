@@ -47,6 +47,7 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ThermostatCardConfig } from "./types";
 
+// Need to align these icon to more info icons
 const modeIcons: { [mode in HvacMode]: string } = {
   auto: mdiCalendarSync,
   heat_cool: mdiAutorenew,

@@ -29,7 +29,7 @@ import {
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import { HVAC_ACTION_TO_MODE } from "../../../data/climate";
+import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import { isUnavailableState } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
@@ -201,8 +201,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   private _computeColor(stateObj: HassEntity): string | undefined {
     if (stateObj.attributes.hvac_action) {
       const hvacAction = stateObj.attributes.hvac_action;
-      if (hvacAction in HVAC_ACTION_TO_MODE) {
-        return stateColorCss(stateObj, HVAC_ACTION_TO_MODE[hvacAction]);
+      if (hvacAction in CLIMATE_HVAC_ACTION_TO_MODE) {
+        return stateColorCss(stateObj, CLIMATE_HVAC_ACTION_TO_MODE[hvacAction]);
       }
       return undefined;
     }
