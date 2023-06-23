@@ -1,31 +1,35 @@
-import "@material/mwc-list/mwc-list-item";
+import { mdiPower } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import {
   computeAttributeNameDisplay,
   computeAttributeValueDisplay,
 } from "../../../common/entity/compute_attribute_display";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import { formatNumber } from "../../../common/number/format_number";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
+import "../../../components/ha-list-item";
 import "../../../components/ha-select";
-import "../../../components/ha-slider";
-import "../../../components/ha-switch";
+import { UNAVAILABLE } from "../../../data/entity";
+import { forwardHaptic } from "../../../data/haptics";
 import {
   HumidifierEntity,
-  HUMIDIFIER_SUPPORT_MODES,
+  HumidifierEntityFeature,
 } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
+import "../components/humidifier/ha-more-info-humidifier-humidity";
 
 class MoreInfoHumidifier extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -42,40 +46,62 @@ class MoreInfoHumidifier extends LitElement {
     const hass = this.hass;
     const stateObj = this.stateObj;
 
-    const supportModes = supportsFeature(stateObj, HUMIDIFIER_SUPPORT_MODES);
+    const supportModes = supportsFeature(
+      stateObj,
+      HumidifierEntityFeature.MODES
+    );
 
-    const rtlDirection = computeRTLDirection(hass);
+    const currentHumidity = this.stateObj.attributes.current_humidity;
 
     return html`
+      ${currentHumidity
+        ? html`
+            <div class="current">
+              ${currentHumidity != null
+                ? html`
+                    <div>
+                      <p class="label">
+                        ${computeAttributeNameDisplay(
+                          this.hass.localize,
+                          this.stateObj,
+                          this.hass.entities,
+                          "current_humidity"
+                        )}
+                      </p>
+                      <p class="value">
+                        ${formatNumber(
+                          currentHumidity,
+                          this.hass.locale
+                        )}${blankBeforePercent(this.hass.locale)}%
+                      </p>
+                    </div>
+                  `
+                : nothing}
+            </div>
+          `
+        : html`<span></span>`}
+      <div class="controls">
+        <ha-more-info-humidifier-humidity
+          .hass=${this.hass}
+          .stateObj=${this.stateObj}
+        ></ha-more-info-humidifier-humidity>
+        <ha-icon-button-group>
+          <ha-icon-button
+            .disabled=${this.stateObj!.state === UNAVAILABLE}
+            .label=${this.hass.localize(
+              "ui.dialogs.more_info_control.humidifier.toggle"
+            )}
+            @click=${this._toggle}
+          >
+            <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
+          </ha-icon-button>
+        </ha-icon-button-group>
+      </div>
       <div
         class=${classMap({
           "has-modes": supportModes,
         })}
       >
-        <div class="container-humidity">
-          <div>
-            ${computeAttributeNameDisplay(
-              hass.localize,
-              stateObj,
-              hass.entities,
-              "humidity"
-            )}
-          </div>
-          <div class="single-row">
-            <div class="target-humidity">${stateObj.attributes.humidity} %</div>
-            <ha-slider
-              step="1"
-              pin
-              ignore-bar-touch
-              dir=${rtlDirection}
-              .min=${stateObj.attributes.min_humidity}
-              .max=${stateObj.attributes.max_humidity}
-              .value=${stateObj.attributes.humidity}
-              @change=${this._targetHumiditySliderChanged}
-            >
-            </ha-slider>
-          </div>
-        </div>
         <ha-select
           .label=${hass.localize("ui.card.humidifier.state")}
           .value=${stateObj.state}
@@ -109,7 +135,12 @@ class MoreInfoHumidifier extends LitElement {
         ${supportModes
           ? html`
               <ha-select
-                .label=${hass.localize("ui.card.humidifier.mode")}
+                .label=${computeAttributeNameDisplay(
+                  hass.localize,
+                  stateObj,
+                  hass.entities,
+                  "mode"
+                )}
                 .value=${stateObj.attributes.mode}
                 fixedMenuPosition
                 naturalMenuWidth
@@ -118,7 +149,7 @@ class MoreInfoHumidifier extends LitElement {
               >
                 ${stateObj.attributes.available_modes!.map(
                   (mode) => html`
-                    <mwc-list-item .value=${mode}>
+                    <ha-list-item .value=${mode}>
                       ${computeAttributeValueDisplay(
                         hass.localize,
                         stateObj,
@@ -128,7 +159,7 @@ class MoreInfoHumidifier extends LitElement {
                         "mode",
                         mode
                       )}
-                    </mwc-list-item>
+                    </ha-list-item>
                   `
                 )}
               </ha-select>
@@ -137,6 +168,14 @@ class MoreInfoHumidifier extends LitElement {
       </div>
     `;
   }
+
+  private _toggle = () => {
+    const service = this.stateObj?.state === "on" ? "turn_off" : "turn_on";
+    forwardHaptic("light");
+    this.hass.callService("humidifier", service, {
+      entity_id: this.stateObj!.entity_id,
+    });
+  };
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
@@ -151,16 +190,6 @@ class MoreInfoHumidifier extends LitElement {
       fireEvent(this, "iron-resize");
       this._resizeDebounce = undefined;
     }, 500);
-  }
-
-  private _targetHumiditySliderChanged(ev) {
-    const newVal = ev.target.value;
-    this._callServiceHelper(
-      this.stateObj!.attributes.humidity,
-      newVal,
-      "set_humidity",
-      { humidity: newVal }
-    );
   }
 
   private _handleStateChanged(ev) {
@@ -222,36 +251,65 @@ class MoreInfoHumidifier extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        color: var(--primary-text-color);
-      }
+    return [
+      moreInfoControlStyle,
+      css`
+        :host {
+          color: var(--primary-text-color);
+        }
 
-      ha-select {
-        width: 100%;
-        margin-top: 8px;
-      }
+        <<<<<<< HEAD ha-select {
+          width: 100%;
+          margin-top: 8px;
+        }
 
-      ha-slider {
-        width: 100%;
-      }
+        ha-slider {
+          width: 100%;
+        }
+        ======= .current {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          margin-bottom: 40px;
+        }
+        .current div {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          flex: 1;
+        }
+        .current p {
+          margin: 0;
+          text-align: center;
+          color: var(--primary-text-color);
+        }
+        .current .label {
+          opacity: 0.8;
+          font-size: 12px;
+          line-height: 16px;
+          letter-spacing: 0.4px;
+          margin-bottom: 4px;
+        }
+        .current .value {
+          font-size: 22px;
+          font-weight: 500;
+          line-height: 28px;
+        }
+        >>>>>>>b3948aa8a
+          (Add new humidity control in humidifier more info)
+          ha-select {
+          width: 100%;
+        }
 
-      .container-humidity .single-row {
-        display: flex;
-        height: 50px;
-      }
-
-      .target-humidity {
-        width: 90px;
-        font-size: 200%;
-        margin: auto;
-        direction: ltr;
-      }
-
-      .single-row {
-        padding: 8px 0;
-      }
-    `;
+        .single-row {
+          padding: 8px 0;
+        }
+      `,
+    ];
   }
 }
 

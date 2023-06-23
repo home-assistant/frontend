@@ -1000,6 +1000,9 @@
         "climate": {
           "target_label": "{action} to target",
           "target": "Target"
+        },
+        "humidifier": {
+          "toggle": "Toggle"
         }
       },
       "entity_registry": {

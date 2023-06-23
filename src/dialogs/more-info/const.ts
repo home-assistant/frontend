@@ -21,6 +21,7 @@ export const DOMAINS_WITH_NEW_MORE_INFO = [
   "cover",
   "climate",
   "fan",
+  "humidifier",
   "input_boolean",
   "light",
   "lock",

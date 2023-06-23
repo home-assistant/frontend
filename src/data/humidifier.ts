@@ -3,10 +3,6 @@ import {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 
-export type HumidifierState = "on" | "off";
-
-export type HumidifierAction = "off" | "idle" | "humidifying" | "drying";
-
 export type HumidifierEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
     humidity?: number;
@@ -16,10 +12,30 @@ export type HumidifierEntity = HassEntityBase & {
     mode?: string;
     action?: HumidifierAction;
     available_modes?: string[];
+    current_humidity?: number;
   };
 };
 
-export const HUMIDIFIER_SUPPORT_MODES = 1;
+export const enum HumidifierEntityFeature {
+  MODES = 1,
+}
 
-export const HUMIDIFIER_DEVICE_CLASS_HUMIDIFIER = "humidifier";
-export const HUMIDIFIER_DEVICE_CLASS_DEHUMIDIFIER = "dehumidifier";
+export const enum HumidifierEntityDeviceClass {
+  HUMIDIFIER = "humidifier",
+  DEHUMIDIFIER = "dehumidifier",
+}
+
+export function computeHumidifierStateDisplay(
+  stateObj: FanEntity,
+  locale: FrontendLocaleData,
+  speed?: number
+) {
+  const percentage = stateActive(stateObj)
+    ? stateObj.attributes.percentage
+    : undefined;
+  const currentSpeed = speed ?? percentage;
+
+  return currentSpeed
+    ? `${Math.floor(currentSpeed)}${blankBeforePercent(locale)}%`
+    : "";
+}
