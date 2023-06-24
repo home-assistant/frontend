@@ -5330,6 +5330,8 @@
             "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
             "editor": "Template editor",
             "reset": "Reset to demo template",
+            "confirm_reset": "Do you want to reset your current template back to the demo template?",
+            "confirm_clear": "Do you want to clear your current template?",
             "result_type": "Result type",
             "jinja_documentation": "Jinja2 template documentation",
             "template_extensions": "Home Assistant template extensions",
