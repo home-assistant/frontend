@@ -17,12 +17,13 @@ export const stripPrefixFromEntityName = (
 
     if (lowerCasedEntityName.startsWith(lowerCasedPrefixWithSuffix)) {
       const newName = entityName.substring(lowerCasedPrefixWithSuffix.length);
-
-      // If first word already has an upper case letter (e.g. from brand name)
-      // leave as-is, otherwise capitalize the first word.
-      return hasUpperCase(newName.substr(0, newName.indexOf(" ")))
-        ? newName
-        : newName[0].toUpperCase() + newName.slice(1);
+      if (newName.length) {
+        // If first word already has an upper case letter (e.g. from brand name)
+        // leave as-is, otherwise capitalize the first word.
+        return hasUpperCase(newName.substr(0, newName.indexOf(" ")))
+          ? newName
+          : newName[0].toUpperCase() + newName.slice(1);
+      }
     }
   }
 
