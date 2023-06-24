@@ -119,6 +119,7 @@ class MoreInfoVacuum extends LitElement {
                           this.hass.localize,
                           stateObj,
                           this.hass.locale,
+                          this.hass.config,
                           this.hass.entities,
                           "status"
                         ) ||
@@ -126,6 +127,7 @@ class MoreInfoVacuum extends LitElement {
                           this.hass.localize,
                           stateObj,
                           this.hass.locale,
+                          this.hass.config,
                           this.hass.entities
                         )}
                       </strong>
@@ -201,6 +203,7 @@ class MoreInfoVacuum extends LitElement {
                           this.hass.localize,
                           stateObj,
                           this.hass.locale,
+                          this.hass.config,
                           this.hass.entities,
                           "fan_speed",
                           mode
@@ -218,6 +221,7 @@ class MoreInfoVacuum extends LitElement {
                       this.hass.localize,
                       stateObj,
                       this.hass.locale,
+                      this.hass.config,
                       this.hass.entities,
                       "fan_speed"
                     )}

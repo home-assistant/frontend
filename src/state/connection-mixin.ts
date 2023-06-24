@@ -18,7 +18,13 @@ import { subscribeFrontendUserData } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
 import { serviceCallWillDisconnect } from "../data/service";
-import { FirstWeekday, NumberFormat, TimeFormat } from "../data/translation";
+import {
+  FirstWeekday,
+  NumberFormat,
+  DateFormat,
+  TimeFormat,
+  TimeZone,
+} from "../data/translation";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
@@ -57,6 +63,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           language,
           number_format: NumberFormat.language,
           time_format: TimeFormat.language,
+          date_format: DateFormat.language,
+          time_zone: TimeZone.local,
           first_weekday: FirstWeekday.language,
         },
         resources: null as any,

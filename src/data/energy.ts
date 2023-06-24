@@ -1,13 +1,15 @@
 import {
+  addDays,
   addHours,
   addMilliseconds,
+  addMonths,
   differenceInDays,
-  endOfToday,
-  endOfYesterday,
-  startOfToday,
-  startOfYesterday,
+  endOfDay,
+  startOfDay,
 } from "date-fns/esm";
 import { Collection, getCollection } from "home-assistant-js-websocket";
+import { calcDate } from "../common/datetime/calc_date";
+import { formatTime24h } from "../common/datetime/format_time";
 import { groupBy } from "../common/util/group-by";
 import { HomeAssistant } from "../types";
 import { ConfigEntry, getConfigEntries } from "./config_entries";
@@ -414,11 +416,17 @@ const getEnergyData = async (
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
 
   if (compare) {
+    if (dayDifference > 27 && dayDifference < 32) {
+      // When comparing a month, we want to start at the begining of the month
+      startCompare = addMonths(start, -1);
+    } else {
+      startCompare = addDays(start, (dayDifference + 1) * -1);
+    }
     endCompare = addMilliseconds(start, -1);
     if (energyStatIds.length) {
       _energyStatsCompare = fetchStatistics(
         hass!,
-        start,
+        startCompare,
         endCompare,
         energyStatIds,
         period,
@@ -429,7 +437,7 @@ const getEnergyData = async (
     if (waterStatIds.length) {
       _waterStatsCompare = fetchStatistics(
         hass!,
-        start,
+        startCompare,
         endCompare,
         waterStatIds,
         period,
@@ -618,18 +626,40 @@ export const getEnergyDataCollection = (
   collection._active = 0;
   collection.prefs = options.prefs;
   const now = new Date();
+  const hour = formatTime24h(now, hass.locale, hass.config).split(":")[0];
   // Set start to start of today if we have data for today, otherwise yesterday
-  collection.start = now.getHours() > 0 ? startOfToday() : startOfYesterday();
-  collection.end = now.getHours() > 0 ? endOfToday() : endOfYesterday();
+  collection.start = calcDate(
+    hour === "0" ? addDays(now, -1) : now,
+    startOfDay,
+    hass.locale,
+    hass.config
+  );
+  collection.end = calcDate(
+    hour === "0" ? addDays(now, -1) : now,
+    endOfDay,
+    hass.locale,
+    hass.config
+  );
 
   const scheduleUpdatePeriod = () => {
     collection._updatePeriodTimeout = window.setTimeout(
       () => {
-        collection.start = startOfToday();
-        collection.end = endOfToday();
+        collection.start = calcDate(
+          new Date(),
+          startOfDay,
+          hass.locale,
+          hass.config
+        );
+        collection.end = calcDate(
+          new Date(),
+          endOfDay,
+          hass.locale,
+          hass.config
+        );
         scheduleUpdatePeriod();
       },
-      addHours(endOfToday(), 1).getTime() - Date.now() // Switch to next day an hour after the day changed
+      addHours(calcDate(now, endOfDay, hass.locale, hass.config), 1).getTime() -
+        Date.now() // Switch to next day an hour after the day changed
     );
   };
   scheduleUpdatePeriod();
@@ -641,8 +671,10 @@ export const getEnergyDataCollection = (
     collection.start = newStart;
     collection.end = newEnd;
     if (
-      collection.start.getTime() === startOfToday().getTime() &&
-      collection.end?.getTime() === endOfToday().getTime() &&
+      collection.start.getTime() ===
+        calcDate(new Date(), startOfDay, hass.locale, hass.config).getTime() &&
+      collection.end?.getTime() ===
+        calcDate(new Date(), endOfDay, hass.locale, hass.config).getTime() &&
       !collection._updatePeriodTimeout
     ) {
       scheduleUpdatePeriod();

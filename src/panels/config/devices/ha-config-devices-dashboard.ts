@@ -1,11 +1,15 @@
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiCancel, mdiFilterVariant, mdiPlus } from "@mdi/js";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import {
+  protocolIntegrationPicked,
+  PROTOCOL_INTEGRATIONS,
+} from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import { LocalizeFunc } from "../../../common/translations/localize";
@@ -39,8 +43,6 @@ import { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
-import { showMatterAddDeviceDialog } from "../integrations/integration-panels/matter/show-dialog-add-matter-device";
-import { showZWaveJSAddNodeDialog } from "../integrations/integration-panels/zwave_js/show-dialog-zwave_js-add-node";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 
 interface DeviceRowData extends DeviceRegistryEntry {
@@ -128,6 +130,13 @@ export class HaConfigDeviceDashboard extends LitElement {
             );
             break;
           }
+          case "domain": {
+            filterTexts.push(
+              `${this.hass.localize(
+                "ui.panel.config.integrations.integration"
+              )} "${domainToName(localize, value)}"`
+            );
+          }
         }
       });
       return filterTexts.length ? filterTexts : undefined;
@@ -179,6 +188,8 @@ export class HaConfigDeviceDashboard extends LitElement {
 
       let filterConfigEntry: ConfigEntry | undefined;
 
+      const filteredDomains = new Set<string>();
+
       filters.forEach((value, key) => {
         if (key === "config_entry") {
           outputDevices = outputDevices.filter((device) =>
@@ -186,6 +197,19 @@ export class HaConfigDeviceDashboard extends LitElement {
           );
           startLength = outputDevices.length;
           filterConfigEntry = entries.find((entry) => entry.entry_id === value);
+          if (filterConfigEntry) {
+            filteredDomains.add(filterConfigEntry.domain);
+          }
+        }
+        if (key === "domain") {
+          const entryIds = entries
+            .filter((entry) => entry.domain === value)
+            .map((entry) => entry.entry_id);
+          outputDevices = outputDevices.filter((device) =>
+            device.config_entries.some((entryId) => entryIds.includes(entryId))
+          );
+          startLength = outputDevices.length;
+          filteredDomains.add(value);
         }
       });
 
@@ -200,8 +224,12 @@ export class HaConfigDeviceDashboard extends LitElement {
           this.hass,
           deviceEntityLookup[device.id]
         ),
-        model: device.model || "<unknown>",
-        manufacturer: device.manufacturer || "<unknown>",
+        model:
+          device.model ||
+          `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
+        manufacturer:
+          device.manufacturer ||
+          `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
         area:
           device.area_id && areaLookup[device.area_id]
             ? areaLookup[device.area_id].name
@@ -235,6 +263,7 @@ export class HaConfigDeviceDashboard extends LitElement {
       return {
         devicesOutput: outputDevices,
         filteredConfigEntry: filterConfigEntry,
+        filteredDomains,
       };
     }
   );
@@ -383,8 +412,11 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   public willUpdate(changedProps) {
     if (changedProps.has("_searchParms")) {
-      if (this._searchParms.get("config_entry")) {
-        // If we are requested to show the devices for a given config entry,
+      if (
+        this._searchParms.get("config_entry") ||
+        this._searchParms.get("domain")
+      ) {
+        // If we are requested to show the devices for a given config entry / domain,
         // also show the disabled ones by default.
         this._showDisabled = true;
       }
@@ -527,33 +559,29 @@ export class HaConfigDeviceDashboard extends LitElement {
   }
 
   private _addDevice() {
-    const { filteredConfigEntry } = this._devicesAndFilterDomains(
-      this.devices,
-      this.entries,
-      this.entities,
-      this.areas,
-      this._searchParms,
-      this._showDisabled,
-      this.hass.localize
-    );
-    if (filteredConfigEntry?.domain === "zha") {
-      navigate(`/config/zha/add`);
+    const { filteredConfigEntry, filteredDomains } =
+      this._devicesAndFilterDomains(
+        this.devices,
+        this.entries,
+        this.entities,
+        this.areas,
+        this._searchParms,
+        this._showDisabled,
+        this.hass.localize
+      );
+    if (
+      filteredDomains.size === 1 &&
+      (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+        [...filteredDomains][0]
+      )
+    ) {
+      protocolIntegrationPicked(this, this.hass, [...filteredDomains][0], {
+        config_entry: filteredConfigEntry?.entry_id,
+      });
       return;
     }
-    if (filteredConfigEntry?.domain === "zwave_js") {
-      this._showZJSAddDeviceDialog(filteredConfigEntry);
-      return;
-    }
-    if (filteredConfigEntry?.domain === "matter") {
-      showMatterAddDeviceDialog(this);
-      return;
-    }
-    showAddIntegrationDialog(this);
-  }
-
-  private _showZJSAddDeviceDialog(filteredConfigEntry: ConfigEntry) {
-    showZWaveJSAddNodeDialog(this, {
-      entry_id: filteredConfigEntry!.entry_id,
+    showAddIntegrationDialog(this, {
+      domain: this._searchParms.get("domain") || undefined,
     });
   }
 

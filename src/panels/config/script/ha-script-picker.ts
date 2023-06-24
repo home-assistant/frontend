@@ -12,6 +12,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { differenceInDays } from "date-fns/esm";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
@@ -44,7 +45,10 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
+import { showNewAutomationDialog } from "../automation/show-dialog-new-automation";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
+import { findRelated } from "../../../data/search";
+import { fetchBlueprints } from "../../../data/blueprint";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
@@ -59,6 +63,8 @@ class HaScriptPicker extends LitElement {
   @property() public route!: Route;
 
   @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
+
+  @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _activeFilters?: string[];
 
@@ -114,7 +120,11 @@ class HaScriptPicker extends LitElement {
                   ${this.hass.localize("ui.card.automation.last_triggered")}:
                   ${script.attributes.last_triggered
                     ? dayDifference > 3
-                      ? formatShortDateTime(date, this.hass.locale)
+                      ? formatShortDateTime(
+                          date,
+                          this.hass.locale,
+                          this.hass.config
+                        )
                       : relativeTime(date, this.hass.locale)
                     : this.hass.localize("ui.components.relative_time.never")}
                 </div>
@@ -135,7 +145,7 @@ class HaScriptPicker extends LitElement {
           return html`
             ${last_triggered
               ? dayDifference > 3
-                ? formatShortDateTime(date, this.hass.locale)
+                ? formatShortDateTime(date, this.hass.locale, this.hass.config)
                 : relativeTime(date, this.hass.locale)
               : this.hass.localize("ui.components.relative_time.never")}
           `;
@@ -234,21 +244,49 @@ class HaScriptPicker extends LitElement {
           @related-changed=${this._relatedFilterChanged}
         >
         </ha-button-related-filter-menu>
-        <a href="/config/script/edit/new" slot="fab">
-          <ha-fab
-            ?is-wide=${this.isWide}
-            ?narrow=${this.narrow}
-            .label=${this.hass.localize(
-              "ui.panel.config.script.picker.add_script"
-            )}
-            extended
-            ?rtl=${computeRTL(this.hass)}
-          >
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </ha-fab>
-        </a>
+        <ha-fab
+          slot="fab"
+          ?is-wide=${this.isWide}
+          ?narrow=${this.narrow}
+          .label=${this.hass.localize(
+            "ui.panel.config.script.picker.add_script"
+          )}
+          extended
+          ?rtl=${computeRTL(this.hass)}
+          @click=${this._createNew}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
+  }
+
+  firstUpdated() {
+    if (this._searchParms.has("blueprint")) {
+      this._filterBlueprint();
+    }
+  }
+
+  private async _filterBlueprint() {
+    const blueprint = this._searchParms.get("blueprint");
+    if (!blueprint) {
+      return;
+    }
+    const [related, blueprints] = await Promise.all([
+      findRelated(this.hass, "script_blueprint", blueprint),
+      fetchBlueprints(this.hass, "script"),
+    ]);
+    this._filteredScripts = related.script || [];
+    const blueprintMeta = blueprints[blueprint];
+    this._activeFilters = [
+      this.hass.localize(
+        "ui.panel.config.script.picker.filtered_by_blueprint",
+        "name",
+        !blueprintMeta || "error" in blueprintMeta
+          ? blueprint
+          : blueprintMeta.metadata.name || blueprint
+      ),
+    ];
   }
 
   private _relatedFilterChanged(ev: CustomEvent) {
@@ -273,6 +311,14 @@ class HaScriptPicker extends LitElement {
       navigate(`/config/script/edit/${entry.unique_id}`);
     } else {
       navigate(`/config/script/show/${ev.detail.id}`);
+    }
+  }
+
+  private _createNew() {
+    if (isComponentLoaded(this.hass, "blueprint")) {
+      showNewAutomationDialog(this, { mode: "script" });
+    } else {
+      navigate("/config/script/edit/new");
     }
   }
 

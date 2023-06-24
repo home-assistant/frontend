@@ -4,7 +4,7 @@ import { load } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { LocalStorage } from "../../../common/decorators/local-storage";
+import { storage } from "../../../common/decorators/storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { hasTemplate } from "../../../common/string/has-template";
@@ -38,10 +38,18 @@ class HaPanelDevService extends LitElement {
 
   @state() private _uiAvailable = true;
 
-  @LocalStorage("panel-dev-service-state-service-data", true, false)
+  @storage({
+    key: "panel-dev-service-state-service-data",
+    state: true,
+    subscribe: false,
+  })
   private _serviceData?: ServiceAction = { service: "", target: {}, data: {} };
 
-  @LocalStorage("panel-dev-service-state-yaml-mode", true, false)
+  @storage({
+    key: "panel-dev-service-state-yaml-mode",
+    state: true,
+    subscribe: false,
+  })
   private _yamlMode = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
@@ -346,7 +354,27 @@ class HaPanelDevService extends LitElement {
   }
 
   private _checkUiSupported() {
-    if (this._serviceData && hasTemplate(this._serviceData)) {
+    const fields = this._fields(
+      this.hass.services,
+      this._serviceData?.service
+    ).fields;
+    if (
+      this._serviceData &&
+      (Object.entries(this._serviceData).some(
+        ([key, val]) => key !== "data" && hasTemplate(val)
+      ) ||
+        (this._serviceData.data &&
+          Object.entries(this._serviceData.data).some(([key, val]) => {
+            const field = fields.find((f) => f.key === key);
+            if (
+              field?.selector &&
+              ("template" in field.selector || "object" in field.selector)
+            ) {
+              return false;
+            }
+            return hasTemplate(val);
+          })))
+    ) {
       this._yamlMode = true;
       this._uiAvailable = false;
     } else {

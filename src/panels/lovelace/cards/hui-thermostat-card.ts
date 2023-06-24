@@ -235,6 +235,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                     this.hass.localize,
                     stateObj,
                     this.hass.locale,
+                    this.hass.config,
                     this.hass.entities,
                     "hvac_action"
                   )
@@ -242,6 +243,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                     this.hass.localize,
                     stateObj,
                     this.hass.locale,
+                    this.hass.config,
                     this.hass.entities
                   )
             }
@@ -254,6 +256,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                       this.hass.localize,
                       stateObj,
                       this.hass.locale,
+                      this.hass.config,
                       this.hass.entities,
                       "preset_mode"
                     )}

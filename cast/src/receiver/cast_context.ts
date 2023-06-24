@@ -1,2 +1,3 @@
-/* eslint-disable no-undef */
+import { cast } from "chromecast-caf-receiver";
+
 export const castContext = cast.framework.CastReceiverContext.getInstance();

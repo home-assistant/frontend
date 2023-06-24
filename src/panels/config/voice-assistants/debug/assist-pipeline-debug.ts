@@ -64,7 +64,8 @@ export class AssistPipelineDebug extends LitElement {
                     html`<option value=${run.pipeline_run_id}>
                       ${formatDateTimeWithSeconds(
                         new Date(run.timestamp),
-                        this.hass.locale
+                        this.hass.locale,
+                        this.hass.config
                       )}
                     </option>`
                 )}

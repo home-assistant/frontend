@@ -1,11 +1,11 @@
 import { mdiDelete, mdiPlus } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { CSSResultGroup, LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 import { ensureArray } from "../../../../../common/array/ensure-array";
-import "../../../../../components/ha-icon-button";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
-import { Condition, Clipboard } from "../../../../../data/automation";
+import "../../../../../components/ha-icon-button";
+import { Condition } from "../../../../../data/automation";
 import { Action, ChooseAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
@@ -22,8 +22,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
   @property({ type: Boolean }) public reOrderMode = false;
 
   @state() private _showDefault = false;
-
-  @property() public clipboard?: Clipboard;
 
   public static get defaultConfig() {
     return { choose: [{ conditions: [], sequence: [] }] };
@@ -65,7 +63,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
               .hass=${this.hass}
               .idx=${idx}
               @value-changed=${this._conditionChanged}
-              .clipboard=${this.clipboard}
             ></ha-automation-condition>
             <h3>
               ${this.hass.localize(
@@ -80,7 +77,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
               .hass=${this.hass}
               .idx=${idx}
               @value-changed=${this._actionChanged}
-              .clipboard=${this.clipboard}
             ></ha-automation-action>
           </div>
         </ha-card>`
@@ -109,7 +105,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
               .disabled=${this.disabled}
               @value-changed=${this._defaultChanged}
               .hass=${this.hass}
-              .clipboard=${this.clipboard}
             ></ha-automation-action>
           `
         : html`<div class="link-button-row">

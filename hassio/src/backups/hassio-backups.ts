@@ -136,6 +136,15 @@ export class HassioBackups extends LitElement {
         sortable: true,
         template: (entry: number) => Math.ceil(entry * 10) / 10 + " MB",
       },
+      location: {
+        title: this.supervisor.localize("backup.location"),
+        width: "15%",
+        hidden: narrow,
+        filterable: true,
+        sortable: true,
+        template: (entry: string | null) =>
+          entry || this.supervisor.localize("backup.data_disk"),
+      },
       date: {
         title: this.supervisor.localize("backup.created"),
         width: "15%",

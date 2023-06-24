@@ -295,6 +295,7 @@ export interface SelectSelector {
 
 export interface StateSelector {
   state: {
+    extra_options?: { label: string; value: any }[];
     entity_id?: string;
     attribute?: string;
   } | null;
@@ -344,8 +345,7 @@ export interface TemplateSelector {
 }
 
 export interface ThemeSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  theme: {} | null;
+  theme: { include_default?: boolean } | null;
 }
 export interface TimeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types

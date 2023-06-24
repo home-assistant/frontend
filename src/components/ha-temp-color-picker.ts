@@ -7,6 +7,8 @@ import { rgb2hex } from "../common/color/convert-color";
 import { temperature2rgb } from "../common/color/convert-light-color";
 import { fireEvent } from "../common/dom/fire_event";
 
+const SAFE_ZONE_FACTOR = 0.9;
+
 declare global {
   interface HASSDomEvents {
     "cursor-moved": { value?: any };
@@ -50,9 +52,12 @@ function drawColorWheel(
   for (let y = -radius; y < radius; y += 1) {
     const x = radius * Math.sqrt(1 - (y / radius) ** 2);
 
-    const fraction = (y / radius + 1) / 2;
+    const fraction = (y / (radius * SAFE_ZONE_FACTOR) + 1) / 2;
 
-    const temperature = min + fraction * (max - min);
+    const temperature = Math.max(
+      Math.min(min + fraction * (max - min), max),
+      min
+    );
 
     const color = rgb2hex(temperature2rgb(temperature));
 
@@ -134,7 +139,7 @@ class HaTempColorPicker extends LitElement {
       this.setAttribute("aria-valuemax", this.max.toString());
     }
     if (changedProps.has("value")) {
-      if (this.value != null && this._localValue !== this.value) {
+      if (this._localValue !== this.value) {
         this._resetPosition();
       }
     }
@@ -192,7 +197,11 @@ class HaTempColorPicker extends LitElement {
   }
 
   private _resetPosition() {
-    if (this.value === undefined) return;
+    if (this.value === undefined) {
+      this._cursorPosition = undefined;
+      this._localValue = undefined;
+      return;
+    }
     const [, y] = this._getCoordsFromValue(this.value);
     const currentX = this._cursorPosition?.[0] ?? 0;
     const x =
@@ -202,14 +211,23 @@ class HaTempColorPicker extends LitElement {
   }
 
   private _getCoordsFromValue = (temperature: number): [number, number] => {
+    if (this.value === this.min) {
+      return [0, -1];
+    }
+    if (this.value === this.max) {
+      return [0, 1];
+    }
     const fraction = (temperature - this.min) / (this.max - this.min);
-    const y = 2 * fraction - 1;
+    const y = (2 * fraction - 1) * SAFE_ZONE_FACTOR;
     return [0, y];
   };
 
   private _getValueFromCoord = (_x: number, y: number): number => {
-    const fraction = (y + 1) / 2;
-    const temperature = this.min + fraction * (this.max - this.min);
+    const fraction = (y / SAFE_ZONE_FACTOR + 1) / 2;
+    const temperature = Math.max(
+      Math.min(this.min + fraction * (this.max - this.min), this.max),
+      this.min
+    );
     return Math.round(temperature);
   };
 
@@ -305,9 +323,13 @@ class HaTempColorPicker extends LitElement {
     const cy = ((y + 1) * size) / 2;
 
     const markerPosition = `${cx}px, ${cy}px`;
-    const markerScale = this._pressed ? "1.5" : "1";
+    const markerScale = this._pressed
+      ? this._pressed === "touch"
+        ? "2.5"
+        : "1.5"
+      : "1";
     const markerOffset =
-      this._pressed === "touch" ? `0px, -${size / 8}px` : "0px, 0px";
+      this._pressed === "touch" ? `0px, -${size / 16}px` : "0px, 0px";
 
     return html`
       <div class="container ${classMap({ pressed: Boolean(this._pressed) })}">
@@ -363,21 +385,23 @@ class HaTempColorPicker extends LitElement {
       :host {
         display: block;
         outline: none;
-        border-radius: 9999px;
-      }
-      :host(:focus-visible) {
-        box-shadow: 0 0 0 2px rgb(255, 160, 0);
       }
       .container {
         position: relative;
         width: 100%;
         height: 100%;
-        cursor: pointer;
         display: flex;
       }
       canvas {
         width: 100%;
         height: 100%;
+        object-fit: contain;
+        border-radius: 50%;
+        transition: box-shadow 180ms ease-in-out;
+        cursor: pointer;
+      }
+      :host(:focus-visible) canvas {
+        box-shadow: 0 0 0 2px rgb(255, 160, 0);
       }
       svg {
         position: absolute;

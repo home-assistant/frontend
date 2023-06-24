@@ -67,6 +67,11 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
+import {
+  protocolIntegrationPicked,
+  PROTOCOL_INTEGRATIONS,
+} from "../../../common/integrations/protocolIntegrationPicked";
+import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -158,6 +163,14 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               }"`
             );
             break;
+          }
+          case "domain": {
+            this._showDisabled = true;
+            filterTexts.push(
+              `${this.hass.localize(
+                "ui.panel.config.integrations.integration"
+              )} "${domainToName(localize, value)}"`
+            );
           }
         }
       });
@@ -340,7 +353,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ? entities.concat(stateEntities)
         : entities;
 
-      const filteredDomains: string[] = [];
+      let filteredConfigEntry: ConfigEntry | undefined;
+      const filteredDomains = new Set<string>();
 
       filters.forEach((value, key) => {
         if (key === "config_entry") {
@@ -365,8 +379,25 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           const configEntry = entries.find((entry) => entry.entry_id === value);
 
           if (configEntry) {
-            filteredDomains.push(configEntry.domain);
+            filteredDomains.add(configEntry.domain);
+            filteredConfigEntry = configEntry;
           }
+        }
+        if (key === "domain") {
+          if (!entries) {
+            this._loadConfigEntries();
+            return;
+          }
+          const entryIds = entries
+            .filter((entry) => entry.domain === value)
+            .map((entry) => entry.entry_id);
+          filteredEntities = filteredEntities.filter(
+            (entity) =>
+              entity.config_entry_id &&
+              entryIds.includes(entity.config_entry_id)
+          );
+          filteredDomains.add(value);
+          startLength = filteredEntities.length;
         }
       });
 
@@ -420,7 +451,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       }
 
       this._numHiddenEntities = startLength - result.length;
-      return { filteredEntities: result, filteredDomains: filteredDomains };
+      return { filteredEntities: result, filteredConfigEntry, filteredDomains };
     }
   );
 
@@ -485,7 +516,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this._entries
       );
 
-    const includeZHAFab = filteredDomains.includes("zha");
+    const includeAddDeviceFab =
+      filteredDomains.size === 1 &&
+      (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+        [...filteredDomains][0]
+      );
 
     return html`
       <hass-tabs-subpage-data-table
@@ -521,7 +556,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         @search-changed=${this._handleSearchChange}
         @row-click=${this._openEditEntry}
         id="entity_id"
-        .hasFab=${includeZHAFab}
+        .hasFab=${includeAddDeviceFab}
       >
         <ha-integration-overflow-menu
           .hass=${this.hass}
@@ -677,16 +712,16 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 </ha-check-list-item>
               </ha-button-menu>
             `}
-        ${includeZHAFab
-          ? html`<a href="/config/zha/add" slot="fab">
-              <ha-fab
-                .label=${this.hass.localize("ui.panel.config.zha.add_device")}
-                extended
-                ?rtl=${computeRTL(this.hass)}
-              >
-                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-              </ha-fab>
-            </a>`
+        ${includeAddDeviceFab
+          ? html`<ha-fab
+              .label=${this.hass.localize("ui.panel.config.devices.add_device")}
+              extended
+              @click=${this._addDevice}
+              slot="fab"
+              ?rtl=${computeRTL(this.hass)}
+            >
+              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+            </ha-fab>`
           : nothing}
       </hass-tabs-subpage-data-table>
     `;
@@ -933,6 +968,36 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     this._showReadOnly = true;
     this._showUnavailable = true;
     this._showHidden = true;
+  }
+
+  private _addDevice() {
+    const { filteredConfigEntry, filteredDomains } =
+      this._filteredEntitiesAndDomains(
+        this._entities!,
+        this._devices,
+        this._areas,
+        this._stateEntities,
+        this._searchParms,
+        this._showDisabled,
+        this._showUnavailable,
+        this._showReadOnly,
+        this._showHidden,
+        this._entries
+      );
+    if (
+      filteredDomains.size === 1 &&
+      (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+        [...filteredDomains][0]
+      )
+    ) {
+      protocolIntegrationPicked(this, this.hass, [...filteredDomains][0], {
+        config_entry: filteredConfigEntry?.entry_id,
+      });
+      return;
+    }
+    showAddIntegrationDialog(this, {
+      domain: this._searchParms.get("domain") || undefined,
+    });
   }
 
   static get styles(): CSSResultGroup {

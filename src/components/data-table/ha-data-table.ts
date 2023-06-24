@@ -490,7 +490,7 @@ export class HaDataTable extends LitElement {
   }
 
   private _memFilterData = memoizeOne(
-    async (
+    (
       data: DataTableRowData[],
       columns: SortableColumnContainer,
       filter: string

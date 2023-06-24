@@ -30,6 +30,7 @@ const VALID_CHANNELS = [
   23,
   24,
   25,
+  26,
 ];
 
 @customElement("dialog-zha-change-channel")

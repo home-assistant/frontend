@@ -77,6 +77,7 @@ module.exports.htmlMinifierOptions = {
 module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
   safari10: !latestBuild,
   ecma: latestBuild ? 2015 : 5,
+  module: latestBuild,
   format: { comments: false },
   sourceMap: !isTestBuild,
 });
@@ -97,7 +98,7 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
       "@babel/preset-env",
       {
         useBuiltIns: latestBuild ? false : "entry",
-        corejs: latestBuild ? false : { version: "3.30", proposals: true },
+        corejs: latestBuild ? false : { version: "3.31", proposals: true },
         bugfixes: true,
       },
     ],
@@ -259,6 +260,7 @@ module.exports.config = {
       isHassioBuild: true,
       defineOverlay: {
         __SUPERVISOR__: true,
+        __STATIC_PATH__: `"${paths.hassio_publicPath}/static/"`,
       },
     };
   },

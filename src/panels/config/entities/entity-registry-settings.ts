@@ -9,7 +9,7 @@ import "../../../components/ha-alert";
 import {
   ConfigEntry,
   deleteConfigEntry,
-  getConfigEntries,
+  getConfigEntry,
 } from "../../../data/config_entries";
 import { updateDeviceRegistryEntry } from "../../../data/device_registry";
 import {
@@ -17,10 +17,12 @@ import {
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { fetchIntegrationManifest } from "../../../data/integration";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { hideMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -45,18 +47,31 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @query("entity-registry-settings-editor")
   private _registryEditor?: EntityRegistrySettingsEditor;
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    if (this.entry.config_entry_id) {
-      getConfigEntries(this.hass, {
-        type: ["helper"],
-        domain: this.entry.platform,
-      }).then((entries) => {
-        this._helperConfigEntry = entries.find(
-          (ent) => ent.entry_id === this.entry.config_entry_id
-        );
-      });
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (changedProps.has("entry")) {
+      this._fetchHelperConfigEntry();
     }
+  }
+
+  private async _fetchHelperConfigEntry() {
+    this._helperConfigEntry = undefined;
+    if (!this.entry?.config_entry_id) {
+      return;
+    }
+    try {
+      const configEntry = (
+        await getConfigEntry(this.hass, this.entry.config_entry_id)
+      ).config_entry;
+      const manifest = await fetchIntegrationManifest(
+        this.hass,
+        configEntry.domain
+      );
+      if (manifest.integration_type === "helper") {
+        this._helperConfigEntry = configEntry;
+      }
+      // eslint-disable-next-line no-empty
+    } catch (err) {}
   }
 
   protected render() {
@@ -183,8 +198,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
     try {
-      await this._registryEditor!.updateEntry();
-      fireEvent(this, "close-dialog");
+      const result = await this._registryEditor!.updateEntry();
+      if (result.close) {
+        hideMoreInfoDialog(this);
+      }
     } catch (err: any) {
       this._error = err.message || "Unknown error";
     } finally {

@@ -18,16 +18,16 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { LocalStorage } from "../../common/decorators/local-storage";
+import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-dialog";
+import "../../components/ha-dialog-header";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
 import "../../components/ha-textfield";
-import "../../components/ha-dialog-header";
 import type { HaTextField } from "../../components/ha-textfield";
 import {
   AssistPipeline,
@@ -41,6 +41,7 @@ import type { HomeAssistant } from "../../types";
 import { AudioRecorder } from "../../util/audio-recorder";
 import { documentationUrl } from "../../util/documentation-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
+import { VoiceCommandDialogParams } from "./show-ha-voice-command-dialog";
 
 interface Message {
   who: string;
@@ -56,7 +57,12 @@ export class HaVoiceCommandDialog extends LitElement {
 
   @state() private _opened = false;
 
-  @LocalStorage("AssistPipelineId", true, false) private _pipelineId?: string;
+  @storage({
+    key: "AssistPipelineId",
+    state: true,
+    subscribe: false,
+  })
+  private _pipelineId?: string;
 
   @state() private _pipeline?: AssistPipeline;
 
@@ -82,7 +88,13 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _stt_binary_handler_id?: number | null;
 
-  public async showDialog(): Promise<void> {
+  private _pipelinePromise?: Promise<AssistPipeline>;
+
+  public async showDialog(params?: VoiceCommandDialogParams): Promise<void> {
+    if (params?.pipeline_id) {
+      this._pipelineId = params?.pipeline_id;
+    }
+
     this._conversation = [
       {
         who: "hass",
@@ -92,6 +104,11 @@ export class HaVoiceCommandDialog extends LitElement {
     this._opened = true;
     await this.updateComplete;
     this._scrollMessagesBottom();
+
+    await this._pipelinePromise;
+    if (params?.start_listening && this._pipeline?.stt_engine) {
+      this._toggleListening();
+    }
   }
 
   public async closeDialog(): Promise<void> {
@@ -230,7 +247,7 @@ export class HaVoiceCommandDialog extends LitElement {
                     <div class="listening-icon">
                       <ha-icon-button
                         .path=${mdiMicrophone}
-                        @click=${this._toggleListening}
+                        @click=${this._handleListeningButton}
                         .label=${this.hass.localize(
                           "ui.dialogs.voice_command.start_listening"
                         )}
@@ -275,7 +292,8 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private async _getPipeline() {
     try {
-      this._pipeline = await getAssistPipeline(this.hass, this._pipelineId);
+      this._pipelinePromise = getAssistPipeline(this.hass, this._pipelineId);
+      this._pipeline = await this._pipelinePromise;
     } catch (e: any) {
       if (e.code === "not_found") {
         this._pipelineId = undefined;
@@ -392,9 +410,13 @@ export class HaVoiceCommandDialog extends LitElement {
     }
   }
 
-  private _toggleListening(ev) {
+  private _handleListeningButton(ev) {
     ev.stopPropagation();
     ev.preventDefault();
+    this._toggleListening();
+  }
+
+  private _toggleListening() {
     const supportsMicrophone = AudioRecorder.isSupported;
     if (!supportsMicrophone) {
       this._showNotSupportedMessage();

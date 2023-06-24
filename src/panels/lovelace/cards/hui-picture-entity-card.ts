@@ -14,6 +14,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
+import { computeImageUrl, ImageEntity } from "../../../data/image";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -68,7 +69,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
 
     if (
-      computeDomain(config.entity) !== "camera" &&
+      !["camera", "image"].includes(computeDomain(config.entity)) &&
       !config.image &&
       !config.state_image &&
       !config.camera_image
@@ -123,6 +124,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       this.hass!.localize,
       stateObj,
       this.hass.locale,
+      this.hass.config,
       this.hass.entities
     );
 
@@ -140,14 +142,18 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       footer = html`<div class="footer single">${entityState}</div>`;
     }
 
+    const domain = computeDomain(this._config.entity);
+
     return html`
       <ha-card>
         <hui-image
           .hass=${this.hass}
-          .image=${this._config.image}
+          .image=${domain === "image"
+            ? computeImageUrl(stateObj as ImageEntity)
+            : this._config.image}
           .stateImage=${this._config.state_image}
           .stateFilter=${this._config.state_filter}
-          .cameraImage=${computeDomain(this._config.entity) === "camera"
+          .cameraImage=${domain === "camera"
             ? this._config.entity
             : this._config.camera_image}
           .cameraView=${this._config.camera_view}

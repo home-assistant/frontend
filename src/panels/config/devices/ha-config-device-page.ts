@@ -9,7 +9,14 @@ import {
   mdiPlusCircle,
 } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -261,6 +268,9 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   protected render() {
+    if (!this.devices || !this.deviceId) {
+      return nothing;
+    }
     const device = this._device(this.deviceId, this.devices);
 
     if (!device) {
@@ -290,7 +300,29 @@ export class HaConfigDevicePage extends LitElement {
       : undefined;
     const area = this._computeArea(this.areas, device);
 
-    const deviceInfo: TemplateResult[] = [];
+    const deviceInfo: TemplateResult[] = integrations.map(
+      (integration) =>
+        html`<a
+          slot="actions"
+          href=${`/config/integrations/integration/${integration.domain}#config_entry=${integration.entry_id}`}
+        >
+          <ha-list-item graphic="icon" hasMeta>
+            <img
+              slot="graphic"
+              alt=${domainToName(this.hass.localize, integration.domain)}
+              src=${brandsUrl({
+                domain: integration.domain,
+                type: "icon",
+                darkOptimized: this.hass.themes?.darkMode,
+              })}
+              referrerpolicy="no-referrer"
+            />
+
+            ${domainToName(this.hass.localize, integration.domain)}
+            <ha-icon-next slot="meta"></ha-icon-next>
+          </ha-list-item>
+        </a>`
+    );
 
     const actions = [...(this._deviceActions || [])];
     if (Array.isArray(this._diagnosticDownloadLinks)) {

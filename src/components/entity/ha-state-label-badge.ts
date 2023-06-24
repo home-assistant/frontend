@@ -192,6 +192,7 @@ export class HaStateLabelBadge extends LitElement {
               this.hass!.localize,
               entityState,
               this.hass!.locale,
+              this.hass!.config,
               this.hass!.entities
             );
     }
@@ -280,7 +281,7 @@ export class HaStateLabelBadge extends LitElement {
         font-size: 70%;
       }
       ha-label-badge {
-        --ha-label-badge-color: var(--label-badge-red, #df4c1e);
+        --ha-label-badge-color: var(--label-badge-red);
       }
       ha-label-badge.has-unit_of_measurement {
         --ha-label-badge-label-text-transform: none;
@@ -288,31 +289,31 @@ export class HaStateLabelBadge extends LitElement {
 
       ha-label-badge.binary_sensor,
       ha-label-badge.updater {
-        --ha-label-badge-color: var(--label-badge-blue, #039be5);
+        --ha-label-badge-color: var(--label-badge-blue);
       }
 
       .red {
-        --ha-label-badge-color: var(--label-badge-red, #df4c1e);
+        --ha-label-badge-color: var(--label-badge-red);
       }
 
       .blue {
-        --ha-label-badge-color: var(--label-badge-blue, #039be5);
+        --ha-label-badge-color: var(--label-badge-blue);
       }
 
       .green {
-        --ha-label-badge-color: var(--label-badge-green, #0da035);
+        --ha-label-badge-color: var(--label-badge-green);
       }
 
       .yellow {
-        --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
+        --ha-label-badge-color: var(--label-badge-yellow);
       }
 
       .grey {
-        --ha-label-badge-color: var(--label-badge-grey, var(--paper-grey-500));
+        --ha-label-badge-color: var(--label-badge-grey);
       }
 
       .warning {
-        --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
+        --ha-label-badge-color: var(--label-badge-yellow);
       }
     `;
   }

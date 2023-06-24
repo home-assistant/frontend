@@ -1,7 +1,10 @@
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { assert } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../../common/entity/compute_domain";
+import { computeObjectId } from "../../../../../common/entity/compute_object_id";
 import { hasTemplate } from "../../../../../common/string/has-template";
 import "../../../../../components/ha-service-control";
 import { ServiceAction, serviceActionStruct } from "../../../../../data/script";
@@ -20,6 +23,26 @@ export class HaServiceAction extends LitElement implements ActionElement {
 
   @state() private _action!: ServiceAction;
 
+  private _fields = memoizeOne(
+    (
+      serviceDomains: HomeAssistant["services"],
+      domainService: string | undefined
+    ): { fields: any } => {
+      if (!domainService) {
+        return { fields: {} };
+      }
+      const domain = computeDomain(domainService);
+      const service = computeObjectId(domainService);
+      if (!(domain in serviceDomains)) {
+        return { fields: {} };
+      }
+      if (!(service in serviceDomains[domain])) {
+        return { fields: {} };
+      }
+      return { fields: serviceDomains[domain][service].fields };
+    }
+  );
+
   public static get defaultConfig() {
     return { service: "", data: {} };
   }
@@ -34,7 +57,28 @@ export class HaServiceAction extends LitElement implements ActionElement {
       fireEvent(this, "ui-mode-not-available", err);
       return;
     }
-    if (this.action && hasTemplate(this.action)) {
+
+    const fields = this._fields(
+      this.hass.services,
+      this.action?.service
+    ).fields;
+    if (
+      this.action &&
+      (Object.entries(this.action).some(
+        ([key, val]) => key !== "data" && hasTemplate(val)
+      ) ||
+        (this.action.data &&
+          Object.entries(this.action.data).some(([key, val]) => {
+            const field = fields[key];
+            if (
+              field?.selector &&
+              ("template" in field.selector || "object" in field.selector)
+            ) {
+              return false;
+            }
+            return hasTemplate(val);
+          })))
+    ) {
       fireEvent(
         this,
         "ui-mode-not-available",

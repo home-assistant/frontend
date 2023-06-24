@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
 import Fuse from "fuse.js";
+import { HassConfig } from "home-assistant-js-websocket";
 import {
   css,
   html,
@@ -158,7 +159,7 @@ class AddIntegrationDialog extends LitElement {
     (
       i: Brands,
       h: Integrations,
-      components: HomeAssistant["config"]["components"],
+      components: HassConfig["components"],
       localize: LocalizeFunc,
       filter?: string
     ): IntegrationListItem[] => {

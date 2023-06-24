@@ -15,7 +15,7 @@ export const polyfillLocaleData = async (language: string) => {
       typeof Intl.NumberFormat.__addLocaleData === "function"
     ) {
       const result = await fetch(
-        `/static/locale-data/intl-numberformat/${language}.json`
+        `${__STATIC_PATH__}locale-data/intl-numberformat/${language}.json`
       );
       // @ts-ignore
       Intl.NumberFormat.__addLocaleData(await result.json());
@@ -26,7 +26,7 @@ export const polyfillLocaleData = async (language: string) => {
       typeof Intl.RelativeTimeFormat.__addLocaleData === "function"
     ) {
       const result = await fetch(
-        `/static/locale-data/intl-relativetimeformat/${language}.json`
+        `${__STATIC_PATH__}locale-data/intl-relativetimeformat/${language}.json`
       );
       // @ts-ignore
       Intl.RelativeTimeFormat.__addLocaleData(await result.json());
@@ -37,7 +37,7 @@ export const polyfillLocaleData = async (language: string) => {
       typeof Intl.DateTimeFormat.__addLocaleData === "function"
     ) {
       const result = await fetch(
-        `/static/locale-data/intl-datetimeformat/${language}.json`
+        `${__STATIC_PATH__}locale-data/intl-datetimeformat/${language}.json`
       );
       // @ts-ignore
       Intl.DateTimeFormat.__addLocaleData(await result.json());
@@ -48,10 +48,21 @@ export const polyfillLocaleData = async (language: string) => {
       typeof Intl.DisplayNames.__addLocaleData === "function"
     ) {
       const result = await fetch(
-        `/static/locale-data/intl-displaynames/${language}.json`
+        `${__STATIC_PATH__}locale-data/intl-displaynames/${language}.json`
       );
       // @ts-ignore
       Intl.DisplayNames.__addLocaleData(await result.json());
+    }
+    if (
+      Intl.ListFormat &&
+      // @ts-ignore
+      typeof Intl.ListFormat.__addLocaleData === "function"
+    ) {
+      const result = await fetch(
+        `${__STATIC_PATH__}locale-data/intl-listformat/${language}.json`
+      );
+      // @ts-ignore
+      Intl.ListFormat.__addLocaleData(await result.json());
     }
   } catch (e) {
     // Ignore

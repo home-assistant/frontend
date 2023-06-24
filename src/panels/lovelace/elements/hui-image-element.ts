@@ -1,6 +1,7 @@
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { ImageEntity, computeImageUrl } from "../../../data/image";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { computeTooltip } from "../common/compute-tooltip";
@@ -34,12 +35,16 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
     if (!this._config || !this.hass) {
       return nothing;
     }
+    let stateObj: ImageEntity | undefined;
+    if (this._config.image_entity) {
+      stateObj = this.hass.states[this._config.image_entity] as ImageEntity;
+    }
 
     return html`
       <hui-image
         .hass=${this.hass}
         .entity=${this._config.entity}
-        .image=${this._config.image}
+        .image=${stateObj ? computeImageUrl(stateObj) : this._config.image}
         .stateImage=${this._config.state_image}
         .cameraImage=${this._config.camera_image}
         .cameraView=${this._config.camera_view}

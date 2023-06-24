@@ -15,3 +15,5 @@ import "@formatjs/intl-datetimeformat/locale-data/en";
 import "@formatjs/intl-datetimeformat/add-all-tz";
 import "@formatjs/intl-displaynames/polyfill";
 import "@formatjs/intl-displaynames/locale-data/en";
+import "@formatjs/intl-listformat/polyfill";
+import "@formatjs/intl-listformat/locale-data/en";

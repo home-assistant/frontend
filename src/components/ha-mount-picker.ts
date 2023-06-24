@@ -1,4 +1,4 @@
-import { mdiBackupRestore, mdiHarddisk, mdiPlayBox } from "@mdi/js";
+import { mdiBackupRestore, mdiFolder, mdiHarddisk, mdiPlayBox } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -45,11 +45,11 @@ class HaMountPicker extends LitElement {
   }
 
   protected render() {
-    if (!this._mounts) {
-      return nothing;
-    }
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
+    }
+    if (!this._mounts) {
+      return nothing;
     }
     const dataDiskOption = html`<ha-list-item
       graphic="icon"
@@ -75,7 +75,7 @@ class HaMountPicker extends LitElement {
         fixedMenuPosition
         naturalMenuWidth
       >
-        ${this.usage !== SupervisorMountUsage.MEDIA &&
+        ${this.usage === SupervisorMountUsage.BACKUP &&
         (!this._mounts.default_backup_mount ||
           this._mounts.default_backup_mount === __BACKUP_DATA_DISK__)
           ? dataDiskOption
@@ -98,11 +98,13 @@ class HaMountPicker extends LitElement {
               slot="graphic"
               .path=${mount.usage === SupervisorMountUsage.MEDIA
                 ? mdiPlayBox
+                : mount.usage === SupervisorMountUsage.SHARE
+                ? mdiFolder
                 : mdiBackupRestore}
             ></ha-svg-icon>
           </ha-list-item>`
         )}
-        ${this.usage !== SupervisorMountUsage.MEDIA &&
+        ${this.usage === SupervisorMountUsage.BACKUP &&
         this._mounts.default_backup_mount
           ? dataDiskOption
           : nothing}
