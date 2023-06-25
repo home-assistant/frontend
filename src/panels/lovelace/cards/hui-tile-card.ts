@@ -276,7 +276,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
     const entityId = this._config.entity;
     const stateObj = entityId ? this.hass.states[entityId] : undefined;
-    const secondaryInfoType = this._config.secondary_info_type;
+    const secondaryInfo = this._config.secondary_info;
 
     const contentClasses = { vertical: Boolean(this._config.vertical) };
 
@@ -385,7 +385,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               class="info"
               .primary=${name}
               .secondary=${stateDisplay}
-              .secondaryInfoType=${secondaryInfoType}
+              .secondaryInfo=${secondaryInfo}
             ></ha-tile-info>
           </div>
         </div>

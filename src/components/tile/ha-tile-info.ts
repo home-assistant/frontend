@@ -14,7 +14,7 @@ export class HaTileInfo extends LitElement {
 
   @property() public secondary?: string | TemplateResult<1>;
 
-  @property() public secondaryInfoType?: string;
+  @property() public secondaryInfo?: string;
 
   protected render() {
     return html`
@@ -26,7 +26,7 @@ export class HaTileInfo extends LitElement {
   }
 
   private _conditionallyRenderSecondaryData() {
-    switch (this.secondaryInfoType) {
+    switch (this.secondaryInfo) {
       case "state":
         return this.secondary
           ? html`<span class="secondary">${this.secondary}</span>`
