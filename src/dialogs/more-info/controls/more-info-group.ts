@@ -55,7 +55,7 @@ class MoreInfoGroup extends LitElement {
     if (groupDomain && groupDomain !== "group") {
       this._groupDomainStateObj = {
         ...baseStateObj,
-        entity_id: this.stateObj.entity_id,
+        ...this.stateObj,
         attributes: {
           ...baseStateObj.attributes,
           friendly_name: this.stateObj.attributes.friendly_name,
