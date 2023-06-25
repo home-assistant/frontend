@@ -2624,7 +2624,7 @@
                   "else": "Else",
                   "add_else": "Add else",
                   "description": {
-                    "full": "Perform {action} if `{conditions}`{hasElse, select, \n true { otherwise `{elseAction}`} \n other {}\n } "
+                    "full": "Perform `{action}` if `{conditions}`{hasElse, select, \n true { otherwise `{elseAction}`} \n other {}\n } "
                   }
                 },
                 "stop": {
