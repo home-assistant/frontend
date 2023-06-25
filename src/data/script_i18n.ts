@@ -31,6 +31,7 @@ import {
   VariablesAction,
   WaitForTriggerAction,
 } from "./script";
+import "../resources/intl-polyfill";
 
 const actionTranslationBaseKey =
   "ui.panel.config.automation.editor.actions.type";
@@ -49,7 +50,7 @@ export const describeAction = <T extends ActionType>(
     actionType = getActionType(action) as T;
   }
 
-  const conjunctionFormatter = new Intl.ListFormat("en", {
+  const conjunctionFormatter = new Intl.ListFormat(hass.language, {
     style: "long",
     type: "conjunction",
   });
@@ -73,8 +74,7 @@ export const describeAction = <T extends ActionType>(
         ? `${domainToName(hass.localize, domain)}: ${service.name}`
         : hass.localize(
             `${actionTranslationBaseKey}.service.description.service_based_on_name`,
-            "name",
-            config.service
+            { name: config.service }
           );
     } else {
       return hass.localize(
@@ -169,8 +169,9 @@ export const describeAction = <T extends ActionType>(
     if (typeof config.delay === "number") {
       duration = hass.localize(
         `${actionTranslationBaseKey}.delay.description.duration_string`,
-        "duration",
-        secondsToDuration(config.delay)!
+        {
+          duration: secondsToDuration(config.delay)!,
+        }
       );
     } else if (typeof config.delay === "string") {
       duration = isTemplate(config.delay)
@@ -179,33 +180,35 @@ export const describeAction = <T extends ActionType>(
           )
         : hass.localize(
             `${actionTranslationBaseKey}.delay.description.duration_string`,
-            "duration",
-            config.delay ||
-              hass.localize(
-                `${actionTranslationBaseKey}.delay.description.duration_unknown`
-              )
+            {
+              duration:
+                config.delay ||
+                hass.localize(
+                  `${actionTranslationBaseKey}.delay.description.duration_unknown`
+                ),
+            }
           );
     } else if (config.delay) {
       duration = hass.localize(
         `${actionTranslationBaseKey}.delay.description.duration_string`,
-        "duration",
-        formatDuration(config.delay)
+        {
+          duration: formatDuration(config.delay),
+        }
       );
     } else {
       duration = hass.localize(
         `${actionTranslationBaseKey}.delay.description.duration_string`,
-        "duration",
-        hass.localize(
-          `${actionTranslationBaseKey}.delay.description.duration_unknown`
-        )
+        {
+          duration: hass.localize(
+            `${actionTranslationBaseKey}.delay.description.duration_unknown`
+          ),
+        }
       );
     }
 
-    return hass.localize(
-      `${actionTranslationBaseKey}.delay.description.full`,
-      "duration",
-      duration
-    );
+    return hass.localize(`${actionTranslationBaseKey}.delay.description.full`, {
+      duration: duration,
+    });
   }
 
   if (actionType === "activate_scene") {
@@ -237,7 +240,8 @@ export const describeAction = <T extends ActionType>(
       {
         hasMedia: config.metadata.title || config.data.media_content_id,
         media: config.metadata.title || config.data.media_content_id,
-        hasMediaPlayer: mediaStateObj ? true : entityId === undefined,
+        hasMediaPlayer:
+          mediaStateObj !== undefined ? true : entityId === undefined,
         mediaPlayer: mediaStateObj ? computeStateName(mediaStateObj) : entityId,
       }
     );
@@ -314,11 +318,41 @@ export const describeAction = <T extends ActionType>(
       ifConditions = [config.if];
     }
 
+    let elseActions: string[] = [];
+    if (config.else) {
+      if (Array.isArray(config.else)) {
+        const actions = ensureArray(config.else);
+        actions.forEach((currentAction) => {
+          elseActions.push(
+            describeAction(hass, entityRegistry, currentAction, undefined)
+          );
+        });
+      } else {
+        elseActions = [
+          describeAction(hass, entityRegistry, config.else, undefined),
+        ];
+      }
+    }
+
+    let thenActions: string[] = [];
+    if (Array.isArray(config.then)) {
+      const actions = ensureArray(config.then);
+      actions.forEach((currentAction) => {
+        thenActions.push(
+          describeAction(hass, entityRegistry, currentAction, undefined)
+        );
+      });
+    } else {
+      thenActions = [
+        describeAction(hass, entityRegistry, config.then, undefined),
+      ];
+    }
+
     return hass.localize(`${actionTranslationBaseKey}.if.description.full`, {
       hasElse: config.else !== undefined,
-      action: "an action",
-      conditions: ifConditions,
-      elseAction: "or else",
+      action: conjunctionFormatter.format(thenActions),
+      conditions: conjunctionFormatter.format(ifConditions),
+      elseAction: conjunctionFormatter.format(elseActions),
     });
   }
 
@@ -379,11 +413,12 @@ export const describeAction = <T extends ActionType>(
   }
 
   if (actionType === "check_condition") {
-    return `Test ${describeCondition(
-      action as Condition,
-      hass,
-      entityRegistry
-    )}`;
+    return hass.localize(
+      `${actionTranslationBaseKey}.check_condition.description.full`,
+      {
+        condition: describeCondition(action as Condition, hass, entityRegistry),
+      }
+    );
   }
 
   if (actionType === "device_action") {
