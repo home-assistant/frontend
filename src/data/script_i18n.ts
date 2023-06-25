@@ -240,8 +240,7 @@ export const describeAction = <T extends ActionType>(
       {
         hasMedia: config.metadata.title || config.data.media_content_id,
         media: config.metadata.title || config.data.media_content_id,
-        hasMediaPlayer:
-          mediaStateObj !== undefined ? true : entityId === undefined,
+        hasMediaPlayer: mediaStateObj ? true : entityId !== undefined,
         mediaPlayer: mediaStateObj ? computeStateName(mediaStateObj) : entityId,
       }
     );
