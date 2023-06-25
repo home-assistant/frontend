@@ -2638,7 +2638,7 @@
                 "parallel": {
                   "label": "Run in parallel",
                   "description": {
-                    "full": "Run {number} {number, plural,\n one {action}\n other{actions}\n} in parallel"
+                    "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in parallel"
                   }
                 },
                 "variables": {
