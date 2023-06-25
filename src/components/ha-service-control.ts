@@ -250,15 +250,15 @@ export class HaServiceControl extends LitElement {
     const targetSelector = target ? { target } : { target: {} };
     const targetEntities =
       ensureArray(
-        value?.target?.entity_id?.slice() || value?.data?.entity_id
-      ) || [];
+        value?.target?.entity_id || value?.data?.entity_id
+      )?.slice() || [];
     const targetDevices =
       ensureArray(
-        value?.target?.device_id?.slice() || value?.data?.device_id
-      ) || [];
+        value?.target?.device_id || value?.data?.device_id
+      )?.slice() || [];
     const targetAreas = ensureArray(
       value?.target?.area_id || value?.data?.area_id
-    );
+    )?.slice();
     if (targetAreas) {
       targetAreas.forEach((areaId) => {
         const expanded = expandAreaTarget(
