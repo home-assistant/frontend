@@ -26,6 +26,7 @@ import { createViewElement } from "../create-element/create-view-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { confDeleteCard } from "../editor/delete-card";
+import { deleteCard } from "../editor/config-util";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 import { PANEL_VIEW_LAYOUT, DEFAULT_VIEW_LAYOUT } from "./const";
@@ -35,7 +36,7 @@ declare global {
   interface HASSDomEvents {
     "ll-create-card": undefined;
     "ll-edit-card": { path: [number] | [number, number] };
-    "ll-delete-card": { path: [number] | [number, number] };
+    "ll-delete-card": { path: [number] | [number, number]; confirm: boolean };
   }
 }
 
@@ -251,7 +252,12 @@ export class HUIView extends ReactiveElement {
       });
     });
     this._layoutElement.addEventListener("ll-delete-card", (ev) => {
-      confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
+      if (ev.detail.confirm) {
+        confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
+      } else {
+        const newLovelace = deleteCard(this.lovelace!.config, ev.detail.path);
+        this.lovelace.saveConfig(newLovelace);
+      }
     });
   }
 
