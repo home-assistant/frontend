@@ -120,43 +120,30 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
           ></round-slider>
         `;
 
-    const mainHumidity = html`
+    const setValues = html`
       <svg viewBox="0 0 30 20">
-        <text x="50%" dx="1" y="73%" text-anchor="middle" id="main-humidity">
-          ${curHumidity
-            ? svg`
-                      ${formatNumber(curHumidity, this.hass.locale)}
-                      <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
-                        %
-                      </tspan>
-                      `
-            : isUnavailableState(stateObj.state) ||
-              setHumidity === undefined ||
-              setHumidity === null
+        <text x="50%" dx="1" y="73%" text-anchor="middle" id="set-values">
+          ${isUnavailableState(stateObj.state) ||
+          setHumidity === undefined ||
+          setHumidity === null
             ? ""
             : svg`
-                        ${formatNumber(setHumidity, this.hass.locale, {
-                          maximumFractionDigits: 0,
-                        })}
-                        <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
-                          %
-                        </tspan>
-                        `}
+                ${formatNumber(setHumidity, this.hass.locale, {
+                  maximumFractionDigits: 0,
+                })}
+                <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
+                  %
+                </tspan>
+                `}
         </text>
       </svg>
     `;
 
-    const secondaryHumidity = html`
-      <svg viewBox="0 0 40 10" id="secondary_humidity">
-        <text x="50%" y="50%" text-anchor="middle" id="secondary-humidity">
+    const currentHumidity = html`
+      <svg viewBox="0 0 40 10" id="current_humidity">
+        <text x="50%" y="50%" text-anchor="middle" id="current-humidity">
           ${curHumidity
-            ? isUnavailableState(stateObj.state) ||
-              setHumidity === undefined ||
-              setHumidity === null
-              ? ""
-              : svg`${formatNumber(setHumidity, this.hass.locale, {
-                  maximumFractionDigits: 0,
-                })}`
+            ? svg`${formatNumber(curHumidity, this.hass.locale)}`
             : ""}
         </text>
       </svg>
@@ -198,9 +185,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
                   @click=${this._toggle}
                   tabindex="0"
                 >
-                  ${mainHumidity}
+                  ${setValues}
                 </ha-icon-button>
-                ${secondaryHumidity} ${currentMode}
+                ${currentHumidity} ${currentMode}
               </div>
             </div>
           </div>
@@ -367,7 +354,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         transform: translate(0, 250%);
       }
 
-      #main-humidity {
+      #set-values {
         font-size: 13px;
         font-family: var(--paper-font-body1_-_font-family);
         font-weight: var(--paper-font-body1_-_font-weight);
@@ -378,12 +365,12 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         font-size: 4px;
       }
 
-      #secondary_humidity {
+      #current_humidity {
         max-width: 80%;
         transform: translate(0, 300%);
       }
 
-      #secondary-humidity {
+      #current-humidity {
         fill: var(--primary-text-color);
         font-size: 5px;
       }
