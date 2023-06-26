@@ -180,7 +180,7 @@ export const haTheme = EditorView.theme({
 
   ".cm-gutters": {
     backgroundColor:
-      "var(--code-editor-gutter-color, var(--mdc-text-field-fill-color, whitesmoke))",
+      "var(--code-editor-gutter-color, var(--secondary-background-color, whitesmoke))",
     color: "var(--paper-dialog-color, var(--secondary-text-color))",
     border: "none",
     borderRight:
