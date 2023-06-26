@@ -11,10 +11,12 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, queryAssignedNodes } from "lit/decorators";
+import deepClone from "deep-clone-simple";
+import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
-import { saveConfig } from "../../../data/lovelace";
+import { saveConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
 import { showSaveSuccessToast } from "../../../util/toast-saved-success";
@@ -33,6 +35,14 @@ export class HuiCardOptions extends LitElement {
   @property() public path?: [number, number];
 
   @queryAssignedNodes() private _assignedNodes?: NodeListOf<LovelaceCard>;
+
+  @storage({
+    key: "lovelaceClipboard",
+    state: false,
+    subscribe: false,
+    storage: "sessionStorage",
+  })
+  protected _clipboard?: LovelaceCardConfig;
 
   public getCardSize() {
     return this._assignedNodes ? computeCardSize(this._assignedNodes[0]) : 1;
@@ -96,6 +106,16 @@ export class HuiCardOptions extends LitElement {
               <mwc-list-item
                 >${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.duplicate"
+                )}</mwc-list-item
+              >
+              <mwc-list-item
+                >${this.hass!.localize(
+                  "ui.panel.lovelace.editor.edit_card.copy"
+                )}</mwc-list-item
+              >
+              <mwc-list-item
+                >${this.hass!.localize(
+                  "ui.panel.lovelace.editor.edit_card.cut"
                 )}</mwc-list-item
               >
               <mwc-list-item class="delete-item">
@@ -163,7 +183,13 @@ export class HuiCardOptions extends LitElement {
         this._duplicateCard();
         break;
       case 2:
-        this._deleteCard();
+        this._copyCard();
+        break;
+      case 3:
+        this._cutCard();
+        break;
+      case 4:
+        this._deleteCard(true);
         break;
     }
   }
@@ -181,6 +207,17 @@ export class HuiCardOptions extends LitElement {
 
   private _editCard(): void {
     fireEvent(this, "ll-edit-card", { path: this.path! });
+  }
+
+  private _cutCard(): void {
+    this._copyCard();
+    this._deleteCard(false);
+  }
+
+  private _copyCard(): void {
+    const cardConfig =
+      this.lovelace!.config.views[this.path![0]].cards![this.path![1]];
+    this._clipboard = deepClone(cardConfig);
   }
 
   private _cardUp(): void {
@@ -236,8 +273,8 @@ export class HuiCardOptions extends LitElement {
     });
   }
 
-  private _deleteCard(): void {
-    fireEvent(this, "ll-delete-card", { path: this.path! });
+  private _deleteCard(confirm: boolean): void {
+    fireEvent(this, "ll-delete-card", { path: this.path!, confirm });
   }
 }
 

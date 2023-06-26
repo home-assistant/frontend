@@ -1,6 +1,8 @@
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
+import { mdiContentCopy } from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -13,6 +15,7 @@ import {
   optional,
   string,
 } from "superstruct";
+import { storage } from "../../../../common/decorators/storage";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
@@ -55,6 +58,14 @@ export class HuiConditionalCardEditor
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
+
+  @storage({
+    key: "lovelaceClipboard",
+    state: false,
+    subscribe: false,
+    storage: "sessionStorage",
+  })
+  protected _clipboard?: LovelaceCardConfig;
 
   @state() private _config?: ConditionalCardConfig;
 
@@ -114,6 +125,14 @@ export class HuiConditionalCardEditor
                             : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
                         )}
                       </mwc-button>
+
+                      <ha-icon-button
+                        .label=${this.hass!.localize(
+                          "ui.panel.lovelace.editor.edit_card.copy"
+                        )}
+                        .path=${mdiContentCopy}
+                        @click=${this._handleCopyCard}
+                      ></ha-icon-button>
                       <mwc-button @click=${this._handleReplaceCard}
                         >${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.conditional.change_type"
@@ -236,6 +255,13 @@ export class HuiConditionalCardEditor
     this._guiModeAvailable = true;
     this._config = { ...this._config, card: ev.detail.config };
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  protected _handleCopyCard() {
+    if (!this._config) {
+      return;
+    }
+    this._clipboard = deepClone(this._config.card);
   }
 
   private _handleCardChanged(ev: HASSDomEvent<ConfigChangedEvent>): void {
