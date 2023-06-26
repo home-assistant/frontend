@@ -52,10 +52,6 @@ export interface ConversationResult {
     | IntentResultError;
 }
 
-export interface AgentInfo {
-  attribution?: { name: string; url: string };
-}
-
 export interface Agent {
   id: string;
   name: string;
@@ -85,15 +81,6 @@ export const listAgents = (
     type: "conversation/agent/list",
     language,
     country,
-  });
-
-export const getAgentInfo = (
-  hass: HomeAssistant,
-  agent_id?: string
-): Promise<AgentInfo> =>
-  hass.callWS({
-    type: "conversation/agent/info",
-    agent_id,
   });
 
 export const prepareConversation = (
