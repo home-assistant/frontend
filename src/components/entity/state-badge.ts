@@ -11,8 +11,12 @@ import {
 import { property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { stateColorCss } from "../../common/entity/state_color";
+import {
+  stateColorCss,
+  stateColorBrightness,
+} from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
 import { HVAC_ACTION_TO_MODE } from "../../data/climate";
@@ -115,7 +119,6 @@ export class StateBadge extends LitElement {
     this._showIcon = true;
 
     if (stateObj && this.overrideImage === undefined) {
-      const domain = computeStateDomain(stateObj);
       // hide icon if we have entity picture
       if (
         (stateObj.attributes.entity_picture_local ||
@@ -128,7 +131,7 @@ export class StateBadge extends LitElement {
         if (this.hass) {
           imageUrl = this.hass.hassUrl(imageUrl);
         }
-        if (domain === "camera") {
+        if (computeDomain(stateObj.entity_id) === "camera") {
           imageUrl = cameraUrlWithWidthHeight(imageUrl, 80, 80);
         }
         hostStyle.backgroundImage = `url(${imageUrl})`;
@@ -144,7 +147,7 @@ export class StateBadge extends LitElement {
         if (stateObj.attributes.rgb_color) {
           iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
         }
-        if (stateObj.attributes.brightness && domain !== "plant") {
+        if (stateObj.attributes.brightness) {
           const brightness = stateObj.attributes.brightness;
           if (typeof brightness !== "number") {
             const errorMessage = `Type error: state-badge expected number, but type of ${
@@ -153,8 +156,7 @@ export class StateBadge extends LitElement {
             // eslint-disable-next-line
             console.warn(errorMessage);
           }
-          // lowest brightness will be around 50% (that's pretty dark)
-          iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+          iconStyle.filter = stateColorBrightness(stateObj);
         }
         if (stateObj.attributes.hvac_action) {
           const hvacAction = stateObj.attributes.hvac_action;

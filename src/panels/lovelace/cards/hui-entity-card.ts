@@ -16,7 +16,10 @@ import { computeAttributeValueDisplay } from "../../../common/entity/compute_att
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateColorCss } from "../../../common/entity/state_color";
+import {
+  stateColorCss,
+  stateColorBrightness,
+} from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import {
   formatNumber,
@@ -28,7 +31,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import { isUnavailableState } from "../../../data/entity";
-import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
@@ -143,10 +145,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               data-state=${stateObj.state}
               style=${styleMap({
                 color: colored ? this._computeColor(stateObj) : undefined,
-                filter:
-                  colored && domain !== "plant"
-                    ? this._computeBrightness(stateObj)
-                    : undefined,
+                filter: colored ? stateColorBrightness(stateObj) : undefined,
                 height: this._config.icon_height
                   ? this._config.icon_height
                   : "",
@@ -215,14 +214,6 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       return iconColor;
     }
     return undefined;
-  }
-
-  private _computeBrightness(stateObj: HassEntity | LightEntity): string {
-    if (stateObj.attributes.brightness) {
-      const brightness = stateObj.attributes.brightness;
-      return `brightness(${(brightness + 245) / 5}%)`;
-    }
-    return "";
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
