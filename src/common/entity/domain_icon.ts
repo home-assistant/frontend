@@ -15,6 +15,7 @@ import {
   mdiCheckCircleOutline,
   mdiClock,
   mdiCloseCircleOutline,
+  mdiCrosshairsQuestion,
   mdiFan,
   mdiFanOff,
   mdiGestureTapButton,
@@ -98,6 +99,8 @@ export const domainIconWithoutDefault = (
 
     case "button":
       switch (stateObj?.attributes.device_class) {
+        case "identify":
+          return mdiCrosshairsQuestion;
         case "restart":
           return mdiRestart;
         case "update":
