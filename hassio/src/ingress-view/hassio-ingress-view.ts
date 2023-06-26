@@ -49,12 +49,18 @@ class HassioIngressView extends LitElement {
 
   private _sessionKeepAlive?: number;
 
+  private _fetchDataTimeout?: number;
+
   public disconnectedCallback() {
     super.disconnectedCallback();
 
     if (this._sessionKeepAlive) {
       clearInterval(this._sessionKeepAlive);
       this._sessionKeepAlive = undefined;
+    }
+    if (this._fetchDataTimeout) {
+      clearInterval(this._fetchDataTimeout);
+      this._fetchDataTimeout = undefined;
     }
   }
 
@@ -150,7 +156,7 @@ class HassioIngressView extends LitElement {
   private async _fetchData(addonSlug: string) {
     const createSessionPromise = createHassioSession(this.hass);
 
-    let addon;
+    let addon: HassioAddonDetails;
 
     try {
       addon = await fetchHassioAddonInfo(this.hass, addonSlug);
@@ -184,7 +190,7 @@ class HassioIngressView extends LitElement {
       return;
     }
 
-    if (addon.state !== "started") {
+    if (!addon.state || !["startup", "started"].includes(addon.state)) {
       const confirm = await showConfirmationDialog(this, {
         text: this.supervisor.localize("ingress.error_addon_not_running"),
         title: addon.name,
@@ -197,10 +203,8 @@ class HassioIngressView extends LitElement {
           fireEvent(this, "supervisor-collection-refresh", {
             collection: "addon",
           });
-          // Give the add-on some time to start
-          await new Promise((resolve) => {
-            setTimeout(resolve, 1000);
-          });
+          this._fetchData(addonSlug);
+          return;
         } catch (e) {
           await showAlertDialog(this, {
             text: this.supervisor.localize("ingress.error_starting_addon"),
@@ -217,7 +221,24 @@ class HassioIngressView extends LitElement {
       }
     }
 
-    let session;
+    if (addon.state === "startup") {
+      // Addon is starting up, wait for it to start
+      this._fetchDataTimeout = window.setTimeout(() => {
+        this._fetchData(addonSlug);
+      }, 500);
+      return;
+    }
+
+    if (addon.state !== "started") {
+      return;
+    }
+
+    if (this._fetchDataTimeout) {
+      clearInterval(this._fetchDataTimeout);
+      this._fetchDataTimeout = undefined;
+    }
+
+    let session: string;
 
     try {
       session = await createSessionPromise;
