@@ -1,24 +1,31 @@
-import { mdiMinus, mdiPlus } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { mdiMinus, mdiPlus, mdiThermometer, mdiWaterPercent } from "@mdi/js";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeAttributeValueDisplay } from "../../../../common/entity/compute_attribute_display";
-import { computeStateDisplay } from "../../../../common/entity/compute_state_display";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
+import { clamp } from "../../../../common/number/clamp";
+import { formatNumber } from "../../../../common/number/format_number";
+import { blankBeforePercent } from "../../../../common/translations/blank_before_percent";
+import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-control-circular-slider";
 import "../../../../components/ha-svg-icon";
 import {
   CLIMATE_HVAC_ACTION_TO_MODE,
-  CLIMATE_HVAC_MODE_ICONS,
   ClimateEntity,
   ClimateEntityFeature,
 } from "../../../../data/climate";
 import { UNAVAILABLE } from "../../../../data/entity";
 import { HomeAssistant } from "../../../../types";
-import { clamp } from "../../../../common/number/clamp";
-import { debounce } from "../../../../common/util/debounce";
 
 type Target = "value" | "low" | "high";
 
@@ -32,8 +39,8 @@ export class HaMoreInfoClimateTemperature extends LitElement {
 
   @state() private _selectTargetTemperature: Target = "low";
 
-  protected updated(changedProp: Map<string | number | symbol, unknown>): void {
-    super.updated(changedProp);
+  protected willUpdate(changedProp: PropertyValues): void {
+    super.willUpdate(changedProp);
     if (changedProp.has("stateObj")) {
       this._targetTemperature = {
         value: this.stateObj.attributes.temperature,
@@ -145,19 +152,37 @@ export class HaMoreInfoClimateTemperature extends LitElement {
   }
 
   private _renderHvacMode() {
+    const currentTemperature = this.stateObj.attributes.current_temperature;
+    const currentHumidity = this.stateObj.attributes.current_humidity;
+
+    if (currentTemperature == null && currentHumidity == null) {
+      return nothing;
+    }
+
     return html`
-      <p class="mode">
-        <ha-svg-icon
-          .path=${CLIMATE_HVAC_MODE_ICONS[this.stateObj.state]}
-        ></ha-svg-icon>
-        ${computeStateDisplay(
-          this.hass.localize,
-          this.stateObj,
-          this.hass.locale,
-          this.hass.config,
-          this.hass.entities
-        )}
-      </p>
+      <p class="current-label">Currently</p>
+      <div class="current">
+        ${currentTemperature != null
+          ? html`
+              <p>
+                <ha-svg-icon .path=${mdiThermometer}></ha-svg-icon>
+                ${formatNumber(currentTemperature, this.hass.locale)}
+                ${this.hass.config.unit_system.temperature}
+              </p>
+            `
+          : nothing}
+        ${currentHumidity != null
+          ? html`
+              <p>
+                <ha-svg-icon .path=${mdiWaterPercent}></ha-svg-icon>
+                ${formatNumber(
+                  currentHumidity,
+                  this.hass.locale
+                )}${blankBeforePercent(this.hass.locale)}%
+              </p>
+            `
+          : nothing}
+      </div>
     `;
   }
 
@@ -407,9 +432,27 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         align-items: center;
         color: var(--action-color, initial);
       }
-      .mode ha-svg-icon {
+      .current-label {
+        font-weight: 500;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+      .current {
+        display: flex;
+        flex-direction: row;
+        gap: 12px;
+      }
+      .current p {
+        font-weight: 500;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+      .current ha-svg-icon {
         --mdc-icon-size: 20px;
-        margin-right: 8px;
+        margin-right: 4px;
       }
       .dual {
         display: flex;

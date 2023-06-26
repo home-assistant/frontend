@@ -29,8 +29,7 @@ import {
 import { HomeAssistant } from "../../../types";
 import "../components/climate/ha-more-info-climate-temperature";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
-import { formatNumber } from "../../../common/number/format_number";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
+import "../components/ha-more-info-state-header";
 
 class MoreInfoClimate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -38,6 +37,30 @@ class MoreInfoClimate extends LitElement {
   @property() public stateObj?: ClimateEntity;
 
   private _resizeDebounce?: number;
+
+  private get _stateOverride() {
+    if (!this.stateObj) return undefined;
+
+    const stateDisplay = computeStateDisplay(
+      this.hass.localize,
+      this.stateObj,
+      this.hass.locale,
+      this.hass.config,
+      this.hass.entities
+    );
+    if (this.stateObj.attributes.preset_mode) {
+      const presetDisplay = computeAttributeValueDisplay(
+        this.hass.localize,
+        this.stateObj,
+        this.hass.locale,
+        this.hass.config,
+        this.hass.entities,
+        "preset_mode"
+      );
+      return `${stateDisplay} ⸱ ${presetDisplay}`;
+    }
+    return stateDisplay;
+  }
 
   protected render() {
     if (!this.stateObj) {
@@ -78,52 +101,12 @@ class MoreInfoClimate extends LitElement {
 
     const rtlDirection = computeRTLDirection(hass);
 
-    const currentTemperature = this.stateObj.attributes.current_temperature;
-    const currentHumidity = this.stateObj.attributes.current_humidity;
-
     return html`
-      ${currentTemperature || currentHumidity
-        ? html` <div class="current">
-            ${currentTemperature != null
-              ? html`
-                  <div>
-                    <p class="label">
-                      ${computeAttributeNameDisplay(
-                        this.hass.localize,
-                        this.stateObj,
-                        this.hass.entities,
-                        "current_temperature"
-                      )}
-                    </p>
-                    <p class="value">
-                      ${formatNumber(currentTemperature, this.hass.locale)}
-                      ${this.hass.config.unit_system.temperature}
-                    </p>
-                  </div>
-                `
-              : nothing}
-            ${currentHumidity != null
-              ? html`
-                  <div>
-                    <p class="label">
-                      ${computeAttributeNameDisplay(
-                        this.hass.localize,
-                        this.stateObj,
-                        this.hass.entities,
-                        "current_humidity"
-                      )}
-                    </p>
-                    <p class="value">
-                      ${formatNumber(
-                        currentHumidity,
-                        this.hass.locale
-                      )}${blankBeforePercent(this.hass.locale)}%
-                    </p>
-                  </div>
-                `
-              : nothing}
-          </div>`
-        : nothing}
+      <ha-more-info-state-header
+        .hass=${this.hass}
+        .stateObj=${this.stateObj}
+        .stateOverride=${this._stateOverride}
+      ></ha-more-info-state-header>
       <div class="controls">
         <ha-more-info-climate-temperature
           .hass=${this.hass}
