@@ -610,6 +610,14 @@ const tryDescribeTrigger = (
     );
   }
 
+  // Conversation Trigger
+  if (trigger.platform === "conversation") {
+    return hass.localize(
+      `${triggerTranslationBaseKey}.conversation.description.full`,
+      { sentence: disjunctionFormatter.format(ensureArray(trigger.command)) }
+    );
+  }
+
   // Persistent Notification Trigger
   if (trigger.platform === "persistent_notification") {
     return "When a persistent notification is updated";

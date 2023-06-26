@@ -107,6 +107,11 @@ export interface NumericStateTrigger extends BaseTrigger {
   for?: string | number | ForDict;
 }
 
+export interface ConversationTrigger extends BaseTrigger {
+  platform: "conversation";
+  command: string | string[];
+}
+
 export interface SunTrigger extends BaseTrigger {
   platform: "sun";
   offset: number;
@@ -178,6 +183,7 @@ export type Trigger =
   | HassTrigger
   | NumericStateTrigger
   | SunTrigger
+  | ConversationTrigger
   | TimePatternTrigger
   | WebhookTrigger
   | PersistentNotificationTrigger

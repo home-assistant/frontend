@@ -2378,6 +2378,15 @@
                     "rises": "When the sun rises{hasDuration, select, \n true { offset by {duration}} \n other {}\n }"
                   }
                 },
+                "conversation": {
+                  "label": "Sentence",
+                  "add_sentence": "Add sentence",
+                  "delete": "Delete sentence",
+                  "confirm_delete": "Are you sure you want to delete this sentence?",
+                  "description": {
+                    "full": "When the sentence {sentence} is said"
+                  }
+                },
                 "tag": {
                   "label": "Tag",
                   "description": {
