@@ -214,6 +214,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         outline: none;
         background: var(--divider-color);
         border-radius: 14px;
+        padding: 4px;
+        margin-top: -4px;
+        margin-bottom: 8px;
       }
       .entity div {
         width: 100%;
