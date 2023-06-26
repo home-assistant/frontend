@@ -1,4 +1,4 @@
-import { mdiMinus, mdiPlus, mdiWaterPercent } from "@mdi/js";
+import { mdiMinus, mdiPlus } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -88,10 +88,12 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
       return nothing;
     }
     return html`
-      <p class="state">
-        <ha-svg-icon .path=${mdiWaterPercent}></ha-svg-icon>
-        ${humidity}${blankBeforePercent(this.hass.locale)}%
+      <p class="current-label">
+        ${this.hass.localize(
+          "ui.dialogs.more_info_control.humidifier.currently"
+        )}
       </p>
+      <p class="current">${humidity}${blankBeforePercent(this.hass.locale)}%</p>
     `;
   }
 
@@ -211,7 +213,7 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
         font-size: 58px;
         line-height: 64px;
         letter-spacing: -0.25px;
-        margin: 12px 0;
+        margin: 20px 0;
       }
       .humidity span {
         display: inline-flex;
@@ -220,7 +222,19 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
         font-size: 24px;
         line-height: 40px;
       }
-      .state {
+      .current-label {
+        font-weight: 500;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+      .current {
+        display: flex;
+        flex-direction: row;
+        gap: 12px;
+      }
+      .current p {
         font-weight: 500;
         display: flex;
         flex-direction: row;

@@ -1002,7 +1002,8 @@
           "target": "Target"
         },
         "humidifier": {
-          "toggle": "Toggle"
+          "toggle": "Toggle",
+          "currently": "Currently"
         }
       },
       "entity_registry": {
