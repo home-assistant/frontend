@@ -996,6 +996,9 @@
           "open": "Open",
           "lock": "Lock",
           "unlock": "Unlock"
+        },
+        "climate": {
+          "currently": "Currently"
         }
       },
       "entity_registry": {

@@ -151,7 +151,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     `;
   }
 
-  private _renderHvacMode() {
+  private _renderCurrent() {
     const currentTemperature = this.stateObj.attributes.current_temperature;
     const currentHumidity = this.stateObj.attributes.current_humidity;
 
@@ -160,7 +160,9 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     }
 
     return html`
-      <p class="current-label">Currently</p>
+      <p class="current-label">
+        ${this.hass.localize("ui.dialogs.more_info_control.climate.currently")}
+      </p>
       <div class="current">
         ${currentTemperature != null
           ? html`
@@ -205,18 +207,27 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     `;
   }
 
-  private _renderTemperature(temperature: number) {
+  private _renderTargetTemperature(temperature: number) {
     const digits = this._step.toString().split(".")?.[1]?.length ?? 0;
-    const [temperatureInteger, temperatureDecimal] = temperature
-      .toFixed(digits)
-      .split(".");
+    const formatted = formatNumber(temperature, this.hass.locale, {
+      maximumFractionDigits: digits,
+      minimumFractionDigits: digits,
+    });
+    const [temperatureInteger] = formatted.includes(".")
+      ? formatted.split(".")
+      : formatted.split(",");
+
+    const temperatureDecimal = formatted.replace(temperatureInteger, "");
 
     return html`
       <p class="temperature">
         <span aria-hidden="true">
           ${temperatureInteger}
+          ${digits !== 0
+            ? html`<span class="decimal">${temperatureDecimal}</span>`
+            : nothing}
           <span class="unit">
-            ${temperatureDecimal}${this.hass.config.unit_system.temperature}
+            ${this.hass.config.unit_system.temperature}
           </span>
         </span>
         <span class="visually-hidden">
@@ -285,8 +296,8 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           </ha-control-circular-slider>
           <div class="info">
             ${this._renderHvacAction()}
-            ${this._renderTemperature(this._targetTemperature.value)}
-            ${this._renderHvacMode()}
+            ${this._renderTargetTemperature(this._targetTemperature.value)}
+            ${this._renderCurrent()}
           </div>
           ${this._renderTemperatureButtons("value")}
         </div>
@@ -334,7 +345,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
                   selected: this._selectTargetTemperature === "low",
                 })}
               >
-                ${this._renderTemperature(this._targetTemperature.low)}
+                ${this._renderTargetTemperature(this._targetTemperature.low)}
               </button>
               <button
                 @click=${this._handleSelectTemp}
@@ -343,10 +354,10 @@ export class HaMoreInfoClimateTemperature extends LitElement {
                   selected: this._selectTargetTemperature === "high",
                 })}
               >
-                ${this._renderTemperature(this._targetTemperature.high)}
+                ${this._renderTargetTemperature(this._targetTemperature.high)}
               </button>
             </div>
-            ${this._renderHvacMode()}
+            ${this._renderCurrent()}
           </div>
           ${this._renderTemperatureButtons(this._selectTargetTemperature)}
         </div>
@@ -370,7 +381,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         >
         </ha-control-circular-slider>
         <div class="info">
-          ${this._renderHvacAction()}${this._renderHvacMode()}
+          ${this._renderHvacAction()}${this._renderCurrent()}
         </div>
       </div>
     `;
@@ -407,7 +418,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         font-size: 58px;
         line-height: 64px;
         letter-spacing: -0.25px;
-        margin: 12px 0;
+        margin: 20px 0;
       }
       .temperature span {
         display: inline-flex;
@@ -416,14 +427,11 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         font-size: 24px;
         line-height: 40px;
       }
-      .temperature.draft {
-        font-style: italic;
-      }
-      .mode {
-        font-weight: 500;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
+      .temperature .decimal {
+        font-size: 24px;
+        line-height: 40px;
+        align-self: flex-end;
+        margin-right: -18px;
       }
       .action {
         font-weight: 500;
@@ -453,6 +461,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       .current ha-svg-icon {
         --mdc-icon-size: 20px;
         margin-right: 4px;
+        display: none;
       }
       .dual {
         display: flex;
@@ -466,8 +475,13 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         padding: 3px 0;
       }
       .dual .temperature .unit {
-        font-size: 22px;
+        font-size: 18px;
         line-height: 34px;
+      }
+      .dual .temperature .decimal {
+        font-size: 18px;
+        line-height: 34px;
+        margin-right: -14px;
       }
       .dual button {
         outline: none;
