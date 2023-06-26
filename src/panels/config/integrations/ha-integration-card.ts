@@ -83,6 +83,9 @@ export class HaIntegrationCard extends LitElement {
           >
             <ha-icon-button
               slot="header-button"
+              .label=${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.configure"
+              )}
               .path=${mdiCogOutline}
             ></ha-icon-button>
           </ha-integration-header>
