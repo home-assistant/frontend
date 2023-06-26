@@ -276,7 +276,7 @@ class HaPanelDevTemplate extends LitElement {
 
         .render-pane {
           position: relative;
-          width: 50%;
+          max-width: 50%;
         }
 
         .render-spinner {
@@ -411,7 +411,12 @@ class HaPanelDevTemplate extends LitElement {
     }
     this._unsubscribeTemplate();
     this._template = "";
-    this._templateResult = undefined;
+    // Reset to empty result. Setting to 'undefined' results in a different visual
+    // behaviour compared to manually emptying the template input box.
+    this._templateResult = {
+      result: "",
+      listeners: { all: false, entities: [], domains: [], time: false },
+    };
   }
 }
 
