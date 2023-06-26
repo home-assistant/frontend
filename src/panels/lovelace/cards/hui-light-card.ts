@@ -30,6 +30,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LightCardConfig } from "./types";
+import { stateColorBrightness } from "../../../common/entity/state_color";
 
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
@@ -239,8 +240,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     if (stateObj.state === "off" || !stateObj.attributes.brightness) {
       return "";
     }
-    const brightness = stateObj.attributes.brightness;
-    return `brightness(${(brightness + 245) / 5}%)`;
+    return stateColorBrightness(stateObj);
   }
 
   private _computeColor(stateObj: LightEntity): string {
