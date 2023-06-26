@@ -68,6 +68,9 @@ export class HaControlCircularSlider extends LitElement {
   @property({ type: Boolean })
   public dual?: boolean;
 
+  @property({ type: Boolean, reflect: true })
+  public inverted?: boolean;
+
   @property({ type: String })
   public label?: string;
 
@@ -81,13 +84,13 @@ export class HaControlCircularSlider extends LitElement {
   public value?: number;
 
   @property({ type: Number })
-  public current?: number;
-
-  @property({ type: Number })
   public low?: number;
 
   @property({ type: Number })
   public high?: number;
+
+  @property({ type: Number })
+  public current?: number;
 
   @property({ type: Number })
   public step = 1;
@@ -97,6 +100,15 @@ export class HaControlCircularSlider extends LitElement {
 
   @property({ type: Number })
   public max = 100;
+
+  @state()
+  public _localValue?: number = this.value;
+
+  @state()
+  public _localLow?: number = this.low;
+
+  @state()
+  public _localHigh?: number = this.high;
 
   @state()
   public _activeSlider?: ActiveSlider;
@@ -120,15 +132,34 @@ export class HaControlCircularSlider extends LitElement {
 
   private _boundedValue(value: number) {
     const min =
-      this._activeSlider === "high" ? Math.min(this.low ?? this.max) : this.min;
+      this._activeSlider === "high"
+        ? Math.min(this._localLow ?? this.max)
+        : this.min;
     const max =
-      this._activeSlider === "low" ? Math.max(this.high ?? this.min) : this.max;
+      this._activeSlider === "low"
+        ? Math.max(this._localHigh ?? this.min)
+        : this.max;
     return Math.min(Math.max(value, min), max);
   }
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
-    super.firstUpdated(changedProperties);
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
     this._setupListeners();
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (!this._activeSlider) {
+      if (changedProps.has("value")) {
+        this._localValue = this.value;
+      }
+      if (changedProps.has("low")) {
+        this._localLow = this.low;
+      }
+      if (changedProps.has("high")) {
+        this._localHigh = this.high;
+      }
+    }
   }
 
   connectedCallback(): void {
@@ -164,8 +195,8 @@ export class HaControlCircularSlider extends LitElement {
 
   private _findActiveSlider(value: number): ActiveSlider {
     if (!this.dual) return "value";
-    const low = Math.max(this.low ?? this.min, this.min);
-    const high = Math.min(this.high ?? this.max, this.max);
+    const low = Math.max(this._localLow ?? this.min, this.min);
+    const high = Math.min(this._localHigh ?? this.max, this.max);
     if (low >= value) {
       return "low";
     }
@@ -178,13 +209,29 @@ export class HaControlCircularSlider extends LitElement {
   }
 
   private _setActiveValue(value: number) {
-    if (!this._activeSlider) return;
-    this[this._activeSlider] = value;
+    switch (this._activeSlider) {
+      case "high":
+        this._localHigh = value;
+        break;
+      case "low":
+        this._localLow = value;
+        break;
+      case "value":
+        this._localValue = value;
+        break;
+    }
   }
 
   private _getActiveValue(): number | undefined {
-    if (!this._activeSlider) return undefined;
-    return this[this._activeSlider];
+    switch (this._activeSlider) {
+      case "high":
+        return this._localHigh;
+      case "low":
+        return this._localLow;
+      case "value":
+        return this._localValue;
+    }
+    return undefined;
   }
 
   _setupListeners() {
@@ -235,6 +282,7 @@ export class HaControlCircularSlider extends LitElement {
         const raw = this._percentageToValue(percentage);
         const bounded = this._boundedValue(raw);
         const stepped = this._steppedValue(bounded);
+        this._setActiveValue(stepped);
         if (this._activeSlider) {
           fireEvent(this, `${this._activeSlider}-changing`, {
             value: undefined,
@@ -340,23 +388,41 @@ export class HaControlCircularSlider extends LitElement {
     }
   }
 
+  private _strokeDashArc(
+    percentage: number,
+    inverted?: boolean
+  ): [string, string] {
+    const maxRatio = MAX_ANGLE / 360;
+    const f = RADIUS * 2 * Math.PI;
+    if (inverted) {
+      const arcLength = (1 - percentage) * f * maxRatio;
+      const strokeDasharray = `${arcLength} ${f - arcLength}`;
+      const strokeDashOffset = `${arcLength + f * (1 - maxRatio)}`;
+      return [strokeDasharray, strokeDashOffset];
+    }
+    const arcLength = percentage * f * maxRatio;
+    const strokeDasharray = `${arcLength} ${f - arcLength}`;
+    const strokeDashOffset = "0";
+    return [strokeDasharray, strokeDashOffset];
+  }
+
   protected render(): TemplateResult {
     const trackPath = arc({ x: 0, y: 0, start: 0, end: MAX_ANGLE, r: RADIUS });
 
-    const maxRatio = MAX_ANGLE / 360;
-
-    const f = RADIUS * 2 * Math.PI;
-    const lowValue = this.dual ? this.low : this.value;
-    const highValue = this.high;
+    const lowValue = this.dual ? this._localLow : this._localValue;
+    const highValue = this._localHigh;
     const lowPercentage = this._valueToPercentage(lowValue ?? this.min);
     const highPercentage = this._valueToPercentage(highValue ?? this.max);
 
-    const lowArcLength = lowPercentage * f * maxRatio;
-    const lowStrokeDasharray = `${lowArcLength} ${f - lowArcLength}`;
+    const [lowStrokeDasharray, lowStrokeDashOffset] = this._strokeDashArc(
+      lowPercentage,
+      this.inverted
+    );
 
-    const highArcLength = (1 - highPercentage) * f * maxRatio;
-    const highStrokeDasharray = `${highArcLength} ${f - highArcLength}`;
-    const highStrokeDashOffset = `${highArcLength + f * (1 - maxRatio)}`;
+    const [highStrokeDasharray, highStrokeDashOffset] = this._strokeDashArc(
+      highPercentage,
+      true
+    );
 
     const currentPercentage = this._valueToPercentage(this.current ?? 0);
     const currentAngle = currentPercentage * MAX_ANGLE;
@@ -381,27 +447,31 @@ export class HaControlCircularSlider extends LitElement {
           </g>
           <g id="display">
             <path class="background" d=${trackPath} />
-            <circle
-              .id=${this.dual ? "low" : "value"}
-              class="track"
-              cx="0"
-              cy="0"
-              r=${RADIUS}
-              stroke-dasharray=${lowStrokeDasharray}
-              stroke-dashoffset="0"
-              role="slider"
-              tabindex="0"
-              aria-valuemin=${this.min}
-              aria-valuemax=${this.max}
-              aria-valuenow=${lowValue != null
-                ? this._steppedValue(lowValue)
-                : undefined}
-              aria-disabled=${this.disabled}
-              aria-label=${ifDefined(this.lowLabel ?? this.label)}
-              @keydown=${this._handleKeyDown}
-              @keyup=${this._handleKeyUp}
-            />
-            ${this.dual
+            ${lowValue != null
+              ? svg`
+                <circle
+                  .id=${this.dual ? "low" : "value"}
+                  class="track"
+                  cx="0"
+                  cy="0"
+                  r=${RADIUS}
+                  stroke-dasharray=${lowStrokeDasharray}
+                  stroke-dashoffset=${lowStrokeDashOffset}
+                  role="slider"
+                  tabindex="0"
+                  aria-valuemin=${this.min}
+                  aria-valuemax=${this.max}
+                  aria-valuenow=${
+                    lowValue != null ? this._steppedValue(lowValue) : undefined
+                  }
+                  aria-disabled=${this.disabled}
+                  aria-label=${ifDefined(this.lowLabel ?? this.label)}
+                  @keydown=${this._handleKeyDown}
+                  @keyup=${this._handleKeyUp}
+                />
+              `
+              : nothing}
+            ${this.dual && highValue != null
               ? svg`
                     <circle
                       id="high"
@@ -496,6 +566,7 @@ export class HaControlCircularSlider extends LitElement {
         fill: none;
         stroke: var(--control-circular-slider-background);
         opacity: var(--control-circular-slider-background-opacity);
+        transition: stroke 180ms ease-in-out, opacity 180ms ease-in-out;
         stroke-linecap: round;
         stroke-width: 24px;
       }
@@ -507,7 +578,8 @@ export class HaControlCircularSlider extends LitElement {
         stroke-width: 24px;
         transition: stroke-width 300ms ease-in-out,
           stroke-dasharray 300ms ease-in-out,
-          stroke-dashoffset 300ms ease-in-out;
+          stroke-dashoffset 300ms ease-in-out, stroke 180ms ease-in-out,
+          opacity 180ms ease-in-out;
       }
 
       .track:focus-visible {

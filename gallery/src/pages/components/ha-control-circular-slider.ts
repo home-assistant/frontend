@@ -10,23 +10,23 @@ export class DemoHaCircularSlider extends LitElement {
   private current = 22;
 
   @state()
-  private value = 19;
+  private low = 19;
 
   @state()
   private high = 25;
 
   @state()
-  private changingValue?: number;
+  private changingLow?: number;
 
   @state()
   private changingHigh?: number;
 
-  private _valueChanged(ev) {
-    this.value = ev.detail.value;
+  private _lowChanged(ev) {
+    this.low = ev.detail.value;
   }
 
-  private _valueChanging(ev) {
-    this.changingValue = ev.detail.value;
+  private _lowChanging(ev) {
+    this.changingLow = ev.detail.value;
   }
 
   private _highChanged(ev) {
@@ -63,19 +63,40 @@ export class DemoHaCircularSlider extends LitElement {
         <div class="card-content">
           <p class="title"><b>Single</b></p>
           <ha-control-circular-slider
-            @value-changed=${this._valueChanged}
-            @value-changing=${this._valueChanging}
-            .value=${this.value}
+            @value-changed=${this._lowChanged}
+            @value-changing=${this._lowChanging}
+            .value=${this.low}
             .current=${this.current}
             step="1"
             min="10"
             max="30"
           ></ha-control-circular-slider>
           <div>
-            Value: ${this.value} °C
+            Low: ${this.low} °C
             <br />
             Changing:
-            ${this.changingValue != null ? `${this.changingValue} °C` : "-"}
+            ${this.changingLow != null ? `${this.changingLow} °C` : "-"}
+          </div>
+        </div>
+      </ha-card>
+      <ha-card>
+        <div class="card-content">
+          <p class="title"><b>Inverted</b></p>
+          <ha-control-circular-slider
+            inverted
+            @value-changed=${this._highChanged}
+            @value-changing=${this._highChanging}
+            .value=${this.high}
+            .current=${this.current}
+            step="1"
+            min="10"
+            max="30"
+          ></ha-control-circular-slider>
+          <div>
+            High: ${this.high} °C
+            <br />
+            Changing:
+            ${this.changingHigh != null ? `${this.changingHigh} °C` : "-"}
           </div>
         </div>
       </ha-card>
@@ -84,11 +105,11 @@ export class DemoHaCircularSlider extends LitElement {
           <p class="title"><b>Dual</b></p>
           <ha-control-circular-slider
             dual
-            @low-changed=${this._valueChanged}
-            @low-changing=${this._valueChanging}
+            @low-changed=${this._lowChanged}
+            @low-changing=${this._lowChanging}
             @high-changed=${this._highChanged}
             @high-changing=${this._highChanging}
-            .low=${this.value}
+            .low=${this.low}
             .high=${this.high}
             .current=${this.current}
             step="1"
@@ -96,10 +117,10 @@ export class DemoHaCircularSlider extends LitElement {
             max="30"
           ></ha-control-circular-slider>
           <div>
-            Low value: ${this.value} °C
+            Low value: ${this.low} °C
             <br />
             Low changing:
-            ${this.changingValue != null ? `${this.changingValue} °C` : "-"}
+            ${this.changingLow != null ? `${this.changingLow} °C` : "-"}
             <br />
             High value: ${this.high} °C
             <br />
@@ -131,6 +152,10 @@ export class DemoHaCircularSlider extends LitElement {
         --control-circular-slider-color: #ff9800;
         --control-circular-slider-background: #ff9800;
         --control-circular-slider-background-opacity: 0.3;
+      }
+      ha-control-circular-slider[inverted] {
+        --control-circular-slider-color: #2196f3;
+        --control-circular-slider-background: #2196f3;
       }
       ha-control-circular-slider[dual] {
         --control-circular-slider-high-color: #2196f3;
