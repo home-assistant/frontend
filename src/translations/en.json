@@ -1103,6 +1103,20 @@
           "no_aliases": "Configure aliases and expose settings for voice assistants"
         }
       },
+      "device-registry-detail": {
+        "name": "[%key:ui::panel::config::devices::name%]",
+        "enabled_label": "[%key:ui::panel::config::devices::enabled_label%]",
+        "enabled_cause": "[%key:ui::panel::config::devices::enabled_cause%]",
+        "type": {
+          "device_heading": "[%key:ui::panel::config::devices::type::device_heading%]",
+          "device": "[%key:ui::panel::config::devices::type::device%]",
+          "service_heading": "[%key:ui::panel::config::devices::type::service_heading%]",
+          "service": "[%key:ui::panel::config::devices::type::service%]"
+        },
+        "enabled_description": "[%key:ui::panel::config::devices::enabled_description%]",
+        "update": "[%key:ui::panel::config::devices::update%]",
+        "unknown_error": "[%key:ui::panel::config::devices::unknown_error%]"
+      },
       "voice-settings": {
         "expose_header": "Expose",
         "aliases_header": "Aliases",
