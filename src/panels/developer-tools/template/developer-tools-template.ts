@@ -276,7 +276,7 @@ class HaPanelDevTemplate extends LitElement {
 
         .render-pane {
           position: relative;
-          max-width: 50%;
+          width: 50%;
         }
 
         .render-spinner {
@@ -409,8 +409,9 @@ class HaPanelDevTemplate extends LitElement {
     ) {
       return;
     }
+    this._unsubscribeTemplate();
     this._template = "";
-    this._subscribeTemplate();
+    this._templateResult = undefined;
   }
 }
 
