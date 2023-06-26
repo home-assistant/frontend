@@ -1,8 +1,14 @@
-import { mdiMinus, mdiPlus, mdiPower, mdiWaterPercent } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html } from "lit";
+import { mdiMinus, mdiPlus, mdiWaterPercent } from "@mdi/js";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { computeStateDisplay } from "../../../../common/entity/compute_state_display";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { clamp } from "../../../../common/number/clamp";
 import { blankBeforePercent } from "../../../../common/translations/blank_before_percent";
@@ -24,8 +30,8 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
 
   @state() private _targetHumidity?: number;
 
-  protected updated(changedProp: Map<string | number | symbol, unknown>): void {
-    super.updated(changedProp);
+  protected willUpdate(changedProp: PropertyValues): void {
+    super.willUpdate(changedProp);
     if (changedProp.has("stateObj")) {
       this._targetHumidity = this.stateObj.attributes.humidity;
     }
@@ -77,18 +83,14 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
   }
 
   private _renderState() {
+    const humidity = this.stateObj.attributes.current_humidity;
+    if (humidity == null) {
+      return nothing;
+    }
     return html`
       <p class="state">
-        <ha-svg-icon
-          .path=${this.stateObj.state === "on" ? mdiWaterPercent : mdiPower}
-        ></ha-svg-icon>
-        ${computeStateDisplay(
-          this.hass.localize,
-          this.stateObj,
-          this.hass.locale,
-          this.hass.config,
-          this.hass.entities
-        )}
+        <ha-svg-icon .path=${mdiWaterPercent}></ha-svg-icon>
+        ${humidity}${blankBeforePercent(this.hass.locale)}%
       </p>
     `;
   }
