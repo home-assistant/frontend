@@ -253,4 +253,5 @@ module.exports = {
   createCastConfig,
   createHassioConfig,
   createGalleryConfig,
+  createWebpackConfig,
 };
