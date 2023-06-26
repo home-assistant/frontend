@@ -144,6 +144,17 @@ export class AssistPipelineDebug extends LitElement {
         title: "Failed to fetch events",
         text: e.message,
       });
+      return;
+    }
+    if (
+      this._events?.length &&
+      // If the last event is not a finish run event, the run is still ongoing.
+      // Refresh events automatically.
+      !["run-end", "error"].includes(this._events[this._events.length - 1].type)
+    ) {
+      setTimeout(() => {
+        this._fetchEvents();
+      }, 2000);
     }
   }
 
