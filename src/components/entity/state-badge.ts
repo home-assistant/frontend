@@ -13,7 +13,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { stateColorCss } from "../../common/entity/state_color";
+import {
+  stateColorCss,
+  stateColorBrightness,
+} from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
 import { HVAC_ACTION_TO_MODE } from "../../data/climate";
@@ -153,8 +156,7 @@ export class StateBadge extends LitElement {
             // eslint-disable-next-line
             console.warn(errorMessage);
           }
-          // lowest brightness will be around 50% (that's pretty dark)
-          iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+          iconStyle.filter = stateColorBrightness(stateObj);
         }
         if (stateObj.attributes.hvac_action) {
           const hvacAction = stateObj.attributes.hvac_action;

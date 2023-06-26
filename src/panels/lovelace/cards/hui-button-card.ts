@@ -26,7 +26,10 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplaySingleEntity } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateColorCss } from "../../../common/entity/state_color";
+import {
+  stateColorCss,
+  stateColorBrightness,
+} from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import { LocalizeFunc } from "../../../common/translations/localize";
@@ -41,7 +44,6 @@ import {
   themesContext,
 } from "../../../data/context";
 import { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
-import { LightEntity } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { FrontendLocaleData } from "../../../data/translation";
 import { Themes } from "../../../data/ws-themes";
@@ -213,9 +215,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                 .state=${stateObj}
                 style=${styleMap({
                   color: colored ? this._computeColor(stateObj) : undefined,
-                  filter: colored
-                    ? this._computeBrightness(stateObj)
-                    : undefined,
+                  filter: colored ? stateColorBrightness(stateObj) : undefined,
                   height: this._config.icon_height
                     ? this._config.icon_height
                     : "",
@@ -335,14 +335,6 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         }
       `,
     ];
-  }
-
-  private _computeBrightness(stateObj: HassEntity | LightEntity): string {
-    if (stateObj.attributes.brightness) {
-      const brightness = stateObj.attributes.brightness;
-      return `brightness(${(brightness + 245) / 5}%)`;
-    }
-    return "";
   }
 
   private _computeColor(stateObj: HassEntity): string | undefined {
