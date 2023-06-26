@@ -1100,6 +1100,7 @@
             "stream_orientation_7": "Rotate right and flip",
             "stream_orientation_8": "Rotate right"
           },
+          "voice_assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
           "no_aliases": "Configure aliases and expose settings for voice assistants"
         }
       },
