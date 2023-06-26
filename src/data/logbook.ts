@@ -360,14 +360,14 @@ export const localizeStateMessage = (
           if (isOn) {
             return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_device_class`, {
               device_class: localize(
-                `component.binary_sensor.device_class.${device_class}`
+                `component.binary_sensor.entity_component.${device_class}.name`
               ),
             });
           }
           if (isOff) {
             return localize(`${LOGBOOK_LOCALIZE_PATH}.cleared_device_class`, {
               device_class: localize(
-                `component.binary_sensor.device_class.${device_class}`
+                `component.binary_sensor.entity_component.${device_class}.name`
               ),
             });
           }
