@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import { mdiDotsVertical } from "@mdi/js";
 import {
   addDays,
   addMonths,
@@ -28,6 +29,7 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { calcDate } from "../../../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import {
@@ -37,9 +39,10 @@ import {
   formatDateYear,
 } from "../../../common/datetime/format_date";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
-import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-button-prev";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-check-list-item";
 import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
@@ -197,18 +200,22 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
           </div>
         </div>
 
-        <div class="buttons">
-          <mwc-button
-            class="compare ${this._compare ? "active" : nothing}"
-            @click=${this._toggleCompare}
-            dense
-            outlined
+        <ha-button-menu>
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+          <ha-check-list-item
+            left
+            @request-selected=${this._toggleCompare}
+            .selected=${this._compare}
           >
             ${this.hass.localize(
               "ui.panel.lovelace.components.energy_period_selector.compare"
             )}
-          </mwc-button>
-        </div>
+          </ha-check-list-item>
+        </ha-button-menu>
       </div>
     `;
   }
@@ -310,8 +317,11 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     this._endDate = energyData.end || endOfToday();
   }
 
-  private _toggleCompare() {
-    this._compare = !this._compare;
+  private _toggleCompare(ev: CustomEvent<RequestSelectedDetail>) {
+    if (ev.detail.source !== "interaction") {
+      return;
+    }
+    this._compare = ev.detail.selected;
     const energyCollection = getEnergyDataCollection(this.hass, {
       key: this.collectionKey,
     });
@@ -325,10 +335,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         display: flex;
         justify-content: flex-end;
       }
-      :host([narrow]) .row {
-        flex-direction: column;
-        justify-self: left;
-      }
       .time-handle {
         display: flex;
         justify-content: flex-end;
@@ -339,15 +345,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         align-items: center;
         justify-content: flex-end;
         font-size: 20px;
-      }
-      .buttons {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        align-items: center;
-      }
-      .compare {
-        position: relative;
       }
       mwc-button {
         margin-left: 8px;
