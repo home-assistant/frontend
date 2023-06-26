@@ -114,6 +114,7 @@ export class HaBlueprintScriptEditor extends LitElement {
                               .selector=${value.selector}
                               .key=${key}
                               .disabled=${this.disabled}
+                              .required=${value?.default === undefined}
                               .value=${(this.config.use_blueprint.input &&
                                 this.config.use_blueprint.input[key]) ??
                               value?.default}
@@ -121,7 +122,7 @@ export class HaBlueprintScriptEditor extends LitElement {
                             ></ha-selector>`
                           : html`<ha-textfield
                               .key=${key}
-                              required
+                              .required=${value?.default === undefined}
                               .disabled=${this.disabled}
                               .value=${(this.config.use_blueprint.input &&
                                 this.config.use_blueprint.input[key]) ??
