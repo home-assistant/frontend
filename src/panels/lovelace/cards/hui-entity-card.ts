@@ -143,7 +143,10 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               data-state=${stateObj.state}
               style=${styleMap({
                 color: colored ? this._computeColor(stateObj) : undefined,
-                filter: colored ? this._computeBrightness(stateObj) : undefined,
+                filter:
+                  colored && domain !== "plant"
+                    ? this._computeBrightness(stateObj)
+                    : undefined,
                 height: this._config.icon_height
                   ? this._config.icon_height
                   : "",

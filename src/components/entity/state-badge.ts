@@ -11,7 +11,6 @@ import {
 import { property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
-import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateColorCss } from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
@@ -116,6 +115,7 @@ export class StateBadge extends LitElement {
     this._showIcon = true;
 
     if (stateObj && this.overrideImage === undefined) {
+      const domain = computeStateDomain(stateObj);
       // hide icon if we have entity picture
       if (
         (stateObj.attributes.entity_picture_local ||
@@ -128,7 +128,7 @@ export class StateBadge extends LitElement {
         if (this.hass) {
           imageUrl = this.hass.hassUrl(imageUrl);
         }
-        if (computeDomain(stateObj.entity_id) === "camera") {
+        if (domain === "camera") {
           imageUrl = cameraUrlWithWidthHeight(imageUrl, 80, 80);
         }
         hostStyle.backgroundImage = `url(${imageUrl})`;
@@ -144,7 +144,7 @@ export class StateBadge extends LitElement {
         if (stateObj.attributes.rgb_color) {
           iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
         }
-        if (stateObj.attributes.brightness) {
+        if (stateObj.attributes.brightness && domain !== "plant") {
           const brightness = stateObj.attributes.brightness;
           if (typeof brightness !== "number") {
             const errorMessage = `Type error: state-badge expected number, but type of ${
