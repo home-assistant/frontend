@@ -13,6 +13,7 @@ import "../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
 import { createAuthForUser } from "../../../data/auth";
 import {
   createUser,
@@ -24,8 +25,8 @@ import {
 import { ValueChangedEvent, HomeAssistant } from "../../../types";
 import { haStyleDialog } from "../../../resources/styles";
 import { AddUserDialogParams } from "./show-dialog-add-user";
-import { HaTextField } from "../../../components/ha-textfield";
-import { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/ha-textfield";
+import type { HaTextField } from "../../../components/ha-textfield";
 
 @customElement("dialog-add-user")
 export class DialogAddUser extends LitElement {
@@ -98,7 +99,7 @@ export class DialogAddUser extends LitElement {
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           ${this._allowChangeName
-            ? html` <ha-textfield
+            ? html`<ha-textfield
                 class="name"
                 name="name"
                 .label=${this.hass.localize(
