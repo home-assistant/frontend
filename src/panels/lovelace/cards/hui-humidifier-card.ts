@@ -17,6 +17,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { isUnavailableState } from "../../../data/entity";
@@ -88,6 +89,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     const name =
       this._config!.name ||
       computeStateName(this.hass!.states[this._config!.entity]);
+
     const targetHumidity =
       stateObj.attributes.humidity !== null &&
       Number.isFinite(Number(stateObj.attributes.humidity))
@@ -95,6 +97,12 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         : stateObj.attributes.min_humidity;
 
     const setHumidity = this._setHum ? this._setHum : targetHumidity;
+
+    const curHumidity =
+      stateObj.attributes.current_humidity !== null &&
+      Number.isFinite(Number(stateObj.attributes.current_humidity))
+        ? stateObj.attributes.current_humidity
+        : undefined;
 
     const rtlDirection = computeRTLDirection(this.hass);
 
@@ -114,23 +122,36 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         `;
 
     const setValues = html`
-      <svg viewBox="0 0 24 20">
+      <svg viewBox="0 0 30 20">
         <text x="50%" dx="1" y="73%" text-anchor="middle" id="set-values">
           ${isUnavailableState(stateObj.state) ||
           setHumidity === undefined ||
           setHumidity === null
             ? ""
             : svg`
-                    ${setHumidity.toFixed()}
-                    <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
-                      %
-                    </tspan>
-                    `}
+                ${formatNumber(setHumidity, this.hass.locale, {
+                  maximumFractionDigits: 0,
+                })}
+                <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
+                  %
+                </tspan>
+                `}
         </text>
       </svg>
     `;
+
+    const currentHumidity = html`
+      <svg viewBox="0 0 40 10" id="current_humidity">
+        <text x="50%" y="50%" text-anchor="middle" id="current-humidity">
+          ${curHumidity
+            ? svg`${formatNumber(curHumidity, this.hass.locale)}`
+            : ""}
+        </text>
+      </svg>
+    `;
+
     const currentMode = html`
-      <svg viewBox="0 0 40 10" id="humidity">
+      <svg viewBox="0 0 40 10" id="mode">
         <text x="50%" y="50%" text-anchor="middle" id="set-mode">
           ${this.hass!.localize(`state.default.${stateObj.state}`)}
           ${stateObj.attributes.mode && !isUnavailableState(stateObj.state)
@@ -172,7 +193,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
                 >
                   ${setValues}
                 </ha-icon-button>
-                ${currentMode}
+                ${currentHumidity} ${currentMode}
               </div>
             </div>
           </div>
@@ -335,9 +356,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         overflow-wrap: break-word;
       }
 
-      #humidity {
+      #mode {
         max-width: 80%;
-        transform: translate(0, 350%);
+        transform: translate(0, 250%);
       }
 
       #set-values {
@@ -351,9 +372,19 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         font-size: 4px;
       }
 
+      #current_humidity {
+        max-width: 80%;
+        transform: translate(0, 300%);
+      }
+
+      #current-humidity {
+        fill: var(--primary-text-color);
+        font-size: 5px;
+      }
+
       .toggle-button {
         color: var(--primary-text-color);
-        width: 60%;
+        width: 75%;
         height: auto;
         position: absolute;
         max-width: calc(100% - 40px);
