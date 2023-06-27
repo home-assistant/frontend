@@ -53,6 +53,7 @@ import "./types/ha-automation-trigger-homeassistant";
 import "./types/ha-automation-trigger-mqtt";
 import "./types/ha-automation-trigger-numeric_state";
 import "./types/ha-automation-trigger-persistent_notification";
+import "./types/ha-automation-trigger-conversation";
 import "./types/ha-automation-trigger-state";
 import "./types/ha-automation-trigger-sun";
 import "./types/ha-automation-trigger-tag";
