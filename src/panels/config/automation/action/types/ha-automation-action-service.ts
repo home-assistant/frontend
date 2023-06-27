@@ -121,7 +121,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
       ></ha-service-control>
       ${domain && service && this.hass.services[domain]?.[service]?.response
         ? html`<ha-settings-row .narrow=${this.narrow}>
-            ${this.hass.services[domain]?.[service]?.response.optional
+            ${this.hass.services[domain][service].response!.optional
               ? html`<ha-checkbox
                   .checked=${this._action.response_variable ||
                   this._responseChecked}
@@ -136,7 +136,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
               )}</span
             >
             <span slot="description">
-              ${this.hass.services[domain]?.[service]?.response.optional
+              ${this.hass.services[domain][service].response!.optional
                 ? this.hass.localize(
                     "ui.panel.config.automation.editor.actions.type.service.has_optional_response"
                   )
@@ -146,7 +146,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
             </span>
             <ha-textfield
               .value=${this._action.response_variable || ""}
-              .required=${!this.hass.services[domain]?.[service]?.response
+              .required=${!this.hass.services[domain][service].response!
                 .optional}
               .disabled=${this.disabled ||
               (!this._action.response_variable && !this._responseChecked)}
