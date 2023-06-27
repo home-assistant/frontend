@@ -28,7 +28,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _action!: ServiceAction;
+  @state() private _action?: ServiceAction;
 
   @state() private _responseChecked = false;
 
@@ -107,7 +107,10 @@ export class HaServiceAction extends LitElement implements ActionElement {
   }
 
   protected render() {
-    const [domain, service] = this._action?.service
+    if (!this._action) {
+      return nothing;
+    }
+    const [domain, service] = this._action.service
       ? this._action.service.split(".", 2)
       : [undefined, undefined];
     return html`
@@ -163,8 +166,8 @@ export class HaServiceAction extends LitElement implements ActionElement {
     }
     const value = { ...this.action, ...ev.detail.value };
     if ("response_variable" in this.action) {
-      const [domain, service] = this._action.service
-        ? this._action.service.split(".", 2)
+      const [domain, service] = this._action!.service
+        ? this._action!.service.split(".", 2)
         : [undefined, undefined];
       if (
         domain &&
