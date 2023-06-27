@@ -5322,6 +5322,7 @@
             "title": "Services",
             "description": "The service dev tool allows you to call any available service in Home Assistant.",
             "call_service": "Call Service",
+            "response": "Response",
             "column_parameter": "Parameter",
             "column_description": "Description",
             "column_example": "Example",
