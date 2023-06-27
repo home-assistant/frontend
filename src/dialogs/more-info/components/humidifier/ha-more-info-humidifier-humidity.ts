@@ -147,6 +147,10 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
     const currentHumidity = this.stateObj.attributes.current_humidity;
 
     if (targetHumidity != null) {
+      const inverted =
+        this.stateObj.attributes.device_class ===
+        HumidifierEntityDeviceClass.DEHUMIDIFIER;
+
       return html`
         <div
           class="container"
@@ -155,14 +159,13 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
           })}
         >
           <ha-control-circular-slider
-            .inverted=${this.stateObj.attributes.device_class ===
-            HumidifierEntityDeviceClass.DEHUMIDIFIER}
+            .inverted=${inverted}
             .value=${targetHumidity}
             .min=${this._min}
             .max=${this._max}
             .step=${this._step}
             .current=${currentHumidity}
-            .disabled=${this.stateObj!.state === UNAVAILABLE}
+            .disabled=${this.stateObj.state === UNAVAILABLE}
             @value-changed=${this._valueChanged}
             @value-changing=${this._valueChanging}
           >
