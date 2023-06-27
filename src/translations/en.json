@@ -2642,7 +2642,7 @@
                 "stop": {
                   "label": "Stop",
                   "stop": "Reason for stopping",
-                  "response": "Response",
+                  "response_variable": "The name of the variable to use as response",
                   "error": "Stop because of an unexpected error"
                 },
                 "parallel": {
