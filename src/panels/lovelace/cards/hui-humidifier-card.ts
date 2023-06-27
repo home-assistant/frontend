@@ -1,4 +1,4 @@
-import { mdiDotsVertical } from "@mdi/js";
+import { mdiDotsVertical, mdiPower, mdiWaterPercent } from "@mdi/js";
 import "@thomasloven/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -12,6 +12,7 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { classMap } from "lit/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
@@ -216,7 +217,31 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
               </div>
             </div>
           </div>
-          <div id="info" .title=${name}>${name}</div>
+          <div id="info" .title=${name}>
+            <div id="modes">
+              <ha-icon-button
+                class=${classMap({ "selected-icon": stateObj.state === "on" })}
+                @click=${this._turnOn}
+                tabindex="0"
+                .path=${mdiWaterPercent}
+                .label=${this.hass!.localize(
+                  `component.humidifier.entity_component._.state.on`
+                )}
+              >
+              </ha-icon-button>
+              <ha-icon-button
+                class=${classMap({ "selected-icon": stateObj.state === "off" })}
+                @click=${this._turnOff}
+                tabindex="0"
+                .path=${mdiPower}
+                .label=${this.hass!.localize(
+                  `component.humidifier.entity_component._.state.off`
+                )}
+              >
+              </ha-icon-button>
+            </div>
+            ${name}
+          </div>
         </div>
       </ha-card>
     `;
@@ -318,8 +343,14 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private _toggle(): void {
-    this.hass!.callService("humidifier", "toggle", {
+  private _turnOn(): void {
+    this.hass!.callService("humidifier", "turn_on", {
+      entity_id: this._config!.entity,
+    });
+  }
+
+  private _turnOff(): void {
+    this.hass!.callService("humidifier", "turn_off", {
       entity_id: this._config!.entity,
     });
   }
