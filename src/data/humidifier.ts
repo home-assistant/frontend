@@ -13,6 +13,7 @@ export type HumidifierEntity = HassEntityBase & {
   state: HumidifierState;
   attributes: HassEntityAttributeBase & {
     humidity?: number;
+    current_humidity?: number;
     min_humidity?: number;
     max_humidity?: number;
     mode?: string;
