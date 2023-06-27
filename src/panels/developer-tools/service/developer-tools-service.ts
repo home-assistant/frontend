@@ -1,7 +1,7 @@
 import { mdiHelpCircle } from "@mdi/js";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
@@ -20,7 +20,7 @@ import "../../../components/ha-service-picker";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { forwardHaptic } from "../../../data/haptics";
-import { ServiceAction } from "../../../data/script";
+import { Action, ServiceAction } from "../../../data/script";
 import {
   callExecuteScript,
   serviceCallWillDisconnect,
@@ -38,6 +38,8 @@ class HaPanelDevService extends LitElement {
 
   @state() private _uiAvailable = true;
 
+  @state() private _response?: Record<string, any>;
+
   @storage({
     key: "panel-dev-service-state-service-data",
     state: true,
@@ -52,7 +54,7 @@ class HaPanelDevService extends LitElement {
   })
   private _yamlMode = false;
 
-  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+  @query("#yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   protected firstUpdated(params) {
     super.firstUpdated(params);
@@ -109,6 +111,7 @@ class HaPanelDevService extends LitElement {
                   @value-changed=${this._serviceChanged}
                 ></ha-service-picker>
                 <ha-yaml-editor
+                  id="yaml-editor"
                   .hass=${this.hass}
                   .defaultValue=${this._serviceData}
                   @value-changed=${this._yamlChanged}
@@ -160,7 +163,23 @@ class HaPanelDevService extends LitElement {
           </ha-progress-button>
         </div>
       </div>
-
+      ${this._response
+        ? html`<div class="content">
+            <ha-card
+              .header=${this.hass.localize(
+                "ui.panel.developer-tools.tabs.services.response"
+              )}
+            >
+              <div class="card-content">
+                <ha-yaml-editor
+                  readOnly
+                  autoUpdate
+                  .value=${this._response}
+                ></ha-yaml-editor>
+              </div>
+            </ha-card>
+          </div>`
+        : nothing}
       ${(this._yamlMode ? fields : this._filterSelectorFields(fields)).length
         ? html`<div class="content">
             <ha-expansion-panel
@@ -175,7 +194,7 @@ class HaPanelDevService extends LitElement {
               .expanded=${this._yamlMode}
             >
               ${this._yamlMode
-                ? html` <div class="description">
+                ? html`<div class="description">
                     <h3>
                       ${target
                         ? html`
@@ -317,10 +336,20 @@ class HaPanelDevService extends LitElement {
     if (!this._serviceData?.service) {
       return;
     }
+    const [domain, service] = this._serviceData.service.split(".", 2);
+    const script: Action[] = [];
+    if ("response" in this.hass.services[domain][service]) {
+      script.push({
+        ...this._serviceData,
+        response_variable: "service_result",
+      });
+      script.push({ stop: "done", response: "{{ service_result }}" });
+    } else {
+      script.push(this._serviceData);
+    }
     try {
-      await callExecuteScript(this.hass, [this._serviceData]);
+      this._response = (await callExecuteScript(this.hass, script)).response;
     } catch (err: any) {
-      const [domain, service] = this._serviceData.service.split(".", 2);
       if (
         err.error?.code === ERR_CONNECTION_LOST &&
         serviceCallWillDisconnect(domain, service)
