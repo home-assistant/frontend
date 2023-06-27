@@ -169,12 +169,6 @@ export const computeStateDisplayFromEntityAttributes = (
     }
   }
 
-  if (domain === "humidifier") {
-    if (state === "on" && attributes.humidity) {
-      return `${attributes.humidity} %`;
-    }
-  }
-
   // `counter` `number` and `input_number` domains do not have a unit of measurement but should still use `formatNumber`
   if (
     domain === "counter" ||
