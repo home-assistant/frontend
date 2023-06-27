@@ -7,6 +7,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { domainIcon } from "../../../../common/entity/domain_icon";
 import { stateColorCss } from "../../../../common/entity/state_color";
@@ -136,8 +137,6 @@ export class HaMoreInfoLockToggle extends LitElement {
 
     return html`
       <ha-control-switch
-        .pathOn=${onIcon}
-        .pathOff=${offIcon}
         vertical
         reversed
         .checked=${this._isOn}
@@ -149,12 +148,33 @@ export class HaMoreInfoLockToggle extends LitElement {
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
       >
+        <ha-svg-icon
+          slot="icon-on"
+          .path=${onIcon}
+          class=${classMap({ pulse: locking })}
+        ></ha-svg-icon>
+        <ha-svg-icon
+          slot="icon-off"
+          .path=${offIcon}
+          class=${classMap({ pulse: unlocking })}
+        ></ha-svg-icon>
       </ha-control-switch>
     `;
   }
 
   static get styles(): CSSResultGroup {
     return css`
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
       ha-control-switch {
         height: 45vh;
         max-height: 320px;
@@ -163,6 +183,9 @@ export class HaMoreInfoLockToggle extends LitElement {
         --control-switch-border-radius: 24px;
         --control-switch-padding: 6px;
         --mdc-icon-size: 24px;
+      }
+      .pulse {
+        animation: pulse 1s infinite;
       }
       .buttons {
         display: flex;
