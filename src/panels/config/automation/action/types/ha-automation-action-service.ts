@@ -30,6 +30,8 @@ export class HaServiceAction extends LitElement implements ActionElement {
 
   @state() private _action!: ServiceAction;
 
+  @state() private _responseChecked = false;
+
   private _fields = memoizeOne(
     (
       serviceDomains: HomeAssistant["services"],
@@ -119,7 +121,15 @@ export class HaServiceAction extends LitElement implements ActionElement {
       ></ha-service-control>
       ${domain && service && this.hass.services[domain]?.[service]?.response
         ? html`<ha-settings-row .narrow=${this.narrow}>
-            <div slot="prefix" class="checkbox-spacer"></div>
+            ${this.hass.services[domain]?.[service]?.response.optional
+              ? html`<ha-checkbox
+                  .checked=${this._action.response_variable ||
+                  this._responseChecked}
+                  .disabled=${this.disabled}
+                  @change=${this._responseCheckboxChanged}
+                  slot="prefix"
+                ></ha-checkbox>`
+              : html`<div slot="prefix" class="checkbox-spacer"></div>`}
             <span slot="heading"
               >${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.type.service.response_variable"
@@ -138,6 +148,8 @@ export class HaServiceAction extends LitElement implements ActionElement {
               .value=${this._action.response_variable || ""}
               .required=${!this.hass.services[domain]?.[service]?.response
                 .optional}
+              .disabled=${this.disabled ||
+              (!this._action.response_variable && !this._responseChecked)}
               @change=${this._responseVariableChanged}
             ></ha-textfield>
           </ha-settings-row>`
@@ -161,6 +173,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
         !("response" in this.hass.services[domain][service])
       ) {
         delete value.response_variable;
+        this._responseChecked = false;
       }
     }
     fireEvent(this, "value-changed", { value });
@@ -172,6 +185,15 @@ export class HaServiceAction extends LitElement implements ActionElement {
       delete value.response_variable;
     }
     fireEvent(this, "value-changed", { value });
+  }
+
+  private _responseCheckboxChanged(ev) {
+    this._responseChecked = ev.target.checked;
+    if (!this._responseChecked) {
+      const value = { ...this.action };
+      delete value.response_variable;
+      fireEvent(this, "value-changed", { value });
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -192,6 +214,9 @@ export class HaServiceAction extends LitElement implements ActionElement {
           --service-control-items-border-top,
           1px solid var(--divider-color)
         );
+      }
+      ha-checkbox {
+        margin-left: -16px;
       }
       .checkbox-spacer {
         width: 32px;
