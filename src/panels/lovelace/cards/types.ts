@@ -438,6 +438,7 @@ export interface ThermostatCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
   name?: string;
+  current_primary_info?: boolean;
 }
 
 export interface WeatherForecastCardConfig extends LovelaceCardConfig {

@@ -157,47 +157,109 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             ></round-slider>
           `;
 
-    const currentTemperature = svg`
-        <svg viewBox="0 0 40 20">
-          <text
-            x="50%"
-            dx="1"
-            y="60%"
-            text-anchor="middle"
-            style="font-size: 13px;"
-          >
-            ${
-              stateObj.state !== UNAVAILABLE &&
-              stateObj.attributes.current_temperature != null &&
-              !isNaN(stateObj.attributes.current_temperature)
-                ? svg`
-                    ${formatNumber(
-                      stateObj.attributes.current_temperature,
-                      this.hass.locale
-                    )}
-                    <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
-                      ${this.hass.config.unit_system.temperature}
-                    </tspan>
-                  `
-                : nothing
-            }
-          </text>
-        </svg>
-      `;
+    const currentPrimaryInfo = this._config.current_primary_info ?? false;
 
-    const setValues = svg`
-      <svg id="set-values">
+    const currentTemp =
+      stateObj.attributes.current_temperature != null &&
+      !isNaN(stateObj.attributes.current_temperature)
+        ? formatNumber(
+            stateObj.attributes.current_temperature,
+            this.hass.locale
+          )
+        : undefined;
+
+    const setTempLow =
+      this._setTemp != null && Array.isArray(this._setTemp)
+        ? this._formatSetTemp(this._setTemp[0])
+        : undefined;
+
+    const setTempHigh =
+      this._setTemp != null && Array.isArray(this._setTemp)
+        ? this._formatSetTemp(this._setTemp[1])
+        : undefined;
+
+    const setTemp =
+      this._setTemp != null && !Array.isArray(this._setTemp)
+        ? this._formatSetTemp(this._setTemp)
+        : undefined;
+
+    const primary = html`
+      <svg viewBox="0 0 40 20" id="primary">
+        ${stateObj.state === UNAVAILABLE
+          ? nothing
+          : currentPrimaryInfo && currentTemp != null
+          ? svg`
+              <text
+                x="50%"
+                dx="1"
+                y="60%"
+                text-anchor="middle"
+                style="font-size: 13px;"
+              >
+                ${currentTemp}
+                <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
+                  ${this.hass.config.unit_system.temperature}
+                </tspan>
+              </text>
+          `
+          : setTemp
+          ? svg`
+              <text
+                x="50%"
+                dx="1"
+                y="60%"
+                text-anchor="middle"
+                style="font-size: 13px;"
+              >
+                ${setTemp}
+                <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
+                  ${this.hass.config.unit_system.temperature}
+                </tspan>
+              </text>
+          `
+          : setTempLow && setTempHigh
+          ? svg`
+              <text
+                x="27%"
+                dx="1"
+                y="60%"
+                text-anchor="middle"
+                style="font-size: 7px;"
+              >
+                ${setTempLow}
+                <tspan dx="-2" dy="-3" style="font-size: 3px;">
+                  ${this.hass.config.unit_system.temperature}
+                </tspan>
+              </text>
+              <text
+                x="73%"
+                dx="1"
+                y="60%"
+                text-anchor="middle"
+                style="font-size: 7px;"
+              >
+                ${setTempHigh}
+                <tspan dx="-2" dy="-3" style="font-size: 3px;">
+                  ${this.hass.config.unit_system.temperature}
+                </tspan>
+              </text>
+          `
+          : nothing}
+      </svg>
+    `;
+
+    const secondary = svg`
+      <svg id="secondary">
         <g>
           <text text-anchor="middle" class="set-value">
             ${
-              stateObj.state !== UNAVAILABLE && this._setTemp != null
-                ? Array.isArray(this._setTemp)
-                  ? svg`
-                    ${this._formatSetTemp(this._setTemp[0])} -
-                    ${this._formatSetTemp(this._setTemp[1])}
-                  `
-                  : this._formatSetTemp(this._setTemp)
-                : nothing
+              stateObj.state === UNAVAILABLE
+                ? nothing
+                : currentPrimaryInfo
+                ? setTemp || (setTempLow && setTempHigh)
+                  ? setTemp || `${setTempLow} - ${setTempHigh}`
+                  : nothing
+                : currentTemp
             }
           </text>
           <text
@@ -266,7 +328,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             <div id="slider">
               ${slider}
               <div id="slider-center">
-                <div id="temperature">${currentTemperature} ${setValues}</div>
+                <div id="temperature">${primary} ${secondary}</div>
               </div>
             </div>
           </div>
@@ -371,7 +433,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     const card = this._card;
     if (card) {
       card.updateComplete.then(() => {
-        const svgRoot = this.shadowRoot!.querySelector("#set-values")!;
+        const svgRoot = this.shadowRoot!.querySelector("#secondary")!;
         const box = svgRoot.querySelector("g")!.getBBox()!;
         svgRoot.setAttribute(
           "viewBox",
@@ -612,7 +674,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         direction: ltr;
       }
 
-      #set-values {
+      #secondary {
         max-width: 80%;
         transform: translate(0, -50%);
         font-size: 20px;

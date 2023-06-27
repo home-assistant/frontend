@@ -1,6 +1,6 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, assign, object, optional, string } from "superstruct";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
@@ -15,6 +15,7 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     name: optional(string()),
     theme: optional(string()),
+    current_primary_info: optional(boolean()),
   })
 );
 
@@ -27,6 +28,11 @@ const SCHEMA = [
       { name: "name", required: false, selector: { text: {} } },
       { name: "theme", required: false, selector: { theme: {} } },
     ],
+  },
+  {
+    name: "current_primary_info",
+    required: false,
+    selector: { boolean: {} },
   },
 ] as const;
 
@@ -68,6 +74,12 @@ export class HuiThermostatCardEditor
     if (schema.name === "entity") {
       return this.hass!.localize(
         "ui.panel.lovelace.editor.card.generic.entity"
+      );
+    }
+
+    if (schema.name === "current_primary_info") {
+      return this.hass!.localize(
+        "ui.panel.lovelace.editor.card.thermostat.current_primary_info"
       );
     }
 
