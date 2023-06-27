@@ -1,4 +1,5 @@
 <meta charset="utf-8" />
+<meta name="robots" content="noindex">
 <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
 <link rel="icon" href="/static/icons/favicon.ico" />
 <% if (!useWDS) { %>
