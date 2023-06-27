@@ -15,6 +15,7 @@ import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { differenceInDays } from "date-fns/esm";
+import { styleMap } from "lit/directives/style-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
@@ -52,6 +53,7 @@ import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
 import { findRelated } from "../../../data/search";
 import { fetchBlueprints } from "../../../data/blueprint";
+import { UNAVAILABLE } from "../../../data/entity";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
@@ -106,7 +108,15 @@ class HaAutomationPicker extends LitElement {
           ),
           type: "icon",
           template: (_, automation) =>
-            html`<ha-state-icon .state=${automation}></ha-state-icon>`,
+            html`<ha-state-icon
+              .state=${automation}
+              style=${styleMap({
+                color:
+                  automation.state === UNAVAILABLE
+                    ? "var(--error-color)"
+                    : "unset",
+              })}
+            ></ha-state-icon>`,
         },
         name: {
           title: this.hass.localize(
