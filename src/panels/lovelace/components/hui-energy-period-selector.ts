@@ -38,7 +38,6 @@ import {
   formatDateShort,
   formatDateYear,
 } from "../../../common/datetime/format_date";
-import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-button-menu";
@@ -48,6 +47,8 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
 import "../../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../../components/ha-date-range-picker";
+import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
+import { debounce } from "../../../common/util/debounce";
 
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
@@ -65,12 +66,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   @state() private _compare = false;
 
-  public connectedCallback() {
-    super.connectedCallback();
-    if (this.narrow !== false) {
-      toggleAttribute(this, "narrow", this.offsetWidth < 600);
-    }
-  }
+  private _resizeObserver?: ResizeObserver;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -80,8 +76,40 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     ];
   }
 
+  private _measure() {
+    this.narrow = this.offsetWidth < 450;
+  }
+
+  private async _attachObserver(): Promise<void> {
+    if (!this._resizeObserver) {
+      await loadPolyfillIfNeeded();
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measure(), 250, false)
+      );
+    }
+    this._resizeObserver.observe(this);
+  }
+
+  protected firstUpdated(): void {
+    this._attachObserver();
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.updateComplete.then(() => this._attachObserver());
+  }
+
+  public disconnectedCallback(): void {
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+    }
+  }
+
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
+    if (!this.hasUpdated) {
+      this._measure();
+    }
     const today = new Date();
     const weekStartsOn = firstWeekdayIndex(this.hass.locale);
 
@@ -334,11 +362,14 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       .row {
         display: flex;
       }
-      .time-handle {
+      :host .time-handle {
         display: flex;
         justify-content: flex-end;
         align-items: center;
         margin-left: auto;
+      }
+      :host([narrow]) .time-handle {
+        --mdc-icon-button-size: 24px;
       }
       .label {
         display: flex;

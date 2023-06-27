@@ -75,7 +75,6 @@ class PanelEnergy extends LitElement {
           <hui-energy-period-selector
             .hass=${this.hass}
             collectionKey="energy_dashboard"
-            .narrow=${false}
           ></hui-energy-period-selector>
         </div>
       </div>
