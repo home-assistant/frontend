@@ -349,6 +349,7 @@ export class HaDataTable extends LitElement {
                   class="mdc-data-table__content scroller ha-scrollbar"
                   @scroll=${this._saveScrollPos}
                   .items=${this._items}
+                  .keyFunction=${this._keyFunction}
                   .renderItem=${this._renderRow}
                 ></lit-virtualizer>
               `}
@@ -356,6 +357,8 @@ export class HaDataTable extends LitElement {
       </div>
     `;
   }
+
+  private _keyFunction = (row: DataTableRowData) => row[this.id] || row;
 
   private _renderRow = (row: DataTableRowData, index: number) => {
     // not sure how this happens...

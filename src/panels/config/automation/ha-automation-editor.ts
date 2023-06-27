@@ -11,6 +11,7 @@ import {
   mdiPlay,
   mdiPlayCircleOutline,
   mdiRenameBox,
+  mdiRobotConfused,
   mdiStopCircleOutline,
   mdiTransitConnection,
 } from "@mdi/js";
@@ -22,6 +23,7 @@ import {
   TemplateResult,
   css,
   html,
+  nothing,
 } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -62,6 +64,8 @@ import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-a
 import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
+import { UNAVAILABLE } from "../../../data/entity";
+import { validateConfig } from "../../../data/config";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -105,6 +109,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   @state() private _mode: "gui" | "yaml" = "gui";
 
   @state() private _readOnly = false;
+
+  @state() private _validationErrors?: (string | TemplateResult)[];
 
   @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
 
@@ -291,9 +297,20 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 })}"
                 @subscribe-automation-config=${this._subscribeAutomationConfig}
               >
-                ${this._errors
-                  ? html`<ha-alert alert-type="error">
-                      ${this._errors}
+                ${this._errors || stateObj?.state === UNAVAILABLE
+                  ? html`<ha-alert
+                      alert-type="error"
+                      .title=${stateObj?.state === UNAVAILABLE
+                        ? "Automation unavailable"
+                        : undefined}
+                    >
+                      ${this._errors || this._validationErrors}
+                      ${stateObj?.state === UNAVAILABLE
+                        ? html`<ha-svg-icon
+                            slot="icon"
+                            .path=${mdiRobotConfused}
+                          ></ha-svg-icon>`
+                        : nothing}
                     </ha-alert>`
                   : ""}
                 ${this._mode === "gui"
@@ -427,6 +444,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     if (changedProps.has("entityId") && this.entityId) {
       getAutomationStateConfig(this.hass, this.entityId).then((c) => {
         this._config = this._normalizeConfig(c.config);
+        this._checkValidation();
       });
       this._entityId = this.entityId;
       this._dirty = false;
@@ -455,6 +473,30 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._entityId = automation?.entity_id;
   }
 
+  private async _checkValidation() {
+    this._validationErrors = undefined;
+    if (!this._entityId || !this._config) {
+      return;
+    }
+    const stateObj = this.hass.states[this._entityId];
+    if (stateObj?.state !== UNAVAILABLE) {
+      return;
+    }
+    const validation = await validateConfig(this.hass, {
+      trigger: this._config.trigger,
+      condition: this._config.condition,
+      action: this._config.action,
+    });
+    this._validationErrors = Object.entries(validation).map(([key, value]) =>
+      value.valid
+        ? ""
+        : html`${this.hass.localize(
+              `ui.panel.config.automation.editor.${key}s.header`
+            )}:
+            ${value.error}<br />`
+    );
+  }
+
   private _normalizeConfig(config: AutomationConfig): AutomationConfig {
     // Normalize data: ensure trigger, action and condition are lists
     // Happens when people copy paste their automations into the config
@@ -476,6 +518,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       this._dirty = false;
       this._readOnly = false;
       this._config = this._normalizeConfig(config);
+      this._checkValidation();
     } catch (err: any) {
       const entityRegistry = await fetchEntityRegistry(this.hass.connection);
       const entity = entityRegistry.find(
@@ -686,6 +729,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       await this._promptAutomationAlias();
     }
 
+    this._validationErrors = undefined;
     try {
       await saveAutomationConfig(this.hass, id, this._config!);
     } catch (errors: any) {
