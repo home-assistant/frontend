@@ -165,13 +165,24 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
             text-anchor="middle"
             id="set-mode"
           >
-            ${computeStateDisplay(
-              this.hass.localize,
-              stateObj,
-              this.hass.locale,
-              this.hass.config,
-              this.hass.entities
-            )}
+            ${
+              stateObj.attributes.action != null
+                ? computeAttributeValueDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    this.hass.config,
+                    this.hass.entities,
+                    "action"
+                  )
+                : computeStateDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    this.hass.config,
+                    this.hass.entities
+                  )
+            }
             ${
               stateObj.state !== UNAVAILABLE && stateObj.attributes.mode
                 ? html`
