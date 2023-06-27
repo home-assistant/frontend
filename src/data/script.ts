@@ -51,6 +51,7 @@ export const serviceActionStruct: Describe<ServiceAction> = assign(
     entity_id: optional(string()),
     target: optional(targetStruct),
     data: optional(object()),
+    response_variable: optional(string()),
   })
 );
 
