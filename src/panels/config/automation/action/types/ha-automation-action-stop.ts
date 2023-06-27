@@ -19,7 +19,7 @@ export class HaStopAction extends LitElement implements ActionElement {
   }
 
   protected render() {
-    const { error, stop } = this.action;
+    const { error, stop, response } = this.action;
 
     return html`
       <ha-textfield
@@ -30,6 +30,21 @@ export class HaStopAction extends LitElement implements ActionElement {
         .disabled=${this.disabled}
         @change=${this._stopChanged}
       ></ha-textfield>
+      <p>
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.stop.response"
+        )}
+      </p>
+      <ha-code-editor
+        mode="jinja2"
+        .hass=${this.hass}
+        .value=${response}
+        autofocus
+        autocomplete-entities
+        autocomplete-icons
+        @value-changed=${this._responseChanged}
+        dir="ltr"
+      ></ha-code-editor>
       <ha-formfield
         .disabled=${this.disabled}
         .label=${this.hass.localize(
@@ -45,14 +60,21 @@ export class HaStopAction extends LitElement implements ActionElement {
     `;
   }
 
-  private _stopChanged(ev: CustomEvent) {
+  private _stopChanged(ev: Event) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.action, stop: (ev.target as any).value },
     });
   }
 
-  private _errorChanged(ev: CustomEvent) {
+  private _responseChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    fireEvent(this, "value-changed", {
+      value: { ...this.action, response: ev.detail.value },
+    });
+  }
+
+  private _errorChanged(ev: Event) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.action, error: (ev.target as any).checked },
@@ -61,7 +83,8 @@ export class HaStopAction extends LitElement implements ActionElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-textfield {
+      ha-textfield,
+      ha-code-editor {
         display: block;
         margin-bottom: 24px;
       }

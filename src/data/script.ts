@@ -221,6 +221,7 @@ export interface VariablesAction extends BaseAction {
 
 export interface StopAction extends BaseAction {
   stop: string;
+  response?: string;
   error?: boolean;
 }
 
