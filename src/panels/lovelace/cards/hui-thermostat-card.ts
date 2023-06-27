@@ -166,16 +166,19 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             style="font-size: 13px;"
           >
             ${
-              stateObj.attributes.current_temperature !== null &&
+              stateObj.state !== UNAVAILABLE &&
+              stateObj.attributes.current_temperature != null &&
               !isNaN(stateObj.attributes.current_temperature)
-                ? svg`${formatNumber(
-                    stateObj.attributes.current_temperature,
-                    this.hass.locale
-                  )}
-            <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
-              ${this.hass.config.unit_system.temperature}
-            </tspan>`
-                : ""
+                ? svg`
+                    ${formatNumber(
+                      stateObj.attributes.current_temperature,
+                      this.hass.locale
+                    )}
+                    <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
+                      ${this.hass.config.unit_system.temperature}
+                    </tspan>
+                  `
+                : nothing
             }
           </text>
         </svg>
@@ -186,42 +189,14 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         <g>
           <text text-anchor="middle" class="set-value">
             ${
-              stateObj.state === UNAVAILABLE
-                ? this.hass.localize("state.default.unavailable")
-                : this._setTemp === undefined || this._setTemp === null
-                ? ""
-                : Array.isArray(this._setTemp)
-                ? this._stepSize === 1
+              stateObj.state !== UNAVAILABLE && this._setTemp != null
+                ? Array.isArray(this._setTemp)
                   ? svg`
-                      ${formatNumber(this._setTemp[0], this.hass.locale, {
-                        maximumFractionDigits: 0,
-                      })} -
-                      ${formatNumber(this._setTemp[1], this.hass.locale, {
-                        maximumFractionDigits: 0,
-                      })}
-                      `
-                  : svg`
-                      ${formatNumber(this._setTemp[0], this.hass.locale, {
-                        minimumFractionDigits: 1,
-                        maximumFractionDigits: 1,
-                      })} -
-                      ${formatNumber(this._setTemp[1], this.hass.locale, {
-                        minimumFractionDigits: 1,
-                        maximumFractionDigits: 1,
-                      })}
-                      `
-                : this._stepSize === 1
-                ? svg`
-                      ${formatNumber(this._setTemp, this.hass.locale, {
-                        maximumFractionDigits: 0,
-                      })}
-                      `
-                : svg`
-                      ${formatNumber(this._setTemp, this.hass.locale, {
-                        minimumFractionDigits: 1,
-                        maximumFractionDigits: 1,
-                      })}
-                      `
+                    ${this._formatSetTemp(this._setTemp[0])} -
+                    ${this._formatSetTemp(this._setTemp[1])}
+                  `
+                  : this._formatSetTemp(this._setTemp)
+                : nothing
             }
           </text>
           <text
@@ -230,7 +205,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             id="set-mode"
           >
             ${
-              stateObj.attributes.hvac_action
+              stateObj.state !== UNAVAILABLE && stateObj.attributes.hvac_action
                 ? computeAttributeValueDisplay(
                     this.hass.localize,
                     stateObj,
@@ -248,6 +223,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                   )
             }
             ${
+              stateObj.state !== UNAVAILABLE &&
               stateObj.attributes.preset_mode &&
               stateObj.attributes.preset_mode !== CLIMATE_PRESET_NONE
                 ? html`
@@ -261,7 +237,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                       "preset_mode"
                     )}
                   `
-                : ""
+                : nothing
             }
           </text>
         </g>
@@ -372,6 +348,17 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     ) {
       this._setTemp = this._getSetTemp(stateObj);
     }
+  }
+
+  private _formatSetTemp(temp: number) {
+    return this._stepSize === 1
+      ? formatNumber(temp, this.hass!.locale, {
+          maximumFractionDigits: 0,
+        })
+      : formatNumber(temp, this.hass!.locale, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        });
   }
 
   private _rescale_svg() {
