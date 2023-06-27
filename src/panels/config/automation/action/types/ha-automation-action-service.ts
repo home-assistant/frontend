@@ -107,7 +107,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
   }
 
   protected render() {
-    const [domain, service] = this._action.service
+    const [domain, service] = this._action?.service
       ? this._action.service.split(".", 2)
       : [undefined, undefined];
     return html`
