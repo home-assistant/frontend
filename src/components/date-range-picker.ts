@@ -258,6 +258,7 @@ class DateRangePickerElement extends WrappedElement {
           }
           .vue-daterange-picker{
             min-width: unset !important;
+            display: block !important;
           }
         `;
     const shadowRoot = this.shadowRoot!;

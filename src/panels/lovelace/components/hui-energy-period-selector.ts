@@ -175,29 +175,29 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 this.hass.locale,
                 this.hass.config
               )}`}
-          <div class="time-handle">
-            <ha-icon-button-prev
-              .label=${this.hass.localize(
-                "ui.panel.lovelace.components.energy_period_selector.previous"
-              )}
-              @click=${this._pickPrevious}
-            ></ha-icon-button-prev>
-            <ha-date-range-picker
-              .hass=${this.hass}
-              .startDate=${this._startDate}
-              .endDate=${this._endDate || new Date()}
-              .ranges=${this._ranges}
-              @change=${this._dateRangeChanged}
-              .timePicker=${false}
-              minimal
-            ></ha-date-range-picker>
-            <ha-icon-button-next
-              .label=${this.hass.localize(
-                "ui.panel.lovelace.components.energy_period_selector.next"
-              )}
-              @click=${this._pickNext}
-            ></ha-icon-button-next>
-          </div>
+        </div>
+        <div class="time-handle">
+          <ha-icon-button-prev
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.components.energy_period_selector.previous"
+            )}
+            @click=${this._pickPrevious}
+          ></ha-icon-button-prev>
+          <ha-date-range-picker
+            .hass=${this.hass}
+            .startDate=${this._startDate}
+            .endDate=${this._endDate || new Date()}
+            .ranges=${this._ranges}
+            @change=${this._dateRangeChanged}
+            .timePicker=${false}
+            minimal
+          ></ha-date-range-picker>
+          <ha-icon-button-next
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.components.energy_period_selector.next"
+            )}
+            @click=${this._pickNext}
+          ></ha-icon-button-next>
         </div>
 
         <ha-button-menu>
@@ -333,12 +333,12 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     return css`
       .row {
         display: flex;
-        justify-content: flex-end;
       }
       .time-handle {
         display: flex;
         justify-content: flex-end;
         align-items: center;
+        margin-left: auto;
       }
       .label {
         display: flex;
