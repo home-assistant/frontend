@@ -25,6 +25,7 @@ import { HaDeviceTrigger } from "../../../../src/panels/config/automation/trigge
 import { HaStateTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-state";
 import { HaMQTTTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-mqtt";
 import "../../../../src/panels/config/automation/trigger/ha-automation-trigger";
+import { HaConversationTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-conversation";
 
 const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
   {
@@ -111,6 +112,16 @@ const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
   {
     name: "Device Trigger",
     triggers: [{ platform: "device", ...HaDeviceTrigger.defaultConfig }],
+  },
+  {
+    name: "Sentence",
+    triggers: [
+      { platform: "conversation", ...HaConversationTrigger.defaultConfig },
+      {
+        platform: "conversation",
+        command: ["Turn on the lights", "Turn the lights on"],
+      },
+    ],
   },
 ];
 
