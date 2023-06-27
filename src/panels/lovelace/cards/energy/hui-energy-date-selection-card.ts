@@ -1,4 +1,4 @@
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing, css, CSSResultGroup } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../../../../types";
 import "../../components/hui-energy-period-selector";
@@ -28,10 +28,20 @@ export class HuiEnergyDateSelectionCard
     }
 
     return html`
-      <hui-energy-period-selector
-        .hass=${this.hass}
-        .collectionKey=${this._config.collection_key}
-      ></hui-energy-period-selector>
+      <ha-card class="padded">
+        <hui-energy-period-selector
+          .hass=${this.hass}
+          .collectionKey=${this._config.collection_key}
+        ></hui-energy-period-selector>
+      </ha-card>
+    `;
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      .padded {
+        padding-left: 16px !important;
+      }
     `;
   }
 }
