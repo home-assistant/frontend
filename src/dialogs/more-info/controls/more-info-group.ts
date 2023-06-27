@@ -46,7 +46,8 @@ class MoreInfoGroup extends LitElement {
       return;
     }
 
-    const baseStateObj = states.find((s) => s.state === "on") || states[0];
+    const baseStateObj =
+      states.find((s) => s.state === this.stateObj!.state) || states[0];
 
     const groupDomain = computeGroupDomain(this.stateObj);
 
@@ -55,7 +56,9 @@ class MoreInfoGroup extends LitElement {
     if (groupDomain && groupDomain !== "group") {
       this._groupDomainStateObj = {
         ...baseStateObj,
-        ...this.stateObj,
+        entity_id: this.stateObj.entity_id,
+        last_updated: this.stateObj.last_updated,
+        last_changed: this.stateObj.last_changed,
         attributes: {
           ...baseStateObj.attributes,
           friendly_name: this.stateObj.attributes.friendly_name,
