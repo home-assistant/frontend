@@ -1,4 +1,11 @@
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert } from "superstruct";
@@ -98,6 +105,9 @@ export class HaServiceAction extends LitElement implements ActionElement {
   }
 
   protected render() {
+    const [domain, service] = this._action.service
+      ? this._action.service.split(".", 2)
+      : [undefined, undefined];
     return html`
       <ha-service-control
         .narrow=${this.narrow}
@@ -107,6 +117,31 @@ export class HaServiceAction extends LitElement implements ActionElement {
         .showAdvanced=${this.hass.userData?.showAdvanced}
         @value-changed=${this._actionChanged}
       ></ha-service-control>
+      ${domain && service && this.hass.services[domain]?.[service]?.response
+        ? html`<ha-settings-row .narrow=${this.narrow}>
+            <div slot="prefix" class="checkbox-spacer"></div>
+            <span slot="heading"
+              >${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.service.response_variable"
+              )}</span
+            >
+            <span slot="description">
+              ${this.hass.services[domain]?.[service]?.response.optional
+                ? this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.type.service.has_optional_response"
+                  )
+                : this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.type.service.has_response"
+                  )}
+            </span>
+            <ha-textfield
+              .value=${this._action.response_variable || ""}
+              .required=${!this.hass.services[domain]?.[service]?.response
+                .optional}
+              @change=${this._responseVariableChanged}
+            ></ha-textfield>
+          </ha-settings-row>`
+        : nothing}
     `;
   }
 
@@ -114,6 +149,29 @@ export class HaServiceAction extends LitElement implements ActionElement {
     if (ev.detail.value === this._action) {
       ev.stopPropagation();
     }
+    const value = { ...this.action, ...ev.detail.value };
+    if ("response_variable" in this.action) {
+      const [domain, service] = this._action.service
+        ? this._action.service.split(".", 2)
+        : [undefined, undefined];
+      if (
+        domain &&
+        service &&
+        this.hass.services[domain]?.[service] &&
+        !("response" in this.hass.services[domain][service])
+      ) {
+        delete value.response_variable;
+      }
+    }
+    fireEvent(this, "value-changed", { value });
+  }
+
+  private _responseVariableChanged(ev) {
+    const value = { ...this.action, response_variable: ev.target.value };
+    if (!ev.target.value) {
+      delete value.response_variable;
+    }
+    fireEvent(this, "value-changed", { value });
   }
 
   static get styles(): CSSResultGroup {
@@ -121,6 +179,22 @@ export class HaServiceAction extends LitElement implements ActionElement {
       ha-service-control {
         display: block;
         margin: 0 -16px;
+      }
+      ha-settings-row {
+        margin: 0 -16px;
+        padding: var(--service-control-padding, 0 16px);
+      }
+      ha-settings-row {
+        --paper-time-input-justify-content: flex-end;
+        --settings-row-content-width: 100%;
+        --settings-row-prefix-display: contents;
+        border-top: var(
+          --service-control-items-border-top,
+          1px solid var(--divider-color)
+        );
+      }
+      .checkbox-spacer {
+        width: 32px;
       }
     `;
   }

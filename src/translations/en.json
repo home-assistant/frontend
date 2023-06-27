@@ -2567,7 +2567,10 @@
               "continue_on_error": "Continue on error",
               "type": {
                 "service": {
-                  "label": "Call service"
+                  "label": "Call service",
+                  "response_variable": "Response variable",
+                  "has_optional_response": "This service can return a response, if you want to use the response, enter the name of a variable the response will be saved in",
+                  "has_response": "This service returns a response, enter the name of a variable the response will be saved in"
                 },
                 "play_media": {
                   "label": "Play media"
