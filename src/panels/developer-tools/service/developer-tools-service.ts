@@ -343,7 +343,7 @@ class HaPanelDevService extends LitElement {
         ...this._serviceData,
         response_variable: "service_result",
       });
-      script.push({ stop: "done", response: "{{ service_result }}" });
+      script.push({ stop: "done", response_variable: "service_result" });
     } else {
       script.push(this._serviceData);
     }
