@@ -166,7 +166,7 @@ class StatisticsChart extends LitElement {
           },
         },
         y: {
-          beginAtZero: false,
+          beginAtZero: this.chartType === "bar",
           ticks: {
             maxTicksLimit: 7,
           },
