@@ -612,9 +612,19 @@ const tryDescribeTrigger = (
 
   // Conversation Trigger
   if (trigger.platform === "conversation") {
+    if (!trigger.command) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.conversation.description.empty`
+      );
+    }
+
     return hass.localize(
       `${triggerTranslationBaseKey}.conversation.description.full`,
-      { sentence: disjunctionFormatter.format(ensureArray(trigger.command)) }
+      {
+        sentence: disjunctionFormatter.format(
+          ensureArray(trigger.command).map((cmd) => `'${cmd}'`)
+        ),
+      }
     );
   }
 
