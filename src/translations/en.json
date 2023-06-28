@@ -4476,6 +4476,7 @@
             "move_down": "Move card down",
             "move_before": "Move card before",
             "move_after": "Move card after",
+            "position": "Card is in position {position} of {total}",
             "options": "More options",
             "search_cards": "Search cards"
           },
