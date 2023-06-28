@@ -135,6 +135,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
   },
   humidifier: {
     device_class: ["humidifier", "dehumidifier"],
+    action: ["off", "idle", "humidifying", "drying"],
   },
   media_player: {
     device_class: ["tv", "speaker", "receiver"],

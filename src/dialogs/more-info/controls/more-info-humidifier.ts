@@ -10,7 +10,10 @@ import {
 import { property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
+import {
+  computeAttributeNameDisplay,
+  computeAttributeValueDisplay,
+} from "../../../common/entity/compute_attribute_display";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -22,6 +25,7 @@ import {
   HUMIDIFIER_SUPPORT_MODES,
 } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
 class MoreInfoHumidifier extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -49,7 +53,14 @@ class MoreInfoHumidifier extends LitElement {
         })}
       >
         <div class="container-humidity">
-          <div>${hass.localize("ui.card.humidifier.humidity")}</div>
+          <div>
+            ${computeAttributeNameDisplay(
+              hass.localize,
+              stateObj,
+              hass.entities,
+              "humidity"
+            )}
+          </div>
           <div class="single-row">
             <div class="target-humidity">${stateObj.attributes.humidity} %</div>
             <ha-slider
@@ -65,6 +76,35 @@ class MoreInfoHumidifier extends LitElement {
             </ha-slider>
           </div>
         </div>
+        <ha-select
+          .label=${hass.localize("ui.card.humidifier.state")}
+          .value=${stateObj.state}
+          fixedMenuPosition
+          naturalMenuWidth
+          @selected=${this._handleStateChanged}
+          @closed=${stopPropagation}
+        >
+          <mwc-list-item value="off">
+            ${computeStateDisplay(
+              hass.localize,
+              stateObj,
+              hass.locale,
+              this.hass.config,
+              hass.entities,
+              "off"
+            )}
+          </mwc-list-item>
+          <mwc-list-item value="on">
+            ${computeStateDisplay(
+              hass.localize,
+              stateObj,
+              hass.locale,
+              this.hass.config,
+              hass.entities,
+              "on"
+            )}
+          </mwc-list-item>
+        </ha-select>
 
         ${supportModes
           ? html`
@@ -123,6 +163,16 @@ class MoreInfoHumidifier extends LitElement {
     );
   }
 
+  private _handleStateChanged(ev) {
+    const newVal = ev.target.value || null;
+    this._callServiceHelper(
+      this.stateObj!.state,
+      newVal,
+      newVal === "on" ? "turn_on" : "turn_off",
+      {}
+    );
+  }
+
   private _handleModeChanged(ev) {
     const newVal = ev.target.value || null;
     this._callServiceHelper(
@@ -178,6 +228,11 @@ class MoreInfoHumidifier extends LitElement {
       }
 
       ha-select {
+        width: 100%;
+        margin-top: 8px;
+      }
+
+      ha-slider {
         width: 100%;
       }
 
