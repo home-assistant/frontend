@@ -376,10 +376,9 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
                 </search-input>
               </div>
             `}
-
-        <div class="container">
-          ${this._showIgnored
-            ? ignoredConfigEntries.map(
+        ${this._showIgnored
+          ? html`<div class="container">
+              ${ignoredConfigEntries.map(
                 (entry: ConfigEntryExtended) => html`
                   <ha-ignored-config-entry-card
                     .hass=${this.hass}
@@ -388,10 +387,12 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
                     @change=${this._handleFlowUpdated}
                   ></ha-ignored-config-entry-card>
                 `
-              )
-            : ""}
-          ${configEntriesInProgress.length
-            ? configEntriesInProgress.map(
+              )}
+            </div>`
+          : ""}
+        ${configEntriesInProgress.length
+          ? html`<div class="container">
+              ${configEntriesInProgress.map(
                 (flow: DataEntryFlowProgressExtended) => html`
                   <ha-config-flow-card
                     .hass=${this.hass}
@@ -400,10 +401,12 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
                     @change=${this._handleFlowUpdated}
                   ></ha-config-flow-card>
                 `
-              )
-            : ""}
-          ${this._showDisabled
-            ? disabledConfigEntries.map(
+              )}
+            </div>`
+          : ""}
+        ${this._showDisabled
+          ? html`<div class="container">
+              ${disabledConfigEntries.map(
                 (entry: ConfigEntryExtended) => html`
                   <ha-disabled-config-entry-card
                     .hass=${this.hass}
@@ -412,8 +415,10 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
                     .entityRegistryEntries=${this._entityRegistryEntries}
                   ></ha-disabled-config-entry-card>
                 `
-              )
-            : ""}
+              )}
+            </div>`
+          : ""}
+        <div class="container">
           ${integrations.length
             ? integrations.map(
                 ([domain, items]) =>
@@ -744,6 +749,8 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
           grid-gap: 16px 16px;
           padding: 8px 16px 16px;
+        }
+        .container:last-of-type {
           margin-bottom: 64px;
         }
         .container > * {
