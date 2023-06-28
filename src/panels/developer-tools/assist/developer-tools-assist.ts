@@ -22,7 +22,6 @@ type SentenceParsingResult = {
   sentence: string;
   language: string;
   result: AssitDebugResult | null;
-  time: Date;
 };
 
 @customElement("developer-tools-assist")
@@ -75,8 +74,6 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
 
     this._sentencesInput.value = "";
 
-    const now = new Date();
-
     const newResults: SentenceParsingResult[] = [];
     sentences.forEach((sentence, index) => {
       const result = results[index];
@@ -85,7 +82,6 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
         sentence,
         language: this._language!,
         result,
-        time: now,
       });
     });
     this._results = [...newResults, ...this._results];
@@ -152,7 +148,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
         </ha-card>
 
         ${this._results.map((r) => {
-          const { sentence, result, language, time } = r;
+          const { sentence, result, language } = r;
           const matched = result != null;
 
           return html`
@@ -163,34 +159,22 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
                   <p>${matched ? "✅" : "❌"}</p>
                 </div>
                 <div class="info">
-                    <p>
-                      Language: ${formatLanguageCode(
-                        language,
-                        this.hass.locale
-                      )} (${language})
-                    </p>
-                    <p>Execution time: 
-                      <ha-absolute-time .hass=${this.hass} .datetime=${time}>
-                    </ha-absolute-time>
-                  </p>
-                    
-                  </p>
+                  Language: ${formatLanguageCode(language, this.hass.locale)}
+                  (${language})
                 </div>
-                ${
-                  result
-                    ? html`
-                        <ha-code-editor
-                          mode="yaml"
-                          .hass=${this.hass}
-                          .value=${dump(result).trimRight()}
-                          read-only
-                          dir="ltr"
-                        ></ha-code-editor>
-                      `
-                    : html`<ha-alert alert-type="error"
-                        >No intent matched</ha-alert
-                      >`
-                }
+                ${result
+                  ? html`
+                      <ha-code-editor
+                        mode="yaml"
+                        .hass=${this.hass}
+                        .value=${dump(result).trimRight()}
+                        read-only
+                        dir="ltr"
+                      ></ha-code-editor>
+                    `
+                  : html`<ha-alert alert-type="error">
+                      No intent matched
+                    </ha-alert>`}
               </div>
             </ha-card>
           `;
