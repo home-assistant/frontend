@@ -9,6 +9,8 @@ type HumidifierState =
   | (typeof FIXED_DOMAIN_STATES.humidifier)[number]
   | (typeof UNAVAILABLE_STATES)[number];
 
+export type HumidifierAction = "off" | "idle" | "humidifying" | "drying";
+
 export type HumidifierEntity = HassEntityBase & {
   state: HumidifierState;
   attributes: HassEntityAttributeBase & {
@@ -17,6 +19,7 @@ export type HumidifierEntity = HassEntityBase & {
     min_humidity?: number;
     max_humidity?: number;
     mode?: string;
+    action: HumidifierAction;
     available_modes?: string[];
   };
 };

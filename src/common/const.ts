@@ -182,6 +182,7 @@ export const DOMAINS_WITH_CARD = [
   "input_select",
   "input_number",
   "input_text",
+  "humidifier",
   "lock",
   "media_player",
   "number",
