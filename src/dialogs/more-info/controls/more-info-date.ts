@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
 import { setDateValue } from "../../../data/date";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-date")
@@ -14,15 +14,17 @@ class MoreInfoDate extends LitElement {
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   protected render() {
-    if (!this.stateObj || isUnavailableState(this.stateObj.state)) {
+    if (!this.stateObj || this.stateObj.state === UNAVAILABLE) {
       return nothing;
     }
 
     return html`
       <ha-date-input
         .locale=${this.hass.locale}
-        .value=${this.stateObj.state}
-        .disabled=${isUnavailableState(this.stateObj.state)}
+        .value=${isUnavailableState(this.stateObj.state)
+          ? undefined
+          : this.stateObj.state}
+        .disabled=${this.stateObj.state === UNAVAILABLE}
         @value-changed=${this._dateChanged}
       >
       </ha-date-input>
@@ -30,7 +32,9 @@ class MoreInfoDate extends LitElement {
   }
 
   private _dateChanged(ev: CustomEvent<{ value: string }>): void {
-    setDateValue(this.hass!, this.stateObj!.entity_id, ev.detail.value);
+    if (ev.detail.value) {
+      setDateValue(this.hass!, this.stateObj!.entity_id, ev.detail.value);
+    }
   }
 
   static get styles(): CSSResultGroup {

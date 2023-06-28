@@ -3,7 +3,7 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
-import { UNAVAILABLE } from "../../../data/entity";
+import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
 import { setTimeValue } from "../../../data/time";
 import type { HomeAssistant } from "../../../types";
 
@@ -20,7 +20,9 @@ class MoreInfoTime extends LitElement {
 
     return html`
       <ha-time-input
-        .value=${this.stateObj.state}
+        .value=${isUnavailableState(this.stateObj.state)
+          ? undefined
+          : this.stateObj.state}
         .locale=${this.hass.locale}
         .disabled=${this.stateObj.state === UNAVAILABLE}
         @value-changed=${this._timeChanged}

@@ -1,7 +1,7 @@
 import { html, LitElement, nothing, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
-import { UNAVAILABLE } from "../../../data/entity";
+import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
 import { setTimeValue } from "../../../data/time";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -47,7 +47,9 @@ class HuiTimeEntityRow extends LitElement implements LovelaceRow {
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <ha-time-input
-          .value=${unavailable ? "" : stateObj.state}
+          .value=${isUnavailableState(stateObj.state)
+            ? undefined
+            : stateObj.state}
           .locale=${this.hass.locale}
           .disabled=${unavailable}
           @value-changed=${this._timeChanged}
