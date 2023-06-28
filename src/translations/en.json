@@ -131,6 +131,7 @@
       },
       "humidifier": {
         "humidity": "Target humidity",
+        "state": "State",
         "mode": "Mode",
         "target_humidity_entity": "{name} target humidity",
         "on_entity": "{name} on"
