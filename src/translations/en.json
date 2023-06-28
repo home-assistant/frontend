@@ -4479,12 +4479,16 @@
             "move_down": "Move card down",
             "move_before": "Move card before",
             "move_after": "Move card after",
-            "position": "Card is in position {position} of {total}",
+            "change_position": "Change card position",
             "options": "More options",
             "search_cards": "Search cards"
           },
           "move_card": {
             "header": "Choose a view to move the card to"
+          },
+          "change_position": {
+            "title": "Change card position",
+            "text": "What position do you want to move your card to?"
           },
           "select_view": {
             "header": "Choose a view",
