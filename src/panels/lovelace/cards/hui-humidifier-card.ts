@@ -166,7 +166,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
             id="set-mode"
           >
             ${
-              stateObj.attributes.action != null
+              stateObj.attributes.action
                 ? computeAttributeValueDisplay(
                     this.hass.localize,
                     stateObj,
