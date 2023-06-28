@@ -315,7 +315,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 <ha-alert
                   alert-type="error"
                   .title=${stateObj?.state === UNAVAILABLE
-                    ? "Script unavailable"
+                    ? this.hass.localize(
+                        "ui.panel.config.script.editor.unavailable"
+                      )
                     : undefined}
                 >
                   ${this._errors || this._validationErrors}
