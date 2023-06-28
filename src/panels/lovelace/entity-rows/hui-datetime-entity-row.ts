@@ -10,7 +10,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
 import { format } from "date-fns";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
 import { setDateTimeValue } from "../../../data/datetime";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -52,11 +52,13 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    const unavailable = isUnavailableState(stateObj.state);
+    const unavailable = stateObj.state === UNAVAILABLE;
 
-    const dateObj = unavailable ? undefined : new Date(stateObj.state);
-    const time = dateObj ? format(dateObj, "HH:mm:ss") : "";
-    const date = dateObj ? format(dateObj, "yyyy-MM-dd") : "";
+    const dateObj = isUnavailableState(stateObj.state)
+      ? undefined
+      : new Date(stateObj.state);
+    const time = dateObj ? format(dateObj, "HH:mm:ss") : undefined;
+    const date = dateObj ? format(dateObj, "yyyy-MM-dd") : undefined;
 
     return html`
       <hui-generic-entity-row
@@ -90,21 +92,25 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
   }
 
   private _timeChanged(ev: CustomEvent<{ value: string }>): void {
-    const stateObj = this.hass!.states[this._config!.entity];
-    const dateObj = new Date(stateObj.state);
-    const newTime = ev.detail.value.split(":").map(Number);
-    dateObj.setHours(newTime[0], newTime[1], newTime[2]);
+    if (ev.detail.value) {
+      const stateObj = this.hass!.states[this._config!.entity];
+      const dateObj = new Date(stateObj.state);
+      const newTime = ev.detail.value.split(":").map(Number);
+      dateObj.setHours(newTime[0], newTime[1], newTime[2]);
 
-    setDateTimeValue(this.hass!, stateObj.entity_id, dateObj);
+      setDateTimeValue(this.hass!, stateObj.entity_id, dateObj);
+    }
   }
 
   private _dateChanged(ev: CustomEvent<{ value: string }>): void {
-    const stateObj = this.hass!.states[this._config!.entity];
-    const dateObj = new Date(stateObj.state);
-    const newDate = ev.detail.value.split("-").map(Number);
-    dateObj.setFullYear(newDate[0], newDate[1] - 1, newDate[2]);
+    if (ev.detail.value) {
+      const stateObj = this.hass!.states[this._config!.entity];
+      const dateObj = new Date(stateObj.state);
+      const newDate = ev.detail.value.split("-").map(Number);
+      dateObj.setFullYear(newDate[0], newDate[1] - 1, newDate[2]);
 
-    setDateTimeValue(this.hass!, stateObj.entity_id, dateObj);
+      setDateTimeValue(this.hass!, stateObj.entity_id, dateObj);
+    }
   }
 
   static get styles(): CSSResultGroup {
