@@ -82,6 +82,26 @@ export const describeTrigger = (
   entityRegistry: EntityRegistryEntry[],
   ignoreAlias = false
 ) => {
+  try {
+    return tryDescribeTrigger(trigger, hass, entityRegistry, ignoreAlias);
+  } catch (error: any) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+
+    let msg = "Error in describing trigger";
+    if (error.message) {
+      msg += ": " + error.message;
+    }
+    return msg;
+  }
+};
+
+const tryDescribeTrigger = (
+  trigger: Trigger,
+  hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
+  ignoreAlias = false
+) => {
   if (trigger.alias && !ignoreAlias) {
     return trigger.alias;
   }
@@ -590,6 +610,24 @@ export const describeTrigger = (
     );
   }
 
+  // Conversation Trigger
+  if (trigger.platform === "conversation") {
+    if (!trigger.command) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.conversation.description.empty`
+      );
+    }
+
+    return hass.localize(
+      `${triggerTranslationBaseKey}.conversation.description.full`,
+      {
+        sentence: disjunctionFormatter.format(
+          ensureArray(trigger.command).map((cmd) => `'${cmd}'`)
+        ),
+      }
+    );
+  }
+
   // Persistent Notification Trigger
   if (trigger.platform === "persistent_notification") {
     return "When a persistent notification is updated";
@@ -621,6 +659,26 @@ export const describeTrigger = (
 };
 
 export const describeCondition = (
+  condition: Condition,
+  hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
+  ignoreAlias = false
+) => {
+  try {
+    return tryDescribeCondition(condition, hass, entityRegistry, ignoreAlias);
+  } catch (error: any) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+
+    let msg = "Error in describing condition";
+    if (error.message) {
+      msg += ": " + error.message;
+    }
+    return msg;
+  }
+};
+
+const tryDescribeCondition = (
   condition: Condition,
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],

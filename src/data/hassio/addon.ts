@@ -23,7 +23,13 @@ export type AddonStartup =
   | "services"
   | "application"
   | "once";
-export type AddonState = "started" | "stopped" | null;
+export type AddonState =
+  | "startup"
+  | "started"
+  | "stopped"
+  | "unknown"
+  | "error"
+  | null;
 export type AddonRepository = "core" | "local" | string;
 
 interface AddonTranslations {

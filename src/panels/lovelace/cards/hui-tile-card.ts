@@ -3,11 +3,11 @@ import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
 import { mdiExclamationThick, mdiHelp } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   TemplateResult,
+  css,
+  html,
   nothing,
 } from "lit";
 import {
@@ -37,13 +37,14 @@ import "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import {
-  computeCoverPositionStateDisplay,
   CoverEntity,
+  computeCoverPositionStateDisplay,
 } from "../../../data/cover";
 import { isUnavailableState } from "../../../data/entity";
-import { computeFanSpeedStateDisplay, FanEntity } from "../../../data/fan";
-import { LightEntity } from "../../../data/light";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { FanEntity, computeFanSpeedStateDisplay } from "../../../data/fan";
+import type { HumidifierEntity } from "../../../data/humidifier";
+import type { LightEntity } from "../../../data/light";
+import type { ActionHandlerEvent } from "../../../data/lovelace";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -51,15 +52,15 @@ import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import "../components/hui-timestamp-display";
 import { createTileFeatureElement } from "../create-element/create-tile-feature-element";
-import { LovelaceTileFeatureConfig } from "../tile-features/types";
-import {
+import type { LovelaceTileFeatureConfig } from "../tile-features/types";
+import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceTileFeature,
 } from "../types";
-import { HuiErrorCard } from "./hui-error-card";
+import type { HuiErrorCard } from "./hui-error-card";
 import { computeTileBadge } from "./tile/badges/tile-badge";
-import { ThermostatCardConfig, TileCardConfig } from "./types";
+import type { ThermostatCardConfig, TileCardConfig } from "./types";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
@@ -241,6 +242,16 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         return `${stateDisplay} ⸱ ${positionStateDisplay}`;
       }
     }
+
+    if (domain === "humidifier" && stateActive(stateObj)) {
+      const humidity = (stateObj as HumidifierEntity).attributes.humidity;
+      if (humidity) {
+        return `${stateDisplay} ⸱ ${Math.round(humidity)}${blankBeforePercent(
+          this.hass!.locale
+        )}%`;
+      }
+    }
+
     return stateDisplay;
   }
 

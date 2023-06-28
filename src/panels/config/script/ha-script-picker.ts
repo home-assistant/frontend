@@ -12,6 +12,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { differenceInDays } from "date-fns/esm";
+import { styleMap } from "lit/directives/style-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
@@ -49,6 +50,7 @@ import { showNewAutomationDialog } from "../automation/show-dialog-new-automatio
 import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { findRelated } from "../../../data/search";
 import { fetchBlueprints } from "../../../data/blueprint";
+import { UNAVAILABLE } from "../../../data/entity";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
@@ -100,7 +102,13 @@ class HaScriptPicker extends LitElement {
         ),
         type: "icon",
         template: (_icon, script) =>
-          html`<ha-state-icon .state=${script}></ha-state-icon>`,
+          html`<ha-state-icon
+            .state=${script}
+            style=${styleMap({
+              color:
+                script.state === UNAVAILABLE ? "var(--error-color)" : "unset",
+            })}
+          ></ha-state-icon>`,
       },
       name: {
         title: this.hass.localize("ui.panel.config.script.picker.headers.name"),

@@ -7,6 +7,7 @@ import {
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
+import { autoCaseNoun } from "../common/translations/auto_case_noun";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HaEntityPickerEntityFilterFunc } from "../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../types";
@@ -359,15 +360,21 @@ export const localizeStateMessage = (
         case "vibration":
           if (isOn) {
             return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_device_class`, {
-              device_class: localize(
-                `component.binary_sensor.device_class.${device_class}`
+              device_class: autoCaseNoun(
+                localize(
+                  `component.binary_sensor.entity_component.${device_class}.name`
+                ),
+                hass.language
               ),
             });
           }
           if (isOff) {
             return localize(`${LOGBOOK_LOCALIZE_PATH}.cleared_device_class`, {
-              device_class: localize(
-                `component.binary_sensor.device_class.${device_class}`
+              device_class: autoCaseNoun(
+                localize(
+                  `component.binary_sensor.entity_component.${device_class}.name`
+                ),
+                hass.language
               ),
             });
           }

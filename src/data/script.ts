@@ -51,6 +51,7 @@ export const serviceActionStruct: Describe<ServiceAction> = assign(
     entity_id: optional(string()),
     target: optional(targetStruct),
     data: optional(object()),
+    response_variable: optional(string()),
   })
 );
 
@@ -116,6 +117,7 @@ export interface ServiceAction extends BaseAction {
   entity_id?: string;
   target?: HassServiceTarget;
   data?: Record<string, unknown>;
+  response_variable?: string;
 }
 
 export interface DeviceAction extends BaseAction {
@@ -221,6 +223,7 @@ export interface VariablesAction extends BaseAction {
 
 export interface StopAction extends BaseAction {
   stop: string;
+  response_variable?: string;
   error?: boolean;
 }
 

@@ -44,6 +44,32 @@ export const describeAction = <T extends ActionType>(
   actionType?: T,
   ignoreAlias = false
 ): string => {
+  try {
+    return tryDescribeAction(
+      hass,
+      entityRegistry,
+      action,
+      actionType,
+      ignoreAlias
+    );
+  } catch (error: any) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+    let msg = "Error in describing action";
+    if (error.message) {
+      msg += ": " + error.message;
+    }
+    return msg;
+  }
+};
+
+const tryDescribeAction = <T extends ActionType>(
+  hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
+  action: ActionTypes[T],
+  actionType?: T,
+  ignoreAlias = false
+): string => {
   if (action.alias && !ignoreAlias) {
     return action.alias;
   }

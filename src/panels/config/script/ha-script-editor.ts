@@ -60,6 +60,8 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
+import { UNAVAILABLE } from "../../../data/entity";
+import { validateConfig } from "../../../data/config";
 
 export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -91,6 +93,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @state() private _readOnly = false;
 
   @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
+
+  @state() private _validationErrors?: (string | TemplateResult)[];
 
   private _schema = memoizeOne(
     (
@@ -159,6 +163,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     if (!this._config) {
       return nothing;
     }
+
+    const stateObj = this._entityId
+      ? this.hass.states[this._entityId]
+      : undefined;
 
     const useBlueprint = "use_blueprint" in this._config;
 
@@ -302,6 +310,28 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             "yaml-mode": this._mode === "yaml",
           })}"
         >
+          ${this._errors || stateObj?.state === UNAVAILABLE
+            ? html`
+                <ha-alert
+                  alert-type="error"
+                  .title=${stateObj?.state === UNAVAILABLE
+                    ? this.hass.localize(
+                        "ui.panel.config.script.editor.unavailable"
+                      )
+                    : undefined}
+                >
+                  ${this._errors || this._validationErrors}
+                </ha-alert>
+              `
+            : ""}
+          ${this._readOnly
+            ? html`<ha-alert alert-type="warning">
+                ${this.hass.localize("ui.panel.config.script.editor.read_only")}
+                <mwc-button slot="action" @click=${this._duplicate}>
+                  ${this.hass.localize("ui.panel.config.script.editor.migrate")}
+                </mwc-button>
+              </ha-alert>`
+            : ""}
           ${this._mode === "gui"
             ? html`
                 <div
@@ -312,13 +342,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                   ${this._config
                     ? html`
                         <div class="config-container">
-                          ${this._errors
-                            ? html`
-                                <ha-alert alert-type="error">
-                                  ${this._errors}
-                                </ha-alert>
-                              `
-                            : ""}
                           <ha-card outlined>
                             <div class="card-content">
                               <ha-form
@@ -363,23 +386,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               `
             : this._mode === "yaml"
             ? html`
-                ${this._readOnly
-                  ? html`<ha-alert alert-type="warning">
-                      ${this.hass.localize(
-                        "ui.panel.config.script.editor.read_only"
-                      )}
-                      <mwc-button slot="action" @click=${this._duplicate}>
-                        ${this.hass.localize(
-                          "ui.panel.config.script.editor.migrate"
-                        )}
-                      </mwc-button>
-                    </ha-alert>`
-                  : ""}
-                ${this._errors
-                  ? html`
-                      <ha-alert alert-type="error">${this._errors}</ha-alert>
-                    `
-                  : ""}
                 <ha-yaml-editor
                   .hass=${this.hass}
                   .defaultValue=${this._preprocessYaml()}
@@ -432,6 +438,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           this._dirty = false;
           this._readOnly = false;
           this._config = this._normalizeConfig(config);
+          const entity = this.entityRegistry.find(
+            (ent) =>
+              ent.platform === "script" && ent.unique_id === this.scriptId
+          );
+          this._entityId = entity?.entity_id;
+          this._checkValidation();
         },
         (resp) => {
           const entity = this.entityRegistry.find(
@@ -479,6 +491,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     if (changedProps.has("entityId") && this.entityId) {
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
         this._config = this._normalizeConfig(c.config);
+        this._checkValidation();
       });
       const regEntry = this.entityRegistry.find(
         (ent) => ent.entity_id === this.entityId
@@ -500,6 +513,28 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       config.sequence = [value];
     }
     return config;
+  }
+
+  private async _checkValidation() {
+    this._validationErrors = undefined;
+    if (!this._entityId || !this._config) {
+      return;
+    }
+    const stateObj = this.hass.states[this._entityId];
+    if (stateObj?.state !== UNAVAILABLE) {
+      return;
+    }
+    const validation = await validateConfig(this.hass, {
+      action: this._config.sequence,
+    });
+    this._validationErrors = Object.entries(validation).map(([key, value]) =>
+      value.valid
+        ? ""
+        : html`${this.hass.localize(
+              `ui.panel.config.automation.editor.${key}s.header`
+            )}:
+            ${value.error}<br />`
+    );
   }
 
   private _computeLabelCallback = (
