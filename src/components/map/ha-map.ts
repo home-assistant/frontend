@@ -159,6 +159,7 @@ export class HaMap extends ReactiveElement {
     const map = this.shadowRoot!.getElementById("map");
     map!.classList.toggle("dark", darkMode);
     map!.classList.toggle("forced-dark", this.darkMode);
+    map!.classList.toggle("foced-light", !darkMode);
   }
 
   private async _loadMap(): Promise<void> {
@@ -503,26 +504,29 @@ export class HaMap extends ReactiveElement {
         background: #090909;
       }
       #map.forced-dark {
+        color: #ffffff;
         --map-filter: invert(0.9) hue-rotate(170deg) brightness(1.5)
           contrast(1.2) saturate(0.3);
+      }
+      #map.foced-light {
+        background: #ffffff;
+        color: #000000;
+        --map-filter: invert(0);
       }
       #map:active {
         cursor: grabbing;
         cursor: -moz-grabbing;
         cursor: -webkit-grabbing;
       }
-      .light {
-        color: #000000;
-      }
-      .dark {
-        color: #ffffff;
-      }
       .leaflet-tile-pane {
         filter: var(--map-filter);
       }
       .dark .leaflet-bar a {
-        background-color: var(--card-background-color, #1c1c1c);
+        background-color: #1c1c1c;
         color: #ffffff;
+      }
+      .dark .leaflet-bar a:hover {
+        background-color: #313131;
       }
       .leaflet-marker-draggable {
         cursor: move !important;

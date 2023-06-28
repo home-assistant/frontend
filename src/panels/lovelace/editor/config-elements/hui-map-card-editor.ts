@@ -11,6 +11,7 @@ import {
   string,
   union,
 } from "superstruct";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { hasLocation } from "../../../../common/entity/has_location";
 import "../../../../components/ha-form/ha-form";
@@ -28,6 +29,7 @@ import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 
 export const mapEntitiesConfigStruct = union([
   object({
@@ -50,30 +52,11 @@ const cardConfigStruct = assign(
     hours_to_show: optional(number()),
     geo_location_sources: optional(array(string())),
     auto_fit: optional(boolean()),
+    theme_mode: optional(string()),
   })
 );
 
-const SCHEMA = [
-  { name: "title", selector: { text: {} } },
-  {
-    name: "",
-    type: "grid",
-    schema: [
-      { name: "aspect_ratio", selector: { text: {} } },
-      {
-        name: "default_zoom",
-        default: DEFAULT_ZOOM,
-        selector: { number: { mode: "box", min: 0 } },
-      },
-      { name: "dark_mode", selector: { boolean: {} } },
-      {
-        name: "hours_to_show",
-        default: DEFAULT_HOURS_TO_SHOW,
-        selector: { number: { mode: "box", min: 0 } },
-      },
-    ],
-  },
-] as const;
+const themeModes = ["auto", "light", "dark"] as const;
 
 @customElement("hui-map-card-editor")
 export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
@@ -82,6 +65,44 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   @state() private _config?: MapCardConfig;
 
   @state() private _configEntities?: EntityConfig[];
+
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        { name: "title", selector: { text: {} } },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            { name: "aspect_ratio", selector: { text: {} } },
+            {
+              name: "default_zoom",
+              default: DEFAULT_ZOOM,
+              selector: { number: { mode: "box", min: 0 } },
+            },
+            {
+              name: "theme_mode",
+              default: "auto",
+              selector: {
+                select: {
+                  options: themeModes.map((themeMode) => ({
+                    value: themeMode,
+                    label: localize(
+                      `ui.panel.lovelace.editor.card.map.theme_mode.${themeMode}`
+                    ),
+                  })),
+                },
+              },
+            },
+            {
+              name: "hours_to_show",
+              default: DEFAULT_HOURS_TO_SHOW,
+              selector: { number: { mode: "box", min: 0 } },
+            },
+          ],
+        },
+      ] as const
+  );
 
   public setConfig(config: MapCardConfig): void {
     assert(config, cardConfigStruct);
@@ -104,7 +125,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
-        .schema=${SCHEMA}
+        .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -170,9 +191,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     switch (schema.name) {
-      case "dark_mode":
       case "default_zoom":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.map.${schema.name}`

@@ -2,9 +2,9 @@ import { HaDurationData } from "../../../components/ha-duration-input";
 import { ActionConfig } from "../../../data/lovelace/config/action";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { Statistic, StatisticType } from "../../../data/recorder";
-import { ForecastType } from "../../../data/weather";
-import { FullCalendarView, TranslationDict } from "../../../types";
+import { FullCalendarView, ThemeMode, TranslationDict } from "../../../types";
 import { Condition, LegacyCondition } from "../common/validate-condition";
+import { ForecastType } from "../../../data/weather";
 import { HuiImage } from "../components/hui-image";
 import { LovelaceElementConfig } from "../elements/types";
 import {
@@ -296,7 +296,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   entities?: Array<EntityConfig | string>;
   hours_to_show?: number;
   geo_location_sources?: string[];
-  dark_mode?: boolean;
+  theme_mode?: ThemeMode;
 }
 
 export interface MarkdownCardConfig extends LovelaceCardConfig {
