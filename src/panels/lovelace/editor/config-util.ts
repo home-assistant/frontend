@@ -185,6 +185,35 @@ export const swapCard = (
   };
 };
 
+export const moveCardToPosition = (
+  config: LovelaceConfig,
+  path: [number, number],
+  position: number
+) => {
+  const view = config.views[path[0]];
+
+  const oldIndex = path[1];
+  const newIndex = Math.max(Math.min(position - 1, view.cards!.length - 1), 0);
+
+  const newCards = [...view.cards!];
+
+  const card = newCards[oldIndex];
+  newCards.splice(oldIndex, 1);
+  newCards.splice(newIndex, 0, card);
+
+  const newView = {
+    ...view,
+    cards: newCards,
+  };
+
+  return {
+    ...config,
+    views: config.views.map((origView, index) =>
+      index === path[0] ? newView : origView
+    ),
+  };
+};
+
 export const moveCard = (
   config: LovelaceConfig,
   fromPath: [number, number],
