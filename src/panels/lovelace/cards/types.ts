@@ -334,6 +334,7 @@ export interface StatisticCardConfig extends LovelaceCardConfig {
 }
 
 export interface PictureCardConfig extends LovelaceCardConfig {
+  title?: string;
   image?: string;
   image_entity?: string;
   tap_action?: ActionConfig;

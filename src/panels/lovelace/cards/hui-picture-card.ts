@@ -108,6 +108,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
+        .header=${this._config.title}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),

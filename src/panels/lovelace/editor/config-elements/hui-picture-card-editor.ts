@@ -14,6 +14,7 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
+    title: optional(string()),
     image: optional(string()),
     image_entity: optional(string()),
     tap_action: optional(actionConfigStruct),
@@ -24,6 +25,7 @@ const cardConfigStruct = assign(
 );
 
 const SCHEMA = [
+  { name: "title", selector: { text: {} } },
   { name: "image", selector: { text: {} } },
   { name: "image_entity", selector: { entity: { domain: "image" } } },
   { name: "alt_text", selector: { text: {} } },
