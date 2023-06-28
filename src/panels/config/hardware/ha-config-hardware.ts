@@ -170,6 +170,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
             adapters: {
               date: {
                 locale: this.hass.locale,
+                config: this.hass.config,
               },
             },
             gridLines: {

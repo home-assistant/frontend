@@ -3,9 +3,9 @@ import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
-  mdiContentDuplicate,
   mdiContentCopy,
   mdiContentCut,
+  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiFlask,
@@ -14,9 +14,11 @@ import {
   mdiSort,
   mdiStopCircleOutline,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import deepClone from "deep-clone-simple";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
@@ -24,8 +26,8 @@ import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
+import type { AutomationClipboard } from "../../../../data/automation";
 import { Condition, testCondition } from "../../../../data/automation";
-import type { Clipboard } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import { CONDITION_TYPES } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
@@ -83,7 +85,13 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public clipboard?: Clipboard;
+  @storage({
+    key: "automationClipboard",
+    state: false,
+    subscribe: true,
+    storage: "sessionStorage",
+  })
+  public _clipboard?: AutomationClipboard;
 
   @state() private _yamlMode = false;
 
@@ -290,7 +298,6 @@ export default class HaAutomationConditionRow extends LitElement {
               .hass=${this.hass}
               .condition=${this.condition}
               .reOrderMode=${this.reOrderMode}
-              .clipboard=${this.clipboard}
             ></ha-automation-condition-editor>
           </div>
         </ha-expansion-panel>
@@ -343,10 +350,10 @@ export default class HaAutomationConditionRow extends LitElement {
         fireEvent(this, "duplicate");
         break;
       case 4:
-        fireEvent(this, "set-clipboard", { condition: this.condition });
+        this._setClipboard();
         break;
       case 5:
-        fireEvent(this, "set-clipboard", { condition: this.condition });
+        this._setClipboard();
         fireEvent(this, "value-changed", { value: null });
         break;
       case 6:
@@ -364,6 +371,13 @@ export default class HaAutomationConditionRow extends LitElement {
         this._onDelete();
         break;
     }
+  }
+
+  private _setClipboard() {
+    this._clipboard = {
+      ...this._clipboard,
+      condition: deepClone(this.condition),
+    };
   }
 
   private _onDisable() {

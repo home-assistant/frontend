@@ -23,6 +23,7 @@ import {
   NumberFormat,
   DateFormat,
   TimeFormat,
+  TimeZone,
 } from "../data/translation";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
@@ -63,6 +64,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           number_format: NumberFormat.language,
           time_format: TimeFormat.language,
           date_format: DateFormat.language,
+          time_zone: TimeZone.local,
           first_weekday: FirstWeekday.language,
         },
         resources: null as any,

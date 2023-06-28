@@ -62,6 +62,7 @@ class HaEntityStatePicker extends LitElement {
                     this.hass.localize,
                     state,
                     this.hass.locale,
+                    this.hass.config,
                     this.hass.entities,
                     key
                   )
@@ -69,6 +70,7 @@ class HaEntityStatePicker extends LitElement {
                     this.hass.localize,
                     state,
                     this.hass.locale,
+                    this.hass.config,
                     this.hass.entities,
                     this.attribute,
                     key

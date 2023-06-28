@@ -2,6 +2,7 @@ import {
   mdiClockOutline,
   mdiFan,
   mdiFire,
+  mdiHeatWave,
   mdiPower,
   mdiSnowflake,
   mdiWaterPercent,
@@ -21,6 +22,7 @@ export const CLIMATE_HVAC_ACTION_ICONS: Record<HvacAction, string> = {
   heating: mdiFire,
   idle: mdiClockOutline,
   off: mdiPower,
+  preheating: mdiHeatWave,
 };
 
 export const CLIMATE_HVAC_ACTION_MODE: Record<HvacAction, HvacMode> = {
@@ -30,6 +32,7 @@ export const CLIMATE_HVAC_ACTION_MODE: Record<HvacAction, HvacMode> = {
   heating: "heat",
   idle: "off",
   off: "off",
+  preheating: "heat",
 };
 
 export const computeClimateBadge: ComputeBadgeFunction = (stateObj) => {

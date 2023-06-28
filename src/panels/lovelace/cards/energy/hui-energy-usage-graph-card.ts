@@ -12,7 +12,7 @@ import {
   isToday,
   startOfToday,
 } from "date-fns/esm";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -105,6 +105,7 @@ export class HuiEnergyUsageGraphCard
               this._start,
               this._end,
               this.hass.locale,
+              this.hass.config,
               this._compareStart,
               this._compareEnd
             )}
@@ -129,6 +130,7 @@ export class HuiEnergyUsageGraphCard
       start: Date,
       end: Date,
       locale: FrontendLocaleData,
+      config: HassConfig,
       compareStart?: Date,
       compareEnd?: Date
     ): ChartOptions => {
@@ -158,7 +160,8 @@ export class HuiEnergyUsageGraphCard
             suggestedMax: end.getTime(),
             adapters: {
               date: {
-                locale: locale,
+                locale,
+                config,
               },
             },
             ticks: {
@@ -206,6 +209,18 @@ export class HuiEnergyUsageGraphCard
           tooltip: {
             position: "nearest",
             filter: (val) => val.formattedValue !== "0",
+            itemSort: function (a: any, b: any) {
+              if (a.raw?.y > 0 && b.raw?.y < 0) {
+                return -1;
+              }
+              if (b.raw?.y > 0 && a.raw?.y < 0) {
+                return 1;
+              }
+              if (a.raw?.y > 0) {
+                return b.datasetIndex - a.datasetIndex;
+              }
+              return a.datasetIndex - b.datasetIndex;
+            },
             callbacks: {
               title: (datasets) => {
                 if (dayDifference > 0) {
@@ -213,10 +228,11 @@ export class HuiEnergyUsageGraphCard
                 }
                 const date = new Date(datasets[0].parsed.x);
                 return `${
-                  compare ? `${formatDateShort(date, locale)}: ` : ""
-                }${formatTime(date, locale)} – ${formatTime(
+                  compare ? `${formatDateShort(date, locale, config)}: ` : ""
+                }${formatTime(date, locale, config)} – ${formatTime(
                   addHours(date, 1),
-                  locale
+                  locale,
+                  config
                 )}`;
               },
               label: (context) =>

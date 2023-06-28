@@ -158,7 +158,11 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
           >
             <span>${growth} ${unit}</span>
             <span slot="secondary">
-              ${formatDateTime(new Date(stat.start), this.hass.locale)}
+              ${formatDateTime(
+                new Date(stat.start),
+                this.hass.locale,
+                this.hass.config
+              )}
             </span>
             <ha-svg-icon slot="meta" .path=${mdiChevronRight}></ha-svg-icon>
           </mwc-list-item>
@@ -213,7 +217,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         <span
           >${formatDateTime(
             new Date(this._chosenStat!.start),
-            this.hass.locale
+            this.hass.locale,
+            this.hass.config
           )}</span
         >
       </div>
@@ -223,7 +228,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         <span
           >${formatDateTime(
             new Date(this._chosenStat!.end),
-            this.hass.locale
+            this.hass.locale,
+            this.hass.config
           )}</span
         >
       </div>

@@ -19,7 +19,7 @@ export class HaStopAction extends LitElement implements ActionElement {
   }
 
   protected render() {
-    const { error, stop } = this.action;
+    const { error, stop, response_variable } = this.action;
 
     return html`
       <ha-textfield
@@ -29,6 +29,14 @@ export class HaStopAction extends LitElement implements ActionElement {
         .value=${stop}
         .disabled=${this.disabled}
         @change=${this._stopChanged}
+      ></ha-textfield>
+      <ha-textfield
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.stop.response_variable"
+        )}
+        .value=${response_variable || ""}
+        .disabled=${this.disabled}
+        @change=${this._responseChanged}
       ></ha-textfield>
       <ha-formfield
         .disabled=${this.disabled}
@@ -45,14 +53,21 @@ export class HaStopAction extends LitElement implements ActionElement {
     `;
   }
 
-  private _stopChanged(ev: CustomEvent) {
+  private _stopChanged(ev: Event) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.action, stop: (ev.target as any).value },
     });
   }
 
-  private _errorChanged(ev: CustomEvent) {
+  private _responseChanged(ev: Event) {
+    ev.stopPropagation();
+    fireEvent(this, "value-changed", {
+      value: { ...this.action, response_variable: (ev.target as any).value },
+    });
+  }
+
+  private _errorChanged(ev: Event) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.action, error: (ev.target as any).checked },

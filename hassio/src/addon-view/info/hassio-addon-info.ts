@@ -114,10 +114,21 @@ class HassioAddonInfo extends LitElement {
 
   @state() private _error?: string;
 
+  private _fetchDataTimeout?: number;
+
   private _addonStoreInfo = memoizeOne(
     (slug: string, storeAddons: StoreAddon[]) =>
       storeAddons.find((addon) => addon.slug === slug)
   );
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+
+    if (this._fetchDataTimeout) {
+      clearInterval(this._fetchDataTimeout);
+      this._fetchDataTimeout = undefined;
+    }
+  }
 
   protected render(): TemplateResult {
     const addonStoreInfo =
@@ -592,7 +603,10 @@ class HassioAddonInfo extends LitElement {
                     </ha-progress-button>
                   `
                 : html`
-                    <ha-progress-button @click=${this._startClicked}>
+                    <ha-progress-button
+                      @click=${this._startClicked}
+                      .progress=${this.addon.state === "startup"}
+                    >
                       ${this.supervisor.localize("addon.dashboard.start")}
                     </ha-progress-button>
                   `
@@ -672,7 +686,34 @@ class HassioAddonInfo extends LitElement {
     super.updated(changedProps);
     if (changedProps.has("addon")) {
       this._loadData();
+      if (
+        !this._fetchDataTimeout &&
+        this.addon &&
+        "state" in this.addon &&
+        this.addon.state === "startup"
+      ) {
+        // Addon is starting up, wait for it to start
+        this._scheduleDataUpdate();
+      }
     }
+  }
+
+  private _scheduleDataUpdate() {
+    this._fetchDataTimeout = window.setTimeout(async () => {
+      const addon = await fetchHassioAddonInfo(this.hass, this.addon.slug);
+      if (addon.state !== "startup") {
+        this._fetchDataTimeout = undefined;
+        this.addon = addon;
+        const eventdata = {
+          success: true,
+          response: undefined,
+          path: "start",
+        };
+        fireEvent(this, "hass-api-called", eventdata);
+      } else {
+        this._scheduleDataUpdate();
+      }
+    }, 500);
   }
 
   private async _loadData(): Promise<void> {

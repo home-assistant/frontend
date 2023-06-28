@@ -41,6 +41,7 @@ const triggers = [
   { platform: "sun", event: "sunset" },
   { platform: "time_pattern" },
   { platform: "webhook" },
+  { platform: "persistent_notification" },
   {
     platform: "zone",
     entity_id: "person.person",
@@ -50,6 +51,11 @@ const triggers = [
   { platform: "tag" },
   { platform: "time", at: "15:32" },
   { platform: "template" },
+  { platform: "conversation", command: "Turn on the lights" },
+  {
+    platform: "conversation",
+    command: ["Turn on the lights", "Turn the lights on"],
+  },
   { platform: "event", event_type: "homeassistant_started" },
 ];
 

@@ -142,4 +142,5 @@ module.exports = {
   createCastConfig,
   createHassioConfig,
   createGalleryConfig,
+  createRollupConfig,
 };

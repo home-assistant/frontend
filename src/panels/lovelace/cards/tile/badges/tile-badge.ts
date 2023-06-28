@@ -5,6 +5,7 @@ import { UNAVAILABLE, UNKNOWN } from "../../../../../data/entity";
 import { HomeAssistant } from "../../../../../types";
 import { computeClimateBadge } from "./tile-badge-climate";
 import { computePersonBadge } from "./tile-badge-person";
+import { computeHumidifierBadge } from "./tile-badge-humidifier";
 
 export type TileBadge = {
   color?: string;
@@ -34,6 +35,8 @@ export const computeTileBadge: ComputeBadgeFunction = (stateObj, hass) => {
       return computePersonBadge(stateObj, hass);
     case "climate":
       return computeClimateBadge(stateObj, hass);
+    case "humidifier":
+      return computeHumidifierBadge(stateObj, hass);
     default:
       return undefined;
   }

@@ -3,9 +3,9 @@ import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
-  mdiContentDuplicate,
   mdiContentCopy,
   mdiContentCut,
+  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiIdentifier,
@@ -15,9 +15,10 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
@@ -30,7 +31,8 @@ import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-textfield";
 import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import { subscribeTrigger, Trigger } from "../../../../data/automation";
+import type { AutomationClipboard } from "../../../../data/automation";
+import { Trigger, subscribeTrigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
@@ -50,6 +52,8 @@ import "./types/ha-automation-trigger-geo_location";
 import "./types/ha-automation-trigger-homeassistant";
 import "./types/ha-automation-trigger-mqtt";
 import "./types/ha-automation-trigger-numeric_state";
+import "./types/ha-automation-trigger-persistent_notification";
+import "./types/ha-automation-trigger-conversation";
 import "./types/ha-automation-trigger-state";
 import "./types/ha-automation-trigger-sun";
 import "./types/ha-automation-trigger-tag";
@@ -108,6 +112,14 @@ export default class HaAutomationTriggerRow extends LitElement {
   @state() private _triggerColor = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
+  @storage({
+    key: "automationClipboard",
+    state: false,
+    subscribe: true,
+    storage: "sessionStorage",
+  })
+  public _clipboard?: AutomationClipboard;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -468,10 +480,10 @@ export default class HaAutomationTriggerRow extends LitElement {
         fireEvent(this, "duplicate");
         break;
       case 4:
-        fireEvent(this, "set-clipboard", { trigger: this.trigger });
+        this._setClipboard();
         break;
       case 5:
-        fireEvent(this, "set-clipboard", { trigger: this.trigger });
+        this._setClipboard();
         fireEvent(this, "value-changed", { value: null });
         break;
       case 6:
@@ -489,6 +501,13 @@ export default class HaAutomationTriggerRow extends LitElement {
         this._onDelete();
         break;
     }
+  }
+
+  private _setClipboard() {
+    this._clipboard = {
+      ...this._clipboard,
+      trigger: this.trigger,
+    };
   }
 
   private _onDelete() {

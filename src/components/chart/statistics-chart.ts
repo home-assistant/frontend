@@ -146,6 +146,7 @@ class StatisticsChart extends LitElement {
           adapters: {
             date: {
               locale: this.hass.locale,
+              config: this.hass.config,
             },
           },
           ticks: {
@@ -165,7 +166,7 @@ class StatisticsChart extends LitElement {
           },
         },
         y: {
-          beginAtZero: false,
+          beginAtZero: this.chartType === "bar",
           ticks: {
             maxTicksLimit: 7,
           },

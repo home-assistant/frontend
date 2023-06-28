@@ -55,6 +55,9 @@ class MoreInfoContent extends ReactiveElement {
     }
 
     if (!moreInfoType) {
+      if (this.lastChild) {
+        this.removeChild(this.lastChild);
+      }
       return;
     }
 

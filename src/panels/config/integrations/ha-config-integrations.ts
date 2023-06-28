@@ -135,13 +135,13 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
             integrations.add(flow.handler);
           }
         });
-        await this.hass.loadBackendTranslation(
+        const localize = await this.hass.loadBackendTranslation(
           "config",
           Array.from(integrations)
         );
         this._configEntriesInProgress = flowsInProgress.map((flow) => ({
           ...flow,
-          localized_title: localizeConfigFlowTitle(this.hass.localize, flow),
+          localized_title: localizeConfigFlowTitle(localize, flow),
         }));
       }),
     ];

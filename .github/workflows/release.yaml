@@ -6,7 +6,7 @@ on:
       - published
 
 env:
-  PYTHON_VERSION: "3.10"
+  PYTHON_VERSION: "3.11"
   NODE_OPTIONS: --max_old_space_size=6144
 
 # Set default workflow permissions
@@ -23,7 +23,7 @@ jobs:
       contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
 
       - name: Verify version
         uses: home-assistant/actions/helpers/verify-version@master
@@ -76,7 +76,7 @@ jobs:
       - name: Build wheels
         uses: home-assistant/wheels@2023.04.0
         with:
-          abi: cp310
+          abi: cp311
           tag: musllinux_1_2
           arch: amd64
           wheels-key: ${{ secrets.WHEELS_KEY }}

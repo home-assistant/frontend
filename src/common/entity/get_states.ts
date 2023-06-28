@@ -30,6 +30,7 @@ export const FIXED_DOMAIN_STATES = {
   lock: ["jammed", "locked", "locking", "unlocked", "unlocking"],
   media_player: ["idle", "off", "paused", "playing", "standby"],
   person: ["home", "not_home"],
+  plant: ["ok", "problem"],
   remote: ["on", "off"],
   scene: [],
   schedule: ["on", "off"],
@@ -102,7 +103,15 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
     frontend_stream_type: ["hls", "web_rtc"],
   },
   climate: {
-    hvac_action: ["off", "idle", "heating", "cooling", "drying", "fan"],
+    hvac_action: [
+      "off",
+      "idle",
+      "preheating",
+      "heating",
+      "cooling",
+      "drying",
+      "fan",
+    ],
   },
   cover: {
     device_class: [
@@ -126,6 +135,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
   },
   humidifier: {
     device_class: ["humidifier", "dehumidifier"],
+    action: ["off", "idle", "humidifying", "drying"],
   },
   media_player: {
     device_class: ["tv", "speaker", "receiver"],

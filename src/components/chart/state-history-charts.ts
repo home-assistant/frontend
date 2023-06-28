@@ -52,7 +52,11 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ attribute: false }) public endTime?: Date;
 
+  @property({ attribute: false }) public startTime?: Date;
+
   @property({ type: Boolean, attribute: "up-to-now" }) public upToNow = false;
+
+  @property() public hoursToShow?: number;
 
   @property({ type: Boolean }) public showNames = true;
 
@@ -95,13 +99,24 @@ export class StateHistoryCharts extends LitElement {
     this._computedEndTime =
       this.upToNow || !this.endTime || this.endTime > now ? now : this.endTime;
 
-    this._computedStartTime = new Date(
-      this.historyData.timeline.reduce(
-        (minTime, stateInfo) =>
-          Math.min(minTime, new Date(stateInfo.data[0].last_changed).getTime()),
-        new Date().getTime()
-      )
-    );
+    if (this.startTime) {
+      this._computedStartTime = this.startTime;
+    } else if (this.hoursToShow) {
+      this._computedStartTime = new Date(
+        new Date().getTime() - 60 * 60 * this.hoursToShow * 1000
+      );
+    } else {
+      this._computedStartTime = new Date(
+        this.historyData.timeline.reduce(
+          (minTime, stateInfo) =>
+            Math.min(
+              minTime,
+              new Date(stateInfo.data[0].last_changed).getTime()
+            ),
+          new Date().getTime()
+        )
+      );
+    }
 
     const combinedItems = this.historyData.timeline.length
       ? (this.virtualize
@@ -142,6 +157,7 @@ export class StateHistoryCharts extends LitElement {
           .data=${item.data}
           .identifier=${item.identifier}
           .showNames=${this.showNames}
+          .startTime=${this._computedStartTime}
           .endTime=${this._computedEndTime}
           .paddingYAxis=${this._maxYWidth}
           .names=${this.names}

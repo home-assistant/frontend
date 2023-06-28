@@ -82,6 +82,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
                         this.hass!.localize,
                         stateObj,
                         this.hass!.locale,
+                        this.hass!.config,
                         this.hass!.entities,
                         option
                       )}

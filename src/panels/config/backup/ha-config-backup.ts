@@ -128,6 +128,7 @@ class HaConfigBackup extends LitElement {
 
     return html`
       <hass-tabs-subpage-data-table
+        hasFab
         .tabs=${[
           {
             translationKey: "ui.panel.config.backup.caption",
