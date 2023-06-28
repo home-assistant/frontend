@@ -616,10 +616,24 @@ class HUIRoot extends LitElement {
         const selectedView = viewPath;
         const selectedViewInt = Number(selectedView);
         let index = 0;
+        let matchFound = false;
+        // Look for path match
         for (let i = 0; i < views.length; i++) {
-          if (views[i].path === selectedView || i === selectedViewInt) {
+          if (views[i].path === selectedView) {
             index = i;
+            matchFound = true;
             break;
+          }
+        }
+        if (!matchFound) {
+          // If nothing was found with a direct path match, we try via the index.
+          // This is done in two steps, since otherwise a view named "1" (and by default
+          // has path "1") would not be accessable.
+          for (let i = 0; i < views.length; i++) {
+            if (i === selectedViewInt) {
+              index = i;
+              break;
+            }
           }
         }
         newSelectView = index;
