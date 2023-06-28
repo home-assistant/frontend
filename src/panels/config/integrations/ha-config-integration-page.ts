@@ -898,10 +898,14 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     if (!this.domain || !isComponentLoaded(this.hass, "diagnostics")) {
       return;
     }
-    this._diagnosticHandler = await fetchDiagnosticHandler(
-      this.hass,
-      this.domain
-    );
+    try {
+      this._diagnosticHandler = await fetchDiagnosticHandler(
+        this.hass,
+        this.domain
+      );
+    } catch (err: any) {
+      // No issue, as diagnostics are not required
+    }
   }
 
   private async _handleEnableDebugLogging() {
