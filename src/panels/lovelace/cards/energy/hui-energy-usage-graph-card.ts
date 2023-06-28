@@ -209,6 +209,18 @@ export class HuiEnergyUsageGraphCard
           tooltip: {
             position: "nearest",
             filter: (val) => val.formattedValue !== "0",
+            itemSort: function (a: any, b: any) {
+              if (a.raw?.y > 0 && b.raw?.y < 0) {
+                return -1;
+              }
+              if (b.raw?.y > 0 && a.raw?.y < 0) {
+                return 1;
+              }
+              if (a.raw?.y > 0) {
+                return b.datasetIndex - a.datasetIndex;
+              }
+              return a.datasetIndex - b.datasetIndex;
+            },
             callbacks: {
               title: (datasets) => {
                 if (dayDifference > 0) {

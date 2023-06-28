@@ -213,6 +213,10 @@ export class HuiEnergySolarGraphCard
         plugins: {
           tooltip: {
             position: "nearest",
+            filter: (val) => val.formattedValue !== "0",
+            itemSort: function (a, b) {
+              return b.datasetIndex - a.datasetIndex;
+            },
             callbacks: {
               title: (datasets) => {
                 if (dayDifference > 0) {
