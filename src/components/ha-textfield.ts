@@ -99,6 +99,10 @@ export class HaTextField extends TextFieldBase {
         direction: var(--direction);
       }
 
+      .mdc-text-field__icon--trailing {
+        padding: var(--textfield-icon-trailing-padding, 12px);
+      }
+
       .mdc-floating-label:not(.mdc-floating-label--float-above) {
         text-overflow: ellipsis;
         width: inherit;
@@ -155,6 +159,9 @@ export class HaTextField extends TextFieldBase {
 
       .mdc-text-field__input[type="number"] {
         direction: var(--direction);
+      }
+      .mdc-text-field__affix--prefix {
+        padding-right: var(--text-field-prefix-padding-right, 2px);
       }
     `,
     // safari workaround - must be explicit

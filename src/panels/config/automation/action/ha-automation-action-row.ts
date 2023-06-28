@@ -1,10 +1,11 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
+  mdiAlertCircleCheck,
   mdiCheck,
-  mdiContentDuplicate,
   mdiContentCopy,
   mdiContentCut,
+  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiPlay,
@@ -13,10 +14,19 @@ import {
   mdiSort,
   mdiStopCircleOutline,
 } from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
@@ -28,13 +38,17 @@ import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_TYPES, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
+import { AutomationClipboard } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../../data/entity_registry";
-import { Clipboard } from "../../../../data/automation";
-import { Action, getActionType } from "../../../../data/script";
+import {
+  Action,
+  NonConditionAction,
+  getActionType,
+} from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
 import { callExecuteScript } from "../../../../data/service";
 import {
@@ -115,7 +129,13 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public reOrderMode = false;
 
-  @property() public clipboard?: Clipboard;
+  @storage({
+    key: "automationClipboard",
+    state: false,
+    subscribe: true,
+    storage: "sessionStorage",
+  })
+  public _clipboard?: AutomationClipboard;
 
   @state() private _entityReg: EntityRegistryEntry[] = [];
 
@@ -184,6 +204,17 @@ export default class HaAutomationActionRow extends LitElement {
           </h3>
 
           <slot name="icons" slot="icons"></slot>
+          ${type !== "condition" &&
+          (this.action as NonConditionAction).continue_on_error === true
+            ? html`<div slot="icons">
+                <ha-svg-icon .path=${mdiAlertCircleCheck}></ha-svg-icon>
+                <simple-tooltip animation-delay="0">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.continue_on_error"
+                  )}
+                </simple-tooltip>
+              </div> `
+            : nothing}
           ${this.hideMenu
             ? ""
             : html`
@@ -373,7 +404,6 @@ export default class HaAutomationActionRow extends LitElement {
                       narrow: this.narrow,
                       reOrderMode: this.reOrderMode,
                       disabled: this.disabled,
-                      clipboard: this.clipboard,
                     })}
                   </div>
                 `}
@@ -408,10 +438,10 @@ export default class HaAutomationActionRow extends LitElement {
         fireEvent(this, "duplicate");
         break;
       case 4:
-        fireEvent(this, "set-clipboard", { action: this.action });
+        this._setClipboard();
         break;
       case 5:
-        fireEvent(this, "set-clipboard", { action: this.action });
+        this._setClipboard();
         fireEvent(this, "value-changed", { value: null });
         break;
       case 6:
@@ -429,6 +459,13 @@ export default class HaAutomationActionRow extends LitElement {
         this._onDelete();
         break;
     }
+  }
+
+  private _setClipboard() {
+    this._clipboard = {
+      ...this._clipboard,
+      action: deepClone(this.action),
+    };
   }
 
   private _onDisable() {

@@ -73,20 +73,25 @@ class HaMenuButton extends LitElement {
       return;
     }
 
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    const oldNarrow =
-      changedProps.get("narrow") ||
-      (oldHass && oldHass.dockedSidebar === "always_hidden");
-    const newNarrow =
+    const oldHass = changedProps.has("hass")
+      ? (changedProps.get("hass") as HomeAssistant | undefined)
+      : this.hass;
+    const oldNarrow = changedProps.has("narrow")
+      ? (changedProps.get("narrow") as boolean | undefined)
+      : this.narrow;
+
+    const oldShowButton =
+      oldNarrow || oldHass?.dockedSidebar === "always_hidden";
+    const showButton =
       this.narrow || this.hass.dockedSidebar === "always_hidden";
 
-    if (oldNarrow === newNarrow) {
+    if (oldShowButton === showButton) {
       return;
     }
 
-    this.style.display = newNarrow || this._alwaysVisible ? "initial" : "none";
+    this.style.display = showButton || this._alwaysVisible ? "initial" : "none";
 
-    if (!newNarrow) {
+    if (!showButton) {
       if (this._unsubNotifications) {
         this._unsubNotifications();
         this._unsubNotifications = undefined;
@@ -98,6 +103,9 @@ class HaMenuButton extends LitElement {
   }
 
   private _subscribeNotifications() {
+    if (this._unsubNotifications) {
+      throw new Error("Already subscribed");
+    }
     this._unsubNotifications = subscribeNotifications(
       this.hass.connection,
       (notifications) => {

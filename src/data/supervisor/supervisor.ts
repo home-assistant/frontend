@@ -129,5 +129,6 @@ export const getSupervisorEventCollection = (
     `_supervisor${key}Event`,
     (conn2) => supervisorApiWsRequest(conn2, { endpoint }),
     (connection, store) =>
-      subscribeSupervisorEventUpdates(connection, store, key)
+      subscribeSupervisorEventUpdates(connection, store, key),
+    { unsubGrace: false }
   );

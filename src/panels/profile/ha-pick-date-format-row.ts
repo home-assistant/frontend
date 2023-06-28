@@ -35,10 +35,14 @@ class DateFormatRow extends LitElement {
           naturalMenuWidth
         >
           ${Object.values(DateFormat).map((format) => {
-            const formattedDate = formatDateNumeric(date, {
-              ...this.hass.locale,
-              date_format: format,
-            });
+            const formattedDate = formatDateNumeric(
+              date,
+              {
+                ...this.hass.locale,
+                date_format: format,
+              },
+              this.hass.config
+            );
             const value = this.hass.localize(
               `ui.panel.profile.date_format.formats.${format}`
             );

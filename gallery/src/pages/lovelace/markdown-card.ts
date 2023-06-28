@@ -9,7 +9,7 @@ const CONFIGS = [
     heading: "markdown-it demo",
     config: `
 - type: markdown
-  content: >-
+  content: |
     # h1 Heading 8-)
 
     ## h2 Heading
@@ -65,6 +65,15 @@ const CONFIGS = [
     >> ...by using additional greater-than signs right next to each other...
     > > > ...or with spaces between arrows.
 
+    > **Warning** Hey there
+    > This is a warning with a title
+
+    > **Note**
+    > This is a note
+
+    > **Note**
+    > This is a multiline note
+    > Lorem ipsum...
 
     ## Lists
 

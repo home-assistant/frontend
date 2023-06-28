@@ -1,13 +1,15 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { PropertyDeclaration, ReactiveElement } from "lit";
+import { ReactiveElement } from "lit";
+import { InternalPropertyDeclaration } from "lit/decorators";
 import type { ClassElement } from "../../types";
 
 type Callback = (oldValue: any, newValue: any) => void;
 
-class Storage {
-  constructor(subscribe = true, storage = window.localStorage) {
+class StorageClass {
+  constructor(storage = window.localStorage) {
     this.storage = storage;
-    if (!subscribe) {
+    if (storage !== window.localStorage) {
+      // storage events only work for localStorage
       return;
     }
     window.addEventListener("storage", (ev: StorageEvent) => {
@@ -77,6 +79,7 @@ class Storage {
   }
 
   public setValue(storageKey: string, value: any): any {
+    const oldValue = this._storage[storageKey];
     this._storage[storageKey] = value;
     try {
       if (value === undefined) {
@@ -86,49 +89,68 @@ class Storage {
       }
     } catch (err: any) {
       // Safari in private mode doesn't allow localstorage
+    } finally {
+      if (this._listeners[storageKey]) {
+        this._listeners[storageKey].forEach((listener) =>
+          listener(oldValue, value)
+        );
+      }
     }
   }
 }
 
-const subscribeStorage = new Storage();
+const storages: Record<string, StorageClass> = {};
 
-export const LocalStorage =
-  (
-    storageKey?: string,
-    property?: boolean,
-    subscribe = true,
-    storageType?: globalThis.Storage,
-    propertyOptions?: PropertyDeclaration
-  ): any =>
+export const storage =
+  (options: {
+    key?: string;
+    storage?: "localStorage" | "sessionStorage";
+    subscribe?: boolean;
+    state?: boolean;
+    stateOptions?: InternalPropertyDeclaration;
+  }): any =>
   (clsElement: ClassElement) => {
-    const storage =
-      subscribe && !storageType
-        ? subscribeStorage
-        : new Storage(subscribe, storageType);
+    const storageName = options.storage || "localStorage";
+
+    let storageInstance: StorageClass;
+    if (storageName && storageName in storages) {
+      storageInstance = storages[storageName];
+    } else {
+      storageInstance = new StorageClass(window[storageName]);
+      storages[storageName] = storageInstance;
+    }
 
     const key = String(clsElement.key);
-    storageKey = storageKey || String(clsElement.key);
+    const storageKey = options.key || String(clsElement.key);
     const initVal = clsElement.initializer
       ? clsElement.initializer()
       : undefined;
 
-    storage.addFromStorage(storageKey);
+    storageInstance.addFromStorage(storageKey);
 
-    const subscribeChanges = (el: ReactiveElement): UnsubscribeFunc =>
-      storage.subscribeChanges(storageKey!, (oldValue) => {
-        el.requestUpdate(clsElement.key, oldValue);
-      });
+    const subscribeChanges =
+      options.subscribe !== false
+        ? (el: ReactiveElement): UnsubscribeFunc =>
+            storageInstance.subscribeChanges(
+              storageKey!,
+              (oldValue, _newValue) => {
+                el.requestUpdate(clsElement.key, oldValue);
+              }
+            )
+        : undefined;
 
     const getValue = (): any =>
-      storage.hasKey(storageKey!) ? storage.getValue(storageKey!) : initVal;
+      storageInstance.hasKey(storageKey!)
+        ? storageInstance.getValue(storageKey!)
+        : initVal;
 
     const setValue = (el: ReactiveElement, value: any) => {
       let oldValue: unknown | undefined;
-      if (property) {
+      if (options.state) {
         oldValue = getValue();
       }
-      storage.setValue(storageKey!, value);
-      if (property) {
+      storageInstance.setValue(storageKey!, value);
+      if (options.state) {
         el.requestUpdate(clsElement.key, oldValue);
       }
     };
@@ -148,22 +170,23 @@ export const LocalStorage =
         configurable: true,
       },
       finisher(cls: typeof ReactiveElement) {
-        if (property && subscribe) {
+        if (options.state && options.subscribe) {
           const connectedCallback = cls.prototype.connectedCallback;
           const disconnectedCallback = cls.prototype.disconnectedCallback;
           cls.prototype.connectedCallback = function () {
             connectedCallback.call(this);
-            this[`__unbsubLocalStorage${key}`] = subscribeChanges(this);
+            this[`__unbsubLocalStorage${key}`] = subscribeChanges?.(this);
           };
           cls.prototype.disconnectedCallback = function () {
             disconnectedCallback.call(this);
-            this[`__unbsubLocalStorage${key}`]();
+            this[`__unbsubLocalStorage${key}`]?.();
+            this[`__unbsubLocalStorage${key}`] = undefined;
           };
         }
-        if (property) {
+        if (options.state) {
           cls.createProperty(clsElement.key, {
             noAccessor: true,
-            ...propertyOptions,
+            ...options.stateOptions,
           });
         }
       },

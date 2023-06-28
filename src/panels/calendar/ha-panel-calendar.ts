@@ -11,7 +11,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { LocalStorage } from "../../common/decorators/local-storage";
+import { storage } from "../../common/decorators/storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import "../../components/ha-card";
@@ -41,7 +41,10 @@ class PanelCalendar extends LitElement {
 
   @state() private _error?: string = undefined;
 
-  @LocalStorage("deSelectedCalendars", true)
+  @storage({
+    key: "deSelectedCalendars",
+    state: true,
+  })
   private _deSelectedCalendars: string[] = [];
 
   private _start?: Date;

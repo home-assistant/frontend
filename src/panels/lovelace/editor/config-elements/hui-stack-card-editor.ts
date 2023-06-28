@@ -1,6 +1,14 @@
-import { mdiArrowLeft, mdiArrowRight, mdiDelete, mdiPlus } from "@mdi/js";
+import {
+  mdiArrowLeft,
+  mdiArrowRight,
+  mdiDelete,
+  mdiContentCut,
+  mdiContentCopy,
+  mdiPlus,
+} from "@mdi/js";
 import "@polymer/paper-tabs";
 import "@polymer/paper-tabs/paper-tab";
+import deepClone from "deep-clone-simple";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import {
@@ -12,6 +20,7 @@ import {
   optional,
   string,
 } from "superstruct";
+import { storage } from "../../../../common/decorators/storage";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
@@ -42,6 +51,14 @@ export class HuiStackCardEditor
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
+
+  @storage({
+    key: "lovelaceClipboard",
+    state: false,
+    subscribe: false,
+    storage: "sessionStorage",
+  })
+  protected _clipboard?: LovelaceCardConfig;
 
   @state() protected _config?: StackCardConfig;
 
@@ -131,6 +148,22 @@ export class HuiStackCardEditor
 
                   <ha-icon-button
                     .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_card.copy"
+                    )}
+                    .path=${mdiContentCopy}
+                    @click=${this._handleCopyCard}
+                  ></ha-icon-button>
+
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_card.cut"
+                    )}
+                    .path=${mdiContentCut}
+                    @click=${this._handleCutCard}
+                  ></ha-icon-button>
+
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
                       "ui.panel.lovelace.editor.edit_card.delete"
                     )}
                     .path=${mdiDelete}
@@ -189,6 +222,18 @@ export class HuiStackCardEditor
     const cards = [...this._config.cards, config];
     this._config = { ...this._config, cards };
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  protected _handleCopyCard() {
+    if (!this._config) {
+      return;
+    }
+    this._clipboard = deepClone(this._config.cards[this._selectedCard]);
+  }
+
+  protected _handleCutCard() {
+    this._handleCopyCard();
+    this._handleDeleteCard();
   }
 
   protected _handleDeleteCard() {

@@ -1,4 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import { LocalizeFunc } from "../../common/translations/localize";
+import { HaFormSchema } from "../../components/ha-form/types";
 import {
   LovelaceBadgeConfig,
   LovelaceCardConfig,
@@ -45,6 +47,19 @@ export interface LovelaceCard extends HTMLElement {
   setConfig(config: LovelaceCardConfig): void;
 }
 
+export interface LovelaceConfigForm {
+  schema: HaFormSchema[];
+  assertConfig?: (config: LovelaceCardConfig) => void;
+  computeLabel?: (
+    schema: HaFormSchema,
+    localize: LocalizeFunc
+  ) => string | undefined;
+  computeHelper?: (
+    schema: HaFormSchema,
+    localize: LocalizeFunc
+  ) => string | undefined;
+}
+
 export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
   getStubConfig?: (
     hass: HomeAssistant,
@@ -52,6 +67,7 @@ export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
     entitiesFallback: string[]
   ) => LovelaceCardConfig;
   getConfigElement?: () => LovelaceCardEditor;
+  getConfigForm?: () => LovelaceConfigForm;
 }
 
 export interface LovelaceHeaderFooterConstructor
@@ -104,11 +120,15 @@ export interface LovelaceTileFeature extends HTMLElement {
 
 export interface LovelaceTileFeatureConstructor
   extends Constructor<LovelaceTileFeature> {
-  getConfigElement?: () => LovelaceTileFeatureEditor;
   getStubConfig?: (
     hass: HomeAssistant,
     stateObj?: HassEntity
   ) => LovelaceTileFeatureConfig;
+  getConfigElement?: () => LovelaceTileFeatureEditor;
+  getConfigForm?: () => {
+    schema: HaFormSchema[];
+    assertConfig?: (config: LovelaceCardConfig) => void;
+  };
   isSupported?: (stateObj?: HassEntity) => boolean;
 }
 

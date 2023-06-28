@@ -11,10 +11,12 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { mdiContentCopy } from "@mdi/js";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
@@ -79,6 +81,8 @@ import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { showToast } from "../../../util/toast";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -324,8 +328,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
       this.hass.states[this.entry.entity_id];
 
     const domain = computeDomain(this.entry.entity_id);
-
-    const invalidDomainUpdate = computeDomain(this._entityId.trim()) !== domain;
 
     const invalidDefaultCode =
       domain === "lock" &&
@@ -675,15 +677,23 @@ export class EntityRegistrySettingsEditor extends LitElement {
           `
         : ""}
       <ha-textfield
-        error-message="Domain needs to stay the same"
-        .value=${this._entityId}
+        class="entityId"
+        .value=${computeObjectId(this._entityId)}
+        .prefix=${domain + "."}
         .label=${this.hass.localize(
           "ui.dialogs.entity_registry.editor.entity_id"
         )}
-        .invalid=${invalidDomainUpdate}
         .disabled=${this.disabled}
+        required
         @input=${this._entityIdChanged}
-      ></ha-textfield>
+        iconTrailing
+      >
+        <ha-icon-button
+          @click=${this._copyEntityId}
+          slot="trailingIcon"
+          .path=${mdiContentCopy}
+        ></ha-icon-button>
+      </ha-textfield>
       ${!this.entry.device_id
         ? html`<ha-area-picker
             .hass=${this.hass}
@@ -1161,9 +1171,16 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._icon = ev.detail.value;
   }
 
+  private async _copyEntityId(): Promise<void> {
+    await copyToClipboard(this._entityId);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
+  }
+
   private _entityIdChanged(ev): void {
     fireEvent(this, "change");
-    this._entityId = ev.target.value;
+    this._entityId = `${computeDomain(this._origEntityId)}.${ev.target.value}`;
   }
 
   private _deviceClassChanged(ev): void {
@@ -1342,6 +1359,20 @@ export class EntityRegistrySettingsEditor extends LitElement {
       css`
         :host {
           display: block;
+        }
+        ha-textfield.entityId {
+          --text-field-prefix-padding-right: 0;
+          --textfield-icon-trailing-padding: 0;
+        }
+        ha-textfield.entityId > ha-icon-button {
+          position: relative;
+          right: -8px;
+          --mdc-icon-button-size: 36px;
+          --mdc-icon-size: 20px;
+          color: var(--secondary-text-color);
+          inset-inline-start: initial;
+          inset-inline-end: -8px;
+          direction: var(--direction);
         }
         ha-switch {
           margin-right: 16px;

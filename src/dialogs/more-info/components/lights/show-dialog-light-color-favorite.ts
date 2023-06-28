@@ -1,7 +1,7 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
 import { LightColor } from "../../../../data/light";
-import type { LightPickerMode } from "./light-color-picker";
+import type { LightPickerMode } from "./dialog-light-color-favorite";
 
 export interface LightColorFavoriteDialogParams {
   entry: ExtEntityRegistryEntry;

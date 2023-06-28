@@ -107,6 +107,11 @@ export interface NumericStateTrigger extends BaseTrigger {
   for?: string | number | ForDict;
 }
 
+export interface ConversationTrigger extends BaseTrigger {
+  platform: "conversation";
+  command: string | string[];
+}
+
 export interface SunTrigger extends BaseTrigger {
   platform: "sun";
   offset: number;
@@ -125,6 +130,12 @@ export interface WebhookTrigger extends BaseTrigger {
   webhook_id: string;
   allowed_methods?: string[];
   local_only?: boolean;
+}
+
+export interface PersistentNotificationTrigger extends BaseTrigger {
+  platform: "persistent_notification";
+  notification_id?: string;
+  update_type?: string[];
 }
 
 export interface ZoneTrigger extends BaseTrigger {
@@ -172,8 +183,10 @@ export type Trigger =
   | HassTrigger
   | NumericStateTrigger
   | SunTrigger
+  | ConversationTrigger
   | TimePatternTrigger
   | WebhookTrigger
+  | PersistentNotificationTrigger
   | ZoneTrigger
   | TagTrigger
   | TimeTrigger
@@ -380,7 +393,7 @@ export const testCondition = (
     variables,
   });
 
-export type Clipboard = {
+export type AutomationClipboard = {
   trigger?: Trigger;
   condition?: Condition;
   action?: Action;

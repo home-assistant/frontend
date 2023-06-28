@@ -187,7 +187,7 @@ export class HuiStatisticsGraphCardEditor
                     ),
                     disabled:
                       !metaDatas ||
-                      !metaDatas.every((metaData) =>
+                      !metaDatas.some((metaData) =>
                         statisticsMetaHasType(
                           metaData,
                           supportedStatTypeMap[stat_type]
@@ -246,12 +246,10 @@ export class HuiStatisticsGraphCardEditor
     );
     const configured_stat_types = this._config!.stat_types
       ? ensureArray(this._config.stat_types)
-      : stat_types.filter(
-          (stat_type) =>
-            stat_type !== "change" &&
-            this._metaDatas?.every((metaData) =>
-              statisticsMetaHasType(metaData, stat_type)
-            )
+      : stat_types.filter((stat_type) =>
+          this._metaDatas?.some((metaData) =>
+            statisticsMetaHasType(metaData, stat_type)
+          )
         );
     const data = {
       chart_type: "line",
@@ -320,9 +318,7 @@ export class HuiStatisticsGraphCardEditor
         : undefined;
     if (config.stat_types && config.entities.length) {
       config.stat_types = ensureArray(config.stat_types).filter((stat_type) =>
-        metadata!.every((metaData) =>
-          statisticsMetaHasType(metaData, stat_type)
-        )
+        metadata!.some((metaData) => statisticsMetaHasType(metaData, stat_type))
       );
       if (!config.stat_types.length) {
         delete config.stat_types;

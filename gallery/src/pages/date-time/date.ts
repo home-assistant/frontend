@@ -1,27 +1,28 @@
-import { html, css, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import "../../../../src/components/ha-card";
-import { HomeAssistant } from "../../../../src/types";
-import { translationMetadata } from "../../../../src/resources/translations-metadata";
+import "@material/mwc-list/mwc-list";
+import { css, html, LitElement } from "lit";
+import { customElement } from "lit/decorators";
 import { formatDateNumeric } from "../../../../src/common/datetime/format_date";
+import "../../../../src/components/ha-card";
 import {
+  DateFormat,
+  FirstWeekday,
   FrontendLocaleData,
   NumberFormat,
   TimeFormat,
-  DateFormat,
-  FirstWeekday,
+  TimeZone,
 } from "../../../../src/data/translation";
+import { demoConfig } from "../../../../src/fake_data/demo_config";
+import { translationMetadata } from "../../../../src/resources/translations-metadata";
 
 @customElement("demo-date-time-date")
 export class DemoDateTimeDate extends LitElement {
-  @property({ attribute: false }) hass!: HomeAssistant;
-
   protected render() {
     const defaultLocale: FrontendLocaleData = {
       language: "en",
       number_format: NumberFormat.language,
       time_format: TimeFormat.language,
       date_format: DateFormat.language,
+      time_zone: TimeZone.local,
       first_weekday: FirstWeekday.language,
     };
     const date = new Date();
@@ -41,32 +42,48 @@ export class DemoDateTimeDate extends LitElement {
               <div class="container">
                 <div>${value.nativeName}</div>
                 <div class="center">
-                  ${formatDateNumeric(date, {
-                    ...defaultLocale,
-                    language: key,
-                    date_format: DateFormat.language,
-                  })}
+                  ${formatDateNumeric(
+                    date,
+                    {
+                      ...defaultLocale,
+                      language: key,
+                      date_format: DateFormat.language,
+                    },
+                    demoConfig
+                  )}
                 </div>
                 <div class="center">
-                  ${formatDateNumeric(date, {
-                    ...defaultLocale,
-                    language: key,
-                    date_format: DateFormat.DMY,
-                  })}
+                  ${formatDateNumeric(
+                    date,
+                    {
+                      ...defaultLocale,
+                      language: key,
+                      date_format: DateFormat.DMY,
+                    },
+                    demoConfig
+                  )}
                 </div>
                 <div class="center">
-                  ${formatDateNumeric(date, {
-                    ...defaultLocale,
-                    language: key,
-                    date_format: DateFormat.MDY,
-                  })}
+                  ${formatDateNumeric(
+                    date,
+                    {
+                      ...defaultLocale,
+                      language: key,
+                      date_format: DateFormat.MDY,
+                    },
+                    demoConfig
+                  )}
                 </div>
                 <div class="center">
-                  ${formatDateNumeric(date, {
-                    ...defaultLocale,
-                    language: key,
-                    date_format: DateFormat.YMD,
-                  })}
+                  ${formatDateNumeric(
+                    date,
+                    {
+                      ...defaultLocale,
+                      language: key,
+                      date_format: DateFormat.YMD,
+                    },
+                    demoConfig
+                  )}
                 </div>
               </div>
             `

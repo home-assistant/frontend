@@ -192,6 +192,7 @@ export class HaStateLabelBadge extends LitElement {
               this.hass!.localize,
               entityState,
               this.hass!.locale,
+              this.hass!.config,
               this.hass!.entities
             );
     }

@@ -39,6 +39,7 @@ import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfil
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { WeatherForecastCardConfig } from "./types";
+import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 
 const DAY_IN_MILLISECONDS = 86400000;
 
@@ -222,6 +223,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                         this.hass.localize,
                         stateObj,
                         this.hass.locale,
+                        this.hass.config,
                         this.hass.entities
                       )}
                     </div>
@@ -319,13 +321,15 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                               ? html`
                                   ${formatTime(
                                     new Date(item.datetime),
-                                    this.hass!.locale
+                                    this.hass!.locale,
+                                    this.hass!.config
                                   )}
                                 `
                               : html`
-                                  ${new Date(item.datetime).toLocaleDateString(
-                                    this.hass!.language,
-                                    { weekday: "short" }
+                                  ${formatDateWeekdayShort(
+                                    new Date(item.datetime),
+                                    this.hass!.locale,
+                                    this.hass!.config
                                   )}
                                 `}
                           </div>

@@ -44,7 +44,8 @@ class MoreInfoSun extends LitElement {
             <div class="value">
               ${formatTime(
                 item === "ris" ? risingDate : settingDate,
-                this.hass.locale
+                this.hass.locale,
+                this.hass.config
               )}
             </div>
           </div>

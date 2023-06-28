@@ -1,12 +1,11 @@
 import { CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-textfield";
 import { Action, ParallelAction } from "../../../../../data/script";
-import type { Clipboard } from "../../../../../data/automation";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-automation-action";
-import "../../../../../components/ha-textfield";
 import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-parallel")
@@ -18,8 +17,6 @@ export class HaParallelAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public action!: ParallelAction;
 
   @property({ type: Boolean }) public reOrderMode = false;
-
-  @property() public clipboard?: Clipboard;
 
   public static get defaultConfig() {
     return {
@@ -37,7 +34,6 @@ export class HaParallelAction extends LitElement implements ActionElement {
         .reOrderMode=${this.reOrderMode}
         .disabled=${this.disabled}
         @value-changed=${this._actionsChanged}
-        .clipboard=${this.clipboard}
         .hass=${this.hass}
       ></ha-automation-action>
     `;
