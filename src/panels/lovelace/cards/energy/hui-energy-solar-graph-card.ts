@@ -236,6 +236,24 @@ export class HuiEnergySolarGraphCard
                   context.parsed.y,
                   locale
                 )} kWh`,
+              footer: (contexts) => {
+                if (contexts.length < 2) {
+                  return [];
+                }
+                let total = 0;
+                for (const context of contexts) {
+                  total += (context.dataset.data[context.dataIndex] as any).y;
+                }
+                if (total === 0) {
+                  return [];
+                }
+                return [
+                  this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.energy_solar_graph.total_produced",
+                    { num: formatNumber(total, locale) }
+                  ),
+                ];
+              },
             },
           },
           filler: {
