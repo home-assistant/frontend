@@ -628,7 +628,7 @@ class HUIRoot extends LitElement {
         if (!matchFound) {
           // If nothing was found with a direct path match, we try via the index.
           // This is done in two steps, since otherwise a view named "1" (and by default
-          // has path "1") would not be accessable.
+          // has path "1") would not be accessible.
           for (let i = 0; i < views.length; i++) {
             if (i === selectedViewInt) {
               index = i;
