@@ -234,13 +234,13 @@ class HUIRoot extends LitElement {
                           @click=${this._goBack}
                         ></ha-icon-button-arrow-prev>
                       `
-                    : html`
-                        <ha-menu-button
-                          slot="navigationIcon"
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                        ></ha-menu-button>
-                      `}
+                    : this.narrow
+                    ? html` <ha-menu-button
+                        slot="navigationIcon"
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                      ></ha-menu-button>`
+                    : ""}
                   ${curViewConfig?.subview
                     ? html`<div class="main-title">${curViewConfig.title}</div>`
                     : views.filter((view) => !view.subview).length > 1
