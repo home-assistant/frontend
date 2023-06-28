@@ -51,6 +51,14 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
     this._language = ev.detail.value;
   }
 
+  private _handleKeyDown(e: KeyboardEvent) {
+    if (e.code !== "Enter" || e.shiftKey) {
+      return;
+    }
+    e.preventDefault();
+    this._parse();
+  }
+
   private _textAreaInput(ev) {
     const value = ev.target.value;
     const valid = Boolean(value);
@@ -130,6 +138,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
               label="Sentences"
               id="sentences-input"
               @input=${this._textAreaInput}
+              @keydown=${this._handleKeyDown}
             ></ha-textarea>
           </div>
           <div class="card-actions">
