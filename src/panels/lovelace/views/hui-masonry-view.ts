@@ -90,9 +90,12 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   protected render(): TemplateResult {
     return html`
       ${this.badges.length > 0
-        ? html` <div class="badges">${this.badges}</div>`
+        ? html`<div class="badges">${this.badges}</div>`
         : ""}
-      <div id="columns"></div>
+      <div
+        id="columns"
+        class=${this.lovelace?.editMode ? "edit-mode" : ""}
+      ></div>
       ${this.lovelace?.editMode
         ? html`
             <ha-fab
@@ -312,6 +315,10 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         justify-content: center;
         margin-left: 4px;
         margin-right: 4px;
+      }
+
+      #columns.edit-mode {
+        margin-bottom: 72px;
       }
 
       .column {
