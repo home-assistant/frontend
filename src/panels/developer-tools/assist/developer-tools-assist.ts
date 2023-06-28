@@ -90,6 +90,15 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
       assistAgent?.supported_languages === "*"
         ? undefined
         : assistAgent?.supported_languages;
+
+    if (
+      !this._language &&
+      this.supportedLanguages?.includes(this.hass.locale.language)
+    ) {
+      this._language = this.hass.locale.language;
+    } else if (!this._language) {
+      this._language = "en";
+    }
   }
 
   protected firstUpdated(): void {
@@ -111,7 +120,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
                   <ha-language-picker
                     .languages=${this.supportedLanguages}
                     .hass=${this.hass}
-                    .value=${this._language ?? "en"}
+                    .value=${this._language}
                     @value-changed=${this._languageChanged}
                   ></ha-language-picker>
                 `
