@@ -301,7 +301,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                   ? html`<ha-alert
                       alert-type="error"
                       .title=${stateObj?.state === UNAVAILABLE
-                        ? "Automation unavailable"
+                        ? this.hass.localize(
+                            "ui.panel.config.automation.editor.unavailable"
+                          )
                         : undefined}
                     >
                       ${this._errors || this._validationErrors}
