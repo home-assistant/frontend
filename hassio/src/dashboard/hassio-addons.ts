@@ -137,6 +137,9 @@ class HassioAddons extends LitElement {
           --mdc-text-field-fill-color: var(--sidebar-background-color);
           --mdc-text-field-idle-line-color: var(--divider-color);
         }
+        .content {
+          margin-bottom: 72px;
+        }
       `,
     ];
   }
