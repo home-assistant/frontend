@@ -105,36 +105,34 @@ class MoreInfoVacuum extends LitElement {
     return html`
       ${stateObj.state !== UNAVAILABLE
         ? html` <div class="flex-horizontal">
-            ${supportsFeature(stateObj, VacuumEntityFeature.STATUS)
-              ? html`
-                  <div>
-                    <span class="status-subtitle"
-                      >${this.hass!.localize(
-                        "ui.dialogs.more_info_control.vacuum.status"
-                      )}:
-                    </span>
-                    <span>
-                      <strong>
-                        ${computeAttributeValueDisplay(
-                          this.hass.localize,
-                          stateObj,
-                          this.hass.locale,
-                          this.hass.config,
-                          this.hass.entities,
-                          "status"
-                        ) ||
-                        computeStateDisplay(
-                          this.hass.localize,
-                          stateObj,
-                          this.hass.locale,
-                          this.hass.config,
-                          this.hass.entities
-                        )}
-                      </strong>
-                    </span>
-                  </div>
-                `
-              : ""}
+            <div>
+              <span class="status-subtitle"
+                >${this.hass!.localize(
+                  "ui.dialogs.more_info_control.vacuum.status"
+                )}:
+              </span>
+              <span>
+                <strong>
+                  ${supportsFeature(stateObj, VacuumEntityFeature.STATUS) &&
+                  stateObj.attributes.status
+                    ? computeAttributeValueDisplay(
+                        this.hass.localize,
+                        stateObj,
+                        this.hass.locale,
+                        this.hass.config,
+                        this.hass.entities,
+                        "status"
+                      )
+                    : computeStateDisplay(
+                        this.hass.localize,
+                        stateObj,
+                        this.hass.locale,
+                        this.hass.config,
+                        this.hass.entities
+                      )}
+                </strong>
+              </span>
+            </div>
             ${supportsFeature(stateObj, VacuumEntityFeature.BATTERY) &&
             stateObj.attributes.battery_level
               ? html`
