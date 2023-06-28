@@ -152,9 +152,18 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       </ha-alert>`;
     }
 
-    const isDarkMode =
-      this._config.theme_mode === "dark" ||
-      (this._config.theme_mode === "auto" && this.hass.themes.darkMode);
+    let isDarkMode =
+      this._config.dark_mode !== null || this._config.dark_mode !== undefined
+        ? this._config.dark_mode
+        : this.hass.themes.darkMode;
+
+    if (this._config.theme_mode === "auto") {
+      isDarkMode = this.hass.themes.darkMode;
+    } else if (this._config.theme_mode === "light") {
+      isDarkMode = false;
+    } else if (this._config.theme_mode === "dark") {
+      isDarkMode = true;
+    }
 
     return html`
       <ha-card id="card" .header=${this._config.title}>

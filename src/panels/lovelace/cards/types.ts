@@ -296,6 +296,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   entities?: Array<EntityConfig | string>;
   hours_to_show?: number;
   geo_location_sources?: string[];
+  dark_mode?: boolean;
   theme_mode?: ThemeMode;
 }
 
