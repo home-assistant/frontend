@@ -32,6 +32,7 @@ import {
   WaitForTriggerAction,
 } from "./script";
 import "../resources/intl-polyfill";
+import { longConjunctionFormatter } from "../common/string/format-list";
 
 const actionTranslationBaseKey =
   "ui.panel.config.automation.editor.actions.type";
@@ -50,40 +51,13 @@ export const describeAction = <T extends ActionType>(
     actionType = getActionType(action) as T;
   }
 
-  const conjunctionFormatter = new Intl.ListFormat(hass.language, {
-    style: "long",
-    type: "conjunction",
-  });
+  const conjunctionFormatter = longConjunctionFormatter(hass);
 
   if (actionType === "service") {
     const config = action as ActionTypes["service"];
 
-    let base: string | undefined;
-
-    if (
-      config.service_template ||
-      (config.service && isTemplate(config.service))
-    ) {
-      base = hass.localize(
-        `${actionTranslationBaseKey}.service.description.service_based_on_template`
-      );
-    } else if (config.service) {
-      const [domain, serviceName] = config.service.split(".", 2);
-      const service = hass.services[domain][serviceName];
-      base = service
-        ? `${domainToName(hass.localize, domain)}: ${service.name}`
-        : hass.localize(
-            `${actionTranslationBaseKey}.service.description.service_based_on_name`,
-            { name: config.service }
-          );
-    } else {
-      return hass.localize(
-        `${actionTranslationBaseKey}.service.description.service`
-      );
-    }
+    const targets: string[] = [];
     if (config.target) {
-      const targets: string[] = [];
-
       for (const [key, label] of Object.entries({
         area_id: "areas",
         device_id: "devices",
@@ -154,12 +128,33 @@ export const describeAction = <T extends ActionType>(
           }
         }
       }
-      if (targets.length > 0) {
-        base += ` ${conjunctionFormatter.format(targets)}`;
-      }
     }
 
-    return base;
+    if (
+      config.service_template ||
+      (config.service && isTemplate(config.service))
+    ) {
+      return hass.localize(
+        `${actionTranslationBaseKey}.service.description.service_based_on_template`,
+        { targets: conjunctionFormatter.format(targets) }
+      );
+    } else if (config.service) {
+      const [domain, serviceName] = config.service.split(".", 2);
+      const service = hass.services[domain][serviceName];
+      return hass.localize(
+        `${actionTranslationBaseKey}.service.description.service_based_on_name`,
+        {
+          name: service
+            ? `${domainToName(hass.localize, domain)}: ${service.name}`
+            : config.service,
+          targets: conjunctionFormatter.format(targets),
+        }
+      );
+    } else {
+      return hass.localize(
+        `${actionTranslationBaseKey}.service.description.service`
+      );
+    }
   }
 
   if (actionType === "delay") {

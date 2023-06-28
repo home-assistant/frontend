@@ -2500,8 +2500,8 @@
                 "service": {
                   "label": "Call service",
                   "description": {
-                    "service_based_on_template": "Call a service based on a template",
-                    "service_based_on_name": "Call service: {service}",
+                    "service_based_on_template": "Call a service based on a template on {targets}",
+                    "service_based_on_name": "Call a service ''{name}'' on {targets}",
                     "service": "Call a service",
                     "target_template": "templated {name}",
                     "target_unknown_entity": "unknown entity",
@@ -2540,7 +2540,7 @@
                   "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]",
                   "description": {
                     "wait_for_a_trigger": "Wait for a trigger",
-                    "wait_for_triggers_with_name": "Wait for `{triggers}`"
+                    "wait_for_triggers_with_name": "Wait for ''{triggers}''"
                   }
                 },
                 "condition": {
@@ -2598,8 +2598,8 @@
                   "description": {
                     "full": "Repeat an action {chosenAction}",
                     "count": "{count} {count, plural,\n one {time}\n other {times}\n}",
-                    "while": "while `{conditions}` is true",
-                    "until": "until `{conditions}` is true",
+                    "while": "while ''{conditions}'' is true",
+                    "until": "until ''{conditions}'' is true",
                     "for_each": "for every item: {items}"
                   }
                 },
@@ -2624,7 +2624,7 @@
                   "else": "Else",
                   "add_else": "Add else",
                   "description": {
-                    "full": "Perform `{action}` if `{conditions}`{hasElse, select, \n true { otherwise `{elseAction}`} \n other {}\n } "
+                    "full": "Perform ''{action}'' if ''{conditions}''{hasElse, select, \n true { otherwise ''{elseAction}''} \n other {}\n } "
                   }
                 },
                 "stop": {
@@ -2649,7 +2649,7 @@
                 },
                 "check_condition": {
                   "description": {
-                    "full": "Test `{condition}`"
+                    "full": "Test {condition}"
                   }
                 }
               }
