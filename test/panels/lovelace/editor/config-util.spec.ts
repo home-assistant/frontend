@@ -2,7 +2,7 @@ import { assert } from "chai";
 
 import {
   swapCard,
-  moveCardToView,
+  moveCard,
   swapView,
 } from "../../../../src/panels/lovelace/editor/config-util";
 import { LovelaceConfig } from "../../../../src/data/lovelace";
@@ -68,7 +68,7 @@ describe("moveCard", () => {
       ],
     };
 
-    const result = moveCardToView(config, [1, 0], [0]);
+    const result = moveCard(config, [1, 0], [0]);
     const expected: LovelaceConfig = {
       views: [
         {
@@ -94,7 +94,7 @@ describe("moveCard", () => {
       ],
     };
 
-    const result = moveCardToView(config, [1, 0], [0]);
+    const result = moveCard(config, [1, 0], [0]);
     const expected: LovelaceConfig = {
       views: [
         {
@@ -121,7 +121,7 @@ describe("moveCard", () => {
     };
 
     const result = () => {
-      moveCardToView(config, [1, 0], [1]);
+      moveCard(config, [1, 0], [1]);
     };
     assert.throws(
       result,

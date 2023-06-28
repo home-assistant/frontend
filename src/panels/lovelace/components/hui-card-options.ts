@@ -10,6 +10,7 @@ import {
   TemplateResult,
   css,
   html,
+  nothing,
 } from "lit";
 import { customElement, property, queryAssignedNodes } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
@@ -44,6 +45,8 @@ export class HuiCardOptions extends LitElement {
   @property() public path?: [number, number];
 
   @queryAssignedNodes() private _assignedNodes?: NodeListOf<LovelaceCard>;
+
+  @property({ type: Boolean }) public showPosition = false;
 
   @storage({
     key: "lovelaceClipboard",
@@ -90,14 +93,16 @@ export class HuiCardOptions extends LitElement {
                 .length ===
               this.path![1] + 1}
             ></ha-icon-button>
-            <ha-icon-button
-              @click=${this._moveToPosition}
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_card.move_to_position"
-              )}
-            >
-              <div class="position-badge">${this.path![1] + 1}</div>
-            </ha-icon-button>
+            ${this.showPosition
+              ? html`<ha-icon-button
+                  @click=${this._changeCardPosition}
+                  .label=${this.hass!.localize(
+                    "ui.panel.lovelace.editor.edit_card.change_position"
+                  )}
+                >
+                  <div class="position-badge">${this.path![1] + 1}</div>
+                </ha-icon-button>`
+              : nothing}
             <ha-icon-button
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_card.move_up"
@@ -271,16 +276,16 @@ export class HuiCardOptions extends LitElement {
     );
   }
 
-  private async _moveToPosition(): Promise<void> {
+  private async _changeCardPosition(): Promise<void> {
     const lovelace = this.lovelace!;
     const path = this.path!;
 
     const positionString = await showPromptDialog(this, {
       title: this.hass!.localize(
-        "ui.panel.lovelace.editor.move_to_position.title"
+        "ui.panel.lovelace.editor.change_position.title"
       ),
       text: this.hass!.localize(
-        "ui.panel.lovelace.editor.move_to_position.text"
+        "ui.panel.lovelace.editor.change_position.text"
       ),
       inputType: "number",
       placeholder: String(path[1] + 1),
