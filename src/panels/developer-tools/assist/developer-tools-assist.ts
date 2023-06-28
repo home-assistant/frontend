@@ -39,7 +39,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
     subscribe: false,
     storage: "localStorage",
   })
-  _language = "en";
+  _language?: string;
 
   @state() _results: SentenceParsingResult[] = [];
 
@@ -63,7 +63,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
     const sentences = this._sentencesInput.value
       .split("\n")
       .filter((a) => a !== "");
-    const { results } = await debugAgent(this.hass, sentences, this._language);
+    const { results } = await debugAgent(this.hass, sentences, this._language!);
 
     this._sentencesInput.value = "";
 
@@ -75,7 +75,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
 
       newResults.push({
         sentence,
-        language: this._language,
+        language: this._language!,
         result,
         time: now,
       });
@@ -90,6 +90,15 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
       assistAgent?.supported_languages === "*"
         ? undefined
         : assistAgent?.supported_languages;
+
+    if (
+      !this._language &&
+      this.supportedLanguages?.includes(this.hass.locale.language)
+    ) {
+      this._language = this.hass.locale.language;
+    } else if (!this._language) {
+      this._language = "en";
+    }
   }
 
   protected firstUpdated(): void {
@@ -124,7 +133,10 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
             ></ha-textarea>
           </div>
           <div class="card-actions">
-            <ha-button @click=${this._parse} .disabled=${!this._validInput}>
+            <ha-button
+              @click=${this._parse}
+              .disabled=${!this._language || !this._validInput}
+            >
               Parse sentences
             </ha-button>
           </div>
