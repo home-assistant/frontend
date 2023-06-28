@@ -133,7 +133,15 @@ window.hassConnection.then(({ conn }) => {
 });
 
 window.addEventListener("error", (e) => {
-  if (!__DEV__ && e.message === "ResizeObserver loop limit exceeded") {
+  if (
+    !__DEV__ &&
+    typeof e.message === "string" &&
+    (e.message.includes("ResizeObserver loop limit exceeded") ||
+      e.message.includes(
+        "ResizeObserver loop completed with undelivered notifications"
+      ))
+  ) {
+    e.preventDefault();
     e.stopImmediatePropagation();
     e.stopPropagation();
     return;

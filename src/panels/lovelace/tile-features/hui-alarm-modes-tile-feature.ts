@@ -18,10 +18,10 @@ import {
   ALARM_MODES,
 } from "../../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../../data/entity";
-import { showEnterCodeDialogDialog } from "../../../dialogs/more-info/components/alarm_control_panel/show-enter-code-dialog";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature, LovelaceTileFeatureEditor } from "../types";
 import { AlarmModesFileFeatureConfig } from "./types";
+import { showEnterCodeDialogDialog } from "../../../dialogs/enter-code/show-enter-code-dialog";
 
 export const supportsAlarmModesTileFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

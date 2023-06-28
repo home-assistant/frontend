@@ -159,3 +159,5 @@ export const computeDefaultFavoriteColors = (
 
   return colors;
 };
+
+export const formatTempColor = (value: number) => `${value} K`;

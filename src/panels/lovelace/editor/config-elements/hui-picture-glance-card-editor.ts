@@ -22,6 +22,7 @@ const cardConfigStruct = assign(
     title: optional(string()),
     entity: optional(string()),
     image: optional(string()),
+    image_entity: optional(string()),
     camera_image: optional(string()),
     camera_view: optional(string()),
     aspect_ratio: optional(string()),
@@ -35,6 +36,7 @@ const cardConfigStruct = assign(
 const SCHEMA = [
   { name: "title", selector: { text: {} } },
   { name: "image", selector: { text: {} } },
+  { name: "image_entity", selector: { entity: { domain: "image" } } },
   { name: "camera_image", selector: { entity: { domain: "camera" } } },
   {
     name: "",

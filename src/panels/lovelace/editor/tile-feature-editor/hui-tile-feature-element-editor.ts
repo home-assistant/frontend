@@ -4,7 +4,10 @@ import {
   LovelaceTileFeatureConfig,
   LovelaceTileFeatureContext,
 } from "../../tile-features/types";
-import type { LovelaceTileFeatureEditor } from "../../types";
+import type {
+  LovelaceConfigForm,
+  LovelaceTileFeatureEditor,
+} from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
 
 @customElement("hui-tile-feature-element-editor")
@@ -20,6 +23,17 @@ export class HuiTileFeatureElementEditor extends HuiElementEditor<
     // Check if a GUI editor exists
     if (elClass && elClass.getConfigElement) {
       return elClass.getConfigElement();
+    }
+
+    return undefined;
+  }
+
+  protected async getConfigForm(): Promise<LovelaceConfigForm | undefined> {
+    const elClass = await getTileFeatureElementClass(this.configElementType!);
+
+    // Check if a schema exists
+    if (elClass && elClass.getConfigForm) {
+      return elClass.getConfigForm();
     }
 
     return undefined;

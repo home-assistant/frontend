@@ -147,7 +147,8 @@
       "lock": {
         "code": "[%key:ui::card::alarm_control_panel::code%]",
         "lock": "Lock",
-        "unlock": "Unlock"
+        "unlock": "Unlock",
+        "open": "Open"
       },
       "media_player": {
         "source": "Source",
@@ -396,7 +397,8 @@
       },
       "theme-picker": {
         "theme": "Theme",
-        "no_theme": "No theme"
+        "no_theme": "No theme",
+        "default": "[%key:ui::panel::profile::themes::default%]"
       },
       "language-picker": {
         "language": "Language",
@@ -929,8 +931,8 @@
         "light": {
           "edit_mode": "Edit favorite colors",
           "toggle": "Toggle",
-          "change_color": "Change color",
-          "change_color_temp": "Change color temperature",
+          "color": "Color",
+          "color_temp": "Temperature",
           "set_white": "Set white",
           "select_effect": "Select effect",
           "brightness": "Brightness",
@@ -978,6 +980,11 @@
           "disarm_action": "Disarm",
           "arm_title": "Arm",
           "arm_action": "Arm"
+        },
+        "lock": {
+          "open": "Open",
+          "lock": "Lock",
+          "unlock": "Unlock"
         }
       },
       "entity_registry": {
@@ -2286,7 +2293,10 @@
                   "event_data": "Event data",
                   "context_users": "Limit to events triggered by",
                   "context_user_picked": "User firing event",
-                  "context_user_pick": "Select user"
+                  "context_user_pick": "Select user",
+                  "description": {
+                    "full": "When {eventTypes} event is fired"
+                  }
                 },
                 "geo_location": {
                   "label": "Geolocation",
@@ -2308,12 +2318,19 @@
                   "label": "Home Assistant",
                   "event": "Event:",
                   "start": "Start",
-                  "shutdown": "Shutdown"
+                  "shutdown": "Shutdown",
+                  "description": {
+                    "started": "When Home Assistant is started",
+                    "shutdown": "When Home Assistant is shutdown"
+                  }
                 },
                 "mqtt": {
                   "label": "MQTT",
                   "topic": "Topic",
-                  "payload": "Payload (optional)"
+                  "payload": "Payload (optional)",
+                  "description": {
+                    "full": "When an MQTT message has been received"
+                  }
                 },
                 "numeric_state": {
                   "label": "Numeric state",
@@ -2325,27 +2342,51 @@
                   "type_value": "Fixed number",
                   "type_input": "Numeric value of another entity"
                 },
+                "persistent_notification": {
+                  "label": "Persistent notification",
+                  "notification_id": "Notification Id",
+                  "update_type": "Update type",
+                  "update_types": {
+                    "added": "added",
+                    "removed": "removed",
+                    "current": "current",
+                    "updated": "updated"
+                  }
+                },
                 "sun": {
                   "label": "Sun",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
-                  "offset": "Offset (optional)"
+                  "offset": "Offset (optional)",
+                  "description": {
+                    "sets": "When the sun sets{hasDuration, select, \n true { offset by {duration}} \n other {}\n }",
+                    "rises": "When the sun rises{hasDuration, select, \n true { offset by {duration}} \n other {}\n }"
+                  }
                 },
                 "tag": {
-                  "label": "Tag"
+                  "label": "Tag",
+                  "description": {
+                    "full": "When a tag is scanned"
+                  }
                 },
                 "template": {
                   "label": "Template",
                   "value_template": "Value template",
-                  "for": "For"
+                  "for": "For",
+                  "description": {
+                    "full": "When a template triggers{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                  }
                 },
                 "time": {
                   "type_value": "Fixed time",
                   "type_input": "Value of a date/time helper or timestamp-class sensor",
                   "label": "Time",
                   "at": "At time",
-                  "mode": "Mode"
+                  "mode": "Mode",
+                  "description": {
+                    "full": "When the time is equal to {time}"
+                  }
                 },
                 "time_pattern": {
                   "label": "Time Pattern",
@@ -2359,7 +2400,10 @@
                   "local_only": "Only accessible from the local network",
                   "webhook_id": "Webhook ID",
                   "webhook_id_helper": "Treat this ID like a password: keep it secret, and make it hard to guess.",
-                  "webhook_settings": "Webhook Settings"
+                  "webhook_settings": "Webhook Settings",
+                  "description": {
+                    "full": "When a Webhook payload has been received"
+                  }
                 },
                 "zone": {
                   "label": "Zone",
@@ -2496,6 +2540,7 @@
               "delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
               "unsupported_action": "No visual editor support for action: {action}",
               "type_select": "Action type",
+              "continue_on_error": "Continue on error",
               "type": {
                 "service": {
                   "label": "Call service",
@@ -2753,6 +2798,21 @@
             "delete": "[%key:ui::common::delete%]",
             "duplicate": "[%key:ui::common::duplicate%]"
           },
+          "dialog_new": {
+            "header": "Create script",
+            "create_empty": "Create new script",
+            "create_empty_description": "Start with an empty script from scratch",
+            "create_blueprint": "[%key:ui::panel::config::automation::dialog_new::create_blueprint%]",
+            "create_blueprint_description": "[%key:ui::panel::config::automation::dialog_new::create_blueprint_description%]",
+            "blueprint_source": {
+              "author": "[%key:ui::panel::config::automation::dialog_new::blueprint_source::author%]",
+              "local": "[%key:ui::panel::config::automation::dialog_new::blueprint_source::local%]",
+              "community": "[%key:ui::panel::config::automation::dialog_new::blueprint_source::community%]",
+              "homeassistant": "[%key:ui::panel::config::automation::dialog_new::blueprint_source::homeassistant%]"
+            },
+            "discover_blueprint_tip": "[%key:ui::panel::config::automation::dialog_new::discover_blueprint_tip%]"
+          },
+
           "editor": {
             "alias": "Name",
             "icon": "Icon",
@@ -3549,11 +3609,11 @@
         },
         "thread": {
           "other_networks": "Other networks",
-          "my_network": "My network",
+          "my_network": "Preferred network",
           "no_preferred_network": "You don't have a preferred network yet.",
           "add_open_thread_border_router": "Add an OpenThread border router",
           "reset_border_router": "Reset border router",
-          "add_to_my_network": "Add to my network",
+          "add_to_my_network": "Add to preferred network",
           "no_routers_otbr_network": "No border routers where found, maybe the border router is not configured correctly. You can try to reset it to the factory settings.",
           "add_dataset_from_tlv": "Add dataset from TLV",
           "add_dataset": "Add Thread dataset",
@@ -4116,6 +4176,7 @@
             "add_title": "Add network storage",
             "update_title": "Update network storage",
             "no_mounts": "No connected network storage",
+            "documentation": "Documentation",
             "not_supported": {
               "title": "The operating system does not support network storage",
               "supervised": "Network storage is not supported on this host",
@@ -4130,6 +4191,10 @@
             "mount_type": {
               "nfs": "Network File Share (NFS)",
               "cifs": "Samba/Windows (CIFS)"
+            },
+            "cifs_versions": {
+              "auto": "Auto (2.1+)",
+              "legacy": "Legacy ({version})"
             },
             "options": {
               "name": {
@@ -4160,6 +4225,10 @@
                 "title": "Usage",
                 "description": "This determines how the share is intended to be used"
               },
+              "version": {
+                "title": "Samba/Windows (CIFS) version",
+                "description": "This choses the version of the protocol to use"
+              },
               "username": {
                 "title": "Username",
                 "description": "This is your username for the samba share"
@@ -4174,6 +4243,9 @@
             "errors": {
               "reload": "Could not reload mount {mount}",
               "invalid_name": "Invalid name, can only contain alphanumeric characters and underscores"
+            },
+            "warnings": {
+              "not_recomeded_cifs_version": "The selected CIFS version is not recommended to use, you should only use this if you have problems with auto and your server does not support version 2.1 or newer"
             }
           }
         },
@@ -4278,6 +4350,11 @@
               "self_consumed_solar_energy": "Self-consumed solar energy",
               "not_produced_solar_energy": "You have not produced any solar energy",
               "self_consumed_solar_could_not_calc": "Self-consumed solar energy couldn't be calculated"
+            },
+            "self_sufficiency_gauge": {
+              "card_indicates_self_sufficiency_quota": "This card indicates how self-sufficient your home is.",
+              "self_sufficiency_quota": "Self-sufficiency quota",
+              "self_sufficiency_could_not_calc": "Self-sufficiency quota couldn't be calculated"
             },
             "grid_neutrality_gauge": {
               "energy_dependency": "This card indicates your net energy usage.",
@@ -4466,12 +4543,15 @@
           "action-editor": {
             "navigation_path": "Navigation Path",
             "url_path": "URL Path",
+            "start_listening": "Start listening",
+            "pipeline_id": "Assistant",
             "actions": {
               "default_action": "Default Action",
               "call-service": "Call Service",
               "more-info": "More Info",
               "toggle": "Toggle",
               "navigate": "Navigate",
+              "assist": "Assist",
               "url": "URL",
               "none": "No Action"
             }
@@ -4659,6 +4739,7 @@
               "aspect_ratio": "Aspect Ratio",
               "attribute": "Attribute",
               "camera_image": "Camera Entity",
+              "image_entity": "Image Entity",
               "camera_view": "Camera View",
               "double_tap_action": "Double Tap Action",
               "entities": "Entities",

@@ -1,5 +1,5 @@
 ---
-title: (Numeric) Date Formatting
+title: Date Format (Numeric)
 ---
 
 This pages lists all supported languages with their available (numeric) date formats.

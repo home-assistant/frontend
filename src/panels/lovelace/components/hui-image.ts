@@ -10,12 +10,14 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { STATES_OFF } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-camera-stream";
 import type { HaCameraStream } from "../../../components/ha-camera-stream";
 import "../../../components/ha-circular-progress";
 import { CameraEntity, fetchThumbnailUrlWithCache } from "../../../data/camera";
 import { UNAVAILABLE } from "../../../data/entity";
+import { computeImageUrl, ImageEntity } from "../../../data/image";
 import { HomeAssistant } from "../../../types";
 
 const UPDATE_INTERVAL = 10000;
@@ -164,6 +166,8 @@ export class HuiImage extends LitElement {
       }
     } else if (this.darkModeImage && this.hass.themes.darkMode) {
       imageSrc = this.darkModeImage;
+    } else if (stateObj && computeDomain(stateObj.entity_id) === "image") {
+      imageSrc = computeImageUrl(stateObj as ImageEntity);
     } else {
       imageSrc = this.image;
     }

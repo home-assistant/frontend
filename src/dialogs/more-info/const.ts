@@ -22,6 +22,7 @@ export const DOMAINS_WITH_NEW_MORE_INFO = [
   "fan",
   "input_boolean",
   "light",
+  "lock",
   "siren",
   "switch",
 ];
@@ -39,6 +40,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   "fan",
   "group",
   "humidifier",
+  "image",
   "input_boolean",
   "input_datetime",
   "light",
