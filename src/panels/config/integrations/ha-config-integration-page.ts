@@ -543,8 +543,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       ];
       if (item.reason) {
         this.hass.loadBackendTranslation("config", item.domain);
-        stateTextExtra = html`:
-        ${this.hass.localize(
+        stateTextExtra = html` ${this.hass.localize(
           `component.${item.domain}.config.error.${item.reason}`
         ) || item.reason}`;
       } else {
