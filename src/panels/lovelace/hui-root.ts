@@ -234,7 +234,7 @@ class HUIRoot extends LitElement {
                           @click=${this._goBack}
                         ></ha-icon-button-arrow-prev>
                       `
-                    : this.narrow
+                    : this.narrow || this.hass.dockedSidebar === "always_hidden"
                     ? html` <ha-menu-button
                         slot="navigationIcon"
                         .hass=${this.hass}
