@@ -237,11 +237,14 @@ export class HuiEnergySolarGraphCard
                   locale
                 )} kWh`,
               footer: (contexts) => {
-                if (contexts.length < 2) {
+                const production_contexts = contexts.filter(
+                  (c) => c.dataset?.stack === "solar"
+                );
+                if (production_contexts.length < 2) {
                   return [];
                 }
                 let total = 0;
-                for (const context of contexts) {
+                for (const context of production_contexts) {
                   total += (context.dataset.data[context.dataIndex] as any).y;
                 }
                 if (total === 0) {
