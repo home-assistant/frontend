@@ -442,6 +442,7 @@ class HaPanelDevService extends LitElement {
     });
     this._serviceData = { ...this._serviceData!, data: example };
     this._yamlEditor?.setValue(this._serviceData);
+    this._checkUiSupported();
   }
 
   static get styles(): CSSResultGroup {
