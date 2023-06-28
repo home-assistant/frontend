@@ -5,7 +5,6 @@ import "../../../components/ha-button";
 import "../../../components/ha-code-editor";
 import "../../../components/ha-language-picker";
 import "../../../components/ha-textarea";
-import "../../../components/ha-absolute-time";
 import type { HaTextArea } from "../../../components/ha-textarea";
 import {
   AssitDebugResult,
