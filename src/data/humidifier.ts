@@ -14,7 +14,7 @@ export type HumidifierEntity = HassEntityBase & {
     min_humidity?: number;
     max_humidity?: number;
     mode?: string;
-    action: HumidifierAction;
+    action?: HumidifierAction;
     available_modes?: string[];
   };
 };
