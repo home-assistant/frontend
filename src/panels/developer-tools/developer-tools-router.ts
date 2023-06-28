@@ -45,6 +45,10 @@ class DeveloperToolsRouter extends HassRouterPage {
         tag: "developer-yaml-config",
         load: () => import("./yaml_configuration/developer-yaml-config"),
       },
+      assist: {
+        tag: "developer-tools-assist",
+        load: () => import("./assist/developer-tools-assist"),
+      },
     },
   };
 
