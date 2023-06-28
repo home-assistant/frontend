@@ -7,6 +7,7 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   TemplateResult,
 } from "lit";
@@ -33,6 +34,8 @@ export class HuiCardOptions extends LitElement {
   @property({ attribute: false }) public lovelace?: Lovelace;
 
   @property() public path?: [number, number];
+
+  @property({ type: Boolean }) public showPosition = false;
 
   @queryAssignedNodes() private _assignedNodes?: NodeListOf<LovelaceCard>;
 
@@ -68,7 +71,7 @@ export class HuiCardOptions extends LitElement {
               "ui.panel.lovelace.editor.edit_card.edit"
             )}</mwc-button
           >
-          <div>
+          <div class="right">
             <slot name="buttons"></slot>
             <ha-icon-button
               .label=${this.hass!.localize(
@@ -81,18 +84,22 @@ export class HuiCardOptions extends LitElement {
                 .length ===
               this.path![1] + 1}
             ></ha-icon-button>
-            <div class="position-badge">
-              ${this.path![1] + 1}
-              <simple-tooltip
-                >${this.hass!.localize(
-                  "ui.panel.lovelace.editor.edit_card.position",
-                  "position",
-                  `${this.path![1] + 1}`,
-                  "total",
-                  `${this.lovelace!.config.views[this.path![0]].cards!.length}`
-                )}</simple-tooltip
-              >
-            </div>
+            ${this.showPosition
+              ? html`<div class="position-badge">
+                  ${this.path![1] + 1}
+                  <simple-tooltip
+                    >${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_card.position",
+                      "position",
+                      `${this.path![1] + 1}`,
+                      "total",
+                      `${
+                        this.lovelace!.config.views[this.path![0]].cards!.length
+                      }`
+                    )}</simple-tooltip
+                  >
+                </div>`
+              : nothing}
             <ha-icon-button
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_card.move_up"
@@ -167,18 +174,21 @@ export class HuiCardOptions extends LitElement {
         align-items: center;
       }
 
+      .right {
+        display: flex;
+        align-items: center;
+      }
+
       .position-badge {
         display: inline-block;
-        vertical-align: bottom;
-        width: 48px;
-        line-height: 48px;
+        width: 24px;
+        line-height: 24px;
         box-sizing: border-box;
         border-radius: 50%;
         font-weight: 400;
-        font-size: 1.25em;
-        background-color: var(--divider-color);
         text-align: center;
-        color: var(--text-accent-color, var(--text-primary-color));
+        background-color: var(--app-header-edit-background-color, #455a64);
+        color: var(--app-header-edit-text-color, white);
       }
 
       ha-icon-button {
