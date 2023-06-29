@@ -628,14 +628,16 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   lastChangedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_changed),
-      this.hass.locale
+      this.hass.locale,
+      this.hass.config
     );
   }
 
   lastUpdatedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_updated),
-      this.hass.locale
+      this.hass.locale,
+      this.hass.config
     );
   }
 
