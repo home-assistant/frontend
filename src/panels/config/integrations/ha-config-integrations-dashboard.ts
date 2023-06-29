@@ -746,7 +746,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         }
         .container {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
           grid-gap: 8px 8px;
           padding: 8px 16px 16px;
         }
