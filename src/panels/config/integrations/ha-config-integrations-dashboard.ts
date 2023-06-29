@@ -767,6 +767,8 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         .empty-message {
           margin: auto;
           text-align: center;
+          grid-column-start: 1;
+          grid-column-end: -1;
         }
         .empty-message h1 {
           margin-bottom: 0;
