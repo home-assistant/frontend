@@ -288,6 +288,7 @@ export class HuiCardOptions extends LitElement {
         "ui.panel.lovelace.editor.change_position.text"
       ),
       inputType: "number",
+      inputMin: "1",
       placeholder: String(path[1] + 1),
     });
 
