@@ -1,6 +1,7 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -14,6 +15,10 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
+import {
+  IntegrationDescriptions,
+  getIntegrationDescriptions,
+} from "../../../data/integrations";
 import {
   HassRouterPage,
   RouterOptions,
@@ -46,6 +51,8 @@ class HaConfigDevices extends HassRouterPage {
   };
 
   @state() private _configEntries: ConfigEntry[] = [];
+
+  @state() private _descriptions?: IntegrationDescriptions;
 
   @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
@@ -98,7 +105,10 @@ class HaConfigDevices extends HassRouterPage {
     }
 
     pageEl.entities = this._entityRegistryEntries;
-    pageEl.entries = this._configEntries;
+    pageEl.entries = this._sortedConfigEntries(
+      this._configEntries,
+      this._descriptions
+    );
     pageEl.devices = this._deviceRegistryEntries;
     pageEl.areas = this._areas;
     pageEl.narrow = this.narrow;
@@ -107,10 +117,36 @@ class HaConfigDevices extends HassRouterPage {
     pageEl.route = this.routeTail;
   }
 
+  private _sortedConfigEntries = memoizeOne(
+    (
+      configEntries: ConfigEntry[],
+      descriptions?: IntegrationDescriptions
+    ): ConfigEntry[] => {
+      const sortedConfigEntries = [...configEntries];
+
+      const getScore = (entry: ConfigEntry) => {
+        const isHelper =
+          descriptions &&
+          (descriptions.core.helper[entry.domain] ||
+            descriptions.custom.helper[entry.domain]);
+        return isHelper ? -1 : 1;
+      };
+
+      const configEntriesCompare = (a: ConfigEntry, b: ConfigEntry) =>
+        getScore(b) - getScore(a);
+
+      return sortedConfigEntries.sort(configEntriesCompare);
+    }
+  );
+
   private _loadData() {
     getConfigEntries(this.hass).then((configEntries) => {
       this._configEntries = configEntries;
     });
+    getIntegrationDescriptions(this.hass).then((descriptions) => {
+      this._descriptions = descriptions;
+    });
+
     if (this._unsubs) {
       return;
     }

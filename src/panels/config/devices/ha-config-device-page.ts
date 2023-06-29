@@ -83,6 +83,7 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
+import { IntegrationDescriptions } from "../../../data/integrations";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -115,6 +116,8 @@ export class HaConfigDevicePage extends LitElement {
 
   @property({ attribute: false }) public areas!: AreaRegistryEntry[];
 
+  @property({ attribute: false }) public descriptions?: IntegrationDescriptions;
+
   @property() public deviceId!: string;
 
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
@@ -145,15 +148,8 @@ export class HaConfigDevicePage extends LitElement {
   );
 
   private _integrations = memoizeOne(
-    (device: DeviceRegistryEntry, entries: ConfigEntry[]): ConfigEntry[] => {
-      const entryLookup: { [entryId: string]: ConfigEntry } = {};
-      for (const entry of entries) {
-        entryLookup[entry.entry_id] = entry;
-      }
-      return device.config_entries
-        .map((entry) => entryLookup[entry])
-        .filter(Boolean);
-    }
+    (device: DeviceRegistryEntry, entries: ConfigEntry[]): ConfigEntry[] =>
+      entries.filter((entry) => device.config_entries.includes(entry.entry_id))
   );
 
   private _entities = memoizeOne(

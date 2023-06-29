@@ -176,11 +176,6 @@ export class HaConfigDeviceDashboard extends LitElement {
         deviceEntityLookup[entity.device_id].push(entity);
       }
 
-      const entryLookup: { [entryId: string]: ConfigEntry } = {};
-      for (const entry of entries) {
-        entryLookup[entry.entry_id] = entry;
-      }
-
       const areaLookup: { [areaId: string]: AreaRegistryEntry } = {};
       for (const area of areas) {
         areaLookup[area.area_id] = area;
@@ -217,47 +212,48 @@ export class HaConfigDeviceDashboard extends LitElement {
         outputDevices = outputDevices.filter((device) => !device.disabled_by);
       }
 
-      outputDevices = outputDevices.map((device) => ({
-        ...device,
-        name: computeDeviceName(
-          device,
-          this.hass,
-          deviceEntityLookup[device.id]
-        ),
-        model:
-          device.model ||
-          `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
-        manufacturer:
-          device.manufacturer ||
-          `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
-        area:
-          device.area_id && areaLookup[device.area_id]
-            ? areaLookup[device.area_id].name
-            : "—",
-        integration: device.config_entries.length
-          ? device.config_entries
-              .filter((entId) => entId in entryLookup)
+      outputDevices = outputDevices.map((device) => {
+        const deviceEntries = entries.filter((entry) =>
+          device.config_entries.includes(entry.entry_id)
+        );
+        return {
+          ...device,
+          name: computeDeviceName(
+            device,
+            this.hass,
+            deviceEntityLookup[device.id]
+          ),
+          model:
+            device.model ||
+            `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
+          manufacturer:
+            device.manufacturer ||
+            `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
+          area:
+            device.area_id && areaLookup[device.area_id]
+              ? areaLookup[device.area_id].name
+              : "—",
+          integration:
+            deviceEntries
               .map(
-                (entId) =>
-                  localize(`component.${entryLookup[entId].domain}.title`) ||
-                  entryLookup[entId].domain
+                (entry) =>
+                  localize(`component.${entry.domain}.title`) || entry.domain
               )
-              .join(", ")
-          : this.hass.localize(
+              .join(", ") ||
+            this.hass.localize(
               "ui.panel.config.devices.data_table.no_integration"
             ),
-        domains: device.config_entries
-          .filter((entId) => entId in entryLookup)
-          .map((entId) => entryLookup[entId].domain),
-        battery_entity: [
-          this._batteryEntity(device.id, deviceEntityLookup),
-          this._batteryChargingEntity(device.id, deviceEntityLookup),
-        ],
-        battery_level:
-          this.hass.states[
-            this._batteryEntity(device.id, deviceEntityLookup) || ""
-          ]?.state,
-      }));
+          domains: deviceEntries.map((entry) => entry.domain),
+          battery_entity: [
+            this._batteryEntity(device.id, deviceEntityLookup),
+            this._batteryChargingEntity(device.id, deviceEntityLookup),
+          ],
+          battery_level:
+            this.hass.states[
+              this._batteryEntity(device.id, deviceEntityLookup) || ""
+            ]?.state,
+        };
+      });
 
       this._numHiddenDevices = startLength - outputDevices.length;
       return {
