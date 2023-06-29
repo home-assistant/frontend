@@ -17,6 +17,16 @@ import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-svg-icon";
 import "./state-badge";
+import {
+  fuzzyFilterSort,
+  ScorableTextItem,
+} from "../../common/string/filter/sequence-matching";
+
+interface StatisticItem extends ScorableTextItem {
+  id: string;
+  name: string;
+  state?: HassEntity;
+}
 
 @customElement("ha-statistic-picker")
 export class HaStatisticPicker extends LitElement {
@@ -75,11 +85,11 @@ export class HaStatisticPicker extends LitElement {
 
   private _init = false;
 
-  private _rowRenderer: ComboBoxLitRenderer<{
-    id: string;
-    name: string;
-    state?: HassEntity;
-  }> = (item) => html`<mwc-list-item graphic="avatar" twoline>
+  private _statistics: StatisticItem[] = [];
+
+  private _rowRenderer: ComboBoxLitRenderer<StatisticItem> = (
+    item
+  ) => html`<mwc-list-item graphic="avatar" twoline>
     ${item.state
       ? html`<state-badge slot="graphic" .stateObj=${item.state}></state-badge>`
       : ""}
@@ -105,7 +115,7 @@ export class HaStatisticPicker extends LitElement {
       includeUnitClass?: string | string[],
       includeDeviceClass?: string | string[],
       entitiesOnly?: boolean
-    ): Array<{ id: string; name: string; state?: HassEntity }> => {
+    ): StatisticItem[] => {
       if (!statisticIds.length) {
         return [
           {
@@ -113,6 +123,7 @@ export class HaStatisticPicker extends LitElement {
             name: this.hass.localize(
               "ui.components.statistic-picker.no_statistics"
             ),
+            strings: [],
           },
         ];
       }
@@ -146,26 +157,28 @@ export class HaStatisticPicker extends LitElement {
         });
       }
 
-      const output: Array<{
-        id: string;
-        name: string;
-        state?: HassEntity;
-      }> = [];
+      const output: StatisticItem[] = [];
       statisticIds.forEach((meta) => {
         const entityState = this.hass.states[meta.statistic_id];
         if (!entityState) {
           if (!entitiesOnly) {
+            const id = meta.statistic_id;
+            const name = getStatisticLabel(this.hass, meta.statistic_id, meta);
             output.push({
-              id: meta.statistic_id,
-              name: getStatisticLabel(this.hass, meta.statistic_id, meta),
+              id,
+              name,
+              strings: [id, name],
             });
           }
           return;
         }
+        const id = meta.statistic_id;
+        const name = getStatisticLabel(this.hass, meta.statistic_id, meta);
         output.push({
-          id: meta.statistic_id,
-          name: getStatisticLabel(this.hass, meta.statistic_id, meta),
+          id,
+          name,
           state: entityState,
+          strings: [id, name],
         });
       });
 
@@ -174,6 +187,7 @@ export class HaStatisticPicker extends LitElement {
           {
             id: "",
             name: this.hass.localize("ui.components.statistic-picker.no_match"),
+            strings: [],
           },
         ];
       }
@@ -189,6 +203,7 @@ export class HaStatisticPicker extends LitElement {
         name: this.hass.localize(
           "ui.components.statistic-picker.missing_entity"
         ),
+        strings: [],
       });
 
       return output;
@@ -216,7 +231,7 @@ export class HaStatisticPicker extends LitElement {
     ) {
       this._init = true;
       if (this.hasUpdated) {
-        (this.comboBox as any).items = this._getStatistics(
+        this._statistics = this._getStatistics(
           this.statisticIds!,
           this.includeStatisticsUnitOfMeasurement,
           this.includeUnitClass,
@@ -225,7 +240,7 @@ export class HaStatisticPicker extends LitElement {
         );
       } else {
         this.updateComplete.then(() => {
-          (this.comboBox as any).items = this._getStatistics(
+          this._statistics = this._getStatistics(
             this.statisticIds!,
             this.includeStatisticsUnitOfMeasurement,
             this.includeUnitClass,
@@ -248,11 +263,13 @@ export class HaStatisticPicker extends LitElement {
         .renderer=${this._rowRenderer}
         .disabled=${this.disabled}
         .allowCustomValue=${this.allowCustomEntity}
+        .filteredItems=${this._statistics}
         item-value-path="id"
         item-id-path="id"
         item-label-path="name"
         @opened-changed=${this._openedChanged}
         @value-changed=${this._statisticChanged}
+        @filter-changed=${this._filterChanged}
       ></ha-combo-box>
     `;
   }
@@ -279,6 +296,14 @@ export class HaStatisticPicker extends LitElement {
 
   private _openedChanged(ev: ValueChangedEvent<boolean>) {
     this._opened = ev.detail.value;
+  }
+
+  private _filterChanged(ev: CustomEvent): void {
+    const target = ev.target as HaComboBox;
+    const filterString = ev.detail.value.toLowerCase();
+    target.filteredItems = filterString.length
+      ? fuzzyFilterSort<StatisticItem>(filterString, this._statistics)
+      : this._statistics;
   }
 
   private _setValue(value: string) {
