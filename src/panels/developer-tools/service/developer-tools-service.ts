@@ -419,6 +419,7 @@ class HaPanelDevService extends LitElement {
   private _serviceChanged(ev) {
     ev.stopPropagation();
     this._serviceData = { service: ev.detail.value || "", data: {} };
+    this._response = undefined;
     this._yamlEditor?.setValue(this._serviceData);
     this._checkUiSupported();
   }
