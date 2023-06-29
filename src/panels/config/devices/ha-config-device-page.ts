@@ -41,6 +41,7 @@ import {
   ConfigEntry,
   disableConfigEntry,
   DisableConfigEntryResult,
+  sortConfigEntries,
 } from "../../../data/config_entries";
 import {
   computeDeviceName,
@@ -60,7 +61,7 @@ import {
   findBatteryEntity,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import { domainToName } from "../../../data/integration";
+import { IntegrationManifest, domainToName } from "../../../data/integration";
 import { SceneEntities, showSceneEditor } from "../../../data/scene";
 import { findRelated, RelatedResult } from "../../../data/search";
 import {
@@ -115,6 +116,8 @@ export class HaConfigDevicePage extends LitElement {
 
   @property({ attribute: false }) public areas!: AreaRegistryEntry[];
 
+  @property({ attribute: false }) public manifests!: IntegrationManifest[];
+
   @property() public deviceId!: string;
 
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
@@ -145,8 +148,25 @@ export class HaConfigDevicePage extends LitElement {
   );
 
   private _integrations = memoizeOne(
-    (device: DeviceRegistryEntry, entries: ConfigEntry[]): ConfigEntry[] =>
-      entries.filter((entry) => device.config_entries.includes(entry.entry_id))
+    (
+      device: DeviceRegistryEntry,
+      entries: ConfigEntry[],
+      manifests: IntegrationManifest[]
+    ): ConfigEntry[] => {
+      const entryLookup: { [entryId: string]: ConfigEntry } = {};
+      for (const entry of entries) {
+        entryLookup[entry.entry_id] = entry;
+      }
+      const manifestLookup: { [domain: string]: IntegrationManifest } = {};
+      for (const manifest of manifests) {
+        manifestLookup[manifest.domain] = manifest;
+      }
+      const deviceEntries = device.config_entries
+        .filter((entId) => entId in entryLookup)
+        .map((entry) => entryLookup[entry]);
+
+      return sortConfigEntries(deviceEntries, manifestLookup);
+    }
   );
 
   private _entities = memoizeOne(
@@ -285,7 +305,11 @@ export class HaConfigDevicePage extends LitElement {
     }
 
     const deviceName = computeDeviceName(device, this.hass);
-    const integrations = this._integrations(device, this.entries);
+    const integrations = this._integrations(
+      device,
+      this.entries,
+      this.manifests
+    );
     const entities = this._entities(this.deviceId, this.entities);
     const entitiesByCategory = this._entitiesByCategory(entities);
     const batteryEntity = this._batteryEntity(entities);

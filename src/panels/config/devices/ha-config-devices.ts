@@ -1,7 +1,6 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -52,7 +51,7 @@ class HaConfigDevices extends HassRouterPage {
 
   @state() private _configEntries: ConfigEntry[] = [];
 
-  @state() private _manifests?: IntegrationManifest[];
+  @state() private _manifests?: IntegrationManifest[] = [];
 
   @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
@@ -105,10 +104,8 @@ class HaConfigDevices extends HassRouterPage {
     }
 
     pageEl.entities = this._entityRegistryEntries;
-    pageEl.entries = this._sortedConfigEntries(
-      this._configEntries,
-      this._manifests
-    );
+    pageEl.entries = this._configEntries;
+    pageEl.manifests = this._manifests;
     pageEl.devices = this._deviceRegistryEntries;
     pageEl.areas = this._areas;
     pageEl.narrow = this.narrow;
@@ -116,36 +113,6 @@ class HaConfigDevices extends HassRouterPage {
     pageEl.showAdvanced = this.showAdvanced;
     pageEl.route = this.routeTail;
   }
-
-  private _sortedConfigEntries = memoizeOne(
-    (
-      configEntries: ConfigEntry[],
-      manifests?: IntegrationManifest[]
-    ): ConfigEntry[] => {
-      const sortedConfigEntries = [...configEntries];
-
-      const manifestLookup: { [domain: string]: IntegrationManifest } = {};
-
-      if (manifests) {
-        for (const manifest of manifests) {
-          manifestLookup[manifest.domain] = manifest;
-        }
-      }
-
-      const getScore = (entry: ConfigEntry) => {
-        const manifest = manifestLookup[entry.domain] as
-          | IntegrationManifest
-          | undefined;
-        const isHelper = manifest?.integration_type === "helper";
-        return isHelper ? -1 : 1;
-      };
-
-      const configEntriesCompare = (a: ConfigEntry, b: ConfigEntry) =>
-        getScore(b) - getScore(a);
-
-      return sortedConfigEntries.sort(configEntriesCompare);
-    }
-  );
 
   private _loadData() {
     getConfigEntries(this.hass).then((configEntries) => {

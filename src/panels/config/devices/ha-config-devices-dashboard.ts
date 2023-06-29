@@ -25,7 +25,7 @@ import "../../../components/ha-check-list-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import { AreaRegistryEntry } from "../../../data/area_registry";
-import { ConfigEntry } from "../../../data/config_entries";
+import { ConfigEntry, sortConfigEntries } from "../../../data/config_entries";
 import {
   computeDeviceName,
   DeviceEntityLookup,
@@ -36,7 +36,7 @@ import {
   findBatteryChargingEntity,
   findBatteryEntity,
 } from "../../../data/entity_registry";
-import { domainToName } from "../../../data/integration";
+import { IntegrationManifest, domainToName } from "../../../data/integration";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -67,6 +67,8 @@ export class HaConfigDeviceDashboard extends LitElement {
   @property() public entities!: EntityRegistryEntry[];
 
   @property() public areas!: AreaRegistryEntry[];
+
+  @property() public manifests!: IntegrationManifest[];
 
   @property() public route!: Route;
 
@@ -149,6 +151,7 @@ export class HaConfigDeviceDashboard extends LitElement {
       entries: ConfigEntry[],
       entities: EntityRegistryEntry[],
       areas: AreaRegistryEntry[],
+      manifests: IntegrationManifest[],
       filters: URLSearchParams,
       showDisabled: boolean,
       localize: LocalizeFunc
@@ -176,9 +179,19 @@ export class HaConfigDeviceDashboard extends LitElement {
         deviceEntityLookup[entity.device_id].push(entity);
       }
 
+      const entryLookup: { [entryId: string]: ConfigEntry } = {};
+      for (const entry of entries) {
+        entryLookup[entry.entry_id] = entry;
+      }
+
       const areaLookup: { [areaId: string]: AreaRegistryEntry } = {};
       for (const area of areas) {
         areaLookup[area.area_id] = area;
+      }
+
+      const manifestLookup: { [domain: string]: IntegrationManifest } = {};
+      for (const manifest of manifests) {
+        manifestLookup[manifest.domain] = manifest;
       }
 
       let filterConfigEntry: ConfigEntry | undefined;
@@ -213,8 +226,11 @@ export class HaConfigDeviceDashboard extends LitElement {
       }
 
       outputDevices = outputDevices.map((device) => {
-        const deviceEntries = entries.filter((entry) =>
-          device.config_entries.includes(entry.entry_id)
+        const deviceEntries = sortConfigEntries(
+          device.config_entries
+            .filter((entId) => entId in entryLookup)
+            .map((entId) => entryLookup[entId]),
+          manifestLookup
         );
         return {
           ...device,
@@ -233,16 +249,16 @@ export class HaConfigDeviceDashboard extends LitElement {
             device.area_id && areaLookup[device.area_id]
               ? areaLookup[device.area_id].name
               : "—",
-          integration:
-            deviceEntries
-              .map(
-                (entry) =>
-                  localize(`component.${entry.domain}.title`) || entry.domain
-              )
-              .join(", ") ||
-            this.hass.localize(
-              "ui.panel.config.devices.data_table.no_integration"
-            ),
+          integration: deviceEntries.length
+            ? deviceEntries
+                .map(
+                  (entry) =>
+                    localize(`component.${entry.domain}.title`) || entry.domain
+                )
+                .join(", ")
+            : this.hass.localize(
+                "ui.panel.config.devices.data_table.no_integration"
+              ),
           domains: deviceEntries.map((entry) => entry.domain),
           battery_entity: [
             this._batteryEntity(device.id, deviceEntityLookup),
@@ -425,6 +441,7 @@ export class HaConfigDeviceDashboard extends LitElement {
       this.entries,
       this.entities,
       this.areas,
+      this.manifests,
       this._searchParms,
       this._showDisabled,
       this.hass.localize
