@@ -376,53 +376,52 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
                 </search-input>
               </div>
             `}
-        ${this._showIgnored
-          ? html`<div class="container">
-              ${ignoredConfigEntries.map(
+
+        <div class="container">
+          ${this._showIgnored
+            ? ignoredConfigEntries.map(
                 (entry: ConfigEntryExtended) => html`
                   <ha-ignored-config-entry-card
+                    class="ignored-item"
                     .hass=${this.hass}
                     .manifest=${this._manifests[entry.domain]}
                     .entry=${entry}
                     @change=${this._handleFlowUpdated}
                   ></ha-ignored-config-entry-card>
                 `
-              )}
-            </div>`
-          : ""}
-        ${configEntriesInProgress.length
-          ? html`<div class="container">
-              ${configEntriesInProgress.map(
+              )
+            : ""}
+          ${configEntriesInProgress.length
+            ? configEntriesInProgress.map(
                 (flow: DataEntryFlowProgressExtended) => html`
                   <ha-config-flow-card
+                    class="in-progress-item"
                     .hass=${this.hass}
                     .manifest=${this._manifests[flow.handler]}
                     .flow=${flow}
                     @change=${this._handleFlowUpdated}
                   ></ha-config-flow-card>
                 `
-              )}
-            </div>`
-          : ""}
-        ${this._showDisabled
-          ? html`<div class="container">
-              ${disabledConfigEntries.map(
+              )
+            : ""}
+          ${this._showDisabled
+            ? disabledConfigEntries.map(
                 (entry: ConfigEntryExtended) => html`
                   <ha-disabled-config-entry-card
+                    class="disabled-item"
                     .hass=${this.hass}
                     .entry=${entry}
                     .manifest=${this._manifests[entry.domain]}
                     .entityRegistryEntries=${this._entityRegistryEntries}
                   ></ha-disabled-config-entry-card>
                 `
-              )}
-            </div>`
-          : ""}
-        <div class="container">
+              )
+            : ""}
           ${integrations.length
             ? integrations.map(
                 ([domain, items]) =>
                   html`<ha-integration-card
+                    class="integration-item"
                     data-domain=${domain}
                     .hass=${this.hass}
                     .domain=${domain}
@@ -747,14 +746,19 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         .container {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          grid-gap: 16px 16px;
+          grid-gap: 8px 8px;
           padding: 8px 16px 16px;
-        }
-        .container:last-of-type {
           margin-bottom: 64px;
         }
         .container > * {
           max-width: 500px;
+          grid-column-start: 1;
+        }
+        .ignored-item ~ .ignored-item,
+        .in-progress-item ~ .in-progress-item,
+        .disabled-item ~ .disabled-item,
+        .integration-item ~ .integration-item {
+          grid-column-start: unset;
         }
         .empty-message {
           margin: auto;
