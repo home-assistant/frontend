@@ -46,7 +46,7 @@ export class HuiCardOptions extends LitElement {
 
   @queryAssignedNodes() private _assignedNodes?: NodeListOf<LovelaceCard>;
 
-  @property({ type: Boolean }) public showPosition = false;
+  @property({ type: Boolean }) public hidePosition = false;
 
   @storage({
     key: "lovelaceClipboard",
@@ -82,36 +82,38 @@ export class HuiCardOptions extends LitElement {
           >
           <div class="right">
             <slot name="buttons"></slot>
-            <ha-icon-button
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_card.move_down"
-              )}
-              .path=${mdiArrowDown}
-              class="move-arrow"
-              @click=${this._cardDown}
-              .disabled=${this.lovelace!.config.views[this.path![0]].cards!
-                .length ===
-              this.path![1] + 1}
-            ></ha-icon-button>
-            ${this.showPosition
-              ? html`<ha-icon-button
-                  @click=${this._changeCardPosition}
-                  .label=${this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_card.change_position"
-                  )}
-                >
-                  <div class="position-badge">${this.path![1] + 1}</div>
-                </ha-icon-button>`
+            ${!this.hidePosition
+              ? html`
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_card.move_down"
+                    )}
+                    .path=${mdiArrowDown}
+                    class="move-arrow"
+                    @click=${this._cardDown}
+                    .disabled=${this.lovelace!.config.views[this.path![0]]
+                      .cards!.length ===
+                    this.path![1] + 1}
+                  ></ha-icon-button>
+                  <ha-icon-button
+                    @click=${this._changeCardPosition}
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_card.change_position"
+                    )}
+                  >
+                    <div class="position-badge">${this.path![1] + 1}</div>
+                  </ha-icon-button>
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_card.move_up"
+                    )}
+                    .path=${mdiArrowUp}
+                    class="move-arrow"
+                    @click=${this._cardUp}
+                    ?disabled=${this.path![1] === 0}
+                  ></ha-icon-button>
+                `
               : nothing}
-            <ha-icon-button
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_card.move_up"
-              )}
-              .path=${mdiArrowUp}
-              class="move-arrow"
-              @click=${this._cardUp}
-              ?disabled=${this.path![1] === 0}
-            ></ha-icon-button>
             <ha-button-menu @action=${this._handleAction}>
               <ha-icon-button
                 slot="trigger"
