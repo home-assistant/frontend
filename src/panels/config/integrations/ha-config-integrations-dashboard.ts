@@ -377,46 +377,57 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
               </div>
             `}
         ${this._showIgnored
-          ? html`<div class="container">
-              ${ignoredConfigEntries.map(
-                (entry: ConfigEntryExtended) => html`
-                  <ha-ignored-config-entry-card
-                    .hass=${this.hass}
-                    .manifest=${this._manifests[entry.domain]}
-                    .entry=${entry}
-                    @change=${this._handleFlowUpdated}
-                  ></ha-ignored-config-entry-card>
-                `
-              )}
-            </div>`
+          ? html`<h1>
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.ignore.ignored"
+                )}
+              </h1>
+              <div class="container">
+                ${ignoredConfigEntries.map(
+                  (entry: ConfigEntryExtended) => html`
+                    <ha-ignored-config-entry-card
+                      .hass=${this.hass}
+                      .manifest=${this._manifests[entry.domain]}
+                      .entry=${entry}
+                      @change=${this._handleFlowUpdated}
+                    ></ha-ignored-config-entry-card>
+                  `
+                )}
+              </div>`
           : ""}
         ${configEntriesInProgress.length
-          ? html`<div class="container">
-              ${configEntriesInProgress.map(
-                (flow: DataEntryFlowProgressExtended) => html`
-                  <ha-config-flow-card
-                    .hass=${this.hass}
-                    .manifest=${this._manifests[flow.handler]}
-                    .flow=${flow}
-                    @change=${this._handleFlowUpdated}
-                  ></ha-config-flow-card>
-                `
-              )}
-            </div>`
+          ? html`<h1>
+                ${this.hass.localize("ui.panel.config.integrations.discovered")}
+              </h1>
+              <div class="container">
+                ${configEntriesInProgress.map(
+                  (flow: DataEntryFlowProgressExtended) => html`
+                    <ha-config-flow-card
+                      .hass=${this.hass}
+                      .manifest=${this._manifests[flow.handler]}
+                      .flow=${flow}
+                      @change=${this._handleFlowUpdated}
+                    ></ha-config-flow-card>
+                  `
+                )}
+              </div>`
           : ""}
         ${this._showDisabled
-          ? html`<div class="container">
-              ${disabledConfigEntries.map(
-                (entry: ConfigEntryExtended) => html`
-                  <ha-disabled-config-entry-card
-                    .hass=${this.hass}
-                    .entry=${entry}
-                    .manifest=${this._manifests[entry.domain]}
-                    .entityRegistryEntries=${this._entityRegistryEntries}
-                  ></ha-disabled-config-entry-card>
-                `
-              )}
-            </div>`
+          ? html`<h1>
+                ${this.hass.localize("ui.panel.config.integrations.disabled")}
+              </h1>
+              <div class="container">
+                ${disabledConfigEntries.map(
+                  (entry: ConfigEntryExtended) => html`
+                    <ha-disabled-config-entry-card
+                      .hass=${this.hass}
+                      .entry=${entry}
+                      .manifest=${this._manifests[entry.domain]}
+                      .entityRegistryEntries=${this._entityRegistryEntries}
+                    ></ha-disabled-config-entry-card>
+                  `
+                )}
+              </div>`
           : ""}
         <div class="container">
           ${integrations.length
@@ -756,6 +767,8 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         .empty-message {
           margin: auto;
           text-align: center;
+          grid-column-start: 1;
+          grid-column-end: -1;
         }
         .empty-message h1 {
           margin-bottom: 0;
@@ -850,6 +863,9 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         }
         .menu-badge-container {
           position: relative;
+        }
+        h1 {
+          margin: 8px 0 0 16px;
         }
         ha-button-menu {
           color: var(--primary-text-color);
