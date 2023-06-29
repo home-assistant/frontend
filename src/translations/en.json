@@ -2605,7 +2605,7 @@
                   "timeout": "Timeout (optional)",
                   "continue_timeout": "Continue on timeout",
                   "description": {
-                    "full": "Wait for a template to render true"
+                    "full": "Wait for a template to evaluate to true"
                   }
                 },
                 "wait_for_trigger": {
@@ -2842,7 +2842,6 @@
             },
             "discover_blueprint_tip": "[%key:ui::panel::config::automation::dialog_new::discover_blueprint_tip%]"
           },
-
           "editor": {
             "alias": "Name",
             "icon": "Icon",

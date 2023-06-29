@@ -31,8 +31,7 @@ import {
   VariablesAction,
   WaitForTriggerAction,
 } from "./script";
-import "../resources/intl-polyfill";
-import { longConjunctionFormatter } from "../common/string/format-list";
+import { formatListWithAnds } from "../common/string/format-list";
 
 const actionTranslationBaseKey =
   "ui.panel.config.automation.editor.actions.type";
@@ -76,8 +75,6 @@ const tryDescribeAction = <T extends ActionType>(
   if (!actionType) {
     actionType = getActionType(action) as T;
   }
-
-  const conjunctionFormatter = longConjunctionFormatter(hass);
 
   if (actionType === "service") {
     const config = action as ActionTypes["service"];
@@ -162,7 +159,7 @@ const tryDescribeAction = <T extends ActionType>(
     ) {
       return hass.localize(
         `${actionTranslationBaseKey}.service.description.service_based_on_template`,
-        { targets: conjunctionFormatter.format(targets) }
+        { targets: formatListWithAnds(hass, targets) }
       );
     } else if (config.service) {
       const [domain, serviceName] = config.service.split(".", 2);
@@ -173,14 +170,13 @@ const tryDescribeAction = <T extends ActionType>(
           name: service
             ? `${domainToName(hass.localize, domain)}: ${service.name}`
             : config.service,
-          targets: conjunctionFormatter.format(targets),
+          targets: formatListWithAnds(hass, targets),
         }
       );
-    } else {
-      return hass.localize(
-        `${actionTranslationBaseKey}.service.description.service`
-      );
     }
+    return hass.localize(
+      `${actionTranslationBaseKey}.service.description.service`
+    );
   }
 
   if (actionType === "delay") {
@@ -280,7 +276,7 @@ const tryDescribeAction = <T extends ActionType>(
     );
     return hass.localize(
       `${actionTranslationBaseKey}.wait_for_trigger.description.wait_for_triggers_with_name`,
-      { triggers: conjunctionFormatter.format(triggerNames) }
+      { triggers: formatListWithAnds(hass, triggerNames) }
     );
   }
 
@@ -289,7 +285,7 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(
       `${actionTranslationBaseKey}.variables.description.full`,
       {
-        names: conjunctionFormatter.format(Object.keys(config.variables)),
+        names: formatListWithAnds(hass, Object.keys(config.variables)),
       }
     );
   }
@@ -370,9 +366,9 @@ const tryDescribeAction = <T extends ActionType>(
 
     return hass.localize(`${actionTranslationBaseKey}.if.description.full`, {
       hasElse: config.else !== undefined,
-      action: conjunctionFormatter.format(thenActions),
-      conditions: conjunctionFormatter.format(ifConditions),
-      elseAction: conjunctionFormatter.format(elseActions),
+      action: formatListWithAnds(hass, thenActions),
+      conditions: formatListWithAnds(hass, ifConditions),
+      elseAction: formatListWithAnds(hass, elseActions),
     });
   }
 
@@ -407,7 +403,7 @@ const tryDescribeAction = <T extends ActionType>(
       );
       chosenAction = hass.localize(
         `${actionTranslationBaseKey}.repeat.description.while`,
-        { conditions: conjunctionFormatter.format(conditions) }
+        { conditions: formatListWithAnds(hass, conditions) }
       );
     } else if ("until" in config.repeat) {
       const conditions = ensureArray(config.repeat.until).map((condition) =>
@@ -415,7 +411,7 @@ const tryDescribeAction = <T extends ActionType>(
       );
       chosenAction = hass.localize(
         `${actionTranslationBaseKey}.repeat.description.until`,
-        { conditions: conjunctionFormatter.format(conditions) }
+        { conditions: formatListWithAnds(hass, conditions) }
       );
     } else if ("for_each" in config.repeat) {
       const items = ensureArray(config.repeat.for_each).map((item) =>
@@ -423,7 +419,7 @@ const tryDescribeAction = <T extends ActionType>(
       );
       chosenAction = hass.localize(
         `${actionTranslationBaseKey}.repeat.description.for_each`,
-        { items: conjunctionFormatter.format(items) }
+        { items: formatListWithAnds(hass, items) }
       );
     }
     return hass.localize(
