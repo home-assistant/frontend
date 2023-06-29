@@ -16,9 +16,9 @@ import {
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import {
-  IntegrationDescriptions,
-  getIntegrationDescriptions,
-} from "../../../data/integrations";
+  IntegrationManifest,
+  fetchIntegrationManifests,
+} from "../../../data/integration";
 import {
   HassRouterPage,
   RouterOptions,
@@ -52,7 +52,7 @@ class HaConfigDevices extends HassRouterPage {
 
   @state() private _configEntries: ConfigEntry[] = [];
 
-  @state() private _descriptions?: IntegrationDescriptions;
+  @state() private _manifests?: IntegrationManifest[];
 
   @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
@@ -107,7 +107,7 @@ class HaConfigDevices extends HassRouterPage {
     pageEl.entities = this._entityRegistryEntries;
     pageEl.entries = this._sortedConfigEntries(
       this._configEntries,
-      this._descriptions
+      this._manifests
     );
     pageEl.devices = this._deviceRegistryEntries;
     pageEl.areas = this._areas;
@@ -120,15 +120,23 @@ class HaConfigDevices extends HassRouterPage {
   private _sortedConfigEntries = memoizeOne(
     (
       configEntries: ConfigEntry[],
-      descriptions?: IntegrationDescriptions
+      manifests?: IntegrationManifest[]
     ): ConfigEntry[] => {
       const sortedConfigEntries = [...configEntries];
 
+      const manifestLookup: { [domain: string]: IntegrationManifest } = {};
+
+      if (manifests) {
+        for (const manifest of manifests) {
+          manifestLookup[manifest.domain] = manifest;
+        }
+      }
+
       const getScore = (entry: ConfigEntry) => {
-        const isHelper =
-          descriptions &&
-          (descriptions.core.helper[entry.domain] ||
-            descriptions.custom.helper[entry.domain]);
+        const manifest = manifestLookup[entry.domain] as
+          | IntegrationManifest
+          | undefined;
+        const isHelper = manifest?.integration_type === "helper";
         return isHelper ? -1 : 1;
       };
 
@@ -143,8 +151,8 @@ class HaConfigDevices extends HassRouterPage {
     getConfigEntries(this.hass).then((configEntries) => {
       this._configEntries = configEntries;
     });
-    getIntegrationDescriptions(this.hass).then((descriptions) => {
-      this._descriptions = descriptions;
+    fetchIntegrationManifests(this.hass).then((manifests) => {
+      this._manifests = manifests;
     });
 
     if (this._unsubs) {

@@ -83,7 +83,6 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
-import { IntegrationDescriptions } from "../../../data/integrations";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -115,8 +114,6 @@ export class HaConfigDevicePage extends LitElement {
   @property({ attribute: false }) public entities!: EntityRegistryEntry[];
 
   @property({ attribute: false }) public areas!: AreaRegistryEntry[];
-
-  @property({ attribute: false }) public descriptions?: IntegrationDescriptions;
 
   @property() public deviceId!: string;
 
