@@ -100,11 +100,12 @@ export class HaIntegrationActionCard extends LitElement {
         align-items: center;
       }
       .card-actions {
+        border-top: none;
         justify-content: center;
         display: flex;
       }
       :host ::slotted(*) {
-        margin-right: 4px;
+        margin-right: 8px;
       }
       :host ::slotted(:last-child) {
         margin-right: 0;
