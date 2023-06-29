@@ -75,6 +75,7 @@ export class HaIntegrationActionCard extends LitElement {
       h2 {
         font-size: 16px;
         font-weight: 400;
+        margin-top: 8px;
         margin-bottom: 0;
       }
       h3 {
@@ -101,6 +102,7 @@ export class HaIntegrationActionCard extends LitElement {
       }
       .card-actions {
         border-top: none;
+        padding-top: 0;
         justify-content: center;
         display: flex;
       }

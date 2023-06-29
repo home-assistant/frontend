@@ -51,7 +51,6 @@ export class HaConfigFlowCard extends LitElement {
         ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
         this.flow.context.unique_id
           ? html`<mwc-button
-              outlined
               @click=${this._ignoreFlow}
               .label=${this.hass.localize(
                 `ui.panel.config.integrations.ignore.ignore`
