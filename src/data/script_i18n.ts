@@ -161,7 +161,9 @@ const tryDescribeAction = <T extends ActionType>(
         `${actionTranslationBaseKey}.service.description.service_based_on_template`,
         { targets: formatListWithAnds(hass, targets) }
       );
-    } else if (config.service) {
+    }
+
+    if (config.service) {
       const [domain, serviceName] = config.service.split(".", 2);
       const service = hass.services[domain][serviceName];
       return hass.localize(

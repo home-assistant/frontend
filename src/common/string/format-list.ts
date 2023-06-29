@@ -1,6 +1,6 @@
+import memoizeOne from "memoize-one";
 import { HomeAssistant } from "../../types";
 import "../../resources/intl-polyfill";
-import memoizeOne from "memoize-one";
 
 export const formatListWithAnds = (hass: HomeAssistant, list: string[]) =>
   formatConjunctionList(hass).format(list);
