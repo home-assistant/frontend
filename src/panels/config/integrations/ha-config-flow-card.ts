@@ -1,15 +1,10 @@
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import { mdiBookshelf, mdiCog, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import {
-  mdiBookshelf,
-  mdiCog,
-  mdiDotsVertical,
-  mdiEyeOff,
-  mdiOpenInNew,
-} from "@mdi/js";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import {
   ATTENTION_SOURCES,
   DISCOVERY_SOURCES,
@@ -17,13 +12,12 @@ import {
   localizeConfigFlowTitle,
 } from "../../../data/config_flow";
 import type { IntegrationManifest } from "../../../data/integration";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import "./ha-integration-action-card";
-import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("ha-config-flow-card")
 export class HaConfigFlowCard extends LitElement {
@@ -38,16 +32,10 @@ export class HaConfigFlowCard extends LitElement {
     return html`
       <ha-integration-action-card
         class=${classMap({
-          discovered: !attention,
           attention: attention,
         })}
         .hass=${this.hass}
         .manifest=${this.manifest}
-        .banner=${this.hass.localize(
-          `ui.panel.config.integrations.${
-            attention ? "attention" : "discovered"
-          }`
-        )}
         .domain=${this.flow.handler}
         .label=${this.flow.localized_title}
       >
@@ -60,72 +48,75 @@ export class HaConfigFlowCard extends LitElement {
             }`
           )}
         ></mwc-button>
-        <ha-button-menu slot="header-button">
-          <ha-icon-button
-            slot="trigger"
-            .label=${this.hass.localize("ui.common.menu")}
-            .path=${mdiDotsVertical}
-          ></ha-icon-button>
-          ${this.flow.context.configuration_url
-            ? html`<a
-                href=${this.flow.context.configuration_url.replace(
-                  /^homeassistant:\/\//,
-                  ""
-                )}
-                rel="noreferrer"
-                target=${this.flow.context.configuration_url.startsWith(
-                  "homeassistant://"
-                )
-                  ? "_self"
-                  : "_blank"}
-              >
-                <mwc-list-item graphic="icon" hasMeta>
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.open_configuration_url"
-                  )}
-                  <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
-                  <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
-                </mwc-list-item>
-              </a>`
-            : ""}
-          ${this.manifest
-            ? html`<a
-                href=${this.manifest.is_built_in
-                  ? documentationUrl(
-                      this.hass,
-                      `/integrations/${this.manifest.domain}`
+        ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
+        this.flow.context.unique_id
+          ? html`<mwc-button
+              @click=${this._ignoreFlow}
+              .label=${this.hass.localize(
+                `ui.panel.config.integrations.ignore.ignore`
+              )}
+            ></mwc-button>`
+          : ""}
+        ${this.flow.context.configuration_url || this.manifest
+          ? html`<ha-button-menu slot="header-button">
+              <ha-icon-button
+                slot="trigger"
+                .label=${this.hass.localize("ui.common.menu")}
+                .path=${mdiDotsVertical}
+              ></ha-icon-button>
+              ${this.flow.context.configuration_url
+                ? html`<a
+                    href=${this.flow.context.configuration_url.replace(
+                      /^homeassistant:\/\//,
+                      ""
+                    )}
+                    rel="noreferrer"
+                    target=${this.flow.context.configuration_url.startsWith(
+                      "homeassistant://"
                     )
-                  : this.manifest.documentation}
-                rel="noreferrer"
-                target="_blank"
-              >
-                <mwc-list-item graphic="icon" hasMeta>
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.documentation"
-                  )}
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiBookshelf}
-                  ></ha-svg-icon>
-                  <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
-                </mwc-list-item>
-              </a>`
-            : ""}
-          ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
-          this.flow.context.unique_id
-            ? html`
-                <mwc-list-item
-                  graphic="icon"
-                  @request-selected=${this._ignoreFlow}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.ignore.ignore"
-                  )}
-                  <ha-svg-icon slot="graphic" .path=${mdiEyeOff}></ha-svg-icon>
-                </mwc-list-item>
-              `
-            : ""}
-        </ha-button-menu>
+                      ? "_self"
+                      : "_blank"}
+                  >
+                    <mwc-list-item graphic="icon" hasMeta>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.open_configuration_url"
+                      )}
+                      <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+                      <ha-svg-icon
+                        slot="meta"
+                        .path=${mdiOpenInNew}
+                      ></ha-svg-icon>
+                    </mwc-list-item>
+                  </a>`
+                : ""}
+              ${this.manifest
+                ? html`<a
+                    href=${this.manifest.is_built_in
+                      ? documentationUrl(
+                          this.hass,
+                          `/integrations/${this.manifest.domain}`
+                        )
+                      : this.manifest.documentation}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <mwc-list-item graphic="icon" hasMeta>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.documentation"
+                      )}
+                      <ha-svg-icon
+                        slot="graphic"
+                        .path=${mdiBookshelf}
+                      ></ha-svg-icon>
+                      <ha-svg-icon
+                        slot="meta"
+                        .path=${mdiOpenInNew}
+                      ></ha-svg-icon>
+                    </mwc-list-item>
+                  </a>`
+                : ""}
+            </ha-button-menu>`
+          : ""}
       </ha-integration-action-card>
     `;
   }
@@ -174,14 +165,6 @@ export class HaConfigFlowCard extends LitElement {
   }
 
   static styles = css`
-    .attention {
-      --state-color: var(--error-color);
-      --text-on-state-color: var(--text-primary-color);
-    }
-    .discovered {
-      --state-color: var(--primary-color);
-      --text-on-state-color: var(--text-primary-color);
-    }
     a {
       text-decoration: none;
       color: var(--primary-color);

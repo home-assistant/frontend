@@ -3301,6 +3301,7 @@
           "description": "Manage integrations with services or devices",
           "integration": "integration",
           "discovered": "Discovered",
+          "disabled": "Disabled",
           "available_integrations": "Available integrations",
           "new_flow": "Setup another instance of {integration}",
           "attention": "Attention required",

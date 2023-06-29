@@ -10,10 +10,6 @@ import { brandsUrl } from "../../../util/brands-url";
 export class HaIntegrationHeader extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public banner?: string;
-
-  @property() public label?: string;
-
   @property() public error?: string;
 
   @property() public warning?: string;
@@ -25,25 +21,11 @@ export class HaIntegrationHeader extends LitElement {
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
   protected render(): TemplateResult {
-    let primary: string;
-    let secondary: string | undefined;
-
     const domainName =
       this.localizedDomainName ||
       domainToName(this.hass.localize, this.domain, this.manifest);
 
-    if (this.label) {
-      primary = this.label;
-      secondary =
-        primary.toLowerCase() === domainName.toLowerCase()
-          ? undefined
-          : domainName;
-    } else {
-      primary = domainName;
-    }
-
     return html`
-      ${!this.banner ? "" : html`<div class="banner">${this.banner}</div>`}
       <div class="header">
         <img
           alt=""
@@ -62,7 +44,7 @@ export class HaIntegrationHeader extends LitElement {
             role="heading"
             aria-level="1"
           >
-            ${primary}
+            ${domainName}
           </div>
           ${this.error
             ? html`<div class="error">
@@ -74,8 +56,6 @@ export class HaIntegrationHeader extends LitElement {
                 <ha-svg-icon .path=${mdiAlertOutline}></ha-svg-icon>${this
                   .warning}
               </div>`
-            : secondary
-            ? html`<div class="secondary">${secondary}</div>`
             : nothing}
         </div>
         <div class="header-button">
@@ -94,16 +74,6 @@ export class HaIntegrationHeader extends LitElement {
   }
 
   static styles = css`
-    .banner {
-      background-color: var(--state-color);
-      color: var(--text-on-state-color);
-      text-align: center;
-      padding: 2px;
-
-      /* Padding is subtracted for nested elements with border radiuses */
-      border-top-left-radius: calc(var(--ha-card-border-radius, 12px) - 2px);
-      border-top-right-radius: calc(var(--ha-card-border-radius, 12px) - 2px);
-    }
     .header {
       display: flex;
       position: relative;
@@ -126,8 +96,7 @@ export class HaIntegrationHeader extends LitElement {
     }
     .primary,
     .warning,
-    .error,
-    .secondary {
+    .error {
       word-wrap: break-word;
       display: -webkit-box;
       -webkit-box-orient: vertical;
@@ -151,10 +120,6 @@ export class HaIntegrationHeader extends LitElement {
       --mdc-icon-size: 20px;
       -webkit-line-clamp: 1;
       font-size: 0.9em;
-    }
-    .secondary {
-      font-size: 14px;
-      color: var(--secondary-text-color);
     }
     .error ha-svg-icon {
       margin-right: 4px;
