@@ -937,7 +937,7 @@ export class HaConfigDevicePage extends LitElement {
     }
 
     let links = await Promise.all(
-      this._integrations(device, this.entries).map(
+      this._integrations(device, this.entries, this.manifests).map(
         async (entry): Promise<boolean | { link: string; domain: string }> => {
           if (entry.state !== "loaded") {
             return false;
@@ -1000,50 +1000,55 @@ export class HaConfigDevicePage extends LitElement {
     }
 
     const buttons: DeviceAction[] = [];
-    this._integrations(device, this.entries).forEach((entry) => {
-      if (entry.state !== "loaded" || !entry.supports_remove_device) {
-        return;
+    this._integrations(device, this.entries, this.manifests).forEach(
+      (entry) => {
+        if (entry.state !== "loaded" || !entry.supports_remove_device) {
+          return;
+        }
+        buttons.push({
+          action: async () => {
+            const confirmed = await showConfirmationDialog(this, {
+              text:
+                this._integrations(device, this.entries, this.manifests)
+                  .length > 1
+                  ? this.hass.localize(
+                      `ui.panel.config.devices.confirm_delete_integration`,
+                      {
+                        integration: domainToName(
+                          this.hass.localize,
+                          entry.domain
+                        ),
+                      }
+                    )
+                  : this.hass.localize(
+                      `ui.panel.config.devices.confirm_delete`
+                    ),
+            });
+
+            if (!confirmed) {
+              return;
+            }
+
+            await removeConfigEntryFromDevice(
+              this.hass!,
+              this.deviceId,
+              entry.entry_id
+            );
+          },
+          classes: "warning",
+          icon: mdiDelete,
+          label:
+            this._integrations(device, this.entries, this.manifests).length > 1
+              ? this.hass.localize(
+                  `ui.panel.config.devices.delete_device_integration`,
+                  {
+                    integration: domainToName(this.hass.localize, entry.domain),
+                  }
+                )
+              : this.hass.localize(`ui.panel.config.devices.delete_device`),
+        });
       }
-      buttons.push({
-        action: async () => {
-          const confirmed = await showConfirmationDialog(this, {
-            text:
-              this._integrations(device, this.entries).length > 1
-                ? this.hass.localize(
-                    `ui.panel.config.devices.confirm_delete_integration`,
-                    {
-                      integration: domainToName(
-                        this.hass.localize,
-                        entry.domain
-                      ),
-                    }
-                  )
-                : this.hass.localize(`ui.panel.config.devices.confirm_delete`),
-          });
-
-          if (!confirmed) {
-            return;
-          }
-
-          await removeConfigEntryFromDevice(
-            this.hass!,
-            this.deviceId,
-            entry.entry_id
-          );
-        },
-        classes: "warning",
-        icon: mdiDelete,
-        label:
-          this._integrations(device, this.entries).length > 1
-            ? this.hass.localize(
-                `ui.panel.config.devices.delete_device_integration`,
-                {
-                  integration: domainToName(this.hass.localize, entry.domain),
-                }
-              )
-            : this.hass.localize(`ui.panel.config.devices.delete_device`),
-      });
-    });
+    );
 
     if (buttons.length > 0) {
       this._deleteButtons = buttons;
@@ -1078,9 +1083,11 @@ export class HaConfigDevicePage extends LitElement {
       });
     }
 
-    const domains = this._integrations(device, this.entries).map(
-      (int) => int.domain
-    );
+    const domains = this._integrations(
+      device,
+      this.entries,
+      this.manifests
+    ).map((int) => int.domain);
 
     if (domains.includes("mqtt")) {
       const mqtt = await import(
@@ -1120,9 +1127,11 @@ export class HaConfigDevicePage extends LitElement {
 
     const deviceAlerts: DeviceAlert[] = [];
 
-    const domains = this._integrations(device, this.entries).map(
-      (int) => int.domain
-    );
+    const domains = this._integrations(
+      device,
+      this.entries,
+      this.manifests
+    ).map((int) => int.domain);
 
     if (domains.includes("zwave_js")) {
       const zwave = await import(

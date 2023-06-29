@@ -51,7 +51,7 @@ class HaConfigDevices extends HassRouterPage {
 
   @state() private _configEntries: ConfigEntry[] = [];
 
-  @state() private _manifests?: IntegrationManifest[] = [];
+  @state() private _manifests: IntegrationManifest[] = [];
 
   @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];

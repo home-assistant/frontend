@@ -578,6 +578,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         this.entries,
         this.entities,
         this.areas,
+        this.manifests,
         this._searchParms,
         this._showDisabled,
         this.hass.localize
