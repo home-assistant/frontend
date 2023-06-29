@@ -3301,6 +3301,7 @@
           "description": "Manage integrations with services or devices",
           "integration": "integration",
           "discovered": "Discovered",
+          "disabled": "Disabled",
           "available_integrations": "Available integrations",
           "new_flow": "Setup another instance of {integration}",
           "attention": "Attention required",
@@ -3420,7 +3421,7 @@
               "loaded": "Loaded",
               "setup_error": "Failed to set up",
               "migration_error": "Migration error",
-              "setup_retry": "Retrying setup",
+              "setup_retry": "Failed setup, will retry",
               "not_loaded": "Not loaded",
               "failed_unload": "Failed to unload",
               "setup_in_progress": "Initializing"
@@ -4312,7 +4313,14 @@
             },
             "energy_solar_graph": {
               "production": "Production {name}",
-              "forecast": "Forecast {name}"
+              "forecast": "Forecast {name}",
+              "total_produced": "Total produced {num} kWh"
+            },
+            "energy_gas_graph": {
+              "total_consumed": "Total consumed {num} {unit}"
+            },
+            "energy_water_graph": {
+              "total_consumed": "[%key:ui::panel::lovelace::cards::energy::energy_gas_graph::total_consumed%]"
             },
             "solar_consumed_gauge": {
               "card_indicates_solar_energy_used": "This card indicates how much of the solar energy you produced was used by your home instead of being returned to the grid.",

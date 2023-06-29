@@ -121,6 +121,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     wrapper.hass = this.hass;
     wrapper.lovelace = this.lovelace;
     wrapper.path = [this.index!, 0];
+    wrapper.hidePosition = true;
     card.editMode = true;
     wrapper.appendChild(card);
     this._card = wrapper;
