@@ -97,11 +97,12 @@ export class HaIntegrationCard extends LitElement {
             .hass=${this.hass}
             .domain=${this.domain}
             .localizedDomainName=${this.items[0].localized_domain_name}
-            .banner=${entryState !== "loaded"
+            .error=${entryState !== "loaded"
               ? this.hass.localize(
                   `ui.panel.config.integrations.config_entry.state.${entryState}`
                 )
-              : debugLoggingEnabled
+              : undefined}
+            .warning=${debugLoggingEnabled
               ? this.hass.localize(
                   "ui.panel.config.integrations.config_entry.debug_logging_enabled"
                 )
