@@ -1,4 +1,5 @@
-import { LitElement, TemplateResult, css, html } from "lit";
+import { mdiAlertCircleOutline, mdiAlertOutline } from "@mdi/js";
+import { LitElement, TemplateResult, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-svg-icon";
 import { IntegrationManifest, domainToName } from "../../../data/integration";
@@ -12,6 +13,10 @@ export class HaIntegrationHeader extends LitElement {
   @property() public banner?: string;
 
   @property() public label?: string;
+
+  @property() public error?: string;
+
+  @property() public warning?: string;
 
   @property() public localizedDomainName?: string;
 
@@ -52,8 +57,26 @@ export class HaIntegrationHeader extends LitElement {
           @load=${this._onImageLoad}
         />
         <div class="info">
-          <div class="primary" role="heading">${primary}</div>
-          <div class="secondary">${secondary}</div>
+          <div
+            class="primary ${this.warning || this.error ? "hasError" : ""}"
+            role="heading"
+            aria-level="1"
+          >
+            ${primary}
+          </div>
+          ${this.error
+            ? html`<div class="error">
+                <ha-svg-icon .path=${mdiAlertCircleOutline}></ha-svg-icon>${this
+                  .error}
+              </div>`
+            : this.warning
+            ? html`<div class="warning">
+                <ha-svg-icon .path=${mdiAlertOutline}></ha-svg-icon>${this
+                  .warning}
+              </div>`
+            : secondary
+            ? html`<div class="secondary">${secondary}</div>`
+            : nothing}
         </div>
         <div class="header-button">
           <slot name="header-button"></slot>
@@ -101,29 +124,51 @@ export class HaIntegrationHeader extends LitElement {
       flex: 1;
       align-self: center;
     }
-    .header .info div {
+    .primary,
+    .warning,
+    .error,
+    .secondary {
       word-wrap: break-word;
       display: -webkit-box;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-    .header-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 36px;
     }
     .primary {
       font-size: 16px;
       font-weight: 400;
       word-break: break-word;
       color: var(--primary-text-color);
+      -webkit-line-clamp: 2;
+    }
+    .hasError {
+      -webkit-line-clamp: 1;
+      font-size: 14px;
+    }
+    .warning,
+    .error {
+      line-height: 20px;
+      --mdc-icon-size: 20px;
+      -webkit-line-clamp: 1;
+      font-size: 0.9em;
     }
     .secondary {
       font-size: 14px;
       color: var(--secondary-text-color);
+    }
+    .error ha-svg-icon {
+      margin-right: 4px;
+      color: var(--error-color);
+    }
+    .warning ha-svg-icon {
+      margin-right: 4px;
+      color: var(--warning-color);
+    }
+    .header-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
     }
   `;
 }
