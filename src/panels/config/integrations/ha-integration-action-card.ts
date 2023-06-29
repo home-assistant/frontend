@@ -103,6 +103,7 @@ export class HaIntegrationActionCard extends LitElement {
       .card-actions {
         border-top: none;
         padding-top: 0;
+        padding-bottom: 16px;
         justify-content: center;
         display: flex;
       }
