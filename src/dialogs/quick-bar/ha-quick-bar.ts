@@ -517,26 +517,25 @@ export class QuickBar extends LitElement {
     // Get all domains that have a direct "reload" service
     const reloadableDomains = componentsWithService(this.hass, "reload");
 
-    const commands = reloadableDomains.map(async (domain) => {
-      const localize = await this.hass.loadBackendTranslation("title", domain);
+    const localize = await this.hass.loadBackendTranslation(
+      "title",
+      reloadableDomains
+    );
 
-      return {
-        primaryText:
-          this.hass.localize(
-            `ui.dialogs.quick-bar.commands.reload.${domain}`
-          ) ||
-          this.hass.localize(
-            "ui.dialogs.quick-bar.commands.reload.reload",
-            "domain",
-            domainToName(localize, domain)
-          ),
-        action: () => this.hass.callService(domain, "reload"),
-        iconPath: mdiReload,
-        categoryText: this.hass.localize(
-          `ui.dialogs.quick-bar.commands.types.reload`
+    const commands = reloadableDomains.map((domain) => ({
+      primaryText:
+        this.hass.localize(`ui.dialogs.quick-bar.commands.reload.${domain}`) ||
+        this.hass.localize(
+          "ui.dialogs.quick-bar.commands.reload.reload",
+          "domain",
+          domainToName(localize, domain)
         ),
-      };
-    });
+      action: () => this.hass.callService(domain, "reload"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        `ui.dialogs.quick-bar.commands.types.reload`
+      ),
+    }));
 
     // Add "frontend.reload_themes"
     commands.push({
