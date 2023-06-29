@@ -1,6 +1,6 @@
 import { mdiMenu } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { subscribeNotifications } from "../data/persistent_notification";
@@ -16,6 +16,8 @@ class HaMenuButton extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _hasNotifications = false;
+
+  @state() private _show = false;
 
   private _alwaysVisible = false;
 
@@ -40,7 +42,10 @@ class HaMenuButton extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
+    if (!this._show) {
+      return nothing;
+    }
     const hasNotifications =
       this._hasNotifications &&
       (this.narrow || this.hass.dockedSidebar === "always_hidden");
@@ -66,8 +71,8 @@ class HaMenuButton extends LitElement {
       (Number((window.parent as any).frontendVersion) || 0) < 20190710;
   }
 
-  protected updated(changedProps) {
-    super.updated(changedProps);
+  protected willUpdate(changedProps) {
+    super.willUpdate(changedProps);
 
     if (!changedProps.has("narrow") && !changedProps.has("hass")) {
       return;
@@ -85,11 +90,11 @@ class HaMenuButton extends LitElement {
     const showButton =
       this.narrow || this.hass.dockedSidebar === "always_hidden";
 
-    if (oldShowButton === showButton) {
+    if (this.hasUpdated && oldShowButton === showButton) {
       return;
     }
 
-    this.style.display = showButton || this._alwaysVisible ? "initial" : "none";
+    this._show = showButton || this._alwaysVisible;
 
     if (!showButton) {
       if (this._unsubNotifications) {

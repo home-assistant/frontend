@@ -97,7 +97,13 @@ export class HaIntegrationCard extends LitElement {
             .hass=${this.hass}
             .domain=${this.domain}
             .localizedDomainName=${this.items[0].localized_domain_name}
-            .banner=${entryState !== "loaded"
+            .error=${ERROR_STATES.includes(entryState)
+              ? this.hass.localize(
+                  `ui.panel.config.integrations.config_entry.state.${entryState}`
+                )
+              : undefined}
+            .warning=${entryState !== "loaded" &&
+            !ERROR_STATES.includes(entryState)
               ? this.hass.localize(
                   `ui.panel.config.integrations.config_entry.state.${entryState}`
                 )
@@ -317,9 +323,12 @@ export class HaIntegrationCard extends LitElement {
           --text-on-state-color: var(--primary-text-color);
         }
         .state-not-loaded {
+          opacity: 0.8;
+          --state-color: var(--warning-color);
           --state-message-color: var(--primary-text-color);
         }
         .state-setup {
+          opacity: 0.8;
           --state-message-color: var(--secondary-text-color);
         }
         :host(.highlight) ha-card {

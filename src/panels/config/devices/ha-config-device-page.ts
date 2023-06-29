@@ -145,8 +145,15 @@ export class HaConfigDevicePage extends LitElement {
   );
 
   private _integrations = memoizeOne(
-    (device: DeviceRegistryEntry, entries: ConfigEntry[]): ConfigEntry[] =>
-      entries.filter((entry) => device.config_entries.includes(entry.entry_id))
+    (device: DeviceRegistryEntry, entries: ConfigEntry[]): ConfigEntry[] => {
+      const entryLookup: { [entryId: string]: ConfigEntry } = {};
+      for (const entry of entries) {
+        entryLookup[entry.entry_id] = entry;
+      }
+      return device.config_entries
+        .map((entry) => entryLookup[entry])
+        .filter(Boolean);
+    }
   );
 
   private _entities = memoizeOne(

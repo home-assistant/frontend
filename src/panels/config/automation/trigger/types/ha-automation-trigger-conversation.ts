@@ -92,7 +92,11 @@ export class HaConversationTrigger
 
   private async _updateOption(ev: Event) {
     const index = (ev.target as any).index;
-    const command = [...this.trigger.command];
+    const command = [
+      ...(Array.isArray(this.trigger.command)
+        ? this.trigger.command
+        : [this.trigger.command]),
+    ];
     command.splice(index, 1, (ev.target as HaTextField).value);
     fireEvent(this, "value-changed", {
       value: { ...this.trigger, command },

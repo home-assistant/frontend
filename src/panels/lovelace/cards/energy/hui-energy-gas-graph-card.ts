@@ -240,6 +240,24 @@ export class HuiEnergyGasGraphCard
                   context.parsed.y,
                   locale
                 )} ${unit}`,
+              footer: (contexts) => {
+                if (contexts.length < 2) {
+                  return [];
+                }
+                let total = 0;
+                for (const context of contexts) {
+                  total += (context.dataset.data[context.dataIndex] as any).y;
+                }
+                if (total === 0) {
+                  return [];
+                }
+                return [
+                  this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.energy_gas_graph.total_consumed",
+                    { num: formatNumber(total, locale), unit }
+                  ),
+                ];
+              },
             },
           },
           filler: {

@@ -81,6 +81,8 @@ class DialogBox extends LitElement {
                   .type=${this._params.inputType
                     ? this._params.inputType
                     : "text"}
+                  .min=${this._params.inputMin}
+                  .max=${this._params.inputMax}
                 ></ha-textfield>
               `
             : ""}

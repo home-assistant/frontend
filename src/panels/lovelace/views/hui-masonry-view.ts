@@ -272,7 +272,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       wrapper.hass = this.hass;
       wrapper.lovelace = this.lovelace;
       wrapper.path = [this.index!, index];
-      wrapper.showPosition = true;
       card.editMode = true;
       wrapper.appendChild(card);
       columnEl.appendChild(wrapper);
