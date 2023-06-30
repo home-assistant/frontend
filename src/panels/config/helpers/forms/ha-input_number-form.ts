@@ -71,7 +71,6 @@ class HaInputNumberForm extends LitElement {
     if (!this.hass) {
       return nothing;
     }
-    const nameInvalid = !this._name || this._name.trim() === "";
 
     return html`
       <div class="form">
@@ -82,10 +81,11 @@ class HaInputNumberForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
-          .errorMessage=${this.hass!.localize(
+          autoValidate
+          required
+          .validationMessage=${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
-          .invalid=${nameInvalid}
           dialogInitialFocus
         ></ha-textfield>
         <ha-icon-picker
