@@ -1,10 +1,8 @@
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiBookshelf, mdiCog, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import {
   ATTENTION_SOURCES,
   DISCOVERY_SOURCES,
@@ -130,10 +128,7 @@ export class HaConfigFlowCard extends LitElement {
     });
   }
 
-  private async _ignoreFlow(ev: CustomEvent<RequestSelectedDetail>) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private async _ignoreFlow() {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_ignore_title",
