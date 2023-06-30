@@ -166,7 +166,7 @@ export class HaTextField extends TextFieldBase {
 
       .mdc-text-field:not(.mdc-text-field--disabled)
         .mdc-text-field__affix--prefix {
-        color: var(--input-disabled-ink-color);
+        color: var(--mdc-text-field-label-ink-color);
       }
     `,
     // safari workaround - must be explicit
