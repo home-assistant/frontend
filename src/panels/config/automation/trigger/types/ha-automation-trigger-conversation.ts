@@ -39,6 +39,12 @@ export class HaConversationTrigger
                 iconTrailing
                 .index=${index}
                 .value=${option}
+                .validationMessage=${this.hass.localize(
+                  "ui.panel.config.automation.editor.triggers.type.conversation.no_punctuation"
+                )}
+                autoValidate
+                validateOnInitialRender
+                pattern="^[^.。,，?¿？؟!！;；:：]+$"
                 @change=${this._updateOption}
               >
                 <ha-icon-button
@@ -56,6 +62,11 @@ export class HaConversationTrigger
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.conversation.add_sentence"
         )}
+        .validationMessage=${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.type.conversation.no_punctuation"
+        )}
+        autoValidate
+        pattern="^[^.。,，?¿？؟!！;；:：]+$"
         @keydown=${this._handleKeyAdd}
         @change=${this._addOption}
       ></ha-textfield>`;
