@@ -163,6 +163,11 @@ export class HaTextField extends TextFieldBase {
       .mdc-text-field__affix--prefix {
         padding-right: var(--text-field-prefix-padding-right, 2px);
       }
+
+      .mdc-text-field:not(.mdc-text-field--disabled)
+        .mdc-text-field__affix--prefix {
+        color: var(--input-disabled-ink-color);
+      }
     `,
     // safari workaround - must be explicit
     document.dir === "rtl"
