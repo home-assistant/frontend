@@ -53,7 +53,7 @@ export class HaConfigFlowCard extends LitElement {
           ? html`<mwc-button
               @click=${this._ignoreFlow}
               .label=${this.hass.localize(
-                `ui.panel.config.integrations.ignore.ignore`
+                "ui.panel.config.integrations.ignore.ignore"
               )}
             ></mwc-button>`
           : ""}
