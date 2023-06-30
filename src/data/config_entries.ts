@@ -1,6 +1,6 @@
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { HomeAssistant } from "../types";
-import { IntegrationType } from "./integration";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { HomeAssistant } from "../types";
+import type { IntegrationManifest, IntegrationType } from "./integration";
 
 export interface ConfigEntry {
   entry_id: string;
@@ -143,3 +143,23 @@ export const enableConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
     entry_id: configEntryId,
     disabled_by: null,
   });
+
+export const sortConfigEntries = (
+  configEntries: ConfigEntry[],
+  manifestLookup: { [domain: string]: IntegrationManifest }
+): ConfigEntry[] => {
+  const sortedConfigEntries = [...configEntries];
+
+  const getScore = (entry: ConfigEntry) => {
+    const manifest = manifestLookup[entry.domain] as
+      | IntegrationManifest
+      | undefined;
+    const isHelper = manifest?.integration_type === "helper";
+    return isHelper ? -1 : 1;
+  };
+
+  const configEntriesCompare = (a: ConfigEntry, b: ConfigEntry) =>
+    getScore(b) - getScore(a);
+
+  return sortedConfigEntries.sort(configEntriesCompare);
+};
