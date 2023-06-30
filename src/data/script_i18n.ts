@@ -159,7 +159,7 @@ const tryDescribeAction = <T extends ActionType>(
     ) {
       return hass.localize(
         `${actionTranslationBaseKey}.service.description.service_based_on_template`,
-        { targets: formatListWithAnds(hass, targets) }
+        { targets: formatListWithAnds(hass.locale, targets) }
       );
     }
 
@@ -172,7 +172,7 @@ const tryDescribeAction = <T extends ActionType>(
           name: service
             ? `${domainToName(hass.localize, domain)}: ${service.name}`
             : config.service,
-          targets: formatListWithAnds(hass, targets),
+          targets: formatListWithAnds(hass.locale, targets),
         }
       );
     }
@@ -278,7 +278,7 @@ const tryDescribeAction = <T extends ActionType>(
     );
     return hass.localize(
       `${actionTranslationBaseKey}.wait_for_trigger.description.wait_for_triggers_with_name`,
-      { triggers: formatListWithAnds(hass, triggerNames) }
+      { triggers: formatListWithAnds(hass.locale, triggerNames) }
     );
   }
 
@@ -287,7 +287,7 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(
       `${actionTranslationBaseKey}.variables.description.full`,
       {
-        names: formatListWithAnds(hass, Object.keys(config.variables)),
+        names: formatListWithAnds(hass.locale, Object.keys(config.variables)),
       }
     );
   }
@@ -368,9 +368,9 @@ const tryDescribeAction = <T extends ActionType>(
 
     return hass.localize(`${actionTranslationBaseKey}.if.description.full`, {
       hasElse: config.else !== undefined,
-      action: formatListWithAnds(hass, thenActions),
-      conditions: formatListWithAnds(hass, ifConditions),
-      elseAction: formatListWithAnds(hass, elseActions),
+      action: formatListWithAnds(hass.locale, thenActions),
+      conditions: formatListWithAnds(hass.locale, ifConditions),
+      elseAction: formatListWithAnds(hass.locale, elseActions),
     });
   }
 
@@ -405,7 +405,7 @@ const tryDescribeAction = <T extends ActionType>(
       );
       chosenAction = hass.localize(
         `${actionTranslationBaseKey}.repeat.description.while`,
-        { conditions: formatListWithAnds(hass, conditions) }
+        { conditions: formatListWithAnds(hass.locale, conditions) }
       );
     } else if ("until" in config.repeat) {
       const conditions = ensureArray(config.repeat.until).map((condition) =>
@@ -413,7 +413,7 @@ const tryDescribeAction = <T extends ActionType>(
       );
       chosenAction = hass.localize(
         `${actionTranslationBaseKey}.repeat.description.until`,
-        { conditions: formatListWithAnds(hass, conditions) }
+        { conditions: formatListWithAnds(hass.locale, conditions) }
       );
     } else if ("for_each" in config.repeat) {
       const items = ensureArray(config.repeat.for_each).map((item) =>
@@ -421,7 +421,7 @@ const tryDescribeAction = <T extends ActionType>(
       );
       chosenAction = hass.localize(
         `${actionTranslationBaseKey}.repeat.description.for_each`,
-        { items: formatListWithAnds(hass, items) }
+        { items: formatListWithAnds(hass.locale, items) }
       );
     }
     return hass.localize(

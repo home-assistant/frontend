@@ -1,24 +1,26 @@
 import memoizeOne from "memoize-one";
-import { HomeAssistant } from "../../types";
 import "../../resources/intl-polyfill";
+import { FrontendLocaleData } from "../../data/translation";
 
-export const formatListWithAnds = (hass: HomeAssistant, list: string[]) =>
-  formatConjunctionList(hass).format(list);
+export const formatListWithAnds = (
+  locale: FrontendLocaleData,
+  list: string[]
+) => formatConjunctionList(locale).format(list);
 
-export const formatListWithOrs = (hass: HomeAssistant, list: string[]) =>
-  formatDisjunctionList(hass).format(list);
+export const formatListWithOrs = (locale: FrontendLocaleData, list: string[]) =>
+  formatDisjunctionList(locale).format(list);
 
 const formatConjunctionList = memoizeOne(
-  (hass: HomeAssistant) =>
-    new Intl.ListFormat(hass.language, {
+  (locale: FrontendLocaleData) =>
+    new Intl.ListFormat(locale.language, {
       style: "long",
       type: "conjunction",
     })
 );
 
 const formatDisjunctionList = memoizeOne(
-  (hass: HomeAssistant) =>
-    new Intl.ListFormat(hass.language, {
+  (locale: FrontendLocaleData) =>
+    new Intl.ListFormat(locale.language, {
       style: "long",
       type: "disjunction",
     })
