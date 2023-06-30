@@ -15,6 +15,10 @@ import {
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import {
+  IntegrationManifest,
+  fetchIntegrationManifests,
+} from "../../../data/integration";
+import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
@@ -46,6 +50,8 @@ class HaConfigDevices extends HassRouterPage {
   };
 
   @state() private _configEntries: ConfigEntry[] = [];
+
+  @state() private _manifests: IntegrationManifest[] = [];
 
   @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
@@ -99,6 +105,7 @@ class HaConfigDevices extends HassRouterPage {
 
     pageEl.entities = this._entityRegistryEntries;
     pageEl.entries = this._configEntries;
+    pageEl.manifests = this._manifests;
     pageEl.devices = this._deviceRegistryEntries;
     pageEl.areas = this._areas;
     pageEl.narrow = this.narrow;
@@ -111,6 +118,10 @@ class HaConfigDevices extends HassRouterPage {
     getConfigEntries(this.hass).then((configEntries) => {
       this._configEntries = configEntries;
     });
+    fetchIntegrationManifests(this.hass).then((manifests) => {
+      this._manifests = manifests;
+    });
+
     if (this._unsubs) {
       return;
     }
