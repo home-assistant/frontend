@@ -500,7 +500,7 @@ class DialogCalendarEventEditor extends LitElement {
       return;
     }
     const eventData = this._calculateData();
-    if (eventData.rrule && range === RecurrenceRange.THISEVENT) {
+    if (entry.rrule && eventData.rrule && range === RecurrenceRange.THISEVENT) {
       // Updates to a single instance of a recurring event by definition
       // cannot change the recurrence rule and doing so would be invalid.
       // It is difficult to detect if the user changed the recurrence rule
