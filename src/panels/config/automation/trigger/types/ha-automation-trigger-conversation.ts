@@ -10,6 +10,8 @@ import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dial
 import { HomeAssistant } from "../../../../../types";
 import { TriggerElement } from "../ha-automation-trigger-row";
 
+const PATTERN = "^[^.。,，?¿？؟!！;；:：]+$";
+
 @customElement("ha-automation-trigger-conversation")
 export class HaConversationTrigger
   extends LitElement
@@ -39,6 +41,12 @@ export class HaConversationTrigger
                 iconTrailing
                 .index=${index}
                 .value=${option}
+                .validationMessage=${this.hass.localize(
+                  "ui.panel.config.automation.editor.triggers.type.conversation.no_punctuation"
+                )}
+                autoValidate
+                validateOnInitialRender
+                pattern=${PATTERN}
                 @change=${this._updateOption}
               >
                 <ha-icon-button
@@ -56,6 +64,11 @@ export class HaConversationTrigger
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.conversation.add_sentence"
         )}
+        .validationMessage=${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.type.conversation.no_punctuation"
+        )}
+        autoValidate
+        pattern=${PATTERN}
         @keydown=${this._handleKeyAdd}
         @change=${this._addOption}
       ></ha-textfield>`;
