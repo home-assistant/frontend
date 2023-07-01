@@ -15,7 +15,6 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
   LitElement,
@@ -26,6 +25,7 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "@lit-labs/context";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -40,10 +40,7 @@ import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_TYPES, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
 import { AutomationClipboard } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../../../data/entity_registry";
+import { EntityRegistryEntry } from "../../../../data/entity_registry";
 import {
   Action,
   NonConditionAction,
@@ -73,6 +70,7 @@ import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
+import { fullEntitiesContext } from "../../../../data/context";
 
 export const getType = (action: Action | undefined) => {
   if (!action) {
@@ -137,7 +135,9 @@ export default class HaAutomationActionRow extends LitElement {
   })
   public _clipboard?: AutomationClipboard;
 
-  @state() private _entityReg: EntityRegistryEntry[] = [];
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
 
   @state() private _warnings?: string[];
 
@@ -146,14 +146,6 @@ export default class HaAutomationActionRow extends LitElement {
   @state() private _yamlMode = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entityReg = entities;
-      }),
-    ];
-  }
 
   protected willUpdate(changedProperties: PropertyValues) {
     if (!changedProperties.has("action")) {
