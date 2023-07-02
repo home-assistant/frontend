@@ -153,9 +153,9 @@ export class HuiGaugeCardEditor
       config = {
         ...config,
         severity: {
-          green: config.green ?? config.severity?.green ?? 0,
-          yellow: config.yellow ?? config.severity?.yellow ?? 0,
-          red: config.red ?? config.severity?.red ?? 0,
+          green: config.green || config.severity?.green || 0,
+          yellow: config.yellow || config.severity?.yellow || 0,
+          red: config.red || config.severity?.red || 0,
         },
       };
     } else if (!config.show_severity && config.severity) {
