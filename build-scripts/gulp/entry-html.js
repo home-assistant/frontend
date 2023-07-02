@@ -21,6 +21,8 @@ const renderTemplate = (templateFile, data = {}) => {
     modernRegex: getUserAgentRegex({
       env: "modern",
       allowHigherVersions: true,
+      mobileToDesktop: true,
+      throwOnMissing: true,
     }).toString(),
     // Resolve any child/nested templates relative to the parent and pass the same data
     renderTemplate: (childTemplate) =>
