@@ -41,7 +41,7 @@ export class HaIntegrationHeader extends LitElement {
         />
         <div class="info">
           <div
-            class="primary ${this.warning || this.error ? "hasError" : ""}"
+            class="primary ${this.warning || this.error ? "has-secondary" : ""}"
             role="heading"
             aria-level="1"
           >
@@ -116,16 +116,13 @@ export class HaIntegrationHeader extends LitElement {
       overflow: hidden;
       text-overflow: ellipsis;
       display: -webkit-box;
-      -webkit-line-clamp: 4;
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
-    }
-    .primary {
       font-size: 16px;
       font-weight: 400;
       color: var(--primary-text-color);
-      -webkit-line-clamp: 2;
     }
-    .hasError {
+    .has-secondary {
       -webkit-line-clamp: 1;
       font-size: 14px;
     }
