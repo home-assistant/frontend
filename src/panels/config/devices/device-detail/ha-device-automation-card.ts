@@ -1,11 +1,9 @@
-import { consume } from "@lit-labs/context";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-chip";
 import "../../../../components/ha-chip-set";
 import { showAutomationEditor } from "../../../../data/automation";
-import { fullEntitiesContext } from "../../../../data/context";
 import {
   DeviceAction,
   DeviceAutomation,
@@ -32,11 +30,9 @@ export abstract class HaDeviceAutomationCard<
 
   @property({ attribute: false }) public automations: T[] = [];
 
-  @state() public _showSecondary = false;
+  @property({ attribute: false }) entityReg?: EntityRegistryEntry[];
 
-  @state()
-  @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  @state() public _showSecondary = false;
 
   abstract headerKey: Parameters<typeof this.hass.localize>[0];
 
@@ -67,7 +63,7 @@ export abstract class HaDeviceAutomationCard<
   }
 
   protected render() {
-    if (this.automations.length === 0) {
+    if (this.automations.length === 0 || !this.entityReg) {
       return nothing;
     }
     const automations = this._showSecondary
@@ -89,7 +85,7 @@ export abstract class HaDeviceAutomationCard<
                 >
                   ${this._localizeDeviceAutomation(
                     this.hass,
-                    this._entityReg,
+                    this.entityReg!,
                     automation
                   )}
                 </ha-chip>

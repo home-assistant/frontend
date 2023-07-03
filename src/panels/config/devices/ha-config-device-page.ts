@@ -20,6 +20,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { consume } from "@lit-labs/context";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { SENSOR_ENTITIES } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -84,6 +85,7 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
+import { fullEntitiesContext } from "../../../data/context";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -136,6 +138,10 @@ export class HaConfigDevicePage extends LitElement {
   @state() private _deviceActions?: DeviceAction[];
 
   @state() private _deviceAlerts?: DeviceAlert[];
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
 
   private _logbookTime = { recent: 86400 };
 
@@ -422,12 +428,13 @@ export class HaConfigDevicePage extends LitElement {
                     )
                   : this.hass.localize(
                       "ui.panel.config.devices.automation.create",
-                      "type",
-                      this.hass.localize(
-                        `ui.panel.config.devices.type.${
-                          device.entry_type || "device"
-                        }`
-                      )
+                      {
+                        type: this.hass.localize(
+                          `ui.panel.config.devices.type.${
+                            device.entry_type || "device"
+                          }`
+                        ),
+                      }
                     )}
                 .path=${mdiPlusCircle}
               ></ha-icon-button>
@@ -1180,6 +1187,7 @@ export class HaConfigDevicePage extends LitElement {
   private _showScriptDialog() {
     showDeviceAutomationDialog(this, {
       device: this._device(this.deviceId, this.devices)!,
+      entityReg: this._entityReg,
       script: true,
     });
   }
@@ -1187,6 +1195,7 @@ export class HaConfigDevicePage extends LitElement {
   private _showAutomationDialog() {
     showDeviceAutomationDialog(this, {
       device: this._device(this.deviceId, this.devices)!,
+      entityReg: this._entityReg,
       script: false,
     });
   }
