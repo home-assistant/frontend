@@ -109,6 +109,7 @@ export class DialogDeviceAutomation extends LitElement {
                       <ha-device-triggers-card
                         .hass=${this.hass}
                         .automations=${this._triggers}
+                        .entityReg=${this._params.entityReg}
                       ></ha-device-triggers-card>
                     `
                   : ""}
@@ -117,6 +118,7 @@ export class DialogDeviceAutomation extends LitElement {
                       <ha-device-conditions-card
                         .hass=${this.hass}
                         .automations=${this._conditions}
+                        .entityReg=${this._params.entityReg}
                       ></ha-device-conditions-card>
                     `
                   : ""}
@@ -126,6 +128,7 @@ export class DialogDeviceAutomation extends LitElement {
                         .hass=${this.hass}
                         .automations=${this._actions}
                         .script=${this._params.script}
+                        .entityReg=${this._params.entityReg}
                       ></ha-device-actions-card>
                     `
                   : ""}
