@@ -2107,12 +2107,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lrnwebcomponents/simple-tooltip@npm:7.0.10":
-  version: 7.0.10
-  resolution: "@lrnwebcomponents/simple-tooltip@npm:7.0.10"
+"@lrnwebcomponents/simple-tooltip@npm:7.0.11":
+  version: 7.0.11
+  resolution: "@lrnwebcomponents/simple-tooltip@npm:7.0.11"
   dependencies:
     lit: ^2.7.5
-  checksum: 4e355b580b21b246fed49d3625e6999777b12d8154b786ab27eeafba6d49d2efa4a49a8aa4e7b5e75874e68a1795f911f295f80eedeaf1ad5fbd633d6efeb7c4
+  checksum: 95c89d1f6ace6229b8661d953c792cef4d0842cbf4de830505a75f5fef9a312f730a7b0085aa11bb4e8e6c8a94d4c1d3512127d208695274f130e9f360f770b9
   languageName: node
   linkType: hard
 
@@ -3141,14 +3141,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/web@npm:=1.0.0-pre.11":
-  version: 1.0.0-pre.11
-  resolution: "@material/web@npm:1.0.0-pre.11"
+"@material/web@npm:=1.0.0-pre.12":
+  version: 1.0.0-pre.12
+  resolution: "@material/web@npm:1.0.0-pre.12"
   dependencies:
     lit: ^2.7.4
     safevalues: ^0.4.3
     tslib: ^2.4.0
-  checksum: 6c08d5d1b159472032d8a274eb29c22229dbcd29a80c478bbf680906903a9542dab9916d547e40c3b607a0ecfe51484bc8681b8c2f1fcd521b2b20fe23d84a66
+  checksum: 21132f90e004c84745bd9ba15aacc0ec74ee5c67e8dd610da14220cf0fa129882a82c409094b39226a82f9eaae0c1fbea9a6df07a6a056fc2ef5b771a14b078a
   languageName: node
   linkType: hard
 
@@ -9156,18 +9156,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:10.3.0, glob@npm:^10.2.2":
-  version: 10.3.0
-  resolution: "glob@npm:10.3.0"
+"glob@npm:10.3.1, glob@npm:^10.2.2":
+  version: 10.3.1
+  resolution: "glob@npm:10.3.1"
   dependencies:
     foreground-child: ^3.1.0
     jackspeak: ^2.0.3
     minimatch: ^9.0.1
     minipass: ^5.0.0 || ^6.0.2
-    path-scurry: ^1.7.0
+    path-scurry: ^1.10.0
   bin:
     glob: dist/cjs/src/bin.js
-  checksum: 6fa4ac0a86ffec1c5715a2e6fbdd63e1e7f1c2c8f5db08cc3256cdfcb81093678e7c80a3d100b502a1b9d141369ecf87bc24fe2bcb72acec7b14626d358a4eb0
+  checksum: 19c8c2805658b1002fecf0722cd609a33153d756a0d5260676bd0e9c5e6ef889ec9cce6d3dac0411aa90bce8de3d14f25b6f5589a3292582cccbfeddd0e98cc4
   languageName: node
   linkType: hard
 
@@ -9578,10 +9578,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hls.js@npm:1.4.6":
-  version: 1.4.6
-  resolution: "hls.js@npm:1.4.6"
-  checksum: 7a44107c92e52859bfd5a37b6ea647cfea20848466286c1280b2cf956cfaccf8131fa54867cd8edfb60042a238025fb8788263fd9dfb9d1798ddbdc08f5aab50
+"hls.js@npm:1.4.7":
+  version: 1.4.7
+  resolution: "hls.js@npm:1.4.7"
+  checksum: ca58d97d49048fa6f437b834b807d26f5b47750aae57a573f179155e63e39159aa304f3ef13504b42c19969984918b17557e9311a779b0b04641bd6b668b45db
   languageName: node
   linkType: hard
 
@@ -9622,7 +9622,7 @@ __metadata:
     "@lit-labs/context": 0.3.3
     "@lit-labs/motion": 1.0.3
     "@lit-labs/virtualizer": 2.0.3
-    "@lrnwebcomponents/simple-tooltip": 7.0.10
+    "@lrnwebcomponents/simple-tooltip": 7.0.11
     "@material/chips": =14.0.0-canary.53b3cad2f.0
     "@material/data-table": =14.0.0-canary.53b3cad2f.0
     "@material/mwc-button": 0.27.0
@@ -9648,7 +9648,7 @@ __metadata:
     "@material/mwc-top-app-bar": 0.27.0
     "@material/mwc-top-app-bar-fixed": 0.27.0
     "@material/top-app-bar": =14.0.0-canary.53b3cad2f.0
-    "@material/web": =1.0.0-pre.11
+    "@material/web": =1.0.0-pre.12
     "@mdi/js": 7.2.96
     "@mdi/svg": 7.2.96
     "@octokit/auth-oauth-device": 5.0.2
@@ -9728,7 +9728,7 @@ __metadata:
     fancy-log: 2.0.0
     fs-extra: 11.1.1
     fuse.js: 6.6.2
-    glob: 10.3.0
+    glob: 10.3.1
     google-timezones-json: 1.1.0
     gulp: 4.0.2
     gulp-flatmap: 1.0.2
@@ -9736,7 +9736,7 @@ __metadata:
     gulp-merge-json: 2.1.2
     gulp-rename: 2.0.0
     gulp-zopfli-green: 6.0.1
-    hls.js: 1.4.6
+    hls.js: 1.4.7
     home-assistant-js-websocket: 8.1.0
     html-minifier-terser: 7.2.0
     husky: 8.0.3
@@ -9747,7 +9747,7 @@ __metadata:
     jszip: 3.10.1
     leaflet: 1.9.4
     leaflet-draw: 1.0.4
-    lint-staged: 13.2.2
+    lint-staged: 13.2.3
     lit: 2.7.5
     lit-analyzer: 2.0.0-pre.3
     lodash.template: 4.5.0
@@ -9785,7 +9785,7 @@ __metadata:
     ts-lit-plugin: 2.0.0-pre.1
     tsparticles-engine: 2.10.1
     tsparticles-preset-links: 2.10.1
-    typescript: 5.1.3
+    typescript: 5.1.6
     unfetch: 5.0.0
     vinyl-buffer: 1.0.1
     vinyl-source-stream: 2.0.0
@@ -9793,7 +9793,7 @@ __metadata:
     vis-network: 9.1.6
     vue: 2.7.14
     vue2-daterange-picker: 0.6.8
-    webpack: 5.88.0
+    webpack: 5.88.1
     webpack-cli: 5.1.4
     webpack-dev-server: 4.15.1
     webpack-manifest-plugin: 5.0.0
@@ -11309,9 +11309,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:13.2.2":
-  version: 13.2.2
-  resolution: "lint-staged@npm:13.2.2"
+"lint-staged@npm:13.2.3":
+  version: 13.2.3
+  resolution: "lint-staged@npm:13.2.3"
   dependencies:
     chalk: 5.2.0
     cli-truncate: ^3.1.0
@@ -11328,7 +11328,7 @@ __metadata:
     yaml: ^2.2.2
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: f34f6e2e85e827364658ab8717bf8b35239473c2d4959d746b053a4cf158ac657348444c755820a8ef3eac2d4753a37c52e9db3e201ee20b085f26d2f2fbc9ed
+  checksum: ff51a1e33072f488b28b938ed47323816a1ff278ef6d0e5cbe1704b292773a6c8ce945b504eae3a9b5702917a979523a741f17023e16077bd5fa35be687cc067
   languageName: node
   linkType: hard
 
@@ -11622,10 +11622,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^9.1.1":
-  version: 9.1.2
-  resolution: "lru-cache@npm:9.1.2"
-  checksum: d3415634be3908909081fc4c56371a8d562d9081eba70543d86871b978702fffd0e9e362b83921b27a29ae2b37b90f55675aad770a54ac83bb3e4de5049d4b15
+"lru-cache@npm:^9.1.1 || ^10.0.0":
+  version: 10.0.0
+  resolution: "lru-cache@npm:10.0.0"
+  checksum: 18f101675fe283bc09cda0ef1e3cc83781aeb8373b439f086f758d1d91b28730950db785999cd060d3c825a8571c03073e8c14512b6655af2188d623031baf50
   languageName: node
   linkType: hard
 
@@ -12954,13 +12954,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-scurry@npm:^1.7.0":
-  version: 1.9.2
-  resolution: "path-scurry@npm:1.9.2"
+"path-scurry@npm:^1.10.0":
+  version: 1.10.0
+  resolution: "path-scurry@npm:1.10.0"
   dependencies:
-    lru-cache: ^9.1.1
+    lru-cache: ^9.1.1 || ^10.0.0
     minipass: ^5.0.0 || ^6.0.2
-  checksum: 92888dfb68e285043c6d3291c8e971d5d2bc2f5082f4d7b5392896f34be47024c9d0a8b688dd7ae6d125acc424699195474927cb4f00049a9b1ec7c4256fa8e0
+  checksum: 3b66a4a6ab66e45755b577c966ecf0da92d3e068b3c992d8f69aa2cc908ef4eda9358253e9b4f86cad43d3ad810ec445be164105975f5cb3fdab68459c59dc6e
   languageName: node
   linkType: hard
 
@@ -15428,13 +15428,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.1.3":
-  version: 5.1.3
-  resolution: "typescript@npm:5.1.3"
+"typescript@npm:5.1.6":
+  version: 5.1.6
+  resolution: "typescript@npm:5.1.6"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: d9d51862d98efa46534f2800a1071a613751b1585dc78884807d0c179bcd93d6e9d4012a508e276742f5f33c480adefc52ffcafaf9e0e00ab641a14cde9a31c7
+  checksum: b2f2c35096035fe1f5facd1e38922ccb8558996331405eb00a5111cc948b2e733163cc22fab5db46992aba7dd520fff637f2c1df4996ff0e134e77d3249a7350
   languageName: node
   linkType: hard
 
@@ -15448,13 +15448,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@5.1.3#~builtin<compat/typescript>":
-  version: 5.1.3
-  resolution: "typescript@patch:typescript@npm%3A5.1.3#~builtin<compat/typescript>::version=5.1.3&hash=5da071"
+"typescript@patch:typescript@5.1.6#~builtin<compat/typescript>":
+  version: 5.1.6
+  resolution: "typescript@patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=5da071"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 6f0a9dca6bf4ce9dcaf4e282aade55ef4c56ecb5fb98d0a4a5c0113398815aea66d871b5611e83353e5953a19ed9ef103cf5a76ac0f276d550d1e7cd5344f61e
+  checksum: f53bfe97f7c8b2b6d23cf572750d4e7d1e0c5fff1c36d859d0ec84556a827b8785077bc27676bf7e71fae538e517c3ecc0f37e7f593be913d884805d931bc8be
   languageName: node
   linkType: hard
 
@@ -16135,9 +16135,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:5.88.0":
-  version: 5.88.0
-  resolution: "webpack@npm:5.88.0"
+"webpack@npm:5.88.1":
+  version: 5.88.1
+  resolution: "webpack@npm:5.88.1"
   dependencies:
     "@types/eslint-scope": ^3.7.3
     "@types/estree": ^1.0.0
@@ -16168,7 +16168,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 9fd1568b34ec2e99ba97c8509a15ab2576ec80c396e7015551ec814b24cfc11de173acba3e114dafe95f1a6d460781b09d6201e6a1fb15110e1d01a09f61a283
+  checksum: 726e7e05ab2e7c142609a673dd6aa1a711ed97f349418a2a393d650c5ddad172d191257f60e1e37f6b2a77261571c202aabd5ce9240791a686774f0801cf5ec2
   languageName: node
   linkType: hard
 

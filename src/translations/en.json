@@ -2573,25 +2573,50 @@
                   "label": "Call service",
                   "response_variable": "Response variable",
                   "has_optional_response": "This service can return a response, if you want to use the response, enter the name of a variable the response will be saved in",
-                  "has_response": "This service returns a response, enter the name of a variable the response will be saved in"
+                  "has_response": "This service returns a response, enter the name of a variable the response will be saved in",
+                  "description": {
+                    "service_based_on_template": "Call a service based on a template on {targets}",
+                    "service_based_on_name": "Call a service ''{name}'' on {targets}",
+                    "service": "Call a service",
+                    "target_template": "templated {name}",
+                    "target_unknown_entity": "unknown entity",
+                    "target_unknown_device": "unknown device",
+                    "target_unknown_area": "unknown area"
+                  }
                 },
                 "play_media": {
-                  "label": "Play media"
+                  "label": "Play media",
+                  "description": {
+                    "full": "Play {hasMedia, select, \n true {{media}} \n other {media}\n } on {hasMediaPlayer, select, \n true {{mediaPlayer}} \n other {a media player}\n }"
+                  }
                 },
                 "delay": {
                   "label": "Wait for time to pass (delay)",
-                  "delay": "Duration"
+                  "delay": "Duration",
+                  "description": {
+                    "full": "Delay {duration}",
+                    "duration_string": "for {string}",
+                    "duration_template": "based on a template",
+                    "duration_unknown": "a duration"
+                  }
                 },
                 "wait_template": {
                   "label": "Wait for a template",
                   "wait_template": "Wait Template",
                   "timeout": "Timeout (optional)",
-                  "continue_timeout": "Continue on timeout"
+                  "continue_timeout": "Continue on timeout",
+                  "description": {
+                    "full": "Wait for a template to evaluate to true"
+                  }
                 },
                 "wait_for_trigger": {
                   "label": "Wait for a trigger",
                   "timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::timeout%]",
-                  "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]"
+                  "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]",
+                  "description": {
+                    "wait_for_a_trigger": "Wait for a trigger",
+                    "wait_for_triggers_with_name": "Wait for ''{triggers}''"
+                  }
                 },
                 "condition": {
                   "label": "Condition"
@@ -2599,7 +2624,11 @@
                 "event": {
                   "label": "Event",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::label%]",
-                  "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]"
+                  "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
+                  "description": {
+                    "full": "Fire event {name}",
+                    "template": "based on a template"
+                  }
                 },
                 "device_id": {
                   "label": "Device",
@@ -2618,7 +2647,11 @@
                 },
                 "activate_scene": {
                   "label": "Scene",
-                  "scene": "Scene"
+                  "scene": "Scene",
+                  "description": {
+                    "activate_scene": "Activate a scene",
+                    "activate_scene_with_name": "Activate scene {name}"
+                  }
                 },
                 "repeat": {
                   "label": "Repeat",
@@ -2636,7 +2669,14 @@
                       "conditions": "Until conditions"
                     }
                   },
-                  "sequence": "Actions"
+                  "sequence": "Actions",
+                  "description": {
+                    "full": "Repeat an action {chosenAction}",
+                    "count": "{count} {count, plural,\n one {time}\n other {times}\n}",
+                    "while": "while ''{conditions}'' is true",
+                    "until": "until ''{conditions}'' is true",
+                    "for_each": "for every item: {items}"
+                  }
                 },
                 "choose": {
                   "label": "Choose",
@@ -2646,26 +2686,47 @@
                   "add_option": "Add option",
                   "remove_option": "Remove option",
                   "conditions": "Conditions",
-                  "sequence": "Actions"
+                  "sequence": "Actions",
+                  "description": {
+                    "full": "Choose between {number} {number, plural,\n one {action}\n other{actions}\n}",
+                    "no_action": "Choose an action"
+                  }
                 },
                 "if": {
                   "label": "If-then",
                   "if": "If",
                   "then": "Then",
                   "else": "Else",
-                  "add_else": "Add else"
+                  "add_else": "Add else",
+                  "description": {
+                    "full": "Perform ''{action}'' if ''{conditions}''{hasElse, select, \n true { otherwise ''{elseAction}''} \n other {}\n } "
+                  }
                 },
                 "stop": {
                   "label": "Stop",
                   "stop": "Reason for stopping",
                   "response_variable": "The name of the variable to use as response",
-                  "error": "Stop because of an unexpected error"
+                  "error": "Stop because of an unexpected error",
+                  "description": {
+                    "full": "Stop {hasReason, select, \n true { because: {reason}} \n other {}\n }"
+                  }
                 },
                 "parallel": {
-                  "label": "Run in parallel"
+                  "label": "Run in parallel",
+                  "description": {
+                    "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in parallel"
+                  }
                 },
                 "variables": {
-                  "label": "Define variables"
+                  "label": "Define variables",
+                  "description": {
+                    "full": "Define variables {names}"
+                  }
+                },
+                "check_condition": {
+                  "description": {
+                    "full": "Test {condition}"
+                  }
                 }
               }
             }
@@ -2782,7 +2843,6 @@
             },
             "discover_blueprint_tip": "[%key:ui::panel::config::automation::dialog_new::discover_blueprint_tip%]"
           },
-
           "editor": {
             "alias": "Name",
             "icon": "Icon",

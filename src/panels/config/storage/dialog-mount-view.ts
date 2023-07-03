@@ -336,11 +336,15 @@ class ViewMountDialog extends LitElement {
   private async _connectMount() {
     this._error = undefined;
     this._waiting = true;
+    const mountData = { ...this._data! };
+    if (mountData.type === "cifs" && mountData.version === "auto") {
+      mountData.version = undefined;
+    }
     try {
       if (this._existing) {
-        await updateSupervisorMount(this.hass, this._data!);
+        await updateSupervisorMount(this.hass, mountData);
       } else {
-        await createSupervisorMount(this.hass, this._data!);
+        await createSupervisorMount(this.hass, mountData);
       }
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);
