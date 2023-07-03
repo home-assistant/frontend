@@ -77,10 +77,12 @@ export class HaIntegrationActionCard extends LitElement {
         font-weight: 400;
         margin-top: 8px;
         margin-bottom: 0;
+        max-width: 100%;
       }
       h3 {
         font-size: 14px;
         margin: 0;
+        max-width: 100%;
       }
       .header-button {
         position: absolute;
