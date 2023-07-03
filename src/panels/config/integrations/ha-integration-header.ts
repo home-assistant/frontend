@@ -1,6 +1,7 @@
 import { mdiAlertCircleOutline, mdiAlertOutline } from "@mdi/js";
 import { LitElement, TemplateResult, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
 import { IntegrationManifest, domainToName } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
@@ -40,27 +41,34 @@ export class HaIntegrationHeader extends LitElement {
         />
         <div class="info">
           <div
-            class="primary ${this.warning || this.error ? "hasError" : ""}"
+            class="primary ${this.warning || this.error ? "has-secondary" : ""}"
             role="heading"
             aria-level="1"
           >
             ${domainName}
           </div>
           ${this.error
-            ? html`<div class="error">
-                <ha-svg-icon .path=${mdiAlertCircleOutline}></ha-svg-icon>${this
-                  .error}
-              </div>`
+            ? html`
+                <div class="secondary error">
+                  <ha-svg-icon .path=${mdiAlertCircleOutline}></ha-svg-icon>
+                  <span>${this.error}</span>
+                </div>
+              `
             : this.warning
-            ? html`<div class="warning">
-                <ha-svg-icon .path=${mdiAlertOutline}></ha-svg-icon>${this
-                  .warning}
-              </div>`
+            ? html`
+                <div class="secondary warning">
+                  <ha-svg-icon .path=${mdiAlertOutline}></ha-svg-icon>
+                  <span>${this.warning}</span>
+                </div>
+              `
             : nothing}
         </div>
-        <div class="header-button">
-          <slot name="header-button"></slot>
-        </div>
+        <ha-icon-next
+          class="header-button"
+          .label=${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.configure"
+          )}
+        ></ha-icon-next>
       </div>
     `;
   }
@@ -76,12 +84,15 @@ export class HaIntegrationHeader extends LitElement {
   static styles = css`
     .header {
       display: flex;
+      align-items: center;
       position: relative;
       padding-top: 16px;
       padding-bottom: 16px;
       padding-inline-start: 16px;
       padding-inline-end: 8px;
       direction: var(--direction);
+      box-sizing: border-box;
+      min-width: 0;
     }
     .header img {
       margin-inline-start: initial;
@@ -91,49 +102,54 @@ export class HaIntegrationHeader extends LitElement {
       direction: var(--direction);
     }
     .header .info {
+      position: relative;
+      display: flex;
+      flex-direction: column;
       flex: 1;
       align-self: center;
+      min-width: 0;
     }
-    .primary,
-    .warning,
-    .error {
-      word-wrap: break-word;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    ha-icon-next {
+      color: var(--secondary-text-color);
     }
     .primary {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
       font-size: 16px;
       font-weight: 400;
-      word-break: break-word;
       color: var(--primary-text-color);
-      -webkit-line-clamp: 2;
     }
-    .hasError {
+    .has-secondary {
       -webkit-line-clamp: 1;
       font-size: 14px;
     }
-    .warning,
-    .error {
-      line-height: 20px;
+    .secondary {
+      min-width: 0;
       --mdc-icon-size: 20px;
       -webkit-line-clamp: 1;
-      font-size: 0.9em;
+      font-size: 12px;
+      display: flex;
+      flex-direction: row;
+    }
+    .secondary > span {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .secondary > ha-svg-icon {
+      margin-right: 4px;
+      flex-shrink: 0;
     }
     .error ha-svg-icon {
-      margin-right: 4px;
       color: var(--error-color);
     }
     .warning ha-svg-icon {
-      margin-right: 4px;
       color: var(--warning-color);
-    }
-    .header-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 36px;
     }
   `;
 }

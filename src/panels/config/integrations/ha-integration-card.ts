@@ -24,8 +24,6 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-card";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import { ConfigEntry, ERROR_STATES } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
@@ -114,12 +112,6 @@ export class HaIntegrationCard extends LitElement {
               : undefined}
             .manifest=${this.manifest}
           >
-            <ha-icon-next
-              slot="header-button"
-              .label=${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.configure"
-              )}
-            ></ha-icon-next>
           </ha-integration-header>
         </a>
 
@@ -344,9 +336,6 @@ export class HaIntegrationCard extends LitElement {
         a {
           text-decoration: none;
           color: var(--primary-text-color);
-        }
-        a ha-icon-next {
-          color: var(--secondary-text-color);
         }
         .icons {
           display: flex;

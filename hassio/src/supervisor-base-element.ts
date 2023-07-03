@@ -23,6 +23,7 @@ import {
   SupervisorObject,
   supervisorCollection,
   SupervisorKeys,
+  cleanupSupervisorCollection,
 } from "../../src/data/supervisor/supervisor";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 import { urlSyncMixin } from "../../src/state/url-sync-mixin";
@@ -67,6 +68,10 @@ export class SupervisorBaseElement extends urlSyncMixin(
       this._unsubs[unsub]();
       delete this._unsubs[unsub];
     });
+    Object.keys(this._collections).forEach((collection) => {
+      cleanupSupervisorCollection(this.hass.connection, collection);
+    });
+    this._collections = {};
     this.removeEventListener(
       "supervisor-collection-refresh",
       this._handleSupervisorStoreRefreshEvent
@@ -114,7 +119,9 @@ export class SupervisorBaseElement extends urlSyncMixin(
   private async _handleSupervisorStoreRefreshEvent(ev) {
     const collection = ev.detail.collection;
     if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-      this._collections[collection].refresh();
+      if (collection in this._collections) {
+        this._collections[collection].refresh();
+      }
       return;
     }
 
@@ -129,11 +136,17 @@ export class SupervisorBaseElement extends urlSyncMixin(
     if (this._unsubs[collection]) {
       this._unsubs[collection]();
     }
-    this._unsubs[collection] = this._collections[collection].subscribe((data) =>
-      this._updateSupervisor({
-        [collection]: data,
-      })
-    );
+    try {
+      this._unsubs[collection] = this._collections[collection].subscribe(
+        (data) =>
+          this._updateSupervisor({
+            [collection]: data,
+          })
+      );
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+    }
   }
 
   private async _initSupervisor(): Promise<void> {

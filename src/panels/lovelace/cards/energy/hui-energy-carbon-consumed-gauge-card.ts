@@ -21,6 +21,10 @@ import type { LovelaceCard } from "../../types";
 import { severityMap } from "../hui-gauge-card";
 import type { EnergyCarbonGaugeCardConfig } from "../types";
 
+const FORMAT_OPTIONS = {
+  maximumFractionDigits: 0,
+};
+
 @customElement("hui-energy-carbon-consumed-gauge-card")
 class HuiEnergyCarbonGaugeCard
   extends SubscribeMixin(LitElement)
@@ -129,6 +133,7 @@ class HuiEnergyCarbonGaugeCard
                 min="0"
                 max="100"
                 .value=${value}
+                .formatOptions=${FORMAT_OPTIONS}
                 .locale=${this.hass.locale}
                 label="%"
                 style=${styleMap({
