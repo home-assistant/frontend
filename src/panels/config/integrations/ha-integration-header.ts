@@ -1,6 +1,7 @@
 import { mdiAlertCircleOutline, mdiAlertOutline } from "@mdi/js";
 import { LitElement, TemplateResult, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
 import { IntegrationManifest, domainToName } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
@@ -48,19 +49,22 @@ export class HaIntegrationHeader extends LitElement {
           </div>
           ${this.error
             ? html`<div class="error">
-                <ha-svg-icon .path=${mdiAlertCircleOutline}></ha-svg-icon>${this
-                  .error}
+                <ha-svg-icon .path=${mdiAlertCircleOutline}></ha-svg-icon>
+                <span>${this.error}</span>
               </div>`
             : this.warning
             ? html`<div class="warning">
-                <ha-svg-icon .path=${mdiAlertOutline}></ha-svg-icon>${this
-                  .warning}
+                <ha-svg-icon .path=${mdiAlertOutline}></ha-svg-icon>
+                <span>${this.warning}</span>
               </div>`
             : nothing}
         </div>
-        <div class="header-button">
-          <slot name="header-button"></slot>
-        </div>
+        <ha-icon-next
+          class="header-button"
+          .label=${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.configure"
+          )}
+        ></ha-icon-next>
       </div>
     `;
   }
@@ -76,6 +80,7 @@ export class HaIntegrationHeader extends LitElement {
   static styles = css`
     .header {
       display: flex;
+      align-items: center;
       position: relative;
       padding-top: 16px;
       padding-bottom: 16px;
@@ -94,19 +99,21 @@ export class HaIntegrationHeader extends LitElement {
       flex: 1;
       align-self: center;
     }
+    ha-icon-next {
+      color: var(--secondary-text-color);
+    }
     .primary,
     .warning,
     .error {
       word-wrap: break-word;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
     }
     .primary {
       font-size: 16px;
       font-weight: 400;
-      word-break: break-word;
       color: var(--primary-text-color);
       -webkit-line-clamp: 2;
     }
@@ -116,24 +123,24 @@ export class HaIntegrationHeader extends LitElement {
     }
     .warning,
     .error {
-      line-height: 20px;
       --mdc-icon-size: 20px;
       -webkit-line-clamp: 1;
       font-size: 0.9em;
     }
+    .warning > span,
+    .error > span {
+      position: relative;
+      top: 1px;
+    }
     .error ha-svg-icon {
       margin-right: 4px;
       color: var(--error-color);
+      flex-shrink: 0;
     }
     .warning ha-svg-icon {
       margin-right: 4px;
       color: var(--warning-color);
-    }
-    .header-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 36px;
+      flex-shrink: 0;
     }
   `;
 }
