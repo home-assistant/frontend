@@ -48,15 +48,19 @@ export class HaIntegrationHeader extends LitElement {
             ${domainName}
           </div>
           ${this.error
-            ? html`<div class="error">
-                <ha-svg-icon .path=${mdiAlertCircleOutline}></ha-svg-icon>
-                <span>${this.error}</span>
-              </div>`
+            ? html`
+                <div class="secondary error">
+                  <ha-svg-icon .path=${mdiAlertCircleOutline}></ha-svg-icon>
+                  <span>${this.error}</span>
+                </div>
+              `
             : this.warning
-            ? html`<div class="warning">
-                <ha-svg-icon .path=${mdiAlertOutline}></ha-svg-icon>
-                <span>${this.warning}</span>
-              </div>`
+            ? html`
+                <div class="secondary warning">
+                  <ha-svg-icon .path=${mdiAlertOutline}></ha-svg-icon>
+                  <span>${this.warning}</span>
+                </div>
+              `
             : nothing}
         </div>
         <ha-icon-next
@@ -87,6 +91,8 @@ export class HaIntegrationHeader extends LitElement {
       padding-inline-start: 16px;
       padding-inline-end: 8px;
       direction: var(--direction);
+      box-sizing: border-box;
+      min-width: 0;
     }
     .header img {
       margin-inline-start: initial;
@@ -96,19 +102,21 @@ export class HaIntegrationHeader extends LitElement {
       direction: var(--direction);
     }
     .header .info {
+      position: relative;
+      display: flex;
+      flex-direction: column;
       flex: 1;
       align-self: center;
+      min-width: 0;
     }
     ha-icon-next {
       color: var(--secondary-text-color);
     }
-    .primary,
-    .warning,
-    .error {
-      word-wrap: break-word;
+    .primary {
       overflow: hidden;
       text-overflow: ellipsis;
       display: -webkit-box;
+      -webkit-line-clamp: 4;
       -webkit-box-orient: vertical;
     }
     .primary {
@@ -121,26 +129,30 @@ export class HaIntegrationHeader extends LitElement {
       -webkit-line-clamp: 1;
       font-size: 14px;
     }
-    .warning,
-    .error {
+    .secondary {
+      min-width: 0;
       --mdc-icon-size: 20px;
       -webkit-line-clamp: 1;
-      font-size: 0.9em;
+      font-size: 12px;
+      display: flex;
+      flex-direction: row;
     }
-    .warning > span,
-    .error > span {
+    .secondary > span {
       position: relative;
-      top: 1px;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .secondary > ha-svg-icon {
+      margin-right: 4px;
+      flex-shrink: 0;
     }
     .error ha-svg-icon {
-      margin-right: 4px;
       color: var(--error-color);
-      flex-shrink: 0;
     }
     .warning ha-svg-icon {
-      margin-right: 4px;
       color: var(--warning-color);
-      flex-shrink: 0;
     }
   `;
 }
