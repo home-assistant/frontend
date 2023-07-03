@@ -132,3 +132,6 @@ export const getSupervisorEventCollection = (
       subscribeSupervisorEventUpdates(connection, store, key),
     { unsubGrace: false }
   );
+
+export const cleanupSupervisorCollection = (conn: Connection, key: string) =>
+  delete conn[`_supervisor${key}Event`];
