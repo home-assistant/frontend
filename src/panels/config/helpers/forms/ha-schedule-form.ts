@@ -24,6 +24,7 @@ import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { loadPolyfillIfNeeded } from "../../../../resources/resize-observer.polyfill";
 import { TimeZone } from "../../../../data/translation";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 
 const defaultFullCalendarConfig: CalendarOptions = {
   plugins: [timeGridPlugin, interactionPlugin],
@@ -375,7 +376,19 @@ class HaScheduleForm extends LitElement {
     }
   }
 
-  private _handleEventClick(info: any) {
+  private async _handleEventClick(info: any) {
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass.localize("ui.dialogs.helper_settings.schedule.delete"),
+        text: this.hass.localize(
+          "ui.dialogs.helper_settings.schedule.confirm_delete"
+        ),
+        destructive: true,
+        confirmText: this.hass.localize("ui.common.delete"),
+      }))
+    ) {
+      return;
+    }
     const [day, index] = info.event.id.split("-");
     const value = [...this[`_${day}`]];
 

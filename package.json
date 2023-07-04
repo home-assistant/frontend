@@ -179,7 +179,7 @@
     "@types/luxon": "^3",
     "@types/marked": "4.3.1",
     "@types/mocha": "10.0.1",
-    "@types/qrcode": "1.5.0",
+    "@types/qrcode": "1.5.1",
     "@types/serve-handler": "6.1.1",
     "@types/sortablejs": "1.15.1",
     "@types/tar": "6.1.5",
@@ -192,7 +192,7 @@
     "babel-plugin-template-html-minifier": "4.1.0",
     "chai": "4.3.7",
     "del": "7.0.0",
-    "eslint": "8.43.0",
+    "eslint": "8.44.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-airbnb-typescript": "17.0.0",
     "eslint-config-prettier": "8.8.0",
@@ -259,5 +259,5 @@
     "trailingComma": "es5",
     "arrowParens": "always"
   },
-  "packageManager": "yarn@3.6.0"
+  "packageManager": "yarn@3.6.1"
 }
