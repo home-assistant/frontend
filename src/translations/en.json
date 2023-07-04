@@ -5922,7 +5922,7 @@
       "error_addon_info": "Unable to fetch add-on info to start Ingress",
       "error_addon_not_installed": "The add-on is not installed. Please install it first",
       "error_addon_not_supported": "This add-on does not support Ingress",
-      "error_addon_not_running": "Add-on is not running. Do you want to start it now?",
+      "error_addon_not_running": "The add-on is not running. Do you want to start it now?",
       "start_addon": "Start add-on",
       "error_starting_addon": "Error starting the add-on",
       "error_creating_session": "Unable to create an Ingress session",
