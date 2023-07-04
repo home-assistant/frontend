@@ -1,4 +1,11 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/ha-circular-progress";
 import "../components/ha-icon-button-arrow-prev";
@@ -16,6 +23,8 @@ class HassLoadingScreen extends LitElement {
   @property({ type: Boolean }) public rootnav = false;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property() public message?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -38,6 +47,9 @@ class HassLoadingScreen extends LitElement {
           </div>`}
       <div class="content">
         <ha-circular-progress active></ha-circular-progress>
+        ${this.message
+          ? html`<div id="loading-text">${this.message}</div>`
+          : nothing}
       </div>
     `;
   }
@@ -80,8 +92,13 @@ class HassLoadingScreen extends LitElement {
         .content {
           height: calc(100% - var(--header-height));
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
+        }
+        #loading-text {
+          max-width: 350px;
+          margin-top: 16px;
         }
       `,
     ];

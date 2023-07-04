@@ -5924,6 +5924,7 @@
       "error_addon_not_supported": "This add-on does not support Ingress",
       "error_addon_not_running": "The add-on is not running. Do you want to start it now?",
       "start_addon": "Start add-on",
+      "addon_starting": "The add-on is starting, this can take some time...",
       "error_starting_addon": "Error starting the add-on",
       "error_creating_session": "Unable to create an Ingress session",
       "error_addon_not_ready": "The add-on seems to not be ready, it might still be starting. Do you want to try again?",

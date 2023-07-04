@@ -38,14 +38,15 @@ class HassioIngressView extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public ingressPanel = false;
+  @property({ type: Boolean }) public ingressPanel = false;
+
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _addon?: HassioAddonDetails;
 
-  @property({ type: Boolean })
-  public narrow = false;
+  @state() private _loadingMessage?: string;
 
   private _sessionKeepAlive?: number;
 
@@ -66,7 +67,9 @@ class HassioIngressView extends LitElement {
 
   protected render(): TemplateResult {
     if (!this._addon) {
-      return html`<hass-loading-screen></hass-loading-screen>`;
+      return html`<hass-loading-screen
+        .message=${this._loadingMessage}
+      ></hass-loading-screen>`;
     }
 
     const iframe = html`<iframe
@@ -136,8 +139,8 @@ class HassioIngressView extends LitElement {
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
 
     if (!changedProps.has("route")) {
       return;
@@ -149,6 +152,7 @@ class HassioIngressView extends LitElement {
     const oldAddon = oldRoute ? oldRoute.path.substring(1) : undefined;
 
     if (addon && addon !== oldAddon) {
+      this._loadingMessage = undefined;
       this._fetchData(addon);
     }
   }
@@ -212,6 +216,9 @@ class HassioIngressView extends LitElement {
       });
       if (confirm) {
         try {
+          this._loadingMessage =
+            this.supervisor.localize("ingress.addon_starting") ||
+            "The add-on is starting, this can take some time...";
           await startHassioAddon(this.hass, addonSlug);
           fireEvent(this, "supervisor-collection-refresh", {
             collection: "addon",
@@ -238,6 +245,10 @@ class HassioIngressView extends LitElement {
 
     if (addon.state === "startup") {
       // Addon is starting up, wait for it to start
+      this._loadingMessage =
+        this.supervisor.localize("ingress.addon_starting") ||
+        "The add-on is starting, this can take some time...";
+
       this._fetchDataTimeout = window.setTimeout(() => {
         this._fetchData(addonSlug);
       }, 500);
@@ -247,6 +258,8 @@ class HassioIngressView extends LitElement {
     if (addon.state !== "started") {
       return;
     }
+
+    this._loadingMessage = undefined;
 
     if (this._fetchDataTimeout) {
       clearInterval(this._fetchDataTimeout);
