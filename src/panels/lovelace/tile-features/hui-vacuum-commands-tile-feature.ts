@@ -63,6 +63,7 @@ export const VACUUM_COMMANDS_BUTTONS: Record<
 > = {
   start_pause: (stateObj) => {
     const startPauseOnly =
+      !supportsFeature(stateObj, VacuumEntityFeature.STATE) &&
       !supportsFeature(stateObj, VacuumEntityFeature.START) &&
       supportsFeature(stateObj, VacuumEntityFeature.PAUSE);
 
