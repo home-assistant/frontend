@@ -798,7 +798,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
         .disabled=${this.disabled}
         @click=${this._handleVoiceAssistantsClicked}
       >
-        <span>Voice assistants</span>
+        <span
+          >${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.voice_assistants"
+          )}</span
+        >
         <span slot="secondary">
           ${this.entry.aliases.length
             ? [...this.entry.aliases]
@@ -1320,7 +1324,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private _handleVoiceAssistantsClicked() {
-    showVoiceAssistantsView(this, "Voice assistants");
+    showVoiceAssistantsView(
+      this,
+      this.hass.localize("ui.dialogs.entity_registry.editor.voice_assistants")
+    );
   }
 
   private async _showOptionsFlow() {
