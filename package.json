@@ -256,5 +256,5 @@
     "trailingComma": "es5",
     "arrowParens": "always"
   },
-  "packageManager": "yarn@3.6.0"
+  "packageManager": "yarn@3.6.1"
 }
