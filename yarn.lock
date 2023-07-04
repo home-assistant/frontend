@@ -1770,6 +1770,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fullcalendar/luxon3@npm:6.1.8":
+  version: 6.1.8
+  resolution: "@fullcalendar/luxon3@npm:6.1.8"
+  peerDependencies:
+    "@fullcalendar/core": ~6.1.8
+    luxon: ^3.0.0
+  checksum: 7e842006418dc1855efc96fce22c7180f695b2f0087ec6305b62350d74e1776c1f03337f0d8adff7e1387e82535b42ff3481ad25fdbe82b3a5ad0501a902a386
+  languageName: node
+  linkType: hard
+
 "@fullcalendar/timegrid@npm:6.1.8":
   version: 6.1.8
   resolution: "@fullcalendar/timegrid@npm:6.1.8"
@@ -4433,6 +4443,13 @@ __metadata:
   version: 4.14.195
   resolution: "@types/lodash@npm:4.14.195"
   checksum: 39b75ca635b3fa943d17d3d3aabc750babe4c8212485a4df166fe0516e39288e14b0c60afc6e21913cc0e5a84734633c71e617e2bd14eaa1cf51b8d7799c432e
+  languageName: node
+  linkType: hard
+
+"@types/luxon@npm:^3":
+  version: 3.3.0
+  resolution: "@types/luxon@npm:3.3.0"
+  checksum: f7e3a89fc3ca404fbc3ea538653ed6860bc28f570a8c4d6d24449b89b9b553b7d6ad6cc94a9e129c5b8c9a2b97f0c365b3017f811e59c4a859a9c219a1c918e0
   languageName: node
   linkType: hard
 
@@ -9616,6 +9633,7 @@ __metadata:
     "@fullcalendar/daygrid": 6.1.8
     "@fullcalendar/interaction": 6.1.8
     "@fullcalendar/list": 6.1.8
+    "@fullcalendar/luxon3": 6.1.8
     "@fullcalendar/timegrid": 6.1.8
     "@koa/cors": 4.0.0
     "@lezer/highlight": 1.1.6
@@ -9681,6 +9699,7 @@ __metadata:
     "@types/js-yaml": 4.0.5
     "@types/leaflet": 1.9.3
     "@types/leaflet-draw": 1.0.7
+    "@types/luxon": ^3
     "@types/marked": 4.3.1
     "@types/mocha": 10.0.1
     "@types/qrcode": 1.5.0
@@ -9751,6 +9770,7 @@ __metadata:
     lit: 2.7.5
     lit-analyzer: 2.0.0-pre.3
     lodash.template: 4.5.0
+    luxon: 3.3.0
     magic-string: 0.30.0
     map-stream: 0.0.7
     marked: 4.3.0
@@ -11626,6 +11646,13 @@ __metadata:
   version: 10.0.0
   resolution: "lru-cache@npm:10.0.0"
   checksum: 18f101675fe283bc09cda0ef1e3cc83781aeb8373b439f086f758d1d91b28730950db785999cd060d3c825a8571c03073e8c14512b6655af2188d623031baf50
+  languageName: node
+  linkType: hard
+
+"luxon@npm:3.3.0":
+  version: 3.3.0
+  resolution: "luxon@npm:3.3.0"
+  checksum: 50cf17a0dc155c3dcacbeae8c0b7e80db425e0ba97b9cbdf12a7fc142d841ff1ab1560919f033af46240ed44e2f70c49f76e3422524c7fc8bb8d81ca47c66187
   languageName: node
   linkType: hard
 
