@@ -46,6 +46,7 @@ import type {
 } from "../../types";
 import { showCalendarEventDetailDialog } from "./show-dialog-calendar-event-detail";
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
+import { TimeZone } from "../../data/translation";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -240,9 +241,26 @@ export class HAFullCalendar extends LitElement {
   }
 
   protected firstUpdated(): void {
+    this._loadCalendar();
+  }
+
+  private async _loadCalendar() {
+    const luxonPlugin =
+      this.hass.locale.time_zone === TimeZone.local
+        ? undefined
+        : (await import("@fullcalendar/luxon3")).default;
+
     const config: CalendarOptions = {
       ...defaultFullCalendarConfig,
+      plugins:
+        this.hass.locale.time_zone === TimeZone.local
+          ? defaultFullCalendarConfig.plugins
+          : [...defaultFullCalendarConfig.plugins!, luxonPlugin!],
       locale: this.hass.language,
+      timeZone:
+        this.hass.locale.time_zone === TimeZone.local
+          ? "local"
+          : this.hass.config.time_zone,
       firstDay: firstWeekdayIndex(this.hass.locale),
       initialView: this.initialView,
       eventDisplay: this.eventDisplay,
