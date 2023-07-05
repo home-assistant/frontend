@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import gulp from "gulp";
 import mapStream from "map-stream";
+import transform from "gulp-json-transform";
 
 const inDirFrontend = "translations/frontend";
 const inDirBackend = "translations/backend";
@@ -41,9 +42,35 @@ function checkHtml() {
   });
 }
 
-// Backend translations do not currently pass HTML check so are excluded here for now
+function convertBackendTranslations(data, _file) {
+  const output = { component: {} };
+  if (!data.component) {
+    return output;
+  }
+  Object.keys(data.component).forEach((domain) => {
+    if (!("entity_component" in data.component[domain])) {
+      return;
+    }
+    output.component[domain] = { entity_component: {} };
+    Object.keys(data.component[domain].entity_component).forEach((key) => {
+      output.component[domain].entity_component[key] =
+        data.component[domain].entity_component[key];
+    });
+  });
+  return output;
+}
+
+gulp.task("convert-backend-translations", function () {
+  return gulp
+    .src([`${inDirBackend}/*.json`])
+    .pipe(transform((data, file) => convertBackendTranslations(data, file)))
+    .pipe(gulp.dest(inDirBackend));
+});
+
 gulp.task("check-translations-html", function () {
-  return gulp.src([`${inDirFrontend}/*.json`]).pipe(checkHtml());
+  return gulp
+    .src([`${inDirFrontend}/*.json`, `${inDirBackend}/*.json`])
+    .pipe(checkHtml());
 });
 
 gulp.task("check-all-files-exist", async function () {
@@ -65,5 +92,9 @@ gulp.task("check-all-files-exist", async function () {
 
 gulp.task(
   "check-downloaded-translations",
-  gulp.series("check-translations-html", "check-all-files-exist")
+  gulp.series(
+    "convert-backend-translations",
+    "check-translations-html",
+    "check-all-files-exist"
+  )
 );
