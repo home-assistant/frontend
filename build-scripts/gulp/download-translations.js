@@ -64,7 +64,7 @@ gulp.task("convert-backend-translations", function () {
   return gulp
     .src([`${inDirBackend}/*.json`])
     .pipe(transform((data, file) => convertBackendTranslations(data, file)))
-    .pipe(gulp.dest(inDirBackend));
+    .pipe(gulp.dest(`${inDirBackend}/converted`));
 });
 
 gulp.task("check-translations-html", function () {
