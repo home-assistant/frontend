@@ -11280,6 +11280,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"leaflet-draw@patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch::locator=home-assistant-frontend%40workspace%3A.":
+  version: 1.0.4
+  resolution: "leaflet-draw@patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch::version=1.0.4&hash=790842&locator=home-assistant-frontend%40workspace%3A."
+  checksum: 27507da4eb99090d103a8762eba46333df2e4fcfc6ef17f22a5a8c21c255f01565b0cbdc692bdccadccaab121dff05b49a5a44f47de7352f039a6af66514f6ab
+  languageName: node
+  linkType: hard
+
 "leaflet@npm:1.9.4":
   version: 1.9.4
   resolution: "leaflet@npm:1.9.4"
