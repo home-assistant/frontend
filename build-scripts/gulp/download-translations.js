@@ -64,7 +64,7 @@ gulp.task("convert-backend-translations", function () {
   return gulp
     .src([`${inDirBackend}/*.json`])
     .pipe(transform((data, file) => convertBackendTranslations(data, file)))
-    .pipe(gulp.dest(`${inDirBackend}/converted`));
+    .pipe(gulp.dest(inDirBackend));
 });
 
 gulp.task("check-translations-html", function () {
@@ -92,9 +92,5 @@ gulp.task("check-all-files-exist", async function () {
 
 gulp.task(
   "check-downloaded-translations",
-  gulp.series(
-    "convert-backend-translations",
-    "check-translations-html",
-    "check-all-files-exist"
-  )
+  gulp.series("check-translations-html", "check-all-files-exist")
 );
