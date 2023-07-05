@@ -1,3 +1,4 @@
+import { mdiPalette } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
@@ -72,32 +73,41 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         { name: "title", selector: { text: {} } },
         {
           name: "",
-          type: "grid",
+          type: "expandable",
+          iconPath: mdiPalette,
+          title: localize(`ui.panel.lovelace.editor.card.map.appearance`),
           schema: [
-            { name: "aspect_ratio", selector: { text: {} } },
             {
-              name: "default_zoom",
-              default: DEFAULT_ZOOM,
-              selector: { number: { mode: "box", min: 0 } },
-            },
-            {
-              name: "theme_mode",
-              default: "auto",
-              selector: {
-                select: {
-                  options: themeModes.map((themeMode) => ({
-                    value: themeMode,
-                    label: localize(
-                      `ui.panel.lovelace.editor.card.map.theme_mode.${themeMode}`
-                    ),
-                  })),
+              name: "",
+              type: "grid",
+              schema: [
+                { name: "aspect_ratio", selector: { text: {} } },
+                {
+                  name: "default_zoom",
+                  default: DEFAULT_ZOOM,
+                  selector: { number: { mode: "box", min: 0 } },
                 },
-              },
-            },
-            {
-              name: "hours_to_show",
-              default: DEFAULT_HOURS_TO_SHOW,
-              selector: { number: { mode: "box", min: 0 } },
+                {
+                  name: "theme_mode",
+                  default: "auto",
+                  selector: {
+                    select: {
+                      mode: "dropdown",
+                      options: themeModes.map((themeMode) => ({
+                        value: themeMode,
+                        label: localize(
+                          `ui.panel.lovelace.editor.card.map.theme_modes.${themeMode}`
+                        ),
+                      })),
+                    },
+                  },
+                },
+                {
+                  name: "hours_to_show",
+                  default: DEFAULT_HOURS_TO_SHOW,
+                  selector: { number: { mode: "box", min: 0 } },
+                },
+              ],
             },
           ],
         },
@@ -129,29 +139,28 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
-      <div class="card-config">
-        <hui-entity-editor
-          .hass=${this.hass}
-          .entities=${this._configEntities}
-          .entityFilter=${hasLocation}
-          @entities-changed=${this._entitiesValueChanged}
-        ></hui-entity-editor>
-        <h3>
-          ${this.hass.localize(
-            "ui.panel.lovelace.editor.card.map.geo_location_sources"
-          )}
-        </h3>
-        <div class="geo_location_sources">
-          <hui-input-list-editor
-            .inputLabel=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.map.source"
-            )}
-            .hass=${this.hass}
-            .value=${this._geo_location_sources}
-            @value-changed=${this._geoSourcesChanged}
-          ></hui-input-list-editor>
-        </div>
-      </div>
+
+      <hui-entity-editor
+        .hass=${this.hass}
+        .entities=${this._configEntities}
+        .entityFilter=${hasLocation}
+        @entities-changed=${this._entitiesValueChanged}
+      ></hui-entity-editor>
+
+      <h3>
+        ${this.hass.localize(
+          "ui.panel.lovelace.editor.card.map.geo_location_sources"
+        )}
+      </h3>
+
+      <hui-input-list-editor
+        .inputLabel=${this.hass.localize(
+          "ui.panel.lovelace.editor.card.map.source"
+        )}
+        .hass=${this.hass}
+        .value=${this._geo_location_sources}
+        @value-changed=${this._geoSourcesChanged}
+      ></hui-input-list-editor>
     `;
   }
 
@@ -195,6 +204,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
+      case "theme_mode":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.map.${schema.name}`
+        );
       case "default_zoom":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.map.${schema.name}`
@@ -207,16 +220,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   };
 
   static get styles(): CSSResultGroup {
-    return [
-      configElementStyle,
-      css`
-        .geo_location_sources {
-          padding-left: 20px;
-          padding-inline-start: 20px;
-          direction: var(--direction);
-        }
-      `,
-    ];
+    return [configElementStyle, css``];
   }
 }
 

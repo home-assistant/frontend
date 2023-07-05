@@ -5085,7 +5085,9 @@
               "name": "Map",
               "geo_location_sources": "Geolocation sources",
               "dark_mode": "Dark mode?",
-              "theme_mode": {
+              "appearance": "Appearance",
+              "theme_mode": "Theme Mode",
+              "theme_modes": {
                 "auto": "Auto",
                 "light": "Light",
                 "dark": "Dark"
