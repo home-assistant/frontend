@@ -189,7 +189,7 @@ const tryDescribeAction = <T extends ActionType>(
       duration = hass.localize(
         `${actionTranslationBaseKey}.delay.description.duration_string`,
         {
-          duration: secondsToDuration(config.delay)!,
+          string: secondsToDuration(config.delay)!,
         }
       );
     } else if (typeof config.delay === "string") {
@@ -200,7 +200,7 @@ const tryDescribeAction = <T extends ActionType>(
         : hass.localize(
             `${actionTranslationBaseKey}.delay.description.duration_string`,
             {
-              duration:
+              string:
                 config.delay ||
                 hass.localize(
                   `${actionTranslationBaseKey}.delay.description.duration_unknown`
@@ -211,14 +211,14 @@ const tryDescribeAction = <T extends ActionType>(
       duration = hass.localize(
         `${actionTranslationBaseKey}.delay.description.duration_string`,
         {
-          duration: formatDuration(config.delay),
+          string: formatDuration(config.delay),
         }
       );
     } else {
       duration = hass.localize(
         `${actionTranslationBaseKey}.delay.description.duration_string`,
         {
-          duration: hass.localize(
+          string: hass.localize(
             `${actionTranslationBaseKey}.delay.description.duration_unknown`
           ),
         }
