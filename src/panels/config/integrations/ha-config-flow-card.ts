@@ -16,6 +16,9 @@ import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import "./ha-integration-action-card";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-button";
+import "../../../components/ha-list-item";
 
 @customElement("ha-config-flow-card")
 export class HaConfigFlowCard extends LitElement {
@@ -37,7 +40,7 @@ export class HaConfigFlowCard extends LitElement {
         .domain=${this.flow.handler}
         .label=${this.flow.localized_title}
       >
-        <mwc-button
+        <ha-button
           unelevated
           @click=${this._continueFlow}
           .label=${this.hass.localize(
@@ -45,15 +48,15 @@ export class HaConfigFlowCard extends LitElement {
               attention ? "reconfigure" : "configure"
             }`
           )}
-        ></mwc-button>
+        ></ha-button>
         ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
         this.flow.context.unique_id
-          ? html`<mwc-button
+          ? html`<ha-button
               @click=${this._ignoreFlow}
               .label=${this.hass.localize(
                 "ui.panel.config.integrations.ignore.ignore"
               )}
-            ></mwc-button>`
+            ></ha-button>`
           : ""}
         ${this.flow.context.configuration_url || this.manifest
           ? html`<ha-button-menu slot="header-button">
@@ -75,7 +78,7 @@ export class HaConfigFlowCard extends LitElement {
                       ? "_self"
                       : "_blank"}
                   >
-                    <mwc-list-item graphic="icon" hasMeta>
+                    <ha-list-item graphic="icon" hasMeta>
                       ${this.hass.localize(
                         "ui.panel.config.integrations.config_entry.open_configuration_url"
                       )}
@@ -84,7 +87,7 @@ export class HaConfigFlowCard extends LitElement {
                         slot="meta"
                         .path=${mdiOpenInNew}
                       ></ha-svg-icon>
-                    </mwc-list-item>
+                    </ha-list-item>
                   </a>`
                 : ""}
               ${this.manifest
@@ -98,7 +101,7 @@ export class HaConfigFlowCard extends LitElement {
                     rel="noreferrer"
                     target="_blank"
                   >
-                    <mwc-list-item graphic="icon" hasMeta>
+                    <ha-list-item graphic="icon" hasMeta>
                       ${this.hass.localize(
                         "ui.panel.config.integrations.config_entry.documentation"
                       )}
@@ -110,7 +113,7 @@ export class HaConfigFlowCard extends LitElement {
                         slot="meta"
                         .path=${mdiOpenInNew}
                       ></ha-svg-icon>
-                    </mwc-list-item>
+                    </ha-list-item>
                   </a>`
                 : ""}
             </ha-button-menu>`
@@ -170,6 +173,10 @@ export class HaConfigFlowCard extends LitElement {
     ha-svg-icon[slot="meta"] {
       width: 18px;
       height: 18px;
+    }
+    .attention {
+      --mdc-theme-primary: var(--error-color);
+      --ha-card-border-color: var(--error-color);
     }
   `;
 }

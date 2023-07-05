@@ -1,6 +1,4 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import "@material/mwc-button";
-import "@material/mwc-list";
 import "@material/mwc-ripple";
 import type { Ripple } from "@material/mwc-ripple";
 import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
@@ -24,6 +22,7 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-card";
+import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import { ConfigEntry, ERROR_STATES } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
