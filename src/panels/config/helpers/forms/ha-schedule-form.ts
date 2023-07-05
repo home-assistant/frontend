@@ -23,6 +23,8 @@ import { Schedule, ScheduleDay, weekdays } from "../../../../data/schedule";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { loadPolyfillIfNeeded } from "../../../../resources/resize-observer.polyfill";
+import { TimeZone } from "../../../../data/translation";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 
 const defaultFullCalendarConfig: CalendarOptions = {
   plugins: [timeGridPlugin, interactionPlugin],
@@ -286,9 +288,18 @@ class HaScheduleForm extends LitElement {
     const value = [...this[`_${day}`]];
     const newValue = { ...this._item };
 
-    const endFormatted = formatTime24h(end, this.hass.locale, this.hass.config);
+    // Schedule is timezone unaware, we need to format it in local time
+    const endFormatted = formatTime24h(
+      end,
+      { ...this.hass.locale, time_zone: TimeZone.local },
+      this.hass.config
+    );
     value.push({
-      from: formatTime24h(start, this.hass.locale, this.hass.config),
+      from: formatTime24h(
+        start,
+        { ...this.hass.locale, time_zone: TimeZone.local },
+        this.hass.config
+      ),
       to:
         !isSameDay(start, end) || endFormatted === "0:00"
           ? "24:00"
@@ -365,7 +376,19 @@ class HaScheduleForm extends LitElement {
     }
   }
 
-  private _handleEventClick(info: any) {
+  private async _handleEventClick(info: any) {
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass.localize("ui.dialogs.helper_settings.schedule.delete"),
+        text: this.hass.localize(
+          "ui.dialogs.helper_settings.schedule.confirm_delete"
+        ),
+        destructive: true,
+        confirmText: this.hass.localize("ui.common.delete"),
+      }))
+    ) {
+      return;
+    }
     const [day, index] = info.event.id.split("-");
     const value = [...this[`_${day}`]];
 

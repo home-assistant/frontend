@@ -38,14 +38,15 @@ class HassioIngressView extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public ingressPanel = false;
+  @property({ type: Boolean }) public ingressPanel = false;
+
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _addon?: HassioAddonDetails;
 
-  @property({ type: Boolean })
-  public narrow = false;
+  @state() private _loadingMessage?: string;
 
   private _sessionKeepAlive?: number;
 
@@ -66,7 +67,9 @@ class HassioIngressView extends LitElement {
 
   protected render(): TemplateResult {
     if (!this._addon) {
-      return html`<hass-loading-screen></hass-loading-screen>`;
+      return html`<hass-loading-screen
+        .message=${this._loadingMessage}
+      ></hass-loading-screen>`;
     }
 
     const iframe = html`<iframe
@@ -136,8 +139,8 @@ class HassioIngressView extends LitElement {
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
 
     if (!changedProps.has("route")) {
       return;
@@ -149,6 +152,7 @@ class HassioIngressView extends LitElement {
     const oldAddon = oldRoute ? oldRoute.path.substring(1) : undefined;
 
     if (addon && addon !== oldAddon) {
+      this._loadingMessage = undefined;
       this._fetchData(addon);
     }
   }
@@ -161,8 +165,11 @@ class HassioIngressView extends LitElement {
     try {
       addon = await fetchHassioAddonInfo(this.hass, addonSlug);
     } catch (err: any) {
+      await this.updateComplete;
       await showAlertDialog(this, {
-        text: this.supervisor.localize("ingress.error_addon_info"),
+        text:
+          this.supervisor.localize("ingress.error_addon_info") ||
+          "Unable to fetch add-on info to start Ingress",
         title: "Supervisor",
       });
       await nextRender();
@@ -171,8 +178,11 @@ class HassioIngressView extends LitElement {
     }
 
     if (!addon.version) {
+      await this.updateComplete;
       await showAlertDialog(this, {
-        text: this.supervisor.localize("ingress.error_addon_not_installed"),
+        text:
+          this.supervisor.localize("ingress.error_addon_not_installed") ||
+          "The add-on is not installed. Please install it first",
         title: addon.name,
       });
       await nextRender();
@@ -181,8 +191,11 @@ class HassioIngressView extends LitElement {
     }
 
     if (!addon.ingress_url) {
+      await this.updateComplete;
       await showAlertDialog(this, {
-        text: this.supervisor.localize("ingress.error_addon_not_supported"),
+        text:
+          this.supervisor.localize("ingress.error_addon_not_supported") ||
+          "This add-on does not support Ingress",
         title: addon.name,
       });
       await nextRender();
@@ -191,14 +204,21 @@ class HassioIngressView extends LitElement {
     }
 
     if (!addon.state || !["startup", "started"].includes(addon.state)) {
+      await this.updateComplete;
       const confirm = await showConfirmationDialog(this, {
-        text: this.supervisor.localize("ingress.error_addon_not_running"),
+        text:
+          this.supervisor.localize("ingress.error_addon_not_running") ||
+          "The add-on is not running. Do you want to start it now?",
         title: addon.name,
-        confirmText: this.supervisor.localize("ingress.start_addon"),
-        dismissText: this.supervisor.localize("common.no"),
+        confirmText:
+          this.supervisor.localize("ingress.start_addon") || "Start add-on",
+        dismissText: this.supervisor.localize("common.no") || "No",
       });
       if (confirm) {
         try {
+          this._loadingMessage =
+            this.supervisor.localize("ingress.addon_starting") ||
+            "The add-on is starting, this can take some time...";
           await startHassioAddon(this.hass, addonSlug);
           fireEvent(this, "supervisor-collection-refresh", {
             collection: "addon",
@@ -207,7 +227,9 @@ class HassioIngressView extends LitElement {
           return;
         } catch (e) {
           await showAlertDialog(this, {
-            text: this.supervisor.localize("ingress.error_starting_addon"),
+            text:
+              this.supervisor.localize("ingress.error_starting_addon") ||
+              "Error starting the add-on",
             title: addon.name,
           });
           await nextRender();
@@ -223,6 +245,10 @@ class HassioIngressView extends LitElement {
 
     if (addon.state === "startup") {
       // Addon is starting up, wait for it to start
+      this._loadingMessage =
+        this.supervisor.localize("ingress.addon_starting") ||
+        "The add-on is starting, this can take some time...";
+
       this._fetchDataTimeout = window.setTimeout(() => {
         this._fetchData(addonSlug);
       }, 500);
@@ -232,6 +258,8 @@ class HassioIngressView extends LitElement {
     if (addon.state !== "started") {
       return;
     }
+
+    this._loadingMessage = undefined;
 
     if (this._fetchDataTimeout) {
       clearInterval(this._fetchDataTimeout);
@@ -247,7 +275,9 @@ class HassioIngressView extends LitElement {
         clearInterval(this._sessionKeepAlive);
       }
       await showAlertDialog(this, {
-        text: this.supervisor.localize("ingress.error_creating_session"),
+        text:
+          this.supervisor.localize("ingress.error_creating_session") ||
+          "Unable to create an Ingress session",
         title: addon.name,
       });
       await nextRender();
@@ -269,16 +299,19 @@ class HassioIngressView extends LitElement {
     this._addon = addon;
   }
 
-  private _checkLoaded(ev): void {
+  private async _checkLoaded(ev): Promise<void> {
     if (!this._addon) {
       return;
     }
     if (ev.target.contentDocument.body.textContent === "502: Bad Gateway") {
+      await this.updateComplete;
       showConfirmationDialog(this, {
-        text: this.supervisor.localize("ingress.error_addon_not_ready"),
+        text:
+          this.supervisor.localize("ingress.error_addon_not_ready") ||
+          "The add-on seems to not be ready, it might still be starting. Do you want to try again?",
         title: this._addon.name,
-        confirmText: this.supervisor.localize("ingress.retry"),
-        dismissText: this.supervisor.localize("common.no"),
+        confirmText: this.supervisor.localize("ingress.retry") || "Retry",
+        dismissText: this.supervisor.localize("common.no") || "No",
         confirm: async () => {
           const addon = this._addon;
           this._addon = undefined;
