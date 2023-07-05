@@ -51,13 +51,10 @@ function convertBackendTranslations(data, _file) {
     if (!("entity_component" in data.component[domain])) {
       return;
     }
-    output.component[domain] = { state: {} };
+    output.component[domain] = { entity_component: {} };
     Object.keys(data.component[domain].entity_component).forEach((key) => {
-      if (!("state" in data.component[domain].entity_component[key])) {
-        return;
-      }
-      output.component[domain].state[key] =
-        data.component[domain].entity_component[key].state;
+      output.component[domain].entity_component[key] =
+        data.component[domain].entity_component[key];
     });
   });
   return output;
