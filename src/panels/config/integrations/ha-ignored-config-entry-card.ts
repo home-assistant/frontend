@@ -7,6 +7,7 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-action-card";
+import "../../../components/ha-button";
 
 @customElement("ha-ignored-config-entry-card")
 export class HaIgnoredConfigEntryCard extends LitElement {
@@ -32,12 +33,12 @@ export class HaIgnoredConfigEntryCard extends LitElement {
             this.entry.localized_domain_name
           : this.entry.title}
       >
-        <mwc-button
+        <ha-button
           @click=${this._removeIgnoredIntegration}
           .label=${this.hass.localize(
             "ui.panel.config.integrations.ignore.stop_ignore"
           )}
-        ></mwc-button>
+        ></ha-button>
       </ha-integration-action-card>
     `;
   }
@@ -76,7 +77,7 @@ export class HaIgnoredConfigEntryCard extends LitElement {
       --state-color: var(--divider-color, #e0e0e0);
     }
 
-    mwc-button {
+    ha-button {
       --mdc-theme-primary: var(--primary-color);
     }
   `;

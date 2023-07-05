@@ -148,7 +148,6 @@ gulp.task(
       process.env.NODE_ENV = "development";
     },
     "clean-gallery",
-    "translations-enable-merge-backend",
     gulp.parallel(
       "gen-icons-json",
       "build-translations",
