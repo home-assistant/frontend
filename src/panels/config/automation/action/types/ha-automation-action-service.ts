@@ -152,7 +152,9 @@ export class HaServiceAction extends LitElement implements ActionElement {
               .required=${!this.hass.services[domain][service].response!
                 .optional}
               .disabled=${this.disabled ||
-              (!this._action.response_variable && !this._responseChecked)}
+              (this.hass.services[domain][service].response!.optional &&
+                !this._action.response_variable &&
+                !this._responseChecked)}
               @change=${this._responseVariableChanged}
             ></ha-textfield>
           </ha-settings-row>`
