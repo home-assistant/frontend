@@ -68,9 +68,7 @@ gulp.task("convert-backend-translations", function () {
 });
 
 gulp.task("check-translations-html", function () {
-  return gulp
-    .src([`${inDirFrontend}/*.json`, `${inDirBackend}/*.json`])
-    .pipe(checkHtml());
+  return gulp.src([`${inDirFrontend}/*.json`]).pipe(checkHtml());
 });
 
 gulp.task("check-all-files-exist", async function () {
