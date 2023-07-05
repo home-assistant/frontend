@@ -100,7 +100,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           } catch (err: any) {
             if (
               err.error?.code === ERR_CONNECTION_LOST &&
-              serviceCallWillDisconnect(domain, service)
+              serviceCallWillDisconnect(domain, service, serviceData)
             ) {
               return { context: { id: "" } };
             }
