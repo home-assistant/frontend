@@ -397,12 +397,10 @@ const tryDescribeTrigger = (
   }
 
   // Time Pattern Trigger
-  if (
-    trigger.platform === "time_pattern" &&
-    (trigger.seconds !== undefined ||
-      trigger.minutes !== undefined ||
-      trigger.hours !== undefined)
-  ) {
+  if (trigger.platform === "time_pattern") {
+    if (!trigger.seconds && !trigger.minutes && !trigger.hours) {
+      return "When a time pattern matches";
+    }
     let result = "Trigger ";
     if (trigger.seconds !== undefined) {
       const seconds_all = trigger.seconds === "*";

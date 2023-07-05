@@ -40,6 +40,7 @@ const triggers = [
   },
   { platform: "sun", event: "sunset" },
   { platform: "time_pattern" },
+  { platform: "time_pattern", hours: "*", minutes: "/5", seconds: "10" },
   { platform: "webhook" },
   { platform: "persistent_notification" },
   {
@@ -105,6 +106,7 @@ export class DemoAutomationDescribeTrigger extends LitElement {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");
+    hass.updateTranslations("config", "en");
     hass.addEntities(ENTITIES);
   }
 
