@@ -265,6 +265,8 @@ export class DemoIntegrationCard extends LitElement {
             ></ha-config-flow-card>
           `
         )}
+      </div>
+      <div class="container">
         ${configEntries.map(
           (info) => html`
             <ha-integration-card
@@ -338,10 +340,10 @@ export class DemoIntegrationCard extends LitElement {
     return css`
       .container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        grid-gap: 16px 16px;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-gap: 8px 8px;
         padding: 8px 16px 16px;
-        margin-bottom: 64px;
+        margin-bottom: 16px;
       }
 
       .container > * {
