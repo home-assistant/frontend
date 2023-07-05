@@ -34,6 +34,7 @@ import "../lovelace/components/hui-generic-entity-row";
 import "./ha-recurrence-rule-editor";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import { CalendarEventEditDialogParams } from "./show-dialog-calendar-event-editor";
+import { TimeZone } from "../../data/translation";
 
 const CALENDAR_DOMAINS = ["calendar"];
 
@@ -81,8 +82,9 @@ class DialogCalendarEventEditor extends LitElement {
           supportsFeature(stateObj, CalendarEntityFeature.CREATE_EVENT)
       )?.entity_id;
     this._timeZone =
-      Intl.DateTimeFormat().resolvedOptions().timeZone ||
-      this.hass.config.time_zone;
+      this.hass.locale.time_zone === TimeZone.local
+        ? Intl.DateTimeFormat().resolvedOptions().timeZone
+        : this.hass.config.time_zone;
     if (params.entry) {
       const entry = params.entry!;
       this._allDay = isDate(entry.dtstart);
