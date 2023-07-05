@@ -278,6 +278,17 @@ export class HAFullCalendar extends LitElement {
       this.shadowRoot!.getElementById("calendar")!,
       config
     );
+
+    // set the calendar to today every day at midnight
+    (function daily(calendar) {
+      const m = new Date().setHours(24, 0, 0, 0);
+      const midnight = m - Date.now();
+      setTimeout(() => {
+        calendar._handleToday();
+        daily(calendar);
+      }, midnight);
+    })(this);
+
     this.calendar!.render();
     this._fireViewChanged();
   }
