@@ -119,6 +119,9 @@ export const coordinatesMinimalResponseCompressedState = (
   detail: number,
   limits?: { min?: number; max?: number }
 ): number[][] | undefined => {
+  if (!history) {
+    return undefined;
+  }
   const numericHistory: NumericEntityHistoryState[] = history.map((item) => ({
     state: Number(item.s),
     // With minimal response and compressed state, we don't have last_changed,
