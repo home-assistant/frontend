@@ -4571,11 +4571,11 @@
             "cut": "Cut",
             "duplicate": "Duplicate",
             "move": "Move to view",
-            "move_up": "Move card up",
-            "move_down": "Move card down",
             "move_before": "Move card before",
             "move_after": "Move card after",
             "change_position": "Change card position",
+            "decrease_position": "Decrease card position",
+            "increase_position": "Increase card position",
             "options": "More options",
             "search_cards": "Search cards"
           },
