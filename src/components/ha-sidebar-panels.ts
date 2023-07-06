@@ -13,7 +13,7 @@ import {
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { LocalStorage } from "../common/decorators/local-storage";
+import { storage } from "../common/decorators/storage";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import { HomeAssistant, PanelInfo } from "../types";
@@ -147,10 +147,18 @@ class HaSidebarPanels extends LitElement {
 
   @property({ type: String }) public currentPanel = "";
 
-  @LocalStorage("sidebarPanelOrder", true)
+  @storage({
+    key: "sidebarPanelOrder",
+    state: true,
+    subscribe: true,
+  })
   private _panelOrder: string[] = [];
 
-  @LocalStorage("sidebarHiddenPanels", true)
+  @storage({
+    key: "sidebarHiddenPanels",
+    state: true,
+    subscribe: true,
+  })
   private _hiddenPanels: string[] = [];
 
   private searchKeys = "";
