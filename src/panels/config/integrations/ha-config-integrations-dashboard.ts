@@ -429,6 +429,13 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
                 )}
               </div>`
           : ""}
+        ${configEntriesInProgress.length ||
+        this._showDisabled ||
+        this._showIgnored
+          ? html`<h1>
+              ${this.hass.localize("ui.panel.config.integrations.configured")}
+            </h1>`
+          : ""}
         <div class="container">
           ${integrations.length
             ? integrations.map(
