@@ -1,17 +1,16 @@
-import "../../../../../components/ha-textfield";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { ensureArray } from "../../../../../common/array/ensure-array";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { TimeChangedEvent } from "../../../../../components/ha-base-time-input";
+import "../../../../../components/ha-duration-input";
 import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-textfield";
 import { WaitForTriggerAction } from "../../../../../data/script";
-import type { Clipboard } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import "../../trigger/ha-automation-trigger";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
-import "../../../../../components/ha-duration-input";
-import { createDurationData } from "../../../../../common/datetime/create_duration_data";
-import { TimeChangedEvent } from "../../../../../components/ha-base-time-input";
-import { ensureArray } from "../../../../../common/array/ensure-array";
 
 @customElement("ha-automation-action-wait_for_trigger")
 export class HaWaitForTriggerAction
@@ -25,8 +24,6 @@ export class HaWaitForTriggerAction
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public reOrderMode = false;
-
-  @property() public clipboard?: Clipboard;
 
   public static get defaultConfig() {
     return { wait_for_trigger: [] };
@@ -65,7 +62,6 @@ export class HaWaitForTriggerAction
         .name=${"wait_for_trigger"}
         .reOrderMode=${this.reOrderMode}
         @value-changed=${this._valueChanged}
-        .clipboard=${this.clipboard}
       ></ha-automation-trigger>
     `;
   }

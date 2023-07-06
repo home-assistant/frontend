@@ -19,6 +19,10 @@ import type { LovelaceCard } from "../../types";
 import { severityMap } from "../hui-gauge-card";
 import type { EnergySolarGaugeCardConfig } from "../types";
 
+const FORMAT_OPTIONS = {
+  maximumFractionDigits: 0,
+};
+
 @customElement("hui-energy-solar-consumed-gauge-card")
 class HuiEnergySolarGaugeCard
   extends SubscribeMixin(LitElement)
@@ -68,10 +72,11 @@ class HuiEnergySolarGaugeCard
       return nothing;
     }
 
-    const totalSolarProduction = calculateStatisticsSumGrowth(
-      this._data.stats,
-      types.solar.map((source) => source.stat_energy_from)
-    );
+    const totalSolarProduction =
+      calculateStatisticsSumGrowth(
+        this._data.stats,
+        types.solar.map((source) => source.stat_energy_from)
+      ) || 0;
 
     const productionReturnedToGrid = calculateStatisticsSumGrowth(
       this._data.stats,
@@ -108,8 +113,9 @@ class HuiEnergySolarGaugeCard
                 min="0"
                 max="100"
                 .value=${value}
-                .locale=${this.hass.locale}
                 label="%"
+                .formatOptions=${FORMAT_OPTIONS}
+                .locale=${this.hass.locale}
                 style=${styleMap({
                   "--gauge-color": this._computeSeverity(value),
                 })}

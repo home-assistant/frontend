@@ -53,6 +53,17 @@ export const polyfillLocaleData = async (language: string) => {
       // @ts-ignore
       Intl.DisplayNames.__addLocaleData(await result.json());
     }
+    if (
+      Intl.ListFormat &&
+      // @ts-ignore
+      typeof Intl.ListFormat.__addLocaleData === "function"
+    ) {
+      const result = await fetch(
+        `${__STATIC_PATH__}locale-data/intl-listformat/${language}.json`
+      );
+      // @ts-ignore
+      Intl.ListFormat.__addLocaleData(await result.json());
+    }
   } catch (e) {
     // Ignore
   }

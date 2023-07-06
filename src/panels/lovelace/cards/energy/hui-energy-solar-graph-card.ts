@@ -12,7 +12,7 @@ import {
   isToday,
   startOfToday,
 } from "date-fns/esm";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -111,6 +111,7 @@ export class HuiEnergySolarGraphCard
               this._start,
               this._end,
               this.hass.locale,
+              this.hass.config,
               this._compareStart,
               this._compareEnd
             )}
@@ -135,6 +136,7 @@ export class HuiEnergySolarGraphCard
       start: Date,
       end: Date,
       locale: FrontendLocaleData,
+      config: HassConfig,
       compareStart?: Date,
       compareEnd?: Date
     ): ChartOptions => {
@@ -164,7 +166,8 @@ export class HuiEnergySolarGraphCard
             suggestedMax: end.getTime(),
             adapters: {
               date: {
-                locale: locale,
+                locale,
+                config,
               },
             },
             ticks: {
@@ -210,6 +213,10 @@ export class HuiEnergySolarGraphCard
         plugins: {
           tooltip: {
             position: "nearest",
+            filter: (val) => val.formattedValue !== "0",
+            itemSort: function (a, b) {
+              return b.datasetIndex - a.datasetIndex;
+            },
             callbacks: {
               title: (datasets) => {
                 if (dayDifference > 0) {
@@ -217,10 +224,11 @@ export class HuiEnergySolarGraphCard
                 }
                 const date = new Date(datasets[0].parsed.x);
                 return `${
-                  compare ? `${formatDateShort(date, locale)}: ` : ""
-                }${formatTime(date, locale)} – ${formatTime(
+                  compare ? `${formatDateShort(date, locale, config)}: ` : ""
+                }${formatTime(date, locale, config)} – ${formatTime(
                   addHours(date, 1),
-                  locale
+                  locale,
+                  config
                 )}`;
               },
               label: (context) =>
@@ -228,6 +236,27 @@ export class HuiEnergySolarGraphCard
                   context.parsed.y,
                   locale
                 )} kWh`,
+              footer: (contexts) => {
+                const production_contexts = contexts.filter(
+                  (c) => c.dataset?.stack === "solar"
+                );
+                if (production_contexts.length < 2) {
+                  return [];
+                }
+                let total = 0;
+                for (const context of production_contexts) {
+                  total += (context.dataset.data[context.dataIndex] as any).y;
+                }
+                if (total === 0) {
+                  return [];
+                }
+                return [
+                  this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.energy_solar_graph.total_produced",
+                    { num: formatNumber(total, locale) }
+                  ),
+                ];
+              },
             },
           },
           filler: {

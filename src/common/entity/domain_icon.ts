@@ -15,6 +15,7 @@ import {
   mdiCheckCircleOutline,
   mdiClock,
   mdiCloseCircleOutline,
+  mdiCrosshairsQuestion,
   mdiFan,
   mdiFanOff,
   mdiGestureTapButton,
@@ -31,6 +32,7 @@ import {
   mdiPowerPlugOff,
   mdiRestart,
   mdiRobot,
+  mdiRobotConfused,
   mdiRobotOff,
   mdiSpeaker,
   mdiSpeakerOff,
@@ -91,13 +93,19 @@ export const domainIconWithoutDefault = (
       return alarmPanelIcon(compareState);
 
     case "automation":
-      return compareState === "off" ? mdiRobotOff : mdiRobot;
+      return compareState === "unavailable"
+        ? mdiRobotConfused
+        : compareState === "off"
+        ? mdiRobotOff
+        : mdiRobot;
 
     case "binary_sensor":
       return binarySensorIcon(compareState, stateObj);
 
     case "button":
       switch (stateObj?.attributes.device_class) {
+        case "identify":
+          return mdiCrosshairsQuestion;
         case "restart":
           return mdiRestart;
         case "update":

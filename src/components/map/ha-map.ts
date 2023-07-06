@@ -471,6 +471,11 @@ export class HaMap extends ReactiveElement {
         background: #090909;
         --map-filter: invert(0.9) hue-rotate(170deg) grayscale(0.7);
       }
+      #map:active {
+        cursor: grabbing;
+        cursor: -moz-grabbing;
+        cursor: -webkit-grabbing;
+      }
       .light {
         color: #000000;
       }

@@ -129,5 +129,9 @@ export const getSupervisorEventCollection = (
     `_supervisor${key}Event`,
     (conn2) => supervisorApiWsRequest(conn2, { endpoint }),
     (connection, store) =>
-      subscribeSupervisorEventUpdates(connection, store, key)
+      subscribeSupervisorEventUpdates(connection, store, key),
+    { unsubGrace: false }
   );
+
+export const cleanupSupervisorCollection = (conn: Connection, key: string) =>
+  delete conn[`_supervisor${key}Event`];

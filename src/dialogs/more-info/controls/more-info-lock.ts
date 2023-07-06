@@ -1,43 +1,156 @@
-import "@material/mwc-button";
-import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import "@material/web/iconbutton/outlined-icon-button";
+import { mdiDoorOpen, mdiLock, mdiLockOff } from "@mdi/js";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import { domainIcon } from "../../../common/entity/domain_icon";
+import { stateColorCss } from "../../../common/entity/state_color";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
-import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
+import { UNAVAILABLE } from "../../../data/entity";
+import { LockEntity, LockEntityFeature } from "../../../data/lock";
 import type { HomeAssistant } from "../../../types";
+import { showEnterCodeDialogDialog } from "../../enter-code/show-enter-code-dialog";
+import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
+import "../components/ha-more-info-state-header";
+import "../components/lock/ha-more-info-lock-toggle";
 
 @customElement("more-info-lock")
 class MoreInfoLock extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: LockEntity;
 
-  @query("ha-textfield") private _textfield?: HaTextField;
+  private async _open() {
+    this._callService("open");
+  }
+
+  private async _lock() {
+    this._callService("lock");
+  }
+
+  private async _unlock() {
+    this._callService("unlock");
+  }
+
+  private async _callService(service: "open" | "lock" | "unlock") {
+    let code: string | undefined;
+
+    if (this.stateObj!.attributes.code_format) {
+      const response = await showEnterCodeDialogDialog(this, {
+        codeFormat: "text",
+        codePattern: this.stateObj!.attributes.code_format,
+        title: this.hass.localize(
+          `ui.dialogs.more_info_control.lock.${service}`
+        ),
+        submitText: this.hass.localize(
+          `ui.dialogs.more_info_control.lock.${service}`
+        ),
+      });
+      if (!response) {
+        return;
+      }
+      code = response;
+    }
+
+    this.hass.callService("lock", service, {
+      entity_id: this.stateObj!.entity_id,
+      code,
+    });
+  }
 
   protected render() {
     if (!this.hass || !this.stateObj) {
       return nothing;
     }
+
+    const supportsOpen = supportsFeature(this.stateObj, LockEntityFeature.OPEN);
+
+    const color = stateColorCss(this.stateObj);
+    const style = {
+      "--icon-color": color,
+    };
+
+    const isJammed = this.stateObj.state === "jammed";
+
     return html`
-      ${this.stateObj.attributes.code_format
-        ? html`<div class="code">
-            <ha-textfield
-              .label=${this.hass.localize("ui.card.lock.code")}
-              .pattern=${this.stateObj.attributes.code_format}
-              type="password"
-            ></ha-textfield>
-            ${this.stateObj.state === "locked"
-              ? html`<mwc-button
-                  @click=${this._callService}
-                  data-service="unlock"
-                  >${this.hass.localize("ui.card.lock.unlock")}</mwc-button
-                >`
-              : html`<mwc-button @click=${this._callService} data-service="lock"
-                  >${this.hass.localize("ui.card.lock.lock")}</mwc-button
-                >`}
-          </div>`
-        : ""}
+      <ha-more-info-state-header
+        .hass=${this.hass}
+        .stateObj=${this.stateObj}
+      ></ha-more-info-state-header>
+      <div class="controls" style=${styleMap(style)}>
+        ${
+          this.stateObj.state === "jammed"
+            ? html`
+                <div class="status">
+                  <span></span>
+                  <div class="icon">
+                    <ha-svg-icon
+                      .path=${domainIcon("lock", this.stateObj)}
+                    ></ha-svg-icon>
+                  </div>
+                </div>
+              `
+            : html`
+                <ha-more-info-lock-toggle
+                  .stateObj=${this.stateObj}
+                  .hass=${this.hass}
+                >
+                </ha-more-info-lock-toggle>
+              `
+        }
+        ${
+          supportsOpen || isJammed
+            ? html`
+                <div class="buttons">
+                  ${supportsOpen
+                    ? html`
+                        <md-outlined-icon-button
+                          .disabled=${this.stateObj.state === UNAVAILABLE}
+                          .title=${this.hass.localize(
+                            "ui.dialogs.more_info_control.lock.open"
+                          )}
+                          .ariaLabel=${this.hass.localize(
+                            "ui.dialogs.more_info_control.lock.open"
+                          )}
+                          @click=${this._open}
+                        >
+                          <ha-svg-icon .path=${mdiDoorOpen}></ha-svg-icon>
+                        </md-outlined-icon-button>
+                      `
+                    : nothing}
+                  ${isJammed
+                    ? html`
+                        <md-outlined-icon-button
+                          .title=${this.hass.localize(
+                            "ui.dialogs.more_info_control.lock.lock"
+                          )}
+                          .ariaLabel=${this.hass.localize(
+                            "ui.dialogs.more_info_control.lock.lock"
+                          )}
+                          @click=${this._lock}
+                        >
+                          <ha-svg-icon .path=${mdiLock}></ha-svg-icon>
+                        </md-outlined-icon-button>
+                        <md-outlined-icon-button
+                          .title=${this.hass.localize(
+                            "ui.dialogs.more_info_control.lock.unlock"
+                          )}
+                          .ariaLabel=${this.hass.localize(
+                            "ui.dialogs.more_info_control.lock.unlock"
+                          )}
+                          @click=${this._unlock}
+                        >
+                          <ha-svg-icon .path=${mdiLockOff}></ha-svg-icon>
+                        </md-outlined-icon-button>
+                      `
+                    : nothing}
+                </div>
+              `
+            : nothing
+        }
+          </div>
+      </div>
       <ha-attributes
         .hass=${this.hass}
         .stateObj=${this.stateObj}
@@ -46,33 +159,64 @@ class MoreInfoLock extends LitElement {
     `;
   }
 
-  private _callService(ev) {
-    const service = ev.target.getAttribute("data-service");
-    const data = {
-      entity_id: this.stateObj!.entity_id,
-      code: this._textfield?.value,
-    };
-    this.hass.callService("lock", service, data);
+  static get styles(): CSSResultGroup {
+    return [
+      moreInfoControlStyle,
+      css`
+        md-outlined-icon-button {
+          --ha-icon-display: block;
+          --md-sys-color-on-surface: var(--secondary-text-color);
+          --md-sys-color-on-surface-variant: var(--secondary-text-color);
+          --md-sys-color-on-surface-rgb: var(--rgb-secondary-text-color);
+          --md-sys-color-outline: var(--secondary-text-color);
+        }
+        @keyframes pulse {
+          0% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+        .status {
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          justify-content: center;
+          height: 45vh;
+          max-height: 320px;
+          min-height: 200px;
+        }
+        .status .icon {
+          position: relative;
+          --mdc-icon-size: 80px;
+          animation: pulse 1s infinite;
+          color: var(--icon-color);
+          border-radius: 50%;
+          width: 144px;
+          height: 144px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .status .icon::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 100%;
+          border-radius: 50%;
+          background-color: var(--icon-color);
+          transition: background-color 180ms ease-in-out;
+          opacity: 0.2;
+        }
+      `,
+    ];
   }
-
-  static styles = css`
-    :host {
-      display: flex;
-      align-items: center;
-      flex-direction: column;
-    }
-    .code {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-start;
-      margin-bottom: 8px;
-      width: 100%;
-    }
-    ha-attributes {
-      width: 100%;
-    }
-  `;
 }
 
 declare global {

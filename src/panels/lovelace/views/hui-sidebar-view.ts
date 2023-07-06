@@ -91,7 +91,9 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="container"></div>
+      <div
+        class="container ${this.lovelace?.editMode ? "edit-mode" : ""}"
+      ></div>
       ${this.lovelace?.editMode
         ? html`
             <ha-fab
@@ -203,6 +205,10 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
         justify-content: center;
         margin-left: 4px;
         margin-right: 4px;
+      }
+
+      .container.edit-mode {
+        margin-bottom: 72px;
       }
 
       #main {

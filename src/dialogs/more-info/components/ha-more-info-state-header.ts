@@ -39,6 +39,7 @@ export class HaMoreInfoStateHeader extends LitElement {
       this.hass!.localize,
       stateObj,
       this.hass!.locale,
+      this.hass!.config,
       this.hass!.entities
     );
 

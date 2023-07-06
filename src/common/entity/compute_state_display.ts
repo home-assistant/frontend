@@ -1,7 +1,7 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
-import { FrontendLocaleData } from "../../data/translation";
+import { FrontendLocaleData, TimeZone } from "../../data/translation";
 import {
   updateIsInstallingFromAttributes,
   UPDATE_SUPPORT_PROGRESS,
@@ -28,12 +28,14 @@ export const computeStateDisplaySingleEntity = (
   localize: LocalizeFunc,
   stateObj: HassEntity,
   locale: FrontendLocaleData,
+  config: HassConfig,
   entity: EntityRegistryDisplayEntry | undefined,
   state?: string
 ): string =>
   computeStateDisplayFromEntityAttributes(
     localize,
     locale,
+    config,
     entity,
     stateObj.entity_id,
     stateObj.attributes,
@@ -44,16 +46,18 @@ export const computeStateDisplay = (
   localize: LocalizeFunc,
   stateObj: HassEntity,
   locale: FrontendLocaleData,
+  config: HassConfig,
   entities: HomeAssistant["entities"],
   state?: string
 ): string => {
-  const entity = entities[stateObj.entity_id] as
+  const entity = entities?.[stateObj.entity_id] as
     | EntityRegistryDisplayEntry
     | undefined;
 
   return computeStateDisplayFromEntityAttributes(
     localize,
     locale,
+    config,
     entity,
     stateObj.entity_id,
     stateObj.attributes,
@@ -64,6 +68,7 @@ export const computeStateDisplay = (
 export const computeStateDisplayFromEntityAttributes = (
   localize: LocalizeFunc,
   locale: FrontendLocaleData,
+  config: HassConfig,
   entity: EntityRegistryDisplayEntry | undefined,
   entityId: string,
   attributes: any,
@@ -119,29 +124,40 @@ export const computeStateDisplayFromEntityAttributes = (
 
   if (domain === "datetime") {
     const time = new Date(state);
-    return formatDateTime(time, locale);
+    return formatDateTime(time, locale, config);
   }
 
   if (["date", "input_datetime", "time"].includes(domain)) {
     // If trying to display an explicit state, need to parse the explicit state to `Date` then format.
     // Attributes aren't available, we have to use `state`.
+
+    // These are timezone agnostic, so we should NOT use the system timezone here.
     try {
       const components = state.split(" ");
       if (components.length === 2) {
         // Date and time.
-        return formatDateTime(new Date(components.join("T")), locale);
+        return formatDateTime(
+          new Date(components.join("T")),
+          { ...locale, time_zone: TimeZone.local },
+          config
+        );
       }
       if (components.length === 1) {
         if (state.includes("-")) {
           // Date only.
-          return formatDate(new Date(`${state}T00:00`), locale);
+          return formatDate(
+            new Date(`${state}T00:00`),
+            { ...locale, time_zone: TimeZone.local },
+            config
+          );
         }
         if (state.includes(":")) {
           // Time only.
           const now = new Date();
           return formatTime(
             new Date(`${now.toISOString().split("T")[0]}T${state}`),
-            locale
+            { ...locale, time_zone: TimeZone.local },
+            config
           );
         }
       }
@@ -150,12 +166,6 @@ export const computeStateDisplayFromEntityAttributes = (
       // Formatting methods may throw error if date parsing doesn't go well,
       // just return the state string in that case.
       return state;
-    }
-  }
-
-  if (domain === "humidifier") {
-    if (state === "on" && attributes.humidity) {
-      return `${attributes.humidity} %`;
     }
   }
 
@@ -175,11 +185,13 @@ export const computeStateDisplayFromEntityAttributes = (
 
   // state is a timestamp
   if (
-    ["button", "input_button", "scene", "stt", "tts"].includes(domain) ||
+    ["button", "image", "input_button", "scene", "stt", "tts"].includes(
+      domain
+    ) ||
     (domain === "sensor" && attributes.device_class === "timestamp")
   ) {
     try {
-      return formatDateTime(new Date(state), locale);
+      return formatDateTime(new Date(state), locale, config);
     } catch (_err) {
       return state;
     }

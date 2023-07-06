@@ -17,6 +17,11 @@ export enum TimeFormat {
   twenty_four = "24",
 }
 
+export enum TimeZone {
+  local = "local",
+  server = "server",
+}
+
 export enum DateFormat {
   language = "language",
   system = "system",
@@ -42,6 +47,7 @@ export interface FrontendLocaleData {
   time_format: TimeFormat;
   date_format: DateFormat;
   first_weekday: FirstWeekday;
+  time_zone: TimeZone;
 }
 
 declare global {

@@ -1,8 +1,10 @@
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { mdiHelpCircle } from "@mdi/js";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-form/ha-form";
+import "../../../components/ha-icon-button";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   createSupervisorMount,
@@ -17,12 +19,15 @@ import { HomeAssistant } from "../../../types";
 import { MountViewDialogParams } from "./show-dialog-view-mount";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import type { SchemaUnion } from "../../../components/ha-form/types";
+import { documentationUrl } from "../../../util/documentation-url";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 const mountSchema = memoizeOne(
   (
     localize: LocalizeFunc,
     existing?: boolean,
-    mountType?: SupervisorMountType
+    mountType?: SupervisorMountType,
+    showCIFSVersion?: boolean
   ) =>
     [
       {
@@ -86,6 +91,41 @@ const mountSchema = memoizeOne(
           ] as const)
         : mountType === "cifs"
         ? ([
+            ...(showCIFSVersion
+              ? ([
+                  {
+                    name: "version",
+                    required: true,
+                    selector: {
+                      select: {
+                        options: [
+                          {
+                            label: localize(
+                              "ui.panel.config.storage.network_mounts.cifs_versions.auto"
+                            ),
+                            value: "auto",
+                          },
+                          {
+                            label: localize(
+                              "ui.panel.config.storage.network_mounts.cifs_versions.legacy",
+                              { version: "2.0" }
+                            ),
+                            value: "2.0",
+                          },
+                          {
+                            label: localize(
+                              "ui.panel.config.storage.network_mounts.cifs_versions.legacy",
+                              { version: "1.0" }
+                            ),
+                            value: "1.0",
+                          },
+                        ],
+                        mode: "dropdown",
+                      },
+                    },
+                  },
+                ] as const)
+              : ([] as const)),
             {
               name: "share",
               required: true,
@@ -118,7 +158,11 @@ class ViewMountDialog extends LitElement {
 
   @state() private _validationError?: Record<string, string>;
 
+  @state() private _validationWarning?: Record<string, string>;
+
   @state() private _existing?: boolean;
+
+  @state() private _showCIFSVersion?: boolean;
 
   @state() private _reloadMounts?: () => void;
 
@@ -128,6 +172,13 @@ class ViewMountDialog extends LitElement {
     this._data = dialogParams.mount;
     this._existing = dialogParams.mount !== undefined;
     this._reloadMounts = dialogParams.reloadMounts;
+    if (
+      dialogParams.mount?.type === "cifs" &&
+      dialogParams.mount.version &&
+      dialogParams.mount.version !== "auto"
+    ) {
+      this._showCIFSVersion = true;
+    }
   }
 
   public closeDialog(): void {
@@ -135,7 +186,9 @@ class ViewMountDialog extends LitElement {
     this._waiting = undefined;
     this._error = undefined;
     this._validationError = undefined;
+    this._validationWarning = undefined;
     this._existing = undefined;
+    this._showCIFSVersion = undefined;
     this._reloadMounts = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -158,6 +211,33 @@ class ViewMountDialog extends LitElement {
             )}
         @closed=${this.closeDialog}
       >
+        <ha-dialog-header slot="heading">
+          <span slot="title"
+            >${this._existing
+              ? this.hass.localize(
+                  "ui.panel.config.storage.network_mounts.update_title"
+                )
+              : this.hass.localize(
+                  "ui.panel.config.storage.network_mounts.add_title"
+                )}
+          </span>
+          <a
+            slot="actionItems"
+            class="header_button"
+            href=${documentationUrl(
+              this.hass,
+              "/common-tasks/os#network-storage"
+            )}
+            title=${this.hass.localize(
+              "ui.panel.config.storage.network_mounts.documentation"
+            )}
+            target="_blank"
+            rel="noreferrer"
+            dir=${computeRTLDirection(this.hass)}
+          >
+            <ha-icon-button .path=${mdiHelpCircle}></ha-icon-button>
+          </a>
+        </ha-dialog-header>
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : nothing}
@@ -166,12 +246,15 @@ class ViewMountDialog extends LitElement {
           .schema=${mountSchema(
             this.hass.localize,
             this._existing,
-            this._data?.type
+            this._data?.type,
+            this._showCIFSVersion
           )}
           .error=${this._validationError}
+          .warning=${this._validationWarning}
           .computeLabel=${this._computeLabelCallback}
           .computeHelper=${this._computeHelperCallback}
           .computeError=${this._computeErrorCallback}
+          .computeWarning=${this._computeWarningCallback}
           @value-changed=${this._valueChanged}
           dialogInitialFocus
         ></ha-form>
@@ -225,26 +308,50 @@ class ViewMountDialog extends LitElement {
       `ui.panel.config.storage.network_mounts.errors.${error}`
     ) || error;
 
+  private _computeWarningCallback = (warning: string): string =>
+    this.hass.localize(
+      // @ts-ignore
+      `ui.panel.config.storage.network_mounts.warnings.${warning}`
+    ) || warning;
+
   private _valueChanged(ev: CustomEvent) {
     this._validationError = {};
+    this._validationWarning = {};
     this._data = ev.detail.value;
     if (this._data?.name && !/^\w+$/.test(this._data.name)) {
       this._validationError.name = "invalid_name";
+    }
+    if (this._data?.type === "cifs" && !this._data.version) {
+      this._data.version = "auto";
+    }
+    if (
+      this._data?.type === "cifs" &&
+      this._data.version &&
+      ["1.0", "2.0"].includes(this._data.version)
+    ) {
+      this._validationWarning.version = "not_recomeded_cifs_version";
     }
   }
 
   private async _connectMount() {
     this._error = undefined;
     this._waiting = true;
+    const mountData = { ...this._data! };
+    if (mountData.type === "cifs" && mountData.version === "auto") {
+      mountData.version = undefined;
+    }
     try {
       if (this._existing) {
-        await updateSupervisorMount(this.hass, this._data!);
+        await updateSupervisorMount(this.hass, mountData);
       } else {
-        await createSupervisorMount(this.hass, this._data!);
+        await createSupervisorMount(this.hass, mountData);
       }
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);
       this._waiting = false;
+      if (this._data!.type === "cifs" && !this._showCIFSVersion) {
+        this._showCIFSVersion = true;
+      }
       return;
     }
     if (this._reloadMounts) {
@@ -274,6 +381,9 @@ class ViewMountDialog extends LitElement {
       haStyle,
       haStyleDialog,
       css`
+        ha-icon-button {
+          color: var(--primary-text-color);
+        }
         .delete-btn {
           --mdc-theme-primary: var(--error-color);
         }

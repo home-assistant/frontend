@@ -1,5 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import {
+  mdiBrightness6,
   mdiCreation,
   mdiFileWordBox,
   mdiLightbulb,
@@ -24,6 +25,8 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-attributes";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-icon-button-group";
+import "../../../components/ha-icon-button-toggle";
 import "../../../components/ha-outlined-button";
 import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-select";
@@ -31,12 +34,14 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
 import {
+  formatTempColor,
   LightColorMode,
   LightEntity,
   LightEntityFeature,
   lightSupportsBrightness,
   lightSupportsColor,
   lightSupportsColorMode,
+  lightSupportsFavoriteColors,
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
@@ -45,7 +50,10 @@ import "../components/ha-more-info-toggle";
 import "../components/lights/ha-favorite-color-button";
 import "../components/lights/ha-more-info-light-brightness";
 import "../components/lights/ha-more-info-light-favorite-colors";
-import { showLightColorPickerView } from "../components/lights/show-view-light-color-picker";
+import "../components/lights/light-color-rgb-picker";
+import "../components/lights/light-color-temp-picker";
+
+type MainControl = "brightness" | "color_temp" | "color";
 
 @customElement("more-info-light")
 class MoreInfoLight extends LitElement {
@@ -61,10 +69,22 @@ class MoreInfoLight extends LitElement {
 
   @state() private _selectedBrightness?: number;
 
+  @state() private _colorTempPreview?: number;
+
+  @state() private _mainControl: MainControl = "brightness";
+
   private _brightnessChanged(ev) {
     const value = (ev.detail as any).value;
     if (isNaN(value)) return;
     this._selectedBrightness = value;
+  }
+
+  private _tempColorHovered(ev: CustomEvent<HASSDomEvents["color-hovered"]>) {
+    if (ev.detail && "color_temp_kelvin" in ev.detail) {
+      this._colorTempPreview = ev.detail.color_temp_kelvin;
+    } else {
+      this._colorTempPreview = undefined;
+    }
   }
 
   protected updated(changedProps: PropertyValues<typeof this>): void {
@@ -74,6 +94,28 @@ class MoreInfoLight extends LitElement {
         : undefined;
       this._effect = this.stateObj?.attributes.effect;
     }
+  }
+
+  private _setMainControl(ev: any) {
+    ev.stopPropagation();
+    this._mainControl = ev.currentTarget.control;
+  }
+
+  private _resetMainControl(ev: any) {
+    ev.stopPropagation();
+    this._mainControl = "brightness";
+  }
+
+  private get _stateOverride() {
+    if (this._colorTempPreview) {
+      return formatTempColor(this._colorTempPreview);
+    }
+    if (this._selectedBrightness) {
+      return `${Math.round(this._selectedBrightness)}${blankBeforePercent(
+        this.hass!.locale
+      )}%`;
+    }
+    return undefined;
   }
 
   protected render() {
@@ -105,47 +147,60 @@ class MoreInfoLight extends LitElement {
       (this.entry.options?.light?.favorite_colors == null ||
         this.entry.options.light.favorite_colors.length > 0);
 
-    const stateOverride = this._selectedBrightness
-      ? `${Math.round(this._selectedBrightness)}${blankBeforePercent(
-          this.hass!.locale
-        )}%`
-      : undefined;
-
     return html`
       <ha-more-info-state-header
         .hass=${this.hass}
         .stateObj=${this.stateObj}
-        .stateOverride=${stateOverride}
+        .stateOverride=${this._stateOverride}
       ></ha-more-info-state-header>
       <div class="controls">
-        ${supportsBrightness
+        ${!supportsBrightness
           ? html`
-              <ha-more-info-light-brightness
-                .stateObj=${this.stateObj}
-                .hass=${this.hass}
-                @slider-moved=${this._brightnessChanged}
-              >
-              </ha-more-info-light-brightness>
-            `
-          : html`
               <ha-more-info-toggle
                 .stateObj=${this.stateObj}
                 .hass=${this.hass}
                 .iconPathOn=${mdiLightbulb}
                 .iconPathOff=${mdiLightbulbOff}
               ></ha-more-info-toggle>
-            `}
+            `
+          : nothing}
         ${supportsColorTemp || supportsColor || supportsBrightness
           ? html`
-              <div class="button-bar">
+              ${supportsBrightness && this._mainControl === "brightness"
+                ? html`
+                    <ha-more-info-light-brightness
+                      .stateObj=${this.stateObj}
+                      .hass=${this.hass}
+                      @slider-moved=${this._brightnessChanged}
+                    >
+                    </ha-more-info-light-brightness>
+                  `
+                : nothing}
+              ${supportsColor && this._mainControl === "color"
+                ? html`
+                    <light-color-rgb-picker
+                      .hass=${this.hass}
+                      .stateObj=${this.stateObj}
+                    >
+                    </light-color-rgb-picker>
+                  `
+                : nothing}
+              ${supportsColorTemp && this._mainControl === "color_temp"
+                ? html`
+                    <light-color-temp-picker
+                      .hass=${this.hass}
+                      .stateObj=${this.stateObj}
+                      @color-hovered=${this._tempColorHovered}
+                    >
+                    </light-color-temp-picker>
+                  `
+                : nothing}
+              <ha-icon-button-group>
                 ${supportsBrightness
                   ? html`
                       <ha-icon-button
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .title=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.toggle"
-                        )}
-                        .ariaLabel=${this.hass.localize(
+                        .label=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.toggle"
                         )}
                         @click=${this._toggle}
@@ -154,49 +209,60 @@ class MoreInfoLight extends LitElement {
                       </ha-icon-button>
                     `
                   : nothing}
+                ${supportsColor || supportsColorTemp
+                  ? html`
+                      <div class="separator"></div>
+                      <ha-icon-button-toggle
+                        .selected=${this._mainControl === "brightness"}
+                        .disabled=${this.stateObj!.state === UNAVAILABLE}
+                        .label=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.brightness"
+                        )}
+                        .control=${"brightness"}
+                        @click=${this._setMainControl}
+                      >
+                        <ha-svg-icon .path=${mdiBrightness6}></ha-svg-icon>
+                      </ha-icon-button-toggle>
+                    `
+                  : nothing}
                 ${supportsColor
                   ? html`
-                      <ha-icon-button
-                        class="color-mode"
+                      <ha-icon-button-toggle
+                        border-only
+                        .selected=${this._mainControl === "color"}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .title=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.change_color"
+                        .label=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.color"
                         )}
-                        .ariaLabel=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.change_color"
-                        )}
-                        .mode=${"color"}
-                        @click=${this._showLightColorPickerView}
+                        .control=${"color"}
+                        @click=${this._setMainControl}
                       >
                         <span class="wheel color"></span>
-                      </ha-icon-button>
+                      </ha-icon-button-toggle>
                     `
                   : nothing}
                 ${supportsColorTemp
                   ? html`
-                      <ha-icon-button
+                      <ha-icon-button-toggle
+                        border-only
+                        .selected=${this._mainControl === "color_temp"}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .title=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.change_color_temp"
+                        .label=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.color_temp"
                         )}
-                        .ariaLabel=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.change_color_temp"
-                        )}
-                        .mode=${"color_temp"}
-                        @click=${this._showLightColorPickerView}
+                        .control=${"color_temp"}
+                        @click=${this._setMainControl}
                       >
                         <span class="wheel color-temp"></span>
-                      </ha-icon-button>
+                      </ha-icon-button-toggle>
                     `
                   : nothing}
                 ${supportsWhite
                   ? html`
+                      <div class="separator"></div>
                       <ha-icon-button
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .title=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.set_white"
-                        )}
-                        .ariaLabel=${this.hass.localize(
+                        .label=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.set_white"
                         )}
                         @click=${this._setWhite}
@@ -205,14 +271,17 @@ class MoreInfoLight extends LitElement {
                       </ha-icon-button>
                     `
                   : nothing}
-              </div>
-              ${this.entry && (this.editMode || hasFavoriteColors)
+              </ha-icon-button-group>
+              ${this.entry &&
+              lightSupportsFavoriteColors(this.stateObj) &&
+              (this.editMode || hasFavoriteColors)
                 ? html`
                     <ha-more-info-light-favorite-colors
                       .hass=${this.hass}
                       .stateObj=${this.stateObj}
                       .entry=${this.entry}
                       .editMode=${this.editMode}
+                      @favorite-color-edit-started=${this._resetMainControl}
                     >
                     </ha-more-info-light-favorite-colors>
                   `
@@ -237,6 +306,7 @@ class MoreInfoLight extends LitElement {
                         this.hass.localize,
                         this.stateObj!,
                         this.hass.locale,
+                        this.hass.config,
                         this.hass.entities,
                         "effect",
                         this._effect
@@ -258,6 +328,7 @@ class MoreInfoLight extends LitElement {
                         this.hass.localize,
                         this.stateObj!,
                         this.hass.locale,
+                        this.hass.config,
                         this.hass.entities,
                         "effect",
                         effect
@@ -284,19 +355,6 @@ class MoreInfoLight extends LitElement {
     this.hass.callService("light", service, {
       entity_id: this.stateObj!.entity_id,
     });
-  };
-
-  private _showLightColorPickerView = (ev) => {
-    showLightColorPickerView(
-      this,
-      this.hass.localize(
-        "ui.dialogs.more_info_control.light.color_picker.title"
-      ),
-      {
-        entityId: this.stateObj!.entity_id,
-        defaultMode: ev.currentTarget.mode,
-      }
-    );
   };
 
   private _setWhite = () => {
@@ -342,9 +400,6 @@ class MoreInfoLight extends LitElement {
           flex: none;
           border-radius: 15px;
         }
-        ha-icon-button[disabled] .wheel {
-          filter: grayscale(1) opacity(0.5);
-        }
         .wheel.color {
           background-image: url("/static/images/color_wheel.png");
           background-size: cover;
@@ -356,6 +411,9 @@ class MoreInfoLight extends LitElement {
             white 50%,
             rgb(255, 160, 0) 100%
           );
+        }
+        *[disabled] .wheel {
+          filter: grayscale(1) opacity(0.5);
         }
         .buttons {
           flex-wrap: wrap;

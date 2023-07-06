@@ -100,7 +100,8 @@ class DialogRepairsIssue extends LitElement {
             ${this._issue.created
               ? formatDateNumeric(
                   new Date(this._issue.created),
-                  this.hass.locale
+                  this.hass.locale,
+                  this.hass.config
                 )
               : ""}
           </div>

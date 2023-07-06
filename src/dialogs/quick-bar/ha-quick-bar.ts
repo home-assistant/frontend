@@ -501,7 +501,7 @@ export class QuickBar extends LitElement {
 
   private async _generateCommandItems(): Promise<CommandItem[]> {
     return [
-      ...this._generateReloadCommands(),
+      ...(await this._generateReloadCommands()),
       ...this._generateServerControlCommands(),
       ...(await this._generateNavigationCommands()),
     ].sort((a, b) =>
@@ -513,9 +513,14 @@ export class QuickBar extends LitElement {
     );
   }
 
-  private _generateReloadCommands(): CommandItem[] {
+  private async _generateReloadCommands(): Promise<CommandItem[]> {
     // Get all domains that have a direct "reload" service
     const reloadableDomains = componentsWithService(this.hass, "reload");
+
+    const localize = await this.hass.loadBackendTranslation(
+      "title",
+      reloadableDomains
+    );
 
     const commands = reloadableDomains.map((domain) => ({
       primaryText:
@@ -523,7 +528,7 @@ export class QuickBar extends LitElement {
         this.hass.localize(
           "ui.dialogs.quick-bar.commands.reload.reload",
           "domain",
-          domainToName(this.hass.localize, domain)
+          domainToName(localize, domain)
         ),
       action: () => this.hass.callService(domain, "reload"),
       iconPath: mdiReload,

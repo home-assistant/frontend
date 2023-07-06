@@ -1,6 +1,10 @@
 import "@material/mwc-list/mwc-list";
-import { mdiDevices, mdiPaletteSwatch, mdiSofa } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
+import {
+  mdiAlertCircleOutline,
+  mdiDevices,
+  mdiPaletteSwatch,
+  mdiSofa,
+} from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -11,10 +15,11 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { Blueprints, fetchBlueprints } from "../data/blueprint";
 import { ConfigEntry, getConfigEntries } from "../data/config_entries";
-import { SceneEntity } from "../data/scene";
 import { findRelated, ItemType, RelatedResult } from "../data/search";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
@@ -72,13 +77,55 @@ export class HaRelatedItems extends LitElement {
     }
   }
 
+  private _relatedEntities = memoizeOne((entityIds: string[]) =>
+    this._toEntities(entityIds)
+  );
+
+  private _relatedAutomations = memoizeOne((automationEntityIds: string[]) =>
+    this._toEntities(automationEntityIds)
+  );
+
+  private _relatedScripts = memoizeOne((scriptEntityIds: string[]) =>
+    this._toEntities(scriptEntityIds)
+  );
+
+  private _relatedGroups = memoizeOne((groupEntityIds: string[]) =>
+    this._toEntities(groupEntityIds)
+  );
+
+  private _relatedScenes = memoizeOne((sceneEntityIds: string[]) =>
+    this._toEntities(sceneEntityIds)
+  );
+
+  private _toEntities = (entityIds: string[]) =>
+    entityIds
+      .map((entityId) => this.hass.states[entityId])
+      .filter((entity) => entity)
+      .sort((a, b) =>
+        caseInsensitiveStringCompare(
+          a.attributes.friendly_name ?? a.entity_id,
+          b.attributes.friendly_name ?? b.entity_id,
+          this.hass.language
+        )
+      );
+
   protected render() {
     if (!this._related) {
       return nothing;
     }
     if (Object.keys(this._related).length === 0) {
       return html`
-        ${this.hass.localize("ui.components.related-items.no_related_found")}
+        <mwc-list>
+          <ha-list-item hasMeta graphic="icon" noninteractive>
+            <ha-svg-icon
+              .path=${mdiAlertCircleOutline}
+              slot="graphic"
+            ></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.components.related-items.no_related_found"
+            )}
+          </ha-list-item>
+        </mwc-list>
       `;
     }
     return html`
@@ -92,7 +139,7 @@ export class HaRelatedItems extends LitElement {
                   (configEntry) => configEntry.entry_id === relatedConfigEntryId
                 );
                 if (!entry) {
-                  return "";
+                  return nothing;
                 }
                 return html`
                   <a
@@ -117,7 +164,7 @@ export class HaRelatedItems extends LitElement {
                 `;
               })}</mwc-list
             >`
-        : ""}
+        : nothing}
       ${this._related.device
         ? html`<h3>
               ${this.hass.localize("ui.components.related-items.device")}
@@ -125,7 +172,7 @@ export class HaRelatedItems extends LitElement {
             ${this._related.device.map((relatedDeviceId) => {
               const device = this.hass.devices[relatedDeviceId];
               if (!device) {
-                return "";
+                return nothing;
               }
               return html`
                 <a
@@ -144,7 +191,7 @@ export class HaRelatedItems extends LitElement {
               `;
             })}            </mwc-list>
             `
-        : ""}
+        : nothing}
       ${this._related.area
         ? html`<h3>
               ${this.hass.localize("ui.components.related-items.area")}
@@ -153,7 +200,7 @@ export class HaRelatedItems extends LitElement {
               >${this._related.area.map((relatedAreaId) => {
                 const area = this.hass.areas[relatedAreaId];
                 if (!area) {
-                  return "";
+                  return nothing;
                 }
                 return html`
                   <a
@@ -183,21 +230,16 @@ export class HaRelatedItems extends LitElement {
                 `;
               })}</mwc-list
             >`
-        : ""}
+        : nothing}
       ${this._related.entity
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.entity")}</h3>
             <mwc-list>
-              ${this._related.entity.map((entityId) => {
-                const entity: HassEntity | undefined =
-                  this.hass.states[entityId];
-                if (!entity) {
-                  return "";
-                }
-                return html`
+              ${this._relatedEntities(this._related.entity).map(
+                (entity) => html`
                   <ha-list-item
                     @click=${this._openMoreInfo}
-                    .entityId=${entityId}
+                    .entityId=${entity.entity_id}
                     hasMeta
                     graphic="icon"
                   >
@@ -208,24 +250,20 @@ export class HaRelatedItems extends LitElement {
                     ${entity.attributes.friendly_name || entity.entity_id}
                     <ha-icon-next slot="meta"></ha-icon-next>
                   </ha-list-item>
-                `;
-              })}
+                `
+              )}
             </mwc-list>
           `
-        : ""}
+        : nothing}
       ${this._related.group
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.group")}</h3>
             <mwc-list>
-              ${this._related.group.map((groupId) => {
-                const group: HassEntity | undefined = this.hass.states[groupId];
-                if (!group) {
-                  return "";
-                }
-                return html`
+              ${this._relatedGroups(this._related.group).map(
+                (group) => html`
                   <ha-list-item
                     @click=${this._openMoreInfo}
-                    .entityId=${groupId}
+                    .entityId=${group.entity_id}
                     hasMeta
                     graphic="icon"
                   >
@@ -236,25 +274,20 @@ export class HaRelatedItems extends LitElement {
                     ${group.attributes.friendly_name || group.entity_id}
                     <ha-icon-next slot="meta"></ha-icon-next>
                   </ha-list-item>
-                `;
-              })}
+                `
+              )}
             </mwc-list>
           `
-        : ""}
+        : nothing}
       ${this._related.scene
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.scene")}</h3>
             <mwc-list>
-              ${this._related.scene.map((sceneId) => {
-                const scene: SceneEntity | undefined =
-                  this.hass.states[sceneId];
-                if (!scene) {
-                  return "";
-                }
-                return html`
+              ${this._relatedScenes(this._related.scene).map(
+                (scene) => html`
                   <ha-list-item
                     @click=${this._openMoreInfo}
-                    .entityId=${sceneId}
+                    .entityId=${scene.entity_id}
                     hasMeta
                     graphic="icon"
                   >
@@ -265,11 +298,11 @@ export class HaRelatedItems extends LitElement {
                     ${scene.attributes.friendly_name || scene.entity_id}
                     <ha-icon-next slot="meta"></ha-icon-next>
                   </ha-list-item>
-                `;
-              })}
+                `
+              )}
             </mwc-list>
           `
-        : ""}
+        : nothing}
       ${this._related.automation_blueprint
         ? html`
             <h3>
@@ -298,23 +331,18 @@ export class HaRelatedItems extends LitElement {
               })}
             </mwc-list>
           `
-        : ""}
+        : nothing}
       ${this._related.automation
         ? html`
             <h3>
               ${this.hass.localize("ui.components.related-items.automation")}
             </h3>
             <mwc-list>
-              ${this._related.automation.map((automationId) => {
-                const automation: HassEntity | undefined =
-                  this.hass.states[automationId];
-                if (!automation) {
-                  return "";
-                }
-                return html`
+              ${this._relatedAutomations(this._related.automation).map(
+                (automation) => html`
                   <ha-list-item
                     @click=${this._openMoreInfo}
-                    .entityId=${automationId}
+                    .entityId=${automation.entity_id}
                     hasMeta
                     graphic="icon"
                   >
@@ -326,11 +354,11 @@ export class HaRelatedItems extends LitElement {
                     automation.entity_id}
                     <ha-icon-next slot="meta"></ha-icon-next>
                   </ha-list-item>
-                `;
-              })}
+                `
+              )}
             </mwc-list>
           `
-        : ""}
+        : nothing}
       ${this._related.script_blueprint
         ? html`
             <h3>
@@ -359,21 +387,16 @@ export class HaRelatedItems extends LitElement {
               })}
             </mwc-list>
           `
-        : ""}
+        : nothing}
       ${this._related.script
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.script")}</h3>
             <mwc-list>
-              ${this._related.script.map((scriptId) => {
-                const script: HassEntity | undefined =
-                  this.hass.states[scriptId];
-                if (!script) {
-                  return "";
-                }
-                return html`
+              ${this._relatedScripts(this._related.script).map(
+                (script) => html`
                   <ha-list-item
                     @click=${this._openMoreInfo}
-                    .entityId=${scriptId}
+                    .entityId=${script.entity_id}
                     hasMeta
                     graphic="icon"
                   >
@@ -384,11 +407,11 @@ export class HaRelatedItems extends LitElement {
                     ${script.attributes.friendly_name || script.entity_id}
                     <ha-icon-next slot="meta"></ha-icon-next>
                   </ha-list-item>
-                `;
-              })}
+                `
+              )}
             </mwc-list>
           `
-        : ""}
+        : nothing}
     `;
   }
 

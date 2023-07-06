@@ -17,6 +17,7 @@ const modules = {
   "intl-datetimeformat": "DateTimeFormat",
   "intl-numberformat": "NumberFormat",
   "intl-displaynames": "DisplayNames",
+  "intl-listformat": "ListFormat",
 };
 
 gulp.task("create-locale-data", (done) => {

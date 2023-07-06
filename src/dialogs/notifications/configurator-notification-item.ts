@@ -38,6 +38,7 @@ export class HuiConfiguratorNotificationItem extends LitElement {
             this.hass.localize,
             this.notification,
             this.hass.locale,
+            this.hass.config,
             this.hass.entities
           )}</mwc-button
         >

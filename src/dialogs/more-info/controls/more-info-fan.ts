@@ -119,6 +119,7 @@ class MoreInfoFan extends LitElement {
       this.hass.localize,
       this.stateObj!,
       this.hass.locale,
+      this.hass.config,
       this.hass.entities,
       forcedState
     );
@@ -281,6 +282,7 @@ class MoreInfoFan extends LitElement {
                             this.hass.localize,
                             this.stateObj!,
                             this.hass.locale,
+                            this.hass.config,
                             this.hass.entities,
                             "preset_mode",
                             this._presetMode
@@ -307,6 +309,7 @@ class MoreInfoFan extends LitElement {
                               this.hass.localize,
                               this.stateObj!,
                               this.hass.locale,
+                              this.hass.config,
                               this.hass.entities,
                               "preset_mode",
                               mode

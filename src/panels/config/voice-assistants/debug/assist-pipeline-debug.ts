@@ -35,6 +35,8 @@ export class AssistPipelineDebug extends LitElement {
 
   @state() private _events?: PipelineRunEvent[];
 
+  private _unsubRefreshEventsID?: number;
+
   protected render() {
     return html`<hass-subpage
       .narrow=${this.narrow}
@@ -64,7 +66,8 @@ export class AssistPipelineDebug extends LitElement {
                     html`<option value=${run.pipeline_run_id}>
                       ${formatDateTimeWithSeconds(
                         new Date(run.timestamp),
-                        this.hass.locale
+                        this.hass.locale,
+                        this.hass.config
                       )}
                     </option>`
                 )}
@@ -93,11 +96,27 @@ export class AssistPipelineDebug extends LitElement {
   }
 
   protected willUpdate(changedProperties) {
+    let clearRefresh = false;
+
     if (changedProperties.has("pipelineId")) {
       this._fetchRuns();
+      clearRefresh = true;
     }
     if (changedProperties.has("_runId")) {
       this._fetchEvents();
+      clearRefresh = true;
+    }
+    if (clearRefresh && this._unsubRefreshEventsID) {
+      clearTimeout(this._unsubRefreshEventsID);
+      this._unsubRefreshEventsID = undefined;
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this._unsubRefreshEventsID) {
+      clearTimeout(this._unsubRefreshEventsID);
+      this._unsubRefreshEventsID = undefined;
     }
   }
 
@@ -143,6 +162,17 @@ export class AssistPipelineDebug extends LitElement {
         title: "Failed to fetch events",
         text: e.message,
       });
+      return;
+    }
+    if (
+      this._events?.length &&
+      // If the last event is not a finish run event, the run is still ongoing.
+      // Refresh events automatically.
+      !["run-end", "error"].includes(this._events[this._events.length - 1].type)
+    ) {
+      this._unsubRefreshEventsID = window.setTimeout(() => {
+        this._fetchEvents();
+      }, 2000);
     }
   }
 

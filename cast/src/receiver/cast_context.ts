@@ -1,3 +1,3 @@
-import { cast } from "chromecast-caf-receiver";
+import { framework } from "./cast_framework";
 
-export const castContext = cast.framework.CastReceiverContext.getInstance();
+export const castContext = framework.CastReceiverContext.getInstance();

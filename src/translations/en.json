@@ -131,6 +131,7 @@
       },
       "humidifier": {
         "humidity": "Target humidity",
+        "state": "State",
         "mode": "Mode",
         "target_humidity_entity": "{name} target humidity",
         "on_entity": "{name} on"
@@ -147,7 +148,8 @@
       "lock": {
         "code": "[%key:ui::card::alarm_control_panel::code%]",
         "lock": "Lock",
-        "unlock": "Unlock"
+        "unlock": "Unlock",
+        "open": "Open"
       },
       "media_player": {
         "source": "Source",
@@ -396,7 +398,8 @@
       },
       "theme-picker": {
         "theme": "Theme",
-        "no_theme": "No theme"
+        "no_theme": "No theme",
+        "default": "[%key:ui::panel::profile::themes::default%]"
       },
       "language-picker": {
         "language": "Language",
@@ -929,8 +932,8 @@
         "light": {
           "edit_mode": "Edit favorite colors",
           "toggle": "Toggle",
-          "change_color": "Change color",
-          "change_color_temp": "Change color temperature",
+          "color": "Color",
+          "color_temp": "Temperature",
           "set_white": "Set white",
           "select_effect": "Select effect",
           "brightness": "Brightness",
@@ -978,6 +981,11 @@
           "disarm_action": "Disarm",
           "arm_title": "Arm",
           "arm_action": "Arm"
+        },
+        "lock": {
+          "open": "Open",
+          "lock": "Lock",
+          "unlock": "Unlock"
         }
       },
       "entity_registry": {
@@ -1093,8 +1101,23 @@
             "stream_orientation_7": "Rotate right and flip",
             "stream_orientation_8": "Rotate right"
           },
+          "voice_assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
           "no_aliases": "Configure aliases and expose settings for voice assistants"
         }
+      },
+      "device-registry-detail": {
+        "name": "[%key:ui::panel::config::devices::name%]",
+        "enabled_label": "[%key:ui::panel::config::devices::enabled_label%]",
+        "enabled_cause": "[%key:ui::panel::config::devices::enabled_cause%]",
+        "type": {
+          "device_heading": "[%key:ui::panel::config::devices::type::device_heading%]",
+          "device": "[%key:ui::panel::config::devices::type::device%]",
+          "service_heading": "[%key:ui::panel::config::devices::type::service_heading%]",
+          "service": "[%key:ui::panel::config::devices::type::service%]"
+        },
+        "enabled_description": "[%key:ui::panel::config::devices::enabled_description%]",
+        "update": "[%key:ui::panel::config::devices::update%]",
+        "unknown_error": "[%key:ui::panel::config::devices::unknown_error%]"
       },
       "voice-settings": {
         "expose_header": "Expose",
@@ -1201,6 +1224,10 @@
         "timer": {
           "duration": "Duration",
           "restore": "Restore?"
+        },
+        "schedule": {
+          "delete": "Delete item?",
+          "confirm_delete": "Do you want to delete this item?"
         }
       },
       "options_flow": {
@@ -1687,7 +1714,7 @@
                 "energy_stat": "Energy returned to the grid",
                 "cost_para": "Do you get money back when you return energy to the grid?",
                 "no_cost": "I do not get money back",
-                "cost_stat": "Use an entity tracking the total recieved money",
+                "cost_stat": "Use an entity tracking the total received money",
                 "cost_stat_input": "Entity with the total compensation",
                 "cost_entity": "Use an entity with current rate",
                 "cost_entity_input": "Entity with the current rate",
@@ -2185,6 +2212,7 @@
             "disable": "[%key:ui::common::disable%]",
             "disabled": "Automation is disabled",
             "read_only": "This automation cannot be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
+            "unavailable": "Automation is unavailable",
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
@@ -2286,7 +2314,10 @@
                   "event_data": "Event data",
                   "context_users": "Limit to events triggered by",
                   "context_user_picked": "User firing event",
-                  "context_user_pick": "Select user"
+                  "context_user_pick": "Select user",
+                  "description": {
+                    "full": "When {eventTypes} event is fired"
+                  }
                 },
                 "geo_location": {
                   "label": "Geolocation",
@@ -2308,12 +2339,19 @@
                   "label": "Home Assistant",
                   "event": "Event:",
                   "start": "Start",
-                  "shutdown": "Shutdown"
+                  "shutdown": "Shutdown",
+                  "description": {
+                    "started": "When Home Assistant is started",
+                    "shutdown": "When Home Assistant is shutdown"
+                  }
                 },
                 "mqtt": {
                   "label": "MQTT",
                   "topic": "Topic",
-                  "payload": "Payload (optional)"
+                  "payload": "Payload (optional)",
+                  "description": {
+                    "full": "When an MQTT message has been received"
+                  }
                 },
                 "numeric_state": {
                   "label": "Numeric state",
@@ -2325,27 +2363,62 @@
                   "type_value": "Fixed number",
                   "type_input": "Numeric value of another entity"
                 },
+                "persistent_notification": {
+                  "label": "Persistent notification",
+                  "notification_id": "Notification Id",
+                  "update_type": "Update type",
+                  "update_types": {
+                    "added": "added",
+                    "removed": "removed",
+                    "current": "current",
+                    "updated": "updated"
+                  }
+                },
                 "sun": {
                   "label": "Sun",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
-                  "offset": "Offset (optional)"
+                  "offset": "Offset (optional)",
+                  "description": {
+                    "sets": "When the sun sets{hasDuration, select, \n true { offset by {duration}} \n other {}\n }",
+                    "rises": "When the sun rises{hasDuration, select, \n true { offset by {duration}} \n other {}\n }"
+                  }
+                },
+                "conversation": {
+                  "label": "Sentence",
+                  "no_punctuation": "You should not use punctuation in your sentence",
+                  "add_sentence": "Add sentence",
+                  "delete": "Delete sentence",
+                  "confirm_delete": "Are you sure you want to delete this sentence?",
+                  "description": {
+                    "empty": "When a sentence is said",
+                    "full": "When the sentence {sentence} is said"
+                  }
                 },
                 "tag": {
-                  "label": "Tag"
+                  "label": "Tag",
+                  "description": {
+                    "full": "When a tag is scanned"
+                  }
                 },
                 "template": {
                   "label": "Template",
                   "value_template": "Value template",
-                  "for": "For"
+                  "for": "For",
+                  "description": {
+                    "full": "When a template triggers{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                  }
                 },
                 "time": {
                   "type_value": "Fixed time",
                   "type_input": "Value of a date/time helper or timestamp-class sensor",
                   "label": "Time",
                   "at": "At time",
-                  "mode": "Mode"
+                  "mode": "Mode",
+                  "description": {
+                    "full": "When the time is equal to {time}"
+                  }
                 },
                 "time_pattern": {
                   "label": "Time Pattern",
@@ -2359,7 +2432,10 @@
                   "local_only": "Only accessible from the local network",
                   "webhook_id": "Webhook ID",
                   "webhook_id_helper": "Treat this ID like a password: keep it secret, and make it hard to guess.",
-                  "webhook_settings": "Webhook Settings"
+                  "webhook_settings": "Webhook Settings",
+                  "description": {
+                    "full": "When a Webhook payload has been received"
+                  }
                 },
                 "zone": {
                   "label": "Zone",
@@ -2496,27 +2572,56 @@
               "delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
               "unsupported_action": "No visual editor support for action: {action}",
               "type_select": "Action type",
+              "continue_on_error": "Continue on error",
               "type": {
                 "service": {
-                  "label": "Call service"
+                  "label": "Call service",
+                  "response_variable": "Response variable",
+                  "has_optional_response": "This service can return a response, if you want to use the response, enter the name of a variable the response will be saved in",
+                  "has_response": "This service returns a response, enter the name of a variable the response will be saved in",
+                  "description": {
+                    "service_based_on_template": "Call a service based on a template on {targets}",
+                    "service_based_on_name": "Call a service ''{name}'' on {targets}",
+                    "service": "Call a service",
+                    "target_template": "templated {name}",
+                    "target_unknown_entity": "unknown entity",
+                    "target_unknown_device": "unknown device",
+                    "target_unknown_area": "unknown area"
+                  }
                 },
                 "play_media": {
-                  "label": "Play media"
+                  "label": "Play media",
+                  "description": {
+                    "full": "Play {hasMedia, select, \n true {{media}} \n other {media}\n } on {hasMediaPlayer, select, \n true {{mediaPlayer}} \n other {a media player}\n }"
+                  }
                 },
                 "delay": {
                   "label": "Wait for time to pass (delay)",
-                  "delay": "Duration"
+                  "delay": "Duration",
+                  "description": {
+                    "full": "Delay {duration}",
+                    "duration_string": "for {string}",
+                    "duration_template": "based on a template",
+                    "duration_unknown": "a duration"
+                  }
                 },
                 "wait_template": {
                   "label": "Wait for a template",
                   "wait_template": "Wait Template",
                   "timeout": "Timeout (optional)",
-                  "continue_timeout": "Continue on timeout"
+                  "continue_timeout": "Continue on timeout",
+                  "description": {
+                    "full": "Wait for a template to evaluate to true"
+                  }
                 },
                 "wait_for_trigger": {
                   "label": "Wait for a trigger",
                   "timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::timeout%]",
-                  "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]"
+                  "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]",
+                  "description": {
+                    "wait_for_a_trigger": "Wait for a trigger",
+                    "wait_for_triggers_with_name": "Wait for ''{triggers}''"
+                  }
                 },
                 "condition": {
                   "label": "Condition"
@@ -2524,7 +2629,11 @@
                 "event": {
                   "label": "Event",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::label%]",
-                  "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]"
+                  "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
+                  "description": {
+                    "full": "Fire event {name}",
+                    "template": "based on a template"
+                  }
                 },
                 "device_id": {
                   "label": "Device",
@@ -2543,7 +2652,11 @@
                 },
                 "activate_scene": {
                   "label": "Scene",
-                  "scene": "Scene"
+                  "scene": "Scene",
+                  "description": {
+                    "activate_scene": "Activate a scene",
+                    "activate_scene_with_name": "Activate scene {name}"
+                  }
                 },
                 "repeat": {
                   "label": "Repeat",
@@ -2561,7 +2674,14 @@
                       "conditions": "Until conditions"
                     }
                   },
-                  "sequence": "Actions"
+                  "sequence": "Actions",
+                  "description": {
+                    "full": "Repeat an action {chosenAction}",
+                    "count": "{count} {count, plural,\n one {time}\n other {times}\n}",
+                    "while": "while ''{conditions}'' is true",
+                    "until": "until ''{conditions}'' is true",
+                    "for_each": "for every item: {items}"
+                  }
                 },
                 "choose": {
                   "label": "Choose",
@@ -2571,25 +2691,47 @@
                   "add_option": "Add option",
                   "remove_option": "Remove option",
                   "conditions": "Conditions",
-                  "sequence": "Actions"
+                  "sequence": "Actions",
+                  "description": {
+                    "full": "Choose between {number} {number, plural,\n one {action}\n other{actions}\n}",
+                    "no_action": "Choose an action"
+                  }
                 },
                 "if": {
                   "label": "If-then",
                   "if": "If",
                   "then": "Then",
                   "else": "Else",
-                  "add_else": "Add else"
+                  "add_else": "Add else",
+                  "description": {
+                    "full": "Perform ''{action}'' if ''{conditions}''{hasElse, select, \n true { otherwise ''{elseAction}''} \n other {}\n } "
+                  }
                 },
                 "stop": {
                   "label": "Stop",
                   "stop": "Reason for stopping",
-                  "error": "Stop because of an unexpected error"
+                  "response_variable": "The name of the variable to use as response",
+                  "error": "Stop because of an unexpected error",
+                  "description": {
+                    "full": "Stop {hasReason, select, \n true { because: {reason}} \n other {}\n }"
+                  }
                 },
                 "parallel": {
-                  "label": "Run in parallel"
+                  "label": "Run in parallel",
+                  "description": {
+                    "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in parallel"
+                  }
                 },
                 "variables": {
-                  "label": "Define variables"
+                  "label": "Define variables",
+                  "description": {
+                    "full": "Define variables {names}"
+                  }
+                },
+                "check_condition": {
+                  "description": {
+                    "full": "Test {condition}"
+                  }
                 }
               }
             }
@@ -2692,6 +2834,20 @@
             "delete": "[%key:ui::common::delete%]",
             "duplicate": "[%key:ui::common::duplicate%]"
           },
+          "dialog_new": {
+            "header": "Create script",
+            "create_empty": "Create new script",
+            "create_empty_description": "Start with an empty script from scratch",
+            "create_blueprint": "[%key:ui::panel::config::automation::dialog_new::create_blueprint%]",
+            "create_blueprint_description": "[%key:ui::panel::config::automation::dialog_new::create_blueprint_description%]",
+            "blueprint_source": {
+              "author": "[%key:ui::panel::config::automation::dialog_new::blueprint_source::author%]",
+              "local": "[%key:ui::panel::config::automation::dialog_new::blueprint_source::local%]",
+              "community": "[%key:ui::panel::config::automation::dialog_new::blueprint_source::community%]",
+              "homeassistant": "[%key:ui::panel::config::automation::dialog_new::blueprint_source::homeassistant%]"
+            },
+            "discover_blueprint_tip": "[%key:ui::panel::config::automation::dialog_new::discover_blueprint_tip%]"
+          },
           "editor": {
             "alias": "Name",
             "icon": "Icon",
@@ -2702,6 +2858,7 @@
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
+            "unavailable": "Script is unavailable",
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "header": "Script: {name}",
@@ -3062,7 +3219,8 @@
             "battery": "Battery",
             "disabled_by": "Disabled",
             "no_devices": "No devices",
-            "no_integration": "No integration"
+            "no_integration": "No integration",
+            "unknown": "unknown"
           },
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this device?",
@@ -3209,6 +3367,7 @@
           "description": "Manage integrations with services or devices",
           "integration": "integration",
           "discovered": "Discovered",
+          "disabled": "Disabled",
           "available_integrations": "Available integrations",
           "new_flow": "Setup another instance of {integration}",
           "attention": "Attention required",
@@ -3251,8 +3410,19 @@
           },
           "integration_page": {
             "entries": "Integration entries",
+            "entries_device": "Devices",
+            "entries_hub": "Hubs",
+            "entries_service": "Services",
+            "entries_helper": "Helpers",
+            "entries_hardware": "Hardware",
             "no_entries": "No entries",
-            "attention_entries": "Needs attention"
+            "attention_entries": "Needs attention",
+            "add_entry": "Add entry",
+            "add_device": "Add device",
+            "add_hub": "Add hub",
+            "add_service": "Add service",
+            "add_helper": "Add helper",
+            "add_hardware": "Add hardware"
           },
           "config_entry": {
             "application_credentials": {
@@ -3266,6 +3436,7 @@
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
+            "entries": "{count} {count, plural,\n  one {entry}\n  other {entries}\n}",
             "rename": "Rename",
             "configure": "Configure",
             "system_options": "System options",
@@ -3307,7 +3478,7 @@
                 "device": "device"
               }
             },
-            "provided_by_custom_integration": "Provided by a custom integration",
+            "custom_integration": "Custom integration",
             "depends_on_cloud": "Depends on the cloud",
             "yaml_only": "Needs manual configuration",
             "disabled_polling": "Automatic polling for updated data disabled",
@@ -3316,7 +3487,7 @@
               "loaded": "Loaded",
               "setup_error": "Failed to set up",
               "migration_error": "Migration error",
-              "setup_retry": "Retrying setup",
+              "setup_retry": "Failed setup, will retry",
               "not_loaded": "Not loaded",
               "failed_unload": "Failed to unload",
               "setup_in_progress": "Initializing"
@@ -3475,11 +3646,11 @@
         },
         "thread": {
           "other_networks": "Other networks",
-          "my_network": "My network",
+          "my_network": "Preferred network",
           "no_preferred_network": "You don't have a preferred network yet.",
           "add_open_thread_border_router": "Add an OpenThread border router",
           "reset_border_router": "Reset border router",
-          "add_to_my_network": "Add to my network",
+          "add_to_my_network": "Add to preferred network",
           "no_routers_otbr_network": "No border routers where found, maybe the border router is not configured correctly. You can try to reset it to the factory settings.",
           "add_dataset_from_tlv": "Add dataset from TLV",
           "add_dataset": "Add Thread dataset",
@@ -3509,7 +3680,11 @@
             "download_backup": "Download Backup",
             "migrate_radio": "Migrate Radio",
             "network_settings_title": "Network Settings",
-            "change_channel": "Change channel"
+            "change_channel": "Change channel",
+            "channel_dialog": {
+              "title": "Multiprotocol addon in use",
+              "text": "Zigbee and Thread share the same radio and must use the same channel. Change the channel of both networks by reconfiguring multiprotocol from the hardware menu."
+            }
           },
           "add_device_page": {
             "spinner": "Searching for Zigbee devices…",
@@ -4038,6 +4213,7 @@
             "add_title": "Add network storage",
             "update_title": "Update network storage",
             "no_mounts": "No connected network storage",
+            "documentation": "Documentation",
             "not_supported": {
               "title": "The operating system does not support network storage",
               "supervised": "Network storage is not supported on this host",
@@ -4052,6 +4228,10 @@
             "mount_type": {
               "nfs": "Network File Share (NFS)",
               "cifs": "Samba/Windows (CIFS)"
+            },
+            "cifs_versions": {
+              "auto": "Auto (2.1+)",
+              "legacy": "Legacy ({version})"
             },
             "options": {
               "name": {
@@ -4082,6 +4262,10 @@
                 "title": "Usage",
                 "description": "This determines how the share is intended to be used"
               },
+              "version": {
+                "title": "Samba/Windows (CIFS) version",
+                "description": "This choses the version of the protocol to use"
+              },
               "username": {
                 "title": "Username",
                 "description": "This is your username for the samba share"
@@ -4096,6 +4280,9 @@
             "errors": {
               "reload": "Could not reload mount {mount}",
               "invalid_name": "Invalid name, can only contain alphanumeric characters and underscores"
+            },
+            "warnings": {
+              "not_recomeded_cifs_version": "The selected CIFS version is not recommended to use, you should only use this if you have problems with auto and your server does not support version 2.1 or newer"
             }
           }
         },
@@ -4192,7 +4379,14 @@
             },
             "energy_solar_graph": {
               "production": "Production {name}",
-              "forecast": "Forecast {name}"
+              "forecast": "Forecast {name}",
+              "total_produced": "Total produced {num} kWh"
+            },
+            "energy_gas_graph": {
+              "total_consumed": "Total consumed {num} {unit}"
+            },
+            "energy_water_graph": {
+              "total_consumed": "[%key:ui::panel::lovelace::cards::energy::energy_gas_graph::total_consumed%]"
             },
             "solar_consumed_gauge": {
               "card_indicates_solar_energy_used": "This card indicates how much of the solar energy you produced was used by your home instead of being returned to the grid.",
@@ -4200,6 +4394,11 @@
               "self_consumed_solar_energy": "Self-consumed solar energy",
               "not_produced_solar_energy": "You have not produced any solar energy",
               "self_consumed_solar_could_not_calc": "Self-consumed solar energy couldn't be calculated"
+            },
+            "self_sufficiency_gauge": {
+              "card_indicates_self_sufficiency_quota": "This card indicates how self-sufficient your home is.",
+              "self_sufficiency_quota": "Self-sufficiency quota",
+              "self_sufficiency_could_not_calc": "Self-sufficiency quota couldn't be calculated"
             },
             "grid_neutrality_gauge": {
               "energy_dependency": "This card indicates your net energy usage.",
@@ -4268,6 +4467,7 @@
         },
         "editor": {
           "header": "Edit UI",
+          "yaml_unsupported": "The edit UI is not available when in YAML mode.",
           "menu": {
             "open": "Open dashboard menu",
             "raw_editor": "Raw configuration editor",
@@ -4345,17 +4545,24 @@
             "edit": "Edit",
             "clear": "Clear",
             "delete": "Delete card",
+            "copy": "Copy card",
+            "cut": "Cut card",
             "duplicate": "Duplicate card",
             "move": "Move to view",
             "move_up": "Move card up",
             "move_down": "Move card down",
             "move_before": "Move card before",
             "move_after": "Move card after",
+            "change_position": "Change card position",
             "options": "More options",
             "search_cards": "Search cards"
           },
           "move_card": {
             "header": "Choose a view to move the card to"
+          },
+          "change_position": {
+            "title": "Change card position",
+            "text": "What position do you want to move your card to?"
           },
           "select_view": {
             "header": "Choose a view",
@@ -4387,12 +4594,15 @@
           "action-editor": {
             "navigation_path": "Navigation Path",
             "url_path": "URL Path",
+            "start_listening": "Start listening",
+            "pipeline_id": "Assistant",
             "actions": {
               "default_action": "Default Action",
               "call-service": "Call Service",
               "more-info": "More Info",
               "toggle": "Toggle",
               "navigate": "Navigate",
+              "assist": "Assist",
               "url": "URL",
               "none": "No Action"
             }
@@ -4580,6 +4790,7 @@
               "aspect_ratio": "Aspect Ratio",
               "attribute": "Attribute",
               "camera_image": "Camera Entity",
+              "image_entity": "Image Entity",
               "camera_view": "Camera View",
               "double_tap_action": "Double Tap Action",
               "entities": "Entities",
@@ -4595,6 +4806,8 @@
               "manual_description": "Need to add a custom card or just want to manually write the YAML?",
               "minimum": "Minimum",
               "name": "Name",
+              "paste": "Paste from Clipboard",
+              "paste_description": "Paste a {type} card from the clipboard",
               "refresh_interval": "Refresh Interval",
               "show_icon": "Show Icon?",
               "show_name": "Show Name?",
@@ -4910,6 +5123,15 @@
             "24": "24 hours"
           }
         },
+        "time_zone": {
+          "header": "Time Zone",
+          "dropdown_label": "Time zone",
+          "description": "Choose the time zone to use for displaying times.",
+          "options": {
+            "local": "Use your local time zone ({timezone})",
+            "server": "Use server time zone ({timezone})"
+          }
+        },
         "date_format": {
           "header": "Date Format",
           "dropdown_label": "Date format",
@@ -5186,6 +5408,7 @@
             "title": "Services",
             "description": "The service dev tool allows you to call any available service in Home Assistant.",
             "call_service": "Call Service",
+            "response": "Response",
             "column_parameter": "Parameter",
             "column_description": "Description",
             "column_example": "Example",
@@ -5222,6 +5445,8 @@
             "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
             "editor": "Template editor",
             "reset": "Reset to demo template",
+            "confirm_reset": "Do you want to reset your current template back to the demo template?",
+            "confirm_clear": "Do you want to clear your current template?",
             "result_type": "Result type",
             "jinja_documentation": "Jinja2 template documentation",
             "template_extensions": "Home Assistant template extensions",
@@ -5253,7 +5478,14 @@
                 "clear": "Delete all old statistic data for this entity"
               }
             },
-            "adjust_sum": "Adjust sum"
+            "adjust_sum": "Adjust sum",
+            "data_table": {
+              "name": "Name",
+              "statistic_id": "Statistic id",
+              "statistics_unit": "Statistics unit",
+              "source": "Source",
+              "issue": "Issue"
+            }
           },
           "yaml": {
             "title": "YAML",
@@ -5688,9 +5920,20 @@
       "error": "[%key:ui::panel::my::error%]",
       "error_addon_not_found": "Add-on not found",
       "error_repository_not_found": "The required repository for this Add-on was not found",
-      "error_addon_not_started": "The requested add-on is not running. Please start it first",
       "error_addon_not_installed": "The requested add-on is not installed. Please install it first",
       "error_addon_no_ingress": "The requested add-on does not support ingress"
+    },
+    "ingress": {
+      "error_addon_info": "Unable to fetch add-on info to start Ingress",
+      "error_addon_not_installed": "The add-on is not installed. Please install it first",
+      "error_addon_not_supported": "This add-on does not support Ingress",
+      "error_addon_not_running": "The add-on is not running. Do you want to start it now?",
+      "start_addon": "Start add-on",
+      "addon_starting": "The add-on is starting, this can take some time...",
+      "error_starting_addon": "Error starting the add-on",
+      "error_creating_session": "Unable to create an Ingress session",
+      "error_addon_not_ready": "The add-on seems to not be ready, it might still be starting. Do you want to try again?",
+      "retry": "Retry"
     },
     "system": {
       "log": {
@@ -5790,6 +6033,8 @@
       "download_backup": "Download backup",
       "create_backup": "Create backup",
       "create": "Create",
+      "location": "Location",
+      "data_disk": "Data disk",
       "created": "Created",
       "name": "Backup name",
       "type": "Backup type",

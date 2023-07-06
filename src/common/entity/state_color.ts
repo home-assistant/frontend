@@ -110,3 +110,15 @@ export const stateColorProperties = (
 
   return undefined;
 };
+
+export const stateColorBrightness = (stateObj: HassEntity): string => {
+  if (
+    stateObj.attributes.brightness &&
+    computeDomain(stateObj.entity_id) !== "plant"
+  ) {
+    // lowest brightness will be around 50% (that's pretty dark)
+    const brightness = stateObj.attributes.brightness;
+    return `brightness(${(brightness + 245) / 5}%)`;
+  }
+  return "";
+};

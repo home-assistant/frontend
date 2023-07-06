@@ -13,7 +13,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { stateColorCss } from "../../common/entity/state_color";
+import {
+  stateColorCss,
+  stateColorBrightness,
+} from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
 import { HVAC_ACTION_TO_MODE } from "../../data/climate";
@@ -37,6 +40,31 @@ export class StateBadge extends LitElement {
   private _showIcon = true;
 
   @state() private _iconStyle: { [name: string]: string | undefined } = {};
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    if (
+      this.hasUpdated &&
+      this.overrideImage === undefined &&
+      (this.stateObj?.attributes.entity_picture ||
+        this.stateObj?.attributes.entity_picture_local)
+    ) {
+      // Update image on connect, so we get new auth token
+      this.requestUpdate("stateObj");
+    }
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (
+      this.overrideImage === undefined &&
+      (this.stateObj?.attributes.entity_picture ||
+        this.stateObj?.attributes.entity_picture_local)
+    ) {
+      // Clear image on disconnect so we don't fetch with old auth when we reconnect
+      this.style.backgroundImage = "";
+    }
+  }
 
   private get _stateColor() {
     const domain = this.stateObj
@@ -128,8 +156,7 @@ export class StateBadge extends LitElement {
             // eslint-disable-next-line
             console.warn(errorMessage);
           }
-          // lowest brightness will be around 50% (that's pretty dark)
-          iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+          iconStyle.filter = stateColorBrightness(stateObj);
         }
         if (stateObj.attributes.hvac_action) {
           const hvacAction = stateObj.attributes.hvac_action;

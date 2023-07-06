@@ -4,6 +4,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import { ensureArray } from "../../common/array/ensure-array";
 import type { SelectOption, SelectSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-checkbox";
@@ -40,7 +41,7 @@ export class HaSelectSelector extends LitElement {
 
   protected render() {
     const options =
-      this.selector.select?.options.map((option) =>
+      this.selector.select?.options?.map((option) =>
         typeof option === "object"
           ? (option as SelectOption)
           : ({ value: option, label: option } as SelectOption)
@@ -77,7 +78,8 @@ export class HaSelectSelector extends LitElement {
           ${this._renderHelper()}
         `;
       }
-
+      const value =
+        !this.value || this.value === "" ? [] : ensureArray(this.value);
       return html`
         <div>
           ${this.label}
@@ -85,7 +87,7 @@ export class HaSelectSelector extends LitElement {
             (item: SelectOption) => html`
               <ha-formfield .label=${item.label}>
                 <ha-checkbox
-                  .checked=${this.value?.includes(item.value)}
+                  .checked=${value.includes(item.value)}
                   .value=${item.value}
                   .disabled=${item.disabled || this.disabled}
                   @change=${this._checkboxChanged}
@@ -100,7 +102,7 @@ export class HaSelectSelector extends LitElement {
 
     if (this.selector.select?.multiple) {
       const value =
-        !this.value || this.value === "" ? [] : (this.value as string[]);
+        !this.value || this.value === "" ? [] : ensureArray(this.value);
 
       const optionItems = options.filter(
         (option) => !option.disabled && !value?.includes(option.value)
@@ -231,19 +233,19 @@ export class HaSelectSelector extends LitElement {
     const value: string = ev.target.value;
     const checked = ev.target.checked;
 
+    const oldValue =
+      !this.value || this.value === "" ? [] : ensureArray(this.value);
+
     if (checked) {
-      if (!this.value) {
-        newValue = [value];
-      } else if (this.value.includes(value)) {
+      if (oldValue.includes(value)) {
         return;
-      } else {
-        newValue = [...this.value, value];
       }
+      newValue = [...oldValue, value];
     } else {
-      if (!this.value?.includes(value)) {
+      if (!oldValue?.includes(value)) {
         return;
       }
-      newValue = (this.value as string[]).filter((v) => v !== value);
+      newValue = oldValue.filter((v) => v !== value);
     }
 
     fireEvent(this, "value-changed", {
@@ -252,7 +254,7 @@ export class HaSelectSelector extends LitElement {
   }
 
   private async _removeItem(ev) {
-    const value: string[] = [...(this.value! as string[])];
+    const value: string[] = [...ensureArray(this.value!)];
     value.splice(ev.target.idx, 1);
 
     fireEvent(this, "value-changed", {
@@ -277,7 +279,10 @@ export class HaSelectSelector extends LitElement {
       return;
     }
 
-    if (newValue !== undefined && this.value?.includes(newValue)) {
+    const currentValue =
+      !this.value || this.value === "" ? [] : ensureArray(this.value);
+
+    if (newValue !== undefined && currentValue.includes(newValue)) {
       return;
     }
 
@@ -285,9 +290,6 @@ export class HaSelectSelector extends LitElement {
       this._filterChanged();
       this.comboBox.setInputValue("");
     }, 0);
-
-    const currentValue =
-      !this.value || this.value === "" ? [] : (this.value as string[]);
 
     fireEvent(this, "value-changed", {
       value: [...currentValue, newValue],

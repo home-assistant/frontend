@@ -1,7 +1,8 @@
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../common/dom/fire_event";
 
 export interface EnterCodeDialogParams {
   codeFormat: "text" | "number";
+  codePattern?: string;
   submitText?: string;
   cancelText?: string;
   title?: string;

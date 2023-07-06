@@ -27,7 +27,7 @@ import "../../../../components/ha-button-menu";
 import "../../../../components/ha-button";
 import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
-import { Trigger, Clipboard } from "../../../../data/automation";
+import { Trigger, AutomationClipboard } from "../../../../data/automation";
 import { TRIGGER_TYPES } from "../../../../data/trigger";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import { SortableInstance } from "../../../../resources/sortable";
@@ -42,6 +42,8 @@ import "./types/ha-automation-trigger-geo_location";
 import "./types/ha-automation-trigger-homeassistant";
 import "./types/ha-automation-trigger-mqtt";
 import "./types/ha-automation-trigger-numeric_state";
+import "./types/ha-automation-trigger-persistent_notification";
+import "./types/ha-automation-trigger-conversation";
 import "./types/ha-automation-trigger-state";
 import "./types/ha-automation-trigger-sun";
 import "./types/ha-automation-trigger-tag";
@@ -50,6 +52,7 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
+import { storage } from "../../../../common/decorators/storage";
 
 const PASTE_VALUE = "__paste__";
 
@@ -65,7 +68,13 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property({ type: Boolean }) public reOrderMode = false;
 
-  @property() public clipboard?: Clipboard;
+  @storage({
+    key: "automationClipboard",
+    state: true,
+    subscribe: true,
+    storage: "sessionStorage",
+  })
+  public _clipboard?: AutomationClipboard;
 
   private _focusLastTriggerOnChange = false;
 
@@ -154,13 +163,13 @@ export default class HaAutomationTrigger extends LitElement {
           >
             <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
           </ha-button>
-          ${this.clipboard?.trigger
+          ${this._clipboard?.trigger
             ? html` <mwc-list-item .value=${PASTE_VALUE} graphic="icon">
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.triggers.paste"
                 )}
                 (${this.hass.localize(
-                  `ui.panel.config.automation.editor.triggers.type.${this.clipboard.trigger.platform}.label`
+                  `ui.panel.config.automation.editor.triggers.type.${this._clipboard.trigger.platform}.label`
                 )})
                 <ha-svg-icon
                   slot="graphic"
@@ -258,7 +267,7 @@ export default class HaAutomationTrigger extends LitElement {
 
     let triggers: Trigger[];
     if (value === PASTE_VALUE) {
-      triggers = this.triggers.concat(deepClone(this.clipboard!.trigger));
+      triggers = this.triggers.concat(deepClone(this._clipboard!.trigger));
     } else {
       const platform = value as Trigger["platform"];
 

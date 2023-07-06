@@ -1,14 +1,5 @@
 import { mdiFilterRemove, mdiRefresh } from "@mdi/js";
-import {
-  addDays,
-  differenceInHours,
-  endOfToday,
-  endOfWeek,
-  endOfYesterday,
-  startOfToday,
-  startOfWeek,
-  startOfYesterday,
-} from "date-fns/esm";
+import { differenceInHours } from "date-fns/esm";
 import {
   HassServiceTarget,
   UnsubscribeFunc,
@@ -16,8 +7,7 @@ import {
 import { css, html, LitElement, PropertyValues } from "lit";
 import { property, query, state } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
-import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
-import { LocalStorage } from "../../common/decorators/local-storage";
+import { storage } from "../../common/decorators/storage";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -31,10 +21,11 @@ import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
 import "../../components/ha-circular-progress";
 import "../../components/ha-date-range-picker";
-import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
+import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-target-picker";
+import "../../components/ha-top-app-bar-fixed";
 import {
   AreaDeviceLookup,
   AreaEntityLookup,
@@ -55,8 +46,6 @@ import {
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
-import "../../components/ha-top-app-bar-fixed";
-import "../../components/ha-icon-button-arrow-prev";
 
 class HaPanelHistory extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) hass!: HomeAssistant;
@@ -69,14 +58,16 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   @state() private _endDate: Date;
 
-  @LocalStorage("historyPickedValue", true, false)
+  @storage({
+    key: "historyPickedValue",
+    state: true,
+    subscribe: false,
+  })
   private _targetPickerValue?: HassServiceTarget;
 
   @state() private _isLoading = false;
 
   @state() private _stateHistory?: HistoryResult;
-
-  @state() private _ranges?: DateRangePickerRanges;
 
   @state() private _deviceEntityLookup?: DeviceEntityLookup;
 
@@ -178,7 +169,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               ?disabled=${this._isLoading}
               .startDate=${this._startDate}
               .endDate=${this._endDate}
-              .ranges=${this._ranges}
               @change=${this._dateRangeChanged}
             ></ha-date-range-picker>
             <ha-target-picker
@@ -204,6 +194,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                 <state-history-charts
                   .hass=${this.hass}
                   .historyData=${this._stateHistory}
+                  .startTime=${this._startDate}
                   .endTime=${this._endDate}
                 >
                 </state-history-charts>
@@ -219,24 +210,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     if (this.hasUpdated) {
       return;
     }
-
-    const today = new Date();
-    const weekStartsOn = firstWeekdayIndex(this.hass.locale);
-    const weekStart = startOfWeek(today, { weekStartsOn });
-    const weekEnd = endOfWeek(today, { weekStartsOn });
-
-    this._ranges = {
-      [this.hass.localize("ui.components.date-range-picker.ranges.today")]: [
-        startOfToday(),
-        endOfToday(),
-      ],
-      [this.hass.localize("ui.components.date-range-picker.ranges.yesterday")]:
-        [startOfYesterday(), endOfYesterday()],
-      [this.hass.localize("ui.components.date-range-picker.ranges.this_week")]:
-        [weekStart, weekEnd],
-      [this.hass.localize("ui.components.date-range-picker.ranges.last_week")]:
-        [addDays(weekStart, -7), addDays(weekEnd, -7)],
-    };
 
     const searchParams = extractSearchParamsObject();
     const entityIds = searchParams.entity_id;

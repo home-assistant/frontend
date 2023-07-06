@@ -1,20 +1,28 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import "@material/mwc-button";
-import "@material/mwc-list";
+import "@material/mwc-ripple";
+import type { Ripple } from "@material/mwc-ripple";
+import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
+import { mdiCloud, mdiPackageVariant } from "@mdi/js";
 import {
-  mdiCogOutline,
-  mdiDevices,
-  mdiHandExtendedOutline,
-  mdiShapeOutline,
-} from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+  CSSResultGroup,
+  LitElement,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
+import {
+  customElement,
+  eventOptions,
+  property,
+  queryAsync,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
+import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import { ConfigEntry, ERROR_STATES } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
@@ -46,8 +54,12 @@ export class HaIntegrationCard extends LitElement {
 
   @property() public logInfo?: IntegrationLogInfo;
 
+  @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
+
+  @state() private _shouldRenderRipple = false;
+
   protected render(): TemplateResult {
-    const state = this._getState(this.items);
+    const entryState = this._getState(this.items);
 
     const debugLoggingEnabled =
       this.logInfo && this.logInfo.level === LogSeverity.DEBUG;
@@ -56,36 +68,51 @@ export class HaIntegrationCard extends LitElement {
       <ha-card
         outlined
         class=${classMap({
-          "state-loaded": state === "loaded",
-          "state-not-loaded": state === "not_loaded",
-          "state-failed-unload": state === "failed_unload",
-          "state-setup": state === "setup_in_progress",
-          "state-error": ERROR_STATES.includes(state),
+          "state-loaded": entryState === "loaded",
+          "state-not-loaded": entryState === "not_loaded",
+          "state-failed-unload": entryState === "failed_unload",
+          "state-setup": entryState === "setup_in_progress",
+          "state-error": ERROR_STATES.includes(entryState),
           "debug-logging": Boolean(debugLoggingEnabled),
         })}
       >
-        <ha-integration-header
-          .hass=${this.hass}
-          .domain=${this.domain}
-          .localizedDomainName=${this.items[0].localized_domain_name}
-          .banner=${state !== "loaded"
-            ? this.hass.localize(
-                `ui.panel.config.integrations.config_entry.state.${state}`
-              )
-            : debugLoggingEnabled
-            ? this.hass.localize(
-                "ui.panel.config.integrations.config_entry.debug_logging_enabled"
-              )
-            : undefined}
-          .manifest=${this.manifest}
+        <a
+          href=${`/config/integrations/integration/${this.domain}`}
+          class="ripple-anchor"
+          @focus=${this.handleRippleFocus}
+          @blur=${this.handleRippleBlur}
+          @mouseenter=${this.handleRippleMouseEnter}
+          @mouseleave=${this.handleRippleMouseLeave}
+          @mousedown=${this.handleRippleActivate}
+          @mouseup=${this.handleRippleDeactivate}
+          @touchstart=${this.handleRippleActivate}
+          @touchend=${this.handleRippleDeactivate}
+          @touchcancel=${this.handleRippleDeactivate}
         >
-          <a
-            href=${`/config/integrations/integration/${this.domain}`}
-            slot="header-button"
+          ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : ""}
+          <ha-integration-header
+            .hass=${this.hass}
+            .domain=${this.domain}
+            .localizedDomainName=${this.items[0].localized_domain_name}
+            .error=${ERROR_STATES.includes(entryState)
+              ? this.hass.localize(
+                  `ui.panel.config.integrations.config_entry.state.${entryState}`
+                )
+              : undefined}
+            .warning=${entryState !== "loaded" &&
+            !ERROR_STATES.includes(entryState)
+              ? this.hass.localize(
+                  `ui.panel.config.integrations.config_entry.state.${entryState}`
+                )
+              : debugLoggingEnabled
+              ? this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+                )
+              : undefined}
+            .manifest=${this.manifest}
           >
-            <ha-icon-button .path=${mdiCogOutline}></ha-icon-button>
-          </a>
-        </ha-integration-header>
+          </ha-integration-header>
+        </a>
 
         ${this._renderSingleEntry()}
       </ha-card>
@@ -94,23 +121,21 @@ export class HaIntegrationCard extends LitElement {
 
   private _renderSingleEntry(): TemplateResult {
     const devices = this._getDevices(this.items, this.hass.devices);
-    const entities = this._getEntities(this.items, this.entityRegistryEntries);
+    const entities = devices.length
+      ? []
+      : this._getEntities(this.items, this.entityRegistryEntries);
 
     const services = !devices.some((device) => device.entry_type !== "service");
 
     return html`
-      <div class="content">
+      <div class="card-actions">
         ${devices.length > 0
           ? html`<a
               href=${devices.length === 1
                 ? `/config/devices/device/${devices[0].id}`
                 : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`}
             >
-              <ha-list-item hasMeta graphic="icon">
-                <ha-svg-icon
-                  .path=${services ? mdiHandExtendedOutline : mdiDevices}
-                  slot="graphic"
-                ></ha-svg-icon>
+              <ha-button>
                 ${this.hass.localize(
                   `ui.panel.config.integrations.config_entry.${
                     services ? "services" : "devices"
@@ -118,28 +143,57 @@ export class HaIntegrationCard extends LitElement {
                   "count",
                   devices.length
                 )}
-                <ha-icon-next slot="meta"></ha-icon-next>
-              </ha-list-item>
+              </ha-button>
             </a>`
-          : ""}
-        ${entities.length > 0
+          : entities.length > 0
           ? html`<a
               href=${`/config/entities?historyBack=1&domain=${this.domain}`}
             >
-              <ha-list-item hasMeta graphic="icon">
-                <ha-svg-icon
-                  .path=${mdiShapeOutline}
-                  slot="graphic"
-                ></ha-svg-icon>
+              <ha-button>
                 ${this.hass.localize(
                   `ui.panel.config.integrations.config_entry.entities`,
                   "count",
                   entities.length
                 )}
-                <ha-icon-next slot="meta"></ha-icon-next>
-              </ha-list-item>
+              </ha-button>
             </a>`
-          : ""}
+          : html`<a href=${`/config/integrations/integration/${this.domain}`}>
+              <ha-button>
+                ${this.hass.localize(
+                  `ui.panel.config.integrations.config_entry.entries`,
+                  "count",
+                  this.items.length
+                )}
+              </ha-button>
+            </a>`}
+        <div class="icons">
+          ${this.manifest && !this.manifest.is_built_in
+            ? html`<span class="icon custom">
+                <ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>
+                <simple-tooltip
+                  animation-delay="0"
+                  .position=${computeRTL(this.hass) ? "right" : "left"}
+                  offset="4"
+                  >${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.custom_integration"
+                  )}</simple-tooltip
+                >
+              </span>`
+            : nothing}
+          ${this.manifest && this.manifest.iot_class?.startsWith("cloud_")
+            ? html`<div class="icon cloud">
+                <ha-svg-icon .path=${mdiCloud}></ha-svg-icon>
+                <simple-tooltip
+                  animation-delay="0"
+                  .position=${computeRTL(this.hass) ? "right" : "left"}
+                  offset="4"
+                  >${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.depends_on_cloud"
+                  )}</simple-tooltip
+                >
+              </div>`
+            : nothing}
+        </div>
       </div>
     `;
   }
@@ -149,14 +203,14 @@ export class HaIntegrationCard extends LitElement {
       if (configEntry.length === 1) {
         return configEntry[0].state;
       }
-      let state: ConfigEntry["state"];
+      let entryState: ConfigEntry["state"];
       for (const entry of configEntry) {
         if (ERROR_STATES.includes(entry.state)) {
           return entry.state;
         }
-        state = entry.state;
+        entryState = entry.state;
       }
-      return state!;
+      return entryState!;
     }
   );
 
@@ -191,6 +245,36 @@ export class HaIntegrationCard extends LitElement {
     }
   );
 
+  private _rippleHandlers: RippleHandlers = new RippleHandlers(() => {
+    this._shouldRenderRipple = true;
+    return this._ripple;
+  });
+
+  @eventOptions({ passive: true })
+  private handleRippleActivate(evt?: Event) {
+    this._rippleHandlers.startPress(evt);
+  }
+
+  private handleRippleDeactivate() {
+    this._rippleHandlers.endPress();
+  }
+
+  private handleRippleFocus() {
+    this._rippleHandlers.startFocus();
+  }
+
+  private handleRippleBlur() {
+    this._rippleHandlers.endFocus();
+  }
+
+  protected handleRippleMouseEnter() {
+    this._rippleHandlers.startHover();
+  }
+
+  protected handleRippleMouseLeave() {
+    this._rippleHandlers.endHover();
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -198,11 +282,24 @@ export class HaIntegrationCard extends LitElement {
         ha-card {
           display: flex;
           flex-direction: column;
+          justify-content: space-between;
           height: 100%;
           overflow: hidden;
           --state-color: var(--divider-color, #e0e0e0);
           --ha-card-border-color: var(--state-color);
           --state-message-color: var(--state-color);
+        }
+        .ripple-anchor {
+          flex-grow: 1;
+          position: relative;
+        }
+        ha-integration-header {
+          height: 100%;
+        }
+        .card-actions {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
         .debug-logging {
           --state-color: var(--warning-color);
@@ -217,9 +314,12 @@ export class HaIntegrationCard extends LitElement {
           --text-on-state-color: var(--primary-text-color);
         }
         .state-not-loaded {
+          opacity: 0.8;
+          --state-color: var(--warning-color);
           --state-message-color: var(--primary-text-color);
         }
         .state-setup {
+          opacity: 0.8;
           --state-message-color: var(--secondary-text-color);
         }
         :host(.highlight) ha-card {
@@ -234,10 +334,30 @@ export class HaIntegrationCard extends LitElement {
         }
         a {
           text-decoration: none;
-          color: var(--primary-color);
+          color: var(--primary-text-color);
         }
-        a ha-icon-button {
-          color: var(--secondary-text-color);
+        .icons {
+          display: flex;
+        }
+        .icon {
+          border-radius: 50%;
+          color: var(--text-primary-color);
+          padding: 4px;
+          margin-left: 8px;
+        }
+        .icon.cloud {
+          background: var(--info-color);
+        }
+        .icon.custom {
+          background: var(--warning-color);
+        }
+        .icon ha-svg-icon {
+          width: 16px;
+          height: 16px;
+          display: block;
+        }
+        simple-tooltip {
+          white-space: nowrap;
         }
       `,
     ];

@@ -8,9 +8,9 @@ cd "$(dirname "$0")/.."
 
 # Install/upgrade node when inside devcontainer
 if [[ -n "$DEVCONTAINER" ]]; then
-    nodeCurrent=$(nvm version default || echo "")
+    nodeCurrent=$(nvm version default || :)
     nodeLatest=$(nvm version-remote "$(cat .nvmrc)")
-    if [[ -z "$nodeCurrent" ]]; then
+    if [[ -z "$nodeCurrent" || "$nodeCurrent" == "N/A" ]]; then
         nvm install
     elif [[ "$nodeCurrent" != "$nodeLatest" ]]; then
         nvm install --reinstall-packages-from="$nodeCurrent" --default

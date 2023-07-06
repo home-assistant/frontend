@@ -98,6 +98,7 @@ export class StateHistoryChartTimeline extends LitElement {
           adapters: {
             date: {
               locale: this.hass.locale,
+              config: this.hass.config,
             },
           },
           suggestedMin: this.startTime,
@@ -181,8 +182,16 @@ export class StateHistoryChartTimeline extends LitElement {
 
               return [
                 d.label || "",
-                formatDateTimeWithSeconds(d.start, this.hass.locale),
-                formatDateTimeWithSeconds(d.end, this.hass.locale),
+                formatDateTimeWithSeconds(
+                  d.start,
+                  this.hass.locale,
+                  this.hass.config
+                ),
+                formatDateTimeWithSeconds(
+                  d.end,
+                  this.hass.locale,
+                  this.hass.config
+                ),
                 formattedDuration,
               ];
             },

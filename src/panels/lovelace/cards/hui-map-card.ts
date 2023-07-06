@@ -34,7 +34,10 @@ import {
   HistoryStates,
   subscribeHistoryStatesTimeWindow,
 } from "../../../data/history";
-import { hasConfigOrEntitiesChanged } from "../common/has-changed";
+import {
+  hasConfigChanged,
+  hasConfigOrEntitiesChanged,
+} from "../common/has-changed";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -194,7 +197,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return true;
     }
 
-    return hasConfigOrEntitiesChanged(this, changedProps);
+    if (this._config?.geo_location_sources) {
+      if (oldHass.states !== this.hass.states) {
+        return true;
+      }
+    }
+
+    return this._config?.entities
+      ? hasConfigOrEntitiesChanged(this, changedProps)
+      : hasConfigChanged(this, changedProps);
   }
 
   public connectedCallback() {
@@ -363,11 +374,19 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           if ((config.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW) > 144) {
             // if showing > 6 days in the history trail, show the full
             // date and time
-            p.tooltip = formatDateTime(t, this.hass.locale);
+            p.tooltip = formatDateTime(t, this.hass.locale, this.hass.config);
           } else if (isToday(t)) {
-            p.tooltip = formatTimeWithSeconds(t, this.hass.locale);
+            p.tooltip = formatTimeWithSeconds(
+              t,
+              this.hass.locale,
+              this.hass.config
+            );
           } else {
-            p.tooltip = formatTimeWeekday(t, this.hass.locale);
+            p.tooltip = formatTimeWeekday(
+              t,
+              this.hass.locale,
+              this.hass.config
+            );
           }
           points.push(p);
         }

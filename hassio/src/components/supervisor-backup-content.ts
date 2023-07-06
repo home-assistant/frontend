@@ -143,7 +143,11 @@ export class SupervisorBackupContent extends LitElement {
               : this._localize("partial_backup")}
             (${Math.ceil(this.backup.size * 10) / 10 + " MB"})<br />
             ${this.hass
-              ? formatDateTime(new Date(this.backup.date), this.hass.locale)
+              ? formatDateTime(
+                  new Date(this.backup.date),
+                  this.hass.locale,
+                  this.hass.config
+                )
               : this.backup.date}
           </div>`
         : html`<paper-input
@@ -336,7 +340,9 @@ export class SupervisorBackupContent extends LitElement {
     const data: any = {};
 
     if (!this.backup) {
-      data.name = this.backupName || formatDate(new Date(), this.hass.locale);
+      data.name =
+        this.backupName ||
+        formatDate(new Date(), this.hass.locale, this.hass.config);
     }
 
     if (this.backupHasPassword) {

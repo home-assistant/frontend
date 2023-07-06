@@ -14,7 +14,7 @@ import {
 } from "../../../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../../../data/entity";
 import { HomeAssistant } from "../../../../types";
-import { showEnterCodeDialogDialog } from "./show-enter-code-dialog";
+import { showEnterCodeDialogDialog } from "../../../enter-code/show-enter-code-dialog";
 
 @customElement("ha-more-info-alarm_control_panel-modes")
 export class HaMoreInfoAlarmControlPanelModes extends LitElement {

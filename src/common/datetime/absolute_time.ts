@@ -1,4 +1,5 @@
 import { isSameDay, isSameYear } from "date-fns";
+import { HassConfig } from "home-assistant-js-websocket";
 import { FrontendLocaleData } from "../../data/translation";
 import {
   formatShortDateTime,
@@ -9,15 +10,16 @@ import { formatTime } from "./format_time";
 export const absoluteTime = (
   from: Date,
   locale: FrontendLocaleData,
+  config: HassConfig,
   to?: Date
 ): string => {
   const _to = to ?? new Date();
 
   if (isSameDay(from, _to)) {
-    return formatTime(from, locale);
+    return formatTime(from, locale, config);
   }
   if (isSameYear(from, _to)) {
-    return formatShortDateTime(from, locale);
+    return formatShortDateTime(from, locale, config);
   }
-  return formatShortDateTimeWithYear(from, locale);
+  return formatShortDateTimeWithYear(from, locale, config);
 };

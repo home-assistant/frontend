@@ -23,6 +23,7 @@ import {
   NumberFormat,
   DateFormat,
   TimeFormat,
+  TimeZone,
 } from "../data/translation";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
@@ -63,6 +64,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           number_format: NumberFormat.language,
           time_format: TimeFormat.language,
           date_format: DateFormat.language,
+          time_zone: TimeZone.local,
           first_weekday: FirstWeekday.language,
         },
         resources: null as any,
@@ -98,7 +100,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           } catch (err: any) {
             if (
               err.error?.code === ERR_CONNECTION_LOST &&
-              serviceCallWillDisconnect(domain, service)
+              serviceCallWillDisconnect(domain, service, serviceData)
             ) {
               return { context: { id: "" } };
             }
@@ -119,7 +121,12 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
                 "ui.notification_toast.service_call_failed",
                 "service",
                 `${domain}/${service}`
-              ) + ` ${err.message}`;
+              ) +
+              ` ${
+                err.message || err.error?.code === ERR_CONNECTION_LOST
+                  ? "connection lost"
+                  : "unknown error"
+              }`;
             fireEvent(this as any, "hass-notification", { message });
             throw err;
           }
