@@ -223,7 +223,7 @@ export class EnergyGridSettings extends LitElement {
                   alt=""
                   referrerpolicy="no-referrer"
                   src=${brandsUrl({
-                    domain: "co2signal",
+                    domain: "electricity_maps",
                     type: "icon",
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
@@ -248,7 +248,7 @@ export class EnergyGridSettings extends LitElement {
                     alt=""
                     referrerpolicy="no-referrer"
                     src=${brandsUrl({
-                      domain: "co2signal",
+                      domain: "electricity_maps",
                       type: "icon",
                       darkOptimized: this.hass.themes?.darkMode,
                     })}
