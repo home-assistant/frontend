@@ -1,17 +1,15 @@
 [modern]
 # Modern builds target recent browsers supporting the latest features to minimize transpilation, polyfills,etc.
 # It is served to browsers meeting the following requirements:
-# - last 2 released + current alpha/beta versionss of all major browsers
+# - released in the last year + current alpha/beta versionss
 # - Firefox extended support release (ESR)
-# - released in the last year
 # - with global utilization at or above 0.5%
 # - must support dynamic import of ES modules
 # - exclude browsers no longer being maintained
 # - exclude KaiOS, QQ, and UC browsers due to lack of sufficient feature support data
 unreleased versions
-last 2 versions
-Firefox ESR
 last 1 year
+Firefox ESR
 >= 0.5% and supports es6-module-dynamic-import
 not dead
 not KaiOS > 0
