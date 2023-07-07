@@ -1,7 +1,6 @@
 Build:
   - build-scripts/**
   - .browserslistrc
-  - .nvmrc
   - gulpfile.js
 
 Cast:
@@ -22,6 +21,11 @@ Dependencies:
   - yarn.lock
   - .yarn/**
   - .yarnrc.yml
+  - .nvmrc
+
+GitHub Actions:
+  - .github/workflows/**
+  - .github/*.yml
 
 Supervisor:
   - hassio/src/**
