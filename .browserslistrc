@@ -3,6 +3,7 @@
 # It is served to browsers meeting the following requirements:
 # - last 2 released + current alpha/beta versionss of all major browsers
 # - Firefox extended support release (ESR)
+# - released in the last year
 # - browsers with global utilization above 0.5%
 # - must support dynamic import of ES modules
 # - exclude browsers no longer being maintained
@@ -10,6 +11,7 @@
 unreleased versions
 last 2 versions
 Firefox ESR
+last 1 year
 > 0.5% and supports es6-module-dynamic-import
 not dead
 not KaiOS > 0
