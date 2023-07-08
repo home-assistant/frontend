@@ -29,7 +29,6 @@ class HaWaterHeaterState extends LocalizeMixin(PolymerElement) {
 
         .state-label {
           font-weight: bold;
-          text-transform: capitalize;
         }
 
         .label {
