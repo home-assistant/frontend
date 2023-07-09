@@ -187,7 +187,7 @@
     "@typescript-eslint/eslint-plugin": "5.61.0",
     "@typescript-eslint/parser": "5.61.0",
     "@web/dev-server": "0.1.38",
-    "@web/dev-server-rollup": "0.4.1",
+    "@web/dev-server-rollup": "0.5.2",
     "babel-loader": "9.1.2",
     "babel-plugin-template-html-minifier": "4.1.0",
     "chai": "4.3.7",
