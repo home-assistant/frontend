@@ -280,6 +280,7 @@
       "edit": "Edit",
       "submit": "Submit",
       "rename": "Rename",
+      "search": "[%key:ui::components::data-table::search%]",
       "ok": "OK",
       "yes": "Yes",
       "no": "No",
