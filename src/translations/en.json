@@ -2553,7 +2553,7 @@
                   "entity": "[%key:ui::panel::config::automation::editor::triggers::type::zone::entity%]",
                   "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "description": {
-                    "full": "Confirm {entity} {numberOfEntities, select, \n one {is}\n other {are} other {} \n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n} "
+                    "full": "Confirm {entity} {numberOfEntities, plural, \n one {is}\n other {are}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n} "
                   }
                 }
               }

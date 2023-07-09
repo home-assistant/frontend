@@ -758,7 +758,7 @@ const tryDescribeCondition = (
     }
     if (conditions.length === 1) {
       return hass.localize(
-        `${conditionsTranslationBaseKey}.not.description.one_conditions`
+        `${conditionsTranslationBaseKey}.not.description.one_condition`
       );
     }
     return hass.localize(
