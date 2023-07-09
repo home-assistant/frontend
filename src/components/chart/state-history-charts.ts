@@ -184,7 +184,17 @@ export class StateHistoryCharts extends LitElement {
   };
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return !(changedProps.size === 1 && changedProps.has("hass"));
+    if (changedProps.size === 1 && changedProps.has("hass")) {
+      return false;
+    }
+    if (
+      changedProps.size === 1 &&
+      changedProps.has("_maxYWidth") &&
+      changedProps.get("_maxYWidth") === this._maxYWidth
+    ) {
+      return false;
+    }
+    return true;
   }
 
   protected willUpdate() {
