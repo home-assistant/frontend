@@ -243,7 +243,8 @@ export class HaDataTable extends LitElement {
                   <search-input
                     .hass=${this.hass}
                     @value-changed=${this._handleSearchChange}
-                    .label=${this.searchLabel}
+                    .label=${this.searchLabel ??
+                    this.hass.localize("ui.components.data-table.search")}
                     .noLabelFloat=${this.noLabelFloat}
                   ></search-input>
                 </div>
