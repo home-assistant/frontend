@@ -166,8 +166,7 @@ export class HaTabsSubpageDataTable extends LitElement {
       .filter=${this.filter}
       .suffix=${!this.narrow}
       @value-changed=${this._handleSearchChange}
-      .label=${this.searchLabel ||
-      this.hass.localize("ui.components.data-table.search")}
+      .label=${this.searchLabel}
     >
       ${!this.narrow
         ? html`<div

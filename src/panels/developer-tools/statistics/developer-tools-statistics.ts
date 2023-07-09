@@ -162,6 +162,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
   protected render() {
     return html`
       <ha-data-table
+        .hass=${this.hass}
         .columns=${this._columns(this.hass.localize)}
         .data=${this._displayData(this._data)}
         noDataText="No statistics"
