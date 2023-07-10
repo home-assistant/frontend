@@ -325,11 +325,11 @@ const tryDescribeAction = <T extends ActionType>(
 
     if (config.else !== undefined) {
       return hass.localize(
-        `${actionTranslationBaseKey}.if.description.full_else`
+        `${actionTranslationBaseKey}.if.description.if_else`
       );
     }
 
-    return hass.localize(`${actionTranslationBaseKey}.if.description.full`);
+    return hass.localize(`${actionTranslationBaseKey}.if.description.if`);
   }
 
   if (actionType === "choose") {
@@ -360,13 +360,13 @@ const tryDescribeAction = <T extends ActionType>(
     } else if ("while" in config.repeat) {
       const conditions = ensureArray(config.repeat.while);
       chosenAction = hass.localize(
-        `${actionTranslationBaseKey}.repeat.description.while`,
+        `${actionTranslationBaseKey}.repeat.description.while_count`,
         { count: conditions.length }
       );
     } else if ("until" in config.repeat) {
       const conditions = ensureArray(config.repeat.until);
       chosenAction = hass.localize(
-        `${actionTranslationBaseKey}.repeat.description.until`,
+        `${actionTranslationBaseKey}.repeat.description.until_count`,
         { count: conditions.length }
       );
     } else if ("for_each" in config.repeat) {
