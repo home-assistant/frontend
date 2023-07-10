@@ -2705,7 +2705,8 @@
                   "else": "Else",
                   "add_else": "Add else",
                   "description": {
-                    "full": "Perform ''{action}'' if ''{conditions}''{hasElse, select, \n true { otherwise ''{elseAction}''} \n other {}\n } "
+                    "full": "Conditionally execute an action",
+                    "full_else": "Conditionally execute an action and default to another action"
                   }
                 },
                 "stop": {

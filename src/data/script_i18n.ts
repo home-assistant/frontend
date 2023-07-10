@@ -326,52 +326,13 @@ const tryDescribeAction = <T extends ActionType>(
   if (actionType === "if") {
     const config = action as IfAction;
 
-    let ifConditions: string[] = [];
-    if (Array.isArray(config.if)) {
-      const conditions = ensureArray(config.if);
-      conditions.forEach((condition) => {
-        ifConditions.push(describeCondition(condition, hass, entityRegistry));
-      });
-    } else {
-      ifConditions = [config.if];
+    if (config.else !== undefined) {
+      return hass.localize(
+        `${actionTranslationBaseKey}.if.description.full_else`
+      );
     }
 
-    let elseActions: string[] = [];
-    if (config.else) {
-      if (Array.isArray(config.else)) {
-        const actions = ensureArray(config.else);
-        actions.forEach((currentAction) => {
-          elseActions.push(
-            describeAction(hass, entityRegistry, currentAction, undefined)
-          );
-        });
-      } else {
-        elseActions = [
-          describeAction(hass, entityRegistry, config.else, undefined),
-        ];
-      }
-    }
-
-    let thenActions: string[] = [];
-    if (Array.isArray(config.then)) {
-      const actions = ensureArray(config.then);
-      actions.forEach((currentAction) => {
-        thenActions.push(
-          describeAction(hass, entityRegistry, currentAction, undefined)
-        );
-      });
-    } else {
-      thenActions = [
-        describeAction(hass, entityRegistry, config.then, undefined),
-      ];
-    }
-
-    return hass.localize(`${actionTranslationBaseKey}.if.description.full`, {
-      hasElse: config.else !== undefined,
-      action: formatListWithAnds(hass.locale, thenActions),
-      conditions: formatListWithAnds(hass.locale, ifConditions),
-      elseAction: formatListWithAnds(hass.locale, elseActions),
-    });
+    return hass.localize(`${actionTranslationBaseKey}.if.description.full`);
   }
 
   if (actionType === "choose") {
