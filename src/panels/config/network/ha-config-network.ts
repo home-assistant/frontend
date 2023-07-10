@@ -42,9 +42,9 @@ class ConfigNetwork extends LitElement {
     return html`
       <ha-card
         outlined
-        header="${this.hass.localize(
+        header=${this.hass.localize(
           "ui.panel.config.network.network_adapter"
-        )}"
+        )}
       >
         <div class="card-content">
           ${this._error
