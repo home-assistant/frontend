@@ -65,6 +65,7 @@ const authProm = isExternal
   : () =>
       getAuth({
         hassUrl,
+        limitHassInstance: true,
         saveTokens,
         loadTokens: () => Promise.resolve(loadTokens()),
       });
