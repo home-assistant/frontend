@@ -91,6 +91,7 @@ export class HaServiceControl extends LitElement {
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (!this.hasUpdated) {
       this.hass.loadBackendTranslation("services");
+      this.hass.loadBackendTranslation("selector");
     }
     if (!changedProperties.has("value")) {
       return;
@@ -480,11 +481,21 @@ export class HaServiceControl extends LitElement {
                       ? this._value.data[dataField.key]
                       : undefined}
                     .placeholder=${dataField.default}
+                    .localizeValue=${this._localizeValueCallback}
                   ></ha-selector>
                 </ha-settings-row>`
               : "";
           })}`;
   }
+
+  private _localizeValueCallback = (key: string) => {
+    if (!this._value?.service) {
+      return "";
+    }
+    return this.hass.localize(
+      `component.${computeDomain(this._value.service)}.selector.${key}`
+    );
+  };
 
   private _checkboxChanged(ev) {
     const checked = ev.currentTarget.checked;
