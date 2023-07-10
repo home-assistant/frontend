@@ -1,17 +1,18 @@
+import { ensureArray } from "../common/array/ensure-array";
 import { formatDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
-import { ensureArray } from "../common/array/ensure-array";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { formatListWithAnds } from "../common/string/format-list";
 import { isTemplate } from "../common/string/has-template";
 import { HomeAssistant } from "../types";
 import { Condition } from "./automation";
-import { describeCondition, describeTrigger } from "./automation_i18n";
+import { describeCondition } from "./automation_i18n";
 import { localizeDeviceAutomationAction } from "./device_automation";
 import { computeDeviceName } from "./device_registry";
 import {
+  EntityRegistryEntry,
   computeEntityRegistryName,
   entityRegistryById,
-  EntityRegistryEntry,
 } from "./entity_registry";
 import { domainToName } from "./integration";
 import {
@@ -21,7 +22,6 @@ import {
   DelayAction,
   DeviceAction,
   EventAction,
-  getActionType,
   IfAction,
   ParallelAction,
   PlayMediaAction,
@@ -30,8 +30,8 @@ import {
   StopAction,
   VariablesAction,
   WaitForTriggerAction,
+  getActionType,
 } from "./script";
-import { formatListWithAnds } from "../common/string/format-list";
 
 const actionTranslationBaseKey =
   "ui.panel.config.automation.editor.actions.type";
@@ -273,12 +273,9 @@ const tryDescribeAction = <T extends ActionType>(
         `${actionTranslationBaseKey}.wait_for_trigger.description.wait_for_a_trigger`
       );
     }
-    const triggerNames = triggers.map((trigger) =>
-      describeTrigger(trigger, hass, entityRegistry)
-    );
     return hass.localize(
-      `${actionTranslationBaseKey}.wait_for_trigger.description.wait_for_triggers_with_name`,
-      { triggers: formatListWithAnds(hass.locale, triggerNames) }
+      `${actionTranslationBaseKey}.wait_for_trigger.description.wait_for_triggers`,
+      { count: triggers.length }
     );
   }
 

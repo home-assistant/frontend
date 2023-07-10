@@ -2621,7 +2621,7 @@
                   "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]",
                   "description": {
                     "wait_for_a_trigger": "Wait for a trigger",
-                    "wait_for_triggers_with_name": "Wait for ''{triggers}''"
+                    "wait_for_triggers": "Wait for {count} {count, plural,\n one {trigger}\n other {triggers}\n}"
                   }
                 },
                 "condition": {
