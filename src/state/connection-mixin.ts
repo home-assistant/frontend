@@ -19,9 +19,9 @@ import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
 import { serviceCallWillDisconnect } from "../data/service";
 import {
+  DateFormat,
   FirstWeekday,
   NumberFormat,
-  DateFormat,
   TimeFormat,
   TimeZone,
 } from "../data/translation";
@@ -176,6 +176,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         loadFragmentTranslation: (fragment) =>
           // @ts-ignore
           this._loadFragmentTranslations(this.hass?.language, fragment),
+        stateDisplay: (stateObj, _entity, state) =>
+          (state !== null ? state : stateObj.state) ?? "",
         ...getState(),
         ...this._pendingHass,
       };

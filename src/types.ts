@@ -3,6 +3,7 @@ import {
   Connection,
   HassConfig,
   HassEntities,
+  HassEntity,
   HassServices,
   HassServiceTarget,
   MessageBase,
@@ -256,6 +257,11 @@ export interface HomeAssistant {
     configFlow?: Parameters<typeof getHassTranslations>[4]
   ): Promise<LocalizeFunc>;
   loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
+  stateDisplay(
+    stateObj: HassEntity,
+    entity: EntityRegistryDisplayEntry,
+    state?: string
+  ): string;
 }
 
 export interface Route {
