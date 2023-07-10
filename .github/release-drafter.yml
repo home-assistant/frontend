@@ -2,7 +2,7 @@ categories:
   - title: 'Dependency updates'
     collapse-after: 3
     labels:
-      - 'dependencies'
+      - 'Dependencies'
 template: |
   ## What's Changed
 
