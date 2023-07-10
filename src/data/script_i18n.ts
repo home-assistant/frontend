@@ -361,20 +361,16 @@ const tryDescribeAction = <T extends ActionType>(
         { count: count }
       );
     } else if ("while" in config.repeat) {
-      const conditions = ensureArray(config.repeat.while).map((condition) =>
-        describeCondition(condition, hass, entityRegistry)
-      );
+      const conditions = ensureArray(config.repeat.while);
       chosenAction = hass.localize(
         `${actionTranslationBaseKey}.repeat.description.while`,
-        { conditions: formatListWithAnds(hass.locale, conditions) }
+        { count: conditions.length }
       );
     } else if ("until" in config.repeat) {
-      const conditions = ensureArray(config.repeat.until).map((condition) =>
-        describeCondition(condition, hass, entityRegistry)
-      );
+      const conditions = ensureArray(config.repeat.until);
       chosenAction = hass.localize(
         `${actionTranslationBaseKey}.repeat.description.until`,
-        { conditions: formatListWithAnds(hass.locale, conditions) }
+        { count: conditions.length }
       );
     } else if ("for_each" in config.repeat) {
       const items = ensureArray(config.repeat.for_each).map((item) =>

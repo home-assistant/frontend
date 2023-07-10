@@ -2679,8 +2679,8 @@
                   "description": {
                     "full": "Repeat an action {chosenAction}",
                     "count": "{count} {count, plural,\n one {time}\n other {times}\n}",
-                    "while": "while ''{conditions}'' is true",
-                    "until": "until ''{conditions}'' is true",
+                    "while": "while {count} {count, plural,\n one {condition matches}\n other {conditions match}\n} ",
+                    "until": "until {count} {count, plural,\n one {condition matches}\n other {conditions match}\n} ",
                     "for_each": "for every item: {items}"
                   }
                 },
