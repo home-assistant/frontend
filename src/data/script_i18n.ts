@@ -165,12 +165,14 @@ const tryDescribeAction = <T extends ActionType>(
 
     if (config.service) {
       const [domain, serviceName] = config.service.split(".", 2);
-      const service = hass.services[domain][serviceName];
+      const service =
+        hass.localize(`component.${domain}.services.${serviceName}.name`) ||
+        hass.services[domain][serviceName]?.name;
       return hass.localize(
         `${actionTranslationBaseKey}.service.description.service_based_on_name`,
         {
           name: service
-            ? `${domainToName(hass.localize, domain)}: ${service.name}`
+            ? `${domainToName(hass.localize, domain)}: ${service}`
             : config.service,
           targets: formatListWithAnds(hass.locale, targets),
         }

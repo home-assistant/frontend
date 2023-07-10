@@ -27,6 +27,12 @@ class HaServicePicker extends LitElement {
 
   @state() private _filter?: string;
 
+  protected willUpdate() {
+    if (!this.hasUpdated) {
+      this.hass.loadBackendTranslation("services");
+    }
+  }
+
   protected render() {
     return html`
       <ha-combo-box
@@ -71,7 +77,11 @@ class HaServicePicker extends LitElement {
             result.push({
               service: `${domain}.${service}`,
               name: `${domainToName(localize, domain)}: ${
-                services[domain][service].name || service
+                this.hass.localize(
+                  `component.${domain}.services.${service}.name`
+                ) ||
+                services[domain][service].name ||
+                service
               }`,
             });
           }
