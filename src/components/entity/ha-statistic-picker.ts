@@ -263,7 +263,9 @@ export class HaStatisticPicker extends LitElement {
         .renderer=${this._rowRenderer}
         .disabled=${this.disabled}
         .allowCustomValue=${this.allowCustomEntity}
-        .filteredItems=${this._statistics}
+        .filteredItems=${this.value && this._statistics.length === 0
+          ? undefined
+          : this._statistics}
         item-value-path="id"
         item-id-path="id"
         item-label-path="name"
