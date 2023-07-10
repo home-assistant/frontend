@@ -12,10 +12,11 @@ import {
   listAgents,
 } from "../../../data/conversation";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { haStyle } from "../../../resources/styles";
+import { buttonLinkStyle, haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { formatLanguageCode } from "../../../common/language/format_language";
 import { storage } from "../../../common/decorators/storage";
+import { fileDownload } from "../../../util/file_download";
 
 type SentenceParsingResult = {
   sentence: string;
@@ -146,6 +147,15 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
           </div>
         </ha-card>
 
+        ${this._results.length
+          ? html`
+              <div class="result-toolbar">
+                <button class="link" @click=${this._download} type="button">
+                  Download Results
+                </button>
+              </div>
+            `
+          : ""}
         ${this._results.map((r) => {
           const { sentence, result, language } = r;
           const matched = result != null;
@@ -182,9 +192,19 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
     `;
   }
 
+  private _download() {
+    fileDownload(
+      `data:text/plain;charset=utf-8,${encodeURIComponent(
+        JSON.stringify({ results: this._results }, null, 2)
+      )}`,
+      `intent_results.json`
+    );
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      buttonLinkStyle,
       css`
         .content {
           padding: 28px 20px 16px;
@@ -206,6 +226,10 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
           text-align: right;
         }
         .form {
+          margin-bottom: 16px;
+        }
+        .result-toolbar {
+          text-align: center;
           margin-bottom: 16px;
         }
         .result {
