@@ -22,7 +22,6 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import { hideMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -200,7 +199,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     try {
       const result = await this._registryEditor!.updateEntry();
       if (result.close) {
-        hideMoreInfoDialog(this);
+        fireEvent(this, "close-dialog");
       }
     } catch (err: any) {
       this._error = err.message || "Unknown error";
