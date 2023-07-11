@@ -141,7 +141,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return hasConfigOrEntityChanged(this, changedProps) || changedProps.has("forecastEvent");
+    return (
+      hasConfigOrEntityChanged(this, changedProps) ||
+      changedProps.has("forecastEvent")
+    );
   }
 
   public willUpdate(): void {

@@ -616,21 +616,21 @@ export const getForecast = (
       forecast_event?.type === "daily" &&
       forecast_event?.forecast &&
       forecast_event?.forecast?.length > 2
-      ) {
+    ) {
       return { forecast: forecast_event.forecast, type: "daily" };
     }
     if (
       forecast_event?.type === "hourly" &&
       forecast_event?.forecast &&
       forecast_event?.forecast?.length > 2
-      ) {
+    ) {
       return { forecast: forecast_event.forecast, type: "hourly" };
     }
     if (
       forecast_event?.type === "twice_daily" &&
       forecast_event?.forecast &&
       forecast_event?.forecast?.length > 2
-      ) {
+    ) {
       return {
         forecast: forecast_event.forecast,
         type: "twice_daily",
@@ -662,12 +662,11 @@ export const getForecast = (
   return undefined;
 };
 
-
 export const subscribeForecast = (
   hass: HomeAssistant,
   entity_id: string,
   forecast_type: "daily" | "hourly" | "twice_daily",
-  callback: (forecastevent: ForecastEvent) => void,
+  callback: (forecastevent: ForecastEvent) => void
 ) =>
   hass.connection.subscribeMessage<ForecastEvent>(callback, {
     type: "weather/subscribe_forecast",
