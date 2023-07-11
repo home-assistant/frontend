@@ -202,7 +202,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               autocapitalize="none"
               autocomplete="off"
               autocorrect="off"
-              spellcheck="false"
+              input-spellcheck="false"
               value="[[_state]]"
               on-change="stateChanged"
               class="state-input"
