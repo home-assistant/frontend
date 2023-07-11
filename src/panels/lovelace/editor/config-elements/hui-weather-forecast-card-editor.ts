@@ -101,22 +101,19 @@ export class HuiWeatherForecastCardEditor
     if (forecastType === "daily") {
       return !!(
         stateObj.attributes.supported_features &&
-        stateObj.attributes.supported_features &
-          WeatherEntityFeature.FORECAST_DAILY
+        stateObj.attributes.supported_features === WeatherEntityFeature.FORECAST_DAILY
       );
     }
     if (forecastType === "hourly") {
       return !!(
         stateObj.attributes.supported_features &&
-        stateObj.attributes.supported_features &
-          WeatherEntityFeature.FORECAST_HOURLY
+        stateObj.attributes.supported_features === WeatherEntityFeature.FORECAST_HOURLY
       );
     }
     if (forecastType === "twice_daily") {
       return !!(
         stateObj.attributes.supported_features &&
-        stateObj.attributes.supported_features &
-          WeatherEntityFeature.FORECAST_TWICE_DAILY
+        stateObj.attributes.supported_features === WeatherEntityFeature.FORECAST_TWICE_DAILY
       );
     }
     return false

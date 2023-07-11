@@ -567,7 +567,7 @@ export const getForecast = (
   | undefined => {
   if (
     forecast_type === "daily" &&
-    forecast_event?.type == "daily" &&
+    forecast_event?.type === "daily" &&
     forecast_event?.forecast &&
     forecast_event?.forecast?.length > 2
   ) {
@@ -575,7 +575,7 @@ export const getForecast = (
   }
   if (
     forecast_type === "hourly" &&
-    forecast_event?.type == "hourly" &&
+    forecast_event?.type === "hourly" &&
     forecast_event?.forecast &&
     forecast_event?.forecast?.length > 2
   ) {
@@ -583,7 +583,7 @@ export const getForecast = (
   }
   if (
     forecast_type === "twice_daily" &&
-    forecast_event?.type == "twice_daily" &&
+    forecast_event?.type === "twice_daily" &&
     forecast_event?.forecast &&
     forecast_event?.forecast?.length > 2
   ) {
@@ -613,21 +613,21 @@ export const getForecast = (
   }
   if (forecast_type === undefined) {
     if (
-      forecast_event?.type == "daily" &&
+      forecast_event?.type === "daily" &&
       forecast_event?.forecast &&
       forecast_event?.forecast?.length > 2
       ) {
       return { forecast: forecast_event.forecast, type: "daily" };
     }
     if (
-      forecast_event?.type == "hourly" &&
+      forecast_event?.type === "hourly" &&
       forecast_event?.forecast &&
       forecast_event?.forecast?.length > 2
       ) {
       return { forecast: forecast_event.forecast, type: "hourly" };
     }
     if (
-      forecast_event?.type == "twice_daily" &&
+      forecast_event?.type === "twice_daily" &&
       forecast_event?.forecast &&
       forecast_event?.forecast?.length > 2
       ) {
