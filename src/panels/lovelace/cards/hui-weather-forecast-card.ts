@@ -111,6 +111,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
+    if (this._subscribed) {
+      this._subscribed();
+      this._subscribed = undefined;
+    }
   }
 
   public getCardSize(): number {
