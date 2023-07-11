@@ -8,6 +8,7 @@ import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import { UNAVAILABLE } from "../../../../data/entity";
 import type { ForecastType, WeatherEntity } from "../../../../data/weather";
+import { WeatherEntityFeature } from "../../../../data/weather";
 import type { HomeAssistant } from "../../../../types";
 import type { WeatherForecastCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
@@ -86,9 +87,7 @@ export class HuiWeatherForecastCardEditor
     if (stateObj && stateObj.state !== UNAVAILABLE) {
       return !!(
         stateObj.attributes.forecast?.length ||
-        stateObj.attributes.forecast_daily?.length ||
-        stateObj.attributes.forecast_hourly?.length ||
-        stateObj.attributes.forecast_twice_daily?.length
+        stateObj.attributes.supported_features
       );
     }
     return undefined;
@@ -99,7 +98,28 @@ export class HuiWeatherForecastCardEditor
     if (forecastType === "legacy") {
       return !!stateObj.attributes.forecast?.length;
     }
-    return !!stateObj?.attributes[`forecast_${forecastType}`]?.length;
+    if (forecastType === "daily") {
+      return !!(
+        stateObj.attributes.supported_features &&
+        stateObj.attributes.supported_features &
+          WeatherEntityFeature.FORECAST_DAILY
+      );
+    }
+    if (forecastType === "hourly") {
+      return !!(
+        stateObj.attributes.supported_features &&
+        stateObj.attributes.supported_features &
+          WeatherEntityFeature.FORECAST_HOURLY
+      );
+    }
+    if (forecastType === "twice_daily") {
+      return !!(
+        stateObj.attributes.supported_features &&
+        stateObj.attributes.supported_features &
+          WeatherEntityFeature.FORECAST_TWICE_DAILY
+      );
+    }
+    return false
   }
 
   private _schema = memoizeOne(

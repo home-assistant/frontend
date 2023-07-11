@@ -25,6 +25,8 @@ import {
   getWeatherStateIcon,
   getWeatherUnit,
   getWind,
+  subscribeForecast,
+  ForecastEvent,
   weatherAttrIcons,
   WeatherEntity,
   weatherSVGStyles,
@@ -70,10 +72,35 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: WeatherForecastCardConfig;
 
+  @state() private _forecastEvent?: ForecastEvent;
+  @state() private _subscribed?: () => void;
+
   @property({ type: Boolean, reflect: true, attribute: "veryverynarrow" })
   private _veryVeryNarrow = false;
 
   private _resizeObserver?: ResizeObserver;
+
+  private _handleForecastEvent(forecastEvent: ForecastEvent) {
+    this._forecastEvent = forecastEvent;
+  }
+
+  private async _subscribeForecastEvents() {
+    if (this._subscribed) {
+      this._subscribed();
+      this._subscribed = undefined;
+    }
+    if (
+      this._config!.forecast_type &&
+      this._config!.forecast_type != "legacy"
+    ) {
+      this._subscribed = await subscribeForecast(
+        this.hass!,
+        this._config!.entity,
+        this._config!.forecast_type,
+        (event) => this._handleForecastEvent(event)
+      );
+    }
+  }
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -109,7 +136,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return hasConfigOrEntityChanged(this, changedProps);
+    return hasConfigOrEntityChanged(this, changedProps) || changedProps.has("forecastEvent");
   }
 
   public willUpdate(): void {
@@ -126,6 +153,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     super.updated(changedProps);
     if (!this._config || !this.hass) {
       return;
+    }
+
+    if (changedProps.has("_config")) {
+      this._subscribeForecastEvents();
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
@@ -172,6 +203,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
     const forecastData = getForecast(
       stateObj.attributes,
+      this._forecastEvent,
       this._config?.forecast_type
     );
     const forecast =

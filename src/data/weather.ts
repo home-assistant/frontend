@@ -28,6 +28,12 @@ import { formatNumber } from "../common/number/format_number";
 import "../components/ha-svg-icon";
 import type { HomeAssistant } from "../types";
 
+export const enum WeatherEntityFeature {
+  FORECAST_DAILY = 1,
+  FORECAST_HOURLY = 2,
+  FORECAST_TWICE_DAILY = 4,
+}
+
 export type ForecastType = "legacy" | "hourly" | "daily" | "twice_daily";
 
 interface ForecastAttribute {
@@ -47,9 +53,6 @@ interface WeatherEntityAttributes extends HassEntityAttributeBase {
   attribution?: string;
   humidity?: number;
   forecast?: ForecastAttribute[];
-  forecast_daily?: ForecastAttribute[];
-  forecast_hourly?: ForecastAttribute[];
-  forecast_twice_daily?: ForecastAttribute[];
   is_daytime?: boolean;
   pressure?: number;
   temperature?: number;
@@ -61,6 +64,11 @@ interface WeatherEntityAttributes extends HassEntityAttributeBase {
   temperature_unit: string;
   visibility_unit: string;
   wind_speed_unit: string;
+}
+
+export interface ForecastEvent {
+  type: "hourly" | "daily" | "twice_daily";
+  forecast: [ForecastAttribute] | null;
 }
 
 export interface WeatherEntity extends HassEntityBase {
@@ -549,6 +557,7 @@ export const getWeatherConvertibleUnits = (
 
 export const getForecast = (
   weather_attributes?: WeatherEntityAttributes | undefined,
+  forecast_event?: ForecastEvent,
   forecast_type?: ForecastType | undefined
 ):
   | {
@@ -558,27 +567,27 @@ export const getForecast = (
   | undefined => {
   if (
     forecast_type === "daily" &&
-    weather_attributes?.forecast_daily &&
-    weather_attributes.forecast_daily.length > 2
+    forecast_event?.type == "daily" &&
+    forecast_event?.forecast &&
+    forecast_event?.forecast?.length > 2
   ) {
-    return { forecast: weather_attributes.forecast_daily, type: "daily" };
+    return { forecast: forecast_event.forecast, type: "daily" };
   }
   if (
     forecast_type === "hourly" &&
-    weather_attributes?.forecast_hourly &&
-    weather_attributes.forecast_hourly.length > 2
+    forecast_event?.type == "hourly" &&
+    forecast_event?.forecast &&
+    forecast_event?.forecast?.length > 2
   ) {
-    return { forecast: weather_attributes.forecast_hourly, type: "hourly" };
+    return { forecast: forecast_event.forecast, type: "hourly" };
   }
   if (
     forecast_type === "twice_daily" &&
-    weather_attributes?.forecast_twice_daily &&
-    weather_attributes.forecast_twice_daily.length > 2
+    forecast_event?.type == "twice_daily" &&
+    forecast_event?.forecast &&
+    forecast_event?.forecast?.length > 2
   ) {
-    return {
-      forecast: weather_attributes.forecast_twice_daily,
-      type: "twice_daily",
-    };
+    return { forecast: forecast_event.forecast, type: "hourly" };
   }
   if (
     forecast_type === "legacy" &&
@@ -604,23 +613,26 @@ export const getForecast = (
   }
   if (forecast_type === undefined) {
     if (
-      weather_attributes?.forecast_daily &&
-      weather_attributes.forecast_daily.length > 2
-    ) {
-      return { forecast: weather_attributes.forecast_daily, type: "daily" };
+      forecast_event?.type == "daily" &&
+      forecast_event?.forecast &&
+      forecast_event?.forecast?.length > 2
+      ) {
+      return { forecast: forecast_event.forecast, type: "daily" };
     }
     if (
-      weather_attributes?.forecast_hourly &&
-      weather_attributes.forecast_hourly.length > 2
-    ) {
-      return { forecast: weather_attributes.forecast_hourly, type: "hourly" };
+      forecast_event?.type == "hourly" &&
+      forecast_event?.forecast &&
+      forecast_event?.forecast?.length > 2
+      ) {
+      return { forecast: forecast_event.forecast, type: "hourly" };
     }
     if (
-      weather_attributes?.forecast_twice_daily &&
-      weather_attributes.forecast_twice_daily.length > 2
-    ) {
+      forecast_event?.type == "twice_daily" &&
+      forecast_event?.forecast &&
+      forecast_event?.forecast?.length > 2
+      ) {
       return {
-        forecast: weather_attributes.forecast_twice_daily,
+        forecast: forecast_event.forecast,
         type: "twice_daily",
       };
     }
@@ -649,3 +661,16 @@ export const getForecast = (
 
   return undefined;
 };
+
+
+export const subscribeForecast = (
+  hass: HomeAssistant,
+  entity_id: string,
+  forecast_type: "daily" | "hourly" | "twice_daily",
+  callback: (forecastevent: ForecastEvent) => void,
+) =>
+  hass.connection.subscribeMessage<ForecastEvent>(callback, {
+    type: "weather/subscribe_forecast",
+    forecast_type,
+    entity_id,
+  });
