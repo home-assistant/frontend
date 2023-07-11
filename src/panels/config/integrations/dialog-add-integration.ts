@@ -443,12 +443,16 @@ class AddIntegrationDialog extends LitElement {
               })}
               @click=${this._integrationPicked}
               .items=${integrations}
+              .keyFunction=${this._keyFunction}
               .renderItem=${this._renderRow}
             >
             </lit-virtualizer>
           </mwc-list>`
         : html`<ha-circular-progress active></ha-circular-progress>`} `;
   }
+
+  private _keyFunction = (integration: IntegrationListItem) =>
+    integration.domain;
 
   private _renderRow = (integration: IntegrationListItem) => {
     if (!integration) {
