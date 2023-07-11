@@ -5,6 +5,3 @@ export const showMoreInfoDialog = (
   element: HTMLElement,
   params: MoreInfoDialogParams
 ) => fireEvent(element, "hass-more-info", params);
-
-export const hideMoreInfoDialog = (element: HTMLElement) =>
-  fireEvent(element, "hass-more-info", { entityId: null });
