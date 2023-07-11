@@ -89,6 +89,10 @@ export class HaServiceControl extends LitElement {
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
+    if (!this.hasUpdated) {
+      this.hass.loadBackendTranslation("services");
+      this.hass.loadBackendTranslation("selector");
+    }
     if (!changedProperties.has("value")) {
       return;
     }
@@ -342,6 +346,20 @@ export class HaServiceControl extends LitElement {
 
     const filteredFields = this._filterFields(serviceData, this._value);
 
+    const domain = this._value?.service
+      ? computeDomain(this._value.service)
+      : undefined;
+    const serviceName = this._value?.service
+      ? computeObjectId(this._value.service)
+      : undefined;
+
+    const description =
+      (serviceName &&
+        this.hass.localize(
+          `component.${domain}.services.${serviceName}.description`
+        )) ||
+      serviceData?.description;
+
     return html`<ha-service-picker
         .hass=${this.hass}
         .value=${this._value?.service}
@@ -349,9 +367,7 @@ export class HaServiceControl extends LitElement {
         @value-changed=${this._serviceChanged}
       ></ha-service-picker>
       <div class="description">
-        ${serviceData?.description
-          ? html`<p>${serviceData?.description}</p>`
-          : ""}
+        ${description ? html`<p>${description}</p>` : ""}
         ${this._manifest
           ? html` <a
               href=${this._manifest.is_built_in
@@ -402,7 +418,9 @@ export class HaServiceControl extends LitElement {
             .hass=${this.hass}
             .disabled=${this.disabled}
             .value=${this._value?.data?.entity_id}
-            .label=${entityId.description}
+            .label=${this.hass.localize(
+              `component.${domain}.services.${serviceName}.fields.entity_id.description`
+            ) || entityId.description}
             @value-changed=${this._entityPicked}
             allow-custom-entity
           ></ha-entity-picker>`
@@ -437,8 +455,18 @@ export class HaServiceControl extends LitElement {
                         @change=${this._checkboxChanged}
                         slot="prefix"
                       ></ha-checkbox>`}
-                  <span slot="heading">${dataField.name || dataField.key}</span>
-                  <span slot="description">${dataField?.description}</span>
+                  <span slot="heading"
+                    >${this.hass.localize(
+                      `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`
+                    ) ||
+                    dataField.name ||
+                    dataField.key}</span
+                  >
+                  <span slot="description"
+                    >${this.hass.localize(
+                      `component.${domain}.services.${serviceName}.fields.${dataField.key}.description`
+                    ) || dataField?.description}</span
+                  >
                   <ha-selector
                     .disabled=${this.disabled ||
                     (showOptional &&
@@ -453,11 +481,21 @@ export class HaServiceControl extends LitElement {
                       ? this._value.data[dataField.key]
                       : undefined}
                     .placeholder=${dataField.default}
+                    .localizeValue=${this._localizeValueCallback}
                   ></ha-selector>
                 </ha-settings-row>`
               : "";
           })}`;
   }
+
+  private _localizeValueCallback = (key: string) => {
+    if (!this._value?.service) {
+      return "";
+    }
+    return this.hass.localize(
+      `component.${computeDomain(this._value.service)}.selector.${key}`
+    );
+  };
 
   private _checkboxChanged(ev) {
     const checked = ev.currentTarget.checked;
