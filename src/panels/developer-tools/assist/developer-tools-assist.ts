@@ -1,3 +1,4 @@
+import { mdiDownload } from "@mdi/js";
 import { dump } from "js-yaml";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -12,7 +13,7 @@ import {
   listAgents,
 } from "../../../data/conversation";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { buttonLinkStyle, haStyle } from "../../../resources/styles";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { formatLanguageCode } from "../../../common/language/format_language";
 import { storage } from "../../../common/decorators/storage";
@@ -150,7 +151,8 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
         ${this._results.length
           ? html`
               <div class="result-toolbar">
-                <button class="link" @click=${this._download} type="button">
+                <ha-button outlined @click=${this._download}>
+                  <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
                   Download Results
                 </button>
               </div>
@@ -204,7 +206,6 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      buttonLinkStyle,
       css`
         .content {
           padding: 28px 20px 16px;
