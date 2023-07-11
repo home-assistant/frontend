@@ -55,34 +55,34 @@ class DialogIPDetail extends LitElement {
                 ${ipv4.address
                   ? html`<div>
                       ${this.hass.localize(
-                        "ui.dialogs.dialog-ip-detail.ip_address"
-                      )}:
-                      ${ipv4.address?.join(", ")}
+                        "ui.dialogs.dialog-ip-detail.ip_address",
+                        { address: ipv4.address?.join(", ") }
+                      )}
                     </div>`
                   : ""}
                 ${ipv4.gateway
                   ? html`<div>
                       ${this.hass.localize(
-                        "ui.dialogs.dialog-ip-detail.gateway"
-                      )}:
-                      ${ipv4.gateway}
+                        "ui.dialogs.dialog-ip-detail.gateway",
+                        { gateway: ipv4.gateway }
+                      )}
                     </div>`
                   : ""}
                 ${ipv4.method
                   ? html`<div>
                       ${this.hass.localize(
-                        "ui.dialogs.dialog-ip-detail.method"
-                      )}:
-                      ${ipv4.method}
+                        "ui.dialogs.dialog-ip-detail.method",
+                        { method: ipv4.method }
+                      )}
                     </div>`
                   : ""}
                 ${ipv4.nameservers?.length
                   ? html`
                       <div>
                         ${this.hass.localize(
-                          "ui.dialogs.dialog-ip-detail.name_servers"
-                        )}:
-                        ${ipv4.nameservers?.join(", ")}
+                          "ui.dialogs.dialog-ip-detail.nameservers",
+                          { nameservers: ipv4.nameservers?.join(", ") }
+                        )}
                       </div>
                     `
                   : ""}
@@ -98,34 +98,34 @@ class DialogIPDetail extends LitElement {
                 ${ipv6.address
                   ? html`<div>
                       ${this.hass.localize(
-                        "ui.dialogs.dialog-ip-detail.ip_address"
-                      )}:
-                      ${ipv6.address?.join(", ")}
+                        "ui.dialogs.dialog-ip-detail.ip_address",
+                        { address: ipv6.address?.join(", ") }
+                      )}
                     </div>`
                   : ""}
                 ${ipv6.gateway
                   ? html`<div>
                       ${this.hass.localize(
-                        "ui.dialogs.dialog-ip-detail.gateway"
-                      )}:
-                      ${ipv6.gateway}
+                        "ui.dialogs.dialog-ip-detail.gateway",
+                        { gateway: ipv6.gateway }
+                      )}
                     </div>`
                   : ""}
                 ${ipv6.method
                   ? html`<div>
                       ${this.hass.localize(
-                        "ui.dialogs.dialog-ip-detail.method"
-                      )}:
-                      ${ipv6.method}
+                        "ui.dialogs.dialog-ip-detail.method",
+                        { method: ipv6.method }
+                      )}
                     </div>`
                   : ""}
                 ${ipv6.nameservers?.length
                   ? html`
                       <div>
                         ${this.hass.localize(
-                          "ui.dialogs.dialog-ip-detail.name_servers"
-                        )}:
-                        ${ipv6.nameservers?.join(", ")}
+                          "ui.dialogs.dialog-ip-detail.nameservers",
+                          { nameservers: ipv6.nameservers?.join(", ") }
+                        )}
                       </div>
                     `
                   : ""}
