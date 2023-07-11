@@ -43,9 +43,11 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
     icon: mdiPause,
     serviceName: "pause",
     isVisible: (stateObj) =>
-      // We need also to check if Start is supported because if not we show play-pause
-      supportsFeature(stateObj, VacuumEntityFeature.START) &&
-      supportsFeature(stateObj, VacuumEntityFeature.PAUSE),
+      // We need also to check if Start is supported because if not we show start-pause
+      // Start-pause service is only available for old vacuum entities, new entities have the `STATE` feature
+      supportsFeature(stateObj, VacuumEntityFeature.PAUSE) &&
+      (supportsFeature(stateObj, VacuumEntityFeature.STATE) ||
+        supportsFeature(stateObj, VacuumEntityFeature.START)),
   },
   {
     translationKey: "start_pause",
@@ -53,6 +55,8 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
     serviceName: "start_pause",
     isVisible: (stateObj) =>
       // If start is supported, we don't show this button
+      // This service is only available for old vacuum entities, new entities have the `STATE` feature
+      !supportsFeature(stateObj, VacuumEntityFeature.STATE) &&
       !supportsFeature(stateObj, VacuumEntityFeature.START) &&
       supportsFeature(stateObj, VacuumEntityFeature.PAUSE),
   },

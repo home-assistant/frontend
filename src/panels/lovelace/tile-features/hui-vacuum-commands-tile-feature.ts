@@ -63,6 +63,8 @@ export const VACUUM_COMMANDS_BUTTONS: Record<
 > = {
   start_pause: (stateObj) => {
     const startPauseOnly =
+      // This service is only available for old vacuum entities, new entities have the `STATE` feature
+      !supportsFeature(stateObj, VacuumEntityFeature.STATE) &&
       !supportsFeature(stateObj, VacuumEntityFeature.START) &&
       supportsFeature(stateObj, VacuumEntityFeature.PAUSE);
 
