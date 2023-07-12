@@ -164,12 +164,10 @@ class OnboardingLocation extends LitElement {
           "ui.panel.page-onboarding.core-config.location_address",
           {
             openstreetmap: html`<a
-              href="https://nominatim.openstreetmap.org/ui/about.html"
+              href="https://www.openstreetmap.org/"
               target="_blank"
               rel="noopener noreferrer"
-              >${this.onboardingLocalize(
-                "ui.panel.page-onboarding.core-config.nomatim_osm"
-              )}</a
+              >OpenStreetMap</a
             >`,
             osm_privacy_policy: html`<a
               href="https://wiki.osmfoundation.org/wiki/Privacy_Policy"
@@ -185,11 +183,6 @@ class OnboardingLocation extends LitElement {
       <p>
         ${this.onboardingLocalize(
           "ui.panel.page-onboarding.core-config.detect_location"
-        )}
-      </p>
-      <p>
-        ${this.onboardingLocalize(
-          "ui.panel.page-onboarding.core-config.pick_location"
         )}
       </p>
 
@@ -328,12 +321,7 @@ class OnboardingLocation extends LitElement {
       }
     );
     try {
-      this._places = await searchPlaces(
-        address,
-        this.hass.locale.language,
-        true,
-        3
-      );
+      this._places = await searchPlaces(address, this.hass, true, 3);
       if (this._places?.length === 1) {
         this._highlightedMarker = this._places[0].place_id;
         this._location = [
@@ -355,10 +343,7 @@ class OnboardingLocation extends LitElement {
       return;
     }
     this._places = null;
-    const reverse = await reverseGeocode(
-      this._location,
-      this.hass.locale.language
-    );
+    const reverse = await reverseGeocode(this._location, this.hass);
     this._country = reverse.address.country_code.toUpperCase();
     this._places = [reverse];
     this._highlightedMarker = reverse.place_id;

@@ -1,3 +1,5 @@
+import { HomeAssistant } from "../types";
+
 export interface OpenStreetMapPlace {
   place_id: number;
   licence: string;
@@ -29,27 +31,27 @@ export interface OpenStreetMapPlace {
 
 export const searchPlaces = (
   address: string,
-  language?: string,
+  hass: HomeAssistant,
   addressdetails?: boolean,
   limit?: number
 ): Promise<OpenStreetMapPlace[]> =>
   fetch(
     `https://nominatim.openstreetmap.org/search.php?q=${address}&format=jsonv2${
       limit ? `&limit=${limit}` : ""
-    }${addressdetails ? "&addressdetails=1" : ""}${
-      language ? `&accept-language=${language}` : ""
-    }`
+    }${addressdetails ? "&addressdetails=1" : ""}&accept-language=${
+      hass.locale.language
+    }`,
+    { headers: { "User-Agent": `HomeAssistant/${hass.config.version}` } }
   ).then((res) => res.json());
 
 export const reverseGeocode = (
   location: [number, number],
-  language?: string,
+  hass: HomeAssistant,
   zoom?: number
 ): Promise<OpenStreetMapPlace> =>
   fetch(
     `https://nominatim.openstreetmap.org/reverse.php?lat=${location[0]}&lon=${
       location[1]
-    }${language ? `&accept-language=${language}` : ""}&zoom=${
-      zoom ?? 18
-    }&format=jsonv2`
+    }&accept-language=${hass.locale.language}&zoom=${zoom ?? 18}&format=jsonv2`,
+    { headers: { "User-Agent": `HomeAssistant/${hass.config.version}` } }
   ).then((res) => res.json());
