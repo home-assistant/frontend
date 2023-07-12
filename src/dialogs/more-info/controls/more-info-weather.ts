@@ -13,7 +13,8 @@ import {
   PropertyValues,
   nothing,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { HassEntityBase } from "home-assistant-js-websocket";
 import { formatDateWeekdayDay } from "../../../common/datetime/format_date";
 import { formatTimeWeekday } from "../../../common/datetime/format_time";
 import { formatNumber } from "../../../common/number/format_number";
@@ -22,16 +23,97 @@ import {
   getForecast,
   getWeatherUnit,
   getWind,
+  subscribeForecast,
+  ForecastEvent,
   WeatherEntity,
+  WeatherEntityFeature,
   weatherIcons,
 } from "../../../data/weather";
 import { HomeAssistant } from "../../../types";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 
 @customElement("more-info-weather")
 class MoreInfoWeather extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public stateObj?: WeatherEntity;
+
+  @state() private _forecastEvent?: ForecastEvent;
+
+  @state() private _subscribed?: () => void;
+
+  private _needForecastSubscription() {
+    return (
+      supportsFeature(
+        this.stateObj as HassEntityBase,
+        WeatherEntityFeature.FORECAST_DAILY
+      ) ||
+      supportsFeature(
+        this.stateObj as HassEntityBase,
+        WeatherEntityFeature.FORECAST_HOURLY
+      ) ||
+      supportsFeature(
+        this.stateObj as HassEntityBase,
+        WeatherEntityFeature.FORECAST_TWICE_DAILY
+      )
+    );
+  }
+
+  private _forecastType() {
+    if (
+      supportsFeature(
+        this.stateObj as HassEntityBase,
+        WeatherEntityFeature.FORECAST_DAILY
+      )
+    ) {
+      return "daily";
+    }
+    if (
+      supportsFeature(
+        this.stateObj as HassEntityBase,
+        WeatherEntityFeature.FORECAST_HOURLY
+      )
+    ) {
+      return "hourly";
+    }
+    if (
+      supportsFeature(
+        this.stateObj as HassEntityBase,
+        WeatherEntityFeature.FORECAST_TWICE_DAILY
+      )
+    ) {
+      return "twice_daily";
+    }
+    return undefined;
+  }
+
+  private _handleForecastEvent(forecastEvent: ForecastEvent) {
+    this._forecastEvent = forecastEvent;
+  }
+
+  private async _subscribeForecastEvents() {
+    if (this._subscribed) {
+      this._subscribed();
+      this._subscribed = undefined;
+    }
+    const forecastType = this._forecastType();
+    if (forecastType) {
+      this._subscribed = await subscribeForecast(
+        this.hass!,
+        this.stateObj!.entity_id,
+        forecastType,
+        (event) => this._handleForecastEvent(event)
+      );
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this._subscribed) {
+      this._subscribed();
+      this._subscribed = undefined;
+    }
+  }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (changedProps.has("stateObj")) {
@@ -50,12 +132,26 @@ class MoreInfoWeather extends LitElement {
     return false;
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (!this.stateObj || !this.hass) {
+      return;
+    }
+
+    if (this._needForecastSubscription() && !this._subscribed) {
+      this._subscribeForecastEvents();
+    }
+  }
+
   protected render() {
     if (!this.hass || !this.stateObj) {
       return nothing;
     }
 
-    const forecastData = getForecast(this.stateObj.attributes);
+    const forecastData = getForecast(
+      this.stateObj.attributes,
+      this._forecastEvent
+    );
     const forecast = forecastData?.forecast;
     const hourly = forecastData?.type === "hourly";
 

@@ -9,6 +9,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { HassEntity } from "home-assistant-js-websocket";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { formatNumber } from "../../../common/number/format_number";
@@ -20,7 +21,10 @@ import {
   getSecondaryWeatherAttribute,
   getWeatherStateIcon,
   getWeatherUnit,
+  subscribeForecast,
+  ForecastEvent,
   WeatherEntity,
+  WeatherEntityFeature,
   weatherSVGStyles,
 } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
@@ -32,12 +36,72 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceRow } from "./types";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EntitiesCardEntityConfig;
+
+  @state() private _forecastEvent?: ForecastEvent;
+
+  @state() private _subscribed?: () => void;
+
+  private _needForecastSubscription() {
+    const stateObj = this.hass!.states[this._config!.entity];
+    return (
+      stateObj &&
+      (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_DAILY) ||
+        supportsFeature(stateObj, WeatherEntityFeature.FORECAST_HOURLY) ||
+        supportsFeature(stateObj, WeatherEntityFeature.FORECAST_TWICE_DAILY))
+    );
+  }
+
+  private _forecastType(stateObj: HassEntity) {
+    if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_DAILY)) {
+      return "daily";
+    }
+    if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_HOURLY)) {
+      return "hourly";
+    }
+    if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_TWICE_DAILY)) {
+      return "twice_daily";
+    }
+    return undefined;
+  }
+
+  private _handleForecastEvent(forecastEvent: ForecastEvent) {
+    this._forecastEvent = forecastEvent;
+  }
+
+  private async _subscribeForecastEvents() {
+    if (this._subscribed) {
+      this._subscribed();
+      this._subscribed = undefined;
+    }
+    const stateObj = this.hass!.states[this._config!.entity];
+    if (!stateObj) {
+      return;
+    }
+    const forecastType = this._forecastType(stateObj);
+    if (forecastType) {
+      this._subscribed = await subscribeForecast(
+        this.hass!,
+        stateObj.entity_id,
+        forecastType,
+        (event) => this._handleForecastEvent(event)
+      );
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this._subscribed) {
+      this._subscribed();
+      this._subscribed = undefined;
+    }
+  }
 
   public setConfig(config: EntitiesCardEntityConfig): void {
     if (!config?.entity) {
@@ -49,6 +113,17 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    if (this._needForecastSubscription() && !this._subscribed) {
+      this._subscribeForecastEvents();
+    }
   }
 
   protected render() {
@@ -73,8 +148,8 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     const hasSecondary = this._config.secondary_info;
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
 
-    const forecastData = getForecast(stateObj.attributes);
-    const forecast = forecastData?.[0];
+    const forecastData = getForecast(stateObj.attributes, this._forecastEvent);
+    const forecast = forecastData?.forecast;
 
     return html`
       <div
