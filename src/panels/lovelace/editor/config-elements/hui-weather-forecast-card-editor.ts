@@ -14,6 +14,7 @@ import type { WeatherForecastCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { supportsFeature } from "../../../../common/entity/supports-feature";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -99,24 +100,15 @@ export class HuiWeatherForecastCardEditor
       return !!stateObj.attributes.forecast?.length;
     }
     if (forecastType === "daily") {
-      return !!(
-        stateObj.attributes.supported_features &&
-        stateObj.attributes.supported_features ===
-          WeatherEntityFeature.FORECAST_DAILY
-      );
+      return supportsFeature(stateObj, WeatherEntityFeature.FORECAST_DAILY);
     }
     if (forecastType === "hourly") {
-      return !!(
-        stateObj.attributes.supported_features &&
-        stateObj.attributes.supported_features ===
-          WeatherEntityFeature.FORECAST_HOURLY
-      );
+      return supportsFeature(stateObj, WeatherEntityFeature.FORECAST_HOURLY);
     }
     if (forecastType === "twice_daily") {
-      return !!(
-        stateObj.attributes.supported_features &&
-        stateObj.attributes.supported_features ===
-          WeatherEntityFeature.FORECAST_TWICE_DAILY
+      return supportsFeature(
+        stateObj,
+        WeatherEntityFeature.FORECAST_TWICE_DAILY
       );
     }
     return false;
