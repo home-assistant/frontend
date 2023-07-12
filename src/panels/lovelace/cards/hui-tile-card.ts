@@ -233,10 +233,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
     }
 
-    const stateDisplay = this.hass!.stateDisplay(
-      stateObj,
-      this.hass!.entities[stateObj.entity_id]
-    );
+    const stateDisplay = this.hass!.stateDisplay(stateObj);
 
     if (domain === "cover") {
       const positionStateDisplay = computeCoverPositionStateDisplay(

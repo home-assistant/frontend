@@ -20,7 +20,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         if (
           this.hass.localize !== oldHass?.localize ||
           this.hass.locale !== oldHass.locale ||
-          this.hass.config !== oldHass.config
+          this.hass.config !== oldHass.config ||
+          this.hass.entities !== oldHass.entities
         ) {
           this._updateStateDisplay();
         }
@@ -33,7 +34,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         stateDisplay: await computeFormatState(
           this.hass.localize,
           this.hass.locale,
-          this.hass.config
+          this.hass.config,
+          this.hass.entities
         ),
       });
     };

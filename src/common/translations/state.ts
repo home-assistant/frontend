@@ -1,30 +1,20 @@
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
-import type { LocalizeFunc } from "./localize";
 import type { FrontendLocaleData } from "../../data/translation";
+import type { HomeAssistant } from "../../types";
+import type { LocalizeFunc } from "./localize";
 
-export type FormatStateFunc = (
-  stateObj: HassEntity,
-  entity?: EntityRegistryDisplayEntry,
-  state?: string
-) => string;
+export type FormatStateFunc = (stateObj: HassEntity, state?: string) => string;
 
 export const computeFormatState = async (
   localize: LocalizeFunc,
   locale: FrontendLocaleData,
-  config: HassConfig
+  config: HassConfig,
+  entities: HomeAssistant["entities"]
 ): Promise<FormatStateFunc> => {
-  const { computeStateDisplaySingleEntity } = await import(
+  const { computeStateDisplay } = await import(
     "../entity/compute_state_display"
   );
 
-  return (stateObj, entity, state) =>
-    computeStateDisplaySingleEntity(
-      localize,
-      stateObj,
-      locale,
-      config,
-      entity,
-      state
-    );
+  return (stateObj, state) =>
+    computeStateDisplay(localize, stateObj, locale, config, entities, state);
 };
