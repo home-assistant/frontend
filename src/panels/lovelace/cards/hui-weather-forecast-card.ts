@@ -85,6 +85,12 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     this._forecastEvent = forecastEvent;
   }
 
+  private _needForecastSubscription() {
+    return (
+      this._config!.forecast_type && this._config!.forecast_type !== "legacy"
+    );
+  }
+
   private async _subscribeForecastEvents() {
     if (this._subscribed) {
       this._subscribed();
@@ -163,7 +169,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    if (changedProps.has("_config")) {
+    if (
+      this._needForecastSubscription() &&
+      (changedProps.has("_config") || !this._subscribed)
+    ) {
       this._subscribeForecastEvents();
     }
 
