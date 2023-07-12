@@ -2,15 +2,16 @@ import { computeFormatState } from "../common/translations/state";
 import { Constructor, HomeAssistant } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
 
-export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
-  class extends superClass {
+export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
+  class StateDisplayMixin extends superClass {
     protected hassConnected() {
       super.hassConnected();
       this._updateStateDisplay();
     }
 
-    protected updated(changedProps) {
-      super.updated(changedProps);
+    protected willUpdate(changedProps) {
+      super.willUpdate(changedProps);
+
       if (!changedProps.has("hass")) {
         return;
       }
@@ -39,4 +40,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         ),
       });
     };
-  };
+  }
+  return StateDisplayMixin;
+};
