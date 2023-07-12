@@ -1,7 +1,8 @@
-import {
+import type {
   Circle,
   CircleMarker,
   LatLngTuple,
+  LatLngExpression,
   Layer,
   Map,
   Marker,
@@ -162,7 +163,7 @@ export class HaMap extends ReactiveElement {
     this._loaded = true;
   }
 
-  public fitMap(): void {
+  public fitMap(options?: { zoom?: number; pad?: number }): void {
     if (!this.leafletMap || !this.Leaflet || !this.hass) {
       return;
     }
@@ -173,7 +174,7 @@ export class HaMap extends ReactiveElement {
           this.hass.config.latitude,
           this.hass.config.longitude
         ),
-        this.zoom
+        options?.zoom || this.zoom
       );
       return;
     }
@@ -196,11 +197,22 @@ export class HaMap extends ReactiveElement {
       );
     });
 
-    if (!this.layers) {
-      bounds = bounds.pad(0.5);
-    }
+    bounds = bounds.pad(options?.pad ?? 0.5);
 
-    this.leafletMap.fitBounds(bounds, { maxZoom: this.zoom });
+    this.leafletMap.fitBounds(bounds, { maxZoom: options?.zoom || this.zoom });
+  }
+
+  public fitBounds(
+    boundingbox: LatLngExpression[],
+    options?: { zoom?: number; pad?: number }
+  ) {
+    if (!this.leafletMap || !this.Leaflet || !this.hass) {
+      return;
+    }
+    const bounds = this.Leaflet.latLngBounds(boundingbox).pad(
+      options?.pad ?? 0.5
+    );
+    this.leafletMap.fitBounds(bounds, { maxZoom: options?.zoom || this.zoom });
   }
 
   private _drawLayers(prevLayers: Layer[] | undefined): void {

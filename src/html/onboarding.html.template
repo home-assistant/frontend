@@ -11,13 +11,14 @@
       }
       body {
         height: auto;
+        padding: 64px 0;
       }
       .content {
         box-sizing: border-box;
         padding: 20px 16px;
         border-radius: var(--ha-card-border-radius, 12px);
         max-width: 432px;
-        margin: 64px auto 0;
+        margin: 0 auto;
         box-shadow: var(
           --ha-card-box-shadow,
           rgba(0, 0, 0, 0.25) 0px 54px 55px,

@@ -1,8 +1,9 @@
-import {
+import type {
   Circle,
   DivIcon,
   DragEndEvent,
   LatLng,
+  LatLngExpression,
   Marker,
   MarkerOptions,
 } from "leaflet";
@@ -22,6 +23,8 @@ import type { HomeAssistant } from "../../types";
 import "../ha-input-helper-text";
 import "./ha-map";
 import type { HaMap } from "./ha-map";
+import { HaIcon } from "../ha-icon";
+import { HaSvgIcon } from "../ha-svg-icon";
 
 declare global {
   // for fire event
@@ -40,6 +43,7 @@ export interface MarkerLocation {
   name?: string;
   id: string;
   icon?: string;
+  iconPath?: string;
   radius_color?: string;
   location_editable?: boolean;
   radius_editable?: boolean;
@@ -81,11 +85,21 @@ export class HaLocationsEditor extends LitElement {
     );
   }
 
-  public fitMap(): void {
-    this.map.fitMap();
+  public fitMap(options?: { zoom?: number; pad?: number }): void {
+    this.map.fitMap(options);
   }
 
-  public async fitMarker(id: string): Promise<void> {
+  public fitBounds(
+    boundingbox: LatLngExpression[],
+    options?: { zoom?: number; pad?: number }
+  ) {
+    this.map.fitBounds(boundingbox, options);
+  }
+
+  public async fitMarker(
+    id: string,
+    options?: { zoom?: number }
+  ): Promise<void> {
     if (!this.Leaflet) {
       await this._loadPromise;
     }
@@ -104,7 +118,10 @@ export class HaLocationsEditor extends LitElement {
       if (circle) {
         this.map.leafletMap.fitBounds(circle.getBounds());
       } else {
-        this.map.leafletMap.setView(marker.getLatLng(), this.zoom);
+        this.map.leafletMap.setView(
+          marker.getLatLng(),
+          options?.zoom || this.zoom
+        );
       }
     }
   }
@@ -199,15 +216,21 @@ export class HaLocationsEditor extends LitElement {
 
     this.locations.forEach((location: MarkerLocation) => {
       let icon: DivIcon | undefined;
-      if (location.icon) {
+      if (location.icon || location.iconPath) {
         // create icon
         const el = document.createElement("div");
         el.className = "named-icon";
-        if (location.name) {
+        if (location.name !== undefined) {
           el.innerText = location.name;
         }
-        const iconEl = document.createElement("ha-icon");
-        iconEl.setAttribute("icon", location.icon);
+        let iconEl: HaIcon | HaSvgIcon;
+        if (location.icon) {
+          iconEl = document.createElement("ha-icon");
+          iconEl.setAttribute("icon", location.icon);
+        } else {
+          iconEl = document.createElement("ha-svg-icon");
+          iconEl.setAttribute("path", location.iconPath!);
+        }
         el.prepend(iconEl);
 
         icon = this.Leaflet!.divIcon({

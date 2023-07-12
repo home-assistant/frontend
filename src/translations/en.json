@@ -5571,11 +5571,21 @@
         },
         "core-config": {
           "intro": "Hello {name}, welcome to Home Assistant. How would you like to name your home?",
+          "intro_core": "We will be setting up some core configuration for your Home Assistant instance now, you can always change this later in the configuration panel.",
           "intro_location": "We would like to know where you live. This information will help with displaying information and setting up sun-based automations. This data is never shared outside of your network.",
-          "intro_location_detect": "We can help you fill in this information by making a one-time request to an external service.",
+          "location_address": "You can enter your address, we will then try to find the coordinates for it with {openstreetmap} ({osm_privacy_policy}).",
+          "nomatim_osm": "Nominatim from OpenStreetMap",
+          "osm_privacy_policy": "OpenStreetMap Foundation privacy policy",
+          "detect_location": "We can also try to detect your location automatically.",
+          "pick_location": "You can also use the map to select your location, in that case no information is shared with anyone.",
+          "title_location_detect": "Do you want us to detect your location?",
+          "intro_location_detect": "We can detect your location roughly by making a one-time request to an external service.",
+          "intro_core_config": "We filled out some details about your location, please check if they are correct and continue.",
           "location_name": "Name of your Home Assistant installation",
           "location_name_default": "Home",
+          "address_label": "Search address",
           "button_detect": "Detect",
+          "button_search": "Search",
           "finish": "Next"
         },
         "integration": {
