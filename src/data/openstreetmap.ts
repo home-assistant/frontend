@@ -40,9 +40,14 @@ export const searchPlaces = (
       limit ? `&limit=${limit}` : ""
     }${addressdetails ? "&addressdetails=1" : ""}&accept-language=${
       hass.locale.language
-    }`,
+    }&email=abuse@home-assistant.io`,
     { headers: { "User-Agent": `HomeAssistant/${hass.config.version}` } }
-  ).then((res) => res.json());
+  ).then((res) => {
+    if (res.ok) {
+      return res.json();
+    }
+    throw new Error(res.statusText);
+  });
 
 export const reverseGeocode = (
   location: [number, number],
@@ -52,6 +57,13 @@ export const reverseGeocode = (
   fetch(
     `https://nominatim.openstreetmap.org/reverse.php?lat=${location[0]}&lon=${
       location[1]
-    }&accept-language=${hass.locale.language}&zoom=${zoom ?? 18}&format=jsonv2`,
+    }&accept-language=${hass.locale.language}&zoom=${
+      zoom ?? 18
+    }&format=jsonv2&email=abuse@home-assistant.io`,
     { headers: { "User-Agent": `HomeAssistant/${hass.config.version}` } }
-  ).then((res) => res.json());
+  ).then((res) => {
+    if (res.ok) {
+      return res.json();
+    }
+    throw new Error(res.statusText);
+  });
