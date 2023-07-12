@@ -1,15 +1,12 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import {
-  computeAttributeNameDisplay,
-  computeAttributeValueDisplay,
-} from "../common/entity/compute_attribute_display";
+import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 import { STATE_ATTRIBUTES } from "../data/entity_attributes";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
-
 import "./ha-expansion-panel";
+import "./ha-attribute-value";
 
 @customElement("ha-attributes")
 class HaAttributes extends LitElement {
@@ -58,14 +55,11 @@ class HaAttributes extends LitElement {
                         )}
                       </div>
                       <div class="value">
-                        ${computeAttributeValueDisplay(
-                          this.hass.localize,
-                          this.stateObj!,
-                          this.hass.locale,
-                          this.hass.config,
-                          this.hass.entities,
-                          attribute
-                        )}
+                        <ha-attribute-value
+                          .hass=${this.hass}
+                          .attribute=${attribute}
+                          .stateObj=${this.stateObj}
+                        ></ha-attribute-value>
                       </div>
                     </div>
                   `

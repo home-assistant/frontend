@@ -1,7 +1,6 @@
 import { HassConfig, HassEntity } from "home-assistant-js-websocket";
-import { html, TemplateResult } from "lit";
-import { until } from "lit/directives/until";
 import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import { FrontendLocaleData } from "../../data/translation";
 import { HomeAssistant } from "../../types";
 import checkValidDate from "../datetime/check_valid_date";
 import { formatDate } from "../datetime/format_date";
@@ -12,9 +11,6 @@ import { isDate } from "../string/is_date";
 import { isTimestamp } from "../string/is_timestamp";
 import { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
-import { FrontendLocaleData } from "../../data/translation";
-
-let jsYamlPromise: Promise<typeof import("../../resources/js-yaml-dump")>;
 
 export const computeAttributeValueDisplay = (
   localize: LocalizeFunc,
@@ -24,7 +20,7 @@ export const computeAttributeValueDisplay = (
   entities: HomeAssistant["entities"],
   attribute: string,
   value?: any
-): string | TemplateResult => {
+): string => {
   const attributeValue =
     value !== undefined ? value : stateObj.attributes[attribute];
 
@@ -40,23 +36,6 @@ export const computeAttributeValueDisplay = (
 
   // Special handling in case this is a string with an known format
   if (typeof attributeValue === "string") {
-    // URL handling
-    if (attributeValue.startsWith("http")) {
-      try {
-        // If invalid URL, exception will be raised
-        const url = new URL(attributeValue);
-        if (url.protocol === "http:" || url.protocol === "https:")
-          return html`<a
-            target="_blank"
-            rel="noopener noreferrer"
-            href=${attributeValue}
-            >${attributeValue}</a
-          >`;
-      } catch (_) {
-        // Nothing to do here
-      }
-    }
-
     // Date handling
     if (isDate(attributeValue, true)) {
       // Timestamp handling
@@ -81,13 +60,8 @@ export const computeAttributeValueDisplay = (
       attributeValue.some((val) => val instanceof Object)) ||
     (!Array.isArray(attributeValue) && attributeValue instanceof Object)
   ) {
-    if (!jsYamlPromise) {
-      jsYamlPromise = import("../../resources/js-yaml-dump");
-    }
-    const yaml = jsYamlPromise.then((jsYaml) => jsYaml.dump(attributeValue));
-    return html`<pre>${until(yaml, "")}</pre>`;
+    return JSON.stringify(attributeValue);
   }
-
   // If this is an array, try to determine the display value for each item
   if (Array.isArray(attributeValue)) {
     return attributeValue

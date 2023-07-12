@@ -12,13 +12,12 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
-  stateColorCss,
   stateColorBrightness,
+  stateColorCss,
 } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import {
@@ -27,6 +26,7 @@ import {
   isNumericState,
 } from "../../../common/number/format_number";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
+import "../../../components/ha-attribute-value";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
@@ -157,14 +157,14 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           <span class="value"
             >${"attribute" in this._config
               ? stateObj.attributes[this._config.attribute!] !== undefined
-                ? computeAttributeValueDisplay(
-                    this.hass.localize,
-                    stateObj,
-                    this.hass.locale,
-                    this.hass.config,
-                    this.hass.entities,
-                    this._config.attribute!
-                  )
+                ? html`
+                    <ha-attribute-value
+                      .hass=${this.hass}
+                      .stateObj=${stateObj}
+                      .attribute=${this._config.attribute!}
+                    >
+                    </ha-attribute-value>
+                  `
                 : this.hass.localize("state.default.unknown")
               : isNumericState(stateObj) || this._config.unit
               ? formatNumber(
