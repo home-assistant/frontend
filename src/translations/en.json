@@ -134,6 +134,9 @@
         "state": "State",
         "mode": "Mode",
         "target_humidity_entity": "{name} target humidity",
+        "current_humidity_entity": "{name} current humidity",
+        "humidifying": "{name} humidifying",
+        "drying": "{name} drying",
         "on_entity": "{name} on"
       },
       "light": {

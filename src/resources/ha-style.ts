@@ -157,6 +157,8 @@ documentContainer.innerHTML = `<custom-style>
       --state-device_tracker-home-color: var(--green-color);
       --state-fan-active-color: var(--cyan-color);
       --state-humidifier-active-color: var(--blue-color);
+      --state-humidifier-humidify-color: var(--blue-color);
+      --state-humidifier-dry-color: var(--orange-color);
       --state-light-active-color: var(--amber-color);
       --state-lock-jammed-color: var(--red-color);
       --state-lock-locked-color: var(--green-color);
