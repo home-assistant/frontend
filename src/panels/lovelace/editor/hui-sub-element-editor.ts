@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { mdiArrowLeft } from "@mdi/js";
+import { mdiArrowLeft, mdiCodeBraces, mdiListBoxOutline } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
@@ -50,17 +50,17 @@ export class HuiSubElementEditor extends LitElement {
             )}</span
           >
         </div>
-        <mwc-button
-          slot="secondaryAction"
-          .disabled=${!this._guiModeAvailable}
+        <ha-icon-button
+          class="gui-mode-button"
           @click=${this._toggleMode}
-        >
-          ${this.hass.localize(
+          .disabled=${!this._guiModeAvailable}
+          .label=${this.hass!.localize(
             this._guiMode
               ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
               : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
           )}
-        </mwc-button>
+          .path=${this._guiMode ? mdiCodeBraces : mdiListBoxOutline}
+        ></ha-icon-button>
       </div>
       ${this.config.type === "row"
         ? html`
