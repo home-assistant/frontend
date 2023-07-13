@@ -373,7 +373,7 @@ class StateHistoryChartLine extends LitElement {
               name: name,
             })}`,
             true,
-            computedStyles.getPropertyValue("--state-humidifier-humidify-color")
+            computedStyles.getPropertyValue("--state-humidifier-on-color")
           );
         } else if (hasDrying) {
           addDataSet(
@@ -381,7 +381,7 @@ class StateHistoryChartLine extends LitElement {
               name: name,
             })}`,
             true,
-            computedStyles.getPropertyValue("--state-humidifier-dry-color")
+            computedStyles.getPropertyValue("--state-humidifier-on-color")
           );
         } else {
           addDataSet(
