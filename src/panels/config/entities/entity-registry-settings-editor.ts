@@ -687,6 +687,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
         required
         @input=${this._entityIdChanged}
         iconTrailing
+        autocapitalize="none"
+        autocomplete="off"
+        autocorrect="off"
+        input-spellcheck="false"
       >
         <ha-icon-button
           @click=${this._copyEntityId}
