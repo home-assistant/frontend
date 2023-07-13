@@ -1,10 +1,10 @@
-let loaded: Promise<typeof import("./codemirror")>;
+let loaded: typeof import("./codemirror");
 
 export const loadCodeMirror = async (): Promise<
   typeof import("./codemirror")
 > => {
   if (!loaded) {
-    loaded = import("./codemirror");
+    loaded = await import("./codemirror");
   }
   return loaded;
 };
