@@ -1385,6 +1385,15 @@
         "message_example": "Hello. How can I assist?",
         "message_placeholder": "Enter a sentence to speak.",
         "play": "Play"
+      },
+      "dialog-ip-detail": {
+        "ip_information": "[%key:ui::panel::config::network::ip_information%]",
+        "ipv4": "IPv4",
+        "ipv6": "IPv6",
+        "ip_address": "IP Address: {address}",
+        "gateway": "Gateway: {gateway}",
+        "method": "Method: {method}",
+        "nameservers": "Name Servers: {nameservers}"
       }
     },
     "duration": {
@@ -4193,7 +4202,10 @@
               "description": "The name your instance will have on your network",
               "failed_to_set_hostname": "Setting hostname failed"
             }
-          }
+          },
+          "network_adapter": "Network Adapter",
+          "network_adapter_info": "Configure which network adapters integrations will use. Currently this setting only affects multicast traffic. A restart is required for these settings to apply.",
+          "ip_information": "IP Information"
         },
         "storage": {
           "caption": "Storage",
