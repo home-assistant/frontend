@@ -1,6 +1,6 @@
 import "@material/web/iconbutton/outlined-icon-button";
 import { mdiDoorOpen, mdiLock, mdiLockOff } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { domainIcon } from "../../../common/entity/domain_icon";
@@ -8,9 +8,12 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import { UNAVAILABLE } from "../../../data/entity";
-import { LockEntity, LockEntityFeature } from "../../../data/lock";
+import {
+  LockEntity,
+  LockEntityFeature,
+  callProtectedLockService,
+} from "../../../data/lock";
 import type { HomeAssistant } from "../../../types";
-import { showEnterCodeDialogDialog } from "../../enter-code/show-enter-code-dialog";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 import "../components/lock/ha-more-info-lock-toggle";
@@ -22,41 +25,15 @@ class MoreInfoLock extends LitElement {
   @property({ attribute: false }) public stateObj?: LockEntity;
 
   private async _open() {
-    this._callService("open");
+    callProtectedLockService(this, this.hass, this.stateObj!, "open");
   }
 
   private async _lock() {
-    this._callService("lock");
+    callProtectedLockService(this, this.hass, this.stateObj!, "lock");
   }
 
   private async _unlock() {
-    this._callService("unlock");
-  }
-
-  private async _callService(service: "open" | "lock" | "unlock") {
-    let code: string | undefined;
-
-    if (this.stateObj!.attributes.code_format) {
-      const response = await showEnterCodeDialogDialog(this, {
-        codeFormat: "text",
-        codePattern: this.stateObj!.attributes.code_format,
-        title: this.hass.localize(
-          `ui.dialogs.more_info_control.lock.${service}`
-        ),
-        submitText: this.hass.localize(
-          `ui.dialogs.more_info_control.lock.${service}`
-        ),
-      });
-      if (!response) {
-        return;
-      }
-      code = response;
-    }
-
-    this.hass.callService("lock", service, {
-      entity_id: this.stateObj!.entity_id,
-      code,
-    });
+    callProtectedLockService(this, this.hass, this.stateObj!, "unlock");
   }
 
   protected render() {
