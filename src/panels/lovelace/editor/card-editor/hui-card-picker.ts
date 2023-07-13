@@ -123,7 +123,7 @@ export class HuiCardPicker extends LitElement {
         })}
       >
         <div class="cards-container">
-          ${this._clipboard
+          ${this._clipboard && !this._filter
             ? html`
                 ${until(
                   this._renderCardElement(
@@ -402,6 +402,9 @@ export class HuiCardPicker extends LitElement {
           background: var(--primary-background-color, #fafafa);
           cursor: pointer;
           position: relative;
+          overflow: hidden;
+          border: var(--ha-card-border-width, 1px) solid
+            var(--ha-card-border-color, var(--divider-color));
         }
 
         .card-header {
@@ -451,8 +454,6 @@ export class HuiCardPicker extends LitElement {
           height: 100%;
           z-index: 1;
           box-sizing: border-box;
-          border: var(--ha-card-border-width, 1px) solid
-            var(--ha-card-border-color, var(--divider-color));
           border-radius: var(--ha-card-border-radius, 12px);
         }
 
