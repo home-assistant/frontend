@@ -296,16 +296,15 @@ export class HaChooseAction extends LitElement implements ActionElement {
           inset-inline-start: initial;
           inset-inline-end: 0;
           direction: var(--direction);
-          padding: 4px;
         }
         ha-svg-icon {
           height: 20px;
         }
         .link-button-row {
-          padding: 14px;
+          padding: 14px 14px 0 14px;
         }
         .card-content {
-          padding: 0 0 8px 8px;
+          padding: 0 16px 16px 16px;
         }
       `,
     ];
