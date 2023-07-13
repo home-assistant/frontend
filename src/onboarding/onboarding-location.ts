@@ -180,11 +180,6 @@ class OnboardingLocation extends LitElement {
           }
         )}
       </p>
-      <p>
-        ${this.onboardingLocalize(
-          "ui.panel.page-onboarding.core-config.detect_location"
-        )}
-      </p>
 
       <div class="footer">
         <mwc-button
