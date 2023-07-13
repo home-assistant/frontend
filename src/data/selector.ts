@@ -19,6 +19,7 @@ export type Selector =
   | BooleanSelector
   | ColorRGBSelector
   | ColorTempSelector
+  | ConditionSelector
   | ConversationAgentSelector
   | ConfigEntrySelector
   | ConstantSelector
@@ -94,6 +95,11 @@ export interface ColorTempSelector {
     min_mireds?: number;
     max_mireds?: number;
   } | null;
+}
+
+export interface ConditionSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  condition: {} | null;
 }
 
 export interface ConversationAgentSelector {
