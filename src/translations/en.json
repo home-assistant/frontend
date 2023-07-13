@@ -5582,7 +5582,6 @@
           "location_name_default": "Home",
           "address_label": "Search address",
           "button_detect": "Detect",
-          "button_search": "Search",
           "finish": "Next"
         },
         "integration": {

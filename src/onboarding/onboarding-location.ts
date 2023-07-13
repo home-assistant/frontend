@@ -96,9 +96,9 @@ class OnboardingLocation extends LitElement {
               slot="trailingIcon"
               .disabled=${this._working}
               .label=${this.onboardingLocalize(
-                `ui.panel.page-onboarding.core-config.${
-                  this._search ? "button_search" : "button_detect"
-                }`
+                this._search
+                  ? "ui.common.search"
+                  : "ui.panel.page-onboarding.core-config.button_detect"
               )}
               .path=${this._search ? mdiMapSearchOutline : mdiCrosshairsGps}
             ></ha-icon-button>`}
