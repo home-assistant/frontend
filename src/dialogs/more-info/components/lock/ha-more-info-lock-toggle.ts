@@ -15,9 +15,8 @@ import "../../../../components/ha-control-button";
 import "../../../../components/ha-control-switch";
 import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity";
 import { forwardHaptic } from "../../../../data/haptics";
-import { LockEntity } from "../../../../data/lock";
+import { callProtectedLockService, LockEntity } from "../../../../data/lock";
 import { HomeAssistant } from "../../../../types";
-import { showEnterCodeDialogDialog } from "../../../enter-code/show-enter-code-dialog";
 
 @customElement("ha-more-info-lock-toggle")
 export class HaMoreInfoLockToggle extends LitElement {
@@ -68,30 +67,12 @@ export class HaMoreInfoLockToggle extends LitElement {
       return;
     }
     forwardHaptic("light");
-
-    let code: string | undefined;
-
-    if (this.stateObj.attributes.code_format) {
-      const response = await showEnterCodeDialogDialog(this, {
-        codeFormat: "text",
-        codePattern: this.stateObj.attributes.code_format,
-        title: this.hass.localize(
-          `ui.dialogs.more_info_control.lock.${turnOn ? "lock" : "unlock"}`
-        ),
-        submitText: this.hass.localize(
-          `ui.dialogs.more_info_control.lock.${turnOn ? "lock" : "unlock"}`
-        ),
-      });
-      if (response == null) {
-        throw new Error("cancel");
-      }
-      code = response;
-    }
-
-    await this.hass.callService("lock", turnOn ? "lock" : "unlock", {
-      entity_id: this.stateObj.entity_id,
-      code,
-    });
+    callProtectedLockService(
+      this,
+      this.hass,
+      this.stateObj,
+      turnOn ? "lock" : "unlock"
+    );
   }
 
   protected render(): TemplateResult {
