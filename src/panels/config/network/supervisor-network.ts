@@ -254,7 +254,11 @@ export class HassioNetwork extends LitElement {
             .label=${"ui.common.menu"}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <mwc-list-item>IP Information</mwc-list-item>
+          <mwc-list-item
+            >${this.hass.localize(
+              "ui.panel.config.network.ip_information"
+            )}</mwc-list-item
+          >
         </ha-button-menu>
       </div>`;
   }
