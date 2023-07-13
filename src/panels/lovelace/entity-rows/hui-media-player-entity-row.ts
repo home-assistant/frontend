@@ -24,10 +24,11 @@ import { customElement, property, state } from "lit/decorators";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import { stateActive } from "../../../common/entity/state_active";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-slider";
-import { isUnavailableState, UNAVAILABLE, UNKNOWN } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import {
   computeMediaDescription,
   ControlButton,
@@ -199,7 +200,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       >
         <div class="controls">
           ${supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON) &&
-          entityState === "off" &&
+          !stateActive(stateObj) &&
           !isUnavailableState(entityState)
             ? html`
                 <ha-icon-button
@@ -216,8 +217,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             ? buttons
             : ""}
           ${supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF) &&
-          entityState !== "off" &&
-          !isUnavailableState(entityState)
+          stateActive(stateObj)
             ? html`
                 <ha-icon-button
                   .path=${mdiPower}
@@ -230,7 +230,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       </hui-generic-entity-row>
       ${(supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET) ||
         supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_BUTTONS)) &&
-      ![UNAVAILABLE, UNKNOWN, "off"].includes(entityState)
+      stateActive(stateObj)
         ? html`
             <div class="flex">
               <div class="volume">
@@ -330,7 +330,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
     this.hass!.callService(
       "media_player",
-      stateObj.state === "off" ? "turn_on" : "turn_off",
+      stateActive(stateObj) ? "turn_off" : "turn_on",
       {
         entity_id: this._config!.entity,
       }

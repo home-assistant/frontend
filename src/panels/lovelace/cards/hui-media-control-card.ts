@@ -17,6 +17,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { extractColors } from "../../../common/image/extract_color";
+import { stateActive } from "../../../common/entity/state_active";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -169,10 +170,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     const entityState = stateObj.state;
 
-    const isOffState = entityState === "off";
+    const isOffState =
+      !stateActive(stateObj) && !isUnavailableState(entityState);
     const isUnavailable =
       isUnavailableState(entityState) ||
-      (entityState === "off" &&
+      (isOffState &&
         !supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON));
     const hasNoImage = !this._image;
     const controls = computeMediaControls(stateObj, false);
