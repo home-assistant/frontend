@@ -1,7 +1,7 @@
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
-import { mdiContentCopy } from "@mdi/js";
+import { mdiCodeBraces, mdiContentCopy, mdiListBoxOutline } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
@@ -92,6 +92,8 @@ export class HuiConditionalCardEditor
       return nothing;
     }
 
+    const isGuiMode = !this._cardEditorEl || this._GUImode;
+
     return html`
       <mwc-tab-bar
         .activeIndex=${this._cardTab ? 1 : 0}
@@ -114,17 +116,17 @@ export class HuiConditionalCardEditor
               ${this._config.card.type !== undefined
                 ? html`
                     <div class="card-options">
-                      <mwc-button
+                      <ha-icon-button
+                        class="gui-mode-button"
                         @click=${this._toggleMode}
                         .disabled=${!this._guiModeAvailable}
-                        class="gui-mode-button"
-                      >
-                        ${this.hass!.localize(
-                          !this._cardEditorEl || this._GUImode
+                        .label=${this.hass!.localize(
+                          isGuiMode
                             ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
                             : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
                         )}
-                      </mwc-button>
+                        .path=${isGuiMode ? mdiCodeBraces : mdiListBoxOutline}
+                      ></ha-icon-button>
 
                       <ha-icon-button
                         .label=${this.hass!.localize(

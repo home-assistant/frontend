@@ -1,15 +1,17 @@
 import {
   mdiArrowLeft,
   mdiArrowRight,
-  mdiDelete,
-  mdiContentCut,
+  mdiCodeBraces,
   mdiContentCopy,
+  mdiContentCut,
+  mdiDelete,
+  mdiListBoxOutline,
   mdiPlus,
 } from "@mdi/js";
 import "@polymer/paper-tabs";
 import "@polymer/paper-tabs/paper-tab";
 import deepClone from "deep-clone-simple";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import {
   any,
@@ -21,7 +23,7 @@ import {
   string,
 } from "superstruct";
 import { storage } from "../../../../common/decorators/storage";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -87,6 +89,8 @@ export class HuiStackCardEditor
     const selected = this._selectedCard!;
     const numcards = this._config.cards.length;
 
+    const isGuiMode = !this._cardEditorEl || this._GUImode;
+
     return html`
       <div class="card-config">
         <div class="toolbar">
@@ -114,17 +118,17 @@ export class HuiStackCardEditor
           ${selected < numcards
             ? html`
                 <div id="card-options">
-                  <mwc-button
+                  <ha-icon-button
+                    class="gui-mode-button"
                     @click=${this._toggleMode}
                     .disabled=${!this._guiModeAvailable}
-                    class="gui-mode-button"
-                  >
-                    ${this.hass!.localize(
-                      !this._cardEditorEl || this._GUImode
+                    .label=${this.hass!.localize(
+                      isGuiMode
                         ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
                         : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
                     )}
-                  </mwc-button>
+                    .path=${isGuiMode ? mdiCodeBraces : mdiListBoxOutline}
+                  ></ha-icon-button>
 
                   <ha-icon-button
                     .disabled=${selected === 0}
