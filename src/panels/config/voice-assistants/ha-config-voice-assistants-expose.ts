@@ -150,11 +150,10 @@ export class VoiceAssistantsExpose extends LitElement {
         filterable: true,
         direction: "asc",
         grows: true,
-        template: (name, entry) =>
-          html`
-            ${name}<br />
-            <div class="secondary">${entry.entity_id}</div>
-          `,
+        template: (name, entry) => html`
+          ${name}<br />
+          <div class="secondary">${entry.entity_id}</div>
+        `,
       },
       area: {
         title: this.hass.localize(

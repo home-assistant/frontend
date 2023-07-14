@@ -94,26 +94,25 @@ class HassTabsSubpage extends LitElement {
       }
 
       return shownTabs.map(
-        (page) =>
-          html`
-            <a href=${page.path}>
-              <ha-tab
-                .hass=${this.hass}
-                .active=${page.path === activeTab?.path}
-                .narrow=${this.narrow}
-                .name=${page.translationKey
-                  ? localizeFunc(page.translationKey)
-                  : page.name}
-              >
-                ${page.iconPath
-                  ? html`<ha-svg-icon
-                      slot="icon"
-                      .path=${page.iconPath}
-                    ></ha-svg-icon>`
-                  : ""}
-              </ha-tab>
-            </a>
-          `
+        (page) => html`
+          <a href=${page.path}>
+            <ha-tab
+              .hass=${this.hass}
+              .active=${page.path === activeTab?.path}
+              .narrow=${this.narrow}
+              .name=${page.translationKey
+                ? localizeFunc(page.translationKey)
+                : page.name}
+            >
+              ${page.iconPath
+                ? html`<ha-svg-icon
+                    slot="icon"
+                    .path=${page.iconPath}
+                  ></ha-svg-icon>`
+                : ""}
+            </ha-tab>
+          </a>
+        `
       );
     }
   );

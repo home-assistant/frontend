@@ -53,39 +53,38 @@ export class HaAnalytics extends LitElement {
         </ha-switch>
       </ha-settings-row>
       ${ADDITIONAL_PREFERENCES.map(
-        (preference) =>
-          html`
-            <ha-settings-row>
-              <span slot="heading" data-for=${preference}>
-                ${this.localize(
-                  `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
-                )}
-              </span>
-              <span slot="description" data-for=${preference}>
-                ${this.localize(
-                  `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.description`
-                )}
-              </span>
-              <span>
-                <ha-switch
-                  @change=${this._handleRowClick}
-                  .checked=${this.analytics?.preferences[preference]}
-                  .preference=${preference}
-                  name=${preference}
-                >
-                </ha-switch>
-                ${!baseEnabled
-                  ? html`
-                      <simple-tooltip animation-delay="0" position="right">
-                        ${this.localize(
-                          `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
-                        )}
-                      </simple-tooltip>
-                    `
-                  : ""}
-              </span>
-            </ha-settings-row>
-          `
+        (preference) => html`
+          <ha-settings-row>
+            <span slot="heading" data-for=${preference}>
+              ${this.localize(
+                `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
+              )}
+            </span>
+            <span slot="description" data-for=${preference}>
+              ${this.localize(
+                `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.description`
+              )}
+            </span>
+            <span>
+              <ha-switch
+                @change=${this._handleRowClick}
+                .checked=${this.analytics?.preferences[preference]}
+                .preference=${preference}
+                name=${preference}
+              >
+              </ha-switch>
+              ${!baseEnabled
+                ? html`
+                    <simple-tooltip animation-delay="0" position="right">
+                      ${this.localize(
+                        `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
+                      )}
+                    </simple-tooltip>
+                  `
+                : ""}
+            </span>
+          </ha-settings-row>
+        `
       )}
       <ha-settings-row>
         <span slot="heading" data-for="diagnostics">

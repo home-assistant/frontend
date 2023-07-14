@@ -77,8 +77,9 @@ export class HaConfigUsers extends LitElement {
           width: "20%",
           direction: "asc",
           hidden: narrow,
-          template: (groupIds: User["group_ids"]) =>
-            html` ${localize(`groups.${groupIds[0]}`)} `,
+          template: (groupIds: User["group_ids"]) => html`
+            ${localize(`groups.${groupIds[0]}`)}
+          `,
         },
         is_active: {
           title: this.hass.localize(

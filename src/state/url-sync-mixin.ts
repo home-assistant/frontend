@@ -19,7 +19,7 @@ export let historyPromise: Promise<void> | undefined;
 let historyResolve: undefined | (() => void);
 
 export const urlSyncMixin = <
-  T extends Constructor<ReactiveElement & ProvideHassElement>
+  T extends Constructor<ReactiveElement & ProvideHassElement>,
 >(
   superClass: T
 ) =>

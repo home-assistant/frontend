@@ -10,12 +10,13 @@ import "./ha-combo-box";
 
 const rowRenderer: ComboBoxLitRenderer<{ service: string; name: string }> = (
   item
-) => html`<mwc-list-item twoline>
-  <span>${item.name}</span>
-  <span slot="secondary"
-    >${item.name === item.service ? "" : item.service}</span
-  >
-</mwc-list-item>`;
+) =>
+  html`<mwc-list-item twoline>
+    <span>${item.name}</span>
+    <span slot="secondary"
+      >${item.name === item.service ? "" : item.service}</span
+    >
+  </mwc-list-item>`;
 
 @customElement("ha-service-picker")
 class HaServicePicker extends LitElement {

@@ -74,13 +74,12 @@ export class EnergyGasSettings extends LitElement {
             >
           </p>
           ${gasValidation.map(
-            (result) =>
-              html`
-                <ha-energy-validation-result
-                  .hass=${this.hass}
-                  .issues=${result}
-                ></ha-energy-validation-result>
-              `
+            (result) => html`
+              <ha-energy-validation-result
+                .hass=${this.hass}
+                .issues=${result}
+              ></ha-energy-validation-result>
+            `
           )}
           <h3>
             ${this.hass.localize("ui.panel.config.energy.gas.gas_consumption")}

@@ -299,23 +299,22 @@ class MoreInfoFan extends LitElement {
                       ></ha-svg-icon>
                     </ha-outlined-button>
                     ${this.stateObj.attributes.preset_modes?.map(
-                      (mode) =>
-                        html`
-                          <ha-list-item
-                            .value=${mode}
-                            .activated=${this._presetMode === mode}
-                          >
-                            ${computeAttributeValueDisplay(
-                              this.hass.localize,
-                              this.stateObj!,
-                              this.hass.locale,
-                              this.hass.config,
-                              this.hass.entities,
-                              "preset_mode",
-                              mode
-                            )}
-                          </ha-list-item>
-                        `
+                      (mode) => html`
+                        <ha-list-item
+                          .value=${mode}
+                          .activated=${this._presetMode === mode}
+                        >
+                          ${computeAttributeValueDisplay(
+                            this.hass.localize,
+                            this.stateObj!,
+                            this.hass.locale,
+                            this.hass.config,
+                            this.hass.entities,
+                            "preset_mode",
+                            mode
+                          )}
+                        </ha-list-item>
+                      `
                     )}
                   </ha-button-menu>
                 `

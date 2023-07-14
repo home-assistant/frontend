@@ -138,12 +138,12 @@ export class Gauge extends LitElement {
               : this.valueText ||
                 formatNumber(this.value, this.locale, this.formatOptions)
           }${
-      this._segment_label
-        ? ""
-        : this.label === "%"
-        ? blankBeforePercent(this.locale) + "%"
-        : ` ${this.label}`
-    }
+            this._segment_label
+              ? ""
+              : this.label === "%"
+              ? blankBeforePercent(this.locale) + "%"
+              : ` ${this.label}`
+          }
         </text>
       </svg>`;
   }

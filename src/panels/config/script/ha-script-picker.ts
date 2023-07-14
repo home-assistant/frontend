@@ -165,53 +165,50 @@ class HaScriptPicker extends LitElement {
       title: "",
       width: this.narrow ? undefined : "10%",
       type: "overflow-menu",
-      template: (_: string, script: any) =>
-        html`
-          <ha-icon-overflow-menu
-            .hass=${this.hass}
-            narrow
-            .items=${[
-              {
-                path: mdiInformationOutline,
-                label: this.hass.localize(
-                  "ui.panel.config.script.picker.show_info"
-                ),
-                action: () => this._showInfo(script),
-              },
-              {
-                path: mdiPlay,
-                label: this.hass.localize("ui.panel.config.script.picker.run"),
-                action: () => this._runScript(script),
-              },
-              {
-                path: mdiTransitConnection,
-                label: this.hass.localize(
-                  "ui.panel.config.script.picker.show_trace"
-                ),
-                action: () => this._showTrace(script),
-              },
-              {
-                divider: true,
-              },
-              {
-                path: mdiContentDuplicate,
-                label: this.hass.localize(
-                  "ui.panel.config.script.picker.duplicate"
-                ),
-                action: () => this._duplicate(script),
-              },
-              {
-                label: this.hass.localize(
-                  "ui.panel.config.script.picker.delete"
-                ),
-                path: mdiDelete,
-                action: () => this._deleteConfirm(script),
-                warning: true,
-              },
-            ]}
-          >
-          </ha-icon-overflow-menu>
-        `,
+      template: (_: string, script: any) => html`
+        <ha-icon-overflow-menu
+          .hass=${this.hass}
+          narrow
+          .items=${[
+            {
+              path: mdiInformationOutline,
+              label: this.hass.localize(
+                "ui.panel.config.script.picker.show_info"
+              ),
+              action: () => this._showInfo(script),
+            },
+            {
+              path: mdiPlay,
+              label: this.hass.localize("ui.panel.config.script.picker.run"),
+              action: () => this._runScript(script),
+            },
+            {
+              path: mdiTransitConnection,
+              label: this.hass.localize(
+                "ui.panel.config.script.picker.show_trace"
+              ),
+              action: () => this._showTrace(script),
+            },
+            {
+              divider: true,
+            },
+            {
+              path: mdiContentDuplicate,
+              label: this.hass.localize(
+                "ui.panel.config.script.picker.duplicate"
+              ),
+              action: () => this._duplicate(script),
+            },
+            {
+              label: this.hass.localize("ui.panel.config.script.picker.delete"),
+              path: mdiDelete,
+              action: () => this._deleteConfirm(script),
+              warning: true,
+            },
+          ]}
+        >
+        </ha-icon-overflow-menu>
+      `,
     };
 
     return columns;

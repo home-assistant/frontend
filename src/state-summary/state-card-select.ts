@@ -29,19 +29,18 @@ class StateCardSelect extends LitElement {
         @closed=${stopPropagation}
       >
         ${this.stateObj.attributes.options.map(
-          (option) =>
-            html`
-              <mwc-list-item .value=${option}>
-                ${computeStateDisplay(
-                  this.hass.localize,
-                  this.stateObj,
-                  this.hass.locale,
-                  this.hass.config,
-                  this.hass.entities,
-                  option
-                )}
-              </mwc-list-item>
-            `
+          (option) => html`
+            <mwc-list-item .value=${option}>
+              ${computeStateDisplay(
+                this.hass.localize,
+                this.stateObj,
+                this.hass.locale,
+                this.hass.config,
+                this.hass.entities,
+                option
+              )}
+            </mwc-list-item>
+          `
         )}
       </ha-select>
     `;

@@ -145,21 +145,20 @@ export interface DeviceSelector {
 }
 
 export interface LegacyDeviceSelector {
-  device:
-    | DeviceSelector["device"] & {
-        /**
-         * @deprecated Use filter instead
-         */
-        integration?: DeviceSelectorFilter["integration"];
-        /**
-         * @deprecated Use filter instead
-         */
-        manufacturer?: DeviceSelectorFilter["manufacturer"];
-        /**
-         * @deprecated Use filter instead
-         */
-        model?: DeviceSelectorFilter["model"];
-      };
+  device: DeviceSelector["device"] & {
+    /**
+     * @deprecated Use filter instead
+     */
+    integration?: DeviceSelectorFilter["integration"];
+    /**
+     * @deprecated Use filter instead
+     */
+    manufacturer?: DeviceSelectorFilter["manufacturer"];
+    /**
+     * @deprecated Use filter instead
+     */
+    model?: DeviceSelectorFilter["model"];
+  };
 }
 
 export interface DurationSelector {
@@ -185,21 +184,20 @@ export interface EntitySelector {
 }
 
 export interface LegacyEntitySelector {
-  entity:
-    | EntitySelector["entity"] & {
-        /**
-         * @deprecated Use filter instead
-         */
-        integration?: EntitySelectorFilter["integration"];
-        /**
-         * @deprecated Use filter instead
-         */
-        domain?: EntitySelectorFilter["domain"];
-        /**
-         * @deprecated Use filter instead
-         */
-        device_class?: EntitySelectorFilter["device_class"];
-      };
+  entity: EntitySelector["entity"] & {
+    /**
+     * @deprecated Use filter instead
+     */
+    integration?: EntitySelectorFilter["integration"];
+    /**
+     * @deprecated Use filter instead
+     */
+    domain?: EntitySelectorFilter["domain"];
+    /**
+     * @deprecated Use filter instead
+     */
+    device_class?: EntitySelectorFilter["device_class"];
+  };
 }
 
 export interface StatisticSelector {

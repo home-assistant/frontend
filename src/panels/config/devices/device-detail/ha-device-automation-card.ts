@@ -20,7 +20,7 @@ declare global {
 }
 
 export abstract class HaDeviceAutomationCard<
-  T extends DeviceAutomation
+  T extends DeviceAutomation,
 > extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -76,20 +76,19 @@ export abstract class HaDeviceAutomationCard<
       <div class="content">
         <ha-chip-set>
           ${automations.map(
-            (automation, idx) =>
-              html`
-                <ha-chip
-                  .index=${idx}
-                  @click=${this._handleAutomationClicked}
-                  class=${automation.metadata?.secondary ? "secondary" : ""}
-                >
-                  ${this._localizeDeviceAutomation(
-                    this.hass,
-                    this.entityReg!,
-                    automation
-                  )}
-                </ha-chip>
-              `
+            (automation, idx) => html`
+              <ha-chip
+                .index=${idx}
+                @click=${this._handleAutomationClicked}
+                class=${automation.metadata?.secondary ? "secondary" : ""}
+              >
+                ${this._localizeDeviceAutomation(
+                  this.hass,
+                  this.entityReg!,
+                  automation
+                )}
+              </ha-chip>
+            `
           )}
         </ha-chip-set>
         ${!this._showSecondary && automations.length < this.automations.length

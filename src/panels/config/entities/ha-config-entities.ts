@@ -201,15 +201,14 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         direction: "asc",
         grows: true,
         template: narrow
-          ? (name, entity: EntityRow) =>
-              html`
-                ${name}<br />
-                <div class="secondary">
-                  ${entity.entity_id} |
-                  ${this.hass.localize(`component.${entity.platform}.title`) ||
-                  entity.platform}
-                </div>
-              `
+          ? (name, entity: EntityRow) => html`
+              ${name}<br />
+              <div class="secondary">
+                ${entity.entity_id} |
+                ${this.hass.localize(`component.${entity.platform}.title`) ||
+                entity.platform}
+              </div>
+            `
           : undefined,
       },
       entity_id: {

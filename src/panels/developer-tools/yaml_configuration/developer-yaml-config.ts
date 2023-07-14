@@ -142,24 +142,23 @@ export class DeveloperYamlConfig extends LitElement {
             </ha-call-service-button>
           </div>
           ${this._reloadableDomains.map(
-            (domain) =>
-              html`
-                <div class="card-actions">
-                  <ha-call-service-button
-                    .hass=${this.hass}
-                    .domain=${domain}
-                    service="reload"
-                    >${this.hass.localize(
-                      `ui.panel.developer-tools.tabs.yaml.section.reloading.${domain}`
-                    ) ||
-                    this.hass.localize(
-                      "ui.panel.developer-tools.tabs.yaml.section.reloading.reload",
-                      "domain",
-                      domainToName(this.hass.localize, domain)
-                    )}
-                  </ha-call-service-button>
-                </div>
-              `
+            (domain) => html`
+              <div class="card-actions">
+                <ha-call-service-button
+                  .hass=${this.hass}
+                  .domain=${domain}
+                  service="reload"
+                  >${this.hass.localize(
+                    `ui.panel.developer-tools.tabs.yaml.section.reloading.${domain}`
+                  ) ||
+                  this.hass.localize(
+                    "ui.panel.developer-tools.tabs.yaml.section.reloading.reload",
+                    "domain",
+                    domainToName(this.hass.localize, domain)
+                  )}
+                </ha-call-service-button>
+              </div>
+            `
           )}
         </ha-card>
       </div>

@@ -223,25 +223,26 @@ class ZHAConfigDashboard extends LitElement {
         </ha-card>
         ${this._configuration
           ? Object.entries(this._configuration.schemas).map(
-              ([section, schema]) => html`<ha-card
-                header=${this.hass.localize(
-                  `component.zha.config_panel.${section}.title`
-                )}
-              >
-                <div class="card-content">
-                  <ha-form
-                    .hass=${this.hass}
-                    .schema=${schema}
-                    .data=${this._configuration!.data[section]}
-                    @value-changed=${this._dataChanged}
-                    .section=${section}
-                    .computeLabel=${this._computeLabelCallback(
-                      this.hass.localize,
-                      section
-                    )}
-                  ></ha-form>
-                </div>
-              </ha-card>`
+              ([section, schema]) =>
+                html`<ha-card
+                  header=${this.hass.localize(
+                    `component.zha.config_panel.${section}.title`
+                  )}
+                >
+                  <div class="card-content">
+                    <ha-form
+                      .hass=${this.hass}
+                      .schema=${schema}
+                      .data=${this._configuration!.data[section]}
+                      @value-changed=${this._dataChanged}
+                      .section=${section}
+                      .computeLabel=${this._computeLabelCallback(
+                        this.hass.localize,
+                        section
+                      )}
+                    ></ha-form>
+                  </div>
+                </ha-card>`
             )
           : ""}
         <ha-card>
