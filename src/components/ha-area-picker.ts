@@ -34,13 +34,12 @@ import "./ha-svg-icon";
 
 type ScorableAreaRegistryEntry = ScorableTextItem & AreaRegistryEntry;
 
-const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (
-  item
-) => html`<mwc-list-item
-  class=${classMap({ "add-new": item.area_id === "add_new" })}
->
-  ${item.name}
-</mwc-list-item>`;
+const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (item) =>
+  html`<mwc-list-item
+    class=${classMap({ "add-new": item.area_id === "add_new" })}
+  >
+    ${item.name}
+  </mwc-list-item>`;
 
 @customElement("ha-area-picker")
 export class HaAreaPicker extends LitElement {

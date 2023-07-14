@@ -202,30 +202,28 @@ class HaPanelDevTemplate extends LitElement {
                   ${this._templateResult.listeners.domains
                     .sort()
                     .map(
-                      (domain) =>
-                        html`
-                          <li>
-                            <b
-                              >${this.hass.localize(
-                                "ui.panel.developer-tools.tabs.templates.domain"
-                              )}</b
-                            >: ${domain}
-                          </li>
-                        `
+                      (domain) => html`
+                        <li>
+                          <b
+                            >${this.hass.localize(
+                              "ui.panel.developer-tools.tabs.templates.domain"
+                            )}</b
+                          >: ${domain}
+                        </li>
+                      `
                     )}
                   ${this._templateResult.listeners.entities
                     .sort()
                     .map(
-                      (entity_id) =>
-                        html`
-                          <li>
-                            <b
-                              >${this.hass.localize(
-                                "ui.panel.developer-tools.tabs.templates.entity"
-                              )}</b
-                            >: ${entity_id}
-                          </li>
-                        `
+                      (entity_id) => html`
+                        <li>
+                          <b
+                            >${this.hass.localize(
+                              "ui.panel.developer-tools.tabs.templates.entity"
+                            )}</b
+                          >: ${entity_id}
+                        </li>
+                      `
                     )}
                 </ul>
               `

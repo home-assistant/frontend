@@ -109,64 +109,65 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
     return html`
       ${(action.choose ? ensureArray(action.choose) : []).map(
-        (option, idx) => html`<ha-card>
-          <ha-expansion-panel
-            leftChevron
-            @expanded-changed=${this._expandedChanged}
-          >
-            <h3 slot="header">
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.type.choose.option",
-                "number",
-                idx + 1
-              )}:
-              ${this._getDescription(option, idx)}
-            </h3>
+        (option, idx) =>
+          html`<ha-card>
+            <ha-expansion-panel
+              leftChevron
+              @expanded-changed=${this._expandedChanged}
+            >
+              <h3 slot="header">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.type.choose.option",
+                  "number",
+                  idx + 1
+                )}:
+                ${this._getDescription(option, idx)}
+              </h3>
 
-            <ha-icon-button
-              slot="icons"
-              .idx=${idx}
-              .disabled=${this.disabled}
-              @click=${this._removeOption}
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.type.choose.remove_option"
-              )}
-              .path=${mdiDelete}
-            ></ha-icon-button>
-            <div class="card-content">
-              <h4>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.type.choose.conditions"
-                )}:
-              </h4>
-              <ha-automation-condition
-                nested
-                .conditions=${ensureArray<string | Condition>(
-                  option.conditions
+              <ha-icon-button
+                slot="icons"
+                .idx=${idx}
+                .disabled=${this.disabled}
+                @click=${this._removeOption}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.type.choose.remove_option"
                 )}
-                .reOrderMode=${this.reOrderMode}
-                .disabled=${this.disabled}
-                .hass=${this.hass}
-                .idx=${idx}
-                @value-changed=${this._conditionChanged}
-              ></ha-automation-condition>
-              <h4>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.type.choose.sequence"
-                )}:
-              </h4>
-              <ha-automation-action
-                nested
-                .actions=${ensureArray(option.sequence) || []}
-                .reOrderMode=${this.reOrderMode}
-                .disabled=${this.disabled}
-                .hass=${this.hass}
-                .idx=${idx}
-                @value-changed=${this._actionChanged}
-              ></ha-automation-action>
-            </div>
-          </ha-expansion-panel>
-        </ha-card>`
+                .path=${mdiDelete}
+              ></ha-icon-button>
+              <div class="card-content">
+                <h4>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.type.choose.conditions"
+                  )}:
+                </h4>
+                <ha-automation-condition
+                  nested
+                  .conditions=${ensureArray<string | Condition>(
+                    option.conditions
+                  )}
+                  .reOrderMode=${this.reOrderMode}
+                  .disabled=${this.disabled}
+                  .hass=${this.hass}
+                  .idx=${idx}
+                  @value-changed=${this._conditionChanged}
+                ></ha-automation-condition>
+                <h4>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.type.choose.sequence"
+                  )}:
+                </h4>
+                <ha-automation-action
+                  nested
+                  .actions=${ensureArray(option.sequence) || []}
+                  .reOrderMode=${this.reOrderMode}
+                  .disabled=${this.disabled}
+                  .hass=${this.hass}
+                  .idx=${idx}
+                  @value-changed=${this._actionChanged}
+                ></ha-automation-action>
+              </div>
+            </ha-expansion-panel>
+          </ha-card>`
       )}
       <ha-button
         outlined

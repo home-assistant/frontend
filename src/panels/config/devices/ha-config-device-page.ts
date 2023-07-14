@@ -376,32 +376,30 @@ export class HaConfigDevicePage extends LitElement {
     const firstDeviceAction = actions.shift();
 
     if (device.disabled_by) {
-      deviceInfo.push(
-        html`
-          <ha-alert alert-type="warning">
-            ${this.hass.localize(
-              "ui.panel.config.devices.enabled_cause",
-              "type",
-              this.hass.localize(
-                `ui.panel.config.devices.type.${device.entry_type || "device"}`
-              ),
-              "cause",
-              this.hass.localize(
-                `ui.panel.config.devices.disabled_by.${device.disabled_by}`
-              )
-            )}
-          </ha-alert>
-          ${device.disabled_by === "user"
-            ? html`
-                <div class="card-actions" slot="actions">
-                  <mwc-button unelevated @click=${this._enableDevice}>
-                    ${this.hass.localize("ui.common.enable")}
-                  </mwc-button>
-                </div>
-              `
-            : ""}
-        `
-      );
+      deviceInfo.push(html`
+        <ha-alert alert-type="warning">
+          ${this.hass.localize(
+            "ui.panel.config.devices.enabled_cause",
+            "type",
+            this.hass.localize(
+              `ui.panel.config.devices.type.${device.entry_type || "device"}`
+            ),
+            "cause",
+            this.hass.localize(
+              `ui.panel.config.devices.disabled_by.${device.disabled_by}`
+            )
+          )}
+        </ha-alert>
+        ${device.disabled_by === "user"
+          ? html`
+              <div class="card-actions" slot="actions">
+                <mwc-button unelevated @click=${this._enableDevice}>
+                  ${this.hass.localize("ui.common.enable")}
+                </mwc-button>
+              </div>
+            `
+          : ""}
+      `);
     }
 
     this._renderIntegrationInfo(device, integrations, deviceInfo);
@@ -751,12 +749,11 @@ export class HaConfigDevicePage extends LitElement {
                   ? html`
                       <div>
                         ${this._deviceAlerts.map(
-                          (alert) =>
-                            html`
-                              <ha-alert .alertType=${alert.level}>
-                                ${alert.text}
-                              </ha-alert>
-                            `
+                          (alert) => html`
+                            <ha-alert .alertType=${alert.level}>
+                              ${alert.text}
+                            </ha-alert>
+                          `
                         )}
                       </div>
                     `

@@ -178,14 +178,13 @@ class HassioSupervisorInfo extends LitElement {
           </div>
           <div class="metrics-block">
             ${metrics.map(
-              (metric) =>
-                html`
-                  <supervisor-metric
-                    .description=${metric.description}
-                    .value=${metric.value ?? 0}
-                    .tooltip=${metric.tooltip}
-                  ></supervisor-metric>
-                `
+              (metric) => html`
+                <supervisor-metric
+                  .description=${metric.description}
+                  .value=${metric.value ?? 0}
+                  .tooltip=${metric.tooltip}
+                ></supervisor-metric>
+              `
             )}
           </div>
         </div>

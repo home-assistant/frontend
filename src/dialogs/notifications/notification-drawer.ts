@@ -108,12 +108,13 @@ export class HuiNotificationDrawer extends LitElement {
         <div class="notifications">
           ${notifications.length
             ? html`${notifications.map(
-                (notification) => html`<div class="notification">
-                  <notification-item
-                    .hass=${this.hass}
-                    .notification=${notification}
-                  ></notification-item>
-                </div>`
+                (notification) =>
+                  html`<div class="notification">
+                    <notification-item
+                      .hass=${this.hass}
+                      .notification=${notification}
+                    ></notification-item>
+                  </div>`
               )}
               ${this._notifications.length > 1
                 ? html`<div class="notification-actions">

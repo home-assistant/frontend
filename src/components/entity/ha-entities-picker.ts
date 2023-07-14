@@ -130,9 +130,9 @@ class HaEntitiesPickerLight extends LitElement {
 
   private _getEntityFilter = memoizeOne(
     (
-        value: string[] | undefined,
-        entityFilter: HaEntityPickerEntityFilterFunc | undefined
-      ): HaEntityPickerEntityFilterFunc =>
+      value: string[] | undefined,
+      entityFilter: HaEntityPickerEntityFilterFunc | undefined
+    ): HaEntityPickerEntityFilterFunc =>
       (stateObj: HassEntity) =>
         (!value || !value.includes(stateObj.entity_id)) &&
         (!entityFilter || entityFilter(stateObj))

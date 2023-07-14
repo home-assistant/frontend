@@ -58,12 +58,11 @@ export class HaConfigLovelaceRescources extends LitElement {
         sortable: true,
         filterable: true,
         width: "30%",
-        template: (type) =>
-          html`
-            ${this.hass.localize(
-              `ui.panel.config.lovelace.resources.types.${type}`
-            ) || type}
-          `,
+        template: (type) => html`
+          ${this.hass.localize(
+            `ui.panel.config.lovelace.resources.types.${type}`
+          ) || type}
+        `,
       },
     })
   );

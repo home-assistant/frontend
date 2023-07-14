@@ -167,17 +167,16 @@ class DemoHaAutomationEditorTrigger extends LitElement {
             .value=${this.data[sampleIdx]}
           >
             ${["light", "dark"].map(
-              (slot) =>
-                html`
-                  <ha-automation-trigger
-                    slot=${slot}
-                    .hass=${this.hass}
-                    .triggers=${this.data[sampleIdx]}
-                    .sampleIdx=${sampleIdx}
-                    .disabled=${this._disabled}
-                    @value-changed=${valueChanged}
-                  ></ha-automation-trigger>
-                `
+              (slot) => html`
+                <ha-automation-trigger
+                  slot=${slot}
+                  .hass=${this.hass}
+                  .triggers=${this.data[sampleIdx]}
+                  .sampleIdx=${sampleIdx}
+                  .disabled=${this._disabled}
+                  @value-changed=${valueChanged}
+                ></ha-automation-trigger>
+              `
             )}
           </demo-black-white-row>
         `

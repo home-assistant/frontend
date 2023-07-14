@@ -85,17 +85,16 @@ class DemoHaAutomationEditorAction extends LitElement {
             .value=${this.data[sampleIdx]}
           >
             ${["light", "dark"].map(
-              (slot) =>
-                html`
-                  <ha-automation-action
-                    slot=${slot}
-                    .hass=${this.hass}
-                    .actions=${this.data[sampleIdx]}
-                    .sampleIdx=${sampleIdx}
-                    .disabled=${this._disabled}
-                    @value-changed=${valueChanged}
-                  ></ha-automation-action>
-                `
+              (slot) => html`
+                <ha-automation-action
+                  slot=${slot}
+                  .hass=${this.hass}
+                  .actions=${this.data[sampleIdx]}
+                  .sampleIdx=${sampleIdx}
+                  .disabled=${this._disabled}
+                  @value-changed=${valueChanged}
+                ></ha-automation-action>
+              `
             )}
           </demo-black-white-row>
         `

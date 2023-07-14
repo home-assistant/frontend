@@ -211,7 +211,9 @@ export class StateBadge extends LitElement {
           background: var(--divider-color);
         }
         ha-state-icon {
-          transition: color 0.3s ease-in-out, filter 0.3s ease-in-out;
+          transition:
+            color 0.3s ease-in-out,
+            filter 0.3s ease-in-out;
         }
         .missing {
           color: #fce588;

@@ -36,12 +36,11 @@ interface AreaDevices {
   devices: string[];
 }
 
-const rowRenderer: ComboBoxLitRenderer<AreaDevices> = (
-  item
-) => html`<mwc-list-item twoline>
-  <span>${item.name}</span>
-  <span slot="secondary">${item.devices.length} devices</span>
-</mwc-list-item>`;
+const rowRenderer: ComboBoxLitRenderer<AreaDevices> = (item) =>
+  html`<mwc-list-item twoline>
+    <span>${item.name}</span>
+    <span slot="secondary">${item.devices.length} devices</span>
+  </mwc-list-item>`;
 
 @customElement("ha-area-devices-picker")
 export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {

@@ -283,7 +283,9 @@ export class HaControlSelect extends LitElement {
         width: 100%;
         background-color: var(--control-select-color);
         opacity: 0;
-        transition: background-color ease-in-out 180ms, opacity ease-in-out 80ms;
+        transition:
+          background-color ease-in-out 180ms,
+          opacity ease-in-out 80ms;
       }
       .option.focused::before,
       .option:hover::before {

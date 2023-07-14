@@ -87,26 +87,28 @@ export class HaStatisticPicker extends LitElement {
 
   private _statistics: StatisticItem[] = [];
 
-  private _rowRenderer: ComboBoxLitRenderer<StatisticItem> = (
-    item
-  ) => html`<mwc-list-item graphic="avatar" twoline>
-    ${item.state
-      ? html`<state-badge slot="graphic" .stateObj=${item.state}></state-badge>`
-      : ""}
-    <span>${item.name}</span>
-    <span slot="secondary"
-      >${item.id === "" || item.id === "__missing"
-        ? html`<a
-            target="_blank"
-            rel="noopener noreferrer"
-            href=${documentationUrl(this.hass, "/more-info/statistics/")}
-            >${this.hass.localize(
-              "ui.components.statistic-picker.learn_more"
-            )}</a
-          >`
-        : item.id}</span
-    >
-  </mwc-list-item>`;
+  private _rowRenderer: ComboBoxLitRenderer<StatisticItem> = (item) =>
+    html`<mwc-list-item graphic="avatar" twoline>
+      ${item.state
+        ? html`<state-badge
+            slot="graphic"
+            .stateObj=${item.state}
+          ></state-badge>`
+        : ""}
+      <span>${item.name}</span>
+      <span slot="secondary"
+        >${item.id === "" || item.id === "__missing"
+          ? html`<a
+              target="_blank"
+              rel="noopener noreferrer"
+              href=${documentationUrl(this.hass, "/more-info/statistics/")}
+              >${this.hass.localize(
+                "ui.components.statistic-picker.learn_more"
+              )}</a
+            >`
+          : item.id}</span
+      >
+    </mwc-list-item>`;
 
   private _getStatistics = memoizeOne(
     (

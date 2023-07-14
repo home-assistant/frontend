@@ -228,27 +228,28 @@ class DialogZWaveJSAddNode extends LitElement {
                   .sort()
                   .reverse()
                   .map(
-                    (securityClass) => html`<ha-formfield
-                      .label=${html`<b
-                          >${this.hass.localize(
-                            `ui.panel.config.zwave_js.security_classes.${SecurityClass[securityClass]}.title`
-                          )}</b
-                        >
-                        <div class="secondary">
-                          ${this.hass.localize(
-                            `ui.panel.config.zwave_js.security_classes.${SecurityClass[securityClass]}.description`
-                          )}
-                        </div>`}
-                    >
-                      <ha-checkbox
-                        @change=${this._handleSecurityClassChange}
-                        .value=${securityClass}
-                        .checked=${this._securityClasses.includes(
-                          securityClass
-                        )}
+                    (securityClass) =>
+                      html`<ha-formfield
+                        .label=${html`<b
+                            >${this.hass.localize(
+                              `ui.panel.config.zwave_js.security_classes.${SecurityClass[securityClass]}.title`
+                            )}</b
+                          >
+                          <div class="secondary">
+                            ${this.hass.localize(
+                              `ui.panel.config.zwave_js.security_classes.${SecurityClass[securityClass]}.description`
+                            )}
+                          </div>`}
                       >
-                      </ha-checkbox>
-                    </ha-formfield>`
+                        <ha-checkbox
+                          @change=${this._handleSecurityClassChange}
+                          .value=${securityClass}
+                          .checked=${this._securityClasses.includes(
+                            securityClass
+                          )}
+                        >
+                        </ha-checkbox>
+                      </ha-formfield>`
                   )}
               </div>
               <mwc-button

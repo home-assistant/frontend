@@ -125,11 +125,10 @@ class HaBlueprintOverview extends LitElement {
         direction: "asc",
         grows: true,
         template: narrow
-          ? (name, entity: any) =>
-              html`
-                ${name}<br />
-                <div class="secondary">${entity.path}</div>
-              `
+          ? (name, entity: any) => html`
+              ${name}<br />
+              <div class="secondary">${entity.path}</div>
+            `
           : undefined,
       },
       type: {

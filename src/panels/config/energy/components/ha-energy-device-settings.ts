@@ -68,13 +68,12 @@ export class EnergyDeviceSettings extends LitElement {
             >
           </p>
           ${this.validationResult?.device_consumption.map(
-            (result) =>
-              html`
-                <ha-energy-validation-result
-                  .hass=${this.hass}
-                  .issues=${result}
-                ></ha-energy-validation-result>
-              `
+            (result) => html`
+              <ha-energy-validation-result
+                .hass=${this.hass}
+                .issues=${result}
+              ></ha-energy-validation-result>
+            `
           )}
           <h3>
             ${this.hass.localize(

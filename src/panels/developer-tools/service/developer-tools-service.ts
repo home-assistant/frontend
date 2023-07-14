@@ -66,8 +66,8 @@ class HaPanelDevService extends LitElement {
         data: {},
       };
       if (this._yamlMode) {
-        this.updateComplete.then(() =>
-          this._yamlEditor?.setValue(this._serviceData)
+        this.updateComplete.then(
+          () => this._yamlEditor?.setValue(this._serviceData)
         );
       }
     } else if (!this._serviceData?.service) {
@@ -79,8 +79,8 @@ class HaPanelDevService extends LitElement {
         data: {},
       };
       if (this._yamlMode) {
-        this.updateComplete.then(() =>
-          this._yamlEditor?.setValue(this._serviceData)
+        this.updateComplete.then(
+          () => this._yamlEditor?.setValue(this._serviceData)
         );
       }
     }
@@ -248,11 +248,12 @@ class HaPanelDevService extends LitElement {
                   ? fields
                   : this._filterSelectorFields(fields)
                 ).map(
-                  (field) => html` <tr>
-                    <td><pre>${field.key}</pre></td>
-                    <td>${field.description}</td>
-                    <td>${field.example}</td>
-                  </tr>`
+                  (field) =>
+                    html` <tr>
+                      <td><pre>${field.key}</pre></td>
+                      <td>${field.description}</td>
+                      <td>${field.example}</td>
+                    </tr>`
                 )}
               </table>
               ${this._yamlMode
