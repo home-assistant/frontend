@@ -123,12 +123,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
           sortable: true,
           filterable: true,
           width: "20%",
-          template: (mode) =>
-            html`
-              ${this.hass.localize(
-                `ui.panel.config.lovelace.dashboards.conf_mode.${mode}`
-              ) || mode}
-            `,
+          template: (mode) => html`
+            ${this.hass.localize(
+              `ui.panel.config.lovelace.dashboards.conf_mode.${mode}`
+            ) || mode}
+          `,
         };
         if (dashboards.some((dashboard) => dashboard.filename)) {
           columns.filename = {

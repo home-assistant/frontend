@@ -50,57 +50,61 @@ class HaRefreshTokens extends LitElement {
         ${this.hass.localize("ui.panel.profile.refresh_tokens.description")}
         ${refreshTokens?.length
           ? refreshTokens!.map(
-              (token) => html`<ha-settings-row three-line>
-                <span slot="heading"
-                  >${this.hass.localize(
-                    "ui.panel.profile.refresh_tokens.token_title",
-                    { clientId: token.client_id }
-                  )}
-                </span>
-                <div slot="description">
-                  ${this.hass.localize(
-                    "ui.panel.profile.refresh_tokens.created_at",
-                    {
-                      date: relativeTime(
-                        new Date(token.created_at),
-                        this.hass.locale
-                      ),
-                    }
-                  )}
-                </div>
-                <div slot="description">
-                  ${token.last_used_at
-                    ? this.hass.localize(
-                        "ui.panel.profile.refresh_tokens.last_used",
-                        {
-                          date: relativeTime(
-                            new Date(token.last_used_at),
-                            this.hass.locale
-                          ),
-                          location: token.last_used_ip,
-                        }
-                      )
-                    : this.hass.localize(
-                        "ui.panel.profile.refresh_tokens.not_used"
-                      )}
-                </div>
-                <div>
-                  ${token.is_current
-                    ? html`<simple-tooltip animation-delay="0" position="left">
-                        ${this.hass.localize(
-                          "ui.panel.profile.refresh_tokens.current_token_tooltip"
+              (token) =>
+                html`<ha-settings-row three-line>
+                  <span slot="heading"
+                    >${this.hass.localize(
+                      "ui.panel.profile.refresh_tokens.token_title",
+                      { clientId: token.client_id }
+                    )}
+                  </span>
+                  <div slot="description">
+                    ${this.hass.localize(
+                      "ui.panel.profile.refresh_tokens.created_at",
+                      {
+                        date: relativeTime(
+                          new Date(token.created_at),
+                          this.hass.locale
+                        ),
+                      }
+                    )}
+                  </div>
+                  <div slot="description">
+                    ${token.last_used_at
+                      ? this.hass.localize(
+                          "ui.panel.profile.refresh_tokens.last_used",
+                          {
+                            date: relativeTime(
+                              new Date(token.last_used_at),
+                              this.hass.locale
+                            ),
+                            location: token.last_used_ip,
+                          }
+                        )
+                      : this.hass.localize(
+                          "ui.panel.profile.refresh_tokens.not_used"
                         )}
-                      </simple-tooltip>`
-                    : ""}
-                  <ha-icon-button
-                    .token=${token}
-                    .disabled=${token.is_current}
-                    .label=${this.hass.localize("ui.common.delete")}
-                    .path=${mdiDelete}
-                    @click=${this._deleteToken}
-                  ></ha-icon-button>
-                </div>
-              </ha-settings-row>`
+                  </div>
+                  <div>
+                    ${token.is_current
+                      ? html`<simple-tooltip
+                          animation-delay="0"
+                          position="left"
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.profile.refresh_tokens.current_token_tooltip"
+                          )}
+                        </simple-tooltip>`
+                      : ""}
+                    <ha-icon-button
+                      .token=${token}
+                      .disabled=${token.is_current}
+                      .label=${this.hass.localize("ui.common.delete")}
+                      .path=${mdiDelete}
+                      @click=${this._deleteToken}
+                    ></ha-icon-button>
+                  </div>
+                </ha-settings-row>`
             )
           : ""}
       </div>

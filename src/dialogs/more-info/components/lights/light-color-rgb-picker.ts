@@ -415,7 +415,7 @@ class LightRgbColorPicker extends LitElement {
         number,
         number,
         number,
-        number
+        number,
       ];
       this._applyColor({ rgbww_color });
     } else if (lightSupportsColorMode(this.stateObj!, LightColorMode.RGBW)) {
@@ -427,7 +427,7 @@ class LightRgbColorPicker extends LitElement {
         number,
         number,
         number,
-        number
+        number,
       ];
       this._applyColor({ rgbw_color });
     }

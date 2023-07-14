@@ -56,26 +56,25 @@ export class HuiCreateDialogHeaderFooter
       >
         <div class="elements">
           ${headerFooterElements.map(
-            (headerFooter, index) =>
-              html`
-                <ha-card
-                  role="button"
-                  tabindex="0"
-                  aria-labelledby=${"card-name-" + index}
-                  outlined
-                  .type=${headerFooter.type}
-                  @click=${this._handleHeaderFooterPicked}
-                  @keyDown=${this._handleHeaderFooterPicked}
-                  dialogInitialFocus
-                >
-                  <ha-svg-icon .path=${headerFooter.icon}></ha-svg-icon>
-                  <div .id=${"card-name-" + index} role="none presentation">
-                    ${this.hass!.localize(
-                      `ui.panel.lovelace.editor.header-footer.types.${headerFooter.type}.name`
-                    )}
-                  </div>
-                </ha-card>
-              `
+            (headerFooter, index) => html`
+              <ha-card
+                role="button"
+                tabindex="0"
+                aria-labelledby=${"card-name-" + index}
+                outlined
+                .type=${headerFooter.type}
+                @click=${this._handleHeaderFooterPicked}
+                @keyDown=${this._handleHeaderFooterPicked}
+                dialogInitialFocus
+              >
+                <ha-svg-icon .path=${headerFooter.icon}></ha-svg-icon>
+                <div .id=${"card-name-" + index} role="none presentation">
+                  ${this.hass!.localize(
+                    `ui.panel.lovelace.editor.header-footer.types.${headerFooter.type}.name`
+                  )}
+                </div>
+              </ha-card>
+            `
           )}
         </div>
         <div slot="primaryAction">

@@ -48,26 +48,25 @@ class StepFlowCreateEntry extends LitElement {
               </p>
               <div class="devices">
                 ${this.devices.map(
-                  (device) =>
-                    html`
-                      <div class="device">
-                        <div>
-                          <b>${computeDeviceName(device, this.hass)}</b><br />
-                          ${!device.model && !device.manufacturer
-                            ? html`&nbsp;`
-                            : html`${device.model}
-                              ${device.manufacturer
-                                ? html`(${device.manufacturer})`
-                                : ""}`}
-                        </div>
-                        <ha-area-picker
-                          .hass=${this.hass}
-                          .device=${device.id}
-                          .value=${device.area_id ?? undefined}
-                          @value-changed=${this._areaPicked}
-                        ></ha-area-picker>
+                  (device) => html`
+                    <div class="device">
+                      <div>
+                        <b>${computeDeviceName(device, this.hass)}</b><br />
+                        ${!device.model && !device.manufacturer
+                          ? html`&nbsp;`
+                          : html`${device.model}
+                            ${device.manufacturer
+                              ? html`(${device.manufacturer})`
+                              : ""}`}
                       </div>
-                    `
+                      <ha-area-picker
+                        .hass=${this.hass}
+                        .device=${device.id}
+                        .value=${device.area_id ?? undefined}
+                        @value-changed=${this._areaPicked}
+                      ></ha-area-picker>
+                    </div>
+                  `
                 )}
               </div>
             `}

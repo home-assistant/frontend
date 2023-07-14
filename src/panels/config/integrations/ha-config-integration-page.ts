@@ -410,22 +410,23 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   </h1>
                   <mwc-list>
                     ${discoveryFlows.map(
-                      (flow) => html`<ha-list-item
-                        hasMeta
-                        class="discovered"
-                        noninteractive
-                      >
-                        ${flow.localized_title}
-                        <ha-button
-                          slot="meta"
-                          unelevated
-                          .flow=${flow}
-                          @click=${this._continueFlow}
-                          .label=${this.hass.localize(
-                            "ui.panel.config.integrations.configure"
-                          )}
-                        ></ha-button>
-                      </ha-list-item>`
+                      (flow) =>
+                        html`<ha-list-item
+                          hasMeta
+                          class="discovered"
+                          noninteractive
+                        >
+                          ${flow.localized_title}
+                          <ha-button
+                            slot="meta"
+                            unelevated
+                            .flow=${flow}
+                            @click=${this._continueFlow}
+                            .label=${this.hass.localize(
+                              "ui.panel.config.integrations.configure"
+                            )}
+                          ></ha-button>
+                        </ha-list-item>`
                     )}
                   </mwc-list>
                 </ha-card>`

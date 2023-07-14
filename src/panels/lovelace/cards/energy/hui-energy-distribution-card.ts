@@ -446,8 +446,8 @@ class HuiEnergyDistrubutionCard
                             cy="40"
                             r="38"
                             stroke-dasharray="${homeSolarCircumference} ${
-                            CIRCLE_CIRCUMFERENCE - homeSolarCircumference
-                          }"
+                              CIRCLE_CIRCUMFERENCE - homeSolarCircumference
+                            }"
                             shape-rendering="geometricPrecision"
                             stroke-dashoffset="-${
                               CIRCLE_CIRCUMFERENCE - homeSolarCircumference
@@ -461,8 +461,8 @@ class HuiEnergyDistrubutionCard
                             cy="40"
                             r="38"
                             stroke-dasharray="${homeBatteryCircumference} ${
-                            CIRCLE_CIRCUMFERENCE - homeBatteryCircumference
-                          }"
+                              CIRCLE_CIRCUMFERENCE - homeBatteryCircumference
+                            }"
                             stroke-dashoffset="-${
                               CIRCLE_CIRCUMFERENCE -
                               homeBatteryCircumference -
@@ -478,8 +478,8 @@ class HuiEnergyDistrubutionCard
                             cy="40"
                             r="38"
                             stroke-dasharray="${homeLowCarbonCircumference} ${
-                            CIRCLE_CIRCUMFERENCE - homeLowCarbonCircumference
-                          }"
+                              CIRCLE_CIRCUMFERENCE - homeLowCarbonCircumference
+                            }"
                             stroke-dashoffset="-${
                               CIRCLE_CIRCUMFERENCE -
                               homeLowCarbonCircumference -
@@ -611,8 +611,8 @@ class HuiEnergyDistrubutionCard
                     id="return"
                     class="return"
                     d="M${hasBattery ? 45 : 47},0 v15 c0,${
-                    hasBattery ? "35 -10,30 -30,30" : "40 -10,35 -30,35"
-                  } h-20"
+                      hasBattery ? "35 -10,30 -30,30" : "40 -10,35 -30,35"
+                    } h-20"
                     vector-effect="non-scaling-stroke"
                   ></path> `
                 : ""}
@@ -621,8 +621,8 @@ class HuiEnergyDistrubutionCard
                     id="solar"
                     class="solar"
                     d="M${hasBattery ? 55 : 53},0 v15 c0,${
-                    hasBattery ? "35 10,30 30,30" : "40 10,35 30,35"
-                  } h20"
+                      hasBattery ? "35 10,30 30,30" : "40 10,35 30,35"
+                    } h20"
                     vector-effect="non-scaling-stroke"
                   ></path>`
                 : ""}
@@ -1024,7 +1024,9 @@ class HuiEnergyDistrubutionCard
     }
     .circle svg circle {
       animation: rotate-in 0.6s ease-in;
-      transition: stroke-dashoffset 0.4s, stroke-dasharray 0.4s;
+      transition:
+        stroke-dashoffset 0.4s,
+        stroke-dasharray 0.4s;
       fill: none;
     }
     @keyframes rotate-in {

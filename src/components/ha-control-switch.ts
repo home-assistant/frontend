@@ -208,7 +208,8 @@ export class HaControlSwitch extends LitElement {
         border-radius: calc(
           var(--control-switch-border-radius) - var(--control-switch-padding)
         );
-        transition: transform 180ms ease-in-out,
+        transition:
+          transform 180ms ease-in-out,
           background-color 180ms ease-in-out;
         background-color: var(--control-switch-off-color);
         color: white;

@@ -45,12 +45,11 @@ export type HaDevicePickerDeviceFilterFunc = (
 
 export type HaDevicePickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
-const rowRenderer: ComboBoxLitRenderer<Device> = (item) => html`<mwc-list-item
-  .twoline=${!!item.area}
->
-  <span>${item.name}</span>
-  <span slot="secondary">${item.area}</span>
-</mwc-list-item>`;
+const rowRenderer: ComboBoxLitRenderer<Device> = (item) =>
+  html`<mwc-list-item .twoline=${!!item.area}>
+    <span>${item.name}</span>
+    <span slot="secondary">${item.area}</span>
+  </mwc-list-item>`;
 
 @customElement("ha-device-picker")
 export class HaDevicePicker extends SubscribeMixin(LitElement) {

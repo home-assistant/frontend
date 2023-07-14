@@ -98,7 +98,7 @@ export interface HaFormTimeSchema extends HaFormBaseSchema {
 // Type utility to unionize a schema array by flattening any grid schemas
 export type SchemaUnion<
   SchemaArray extends readonly HaFormSchema[],
-  Schema = SchemaArray[number]
+  Schema = SchemaArray[number],
 > = Schema extends HaFormGridSchema | HaFormExpandableSchema
   ? SchemaUnion<Schema["schema"]>
   : Schema;

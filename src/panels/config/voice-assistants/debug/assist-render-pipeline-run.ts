@@ -101,13 +101,12 @@ const renderProgress = (
 
 const renderData = (data: Record<string, any>, keys: Record<string, string>) =>
   Object.entries(keys).map(
-    ([key, label]) =>
-      html`
-        <div class="row">
-          <div>${label}</div>
-          <div>${data[key]}</div>
-        </div>
-      `
+    ([key, label]) => html`
+      <div class="row">
+        <div>${label}</div>
+        <div>${data[key]}</div>
+      </div>
+    `
   );
 
 const dataMinusKeysRender = (
