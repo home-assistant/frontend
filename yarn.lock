@@ -9301,10 +9301,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-timezones-json@npm:1.1.0":
-  version: 1.1.0
-  resolution: "google-timezones-json@npm:1.1.0"
-  checksum: 4abbf1b50a9c199fec4dbf7113803dbcb7c87794a4e52189dc0187e4c8a26a7dffd133bc4e2674e1f30f357e5f2060153effe267a013613c362cc098176dc8a0
+"google-timezones-json@npm:1.2.0":
+  version: 1.2.0
+  resolution: "google-timezones-json@npm:1.2.0"
+  checksum: 2945d2ed900511cb5111c9066dd84a8330feed5166b195a854f9ac9550c9f9e2d10d62743e08a4571c6005a9a08045b2375c60dc9539c403830a0a25cd0d1690
   languageName: node
   linkType: hard
 
@@ -9718,7 +9718,7 @@ __metadata:
     fs-extra: 11.1.1
     fuse.js: 6.6.2
     glob: 10.3.3
-    google-timezones-json: 1.1.0
+    google-timezones-json: 1.2.0
     gulp: 4.0.2
     gulp-flatmap: 1.0.2
     gulp-json-transform: 0.4.8
