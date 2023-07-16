@@ -9773,8 +9773,8 @@ __metadata:
     terser-webpack-plugin: 5.3.9
     tinykeys: 2.1.0
     ts-lit-plugin: 2.0.0-pre.1
-    tsparticles-engine: 2.10.1
-    tsparticles-preset-links: 2.10.1
+    tsparticles-engine: 2.11.0
+    tsparticles-preset-links: 2.11.0
     typescript: 5.1.6
     unfetch: 5.0.0
     vinyl-buffer: 1.0.1
@@ -15262,89 +15262,89 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsparticles-engine@npm:2.10.1, tsparticles-engine@npm:^2.10.1":
-  version: 2.10.1
-  resolution: "tsparticles-engine@npm:2.10.1"
-  checksum: 5662c453b1e4c37c608435393a8c5ae03bd9b301dc488a3909bdddf321f38c486b6076d61641add3e2d8764c6e8eb28021e1b424da3240b6efa723c6e8bcbc43
+"tsparticles-engine@npm:2.11.0, tsparticles-engine@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "tsparticles-engine@npm:2.11.0"
+  checksum: 1aad1c3969b38dec5b468220eba7a1a26982fd8b13567f37970fe8d1cd6e7609da8622e8b16599b6359ecc681a33e9672a8a697e5ea9f146b15cc709b9fa78d9
   languageName: node
   linkType: hard
 
-"tsparticles-interaction-particles-links@npm:^2.10.1":
-  version: 2.10.1
-  resolution: "tsparticles-interaction-particles-links@npm:2.10.1"
+"tsparticles-interaction-particles-links@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "tsparticles-interaction-particles-links@npm:2.11.0"
   dependencies:
-    tsparticles-engine: ^2.10.1
-  checksum: 994fcac1cfcae34409095437db7684cc9f74b4e084995da310ea7f1a63c0a97030cac8fde47a7a54b5e8644e26a3b72fb5e6d229e10758eb1e6fcf52800b8e83
+    tsparticles-engine: ^2.11.0
+  checksum: 38bfca50c5c8b55ef3cc55975a5be80479e283dbe04247f165635281f37f9b9fb6b884e5e996ca99e0da3725e4777100ddef2a04dab6216896649f48a89faf04
   languageName: node
   linkType: hard
 
-"tsparticles-move-base@npm:^2.10.1":
-  version: 2.10.1
-  resolution: "tsparticles-move-base@npm:2.10.1"
+"tsparticles-move-base@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "tsparticles-move-base@npm:2.11.0"
   dependencies:
-    tsparticles-engine: ^2.10.1
-  checksum: 26fb88e7622dfbede4d0177d01645917b01611bf8be32508588e7d8d6e28fcaf58daf900095a7947382d59fe9fcd420563cc6fc6a50c67c9c7ea7236c601d9b7
+    tsparticles-engine: ^2.11.0
+  checksum: a049e1ecd23f8b3fd19b236040085e415765b299e919647acc18e43eb2b6d51176c97ae3095f313cd0959096638d6d6ad4337d5c9cff8d98d1b8dadbad02eaff
   languageName: node
   linkType: hard
 
-"tsparticles-preset-links@npm:2.10.1":
-  version: 2.10.1
-  resolution: "tsparticles-preset-links@npm:2.10.1"
+"tsparticles-preset-links@npm:2.11.0":
+  version: 2.11.0
+  resolution: "tsparticles-preset-links@npm:2.11.0"
   dependencies:
-    tsparticles-engine: ^2.10.1
-    tsparticles-interaction-particles-links: ^2.10.1
-    tsparticles-move-base: ^2.10.1
-    tsparticles-shape-circle: ^2.10.1
-    tsparticles-updater-color: ^2.10.1
-    tsparticles-updater-opacity: ^2.10.1
-    tsparticles-updater-out-modes: ^2.10.1
-    tsparticles-updater-size: ^2.10.1
-  checksum: 0678ad77ae9022f3ceac6b462ad4e049e2a0f5559b035690698609df081d7d6307fb93c38d07f3fe6e0f517635bd6a4831b705b7ba6fc33f79a22d4a3ddf65fe
+    tsparticles-engine: ^2.11.0
+    tsparticles-interaction-particles-links: ^2.11.0
+    tsparticles-move-base: ^2.11.0
+    tsparticles-shape-circle: ^2.11.0
+    tsparticles-updater-color: ^2.11.0
+    tsparticles-updater-opacity: ^2.11.0
+    tsparticles-updater-out-modes: ^2.11.0
+    tsparticles-updater-size: ^2.11.0
+  checksum: 4f50e70d25cce142fc1a692dc736819c3e42c6bf3c4d10eaf6667536750ed487ee8e6173914ade73fd26ea9cee0557e84e3bf305efc73fb6288803cd803a22a3
   languageName: node
   linkType: hard
 
-"tsparticles-shape-circle@npm:^2.10.1":
-  version: 2.10.1
-  resolution: "tsparticles-shape-circle@npm:2.10.1"
+"tsparticles-shape-circle@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "tsparticles-shape-circle@npm:2.11.0"
   dependencies:
-    tsparticles-engine: ^2.10.1
-  checksum: 49c2a865745c6217b08006c11f134e64792e1d62abbc1dc6f2484165b6b13b6bd7205cd10171418697680e513bd3c8d128c7d9877c61540722250bb8e1693f02
+    tsparticles-engine: ^2.11.0
+  checksum: a83098b8d39b8ed89d1ced0f7b2e560d53b8d0f85f3993cd539b8a72d12d84cc9ef67ccc663ac580489129f33638c1791506c40d69ac0afcf8cb2e999688b2c1
   languageName: node
   linkType: hard
 
-"tsparticles-updater-color@npm:^2.10.1":
-  version: 2.10.1
-  resolution: "tsparticles-updater-color@npm:2.10.1"
+"tsparticles-updater-color@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "tsparticles-updater-color@npm:2.11.0"
   dependencies:
-    tsparticles-engine: ^2.10.1
-  checksum: 6858b429fd59f244251584346d47748216774a9012a6ffb9a614f87ca83b957a6da2b0dffb1c9e5238c84c043c29a23eb828568baf4ddde76c73707a1a0652ba
+    tsparticles-engine: ^2.11.0
+  checksum: bfbac9a31d1ccbc179c646016f45b6ca6990d1b23b654130e38ec8df95402241d20e18d8a5b061e66c82eef4380901ed964ccbe3143d5b8ff757bd91014134e6
   languageName: node
   linkType: hard
 
-"tsparticles-updater-opacity@npm:^2.10.1":
-  version: 2.10.1
-  resolution: "tsparticles-updater-opacity@npm:2.10.1"
+"tsparticles-updater-opacity@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "tsparticles-updater-opacity@npm:2.11.0"
   dependencies:
-    tsparticles-engine: ^2.10.1
-  checksum: f5a418dfe922db99cd6ee75a7accb901eebb4e4f34ef411be46a1d88c8893816b4f8487f7b100a0a1cda749fdecf1d052efaae994a8639a464b6d6829ec9ee8b
+    tsparticles-engine: ^2.11.0
+  checksum: e8bf67196b529fabc838140ffe2997c58e27ab569e70a9815b10db93e8d5496f4f07e04b600b832d1a22239970eca29b2619e30f00cb0f2cc0428bd73c3582f0
   languageName: node
   linkType: hard
 
-"tsparticles-updater-out-modes@npm:^2.10.1":
-  version: 2.10.1
-  resolution: "tsparticles-updater-out-modes@npm:2.10.1"
+"tsparticles-updater-out-modes@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "tsparticles-updater-out-modes@npm:2.11.0"
   dependencies:
-    tsparticles-engine: ^2.10.1
-  checksum: 0f78d2aae5fa03f1af32dbe9eab326d6ef59b4e63226a84a5f8ce91efb1beecd13e0465068de9c9cd70ba830c212552fbe3b01fd21c674368ba39071af335e9b
+    tsparticles-engine: ^2.11.0
+  checksum: 8f14fb9756c98e48d0d613b439bbb6c21d385b95cf78cebcc8077da15f42b2d9c219d7b51e9ed8f2643eb00a9871d2cdb91fc96922376827bf69171d030fc7ac
   languageName: node
   linkType: hard
 
-"tsparticles-updater-size@npm:^2.10.1":
-  version: 2.10.1
-  resolution: "tsparticles-updater-size@npm:2.10.1"
+"tsparticles-updater-size@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "tsparticles-updater-size@npm:2.11.0"
   dependencies:
-    tsparticles-engine: ^2.10.1
-  checksum: c77ce515aa765f4e069d232ca7407105d86c432042593fffdd6ae33948f84a654cba7e41c0aef00c2327ed3b5715ab07e057153b93afe5c7a2a5917eee786e85
+    tsparticles-engine: ^2.11.0
+  checksum: b14aecf4000441fe3e7f37cacd9f9074bb8fcd96b7ed0eb1be16274da8a843d005bca37949043867378138c6e65ccdd76c849ba2528a1c4cf92ad6488b4da7d8
   languageName: node
   linkType: hard
 
