@@ -16,8 +16,10 @@ import {
   mdiClock,
   mdiCloseCircleOutline,
   mdiCrosshairsQuestion,
+  mdiDoorbell,
   mdiFan,
   mdiFanOff,
+  mdiGestureTap,
   mdiGestureTapButton,
   mdiLanConnect,
   mdiLanDisconnect,
@@ -25,6 +27,7 @@ import {
   mdiLockAlert,
   mdiLockClock,
   mdiLockOpen,
+  mdiMotionSensor,
   mdiPackage,
   mdiPackageDown,
   mdiPackageUp,
@@ -130,6 +133,18 @@ export const domainIconWithoutDefault = (
         return compareState === "home" ? mdiBluetoothConnect : mdiBluetooth;
       }
       return compareState === "not_home" ? mdiAccountArrowRight : mdiAccount;
+
+    case "event":
+      switch (stateObj?.attributes.device_class) {
+        case "doorbell":
+          return mdiDoorbell;
+        case "button":
+          return mdiGestureTapButton;
+        case "motion":
+          return mdiMotionSensor;
+        default:
+          return mdiGestureTap;
+      }
 
     case "fan":
       return compareState === "off" ? mdiFanOff : mdiFan;

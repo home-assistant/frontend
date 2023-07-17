@@ -52,6 +52,8 @@ export default class HaNumericStateCondition extends LitElement {
                 "effect_list",
                 "effect",
                 "entity_picture",
+                "event_type",
+                "event_types",
                 "fan_mode",
                 "fan_modes",
                 "fan_speed_list",

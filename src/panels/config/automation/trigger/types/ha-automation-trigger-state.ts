@@ -76,6 +76,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                 "effect_list",
                 "entity_id",
                 "entity_picture",
+                "event_types",
                 "fan_modes",
                 "fan_speed_list",
                 "friendly_name",

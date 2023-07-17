@@ -178,6 +178,7 @@ export const DOMAINS_WITH_CARD = [
   "climate",
   "cover",
   "configurator",
+  "event",
   "input_button",
   "input_select",
   "input_number",
@@ -201,6 +202,7 @@ export const SENSOR_ENTITIES = [
   "calendar",
   "camera",
   "device_tracker",
+  "event",
   "weather",
 ];
 

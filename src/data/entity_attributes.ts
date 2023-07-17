@@ -9,6 +9,7 @@ export const STATE_ATTRIBUTES = [
   "emulated_hue_name",
   "emulated_hue",
   "entity_picture",
+  "event_types",
   "friendly_name",
   "haaska_hidden",
   "haaska_name",
