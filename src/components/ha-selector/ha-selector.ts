@@ -42,6 +42,7 @@ const LOAD_ELEMENTS = {
   time: () => import("./ha-selector-time"),
   icon: () => import("./ha-selector-icon"),
   media: () => import("./ha-selector-media"),
+  service: () => import("./ha-selector-service"),
   theme: () => import("./ha-selector-theme"),
   tts: () => import("./ha-selector-tts"),
   tts_voice: () => import("./ha-selector-tts-voice"),

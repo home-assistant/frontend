@@ -40,6 +40,7 @@ export type Selector =
   | ObjectSelector
   | AssistPipelineSelector
   | SelectSelector
+  | ServiceSelector
   | StateSelector
   | StatisticSelector
   | StringSelector
@@ -198,6 +199,11 @@ export interface LegacyEntitySelector {
      */
     device_class?: EntitySelectorFilter["device_class"];
   };
+}
+
+export interface ServiceSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  service: {} | null;
 }
 
 export interface StatisticSelector {

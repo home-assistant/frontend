@@ -161,6 +161,7 @@ const SCHEMAS: {
       date: { name: "Date", selector: { date: {} } },
       datetime: { name: "Date Time", selector: { datetime: {} } },
       action: { name: "Action", selector: { action: {} } },
+      service: { name: "Service", selector: { service: {} } },
       text: {
         name: "Text",
         selector: { text: {} },
