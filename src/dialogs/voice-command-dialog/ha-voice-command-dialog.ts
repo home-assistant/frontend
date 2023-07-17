@@ -87,9 +87,14 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _pipelinePromise?: Promise<AssistPipeline>;
 
-  public async showDialog(params?: VoiceCommandDialogParams): Promise<void> {
-    if (params?.pipeline_id) {
-      this._pipelineId = params?.pipeline_id;
+  public async showDialog(params: VoiceCommandDialogParams): Promise<void> {
+    if (params.pipeline_id === "last_used") {
+      // Do not set pipeline id
+    } else if (params.pipeline_id === "preferred") {
+      await this._loadPipelines();
+      this._pipelineId = this._preferredPipeline;
+    } else {
+      this._pipelineId = params.pipeline_id;
     }
 
     this._conversation = [

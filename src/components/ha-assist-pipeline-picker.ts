@@ -16,7 +16,8 @@ import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
 
-const PREFERRED = "__PREFERRED_PIPELINE_OPTION__";
+const PREFERRED = "preferred";
+const LAST_USED = "last_used";
 
 @customElement("ha-assist-pipeline-picker")
 export class HaAssistPipelinePicker extends LitElement {
@@ -29,6 +30,8 @@ export class HaAssistPipelinePicker extends LitElement {
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
+
+  @property() public includeLastUsed = false;
 
   @state() _pipelines?: AssistPipeline[];
 
@@ -58,6 +61,15 @@ export class HaAssistPipelinePicker extends LitElement {
             )?.name,
           })}
         </ha-list-item>
+        ${this.includeLastUsed
+          ? html`
+              <ha-list-item .value=${LAST_USED}>
+                ${this.hass!.localize(
+                  "ui.components.pipeline-picker.last_used"
+                )}
+              </ha-list-item>
+            `
+          : null}
         ${this._pipelines.map(
           (pipeline) =>
             html`<ha-list-item .value=${pipeline.id}>
