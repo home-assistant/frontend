@@ -5571,7 +5571,7 @@
         },
         "core-config": {
           "intro": "Hello {name}, welcome to Home Assistant. How would you like to name your home?",
-          "intro_core": "We will be setting up some core configuration for your Home Assistant instance now, you can always change this later in the configuration panel.",
+          "intro_core": "We will set up the basics together. You can always change this later in the settings.",
           "intro_location": "We would like to know where you live. This information will help with displaying information and setting up sun-based automations. This data is never shared outside of your network.",
           "location_address": "Powered by {openstreetmap} ({osm_privacy_policy}).",
           "osm_privacy_policy": "Privacy policy",
