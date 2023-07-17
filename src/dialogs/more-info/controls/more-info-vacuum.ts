@@ -9,17 +9,26 @@ import {
   mdiStop,
   mdiTargetVariant,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
+import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
+import {
+  EntityRegistryDisplayEntry,
+  findBatteryChargingEntity,
+  findBatteryEntity,
+} from "../../../data/entity_registry";
 import { VacuumEntity, VacuumEntityFeature } from "../../../data/vacuum";
 import { HomeAssistant } from "../../../types";
 
@@ -137,19 +146,7 @@ class MoreInfoVacuum extends LitElement {
                 </strong>
               </span>
             </div>
-            ${supportsFeature(stateObj, VacuumEntityFeature.BATTERY) &&
-            stateObj.attributes.battery_level
-              ? html`
-                  <div>
-                    <span>
-                      ${stateObj.attributes.battery_level} %
-                      <ha-icon
-                        .icon=${stateObj.attributes.battery_icon}
-                      ></ha-icon>
-                    </span>
-                  </div>
-                `
-              : ""}
+            ${this._renderBattery()}
           </div>`
         : ""}
       ${VACUUM_COMMANDS.some((item) => item.isVisible(stateObj))
@@ -241,6 +238,81 @@ class MoreInfoVacuum extends LitElement {
         .extraFilters=${filterExtraAttributes}
       ></ha-attributes>
     `;
+  }
+
+  private _deviceEntities = memoizeOne(
+    (
+      deviceId: string,
+      entities: HomeAssistant["entities"]
+    ): EntityRegistryDisplayEntry[] => {
+      const entries = Object.values(entities);
+      return entries.filter((entity) => entity.device_id === deviceId);
+    }
+  );
+
+  private _renderBattery() {
+    const stateObj = this.stateObj!;
+
+    const deviceId = this.hass.entities[stateObj.entity_id]?.device_id;
+
+    const entities = deviceId
+      ? this._deviceEntities(deviceId, this.hass.entities)
+      : [];
+
+    const batteryEntity = findBatteryEntity(this.hass, entities);
+    const battery = batteryEntity
+      ? this.hass.states[batteryEntity.entity_id]
+      : undefined;
+
+    const batteryIsBinary =
+      battery && computeStateDomain(battery) === "binary_sensor";
+
+    // Use device battery entity
+    if (battery && (batteryIsBinary || !isNaN(battery.state as any))) {
+      const batteryChargingEntity = findBatteryChargingEntity(
+        this.hass,
+        entities
+      );
+      const batteryCharging = batteryChargingEntity
+        ? this.hass.states[batteryChargingEntity?.entity_id]
+        : undefined;
+
+      return html`
+        <div>
+          <span>
+            ${batteryIsBinary
+              ? ""
+              : `${Number(battery.state).toFixed()}${blankBeforePercent(
+                  this.hass.locale
+                )}%`}
+            <ha-battery-icon
+              .hass=${this.hass}
+              .batteryStateObj=${battery}
+              .batteryChargingStateObj=${batteryCharging}
+            ></ha-battery-icon>
+          </span>
+        </div>
+      `;
+    }
+
+    // Use battery_level and battery_icon deprecated attributes
+    if (
+      supportsFeature(stateObj, VacuumEntityFeature.BATTERY) &&
+      stateObj.attributes.battery_level
+    ) {
+      return html`
+        <div>
+          <span>
+            ${stateObj.attributes.battery_level.toFixed()}${blankBeforePercent(
+              this.hass.locale
+            )}%
+            <ha-icon .icon=${stateObj.attributes.battery_icon}></ha-icon>
+          </span>
+        </div>
+      `;
+    }
+
+    return nothing;
   }
 
   private callService(ev: CustomEvent) {
