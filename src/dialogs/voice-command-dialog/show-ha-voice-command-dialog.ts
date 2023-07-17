@@ -18,6 +18,7 @@ export const showVoiceCommandDialog = (
       type: "assist/show",
       payload: {
         pipeline_id: dialogParams.pipeline_id,
+        // Start listening by default for app
         start_listening: dialogParams.start_listening ?? true,
       },
     });
@@ -28,6 +29,7 @@ export const showVoiceCommandDialog = (
     dialogImport: loadVoiceCommandDialog,
     dialogParams: {
       pipeline_id: dialogParams.pipeline_id,
+      // Don't start listening by default for web
       start_listening: dialogParams.start_listening ?? false,
     },
   });

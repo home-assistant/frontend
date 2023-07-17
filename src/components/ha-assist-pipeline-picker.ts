@@ -37,11 +37,15 @@ export class HaAssistPipelinePicker extends LitElement {
 
   @state() _preferredPipeline: string | null = null;
 
+  private get _default() {
+    return this.includeLastUsed ? LAST_USED : PREFERRED;
+  }
+
   protected render() {
     if (!this._pipelines) {
       return nothing;
     }
-    const value = this.value ?? PREFERRED;
+    const value = this.value ?? this._default;
     return html`
       <ha-select
         .label=${this.label ||
@@ -54,13 +58,6 @@ export class HaAssistPipelinePicker extends LitElement {
         fixedMenuPosition
         naturalMenuWidth
       >
-        <ha-list-item .value=${PREFERRED}>
-          ${this.hass!.localize("ui.components.pipeline-picker.preferred", {
-            preferred: this._pipelines.find(
-              (pipeline) => pipeline.id === this._preferredPipeline
-            )?.name,
-          })}
-        </ha-list-item>
         ${this.includeLastUsed
           ? html`
               <ha-list-item .value=${LAST_USED}>
@@ -70,6 +67,13 @@ export class HaAssistPipelinePicker extends LitElement {
               </ha-list-item>
             `
           : null}
+        <ha-list-item .value=${PREFERRED}>
+          ${this.hass!.localize("ui.components.pipeline-picker.preferred", {
+            preferred: this._pipelines.find(
+              (pipeline) => pipeline.id === this._preferredPipeline
+            )?.name,
+          })}
+        </ha-list-item>
         ${this._pipelines.map(
           (pipeline) =>
             html`<ha-list-item .value=${pipeline.id}>
@@ -105,11 +109,11 @@ export class HaAssistPipelinePicker extends LitElement {
       !this.hass ||
       target.value === "" ||
       target.value === this.value ||
-      (this.value === undefined && target.value === PREFERRED)
+      (this.value === undefined && target.value === this._default)
     ) {
       return;
     }
-    this.value = target.value === PREFERRED ? undefined : target.value;
+    this.value = target.value === this._default ? undefined : target.value;
     fireEvent(this, "value-changed", { value: this.value });
   }
 }

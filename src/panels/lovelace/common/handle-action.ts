@@ -165,7 +165,7 @@ export const handleAction = async (
     case "assist": {
       showVoiceCommandDialog(node, hass, {
         start_listening: actionConfig.start_listening ?? false,
-        pipeline_id: actionConfig.pipeline_id ?? "preferred",
+        pipeline_id: actionConfig.pipeline_id ?? "last_used",
       });
       break;
     }
