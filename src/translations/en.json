@@ -5573,7 +5573,7 @@
           "intro": "Hello {name}, welcome to Home Assistant. How would you like to name your home?",
           "intro_core": "We will be setting up some core configuration for your Home Assistant instance now, you can always change this later in the configuration panel.",
           "intro_location": "We would like to know where you live. This information will help with displaying information and setting up sun-based automations. This data is never shared outside of your network.",
-          "location_address": "Address search is powered by {openstreetmap} ({osm_privacy_policy}).",
+          "location_address": "Powered by {openstreetmap} ({osm_privacy_policy}).",
           "osm_privacy_policy": "Privacy policy",
           "title_location_detect": "Do you want us to detect your location?",
           "intro_location_detect": "We can detect your location by making a one-time request to an external service.",

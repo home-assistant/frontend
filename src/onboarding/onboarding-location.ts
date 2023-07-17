@@ -66,6 +66,26 @@ class OnboardingLocation extends LitElement {
   @query("ha-locations-editor", true) private map!: HaLocationsEditor;
 
   protected render(): TemplateResult {
+    const addressAttribution = this.onboardingLocalize(
+      "ui.panel.page-onboarding.core-config.location_address",
+      {
+        openstreetmap: html`<a
+          href="https://www.openstreetmap.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >OpenStreetMap</a
+        >`,
+        osm_privacy_policy: html`<a
+          href="https://wiki.osmfoundation.org/wiki/Privacy_Policy"
+          target="_blank"
+          rel="noopener noreferrer"
+          >${this.onboardingLocalize(
+            "ui.panel.page-onboarding.core-config.osm_privacy_policy"
+          )}</a
+        >`,
+      }
+    );
+
     return html`
       ${this._error
         ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
@@ -86,22 +106,26 @@ class OnboardingLocation extends LitElement {
         @keyup=${this._addressSearch}
       >
         ${this._working
-          ? html`<ha-circular-progress
-              slot="trailingIcon"
-              active
-              size="small"
-            ></ha-circular-progress>`
-          : html`<ha-icon-button
-              @click=${this._handleButtonClick}
-              slot="trailingIcon"
-              .disabled=${this._working}
-              .label=${this.onboardingLocalize(
-                this._search
-                  ? "ui.common.search"
-                  : "ui.panel.page-onboarding.core-config.button_detect"
-              )}
-              .path=${this._search ? mdiMapSearchOutline : mdiCrosshairsGps}
-            ></ha-icon-button>`}
+          ? html`
+              <ha-circular-progress
+                slot="trailingIcon"
+                active
+                size="small"
+              ></ha-circular-progress>
+            `
+          : html`
+              <ha-icon-button
+                @click=${this._handleButtonClick}
+                slot="trailingIcon"
+                .disabled=${this._working}
+                .label=${this.onboardingLocalize(
+                  this._search
+                    ? "ui.common.search"
+                    : "ui.panel.page-onboarding.core-config.button_detect"
+                )}
+                .path=${this._search ? mdiMapSearchOutline : mdiCrosshairsGps}
+              ></ha-icon-button>
+            `}
       </ha-textfield>
       ${this._places !== undefined
         ? html`
@@ -144,6 +168,7 @@ class OnboardingLocation extends LitElement {
             </mwc-list>
           `
         : nothing}
+      <p class="attribution">${addressAttribution}</p>
       <ha-locations-editor
         class="flex"
         .hass=${this.hass}
@@ -158,28 +183,6 @@ class OnboardingLocation extends LitElement {
         @location-updated=${this._locationChanged}
         @marker-clicked=${this._markerClicked}
       ></ha-locations-editor>
-
-      <p>
-        ${this.onboardingLocalize(
-          "ui.panel.page-onboarding.core-config.location_address",
-          {
-            openstreetmap: html`<a
-              href="https://www.openstreetmap.org/"
-              target="_blank"
-              rel="noopener noreferrer"
-              >OpenStreetMap</a
-            >`,
-            osm_privacy_policy: html`<a
-              href="https://wiki.osmfoundation.org/wiki/Privacy_Policy"
-              target="_blank"
-              rel="noopener noreferrer"
-              >${this.onboardingLocalize(
-                "ui.panel.page-onboarding.core-config.osm_privacy_policy"
-              )}</a
-            >`,
-          }
-        )}
-      </p>
 
       <div class="footer">
         <mwc-button
@@ -505,6 +508,27 @@ class OnboardingLocation extends LitElement {
       }
       a {
         color: var(--primary-color);
+      }
+      .attribution {
+        /* textfield helper style */
+        margin: 0;
+        padding: 4px 16px 12px 16px;
+        color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
+        font-family: var(
+          --mdc-typography-caption-font-family,
+          var(--mdc-typography-font-family, Roboto, sans-serif)
+        );
+        font-size: var(--mdc-typography-caption-font-size, 0.75rem);
+        font-weight: var(--mdc-typography-caption-font-weight, 400);
+        letter-spacing: var(
+          --mdc-typography-caption-letter-spacing,
+          0.0333333333em
+        );
+        text-decoration: var(--mdc-typography-caption-text-decoration, inherit);
+        text-transform: var(--mdc-typography-caption-text-transform, inherit);
+      }
+      .attribution a {
+        color: inherit;
       }
     `;
   }
