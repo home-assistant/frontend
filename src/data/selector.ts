@@ -278,7 +278,9 @@ export interface ObjectSelector {
 
 export interface AssistPipelineSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  assist_pipeline: {} | null;
+  assist_pipeline: {
+    include_last_used?: boolean;
+  } | null;
 }
 
 export interface SelectOption {
