@@ -38,7 +38,9 @@ const ASSIST_SCHEMA = [
       {
         name: "pipeline_id",
         selector: {
-          assist_pipeline: {},
+          assist_pipeline: {
+            include_last_used: true,
+          },
         },
       },
       {

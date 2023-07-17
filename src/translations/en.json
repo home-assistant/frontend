@@ -398,7 +398,8 @@
       },
       "pipeline-picker": {
         "pipeline": "Assistant",
-        "preferred": "Preferred assistant ({preferred})"
+        "preferred": "Preferred assistant ({preferred})",
+        "last_used": "Last used assistant"
       },
       "theme-picker": {
         "theme": "Theme",

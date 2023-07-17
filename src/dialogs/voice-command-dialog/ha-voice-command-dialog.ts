@@ -87,9 +87,16 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _pipelinePromise?: Promise<AssistPipeline>;
 
-  public async showDialog(params?: VoiceCommandDialogParams): Promise<void> {
-    if (params?.pipeline_id) {
-      this._pipelineId = params?.pipeline_id;
+  public async showDialog(
+    params: Required<VoiceCommandDialogParams>
+  ): Promise<void> {
+    if (params.pipeline_id === "last_used") {
+      // Do not set pipeline id (retrieve from storage)
+    } else if (params.pipeline_id === "preferred") {
+      await this._loadPipelines();
+      this._pipelineId = this._preferredPipeline;
+    } else {
+      this._pipelineId = params.pipeline_id;
     }
 
     this._conversation = [
@@ -103,7 +110,11 @@ export class HaVoiceCommandDialog extends LitElement {
     this._scrollMessagesBottom();
 
     await this._pipelinePromise;
-    if (params?.start_listening && this._pipeline?.stt_engine) {
+    if (
+      params?.start_listening &&
+      this._pipeline?.stt_engine &&
+      AudioRecorder.isSupported
+    ) {
       this._toggleListening();
     }
   }
