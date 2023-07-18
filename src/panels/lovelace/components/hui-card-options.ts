@@ -1,14 +1,14 @@
 import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
-  mdiArrowDown,
-  mdiArrowUp,
   mdiContentCopy,
   mdiContentCut,
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiFileMoveOutline,
+  mdiMinus,
+  mdiPlus,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
@@ -96,14 +96,12 @@ export class HuiCardOptions extends LitElement {
               ? html`
                   <ha-icon-button
                     .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_card.move_down"
+                      "ui.panel.lovelace.editor.edit_card.decrease_position"
                     )}
-                    .path=${mdiArrowDown}
+                    .path=${mdiMinus}
                     class="move-arrow"
-                    @click=${this._cardDown}
-                    .disabled=${this.lovelace!.config.views[this.path![0]]
-                      .cards!.length ===
-                    this.path![1] + 1}
+                    @click=${this._decreaseCardPosiion}
+                    ?disabled=${this.path![1] === 0}
                   ></ha-icon-button>
                   <ha-icon-button
                     @click=${this._changeCardPosition}
@@ -115,12 +113,14 @@ export class HuiCardOptions extends LitElement {
                   </ha-icon-button>
                   <ha-icon-button
                     .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_card.move_up"
+                      "ui.panel.lovelace.editor.edit_card.increase_position"
                     )}
-                    .path=${mdiArrowUp}
+                    .path=${mdiPlus}
                     class="move-arrow"
-                    @click=${this._cardUp}
-                    ?disabled=${this.path![1] === 0}
+                    @click=${this._increaseCardPosition}
+                    .disabled=${this.lovelace!.config.views[this.path![0]]
+                      .cards!.length ===
+                    this.path![1] + 1}
                   ></ha-icon-button>
                 `
               : nothing}
@@ -291,7 +291,7 @@ export class HuiCardOptions extends LitElement {
     this._clipboard = deepClone(cardConfig);
   }
 
-  private _cardUp(): void {
+  private _decreaseCardPosiion(): void {
     const lovelace = this.lovelace!;
     const path = this.path!;
     lovelace.saveConfig(
@@ -299,7 +299,7 @@ export class HuiCardOptions extends LitElement {
     );
   }
 
-  private _cardDown(): void {
+  private _increaseCardPosition(): void {
     const lovelace = this.lovelace!;
     const path = this.path!;
     lovelace.saveConfig(
