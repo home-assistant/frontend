@@ -42,9 +42,13 @@ export class HaThemePicker extends LitElement {
         fixedMenuPosition
         naturalMenuWidth
       >
-        <mwc-list-item value="remove">
-          ${this.hass!.localize("ui.components.theme-picker.no_theme")}
-        </mwc-list-item>
+        ${!this.required
+          ? html`
+              <mwc-list-item value="remove">
+                ${this.hass!.localize("ui.components.theme-picker.no_theme")}
+              </mwc-list-item>
+            `
+          : nothing}
         ${this.includeDefault
           ? html`
               <mwc-list-item .value=${DEFAULT_THEME}>
