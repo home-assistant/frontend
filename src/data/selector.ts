@@ -329,6 +329,7 @@ export interface StringSelector {
       | "time"
       | "datetime-local"
       | "color";
+    prefix?: string;
     suffix?: string;
     autocomplete?: string;
   } | null;

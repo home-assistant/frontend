@@ -122,7 +122,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               {
                 name: "id",
                 selector: {
-                  text: {},
+                  text: {
+                    prefix: "script.",
+                  },
                 },
               },
             ] as const)
