@@ -403,8 +403,7 @@
       },
       "theme-picker": {
         "theme": "Theme",
-        "no_theme": "No theme",
-        "default": "[%key:ui::panel::profile::themes::home_assistant%]"
+        "no_theme": "No theme"
       },
       "language-picker": {
         "language": "Language",
@@ -5194,8 +5193,7 @@
           "primary_color": "Primary color",
           "accent_color": "Accent color",
           "reset": "Reset",
-          "use_default": "Use default theme",
-          "home_assistant": "Home Assistant"
+          "use_default": "Use default theme"
         },
         "dashboard": {
           "header": "Dashboard",
