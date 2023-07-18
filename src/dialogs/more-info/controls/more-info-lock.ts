@@ -1,4 +1,3 @@
-import "@material/web/iconbutton/outlined-icon-button";
 import { mdiDoorOpen, mdiLock, mdiLockOff } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -7,6 +6,7 @@ import { domainIcon } from "../../../common/entity/domain_icon";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
+import "../../../components/ha-outlined-icon-button";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   LockEntity,
@@ -82,7 +82,7 @@ class MoreInfoLock extends LitElement {
                 <div class="buttons">
                   ${supportsOpen
                     ? html`
-                        <md-outlined-icon-button
+                        <ha-outlined-icon-button
                           .disabled=${this.stateObj.state === UNAVAILABLE}
                           .title=${this.hass.localize(
                             "ui.dialogs.more_info_control.lock.open"
@@ -93,12 +93,12 @@ class MoreInfoLock extends LitElement {
                           @click=${this._open}
                         >
                           <ha-svg-icon .path=${mdiDoorOpen}></ha-svg-icon>
-                        </md-outlined-icon-button>
+                        </ha-outlined-icon-button>
                       `
                     : nothing}
                   ${isJammed
                     ? html`
-                        <md-outlined-icon-button
+                        <ha-outlined-icon-button
                           .title=${this.hass.localize(
                             "ui.dialogs.more_info_control.lock.lock"
                           )}
@@ -108,8 +108,8 @@ class MoreInfoLock extends LitElement {
                           @click=${this._lock}
                         >
                           <ha-svg-icon .path=${mdiLock}></ha-svg-icon>
-                        </md-outlined-icon-button>
-                        <md-outlined-icon-button
+                        </ha-outlined-icon-button>
+                        <ha-outlined-icon-button
                           .title=${this.hass.localize(
                             "ui.dialogs.more_info_control.lock.unlock"
                           )}
@@ -119,7 +119,7 @@ class MoreInfoLock extends LitElement {
                           @click=${this._unlock}
                         >
                           <ha-svg-icon .path=${mdiLockOff}></ha-svg-icon>
-                        </md-outlined-icon-button>
+                        </ha-outlined-icon-button>
                       `
                     : nothing}
                 </div>
@@ -140,13 +140,6 @@ class MoreInfoLock extends LitElement {
     return [
       moreInfoControlStyle,
       css`
-        md-outlined-icon-button {
-          --ha-icon-display: block;
-          --md-sys-color-on-surface: var(--secondary-text-color);
-          --md-sys-color-on-surface-variant: var(--secondary-text-color);
-          --md-sys-color-on-surface-rgb: var(--rgb-secondary-text-color);
-          --md-sys-color-outline: var(--secondary-text-color);
-        }
         @keyframes pulse {
           0% {
             opacity: 1;
