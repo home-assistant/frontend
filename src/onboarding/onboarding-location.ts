@@ -506,9 +506,6 @@ class OnboardingLocation extends LitElement {
         margin-top: 16px;
         text-align: right;
       }
-      a {
-        color: var(--primary-color);
-      }
       .attribution {
         /* textfield helper style */
         margin: 0;
