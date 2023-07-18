@@ -182,6 +182,10 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         display: block;
         margin-top: 24px;
       }
+      p {
+        font-size: 14px;
+        line-height: 20px;
+      }
     `;
   }
 }

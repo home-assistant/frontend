@@ -82,10 +82,13 @@ class OnboardingAnalytics extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      p {
+        font-size: 14px;
+        line-height: 20px;
+      }
       .error {
         color: var(--error-color);
       }
-
       .footer {
         margin-top: 16px;
         display: flex;
@@ -93,7 +96,6 @@ class OnboardingAnalytics extends LitElement {
         align-items: center;
         flex-direction: row-reverse;
       }
-
       a {
         color: var(--primary-color);
       }
