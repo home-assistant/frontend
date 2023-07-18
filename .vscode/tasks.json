@@ -197,7 +197,7 @@
       "type": "gulp",
       "task": "setup-and-fetch-nightly-translations",
       "problemMatcher": []
-          }
+    }
   ],
   "inputs": [
     {
