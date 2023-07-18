@@ -7,6 +7,7 @@ import {
   mdiAudioVideoOff,
   mdiBluetooth,
   mdiBluetoothConnect,
+  mdiButtonPointer,
   mdiCalendar,
   mdiCast,
   mdiCastConnected,
@@ -114,7 +115,7 @@ export const domainIconWithoutDefault = (
         case "update":
           return mdiPackageUp;
         default:
-          return mdiGestureTapButton;
+          return mdiButtonPointer;
       }
 
     case "camera":
