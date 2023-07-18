@@ -465,6 +465,10 @@ class OnboardingLocation extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      p {
+        font-size: 14px;
+        line-height: 20px;
+      }
       ha-textfield {
         display: block;
       }

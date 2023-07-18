@@ -89,6 +89,10 @@ class OnboardingName extends LitElement {
       ha-textfield {
         display: block;
       }
+      p {
+        font-size: 14px;
+        line-height: 20px;
+      }
       .footer {
         margin-top: 16px;
         text-align: right;

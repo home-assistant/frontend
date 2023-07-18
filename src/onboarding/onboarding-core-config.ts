@@ -359,6 +359,11 @@ class OnboardingCoreConfig extends LitElement {
         color: var(--secondary-text-color);
       }
 
+      p {
+        font-size: 14px;
+        line-height: 20px;
+      }
+
       ha-textfield {
         display: block;
       }
