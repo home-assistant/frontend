@@ -526,7 +526,7 @@ export const weatherIcon = (state?: string, nightTime?: boolean): string =>
 
 const DAY_IN_MILLISECONDS = 86400000;
 
-export const isForecastHourly = (
+const isForecastHourly = (
   forecast?: ForecastAttribute[]
 ): boolean | undefined => {
   if (forecast && forecast?.length && forecast?.length > 2) {
@@ -555,45 +555,15 @@ export const getWeatherConvertibleUnits = (
     type: "weather/convertible_units",
   });
 
-export const getForecast = (
-  weather_attributes?: WeatherEntityAttributes | undefined,
-  forecast_event?: ForecastEvent,
-  forecast_type?: ForecastType | undefined
+const getLegacyForecast = (
+  weather_attributes?: WeatherEntityAttributes | undefined
 ):
   | {
       forecast: ForecastAttribute[];
       type: "daily" | "hourly" | "twice_daily";
     }
   | undefined => {
-  if (
-    forecast_type === "daily" &&
-    forecast_event?.type === "daily" &&
-    forecast_event?.forecast &&
-    forecast_event?.forecast?.length > 2
-  ) {
-    return { forecast: forecast_event.forecast, type: "daily" };
-  }
-  if (
-    forecast_type === "hourly" &&
-    forecast_event?.type === "hourly" &&
-    forecast_event?.forecast &&
-    forecast_event?.forecast?.length > 2
-  ) {
-    return { forecast: forecast_event.forecast, type: "hourly" };
-  }
-  if (
-    forecast_type === "twice_daily" &&
-    forecast_event?.type === "twice_daily" &&
-    forecast_event?.forecast &&
-    forecast_event?.forecast?.length > 2
-  ) {
-    return { forecast: forecast_event.forecast, type: "hourly" };
-  }
-  if (
-    forecast_type === "legacy" &&
-    weather_attributes?.forecast &&
-    weather_attributes.forecast.length > 2
-  ) {
+  if (weather_attributes?.forecast && weather_attributes.forecast.length > 2) {
     const hourly = isForecastHourly(weather_attributes.forecast);
     if (hourly === true) {
       const dateFirst = new Date(weather_attributes.forecast![0].datetime);
@@ -611,52 +581,40 @@ export const getForecast = (
     }
     return { forecast: weather_attributes.forecast, type: "daily" };
   }
+  return undefined;
+};
+
+export const getForecast = (
+  weather_attributes?: WeatherEntityAttributes | undefined,
+  forecast_event?: ForecastEvent,
+  forecast_type?: ForecastType | undefined
+):
+  | {
+      forecast: ForecastAttribute[];
+      type: "daily" | "hourly" | "twice_daily";
+    }
+  | undefined => {
   if (forecast_type === undefined) {
     if (
-      forecast_event?.type === "daily" &&
+      forecast_event?.type !== undefined &&
       forecast_event?.forecast &&
       forecast_event?.forecast?.length > 2
     ) {
-      return { forecast: forecast_event.forecast, type: "daily" };
+      return { forecast: forecast_event.forecast, type: forecast_event?.type };
     }
-    if (
-      forecast_event?.type === "hourly" &&
-      forecast_event?.forecast &&
-      forecast_event?.forecast?.length > 2
-    ) {
-      return { forecast: forecast_event.forecast, type: "hourly" };
-    }
-    if (
-      forecast_event?.type === "twice_daily" &&
-      forecast_event?.forecast &&
-      forecast_event?.forecast?.length > 2
-    ) {
-      return {
-        forecast: forecast_event.forecast,
-        type: "twice_daily",
-      };
-    }
-    if (
-      weather_attributes?.forecast &&
-      weather_attributes.forecast.length > 2
-    ) {
-      const hourly = isForecastHourly(weather_attributes.forecast);
-      if (hourly === true) {
-        const dateFirst = new Date(weather_attributes.forecast![0].datetime);
-        const datelast = new Date(
-          weather_attributes.forecast![
-            weather_attributes.forecast!.length - 1
-          ].datetime
-        );
-        const dayDiff = datelast.getTime() - dateFirst.getTime();
-        const dayNight = dayDiff > DAY_IN_MILLISECONDS;
-        return {
-          forecast: weather_attributes.forecast,
-          type: dayNight ? "twice_daily" : "hourly",
-        };
-      }
-      return { forecast: weather_attributes.forecast, type: "daily" };
-    }
+    return getLegacyForecast(weather_attributes);
+  }
+
+  if (forecast_type === "legacy") {
+    return getLegacyForecast(weather_attributes);
+  }
+
+  if (
+    forecast_type === forecast_event?.type &&
+    forecast_event?.forecast &&
+    forecast_event?.forecast?.length > 2
+  ) {
+    return { forecast: forecast_event.forecast, type: forecast_type };
   }
 
   return undefined;
