@@ -279,13 +279,13 @@ export class HaCodeEditor extends ReactiveElement {
     };
   }
 
-  private _onUpdate(update: ViewUpdate): void {
+  private _onUpdate = (update: ViewUpdate): void => {
     if (!update.docChanged) {
       return;
     }
     this._value = update.state.doc.toString();
     fireEvent(this, "value-changed", { value: this._value });
-  }
+  };
 
   static get styles(): CSSResultGroup {
     return css`
