@@ -135,6 +135,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     window.location.hash.substring(1)
   );
 
+  private _configPanel = memoizeOne(
+    (domain: string, panels: HomeAssistant["panels"]): string | undefined =>
+      Object.values(panels).find(
+        (panel) => panel.config_panel_domain === domain
+      )?.url_path || integrationsWithPanel[domain]
+  );
+
   private _domainConfigEntries = memoizeOne(
     (domain: string, configEntries?: ConfigEntry[]): ConfigEntry[] =>
       configEntries
@@ -638,6 +645,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       }
     }
 
+    const configPanel = this._configPanel(item.domain, this.hass.panels);
+
     return html`<ha-list-item
       hasMeta
       class="config_entry ${classMap({
@@ -669,13 +678,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ? html`<mwc-button unelevated slot="meta" @click=${this._handleEnable}>
             ${this.hass.localize("ui.common.enable")}
           </mwc-button>`
-        : item.domain in integrationsWithPanel &&
+        : configPanel &&
           (item.domain !== "matter" || isDevVersion(this.hass.config.version))
         ? html`<a
             slot="meta"
-            href=${`${integrationsWithPanel[item.domain]}?config_entry=${
-              item.entry_id
-            }`}
+            href=${`/${configPanel}?config_entry=${item.entry_id}`}
             ><mwc-button>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.configure"
