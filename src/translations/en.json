@@ -404,7 +404,7 @@
       "theme-picker": {
         "theme": "Theme",
         "no_theme": "No theme",
-        "default": "[%key:ui::panel::profile::themes::default%]"
+        "default": "[%key:ui::panel::profile::themes::home_assistant%]"
       },
       "language-picker": {
         "language": "Language",
@@ -5194,8 +5194,8 @@
           "primary_color": "Primary color",
           "accent_color": "Accent color",
           "reset": "Reset",
-          "backend-selected": "Use backend preferred theme",
-          "default": "Default"
+          "use_default": "Use default theme",
+          "home_assistant": "Home Assistant"
         },
         "dashboard": {
           "header": "Dashboard",
