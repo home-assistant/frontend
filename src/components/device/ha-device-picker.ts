@@ -230,19 +230,23 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         );
       }
 
-      const outputDevices = inputDevices.map((device) => ({
-        id: device.id,
-        name: computeDeviceName(
+      const outputDevices = inputDevices.map((device) => {
+        const name = computeDeviceName(
           device,
           this.hass,
           deviceEntityLookup[device.id]
-        ),
-        area:
-          device.area_id && areaLookup[device.area_id]
-            ? areaLookup[device.area_id].name
-            : this.hass.localize("ui.components.device-picker.no_area"),
-        strings: [device.name || ""],
-      }));
+        );
+
+        return {
+          id: device.id,
+          name: name,
+          area:
+            device.area_id && areaLookup[device.area_id]
+              ? areaLookup[device.area_id].name
+              : this.hass.localize("ui.components.device-picker.no_area"),
+          strings: [name || ""],
+        };
+      });
       if (!outputDevices.length) {
         return [
           {
