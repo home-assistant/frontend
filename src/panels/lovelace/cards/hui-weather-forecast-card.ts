@@ -91,12 +91,17 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     );
   }
 
-  private async _subscribeForecastEvents() {
+  private _unsubscribeForecastEvents() {
     if (this._subscribed) {
       this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
+  }
+
+  private async _subscribeForecastEvents() {
     if (
+      this.isConnected &&
+      this._needForecastSubscription() &&
       this._config!.forecast_type &&
       this._config!.forecast_type !== "legacy"
     ) {
@@ -111,6 +116,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   public connectedCallback(): void {
     super.connectedCallback();
+    if (this.hasUpdated && this._config && this.hass) {
+      this._subscribeForecastEvents();
+    }
     this.updateComplete.then(() => this._attachObserver());
   }
 
@@ -118,10 +126,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
-    if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub());
-      this._subscribed = undefined;
-    }
+    this._unsubscribeForecastEvents();
   }
 
   public getCardSize(): number {
@@ -169,10 +174,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    if (
-      this._needForecastSubscription() &&
-      (changedProps.has("_config") || !this._subscribed)
-    ) {
+    if (changedProps.has("_config") || !this._subscribed) {
+      this._unsubscribeForecastEvents();
       this._subscribeForecastEvents();
     }
 

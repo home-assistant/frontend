@@ -85,11 +85,24 @@ class MoreInfoWeather extends LitElement {
     this._forecastEvent = forecastEvent;
   }
 
-  private async _subscribeForecastEvents() {
+  private _unsubscribeForecastEvents() {
     if (this._subscribed) {
       this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
+  }
+
+  private async _subscribeForecastEvents() {
+    if (
+      this._subscribed ||
+      !this.stateObj ||
+      !this.hass ||
+      !this.isConnected ||
+      !this._needForecastSubscription()
+    ) {
+      return;
+    }
+
     const forecastType = this._forecastType();
     if (forecastType) {
       this._subscribed = subscribeForecast(
@@ -101,12 +114,16 @@ class MoreInfoWeather extends LitElement {
     }
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._subscribeForecastEvents();
+    }
+  }
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub());
-      this._subscribed = undefined;
-    }
+    this._unsubscribeForecastEvents();
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -128,13 +145,7 @@ class MoreInfoWeather extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (!this.stateObj || !this.hass) {
-      return;
-    }
-
-    if (this._needForecastSubscription() && !this._subscribed) {
-      this._subscribeForecastEvents();
-    }
+    this._subscribeForecastEvents();
   }
 
   protected render() {

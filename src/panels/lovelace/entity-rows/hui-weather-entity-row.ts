@@ -80,15 +80,24 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     this._forecastEvent = forecastEvent;
   }
 
-  private async _subscribeForecastEvents() {
+  private _unsubscribeForecastEvents() {
     if (this._subscribed) {
       this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
-    const stateObj = this.hass!.states[this._config!.entity];
-    if (!stateObj) {
+  }
+
+  private async _subscribeForecastEvents() {
+    if (
+      this._subscribed ||
+      !this.hass ||
+      !this._config ||
+      !this.isConnected ||
+      !this._needForecastSubscription()
+    ) {
       return;
     }
+    const stateObj = this.hass!.states[this._config!.entity];
     const forecastType = this._forecastType(stateObj);
     if (forecastType) {
       this._subscribed = subscribeForecast(
@@ -100,12 +109,16 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     }
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._subscribeForecastEvents();
+    }
+  }
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub());
-      this._subscribed = undefined;
-    }
+    this._unsubscribeForecastEvents();
   }
 
   public setConfig(config: EntitiesCardEntityConfig): void {
@@ -122,13 +135,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (!this._config || !this.hass) {
-      return;
-    }
-
-    if (this._needForecastSubscription() && !this._subscribed) {
-      this._subscribeForecastEvents();
-    }
+    this._subscribeForecastEvents();
   }
 
   protected render() {
