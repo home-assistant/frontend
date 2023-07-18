@@ -96,12 +96,14 @@ export class HaCodeEditor extends ReactiveElement {
     super.disconnectedCallback();
     this.removeEventListener("keydown", stopPropagation);
     this.codemirror?.destroy();
+    delete this.codemirror;
   }
 
   protected update(changedProps: PropertyValues): void {
     super.update(changedProps);
 
     if (!this.codemirror) {
+      this._createCodeMirror();
       return;
     }
     const transactions: TransactionSpec[] = [];
@@ -136,16 +138,11 @@ export class HaCodeEditor extends ReactiveElement {
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    this._load();
-  }
-
   private get _mode() {
     return this._loadedCodeMirror!.langs[this.mode];
   }
 
-  private async _load(): Promise<void> {
+  private async _createCodeMirror(): Promise<void> {
     this._loadedCodeMirror = await loadCodeMirror();
     const extensions: Extension[] = [
       this._loadedCodeMirror.lineNumbers(),
