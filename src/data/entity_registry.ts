@@ -129,20 +129,20 @@ export interface EntityRegistryEntryUpdateParams {
   aliases?: string[];
 }
 
-export const findBatteryEntity = (
+export const findBatteryEntity = <T extends { entity_id: string }>(
   hass: HomeAssistant,
-  entities: EntityRegistryEntry[]
-): EntityRegistryEntry | undefined =>
+  entities: T[]
+): T | undefined =>
   entities.find(
     (entity) =>
       hass.states[entity.entity_id] &&
       hass.states[entity.entity_id].attributes.device_class === "battery"
   );
 
-export const findBatteryChargingEntity = (
+export const findBatteryChargingEntity = <T extends { entity_id: string }>(
   hass: HomeAssistant,
-  entities: EntityRegistryEntry[]
-): EntityRegistryEntry | undefined =>
+  entities: T[]
+): T | undefined =>
   entities.find(
     (entity) =>
       hass.states[entity.entity_id] &&
