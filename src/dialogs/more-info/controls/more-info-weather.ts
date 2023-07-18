@@ -43,19 +43,13 @@ class MoreInfoWeather extends LitElement {
   @state() private _subscribed?: Promise<() => void>;
 
   private _needForecastSubscription() {
-    return (
-      supportsFeature(
-        this.stateObj as HassEntityBase,
-        WeatherEntityFeature.FORECAST_DAILY
-      ) ||
-      supportsFeature(
-        this.stateObj as HassEntityBase,
-        WeatherEntityFeature.FORECAST_HOURLY
-      ) ||
-      supportsFeature(
-        this.stateObj as HassEntityBase,
+    return supportsFeature(
+      this.stateObj as HassEntityBase,
+      // eslint-disable-next-line no-bitwise
+      WeatherEntityFeature.FORECAST_DAILY |
+        // eslint-disable-next-line no-bitwise
+        WeatherEntityFeature.FORECAST_HOURLY |
         WeatherEntityFeature.FORECAST_TWICE_DAILY
-      )
     );
   }
 

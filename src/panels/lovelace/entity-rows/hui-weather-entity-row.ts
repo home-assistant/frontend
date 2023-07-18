@@ -52,9 +52,14 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     const stateObj = this.hass!.states[this._config!.entity];
     return (
       stateObj &&
-      (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_DAILY) ||
-        supportsFeature(stateObj, WeatherEntityFeature.FORECAST_HOURLY) ||
-        supportsFeature(stateObj, WeatherEntityFeature.FORECAST_TWICE_DAILY))
+      supportsFeature(
+        stateObj,
+        // eslint-disable-next-line no-bitwise
+        WeatherEntityFeature.FORECAST_DAILY |
+          // eslint-disable-next-line no-bitwise
+          WeatherEntityFeature.FORECAST_HOURLY |
+          WeatherEntityFeature.FORECAST_TWICE_DAILY
+      )
     );
   }
 
