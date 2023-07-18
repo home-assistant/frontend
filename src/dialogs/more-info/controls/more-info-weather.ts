@@ -40,7 +40,7 @@ class MoreInfoWeather extends LitElement {
 
   @state() private _forecastEvent?: ForecastEvent;
 
-  @state() private _subscribed?: () => void;
+  @state() private _subscribed?: Promise<() => void>;
 
   private _needForecastSubscription() {
     return (
@@ -93,12 +93,12 @@ class MoreInfoWeather extends LitElement {
 
   private async _subscribeForecastEvents() {
     if (this._subscribed) {
-      this._subscribed();
+      this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
     const forecastType = this._forecastType();
     if (forecastType) {
-      this._subscribed = await subscribeForecast(
+      this._subscribed = subscribeForecast(
         this.hass!,
         this.stateObj!.entity_id,
         forecastType,
@@ -110,7 +110,7 @@ class MoreInfoWeather extends LitElement {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     if (this._subscribed) {
-      this._subscribed();
+      this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
   }

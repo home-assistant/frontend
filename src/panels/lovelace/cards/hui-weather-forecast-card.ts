@@ -74,7 +74,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   @state() private _forecastEvent?: ForecastEvent;
 
-  @state() private _subscribed?: () => void;
+  @state() private _subscribed?: Promise<() => void>;
 
   @property({ type: Boolean, reflect: true, attribute: "veryverynarrow" })
   private _veryVeryNarrow = false;
@@ -93,14 +93,14 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   private async _subscribeForecastEvents() {
     if (this._subscribed) {
-      this._subscribed();
+      this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
     if (
       this._config!.forecast_type &&
       this._config!.forecast_type !== "legacy"
     ) {
-      this._subscribed = await subscribeForecast(
+      this._subscribed = subscribeForecast(
         this.hass!,
         this._config!.entity,
         this._config!.forecast_type,
@@ -119,7 +119,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       this._resizeObserver.disconnect();
     }
     if (this._subscribed) {
-      this._subscribed();
+      this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
   }

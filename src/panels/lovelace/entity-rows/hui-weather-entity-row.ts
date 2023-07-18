@@ -46,7 +46,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
   @state() private _forecastEvent?: ForecastEvent;
 
-  @state() private _subscribed?: () => void;
+  @state() private _subscribed?: Promise<() => void>;
 
   private _needForecastSubscription() {
     const stateObj = this.hass!.states[this._config!.entity];
@@ -77,7 +77,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
   private async _subscribeForecastEvents() {
     if (this._subscribed) {
-      this._subscribed();
+      this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
     const stateObj = this.hass!.states[this._config!.entity];
@@ -86,7 +86,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     }
     const forecastType = this._forecastType(stateObj);
     if (forecastType) {
-      this._subscribed = await subscribeForecast(
+      this._subscribed = subscribeForecast(
         this.hass!,
         stateObj.entity_id,
         forecastType,
@@ -98,7 +98,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     if (this._subscribed) {
-      this._subscribed();
+      this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
   }
