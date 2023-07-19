@@ -20,6 +20,9 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
   },
+  developer_assist: {
+    redirect: "/developer-tools/assist",
+  },
   developer_states: {
     redirect: "/developer-tools/state",
   },
