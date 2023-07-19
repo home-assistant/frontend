@@ -79,9 +79,7 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
   @state() private _guiMode = true;
 
   // Error: Configuration broken - do not save
-  @state() private _configErrors?: string[];
-
-  @state() private _yamlErrors?: string[];
+  @state() private _errors?: string[];
 
   // Warning: GUI editor can't handle configuration - ok to save
   @state() private _warnings?: string[];
@@ -103,9 +101,9 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
     this._yaml = _yaml;
     try {
       this._config = load(this.yaml) as any;
-      this._yamlErrors = undefined;
+      this._errors = undefined;
     } catch (err: any) {
-      this._yamlErrors = [err.message];
+      this._errors = [err.message];
     }
     this._setConfig();
   }
@@ -120,19 +118,30 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
     }
     this._config = config;
     this._yaml = undefined;
-    this._yamlErrors = undefined;
-    this._configErrors = undefined;
+    this._errors = undefined;
     this._setConfig();
   }
 
   private _setConfig(): void {
-    if (!this._yamlErrors) {
+    if (!this._errors) {
       try {
         this._updateConfigElement();
       } catch (err: any) {
-        this._configErrors = [err.message];
+        this._errors = [err.message];
       }
     }
+
+    this.updateComplete.then(() => {
+      fireEvent(this, "config-changed", {
+        config: this.value! as any,
+        error: this._errors?.join(", "),
+        guiModeAvailable: !(
+          this.hasWarning ||
+          this.hasError ||
+          this._guiSupported === false
+        ),
+      });
+    });
   }
 
   public get hasWarning(): boolean {
@@ -140,17 +149,7 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
   }
 
   public get hasError(): boolean {
-    return (
-      (this._yamlErrors !== undefined && this._yamlErrors.length > 0) ||
-      (this._configErrors !== undefined && this._configErrors.length > 0)
-    );
-  }
-
-  private _getErrors() {
-    if (this._yamlErrors === undefined && this._configErrors === undefined) {
-      return undefined;
-    }
-    return [...(this._yamlErrors ?? []), ...(this._configErrors ?? [])];
+    return this._errors !== undefined && this._errors.length > 0;
   }
 
   public get GUImode(): boolean {
@@ -159,6 +158,16 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
 
   public set GUImode(guiMode: boolean) {
     this._guiMode = guiMode;
+    this.updateComplete.then(() => {
+      fireEvent(this as HTMLElement, "GUImode-changed", {
+        guiMode,
+        guiModeAvailable: !(
+          this.hasWarning ||
+          this.hasError ||
+          this._guiSupported === false
+        ),
+      });
+    });
   }
 
   public toggleMode() {
@@ -215,7 +224,7 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
                   autocomplete-icons
                   .hass=${this.hass}
                   .value=${this.yaml}
-                  .error=${Boolean(this.hasError)}
+                  .error=${Boolean(this._errors)}
                   @value-changed=${this._handleYAMLChanged}
                   @keydown=${this._ignoreKeydown}
                   dir="ltr"
@@ -239,7 +248,7 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
                 ${this.hass.localize("ui.errors.config.error_detected")}:
                 <br />
                 <ul>
-                  ${this._getErrors()?.map((error) => html`<li>${error}</li>`)}
+                  ${this._errors!.map((error) => html`<li>${error}</li>`)}
                 </ul>
               </div>
             `
@@ -283,35 +292,6 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
     if (this._configElement && changedProperties.has("context")) {
       this._configElement.context = this.context;
     }
-
-    if (
-      changedProperties.has("_config") ||
-      changedProperties.has("_yamlErrors") ||
-      changedProperties.has("_configErrors") ||
-      changedProperties.has("_warnings") ||
-      changedProperties.has("_guiSupported")
-    ) {
-      fireEvent(this, "config-changed", {
-        config: this.value! as any,
-        error: this._getErrors()?.join(", "),
-        guiModeAvailable: !(
-          this.hasWarning ||
-          this.hasError ||
-          this._guiSupported === false
-        ),
-      });
-    }
-
-    if (changedProperties.has("_guiMode")) {
-      fireEvent(this as HTMLElement, "GUImode-changed", {
-        guiMode: this._guiMode,
-        guiModeAvailable: !(
-          this.hasWarning ||
-          this.hasError ||
-          this._guiSupported === false
-        ),
-      });
-    }
   }
 
   private _handleUIConfigChanged(ev: UIConfigChangedEvent) {
@@ -341,7 +321,7 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
     let configElement: LovelaceGenericElementEditor | undefined;
 
     try {
-      this._configErrors = undefined;
+      this._errors = undefined;
       this._warnings = undefined;
 
       if (this._configElementType !== this.configElementType) {
@@ -413,9 +393,9 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
     } catch (err: any) {
       if (err instanceof GUISupportError) {
         this._warnings = err.warnings ?? [err.message];
-        this._configErrors = err.errors || undefined;
+        this._errors = err.errors || undefined;
       } else {
-        this._configErrors = [err.message];
+        this._errors = [err.message];
       }
       this.GUImode = false;
     } finally {
