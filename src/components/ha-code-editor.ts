@@ -84,6 +84,9 @@ export class HaCodeEditor extends ReactiveElement {
   public connectedCallback() {
     super.connectedCallback();
     this.addEventListener("keydown", stopPropagation);
+    if (this._loadedCodeMirror) {
+      this._createCodeMirror();
+    }
     if (!this.codemirror) {
       return;
     }
@@ -95,8 +98,12 @@ export class HaCodeEditor extends ReactiveElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener("keydown", stopPropagation);
-    this.codemirror?.destroy();
-    delete this.codemirror;
+    this._destroyCodeMirror();
+  }
+
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
+    this._loadCodeMirror().then(() => this._createCodeMirror());
   }
 
   protected update(changedProps: PropertyValues): void {
@@ -142,8 +149,19 @@ export class HaCodeEditor extends ReactiveElement {
     return this._loadedCodeMirror!.langs[this.mode];
   }
 
-  private async _createCodeMirror(): Promise<void> {
+  private async _loadCodeMirror() {
     this._loadedCodeMirror = await loadCodeMirror();
+  }
+
+  private _destroyCodeMirror() {
+    this.codemirror?.destroy();
+    delete this.codemirror;
+  }
+
+  private _createCodeMirror(): void {
+    if (!this._loadedCodeMirror) {
+      return;
+    }
     const extensions: Extension[] = [
       this._loadedCodeMirror.lineNumbers(),
       this._loadedCodeMirror.history(),
