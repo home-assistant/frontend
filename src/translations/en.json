@@ -3684,7 +3684,16 @@
           "no_border_routers": "No border routers found",
           "border_routers": "{count} border {count, plural,\n  one {router}\n  other {routers}\n}",
           "managed_by_home_assistant": "Managed by Home Assistant",
-          "operational_dataset": "Operational dataset"
+          "operational_dataset": "Operational dataset",
+          "change_channel": "Change channel",
+          "change_channel_initiated_title": "Channel change in progress",
+          "change_channel_initiated_text": "The channel change has been initiated and will complete in {delay} minutes.",
+          "change_channel_invalid": "Invalid channel",
+          "change_channel_label": "Channel",
+          "change_channel_multiprotocol_enabled_title": "The Thread radio has multiprotocol enabled",
+          "change_channel_multiprotocol_enabled_text": "To change channel when the Thread radio has multiprotocol enabled, please use the hardware settings menu.",
+          "change_channel_range": "Channel must be in the range 11 to 26",
+          "change_channel_text": "Initiate a channel change for your Thread networks. This is an advanced operation and can leave your Thread networks inoperable if the new channel is congested. Depending on existing network conditions, many of your devices may not migrate to the new channel and will require re-joining before they start working again. Use with caution."
         },
         "zha": {
           "common": {
