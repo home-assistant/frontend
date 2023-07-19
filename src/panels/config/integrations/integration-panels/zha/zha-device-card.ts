@@ -11,7 +11,6 @@ import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-area-picker";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-service-description";
 import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
 import {
   EntityRegistryEntry,

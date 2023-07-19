@@ -384,28 +384,30 @@ export class SupervisorBackupContent extends LitElement {
         : undefined;
     let checkedItems = 0;
     this[section].forEach((item) => {
-      templates.push(html`<ha-formfield
-        .label=${html`<supervisor-formfield-label
-          .label=${item.name}
-          .iconPath=${section === "addons" ? mdiPuzzle : mdiFolder}
-          .imageUrl=${section === "addons" &&
-          !this.onboarding &&
-          atLeastVersion(this.hass.config.version, 0, 105) &&
-          addons?.get(item.slug)?.icon
-            ? `/api/hassio/addons/${item.slug}/icon`
-            : undefined}
-          .version=${item.version}
+      templates.push(
+        html`<ha-formfield
+          .label=${html`<supervisor-formfield-label
+            .label=${item.name}
+            .iconPath=${section === "addons" ? mdiPuzzle : mdiFolder}
+            .imageUrl=${section === "addons" &&
+            !this.onboarding &&
+            atLeastVersion(this.hass.config.version, 0, 105) &&
+            addons?.get(item.slug)?.icon
+              ? `/api/hassio/addons/${item.slug}/icon`
+              : undefined}
+            .version=${item.version}
+          >
+          </supervisor-formfield-label>`}
         >
-        </supervisor-formfield-label>`}
-      >
-        <ha-checkbox
-          .item=${item}
-          .checked=${item.checked}
-          .section=${section}
-          @change=${this._updateSectionEntry}
-        >
-        </ha-checkbox>
-      </ha-formfield>`);
+          <ha-checkbox
+            .item=${item}
+            .checked=${item.checked}
+            .section=${section}
+            @change=${this._updateSectionEntry}
+          >
+          </ha-checkbox>
+        </ha-formfield>`
+      );
 
       if (item.checked) {
         checkedItems++;

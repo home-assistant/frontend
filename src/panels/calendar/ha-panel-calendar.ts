@@ -79,23 +79,22 @@ class PanelCalendar extends LitElement {
               ${this.hass.localize("ui.components.calendar.my_calendars")}
             </div>
             ${this._calendars.map(
-              (selCal) =>
-                html`
-                  <div>
-                    <mwc-formfield .label=${selCal.name}>
-                      <mwc-checkbox
-                        style=${styleMap({
-                          "--mdc-theme-secondary": selCal.backgroundColor!,
-                        })}
-                        .value=${selCal.entity_id}
-                        .checked=${!this._deSelectedCalendars.includes(
-                          selCal.entity_id
-                        )}
-                        @change=${this._handleToggle}
-                      ></mwc-checkbox>
-                    </mwc-formfield>
-                  </div>
-                `
+              (selCal) => html`
+                <div>
+                  <mwc-formfield .label=${selCal.name}>
+                    <mwc-checkbox
+                      style=${styleMap({
+                        "--mdc-theme-secondary": selCal.backgroundColor!,
+                      })}
+                      .value=${selCal.entity_id}
+                      .checked=${!this._deSelectedCalendars.includes(
+                        selCal.entity_id
+                      )}
+                      @change=${this._handleToggle}
+                    ></mwc-checkbox>
+                  </mwc-formfield>
+                </div>
+              `
             )}
           </div>
           <ha-full-calendar

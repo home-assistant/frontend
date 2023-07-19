@@ -62,9 +62,10 @@ export class HaTTSVoicePicker extends LitElement {
             </ha-list-item>`
           : nothing}
         ${this._voices.map(
-          (voice) => html`<ha-list-item .value=${voice.voice_id}>
-            ${voice.name}
-          </ha-list-item>`
+          (voice) =>
+            html`<ha-list-item .value=${voice.voice_id}>
+              ${voice.name}
+            </ha-list-item>`
         )}
       </ha-select>
     `;

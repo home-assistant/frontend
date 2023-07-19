@@ -134,6 +134,9 @@
         "state": "State",
         "mode": "Mode",
         "target_humidity_entity": "{name} target humidity",
+        "current_humidity_entity": "{name} current humidity",
+        "humidifying": "{name} humidifying",
+        "drying": "{name} drying",
         "on_entity": "{name} on"
       },
       "light": {
@@ -395,12 +398,12 @@
       },
       "pipeline-picker": {
         "pipeline": "Assistant",
-        "preferred": "Preferred assistant ({preferred})"
+        "preferred": "Preferred assistant ({preferred})",
+        "last_used": "Last used assistant"
       },
       "theme-picker": {
         "theme": "Theme",
-        "no_theme": "No theme",
-        "default": "[%key:ui::panel::profile::themes::default%]"
+        "no_theme": "No theme"
       },
       "language-picker": {
         "language": "Language",
@@ -1382,6 +1385,15 @@
         "message_example": "Hello. How can I assist?",
         "message_placeholder": "Enter a sentence to speak.",
         "play": "Play"
+      },
+      "dialog-ip-detail": {
+        "ip_information": "[%key:ui::panel::config::network::ip_information%]",
+        "ipv4": "IPv4",
+        "ipv6": "IPv6",
+        "ip_address": "IP Address: {address}",
+        "gateway": "Gateway: {gateway}",
+        "method": "Method: {method}",
+        "nameservers": "Name Servers: {nameservers}"
       }
     },
     "duration": {
@@ -2691,7 +2703,9 @@
                   "option": "Option {number}",
                   "add_option": "Add option",
                   "remove_option": "Remove option",
+                  "option_description_additional": " {numberOfAdditionalConditions, plural,\n one {and 1 more condition}\n other {and {numberOfAdditionalConditions} more conditions}}",
                   "conditions": "Conditions",
+                  "no_conditions": "[%key:ui::panel::config::devices::automation::conditions::no_conditions%]",
                   "sequence": "Actions",
                   "description": {
                     "full": "Choose between {number} {number, plural,\n one {action}\n other{actions}\n}",
@@ -3441,6 +3455,7 @@
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
             "entries": "{count} {count, plural,\n  one {entry}\n  other {entries}\n}",
+            "no_devices_or_entities": "No devices or entities",
             "rename": "Rename",
             "configure": "Configure",
             "system_options": "System options",
@@ -3670,7 +3685,16 @@
           "no_border_routers": "No border routers found",
           "border_routers": "{count} border {count, plural,\n  one {router}\n  other {routers}\n}",
           "managed_by_home_assistant": "Managed by Home Assistant",
-          "operational_dataset": "Operational dataset"
+          "operational_dataset": "Operational dataset",
+          "change_channel": "Change channel",
+          "change_channel_initiated_title": "Channel change in progress",
+          "change_channel_initiated_text": "The channel change has been initiated and will complete in {delay} minutes.",
+          "change_channel_invalid": "Invalid channel",
+          "change_channel_label": "Channel",
+          "change_channel_multiprotocol_enabled_title": "The Thread radio has multiprotocol enabled",
+          "change_channel_multiprotocol_enabled_text": "To change channel when the Thread radio has multiprotocol enabled, please use the hardware settings menu.",
+          "change_channel_range": "Channel must be in the range 11 to 26",
+          "change_channel_text": "Initiate a channel change for your Thread networks. This is an advanced operation and can leave your Thread networks inoperable if the new channel is congested. Depending on existing network conditions, many of your devices may not migrate to the new channel and will require re-joining before they start working again. Use with caution."
         },
         "zha": {
           "common": {
@@ -4190,7 +4214,10 @@
               "description": "The name your instance will have on your network",
               "failed_to_set_hostname": "Setting hostname failed"
             }
-          }
+          },
+          "network_adapter": "Network Adapter",
+          "network_adapter_info": "Configure which network adapters integrations will use. Currently this setting only affects multicast traffic. A restart is required for these settings to apply.",
+          "ip_information": "IP Information"
         },
         "storage": {
           "caption": "Storage",
@@ -4400,9 +4427,9 @@
               "self_consumed_solar_could_not_calc": "Self-consumed solar energy couldn't be calculated"
             },
             "self_sufficiency_gauge": {
-              "card_indicates_self_sufficiency_quota": "This card indicates how self-sufficient your home is.",
-              "self_sufficiency_quota": "Self-sufficiency quota",
-              "self_sufficiency_could_not_calc": "Self-sufficiency quota couldn't be calculated"
+              "card_indicates_self_sufficiency_quota": "This card indicates how much of the energy consumed by your home came from on-site sources (such as solar panels or batteries).",
+              "self_sufficiency_quota": "Self-sufficiency",
+              "self_sufficiency_could_not_calc": "Self-sufficiency couldn't be calculated"
             },
             "grid_neutrality_gauge": {
               "energy_dependency": "This card indicates your net energy usage.",
@@ -4548,16 +4575,16 @@
             "add": "Add Card",
             "edit": "Edit",
             "clear": "Clear",
-            "delete": "Delete card",
-            "copy": "Copy card",
-            "cut": "Cut card",
-            "duplicate": "Duplicate card",
+            "delete": "Delete",
+            "copy": "Copy",
+            "cut": "Cut",
+            "duplicate": "Duplicate",
             "move": "Move to view",
-            "move_up": "Move card up",
-            "move_down": "Move card down",
             "move_before": "Move card before",
             "move_after": "Move card after",
             "change_position": "Change card position",
+            "decrease_position": "Decrease card position",
+            "increase_position": "Increase card position",
             "options": "More options",
             "search_cards": "Search cards"
           },
@@ -5176,8 +5203,7 @@
           "primary_color": "Primary color",
           "accent_color": "Accent color",
           "reset": "Reset",
-          "backend-selected": "Use backend preferred theme",
-          "default": "Default"
+          "use_default": "Use default theme"
         },
         "dashboard": {
           "header": "Dashboard",
@@ -5571,10 +5597,16 @@
         },
         "core-config": {
           "intro": "Hello {name}, welcome to Home Assistant. How would you like to name your home?",
-          "intro_location": "We would like to know where you live. This information will help with displaying information and setting up sun-based automations. This data is never shared outside of your network.",
-          "intro_location_detect": "We can help you fill in this information by making a one-time request to an external service.",
+          "intro_core": "We will set up the basics together. You can always change this later in the settings.",
+          "intro_location": "Let's set up the location of your home so that you can display information such as the local weather and use sun-based or presence-based automations. This data is never shared outside of your network.",
+          "location_address": "Powered by {openstreetmap} ({osm_privacy_policy}).",
+          "osm_privacy_policy": "Privacy policy",
+          "title_location_detect": "Do you want us to detect your location?",
+          "intro_location_detect": "We can detect your location by making a one-time request to an external service.",
+          "intro_core_config": "We filled out some details about your location. Please check if they are correct and continue.",
           "location_name": "Name of your Home Assistant installation",
           "location_name_default": "Home",
+          "address_label": "Search address",
           "button_detect": "Detect",
           "finish": "Next"
         },

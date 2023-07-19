@@ -20,6 +20,7 @@ import {
   OTBRCreateNetwork,
   OTBRGetExtendedAddress,
   OTBRInfo,
+  OTBRSetChannel,
   OTBRSetNetwork,
 } from "../../../../../data/otbr";
 import {
@@ -199,6 +200,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                         ><ha-list-item
                           >${this.hass.localize(
                             "ui.panel.config.thread.reset_border_router"
+                          )}</ha-list-item
+                        ><ha-list-item
+                          >${this.hass.localize(
+                            "ui.panel.config.thread.change_channel"
                           )}</ha-list-item
                         >${network.dataset?.preferred
                           ? ""
@@ -384,6 +389,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         this._resetBorderRouter();
         break;
       case 1:
+        this._changeChannel();
+        break;
+      case 2:
         this._setDataset();
         break;
     }
@@ -489,6 +497,64 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     try {
       await removeThreadDataSet(this.hass, dataset.dataset_id);
     } catch (err: any) {
+      showAlertDialog(this, {
+        title: "Error",
+        text: err.message || err,
+      });
+    }
+    this._refresh();
+  }
+
+  private async _changeChannel() {
+    const currentChannel = this._otbrInfo?.channel;
+    const channelStr = await showPromptDialog(this, {
+      title: this.hass.localize("ui.panel.config.thread.change_channel"),
+      text: this.hass.localize("ui.panel.config.thread.change_channel_text"),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.thread.change_channel_label"
+      ),
+      confirmText: this.hass.localize("ui.panel.config.thread.change_channel"),
+      inputType: "number",
+      inputMin: "11",
+      inputMax: "26",
+      defaultValue: currentChannel ? currentChannel.toString() : undefined,
+    });
+    if (!channelStr) {
+      return;
+    }
+    const channel = parseInt(channelStr);
+    if (channel < 11 || channel > 26) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.thread.change_channel_invalid"
+        ),
+        text: this.hass.localize("ui.panel.config.thread.change_channel_range"),
+      });
+      return;
+    }
+    try {
+      const result = await OTBRSetChannel(this.hass, channel);
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.thread.change_channel_initiated_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.thread.change_channel_initiated_text",
+          { delay: Math.floor(result.delay / 60) }
+        ),
+      });
+    } catch (err: any) {
+      if (err.code === "multiprotocol_enabled") {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.thread.change_channel_multiprotocol_enabled_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.thread.change_channel_multiprotocol_enabled_text"
+          ),
+        });
+        return;
+      }
       showAlertDialog(this, {
         title: "Error",
         text: err.message || err,

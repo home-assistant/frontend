@@ -687,6 +687,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
         required
         @input=${this._entityIdChanged}
         iconTrailing
+        autocapitalize="none"
+        autocomplete="off"
+        autocorrect="off"
+        input-spellcheck="false"
       >
         <ha-icon-button
           @click=${this._copyEntityId}
@@ -888,11 +892,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   "ui.dialogs.entity_registry.editor.use_device_area"
                 )}
                 ${this.hass.devices[this.entry.device_id].area_id
-                  ? `(${
-                      this.hass.areas[
-                        this.hass.devices[this.entry.device_id].area_id!
-                      ]?.name
-                    })`
+                  ? `(${this.hass.areas[
+                      this.hass.devices[this.entry.device_id].area_id!
+                    ]?.name})`
                   : ""}</span
               >
               <span slot="description"

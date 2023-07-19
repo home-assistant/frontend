@@ -122,7 +122,8 @@ export class HaControlButton extends LitElement {
         height: 100%;
         width: 100%;
         background-color: var(--control-button-background-color);
-        transition: background-color 180ms ease-in-out,
+        transition:
+          background-color 180ms ease-in-out,
           opacity 180ms ease-in-out;
         opacity: var(--control-button-background-opacity);
       }

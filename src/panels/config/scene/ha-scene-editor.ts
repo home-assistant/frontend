@@ -324,43 +324,42 @@ export class HaSceneEditor extends SubscribeMixin(
                   </div>
 
                   ${devices.map(
-                    (device) =>
-                      html`
-                        <ha-card outlined>
-                          <h1 class="card-header">
-                            ${device.name}
-                            <ha-icon-button
-                              .path=${mdiDelete}
-                              .label=${this.hass.localize(
-                                "ui.panel.config.scene.editor.devices.delete"
-                              )}
-                              .device=${device.id}
-                              @click=${this._deleteDevice}
-                            ></ha-icon-button>
-                          </h1>
-                          ${device.entities.map((entityId) => {
-                            const entityStateObj = this.hass.states[entityId];
-                            if (!entityStateObj) {
-                              return nothing;
-                            }
-                            return html`
-                              <paper-icon-item
-                                .entityId=${entityId}
-                                @click=${this._showMoreInfo}
-                                class="device-entity"
-                              >
-                                <state-badge
-                                  .stateObj=${entityStateObj}
-                                  slot="item-icon"
-                                ></state-badge>
-                                <paper-item-body>
-                                  ${computeStateName(entityStateObj)}
-                                </paper-item-body>
-                              </paper-icon-item>
-                            `;
-                          })}
-                        </ha-card>
-                      `
+                    (device) => html`
+                      <ha-card outlined>
+                        <h1 class="card-header">
+                          ${device.name}
+                          <ha-icon-button
+                            .path=${mdiDelete}
+                            .label=${this.hass.localize(
+                              "ui.panel.config.scene.editor.devices.delete"
+                            )}
+                            .device=${device.id}
+                            @click=${this._deleteDevice}
+                          ></ha-icon-button>
+                        </h1>
+                        ${device.entities.map((entityId) => {
+                          const entityStateObj = this.hass.states[entityId];
+                          if (!entityStateObj) {
+                            return nothing;
+                          }
+                          return html`
+                            <paper-icon-item
+                              .entityId=${entityId}
+                              @click=${this._showMoreInfo}
+                              class="device-entity"
+                            >
+                              <state-badge
+                                .stateObj=${entityStateObj}
+                                slot="item-icon"
+                              ></state-badge>
+                              <paper-item-body>
+                                ${computeStateName(entityStateObj)}
+                              </paper-item-body>
+                            </paper-icon-item>
+                          `;
+                        })}
+                      </ha-card>
+                    `
                   )}
 
                   <ha-card

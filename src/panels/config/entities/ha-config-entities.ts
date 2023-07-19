@@ -55,10 +55,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import {
-  hideMoreInfoDialog,
-  showMoreInfoDialog,
-} from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
@@ -204,15 +201,14 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         direction: "asc",
         grows: true,
         template: narrow
-          ? (name, entity: EntityRow) =>
-              html`
-                ${name}<br />
-                <div class="secondary">
-                  ${entity.entity_id} |
-                  ${this.hass.localize(`component.${entity.platform}.title`) ||
-                  entity.platform}
-                </div>
-              `
+          ? (name, entity: EntityRow) => html`
+              ${name}<br />
+              <div class="secondary">
+                ${entity.entity_id} |
+                ${this.hass.localize(`component.${entity.platform}.title`) ||
+                entity.platform}
+              </div>
+            `
           : undefined,
       },
       entity_id: {
@@ -485,11 +481,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this._areas = areas;
       }),
     ];
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    hideMoreInfoDialog(this);
   }
 
   protected render() {

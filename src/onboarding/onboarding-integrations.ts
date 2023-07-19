@@ -211,6 +211,10 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return css`
+      p {
+        font-size: 14px;
+        line-height: 20px;
+      }
       .badges {
         margin-top: 24px;
         display: flex;

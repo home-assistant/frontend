@@ -133,110 +133,107 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           ${Object.entries(this.placeholders).map(
-            ([type, placeholders]) =>
-              html`
-                <h3>
-                  ${this.hass.localize(
-                    `ui.panel.config.automation.editor.${type}s.name`
-                  )}:
-                </h3>
-                ${placeholders.map((placeholder) => {
-                  if (placeholder.fields.includes("device_id")) {
-                    const extraInfo = getPath(this._extraInfo, [
-                      type,
-                      placeholder.index,
-                    ]);
-                    return html`
-                      <ha-area-devices-picker
-                        .type=${type}
-                        .placeholder=${placeholder}
-                        @value-changed=${this._devicePicked}
-                        .hass=${this.hass}
-                        .area=${extraInfo ? extraInfo.area_id : undefined}
-                        .devices=${extraInfo && extraInfo.device_ids
-                          ? extraInfo.device_ids
-                          : undefined}
-                        .includeDomains=${placeholder.domains}
-                        .includeDeviceClasses=${placeholder.device_classes}
-                        .label=${this._getLabel(
-                          placeholder.domains,
-                          placeholder.device_classes
-                        )}
-                      ></ha-area-devices-picker>
-                      ${extraInfo && extraInfo.manualEntity
-                        ? html`
-                            <h3>
-                              ${this.hass.localize(
-                                `ui.panel.config.automation.thingtalk.link_devices.ambiguous_entities`
-                              )}
-                            </h3>
-                            ${Object.keys(extraInfo.manualEntity).map(
-                              (idx) => html`
-                                <ha-entity-picker
-                                  id="device-entity-picker"
-                                  .type=${type}
-                                  .placeholder=${placeholder}
-                                  .index=${idx}
-                                  @change=${this._entityPicked}
-                                  .includeDomains=${placeholder.domains}
-                                  .includeDeviceClasses=${placeholder.device_classes}
-                                  .hass=${this.hass}
-                                  .label=${`${this._getLabel(
-                                    placeholder.domains,
-                                    placeholder.device_classes
-                                  )} of device ${this._getDeviceName(
-                                    getPath(this._placeholderValues, [
-                                      type,
-                                      placeholder.index,
-                                      idx,
-                                      "device_id",
-                                    ])
-                                  )}`}
-                                  .entityFilter=${(entityState: HassEntity) => {
-                                    const devId =
-                                      this._placeholderValues[type][
-                                        placeholder.index
-                                      ][idx].device_id;
-                                    return this._deviceEntityLookup[
-                                      devId
-                                    ].includes(entityState.entity_id);
-                                  }}
-                                ></ha-entity-picker>
-                              `
-                            )}
-                          `
-                        : ""}
-                    `;
-                  }
-                  if (placeholder.fields.includes("entity_id")) {
-                    return html`
-                      <ha-entity-picker
-                        .type=${type}
-                        .placeholder=${placeholder}
-                        @change=${this._entityPicked}
-                        .includeDomains=${placeholder.domains}
-                        .includeDeviceClasses=${placeholder.device_classes}
-                        .hass=${this.hass}
-                        .label=${this._getLabel(
-                          placeholder.domains,
-                          placeholder.device_classes
-                        )}
-                      ></ha-entity-picker>
-                    `;
-                  }
+            ([type, placeholders]) => html`
+              <h3>
+                ${this.hass.localize(
+                  `ui.panel.config.automation.editor.${type}s.name`
+                )}:
+              </h3>
+              ${placeholders.map((placeholder) => {
+                if (placeholder.fields.includes("device_id")) {
+                  const extraInfo = getPath(this._extraInfo, [
+                    type,
+                    placeholder.index,
+                  ]);
                   return html`
-                    <div class="error">
-                      ${this.hass.localize(
-                        `ui.panel.config.automation.thingtalk.link_devices.unknown_placeholder`
-                      )}<br />
-                      ${placeholder.domains}<br />
-                      ${placeholder.fields.map(
-                        (field) => html` ${field}<br /> `
+                    <ha-area-devices-picker
+                      .type=${type}
+                      .placeholder=${placeholder}
+                      @value-changed=${this._devicePicked}
+                      .hass=${this.hass}
+                      .area=${extraInfo ? extraInfo.area_id : undefined}
+                      .devices=${extraInfo && extraInfo.device_ids
+                        ? extraInfo.device_ids
+                        : undefined}
+                      .includeDomains=${placeholder.domains}
+                      .includeDeviceClasses=${placeholder.device_classes}
+                      .label=${this._getLabel(
+                        placeholder.domains,
+                        placeholder.device_classes
                       )}
-                    </div>
+                    ></ha-area-devices-picker>
+                    ${extraInfo && extraInfo.manualEntity
+                      ? html`
+                          <h3>
+                            ${this.hass.localize(
+                              `ui.panel.config.automation.thingtalk.link_devices.ambiguous_entities`
+                            )}
+                          </h3>
+                          ${Object.keys(extraInfo.manualEntity).map(
+                            (idx) => html`
+                              <ha-entity-picker
+                                id="device-entity-picker"
+                                .type=${type}
+                                .placeholder=${placeholder}
+                                .index=${idx}
+                                @change=${this._entityPicked}
+                                .includeDomains=${placeholder.domains}
+                                .includeDeviceClasses=${placeholder.device_classes}
+                                .hass=${this.hass}
+                                .label=${`${this._getLabel(
+                                  placeholder.domains,
+                                  placeholder.device_classes
+                                )} of device ${this._getDeviceName(
+                                  getPath(this._placeholderValues, [
+                                    type,
+                                    placeholder.index,
+                                    idx,
+                                    "device_id",
+                                  ])
+                                )}`}
+                                .entityFilter=${(entityState: HassEntity) => {
+                                  const devId =
+                                    this._placeholderValues[type][
+                                      placeholder.index
+                                    ][idx].device_id;
+                                  return this._deviceEntityLookup[
+                                    devId
+                                  ].includes(entityState.entity_id);
+                                }}
+                              ></ha-entity-picker>
+                            `
+                          )}
+                        `
+                      : ""}
                   `;
-                })}
-              `
+                }
+                if (placeholder.fields.includes("entity_id")) {
+                  return html`
+                    <ha-entity-picker
+                      .type=${type}
+                      .placeholder=${placeholder}
+                      @change=${this._entityPicked}
+                      .includeDomains=${placeholder.domains}
+                      .includeDeviceClasses=${placeholder.device_classes}
+                      .hass=${this.hass}
+                      .label=${this._getLabel(
+                        placeholder.domains,
+                        placeholder.device_classes
+                      )}
+                    ></ha-entity-picker>
+                  `;
+                }
+                return html`
+                  <div class="error">
+                    ${this.hass.localize(
+                      `ui.panel.config.automation.thingtalk.link_devices.unknown_placeholder`
+                    )}<br />
+                    ${placeholder.domains}<br />
+                    ${placeholder.fields.map((field) => html` ${field}<br /> `)}
+                  </div>
+                `;
+              })}
+            `
           )}
         </div>
         <mwc-button @click=${this.skip} slot="secondaryAction">

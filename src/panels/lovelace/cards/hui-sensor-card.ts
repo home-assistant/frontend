@@ -76,6 +76,9 @@ class HuiSensorCard extends HuiEntityCard {
     return [
       HuiEntityCard.styles,
       css`
+        ha-card {
+          overflow: hidden;
+        }
         .info {
           direction: ltr;
           text-align: var(--float-start);

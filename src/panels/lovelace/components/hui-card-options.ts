@@ -1,7 +1,15 @@
 import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import "@material/mwc-list/mwc-list-item";
-import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
+import {
+  mdiContentCopy,
+  mdiContentCut,
+  mdiContentDuplicate,
+  mdiDelete,
+  mdiDotsVertical,
+  mdiFileMoveOutline,
+  mdiMinus,
+  mdiPlus,
+} from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
   CSSResultGroup,
@@ -17,11 +25,13 @@ import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
 import { LovelaceCardConfig, saveConfig } from "../../../data/lovelace";
 import {
   showAlertDialog,
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { showSaveSuccessToast } from "../../../util/toast-saved-success";
 import { computeCardSize } from "../common/compute-card-size";
@@ -86,14 +96,12 @@ export class HuiCardOptions extends LitElement {
               ? html`
                   <ha-icon-button
                     .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_card.move_down"
+                      "ui.panel.lovelace.editor.edit_card.decrease_position"
                     )}
-                    .path=${mdiArrowDown}
+                    .path=${mdiMinus}
                     class="move-arrow"
-                    @click=${this._cardDown}
-                    .disabled=${this.lovelace!.config.views[this.path![0]]
-                      .cards!.length ===
-                    this.path![1] + 1}
+                    @click=${this._decreaseCardPosiion}
+                    ?disabled=${this.path![1] === 0}
                   ></ha-icon-button>
                   <ha-icon-button
                     @click=${this._changeCardPosition}
@@ -105,12 +113,14 @@ export class HuiCardOptions extends LitElement {
                   </ha-icon-button>
                   <ha-icon-button
                     .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_card.move_up"
+                      "ui.panel.lovelace.editor.edit_card.increase_position"
                     )}
-                    .path=${mdiArrowUp}
+                    .path=${mdiPlus}
                     class="move-arrow"
-                    @click=${this._cardUp}
-                    ?disabled=${this.path![1] === 0}
+                    @click=${this._increaseCardPosition}
+                    .disabled=${this.lovelace!.config.views[this.path![0]]
+                      .cards!.length ===
+                    this.path![1] + 1}
                   ></ha-icon-button>
                 `
               : nothing}
@@ -122,31 +132,51 @@ export class HuiCardOptions extends LitElement {
                 )}
                 .path=${mdiDotsVertical}
               ></ha-icon-button>
-              <mwc-list-item>
+              <ha-list-item graphic="icon">
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${mdiFileMoveOutline}
+                ></ha-svg-icon>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.move"
-                )}</mwc-list-item
-              >
-              <mwc-list-item
-                >${this.hass!.localize(
+                )}
+              </ha-list-item>
+              <ha-list-item graphic="icon">
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${mdiContentDuplicate}
+                ></ha-svg-icon>
+                ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.duplicate"
-                )}</mwc-list-item
-              >
-              <mwc-list-item
-                >${this.hass!.localize(
+                )}
+              </ha-list-item>
+              <ha-list-item graphic="icon">
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${mdiContentCopy}
+                ></ha-svg-icon>
+                ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.copy"
-                )}</mwc-list-item
-              >
-              <mwc-list-item
-                >${this.hass!.localize(
-                  "ui.panel.lovelace.editor.edit_card.cut"
-                )}</mwc-list-item
-              >
-              <mwc-list-item class="delete-item">
+                )}
+              </ha-list-item>
+              <ha-list-item graphic="icon">
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${mdiContentCut}
+                ></ha-svg-icon>
+                ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.cut")}
+              </ha-list-item>
+              <li divider role="separator"></li>
+              <ha-list-item class="warning" graphic="icon">
+                <ha-svg-icon
+                  class="warning"
+                  slot="graphic"
+                  .path=${mdiDelete}
+                ></ha-svg-icon>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.delete"
-                )}</mwc-list-item
-              >
+                )}
+              </ha-list-item>
             </ha-button-menu>
           </div>
         </div>
@@ -155,65 +185,64 @@ export class HuiCardOptions extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      :host(:hover) {
-        outline: 2px solid var(--primary-color);
-      }
+    return [
+      haStyle,
+      css`
+        :host(:hover) {
+          outline: 2px solid var(--primary-color);
+        }
 
-      :host(:not(.panel)) ::slotted(*) {
-        display: block;
-      }
+        :host(:not(.panel)) ::slotted(*) {
+          display: block;
+        }
 
-      :host(.panel) .card {
-        height: calc(100% - 59px);
-      }
+        :host(.panel) .card {
+          height: calc(100% - 59px);
+        }
 
-      ha-card {
-        border-top-right-radius: 0;
-        border-top-left-radius: 0;
-      }
+        ha-card {
+          border-top-right-radius: 0;
+          border-top-left-radius: 0;
+        }
 
-      .card-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
+        .card-actions {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
 
-      .right {
-        display: flex;
-        align-items: center;
-      }
+        .right {
+          display: flex;
+          align-items: center;
+        }
 
-      .position-badge {
-        display: block;
-        width: 24px;
-        line-height: 24px;
-        box-sizing: border-box;
-        border-radius: 50%;
-        font-weight: 500;
-        text-align: center;
-        font-size: 14px;
-        background-color: var(--app-header-edit-background-color, #455a64);
-        color: var(--app-header-edit-text-color, white);
-      }
+        .position-badge {
+          display: block;
+          width: 24px;
+          line-height: 24px;
+          box-sizing: border-box;
+          border-radius: 50%;
+          font-weight: 500;
+          text-align: center;
+          font-size: 14px;
+          background-color: var(--app-header-edit-background-color, #455a64);
+          color: var(--app-header-edit-text-color, white);
+        }
 
-      ha-icon-button {
-        color: var(--primary-text-color);
-      }
+        ha-icon-button {
+          color: var(--primary-text-color);
+        }
 
-      ha-icon-button.move-arrow[disabled] {
-        color: var(--disabled-text-color);
-      }
+        ha-icon-button.move-arrow[disabled] {
+          color: var(--disabled-text-color);
+        }
 
-      mwc-list-item {
-        cursor: pointer;
-        white-space: nowrap;
-      }
-
-      mwc-list-item.delete-item {
-        color: var(--error-color);
-      }
-    `;
+        ha-list-item {
+          cursor: pointer;
+          white-space: nowrap;
+        }
+      `,
+    ];
   }
 
   private _handleAction(ev: CustomEvent<ActionDetail>) {
@@ -262,7 +291,7 @@ export class HuiCardOptions extends LitElement {
     this._clipboard = deepClone(cardConfig);
   }
 
-  private _cardUp(): void {
+  private _decreaseCardPosiion(): void {
     const lovelace = this.lovelace!;
     const path = this.path!;
     lovelace.saveConfig(
@@ -270,7 +299,7 @@ export class HuiCardOptions extends LitElement {
     );
   }
 
-  private _cardDown(): void {
+  private _increaseCardPosition(): void {
     const lovelace = this.lovelace!;
     const path = this.path!;
     lovelace.saveConfig(

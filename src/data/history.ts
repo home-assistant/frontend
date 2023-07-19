@@ -29,6 +29,8 @@ const LINE_ATTRIBUTES_TO_KEEP = [
   "hvac_action",
   "humidity",
   "mode",
+  "action",
+  "current_humidity",
 ];
 
 export interface LineChartState {

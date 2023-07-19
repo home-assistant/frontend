@@ -185,7 +185,7 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
 };
 
 export const tryCreateLovelaceElement = <
-  T extends keyof CreateElementConfigTypes
+  T extends keyof CreateElementConfigTypes,
 >(
   tagSuffix: T,
   config: CreateElementConfigTypes[T]["config"],
@@ -246,7 +246,7 @@ export const tryCreateLovelaceElement = <
 };
 
 export const getLovelaceElementClass = async <
-  T extends keyof CreateElementConfigTypes
+  T extends keyof CreateElementConfigTypes,
 >(
   type: string,
   tagSuffix: T,

@@ -212,70 +212,69 @@ class HaAutomationPicker extends LitElement {
         title: "",
         width: this.narrow ? undefined : "10%",
         type: "overflow-menu",
-        template: (_: string, automation: any) =>
-          html`
-            <ha-icon-overflow-menu
-              .hass=${this.hass}
-              narrow
-              .items=${[
-                {
-                  path: mdiInformationOutline,
-                  label: this.hass.localize(
-                    "ui.panel.config.automation.editor.show_info"
-                  ),
-                  action: () => this._showInfo(automation),
-                },
-                {
-                  path: mdiPlay,
-                  label: this.hass.localize(
-                    "ui.panel.config.automation.editor.run"
-                  ),
-                  action: () => this._runActions(automation),
-                },
-                {
-                  path: mdiTransitConnection,
-                  label: this.hass.localize(
-                    "ui.panel.config.automation.editor.show_trace"
-                  ),
-                  action: () => this._showTrace(automation),
-                },
-                {
-                  divider: true,
-                },
-                {
-                  path: mdiContentDuplicate,
-                  label: this.hass.localize(
-                    "ui.panel.config.automation.picker.duplicate"
-                  ),
-                  action: () => this.duplicate(automation),
-                },
-                {
-                  path:
-                    automation.state === "off"
-                      ? mdiPlayCircleOutline
-                      : mdiStopCircleOutline,
-                  label:
-                    automation.state === "off"
-                      ? this.hass.localize(
-                          "ui.panel.config.automation.editor.enable"
-                        )
-                      : this.hass.localize(
-                          "ui.panel.config.automation.editor.disable"
-                        ),
-                  action: () => this._toggle(automation),
-                },
-                {
-                  label: this.hass.localize(
-                    "ui.panel.config.automation.picker.delete"
-                  ),
-                  path: mdiDelete,
-                  action: () => this._deleteConfirm(automation),
-                  warning: true,
-                },
-              ]}
-            >
-            </ha-icon-overflow-menu>
-          `,
+        template: (_: string, automation: any) => html`
+          <ha-icon-overflow-menu
+            .hass=${this.hass}
+            narrow
+            .items=${[
+              {
+                path: mdiInformationOutline,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.editor.show_info"
+                ),
+                action: () => this._showInfo(automation),
+              },
+              {
+                path: mdiPlay,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.editor.run"
+                ),
+                action: () => this._runActions(automation),
+              },
+              {
+                path: mdiTransitConnection,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.editor.show_trace"
+                ),
+                action: () => this._showTrace(automation),
+              },
+              {
+                divider: true,
+              },
+              {
+                path: mdiContentDuplicate,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.picker.duplicate"
+                ),
+                action: () => this.duplicate(automation),
+              },
+              {
+                path:
+                  automation.state === "off"
+                    ? mdiPlayCircleOutline
+                    : mdiStopCircleOutline,
+                label:
+                  automation.state === "off"
+                    ? this.hass.localize(
+                        "ui.panel.config.automation.editor.enable"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.automation.editor.disable"
+                      ),
+                action: () => this._toggle(automation),
+              },
+              {
+                label: this.hass.localize(
+                  "ui.panel.config.automation.picker.delete"
+                ),
+                path: mdiDelete,
+                action: () => this._deleteConfirm(automation),
+                warning: true,
+              },
+            ]}
+          >
+          </ha-icon-overflow-menu>
+        `,
       };
       return columns;
     }
