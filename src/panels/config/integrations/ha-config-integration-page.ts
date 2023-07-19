@@ -627,7 +627,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       }
 
       if (devicesLine.length === 0) {
-        devicesLine = ["No devices or entities"];
+        devicesLine = [
+          this.hass.localize(
+            "ui.panel.config.integrations.config_entry.no_devices_or_entities"
+          ),
+        ];
       } else if (devicesLine.length === 2) {
         devicesLine = [
           devicesLine[0],
