@@ -110,7 +110,6 @@ export class HaCodeEditor extends ReactiveElement {
     super.update(changedProps);
 
     if (!this.codemirror) {
-      this._createCodeMirror();
       return;
     }
     const transactions: TransactionSpec[] = [];
