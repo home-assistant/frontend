@@ -3441,6 +3441,7 @@
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
             "entries": "{count} {count, plural,\n  one {entry}\n  other {entries}\n}",
+            "no_devices_or_entities": "No devices or entities",
             "rename": "Rename",
             "configure": "Configure",
             "system_options": "System options",
