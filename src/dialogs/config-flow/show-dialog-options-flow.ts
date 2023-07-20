@@ -122,9 +122,7 @@ export const showOptionsFlowDialog = (
             `component.${configEntry.domain}.options.step.${step.step_id}.submit`
           ) ||
           hass.localize(
-            `ui.panel.config.integrations.config_flow.${
-              step.last_step === false ? "next" : "submit"
-            }`
+            `ui.common.${step.last_step === false ? "next" : "submit"}`
           )
         );
       },
