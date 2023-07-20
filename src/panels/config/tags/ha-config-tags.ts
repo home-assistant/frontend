@@ -70,18 +70,19 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           sortable: true,
           filterable: true,
           grows: true,
-          template: (name, tag: any) => html`${name}
-          ${narrow
-            ? html`<div class="secondary">
-                ${tag.last_scanned_datetime
-                  ? html`<ha-relative-time
-                      .hass=${this.hass}
-                      .datetime=${tag.last_scanned_datetime}
-                      capitalize
-                    ></ha-relative-time>`
-                  : this.hass.localize("ui.panel.config.tag.never_scanned")}
-              </div>`
-            : ""}`,
+          template: (name, tag: any) =>
+            html`${name}
+            ${narrow
+              ? html`<div class="secondary">
+                  ${tag.last_scanned_datetime
+                    ? html`<ha-relative-time
+                        .hass=${this.hass}
+                        .datetime=${tag.last_scanned_datetime}
+                        capitalize
+                      ></ha-relative-time>`
+                    : this.hass.localize("ui.panel.config.tag.never_scanned")}
+                </div>`
+              : ""}`,
         },
       };
       if (!narrow) {
@@ -106,33 +107,38 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           title: "",
           label: this.hass.localize("ui.panel.config.tag.headers.write"),
           type: "icon-button",
-          template: (_write, tag: any) => html` <ha-icon-button
-            .tag=${tag}
-            @click=${this._handleWriteClick}
-            .label=${this.hass.localize("ui.panel.config.tag.write")}
-            .path=${mdiContentDuplicate}
-          ></ha-icon-button>`,
+          template: (_write, tag: any) =>
+            html` <ha-icon-button
+              .tag=${tag}
+              @click=${this._handleWriteClick}
+              .label=${this.hass.localize("ui.panel.config.tag.write")}
+              .path=${mdiContentDuplicate}
+            ></ha-icon-button>`,
         };
       }
       columns.automation = {
         title: "",
         type: "icon-button",
-        template: (_automation, tag: any) => html` <ha-icon-button
-          .tag=${tag}
-          @click=${this._handleAutomationClick}
-          .label=${this.hass.localize("ui.panel.config.tag.create_automation")}
-          .path=${mdiRobot}
-        ></ha-icon-button>`,
+        template: (_automation, tag: any) =>
+          html` <ha-icon-button
+            .tag=${tag}
+            @click=${this._handleAutomationClick}
+            .label=${this.hass.localize(
+              "ui.panel.config.tag.create_automation"
+            )}
+            .path=${mdiRobot}
+          ></ha-icon-button>`,
       };
       columns.edit = {
         title: "",
         type: "icon-button",
-        template: (_settings, tag: any) => html` <ha-icon-button
-          .tag=${tag}
-          @click=${this._handleEditClick}
-          .label=${this.hass.localize("ui.panel.config.tag.edit")}
-          .path=${mdiCog}
-        ></ha-icon-button>`,
+        template: (_settings, tag: any) =>
+          html` <ha-icon-button
+            .tag=${tag}
+            @click=${this._handleEditClick}
+            .label=${this.hass.localize("ui.panel.config.tag.edit")}
+            .path=${mdiCog}
+          ></ha-icon-button>`,
       };
       return columns;
     }

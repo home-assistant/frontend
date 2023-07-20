@@ -96,13 +96,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           filterable: true,
           grows: true,
           direction: "asc",
-          template: (name, item: any) =>
-            html`
-              ${name}
-              ${narrow
-                ? html` <div class="secondary">${item.entity_id}</div> `
-                : ""}
-            `,
+          template: (name, item: any) => html`
+            ${name}
+            ${narrow
+              ? html` <div class="secondary">${item.entity_id}</div> `
+              : ""}
+          `,
         },
       };
       if (!narrow) {

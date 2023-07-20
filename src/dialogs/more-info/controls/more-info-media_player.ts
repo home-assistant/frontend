@@ -156,20 +156,19 @@ class MoreInfoMediaPlayer extends LitElement {
                 @closed=${stopPropagation}
               >
                 ${stateObj.attributes.source_list!.map(
-                  (source) =>
-                    html`
-                      <mwc-list-item .value=${source}
-                        >${computeAttributeValueDisplay(
-                          this.hass.localize,
-                          stateObj,
-                          this.hass.locale,
-                          this.hass.config,
-                          this.hass.entities,
-                          "source",
-                          source
-                        )}</mwc-list-item
-                      >
-                    `
+                  (source) => html`
+                    <mwc-list-item .value=${source}
+                      >${computeAttributeValueDisplay(
+                        this.hass.localize,
+                        stateObj,
+                        this.hass.locale,
+                        this.hass.config,
+                        this.hass.entities,
+                        "source",
+                        source
+                      )}</mwc-list-item
+                    >
+                  `
                 )}
                 <ha-svg-icon .path=${mdiLoginVariant} slot="icon"></ha-svg-icon>
               </ha-select>

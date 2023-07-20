@@ -32,7 +32,7 @@ const strategies: Record<
 };
 
 const getLovelaceStrategy = async <
-  T extends LovelaceDashboardStrategy | LovelaceViewStrategy
+  T extends LovelaceDashboardStrategy | LovelaceViewStrategy,
 >(
   strategyType: string
 ): Promise<T> => {

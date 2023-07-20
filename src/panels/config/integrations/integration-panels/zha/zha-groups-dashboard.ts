@@ -94,8 +94,9 @@ export class ZHAGroupsDashboard extends LitElement {
               title: this.hass.localize("ui.panel.config.zha.groups.group_id"),
               type: "numeric",
               width: "15%",
-              template: (groupId: number) =>
-                html` ${formatAsPaddedHex(groupId)} `,
+              template: (groupId: number) => html`
+                ${formatAsPaddedHex(groupId)}
+              `,
               sortable: true,
             },
             members: {

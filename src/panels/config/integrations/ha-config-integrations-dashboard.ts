@@ -150,7 +150,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     ): [
       [string, ConfigEntryExtended[]][],
       ConfigEntryExtended[],
-      ConfigEntryExtended[]
+      ConfigEntryExtended[],
     ] => {
       let filteredConfigEntries: ConfigEntryExtended[];
       const ignored: ConfigEntryExtended[] = [];

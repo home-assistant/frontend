@@ -283,15 +283,14 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
               .header=${this.hass.localize("ui.panel.config.devices.caption")}
               >${devices.length
                 ? devices.map(
-                    (device) =>
-                      html`
-                        <a href="/config/devices/device/${device.id}">
-                          <paper-item>
-                            <paper-item-body> ${device.name} </paper-item-body>
-                            <ha-icon-next></ha-icon-next>
-                          </paper-item>
-                        </a>
-                      `
+                    (device) => html`
+                      <a href="/config/devices/device/${device.id}">
+                        <paper-item>
+                          <paper-item-body> ${device.name} </paper-item-body>
+                          <ha-icon-next></ha-icon-next>
+                        </paper-item>
+                      </a>
+                    `
                   )
                 : html`
                     <paper-item class="no-link"

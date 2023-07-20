@@ -609,7 +609,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         right: 0;
 
         opacity: 1;
-        transition: width 0.8s, opacity 0.8s linear 0.8s;
+        transition:
+          width 0.8s,
+          opacity 0.8s linear 0.8s;
       }
 
       .image {
@@ -621,8 +623,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         right: 0;
         height: 100%;
         opacity: 1;
-        transition: width 0.8s, background-image 0.8s, background-color 0.8s,
-          background-size 0.8s, opacity 0.8s linear 0.8s;
+        transition:
+          width 0.8s,
+          background-image 0.8s,
+          background-color 0.8s,
+          background-size 0.8s,
+          opacity 0.8s linear 0.8s;
       }
 
       .no-image .image {
@@ -640,13 +646,17 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         height: 100%;
         background-image: url("/static/images/card_media_player_bg.png");
         width: 50%;
-        transition: opacity 0.8s, background-color 0.8s;
+        transition:
+          opacity 0.8s,
+          background-color 0.8s;
       }
 
       .off .image,
       .off .color-gradient {
         opacity: 0;
-        transition: opacity 0s, width 0.8s;
+        transition:
+          opacity 0s,
+          width 0.8s;
         width: 0;
       }
 
