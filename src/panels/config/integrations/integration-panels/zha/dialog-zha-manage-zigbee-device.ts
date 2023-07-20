@@ -1,6 +1,6 @@
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
-import { mdiClose } from "@mdi/js";
+import { mdiClose, mdiArrowExpand, mdiArrowCollapse } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -108,10 +108,17 @@ class DialogZHAManageZigbeeDevice extends LitElement {
             .label=${this.hass.localize("ui.dialogs.more_info_control.dismiss")}
             .path=${mdiClose}
           ></ha-icon-button>
+          <ha-icon-button
+            slot="navigationIcon"
+            .path=${this.large ? mdiArrowCollapse : mdiArrowExpand}
+            .label=${this.hass.localize(
+              `ui.dialogs.generic.${this.large ? "reduce" : "enlarge"}`
+            )}
+            @click=${this._enlarge}
+          ></ha-icon-button>
           <span
             slot="title"
             .title=${this.hass.localize("ui.dialogs.zha_manage_device.heading")}
-            @click=${this._enlarge}
           >
             ${this.hass.localize("ui.dialogs.zha_manage_device.heading")}
           </span>

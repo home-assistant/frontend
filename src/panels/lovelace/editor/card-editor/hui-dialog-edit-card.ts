@@ -1,4 +1,9 @@
-import { mdiClose, mdiHelpCircle } from "@mdi/js";
+import {
+  mdiClose,
+  mdiHelpCircle,
+  mdiArrowExpand,
+  mdiArrowCollapse,
+} from "@mdi/js";
 import deepFreeze from "deep-freeze";
 import {
   css,
@@ -185,7 +190,15 @@ export class HuiDialogEditCard
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title" @click=${this._enlarge}>${heading}</span>
+          <ha-icon-button
+            slot="navigationIcon"
+            .path=${this.large ? mdiArrowCollapse : mdiArrowExpand}
+            .label=${this.hass.localize(
+              `ui.dialogs.generic.${this.large ? "reduce" : "enlarge"}`
+            )}
+            @click=${this._enlarge}
+          ></ha-icon-button>
+          <span slot="title">${heading}</span>
           ${this._documentationURL !== undefined
             ? html`
                 <a

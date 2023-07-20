@@ -1,6 +1,8 @@
 import {
   mdiChartBoxOutline,
   mdiClose,
+  mdiArrowExpand,
+  mdiArrowCollapse,
   mdiCogOutline,
   mdiDevices,
   mdiDotsVertical,
@@ -288,9 +290,15 @@ export class MoreInfoDialog extends LitElement {
                   )}
                 ></ha-icon-button-prev>
               `}
-          <span slot="title" .title=${title} @click=${this._enlarge}>
-            ${title}
-          </span>
+          <ha-icon-button
+            slot="navigationIcon"
+            .path=${this.large ? mdiArrowCollapse : mdiArrowExpand}
+            .label=${this.hass.localize(
+              `ui.dialogs.generic.${this.large ? "reduce" : "enlarge"}`
+            )}
+            @click=${this._enlarge}
+          ></ha-icon-button>
+          <span slot="title" .title=${title}> ${title} </span>
           ${isInfoView
             ? html`
                 ${this.shouldShowHistory(domain)

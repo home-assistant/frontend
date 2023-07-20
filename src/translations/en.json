@@ -851,7 +851,9 @@
         "cancel": "Cancel",
         "ok": "OK",
         "default_confirmation_title": "Are you sure?",
-        "close": "Close"
+        "close": "Close",
+        "enlarge": "Enlarge",
+        "reduce": "Reduce"
       },
       "image_cropper": {
         "crop": "Crop",
