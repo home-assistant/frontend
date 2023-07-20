@@ -12,7 +12,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import { loadCodeMirror } from "../resources/codemirror.ondemand";
+import { CodeMirror, loadCodeMirror } from "../resources/codemirror.ondemand";
 import { HomeAssistant } from "../types";
 import "./ha-icon";
 
@@ -58,7 +58,7 @@ export class HaCodeEditor extends ReactiveElement {
 
   @state() private _value = "";
 
-  private _loadedCodeMirror?: typeof import("../resources/codemirror");
+  private _loadedCodeMirror?: CodeMirror;
 
   private _iconList?: Completion[];
 
@@ -78,15 +78,19 @@ export class HaCodeEditor extends ReactiveElement {
       this.codemirror.state,
       [this._loadedCodeMirror.tags.comment]
     );
-    return !!this.shadowRoot!.querySelector(`span.${className}`);
+    return !!this.renderRoot.querySelector(`span.${className}`);
   }
 
   public connectedCallback() {
     super.connectedCallback();
-    this.addEventListener("keydown", stopPropagation);
-    if (this._loadedCodeMirror) {
-      this._createCodeMirror();
+    // Force update on reconnection so editor is recreated
+    if (this.hasUpdated) {
+      this.requestUpdate();
     }
+    this.addEventListener("keydown", stopPropagation);
+    // This is unreachable as editor will not exist yet,
+    // but focus should not behave like this for good a11y.
+    // (@steverep to fix in autofocus PR)
     if (!this.codemirror) {
       return;
     }
@@ -98,18 +102,22 @@ export class HaCodeEditor extends ReactiveElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener("keydown", stopPropagation);
-    this._destroyCodeMirror();
+    this.updateComplete.then(() => {
+      this.codemirror!.destroy();
+      delete this.codemirror;
+    });
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    this._loadCodeMirror().then(() => this._createCodeMirror());
+  // Ensure CodeMirror module is loaded before any update
+  protected override async scheduleUpdate() {
+    this._loadedCodeMirror ??= await loadCodeMirror();
+    super.scheduleUpdate();
   }
 
   protected update(changedProps: PropertyValues): void {
     super.update(changedProps);
-
     if (!this.codemirror) {
+      this._createCodeMirror();
       return;
     }
     const transactions: TransactionSpec[] = [];
@@ -148,18 +156,9 @@ export class HaCodeEditor extends ReactiveElement {
     return this._loadedCodeMirror!.langs[this.mode];
   }
 
-  private async _loadCodeMirror() {
-    this._loadedCodeMirror = await loadCodeMirror();
-  }
-
-  private _destroyCodeMirror() {
-    this.codemirror?.destroy();
-    delete this.codemirror;
-  }
-
-  private _createCodeMirror(): void {
+  private _createCodeMirror() {
     if (!this._loadedCodeMirror) {
-      return;
+      throw new Error("Cannot create editor before CodeMirror is loaded");
     }
     const extensions: Extension[] = [
       this._loadedCodeMirror.lineNumbers(),
