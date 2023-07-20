@@ -357,7 +357,9 @@
           "became_unavailable": "became unavailable",
           "became_unknown": "became unknown",
           "detected_tampering": "detected tampering",
-          "cleared_tampering": "cleared tampering"
+          "cleared_tampering": "cleared tampering",
+          "detected_event": "{event_type} event detected",
+          "detected_unknown_event": "detected an unknown event"
         }
       },
       "entity": {
