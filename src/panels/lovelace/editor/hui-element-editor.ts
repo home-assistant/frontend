@@ -131,14 +131,16 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
       }
     }
 
-    fireEvent(this, "config-changed", {
-      config: this.value! as any,
-      error: this._errors?.join(", "),
-      guiModeAvailable: !(
-        this.hasWarning ||
-        this.hasError ||
-        this._guiSupported === false
-      ),
+    this.updateComplete.then(() => {
+      fireEvent(this, "config-changed", {
+        config: this.value! as any,
+        error: this._errors?.join(", "),
+        guiModeAvailable: !(
+          this.hasWarning ||
+          this.hasError ||
+          this._guiSupported === false
+        ),
+      });
     });
   }
 
@@ -156,13 +158,15 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
 
   public set GUImode(guiMode: boolean) {
     this._guiMode = guiMode;
-    fireEvent(this as HTMLElement, "GUImode-changed", {
-      guiMode,
-      guiModeAvailable: !(
-        this.hasWarning ||
-        this.hasError ||
-        this._guiSupported === false
-      ),
+    this.updateComplete.then(() => {
+      fireEvent(this as HTMLElement, "GUImode-changed", {
+        guiMode,
+        guiModeAvailable: !(
+          this.hasWarning ||
+          this.hasError ||
+          this._guiSupported === false
+        ),
+      });
     });
   }
 
