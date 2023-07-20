@@ -28,7 +28,7 @@ class StepFlowCreateEntry extends LitElement {
     const localize = this.hass.localize;
 
     return html`
-      <h2>${localize("ui.common.success")}!</h2>
+      <h2>${localize("ui.panel.config.integrations.config_flow.success")}!</h2>
       <div class="content">
         ${this.flowConfig.renderCreateEntryDescription(this.hass, this.step)}
         ${this.step.result?.state === "not_loaded"
@@ -73,7 +73,9 @@ class StepFlowCreateEntry extends LitElement {
       </div>
       <div class="buttons">
         <mwc-button @click=${this._flowDone}
-          >${localize("ui.common.finish")}</mwc-button
+          >${localize(
+            "ui.panel.config.integrations.config_flow.finish"
+          )}</mwc-button
         >
       </div>
     `;
