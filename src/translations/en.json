@@ -3213,6 +3213,7 @@
           "entities": {
             "entities": "Entities",
             "control": "Controls",
+            "event": "Events",
             "sensor": "Sensors",
             "diagnostic": "Diagnostic",
             "config": "Configuration",
