@@ -7,6 +7,7 @@ import {
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
   GasSourceTypeEnergyPreference,
+  GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
   WaterSourceTypeEnergyPreference,
 } from "../../../../data/energy";
@@ -18,6 +19,7 @@ export interface EnergySettingsGridFlowDialogParams {
     | FlowToGridSourceEnergyPreference;
   metadata?: StatisticsMetaData;
   direction: "from" | "to";
+  current_preference?: GridSourceTypeEnergyPreference;
   saveCallback: (
     source:
       | FlowFromGridSourceEnergyPreference
@@ -28,12 +30,14 @@ export interface EnergySettingsGridFlowDialogParams {
 export interface EnergySettingsGridFlowFromDialogParams {
   source?: FlowFromGridSourceEnergyPreference;
   metadata?: StatisticsMetaData;
+  current_preference?: GridSourceTypeEnergyPreference;
   saveCallback: (source: FlowFromGridSourceEnergyPreference) => Promise<void>;
 }
 
 export interface EnergySettingsGridFlowToDialogParams {
   source?: FlowToGridSourceEnergyPreference;
   metadata?: StatisticsMetaData;
+  current_preference?: GridSourceTypeEnergyPreference;
   saveCallback: (source: FlowToGridSourceEnergyPreference) => Promise<void>;
 }
 
