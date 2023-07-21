@@ -170,13 +170,13 @@ export class HaStatisticPicker extends LitElement {
 
       const output: StatisticItem[] = [];
       statisticIds.forEach((meta) => {
-        const entityState = this.hass.states[meta.statistic_id];
         if (
           excludeStatistics &&
           excludeStatistics.includes(meta.statistic_id)
         ) {
           return;
         }
+        const entityState = this.hass.states[meta.statistic_id];
         if (!entityState) {
           if (!entitiesOnly) {
             const id = meta.statistic_id;
