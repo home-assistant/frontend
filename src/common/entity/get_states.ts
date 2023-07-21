@@ -250,6 +250,11 @@ export const getStates = (
         result.push("home", "not_home");
       }
       break;
+    case "event":
+      if (attribute === "event_type") {
+        result.push(...state.attributes.event_types);
+      }
+      break;
     case "fan":
       if (attribute === "preset_mode") {
         result.push(...state.attributes.preset_modes);

@@ -8,6 +8,7 @@ import "./state-card-humidifier";
 import "./state-card-configurator";
 import "./state-card-cover";
 import "./state-card-display";
+import "./state-card-event";
 import "./state-card-input_button";
 import "./state-card-input_number";
 import "./state-card-input_select";
