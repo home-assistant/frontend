@@ -35,6 +35,7 @@ const SENSOR_DEVICE_CLASSES = [
   "nitrogen_monoxide",
   "nitrous_oxide",
   "ozone",
+  "ph",
   "pm1",
   "pm10",
   "pm25",
