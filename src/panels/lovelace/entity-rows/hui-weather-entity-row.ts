@@ -16,9 +16,13 @@ import "../../../components/entity/state-badge";
 import { isUnavailableState } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import {
+  getDefaultForecastType,
+  getForecast,
   getSecondaryWeatherAttribute,
   getWeatherStateIcon,
   getWeatherUnit,
+  subscribeForecast,
+  ForecastEvent,
   WeatherEntity,
   weatherSVGStyles,
 } from "../../../data/weather";
@@ -38,6 +42,48 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
   @state() private _config?: EntitiesCardEntityConfig;
 
+  @state() private _forecastEvent?: ForecastEvent;
+
+  @state() private _subscribed?: Promise<() => void>;
+
+  private _unsubscribeForecastEvents() {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub());
+      this._subscribed = undefined;
+    }
+  }
+
+  private async _subscribeForecastEvents() {
+    this._unsubscribeForecastEvents();
+    if (!this.hass || !this._config || !this.isConnected) {
+      return;
+    }
+    const stateObj = this.hass!.states[this._config!.entity];
+    const forecastType = getDefaultForecastType(stateObj);
+    if (forecastType) {
+      this._subscribed = subscribeForecast(
+        this.hass!,
+        stateObj.entity_id,
+        forecastType,
+        (event) => {
+          this._forecastEvent = event;
+        }
+      );
+    }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._subscribeForecastEvents();
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._unsubscribeForecastEvents();
+  }
+
   public setConfig(config: EntitiesCardEntityConfig): void {
     if (!config?.entity) {
       throw new Error("Entity must be specified");
@@ -48,6 +94,13 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("_config") || !this._subscribed) {
+      this._subscribeForecastEvents();
+    }
   }
 
   protected render() {
@@ -71,6 +124,9 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
     const hasSecondary = this._config.secondary_info;
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
+
+    const forecastData = getForecast(stateObj.attributes, this._forecastEvent);
+    const forecast = forecastData?.forecast;
 
     return html`
       <div
@@ -160,7 +216,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
               `}
         </div>
         <div class="secondary">
-          ${getSecondaryWeatherAttribute(this.hass!, stateObj)}
+          ${getSecondaryWeatherAttribute(this.hass!, stateObj, forecast!)}
         </div>
       </div>
     `;

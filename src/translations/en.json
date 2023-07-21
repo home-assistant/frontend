@@ -254,6 +254,9 @@
         "day": "Day",
         "night": "Night",
         "forecast": "Forecast",
+        "forecast_daily": "Forecast daily",
+        "forecast_hourly": "Forecast hourly",
+        "forecast_twice_daily": "Forecast twice daily",
         "high": "High",
         "low": "Low"
       }
@@ -4975,7 +4978,12 @@
               "weather_to_show": "Weather to Show",
               "show_both": "Show current Weather and Forecast",
               "show_only_current": "Show only current Weather",
-              "show_only_forecast": "Show only Forecast"
+              "show_only_forecast": "Show only Forecast",
+              "forecast_type": "Select forecast type",
+              "no_type": "No type",
+              "daily": "Daily",
+              "hourly": "Hourly",
+              "twice_daily": "Twice daily"
             }
           },
           "view": {
