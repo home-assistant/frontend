@@ -14,23 +14,21 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { HassEntityBase } from "home-assistant-js-websocket";
 import { formatDateWeekdayDay } from "../../../common/datetime/format_date";
 import { formatTimeWeekday } from "../../../common/datetime/format_time";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-svg-icon";
 import {
+  getDefaultForecastType,
   getForecast,
   getWeatherUnit,
   getWind,
   subscribeForecast,
   ForecastEvent,
   WeatherEntity,
-  WeatherEntityFeature,
   weatherIcons,
 } from "../../../data/weather";
 import { HomeAssistant } from "../../../types";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 
 @customElement("more-info-weather")
 class MoreInfoWeather extends LitElement {
@@ -42,49 +40,6 @@ class MoreInfoWeather extends LitElement {
 
   @state() private _subscribed?: Promise<() => void>;
 
-  private _needForecastSubscription() {
-    return supportsFeature(
-      this.stateObj as HassEntityBase,
-      // eslint-disable-next-line no-bitwise
-      WeatherEntityFeature.FORECAST_DAILY |
-        // eslint-disable-next-line no-bitwise
-        WeatherEntityFeature.FORECAST_HOURLY |
-        WeatherEntityFeature.FORECAST_TWICE_DAILY
-    );
-  }
-
-  private _forecastType() {
-    if (
-      supportsFeature(
-        this.stateObj as HassEntityBase,
-        WeatherEntityFeature.FORECAST_DAILY
-      )
-    ) {
-      return "daily";
-    }
-    if (
-      supportsFeature(
-        this.stateObj as HassEntityBase,
-        WeatherEntityFeature.FORECAST_HOURLY
-      )
-    ) {
-      return "hourly";
-    }
-    if (
-      supportsFeature(
-        this.stateObj as HassEntityBase,
-        WeatherEntityFeature.FORECAST_TWICE_DAILY
-      )
-    ) {
-      return "twice_daily";
-    }
-    return undefined;
-  }
-
-  private _handleForecastEvent(forecastEvent: ForecastEvent) {
-    this._forecastEvent = forecastEvent;
-  }
-
   private _unsubscribeForecastEvents() {
     if (this._subscribed) {
       this._subscribed.then((unsub) => unsub());
@@ -93,23 +48,20 @@ class MoreInfoWeather extends LitElement {
   }
 
   private async _subscribeForecastEvents() {
-    if (
-      this._subscribed ||
-      !this.stateObj ||
-      !this.hass ||
-      !this.isConnected ||
-      !this._needForecastSubscription()
-    ) {
+    this._unsubscribeForecastEvents();
+    if (!this.isConnected || !this.hass || !this.stateObj) {
       return;
     }
 
-    const forecastType = this._forecastType();
+    const forecastType = getDefaultForecastType(this.stateObj);
     if (forecastType) {
       this._subscribed = subscribeForecast(
         this.hass!,
         this.stateObj!.entity_id,
         forecastType,
-        (event) => this._handleForecastEvent(event)
+        (event) => {
+          this._forecastEvent = event;
+        }
       );
     }
   }
@@ -145,7 +97,18 @@ class MoreInfoWeather extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    this._subscribeForecastEvents();
+
+    if (changedProps.has("stateObj") || !this._subscribed) {
+      const oldState = changedProps.get("stateObj") as
+        | WeatherEntity
+        | undefined;
+      if (
+        oldState?.entity_id !== this.stateObj?.entity_id ||
+        !this._subscribed
+      ) {
+        this._subscribeForecastEvents();
+      }
+    }
   }
 
   protected render() {

@@ -81,10 +81,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   private _resizeObserver?: ResizeObserver;
 
-  private _handleForecastEvent(forecastEvent: ForecastEvent) {
-    this._forecastEvent = forecastEvent;
-  }
-
   private _needForecastSubscription() {
     return (
       this._config!.forecast_type && this._config!.forecast_type !== "legacy"
@@ -99,19 +95,24 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   private async _subscribeForecastEvents() {
+    this._unsubscribeForecastEvents();
     if (
-      this.isConnected &&
-      this._needForecastSubscription() &&
-      this._config!.forecast_type &&
-      this._config!.forecast_type !== "legacy"
+      !this.isConnected ||
+      !this.hass ||
+      !this._config ||
+      !this._needForecastSubscription()
     ) {
-      this._subscribed = subscribeForecast(
-        this.hass!,
-        this._config!.entity,
-        this._config!.forecast_type,
-        (event) => this._handleForecastEvent(event)
-      );
+      return;
     }
+
+    this._subscribed = subscribeForecast(
+      this.hass!,
+      this._config!.entity,
+      this._config!.forecast_type as "daily" | "hourly" | "twice_daily",
+      (event) => {
+        this._forecastEvent = event;
+      }
+    );
   }
 
   public connectedCallback(): void {
@@ -175,7 +176,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     }
 
     if (changedProps.has("_config") || !this._subscribed) {
-      this._unsubscribeForecastEvents();
       this._subscribeForecastEvents();
     }
 

@@ -24,6 +24,7 @@ import {
 } from "home-assistant-js-websocket";
 import { css, html, svg, SVGTemplateResult, TemplateResult } from "lit";
 import { styleMap } from "lit/directives/style-map";
+import { supportsFeature } from "../common/entity/supports-feature";
 import { formatNumber } from "../common/number/format_number";
 import "../components/ha-svg-icon";
 import type { HomeAssistant } from "../types";
@@ -631,3 +632,16 @@ export const subscribeForecast = (
     forecast_type,
     entity_id,
   });
+
+export const getDefaultForecastType = (stateObj: HassEntityBase) => {
+  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_DAILY)) {
+    return "daily";
+  }
+  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_HOURLY)) {
+    return "hourly";
+  }
+  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_TWICE_DAILY)) {
+    return "twice_daily";
+  }
+  return undefined;
+};

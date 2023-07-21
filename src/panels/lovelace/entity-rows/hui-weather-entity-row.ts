@@ -9,7 +9,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { HassEntity } from "home-assistant-js-websocket";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { formatNumber } from "../../../common/number/format_number";
@@ -17,6 +16,7 @@ import "../../../components/entity/state-badge";
 import { isUnavailableState } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import {
+  getDefaultForecastType,
   getForecast,
   getSecondaryWeatherAttribute,
   getWeatherStateIcon,
@@ -24,7 +24,6 @@ import {
   subscribeForecast,
   ForecastEvent,
   WeatherEntity,
-  WeatherEntityFeature,
   weatherSVGStyles,
 } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
@@ -36,7 +35,6 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceRow } from "./types";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
@@ -48,38 +46,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
   @state() private _subscribed?: Promise<() => void>;
 
-  private _needForecastSubscription() {
-    const stateObj = this.hass!.states[this._config!.entity];
-    return (
-      stateObj &&
-      supportsFeature(
-        stateObj,
-        // eslint-disable-next-line no-bitwise
-        WeatherEntityFeature.FORECAST_DAILY |
-          // eslint-disable-next-line no-bitwise
-          WeatherEntityFeature.FORECAST_HOURLY |
-          WeatherEntityFeature.FORECAST_TWICE_DAILY
-      )
-    );
-  }
-
-  private _forecastType(stateObj: HassEntity) {
-    if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_DAILY)) {
-      return "daily";
-    }
-    if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_HOURLY)) {
-      return "hourly";
-    }
-    if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_TWICE_DAILY)) {
-      return "twice_daily";
-    }
-    return undefined;
-  }
-
-  private _handleForecastEvent(forecastEvent: ForecastEvent) {
-    this._forecastEvent = forecastEvent;
-  }
-
   private _unsubscribeForecastEvents() {
     if (this._subscribed) {
       this._subscribed.then((unsub) => unsub());
@@ -88,23 +54,20 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
   }
 
   private async _subscribeForecastEvents() {
-    if (
-      this._subscribed ||
-      !this.hass ||
-      !this._config ||
-      !this.isConnected ||
-      !this._needForecastSubscription()
-    ) {
+    this._unsubscribeForecastEvents();
+    if (!this.hass || !this._config || !this.isConnected) {
       return;
     }
     const stateObj = this.hass!.states[this._config!.entity];
-    const forecastType = this._forecastType(stateObj);
+    const forecastType = getDefaultForecastType(stateObj);
     if (forecastType) {
       this._subscribed = subscribeForecast(
         this.hass!,
         stateObj.entity_id,
         forecastType,
-        (event) => this._handleForecastEvent(event)
+        (event) => {
+          this._forecastEvent = event;
+        }
       );
     }
   }
@@ -135,7 +98,9 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    this._subscribeForecastEvents();
+    if (changedProps.has("_config") || !this._subscribed) {
+      this._subscribeForecastEvents();
+    }
   }
 
   protected render() {
