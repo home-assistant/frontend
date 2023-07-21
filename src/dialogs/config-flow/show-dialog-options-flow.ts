@@ -31,6 +31,7 @@ export const showOptionsFlowDialog = (
       createFlow: async (hass, handler) => {
         const [step] = await Promise.all([
           createOptionsFlow(hass, handler),
+          hass.loadFragmentTranslation("config"),
           hass.loadBackendTranslation("options", configEntry.domain),
           hass.loadBackendTranslation("selector", configEntry.domain),
         ]);
@@ -39,6 +40,7 @@ export const showOptionsFlowDialog = (
       fetchFlow: async (hass, flowId) => {
         const [step] = await Promise.all([
           fetchOptionsFlow(hass, flowId),
+          hass.loadFragmentTranslation("config"),
           hass.loadBackendTranslation("options", configEntry.domain),
           hass.loadBackendTranslation("selector", configEntry.domain),
         ]);
