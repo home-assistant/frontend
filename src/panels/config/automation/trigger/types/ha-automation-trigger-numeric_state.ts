@@ -51,6 +51,8 @@ export class HaNumericStateTrigger extends LitElement {
                 "effect",
                 "entity_id",
                 "entity_picture",
+                "event_type",
+                "event_types",
                 "fan_mode",
                 "fan_modes",
                 "fan_speed_list",

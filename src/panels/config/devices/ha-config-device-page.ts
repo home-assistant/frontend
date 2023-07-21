@@ -207,16 +207,25 @@ export class HaConfigDevicePage extends LitElement {
       const result = groupBy(entities, (entry) =>
         entry.entity_category
           ? entry.entity_category
+          : computeDomain(entry.entity_id) === "event"
+          ? "event"
           : SENSOR_ENTITIES.includes(computeDomain(entry.entity_id))
           ? "sensor"
           : "control"
       ) as Record<
         | "control"
+        | "event"
         | "sensor"
         | NonNullable<EntityRegistryEntry["entity_category"]>,
         EntityRegistryStateEntry[]
       >;
-      for (const key of ["control", "sensor", "diagnostic", "config"]) {
+      for (const key of [
+        "config",
+        "control",
+        "diagnostic",
+        "event",
+        "sensor",
+      ]) {
         if (!(key in result)) {
           result[key] = [];
         }
@@ -877,24 +886,25 @@ export class HaConfigDevicePage extends LitElement {
             ${!this.narrow ? [automationCard, sceneCard, scriptCard] : ""}
           </div>
           <div class="column">
-            ${(["control", "sensor", "config", "diagnostic"] as const).map(
-              (category) =>
-                // Make sure we render controls if no other cards will be rendered
-                entitiesByCategory[category].length > 0 ||
-                (entities.length === 0 && category === "control")
-                  ? html`
-                      <ha-device-entities-card
-                        .hass=${this.hass}
-                        .header=${this.hass.localize(
-                          `ui.panel.config.devices.entities.${category}`
-                        )}
-                        .deviceName=${deviceName}
-                        .entities=${entitiesByCategory[category]}
-                        .showHidden=${device.disabled_by !== null}
-                      >
-                      </ha-device-entities-card>
-                    `
-                  : ""
+            ${(
+              ["control", "sensor", "event", "config", "diagnostic"] as const
+            ).map((category) =>
+              // Make sure we render controls if no other cards will be rendered
+              entitiesByCategory[category].length > 0 ||
+              (entities.length === 0 && category === "control")
+                ? html`
+                    <ha-device-entities-card
+                      .hass=${this.hass}
+                      .header=${this.hass.localize(
+                        `ui.panel.config.devices.entities.${category}`
+                      )}
+                      .deviceName=${deviceName}
+                      .entities=${entitiesByCategory[category]}
+                      .showHidden=${device.disabled_by !== null}
+                    >
+                    </ha-device-entities-card>
+                  `
+                : ""
             )}
             <ha-device-via-devices-card
               .hass=${this.hass}

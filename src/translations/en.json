@@ -357,7 +357,9 @@
           "became_unavailable": "became unavailable",
           "became_unknown": "became unknown",
           "detected_tampering": "detected tampering",
-          "cleared_tampering": "cleared tampering"
+          "cleared_tampering": "cleared tampering",
+          "detected_event": "{event_type} event detected",
+          "detected_unknown_event": "detected an unknown event"
         }
       },
       "entity": {
@@ -2322,7 +2324,7 @@
                   }
                 },
                 "event": {
-                  "label": "Event",
+                  "label": "Manual event",
                   "event_type": "Event type",
                   "event_data": "Event data",
                   "context_users": "Limit to events triggered by",
@@ -2640,11 +2642,11 @@
                   "label": "Condition"
                 },
                 "event": {
-                  "label": "Event",
-                  "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::label%]",
+                  "label": "Manual event",
+                  "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_type%]",
                   "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
                   "description": {
-                    "full": "Fire event {name}",
+                    "full": "Manually fire event {name}",
                     "template": "based on a template"
                   }
                 },
@@ -3212,6 +3214,7 @@
           "entities": {
             "entities": "Entities",
             "control": "Controls",
+            "event": "Events",
             "sensor": "Sensors",
             "diagnostic": "Diagnostic",
             "config": "Configuration",
