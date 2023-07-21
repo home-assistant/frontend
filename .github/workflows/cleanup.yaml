@@ -1,0 +1,33 @@
+name: Branch Cleanup
+
+on:
+  pull_request:
+    types:
+      - closed
+  workflow_dispatch:
+
+jobs:
+  delete-cache:
+    name: Delete Caches
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3.5.3
+      - name: Find and delete caches
+        run: |
+          gh extension install actions/gh-actions-cache
+          echo "Fetching list of cache keys..."
+          cacheKeysForPR=$(gh actions-cache list -R "$GITHUB_REPOSITORY" -B "$GITHUB_REF" | cut -f 1 )
+          # Setting this to not fail the workflow while deleting cache keys.
+          set +e
+          echo "Deleting caches..."
+          for cacheKey in $cacheKeysForPR
+          do
+              gh actions-cache delete "$cacheKey" -R "$GITHUB_REPOSITORY" -B "$GITHUB_REF" --confirm
+          done
+          echo "Done"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
