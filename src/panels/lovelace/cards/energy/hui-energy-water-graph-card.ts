@@ -166,7 +166,13 @@ export class HuiEnergyWaterGraphCard
           x: {
             type: "time",
             suggestedMin: start.getTime(),
-            suggestedMax: end.getTime(),
+            suggestedMax:
+              end.getTime() -
+              (dayDifference > 35
+                ? 3600000 * 24 * 30
+                : dayDifference > 2
+                ? 3600000 * 24
+                : 3600000),
             adapters: {
               date: {
                 locale,
@@ -283,7 +289,13 @@ export class HuiEnergyWaterGraphCard
         options.scales!.xAxisCompare = {
           ...(options.scales!.x as Record<string, any>),
           suggestedMin: compareStart!.getTime(),
-          suggestedMax: compareEnd!.getTime(),
+          suggestedMax:
+            compareEnd!.getTime() -
+            (dayDifference > 35
+              ? 3600000 * 24 * 30
+              : dayDifference > 2
+              ? 3600000 * 24
+              : 3600000),
           display: false,
         };
       }
