@@ -369,7 +369,7 @@ export class HassioNetwork extends LitElement {
               >
               </ha-textfield>
               <ha-textfield
-                id="${version}-nameservers"
+                id="nameservers"
                 .label=${this.hass.localize(
                   "ui.panel.config.network.supervisor.dns_servers"
                 )}
