@@ -338,7 +338,6 @@ export class HaTargetPicker extends LitElement {
               .excludeEntities=${ensureArray(this.value?.entity_id)}
               @value-changed=${this._targetPicked}
               @click=${this._preventDefault}
-              allow-custom-entity
             ></ha-entity-picker>
           `}</mwc-menu-surface
     >`;
