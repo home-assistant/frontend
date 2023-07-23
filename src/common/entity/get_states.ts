@@ -186,6 +186,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "nitrogen_monoxide",
       "nitrous_oxide",
       "ozone",
+      "ph",
       "pm1",
       "pm10",
       "pm25",
