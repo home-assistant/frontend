@@ -26,6 +26,7 @@ export class HaLocationSelector extends LitElement {
 
   protected render() {
     return html`
+      ${this.label ? this.label : ""}
       <ha-locations-editor
         class="flex"
         .hass=${this.hass}
