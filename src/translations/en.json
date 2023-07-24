@@ -254,6 +254,9 @@
         "day": "Day",
         "night": "Night",
         "forecast": "Forecast",
+        "forecast_daily": "Forecast daily",
+        "forecast_hourly": "Forecast hourly",
+        "forecast_twice_daily": "Forecast twice daily",
         "high": "High",
         "low": "Low"
       }
@@ -357,7 +360,9 @@
           "became_unavailable": "became unavailable",
           "became_unknown": "became unknown",
           "detected_tampering": "detected tampering",
-          "cleared_tampering": "cleared tampering"
+          "cleared_tampering": "cleared tampering",
+          "detected_event": "{event_type} event detected",
+          "detected_unknown_event": "detected an unknown event"
         }
       },
       "entity": {
@@ -1468,7 +1473,9 @@
         "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced.",
         "component_not_loaded": "This redirect is not supported by your Home Assistant instance. You need the integration {integration} to use this redirect.",
         "no_supervisor": "This redirect is not supported by your Home Assistant installation. It needs either the Home Assistant Operating System or Home Assistant Supervised installation method. For more information, see the {docs_link}.",
+        "not_app": "This redirect only works from a mobile device that has the Home Assistant Companion app installed. {link}.",
         "documentation": "documentation",
+        "download_app": "Click here to download the app",
         "faq_link": "My Home Assistant FAQ",
         "error": "An unknown error occurred"
       },
@@ -2322,7 +2329,7 @@
                   }
                 },
                 "event": {
-                  "label": "Event",
+                  "label": "Manual event",
                   "event_type": "Event type",
                   "event_data": "Event data",
                   "context_users": "Limit to events triggered by",
@@ -2640,11 +2647,11 @@
                   "label": "Condition"
                 },
                 "event": {
-                  "label": "Event",
-                  "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::label%]",
+                  "label": "Manual event",
+                  "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_type%]",
                   "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
                   "description": {
-                    "full": "Fire event {name}",
+                    "full": "Manually fire event {name}",
                     "template": "based on a template"
                   }
                 },
@@ -3212,6 +3219,7 @@
           "entities": {
             "entities": "Entities",
             "control": "Controls",
+            "event": "Events",
             "sensor": "Sensors",
             "diagnostic": "Diagnostic",
             "config": "Configuration",
@@ -4972,7 +4980,12 @@
               "weather_to_show": "Weather to Show",
               "show_both": "Show current Weather and Forecast",
               "show_only_current": "Show only current Weather",
-              "show_only_forecast": "Show only Forecast"
+              "show_only_forecast": "Show only Forecast",
+              "forecast_type": "Select forecast type",
+              "no_type": "No type",
+              "daily": "Daily",
+              "hourly": "Hourly",
+              "twice_daily": "Twice daily"
             }
           },
           "view": {

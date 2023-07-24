@@ -12,6 +12,7 @@ import { LocalizeFunc } from "../common/translations/localize";
 import { HaEntityPickerEntityFilterFunc } from "../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../types";
 import { UNAVAILABLE, UNKNOWN } from "./entity";
+import { computeAttributeValueDisplay } from "../common/entity/compute_attribute_display";
 
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
 export const CONTINUOUS_DOMAINS = ["counter", "proximity", "sensor", "zone"];
@@ -156,6 +157,7 @@ export const createHistoricState = (
     attributes: {
       // Rebuild the historical state by copying static attributes only
       device_class: currentStateObj?.attributes.device_class,
+      event_type: currentStateObj?.attributes.event_type,
       source_type: currentStateObj?.attributes.source_type,
       has_date: currentStateObj?.attributes.has_date,
       has_time: currentStateObj?.attributes.has_time,
@@ -342,6 +344,23 @@ export const localizeStateMessage = (
           return localize(`${LOGBOOK_LOCALIZE_PATH}.was_closed`);
       }
       break;
+
+    case "event": {
+      const event_type =
+        computeAttributeValueDisplay(
+          hass!.localize,
+          stateObj,
+          hass.locale,
+          hass.config,
+          hass.entities,
+          "event_type"
+        )?.toString() ||
+        localize(`${LOGBOOK_LOCALIZE_PATH}.detected_unknown_event`);
+
+      return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_event`, {
+        event_type: autoCaseNoun(event_type, hass.language),
+      });
+    }
 
     case "lock":
       switch (state) {
