@@ -58,10 +58,8 @@ class HaPanelDevService extends LitElement {
 
   protected firstUpdated(params) {
     super.firstUpdated(params);
-    if (!this.hasUpdated) {
-      this.hass.loadBackendTranslation("services");
-      this.hass.loadBackendTranslation("selector");
-    }
+    this.hass.loadBackendTranslation("services");
+    this.hass.loadBackendTranslation("selector");
 
     const serviceParam = extractSearchParam("service");
     if (serviceParam) {
