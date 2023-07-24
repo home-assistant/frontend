@@ -18,9 +18,9 @@ import {
   mdiCloseCircleOutline,
   mdiCrosshairsQuestion,
   mdiDoorbell,
+  mdiEyeCheck,
   mdiFan,
   mdiFanOff,
-  mdiGestureTap,
   mdiGestureTapButton,
   mdiLanConnect,
   mdiLanDisconnect,
@@ -144,7 +144,7 @@ export const domainIconWithoutDefault = (
         case "motion":
           return mdiMotionSensor;
         default:
-          return mdiGestureTap;
+          return mdiEyeCheck;
       }
 
     case "fan":
