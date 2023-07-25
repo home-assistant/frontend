@@ -20,6 +20,9 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
   },
+  developer_assist: {
+    redirect: "/developer-tools/assist",
+  },
   developer_states: {
     redirect: "/developer-tools/state",
   },
@@ -47,6 +50,9 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   calendar: {
     component: "calendar",
     redirect: "/calendar",
+  },
+  companion_app: {
+    redirect: "#external-app-configuration",
   },
   config: {
     redirect: "/config/dashboard",
@@ -320,6 +326,15 @@ class HaPanelMy extends LitElement {
       return;
     }
 
+    if (this._redirect.redirect === "#external-app-configuration") {
+      if (this.hass.auth.external?.config.hasSettingsScreen) {
+        this.hass.auth.external!.fireMessage({ type: "config_screen/show" });
+        return;
+      }
+      this._error = "not_app";
+      return;
+    }
+
     if (
       this._redirect.component &&
       !isComponentLoaded(this.hass, this._redirect.component)
@@ -404,6 +419,18 @@ class HaPanelMy extends LitElement {
               rel="noreferrer noopener"
               href=${documentationUrl(this.hass, "/installation")}
               >${this.hass.localize("ui.panel.my.documentation")}</a
+            >`
+          );
+          break;
+        case "not_app":
+          error = this.hass.localize(
+            "ui.panel.my.not_app",
+            "link",
+            html`<a
+              target="_blank"
+              rel="noreferrer noopener"
+              href="https://companion.home-assistant.io/download"
+              >${this.hass.localize("ui.panel.my.download_app")}</a
             >`
           );
           break;

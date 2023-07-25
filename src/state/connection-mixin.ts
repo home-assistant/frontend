@@ -123,9 +123,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
                 `${domain}/${service}`
               ) +
               ` ${
-                err.message || err.error?.code === ERR_CONNECTION_LOST
+                err.message ||
+                (err.error?.code === ERR_CONNECTION_LOST
                   ? "connection lost"
-                  : "unknown error"
+                  : "unknown error")
               }`;
             fireEvent(this as any, "hass-notification", { message });
             throw err;

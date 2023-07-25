@@ -11,19 +11,18 @@ import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-list-item";
 
-const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (
-  item
-) => html`<ha-list-item twoline graphic="icon">
-  <span>${item.name}</span>
-  <span slot="secondary">${item.slug}</span>
-  ${item.icon
-    ? html`<img
-        alt=""
-        slot="graphic"
-        .src="/api/hassio/addons/${item.slug}/icon"
-      />`
-    : ""}
-</ha-list-item>`;
+const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (item) =>
+  html`<ha-list-item twoline graphic="icon">
+    <span>${item.name}</span>
+    <span slot="secondary">${item.slug}</span>
+    ${item.icon
+      ? html`<img
+          alt=""
+          slot="graphic"
+          .src="/api/hassio/addons/${item.slug}/icon"
+        />`
+      : ""}
+  </ha-list-item>`;
 
 @customElement("ha-addon-picker")
 class HaAddonPicker extends LitElement {

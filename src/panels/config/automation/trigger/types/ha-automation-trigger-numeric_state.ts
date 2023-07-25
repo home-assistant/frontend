@@ -51,6 +51,8 @@ export class HaNumericStateTrigger extends LitElement {
                 "effect",
                 "entity_id",
                 "entity_picture",
+                "event_type",
+                "event_types",
                 "fan_mode",
                 "fan_modes",
                 "fan_speed_list",
@@ -287,6 +289,10 @@ export class HaNumericStateTrigger extends LitElement {
 
     delete newTrigger.mode_above;
     delete newTrigger.mode_below;
+
+    if (newTrigger.value_template === "") {
+      delete newTrigger.value_template;
+    }
 
     fireEvent(this, "value-changed", { value: newTrigger });
   }

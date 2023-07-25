@@ -33,6 +33,7 @@ import type {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { stateActive } from "../common/entity/state_active";
 import { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
 import type { HomeAssistant, TranslationDict } from "../types";
 import { isUnavailableState } from "./entity";
@@ -270,7 +271,7 @@ export const computeMediaControls = (
     return undefined;
   }
 
-  if (state === "off") {
+  if (!stateActive(stateObj)) {
     return supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
       ? [
           {

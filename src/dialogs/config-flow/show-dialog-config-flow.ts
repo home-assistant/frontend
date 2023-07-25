@@ -23,6 +23,7 @@ export const showConfigFlowDialog = (
     createFlow: async (hass, handler) => {
       const [step] = await Promise.all([
         createConfigFlow(hass, handler),
+        hass.loadFragmentTranslation("config"),
         hass.loadBackendTranslation("config", handler),
         hass.loadBackendTranslation("selector", handler),
         // Used as fallback if no header defined for step
@@ -32,6 +33,7 @@ export const showConfigFlowDialog = (
     },
     fetchFlow: async (hass, flowId) => {
       const step = await fetchConfigFlow(hass, flowId);
+      await hass.loadFragmentTranslation("config");
       await hass.loadBackendTranslation("config", step.handler);
       await hass.loadBackendTranslation("selector", step.handler);
       return step;

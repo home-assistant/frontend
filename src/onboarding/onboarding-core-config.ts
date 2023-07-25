@@ -5,10 +5,10 @@ import {
   html,
   LitElement,
   nothing,
+  PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
@@ -22,22 +22,13 @@ import "../components/ha-textfield";
 import type { HaTextField } from "../components/ha-textfield";
 import "../components/ha-timezone-picker";
 import "../components/map/ha-locations-editor";
-import type {
-  HaLocationsEditor,
-  MarkerLocation,
-} from "../components/map/ha-locations-editor";
-import {
-  ConfigUpdateValues,
-  detectCoreConfig,
-  saveCoreConfig,
-} from "../data/core";
+import { ConfigUpdateValues, saveCoreConfig } from "../data/core";
+import { countryCurrency } from "../data/currency";
 import { onboardCoreConfigStep } from "../data/onboarding";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
-
-const amsterdam: [number, number] = [52.3731339, 4.8903147];
-const mql = matchMedia("(prefers-color-scheme: dark)");
-const locationMarkerId = "location";
+import "./onboarding-location";
+import "./onboarding-name";
 
 @customElement("onboarding-core-config")
 class OnboardingCoreConfig extends LitElement {
@@ -57,19 +48,29 @@ class OnboardingCoreConfig extends LitElement {
 
   @state() private _currency?: ConfigUpdateValues["currency"];
 
-  @state() private _timeZone? =
-    Intl.DateTimeFormat?.().resolvedOptions?.().timeZone;
+  @state() private _timeZone?: ConfigUpdateValues["time_zone"];
 
-  @state() private _language: ConfigUpdateValues["language"] =
-    getLocalLanguage();
+  @state() private _language: ConfigUpdateValues["language"];
 
   @state() private _country?: ConfigUpdateValues["country"];
 
   @state() private _error?: string;
 
-  @query("ha-locations-editor", true) private map!: HaLocationsEditor;
-
   protected render(): TemplateResult {
+    if (!this._name) {
+      return html`<onboarding-name
+        .hass=${this.hass}
+        .onboardingLocalize=${this.onboardingLocalize}
+        @value-changed=${this._nameChanged}
+      ></onboarding-name>`;
+    }
+    if (!this._location) {
+      return html`<onboarding-location
+        .hass=${this.hass}
+        .onboardingLocalize=${this.onboardingLocalize}
+        @value-changed=${this._locationChanged}
+      ></onboarding-location>`;
+    }
     return html`
       ${
         this._error
@@ -78,54 +79,10 @@ class OnboardingCoreConfig extends LitElement {
       }
 
       <p>
-        ${this.onboardingLocalize(
-          "ui.panel.page-onboarding.core-config.intro",
-          "name",
-          this.hass.user!.name
-        )}
+      ${this.onboardingLocalize(
+        "ui.panel.page-onboarding.core-config.intro_core_config"
+      )}
       </p>
-
-      <ha-textfield
-        .label=${this.onboardingLocalize(
-          "ui.panel.page-onboarding.core-config.location_name"
-        )}
-        name="name"
-        .disabled=${this._working}
-        .value=${this._nameValue}
-        @change=${this._handleChange}
-      ></ha-textfield>
-
-      <div class="middle-text">
-        <p>
-          ${this.onboardingLocalize(
-            "ui.panel.page-onboarding.core-config.intro_location"
-          )}
-        </p>
-
-        <div class="row">
-          <div>
-            ${this.onboardingLocalize(
-              "ui.panel.page-onboarding.core-config.intro_location_detect"
-            )}
-          </div>
-          <mwc-button @click=${this._detect}>
-            ${this.onboardingLocalize(
-              "ui.panel.page-onboarding.core-config.button_detect"
-            )}
-          </mwc-button>
-        </div>
-      </div>
-
-      <div class="row">
-        <ha-locations-editor
-          class="flex"
-          .hass=${this.hass}
-          .locations=${this._markerLocation(this._locationValue)}
-          zoom="14"
-          .darkMode=${mql.matches}
-          @location-updated=${this._locationChanged}
-        ></ha-locations-editor>
-      </div>
 
       <div class="row">
         <ha-country-picker
@@ -275,29 +232,27 @@ class OnboardingCoreConfig extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected willUpdate(changedProps: PropertyValues): void {
+    if (!changedProps.has("_country") || !this._country) {
+      return;
+    }
+    if (!this._currency) {
+      this._currency = countryCurrency[this._country];
+    }
+    if (!this._unitSystem) {
+      this._unitSystem = ["US", "MM", "LR"].includes(this._country)
+        ? "us_customary"
+        : "metric";
+    }
+  }
+
+  protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    setTimeout(
-      () => this.renderRoot.querySelector("ha-textfield")!.focus(),
-      100
-    );
-    this.addEventListener("keypress", (ev) => {
-      if (ev.key === "Enter") {
+    this.addEventListener("keyup", (ev) => {
+      if (this._location && ev.key === "Enter") {
         this._save(ev);
       }
     });
-  }
-
-  private get _nameValue() {
-    return this._name !== undefined
-      ? this._name
-      : this.onboardingLocalize(
-          "ui.panel.page-onboarding.core-config.location_name_default"
-        );
-  }
-
-  private get _locationValue() {
-    return this._location || amsterdam;
   }
 
   private get _elevationValue() {
@@ -324,17 +279,6 @@ class OnboardingCoreConfig extends LitElement {
     return this._currency !== undefined ? this._currency : "";
   }
 
-  private _markerLocation = memoizeOne(
-    (location: [number, number]): MarkerLocation[] => [
-      {
-        id: locationMarkerId,
-        latitude: location[0],
-        longitude: location[1],
-        location_editable: true,
-      },
-    ]
-  );
-
   private _handleValueChanged(ev: ValueChangedEvent<string>) {
     const target = ev.currentTarget as HTMLElement;
     this[`_${target.getAttribute("name")}`] = ev.detail.value;
@@ -345,8 +289,25 @@ class OnboardingCoreConfig extends LitElement {
     this[`_${target.name}`] = target.value;
   }
 
-  private _locationChanged(ev) {
-    this._location = ev.detail.location;
+  private _nameChanged(ev: CustomEvent) {
+    this._name = ev.detail.value;
+  }
+
+  private async _locationChanged(ev) {
+    this._location = ev.detail.value.location;
+    this._country = ev.detail.value.country;
+    this._elevation = ev.detail.value.elevation;
+    this._currency = ev.detail.value.currency;
+    this._language = ev.detail.value.language || getLocalLanguage();
+    this._timeZone =
+      ev.detail.value.timezone ||
+      Intl.DateTimeFormat?.().resolvedOptions?.().timeZone;
+    this._unitSystem = ev.detail.value.unit_system;
+    await this.updateComplete;
+    setTimeout(
+      () => this.renderRoot.querySelector("ha-textfield")!.focus(),
+      100
+    );
   }
 
   private _unitSystemChanged(ev: CustomEvent) {
@@ -355,55 +316,17 @@ class OnboardingCoreConfig extends LitElement {
       | "us_customary";
   }
 
-  private async _detect() {
-    this._working = true;
-    try {
-      const values = await detectCoreConfig(this.hass);
-
-      if (values.latitude && values.longitude) {
-        this.map.addEventListener(
-          "markers-updated",
-          () => {
-            this.map.fitMarker(locationMarkerId);
-          },
-          {
-            once: true,
-          }
-        );
-        this._location = [Number(values.latitude), Number(values.longitude)];
-      }
-      if (values.elevation) {
-        this._elevation = String(values.elevation);
-      }
-      if (values.unit_system) {
-        this._unitSystem = values.unit_system;
-      }
-      if (values.time_zone) {
-        this._timeZone = values.time_zone;
-      }
-      if (values.currency) {
-        this._currency = values.currency;
-      }
-      if (values.country) {
-        this._country = values.country;
-      }
-      this._language = getLocalLanguage();
-    } catch (err: any) {
-      this._error = `Failed to detect location information: ${err.message}`;
-    } finally {
-      this._working = false;
-    }
-  }
-
   private async _save(ev) {
+    if (!this._location) {
+      return;
+    }
     ev.preventDefault();
     this._working = true;
     try {
-      const location = this._locationValue;
       await saveCoreConfig(this.hass, {
-        location_name: this._nameValue,
-        latitude: location[0],
-        longitude: location[1],
+        location_name: this._name,
+        latitude: this._location[0],
+        longitude: this._location[1],
         elevation: Number(this._elevationValue),
         unit_system: this._unitSystemValue,
         time_zone: this._timeZoneValue || "UTC",
@@ -436,12 +359,13 @@ class OnboardingCoreConfig extends LitElement {
         color: var(--secondary-text-color);
       }
 
-      ha-textfield {
-        display: block;
+      p {
+        font-size: 14px;
+        line-height: 20px;
       }
 
-      ha-locations-editor {
-        height: 200px;
+      ha-textfield {
+        display: block;
       }
 
       .flex {

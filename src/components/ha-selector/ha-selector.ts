@@ -3,9 +3,9 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import {
-  Selector,
-  handleLegacyEntitySelector,
   handleLegacyDeviceSelector,
+  handleLegacyEntitySelector,
+  Selector,
 } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 
@@ -17,6 +17,7 @@ const LOAD_ELEMENTS = {
   assist_pipeline: () => import("./ha-selector-assist-pipeline"),
   boolean: () => import("./ha-selector-boolean"),
   color_rgb: () => import("./ha-selector-color-rgb"),
+  condition: () => import("./ha-selector-condition"),
   config_entry: () => import("./ha-selector-config-entry"),
   conversation_agent: () => import("./ha-selector-conversation-agent"),
   constant: () => import("./ha-selector-constant"),

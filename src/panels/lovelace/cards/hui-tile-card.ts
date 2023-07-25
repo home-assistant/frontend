@@ -453,7 +453,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         height: 100%;
         z-index: 0;
         overflow: hidden;
-        transition: box-shadow 180ms ease-in-out, border-color 180ms ease-in-out;
+        transition:
+          box-shadow 180ms ease-in-out,
+          border-color 180ms ease-in-out;
       }
       ha-card.active {
         --tile-color: var(--state-icon-color);

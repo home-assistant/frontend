@@ -1,0 +1,15 @@
+name: "Pull Request Labeler"
+
+on: pull_request_target
+
+jobs:
+  triage:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply labels
+        uses: actions/labeler@v4.3.0
+        with:
+          sync-labels: true

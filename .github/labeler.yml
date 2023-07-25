@@ -1,0 +1,31 @@
+Build:
+  - build-scripts/**
+  - .browserslistrc
+  - gulpfile.js
+
+Cast:
+  - cast/src/**
+  - src/cast/**
+
+Demo:
+  - demo/src/**
+  - src/fake_data/**
+
+Design:
+  - gallery/src/**
+  - src/fake_data/**
+
+Dependencies:
+  - package.json
+  - renovate.json
+  - yarn.lock
+  - .yarn/**
+  - .yarnrc.yml
+  - .nvmrc
+
+GitHub Actions:
+  - .github/workflows/**
+  - .github/*.yml
+
+Supervisor:
+  - hassio/src/**

@@ -10,7 +10,6 @@ As a community, we are proud of our logo. Follow these guidelines to ensure it a
 
 ![Logo](/images/logo.png)
 
-
 ## Using the icon
 
 Our icon is a shorter and most used version of our logo. The icon can exist without the wordmark, the wordmark should never exist without the icon.
@@ -21,7 +20,7 @@ Our icon is a shorter and most used version of our logo. The icon can exist with
 
 The pretty blue logo with a background shadow, pictured top left, is our primary logo. It should only be used with black, white, and non-duotone photography.
 
-When needed you can use our logo without a shadow, as seen as the second variant. 
+When needed you can use our logo without a shadow, as seen as the second variant.
 
 The outlined logo should only be used on packaging.
 
