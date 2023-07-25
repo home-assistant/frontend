@@ -10,7 +10,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-circular-progress";
-import "../../../../../components/ha-service-description";
 import {
   DEVICE_MESSAGE_TYPES,
   LOG_OUTPUT,
@@ -258,12 +257,6 @@ class ZHAAddDevicesPage extends LitElement {
           top: -6px;
           right: 0;
           color: var(--primary-color);
-        }
-        ha-service-description {
-          margin-top: 16px;
-          margin-left: 16px;
-          display: block;
-          color: grey;
         }
         .search-button {
           margin-top: 16px;

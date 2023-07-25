@@ -211,6 +211,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         // First step is already done, so we need to get auth somewhere else.
         const auth = await getAuth({
           hassUrl,
+          limitHassInstance: true,
         });
         history.replaceState(null, "", location.pathname);
         await this._connectHass(auth);
@@ -237,6 +238,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       try {
         const auth = await getAuth({
           hassUrl,
+          limitHassInstance: true,
           authCode: result.auth_code,
         });
         await this._connectHass(auth);

@@ -81,28 +81,25 @@ class HaMountPicker extends LitElement {
           ? dataDiskOption
           : nothing}
         ${this._filterMounts(this._mounts, this.usage).map(
-          (mount) => html`<ha-list-item
-            twoline
-            graphic="icon"
-            .value=${mount.name}
-          >
-            <span>${mount.name}</span>
-            <span slot="secondary"
-              >${mount.server}${mount.port
-                ? `:${mount.port}`
-                : nothing}${mount.type === SupervisorMountType.NFS
-                ? mount.path
-                : `:${mount.share}`}</span
-            >
-            <ha-svg-icon
-              slot="graphic"
-              .path=${mount.usage === SupervisorMountUsage.MEDIA
-                ? mdiPlayBox
-                : mount.usage === SupervisorMountUsage.SHARE
-                ? mdiFolder
-                : mdiBackupRestore}
-            ></ha-svg-icon>
-          </ha-list-item>`
+          (mount) =>
+            html`<ha-list-item twoline graphic="icon" .value=${mount.name}>
+              <span>${mount.name}</span>
+              <span slot="secondary"
+                >${mount.server}${mount.port
+                  ? `:${mount.port}`
+                  : nothing}${mount.type === SupervisorMountType.NFS
+                  ? mount.path
+                  : `:${mount.share}`}</span
+              >
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mount.usage === SupervisorMountUsage.MEDIA
+                  ? mdiPlayBox
+                  : mount.usage === SupervisorMountUsage.SHARE
+                  ? mdiFolder
+                  : mdiBackupRestore}
+              ></ha-svg-icon>
+            </ha-list-item>`
         )}
         ${this.usage === SupervisorMountUsage.BACKUP &&
         this._mounts.default_backup_mount

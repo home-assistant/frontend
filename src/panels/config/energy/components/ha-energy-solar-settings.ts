@@ -79,13 +79,12 @@ export class EnergySolarSettings extends LitElement {
             >
           </p>
           ${solarValidation.map(
-            (result) =>
-              html`
-                <ha-energy-validation-result
-                  .hass=${this.hass}
-                  .issues=${result}
-                ></ha-energy-validation-result>
-              `
+            (result) => html`
+              <ha-energy-validation-result
+                .hass=${this.hass}
+                .issues=${result}
+              ></ha-energy-validation-result>
+            `
           )}
 
           <h3>

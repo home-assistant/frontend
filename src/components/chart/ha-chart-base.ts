@@ -108,23 +108,24 @@ export default class HaChartBase extends LitElement {
         ? html`<div class="chartLegend">
             <ul>
               ${this.data.datasets.map(
-                (dataset, index) => html`<li
-                  .datasetIndex=${index}
-                  @click=${this._legendClick}
-                  class=${classMap({
-                    hidden: this._hiddenDatasets.has(index),
-                  })}
-                  .title=${dataset.label}
-                >
-                  <div
-                    class="bullet"
-                    style=${styleMap({
-                      backgroundColor: dataset.backgroundColor as string,
-                      borderColor: dataset.borderColor as string,
+                (dataset, index) =>
+                  html`<li
+                    .datasetIndex=${index}
+                    @click=${this._legendClick}
+                    class=${classMap({
+                      hidden: this._hiddenDatasets.has(index),
                     })}
-                  ></div>
-                  <div class="label">${dataset.label}</div>
-                </li>`
+                    .title=${dataset.label}
+                  >
+                    <div
+                      class="bullet"
+                      style=${styleMap({
+                        backgroundColor: dataset.backgroundColor as string,
+                        borderColor: dataset.borderColor as string,
+                      })}
+                    ></div>
+                    <div class="label">${dataset.label}</div>
+                  </li>`
               )}
             </ul>
           </div>`
@@ -156,18 +157,19 @@ export default class HaChartBase extends LitElement {
               <div>
                 <ul>
                   ${this._tooltip.body.map(
-                    (item, i) => html`<li>
-                      <div
-                        class="bullet"
-                        style=${styleMap({
-                          backgroundColor: this._tooltip!.labelColors[i]
-                            .backgroundColor as string,
-                          borderColor: this._tooltip!.labelColors[i]
-                            .borderColor as string,
-                        })}
-                      ></div>
-                      ${item.lines.join("\n")}
-                    </li>`
+                    (item, i) =>
+                      html`<li>
+                        <div
+                          class="bullet"
+                          style=${styleMap({
+                            backgroundColor: this._tooltip!.labelColors[i]
+                              .backgroundColor as string,
+                            borderColor: this._tooltip!.labelColors[i]
+                              .borderColor as string,
+                          })}
+                        ></div>
+                        ${item.lines.join("\n")}
+                      </li>`
                   )}
                 </ul>
               </div>

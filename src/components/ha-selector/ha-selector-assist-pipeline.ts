@@ -21,14 +21,19 @@ export class HaAssistPipelineSelector extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   protected render() {
-    return html`<ha-assist-pipeline-picker
-      .hass=${this.hass}
-      .value=${this.value}
-      .label=${this.label}
-      .helper=${this.helper}
-      .disabled=${this.disabled}
-      .required=${this.required}
-    ></ha-assist-pipeline-picker>`;
+    return html`
+      <ha-assist-pipeline-picker
+        .hass=${this.hass}
+        .value=${this.value}
+        .label=${this.label}
+        .helper=${this.helper}
+        .disabled=${this.disabled}
+        .required=${this.required}
+        .includeLastUsed=${Boolean(
+          this.selector.assist_pipeline?.include_last_used
+        )}
+      ></ha-assist-pipeline-picker>
+    `;
   }
 
   static styles = css`

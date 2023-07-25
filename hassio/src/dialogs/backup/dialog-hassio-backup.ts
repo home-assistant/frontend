@@ -194,7 +194,7 @@ class HassioBackupDialog
     }
     if (
       !(await showConfirmationDialog(this, {
-        title: "Are you sure you want partially to restore this backup?",
+        title: "Are you sure you want to restore this partial backup?",
         confirmText: "restore",
         dismissText: "cancel",
       }))

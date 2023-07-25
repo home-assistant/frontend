@@ -14,7 +14,7 @@ declare global {
 export type ValidUserDataKey = keyof FrontendUserData;
 
 export const fetchFrontendUserData = async <
-  UserDataKey extends ValidUserDataKey
+  UserDataKey extends ValidUserDataKey,
 >(
   conn: Connection,
   key: UserDataKey
@@ -29,7 +29,7 @@ export const fetchFrontendUserData = async <
 };
 
 export const saveFrontendUserData = async <
-  UserDataKey extends ValidUserDataKey
+  UserDataKey extends ValidUserDataKey,
 >(
   conn: Connection,
   key: UserDataKey,
@@ -42,7 +42,7 @@ export const saveFrontendUserData = async <
   });
 
 export const getOptimisticFrontendUserDataCollection = <
-  UserDataKey extends ValidUserDataKey
+  UserDataKey extends ValidUserDataKey,
 >(
   conn: Connection,
   userDataKey: UserDataKey

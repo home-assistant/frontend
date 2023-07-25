@@ -119,7 +119,6 @@ class HaHumidifierState extends LitElement {
 
       .state-label {
         font-weight: bold;
-        text-transform: capitalize;
       }
 
       .unit {

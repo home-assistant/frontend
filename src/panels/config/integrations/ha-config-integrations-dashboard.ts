@@ -150,7 +150,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     ): [
       [string, ConfigEntryExtended[]][],
       ConfigEntryExtended[],
-      ConfigEntryExtended[]
+      ConfigEntryExtended[],
     ] => {
       let filteredConfigEntries: ConfigEntryExtended[];
       const ignored: ConfigEntryExtended[] = [];
@@ -383,16 +383,20 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
                 )}
               </h1>
               <div class="container">
-                ${ignoredConfigEntries.map(
-                  (entry: ConfigEntryExtended) => html`
-                    <ha-ignored-config-entry-card
-                      .hass=${this.hass}
-                      .manifest=${this._manifests[entry.domain]}
-                      .entry=${entry}
-                      @change=${this._handleFlowUpdated}
-                    ></ha-ignored-config-entry-card>
-                  `
-                )}
+                ${ignoredConfigEntries.length > 0
+                  ? ignoredConfigEntries.map(
+                      (entry: ConfigEntryExtended) => html`
+                        <ha-ignored-config-entry-card
+                          .hass=${this.hass}
+                          .manifest=${this._manifests[entry.domain]}
+                          .entry=${entry}
+                          @change=${this._handleFlowUpdated}
+                        ></ha-ignored-config-entry-card>
+                      `
+                    )
+                  : html`${this.hass.localize(
+                      "ui.panel.config.integrations.no_ignored_integrations"
+                    )}`}
               </div>`
           : ""}
         ${configEntriesInProgress.length
@@ -417,17 +421,28 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
                 ${this.hass.localize("ui.panel.config.integrations.disabled")}
               </h1>
               <div class="container">
-                ${disabledConfigEntries.map(
-                  (entry: ConfigEntryExtended) => html`
-                    <ha-disabled-config-entry-card
-                      .hass=${this.hass}
-                      .entry=${entry}
-                      .manifest=${this._manifests[entry.domain]}
-                      .entityRegistryEntries=${this._entityRegistryEntries}
-                    ></ha-disabled-config-entry-card>
-                  `
-                )}
+                ${disabledConfigEntries.length > 0
+                  ? disabledConfigEntries.map(
+                      (entry: ConfigEntryExtended) => html`
+                        <ha-disabled-config-entry-card
+                          .hass=${this.hass}
+                          .entry=${entry}
+                          .manifest=${this._manifests[entry.domain]}
+                          .entityRegistryEntries=${this._entityRegistryEntries}
+                        ></ha-disabled-config-entry-card>
+                      `
+                    )
+                  : html`${this.hass.localize(
+                      "ui.panel.config.integrations.no_disabled_integrations"
+                    )}`}
               </div>`
+          : ""}
+        ${configEntriesInProgress.length ||
+        this._showDisabled ||
+        this._showIgnored
+          ? html`<h1>
+              ${this.hass.localize("ui.panel.config.integrations.configured")}
+            </h1>`
           : ""}
         <div class="container">
           ${integrations.length

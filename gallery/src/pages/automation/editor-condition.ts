@@ -121,17 +121,16 @@ class DemoHaAutomationEditorCondition extends LitElement {
             .value=${this.data[sampleIdx]}
           >
             ${["light", "dark"].map(
-              (slot) =>
-                html`
-                  <ha-automation-condition
-                    slot=${slot}
-                    .hass=${this.hass}
-                    .conditions=${this.data[sampleIdx]}
-                    .sampleIdx=${sampleIdx}
-                    .disabled=${this._disabled}
-                    @value-changed=${valueChanged}
-                  ></ha-automation-condition>
-                `
+              (slot) => html`
+                <ha-automation-condition
+                  slot=${slot}
+                  .hass=${this.hass}
+                  .conditions=${this.data[sampleIdx]}
+                  .sampleIdx=${sampleIdx}
+                  .disabled=${this._disabled}
+                  @value-changed=${valueChanged}
+                ></ha-automation-condition>
+              `
             )}
           </demo-black-white-row>
         `

@@ -135,6 +135,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     window.location.hash.substring(1)
   );
 
+  private _configPanel = memoizeOne(
+    (domain: string, panels: HomeAssistant["panels"]): string | undefined =>
+      Object.values(panels).find(
+        (panel) => panel.config_panel_domain === domain
+      )?.url_path || integrationsWithPanel[domain]
+  );
+
   private _domainConfigEntries = memoizeOne(
     (domain: string, configEntries?: ConfigEntry[]): ConfigEntry[] =>
       configEntries
@@ -410,22 +417,23 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   </h1>
                   <mwc-list>
                     ${discoveryFlows.map(
-                      (flow) => html`<ha-list-item
-                        hasMeta
-                        class="discovered"
-                        noninteractive
-                      >
-                        ${flow.localized_title}
-                        <ha-button
-                          slot="meta"
-                          unelevated
-                          .flow=${flow}
-                          @click=${this._continueFlow}
-                          .label=${this.hass.localize(
-                            "ui.panel.config.integrations.configure"
-                          )}
-                        ></ha-button>
-                      </ha-list-item>`
+                      (flow) =>
+                        html`<ha-list-item
+                          hasMeta
+                          class="discovered"
+                          noninteractive
+                        >
+                          ${flow.localized_title}
+                          <ha-button
+                            slot="meta"
+                            unelevated
+                            .flow=${flow}
+                            @click=${this._continueFlow}
+                            .label=${this.hass.localize(
+                              "ui.panel.config.integrations.configure"
+                            )}
+                          ></ha-button>
+                        </ha-list-item>`
                     )}
                   </mwc-list>
                 </ha-card>`
@@ -619,7 +627,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       }
 
       if (devicesLine.length === 0) {
-        devicesLine = ["No devices or entities"];
+        devicesLine = [
+          this.hass.localize(
+            "ui.panel.config.integrations.config_entry.no_devices_or_entities"
+          ),
+        ];
       } else if (devicesLine.length === 2) {
         devicesLine = [
           devicesLine[0],
@@ -636,6 +648,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ];
       }
     }
+
+    const configPanel = this._configPanel(item.domain, this.hass.panels);
 
     return html`<ha-list-item
       hasMeta
@@ -668,13 +682,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ? html`<mwc-button unelevated slot="meta" @click=${this._handleEnable}>
             ${this.hass.localize("ui.common.enable")}
           </mwc-button>`
-        : item.domain in integrationsWithPanel &&
+        : configPanel &&
           (item.domain !== "matter" || isDevVersion(this.hass.config.version))
         ? html`<a
             slot="meta"
-            href=${`${integrationsWithPanel[item.domain]}?config_entry=${
-              item.entry_id
-            }`}
+            href=${`/${configPanel}?config_entry=${item.entry_id}`}
             ><mwc-button>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.configure"

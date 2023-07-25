@@ -68,6 +68,7 @@ gulp.task("convert-backend-translations", function () {
 });
 
 gulp.task("check-translations-html", function () {
+  // We exclude backend translations because they are not compliant with the HTML rule for now
   return gulp.src([`${inDirFrontend}/*.json`]).pipe(checkHtml());
 });
 

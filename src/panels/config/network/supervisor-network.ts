@@ -139,25 +139,24 @@ export class HassioNetwork extends LitElement {
                         ${this._accessPoints.accesspoints
                           .filter((ap) => ap.ssid)
                           .map(
-                            (ap) =>
-                              html`
-                                <mwc-list-item
-                                  twoline
-                                  @click=${this._selectAP}
-                                  .activated=${ap.ssid ===
-                                  this._wifiConfiguration?.ssid}
-                                  .ap=${ap}
-                                >
-                                  <span>${ap.ssid}</span>
-                                  <span slot="secondary">
-                                    ${ap.mac} -
-                                    ${this.hass.localize(
-                                      "ui.panel.config.network.supervisor.signal_strength"
-                                    )}:
-                                    ${ap.signal}
-                                  </span>
-                                </mwc-list-item>
-                              `
+                            (ap) => html`
+                              <mwc-list-item
+                                twoline
+                                @click=${this._selectAP}
+                                .activated=${ap.ssid ===
+                                this._wifiConfiguration?.ssid}
+                                .ap=${ap}
+                              >
+                                <span>${ap.ssid}</span>
+                                <span slot="secondary">
+                                  ${ap.mac} -
+                                  ${this.hass.localize(
+                                    "ui.panel.config.network.supervisor.signal_strength"
+                                  )}:
+                                  ${ap.signal}
+                                </span>
+                              </mwc-list-item>
+                            `
                           )}
                       </mwc-list>
                     `
@@ -254,7 +253,11 @@ export class HassioNetwork extends LitElement {
             .label=${"ui.common.menu"}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <mwc-list-item>IP Information</mwc-list-item>
+          <mwc-list-item
+            >${this.hass.localize(
+              "ui.panel.config.network.ip_information"
+            )}</mwc-list-item
+          >
         </ha-button-menu>
       </div>`;
   }

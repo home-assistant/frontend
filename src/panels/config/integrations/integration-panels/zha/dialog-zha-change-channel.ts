@@ -45,7 +45,7 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
 
   public async showDialog(params: ZHAChangeChannelDialogParams): Promise<void> {
     this._params = params;
-    this._newChannel = params.currentChannel;
+    this._newChannel = "auto";
   }
 
   public closeDialog(): void {

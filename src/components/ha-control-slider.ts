@@ -327,7 +327,8 @@ export class HaControlSlider extends LitElement {
         height: 100%;
         width: 100%;
         background-color: var(--control-slider-color);
-        transition: transform 180ms ease-in-out,
+        transition:
+          transform 180ms ease-in-out,
           background-color 180ms ease-in-out;
       }
       .slider .slider-track-bar.show-handle {
@@ -427,7 +428,9 @@ export class HaControlSlider extends LitElement {
         position: absolute;
         background-color: white;
         border-radius: var(--handle-size);
-        transition: left 180ms ease-in-out, bottom 180ms ease-in-out;
+        transition:
+          left 180ms ease-in-out,
+          bottom 180ms ease-in-out;
         top: 0;
         bottom: 0;
         left: calc(var(--value, 0) * (100% - var(--cursor-size)));

@@ -21,7 +21,8 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
-import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import "../../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type {
   LovelaceBadgeConfig,
   LovelaceCardConfig,

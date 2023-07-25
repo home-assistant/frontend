@@ -70,25 +70,24 @@ class EventSubscribeCard extends LitElement {
           ${repeat(
             this._events,
             (event) => event.id,
-            (event) =>
-              html`
-                <div class="event">
-                  ${this.hass!.localize(
-                    "ui.panel.developer-tools.tabs.events.event_fired",
-                    "name",
-                    event.id
-                  )}
-                  ${formatTime(
-                    new Date(event.event.time_fired),
-                    this.hass!.locale,
-                    this.hass!.config
-                  )}:
-                  <ha-yaml-editor
-                    .defaultValue=${event.event}
-                    readOnly
-                  ></ha-yaml-editor>
-                </div>
-              `
+            (event) => html`
+              <div class="event">
+                ${this.hass!.localize(
+                  "ui.panel.developer-tools.tabs.events.event_fired",
+                  "name",
+                  event.id
+                )}
+                ${formatTime(
+                  new Date(event.event.time_fired),
+                  this.hass!.locale,
+                  this.hass!.config
+                )}:
+                <ha-yaml-editor
+                  .defaultValue=${event.event}
+                  readOnly
+                ></ha-yaml-editor>
+              </div>
+            `
           )}
         </div>
       </ha-card>
