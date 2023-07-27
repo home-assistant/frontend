@@ -1,19 +1,30 @@
 import { consume } from "@lit-labs/context";
-import { mdiDelete, mdiPlus } from "@mdi/js";
+import type { SortableEvent } from "sortablejs";
+import { mdiDelete, mdiPlus, mdiArrowUp, mdiArrowDown, mdiDrag } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+import {
+  loadSortable,
+  SortableInstance,
+} from "../../../../../resources/sortable.ondemand";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-icon-button";
 import { Condition } from "../../../../../data/automation";
-import { Action, ChooseAction } from "../../../../../data/script";
+import {
+  Action,
+  ChooseAction,
+  ChooseActionChoice,
+} from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
 import { describeCondition } from "../../../../../data/automation_i18n";
 import { fullEntitiesContext } from "../../../../../data/context";
 import { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import { sortableStyles } from "../../../../../resources/ha-sortable-style";
 
 @customElement("ha-automation-action-choose")
 export class HaChooseAction extends LitElement implements ActionElement {
@@ -27,40 +38,20 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   @state() private _showDefault = false;
 
-  @state() private expandedUpdateFlag = false;
+  @state() private _expandedStates: boolean[] = [];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
+  private _expandLast = false;
+
+  private _sortable?: SortableInstance;
+
+  private _optionKeys = new WeakMap<ChooseActionChoice, string>();
+
   public static get defaultConfig() {
     return { choose: [{ conditions: [], sequence: [] }] };
-  }
-
-  protected willUpdate(changedProperties: PropertyValues) {
-    if (!changedProperties.has("action")) {
-      return;
-    }
-
-    const oldCnt =
-      changedProperties.get("action") === undefined ||
-      changedProperties.get("action").choose === undefined
-        ? 0
-        : ensureArray(changedProperties.get("action").choose).length;
-    const newCnt = this.action.choose
-      ? ensureArray(this.action.choose).length
-      : 0;
-    if (newCnt === oldCnt + 1) {
-      this.expand(newCnt - 1);
-    }
-  }
-
-  private expand(i: number) {
-    this.updateComplete.then(() => {
-      this.shadowRoot!.querySelectorAll("ha-expansion-panel")[i].expanded =
-        true;
-      this.expandedUpdateFlag = !this.expandedUpdateFlag;
-    });
   }
 
   private isExpanded(i: number) {
@@ -72,7 +63,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
   }
 
   private _expandedChanged() {
-    this.expandedUpdateFlag = !this.expandedUpdateFlag;
+    this._expandedStates = this._expandedStates.concat();
   }
 
   private _getDescription(option, idx: number) {
@@ -108,67 +99,99 @@ export class HaChooseAction extends LitElement implements ActionElement {
     const action = this.action;
 
     return html`
-      ${(action.choose ? ensureArray(action.choose) : []).map(
-        (option, idx) =>
-          html`<ha-card>
-            <ha-expansion-panel
-              leftChevron
-              @expanded-changed=${this._expandedChanged}
-            >
-              <h3 slot="header">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.type.choose.option",
-                  "number",
-                  idx + 1
-                )}:
-                ${this._getDescription(option, idx)}
-              </h3>
-
-              <ha-icon-button
-                slot="icons"
-                .idx=${idx}
-                .disabled=${this.disabled}
-                @click=${this._removeOption}
-                .label=${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.type.choose.remove_option"
-                )}
-                .path=${mdiDelete}
-              ></ha-icon-button>
-              <div class="card-content">
-                <h4>
+      <div class="options">
+        ${repeat(
+          action.choose ? ensureArray(action.choose) : [],
+          (option) => this._getKey(option),
+          (option, idx) =>
+            html`<ha-card>
+              <ha-expansion-panel
+                leftChevron
+                @expanded-changed=${this._expandedChanged}
+              >
+                <h3 slot="header">
                   ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.type.choose.conditions"
+                    "ui.panel.config.automation.editor.actions.type.choose.option",
+                    "number",
+                    idx + 1
                   )}:
-                </h4>
-                <ha-automation-condition
-                  nested
-                  .conditions=${ensureArray<string | Condition>(
-                    option.conditions
-                  )}
-                  .reOrderMode=${this.reOrderMode}
-                  .disabled=${this.disabled}
-                  .hass=${this.hass}
-                  .idx=${idx}
-                  @value-changed=${this._conditionChanged}
-                ></ha-automation-condition>
-                <h4>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.type.choose.sequence"
-                  )}:
-                </h4>
-                <ha-automation-action
-                  nested
-                  .actions=${ensureArray(option.sequence) || []}
-                  .reOrderMode=${this.reOrderMode}
-                  .disabled=${this.disabled}
-                  .hass=${this.hass}
-                  .idx=${idx}
-                  @value-changed=${this._actionChanged}
-                ></ha-automation-action>
-              </div>
-            </ha-expansion-panel>
-          </ha-card>`
-      )}
+                  ${this._getDescription(option, idx)}
+                </h3>
+                ${this.reOrderMode
+                  ? html`
+                      <ha-icon-button
+                        .index=${idx}
+                        slot="icons"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.editor.move_up"
+                        )}
+                        .path=${mdiArrowUp}
+                        @click=${this._moveUp}
+                        .disabled=${idx === 0}
+                      ></ha-icon-button>
+                      <ha-icon-button
+                        .index=${idx}
+                        slot="icons"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.editor.move_down"
+                        )}
+                        .path=${mdiArrowDown}
+                        @click=${this._moveDown}
+                        .disabled=${idx ===
+                        ensureArray(this.action.choose).length - 1}
+                      ></ha-icon-button>
+                      <div class="handle" slot="icons">
+                        <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                      </div>
+                    `
+                  : html`
+                      <ha-icon-button
+                        slot="icons"
+                        .idx=${idx}
+                        .disabled=${this.disabled}
+                        @click=${this._removeOption}
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.editor.actions.type.choose.remove_option"
+                        )}
+                        .path=${mdiDelete}
+                      ></ha-icon-button>
+                    `}
+                <div class="card-content">
+                  <h4>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.actions.type.choose.conditions"
+                    )}:
+                  </h4>
+                  <ha-automation-condition
+                    nested
+                    .conditions=${ensureArray<string | Condition>(
+                      option.conditions
+                    )}
+                    .reOrderMode=${this.reOrderMode}
+                    .disabled=${this.disabled}
+                    .hass=${this.hass}
+                    .idx=${idx}
+                    @value-changed=${this._conditionChanged}
+                  ></ha-automation-condition>
+                  <h4>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.actions.type.choose.sequence"
+                    )}:
+                  </h4>
+                  <ha-automation-action
+                    nested
+                    .actions=${ensureArray(option.sequence) || []}
+                    .reOrderMode=${this.reOrderMode}
+                    .disabled=${this.disabled}
+                    .hass=${this.hass}
+                    .idx=${idx}
+                    @value-changed=${this._actionChanged}
+                  ></ha-automation-action>
+                </div>
+              </ha-expansion-panel>
+            </ha-card>`
+        )}
+      </div>
       <ha-button
         outlined
         .label=${this.hass.localize(
@@ -209,6 +232,46 @@ export class HaChooseAction extends LitElement implements ActionElement {
     `;
   }
 
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+
+    if (changedProps.has("reOrderMode")) {
+      if (this.reOrderMode) {
+        this._createSortable();
+      } else {
+        this._destroySortable();
+      }
+    }
+
+    const nodes = this.shadowRoot!.querySelectorAll("ha-expansion-panel");
+    if (this._expandedStates.length !== nodes.length) {
+      this._expandedStates = [];
+    }
+    let update = false;
+    for (let i = 0; i < nodes.length; i++) {
+      if (this._expandLast && i === nodes.length - 1) {
+        nodes[i].expanded = true;
+        update = true;
+      }
+      if (this._expandedStates[i] !== nodes[i].expanded) {
+        this._expandedStates[i] = nodes[i].expanded;
+        update = true;
+      }
+    }
+    if (update) {
+      this._expandedStates = this._expandedStates.concat();
+    }
+    this._expandLast = false;
+  }
+
+  private _getKey(option: ChooseActionChoice) {
+    if (!this._optionKeys.has(option)) {
+      this._optionKeys.set(option, Math.random().toString());
+    }
+
+    return this._optionKeys.get(option)!;
+  }
+
   private _addDefault() {
     this._showDefault = true;
   }
@@ -247,6 +310,33 @@ export class HaChooseAction extends LitElement implements ActionElement {
     fireEvent(this, "value-changed", {
       value: { ...this.action, choose },
     });
+    this._expandLast = true;
+  }
+
+  private _moveUp(ev) {
+    const index = (ev.target as any).index;
+    const newIndex = index - 1;
+    this._move(index, newIndex);
+  }
+
+  private _moveDown(ev) {
+    const index = (ev.target as any).index;
+    const newIndex = index + 1;
+    this._move(index, newIndex);
+  }
+
+  private _dragged(ev: SortableEvent): void {
+    if (ev.oldIndex === ev.newIndex) return;
+    this._move(ev.oldIndex!, ev.newIndex!);
+  }
+
+  private _move(index: number, newIndex: number) {
+    const options = ensureArray(this.action.choose)!.concat();
+    const item = options.splice(index, 1)[0];
+    options.splice(newIndex, 0, item);
+    fireEvent(this, "value-changed", {
+      value: { ...this.action, choose: options },
+    });
   }
 
   private _removeOption(ev: CustomEvent) {
@@ -271,9 +361,37 @@ export class HaChooseAction extends LitElement implements ActionElement {
     });
   }
 
+  private async _createSortable() {
+    const Sortable = await loadSortable();
+    this._sortable = new Sortable(this.shadowRoot!.querySelector(".options")!, {
+      animation: 150,
+      fallbackClass: "sortable-fallback",
+      handle: ".handle",
+      onChoose: (evt: SortableEvent) => {
+        (evt.item as any).placeholder =
+          document.createComment("sort-placeholder");
+        evt.item.after((evt.item as any).placeholder);
+      },
+      onEnd: (evt: SortableEvent) => {
+        // put back in original location
+        if ((evt.item as any).placeholder) {
+          (evt.item as any).placeholder.replaceWith(evt.item);
+          delete (evt.item as any).placeholder;
+        }
+        this._dragged(evt);
+      },
+    });
+  }
+
+  private _destroySortable() {
+    this._sortable?.destroy();
+    this._sortable = undefined;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      sortableStyles,
       css`
         ha-card {
           margin: 0 0 16px 0;
@@ -292,8 +410,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
           font-weight: inherit;
         }
         ha-icon-button {
-          position: absolute;
-          right: 0;
           inset-inline-start: initial;
           inset-inline-end: 0;
           direction: var(--direction);
@@ -306,6 +422,14 @@ export class HaChooseAction extends LitElement implements ActionElement {
         }
         .card-content {
           padding: 0 16px 16px 16px;
+        }
+        .handle {
+          cursor: move;
+          padding: 12px;
+        }
+        .handle ha-svg-icon {
+          pointer-events: none;
+          height: 24px;
         }
       `,
     ];
