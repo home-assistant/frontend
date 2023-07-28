@@ -9790,7 +9790,7 @@ __metadata:
     terser-webpack-plugin: 5.3.9
     tinykeys: 2.1.0
     ts-lit-plugin: 2.0.0-pre.1
-    tsparticles-engine: 2.11.0
+    tsparticles-engine: 2.11.1
     tsparticles-preset-links: 2.11.0
     typescript: 5.1.6
     unfetch: 5.0.0
@@ -15296,10 +15296,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsparticles-engine@npm:2.11.0, tsparticles-engine@npm:^2.11.0":
-  version: 2.11.0
-  resolution: "tsparticles-engine@npm:2.11.0"
-  checksum: 1aad1c3969b38dec5b468220eba7a1a26982fd8b13567f37970fe8d1cd6e7609da8622e8b16599b6359ecc681a33e9672a8a697e5ea9f146b15cc709b9fa78d9
+"tsparticles-engine@npm:2.11.1, tsparticles-engine@npm:^2.11.0":
+  version: 2.11.1
+  resolution: "tsparticles-engine@npm:2.11.1"
+  checksum: c8e18f8d3aac2f10b4a0ba4f5b6039822cc91fe32fb0a5e2c9e90746108ce6a71dfe8c28ce9f76ce4ff5de8fbd72b61d97a39411efd2402a92f2b4f30bd5f650
   languageName: node
   linkType: hard
 
