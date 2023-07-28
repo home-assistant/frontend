@@ -346,16 +346,18 @@ export const localizeStateMessage = (
       break;
 
     case "event": {
-      const event_type =
-        computeAttributeValueDisplay(
-          hass!.localize,
-          stateObj,
-          hass.locale,
-          hass.config,
-          hass.entities,
-          "event_type"
-        )?.toString() ||
-        localize(`${LOGBOOK_LOCALIZE_PATH}.detected_unknown_event`);
+      const event_type = computeAttributeValueDisplay(
+        hass!.localize,
+        stateObj,
+        hass.locale,
+        hass.config,
+        hass.entities,
+        "event_type"
+      )?.toString();
+
+      if (event_type === undefined) {
+        return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_unknown_event`);
+      }
 
       return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_event`, {
         event_type: autoCaseNoun(event_type, hass.language),
