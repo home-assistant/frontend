@@ -195,7 +195,7 @@
     "eslint": "8.45.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-airbnb-typescript": "17.1.0",
-    "eslint-config-prettier": "8.8.0",
+    "eslint-config-prettier": "8.9.0",
     "eslint-import-resolver-webpack": "0.13.2",
     "eslint-plugin-disable": "2.0.3",
     "eslint-plugin-import": "2.27.5",
