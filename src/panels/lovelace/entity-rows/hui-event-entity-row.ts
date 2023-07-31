@@ -69,14 +69,17 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
           })}
         >
           <div class="what">
+            ${computeStateDisplay(
+              this.hass!.localize,
+              stateObj,
+              this.hass.locale,
+              this.hass.config,
+              this.hass.entities
+            )}
+          </div>
+          <div class="when">
             ${isUnavailableState(stateObj.state)
-              ? computeStateDisplay(
-                  this.hass!.localize,
-                  stateObj,
-                  this.hass.locale,
-                  this.hass.config,
-                  this.hass.entities
-                )
+              ? ``
               : computeAttributeValueDisplay(
                   this.hass!.localize,
                   stateObj,
@@ -85,18 +88,6 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
                   this.hass.entities,
                   "event_type"
                 )}
-          </div>
-          <div class="when">
-            ${isUnavailableState(stateObj.state)
-              ? ``
-              : html`
-                  <hui-timestamp-display
-                    .hass=${this.hass}
-                    .ts=${new Date(stateObj.state)}
-                    .format=${this._config.format}
-                    capitalize
-                  ></hui-timestamp-display>
-                `}
           </div>
         </div>
       </hui-generic-entity-row>
