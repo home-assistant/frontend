@@ -4,7 +4,7 @@ export const mockConfigEntries = (hass: MockHomeAssistant) => {
   hass.mockWS("config_entries/get", () => ({
     entry_id: "co2signal",
     domain: "co2signal",
-    title: "CO2 Signal",
+    title: "Electricity Maps",
     source: "user",
     state: "loaded",
     supports_options: false,
