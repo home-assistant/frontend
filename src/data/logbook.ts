@@ -157,7 +157,6 @@ export const createHistoricState = (
     attributes: {
       // Rebuild the historical state by copying static attributes only
       device_class: currentStateObj?.attributes.device_class,
-      event_type: currentStateObj?.attributes.event_type,
       source_type: currentStateObj?.attributes.source_type,
       has_date: currentStateObj?.attributes.has_date,
       has_time: currentStateObj?.attributes.has_time,
