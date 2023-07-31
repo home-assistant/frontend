@@ -355,7 +355,7 @@ export const localizeStateMessage = (
         "event_type"
       )?.toString();
 
-      if (event_type === undefined) {
+      if (!event_type) {
         return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_unknown_event`);
       }
 
