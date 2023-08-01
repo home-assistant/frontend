@@ -46,7 +46,10 @@ export const computeAttributeValueDisplay = (
         // If invalid URL, exception will be raised
         const url = new URL(attributeValue);
         if (url.protocol === "http:" || url.protocol === "https:")
-          return html`<a target="_blank" rel="noreferrer" href=${attributeValue}
+          return html`<a
+            target="_blank"
+            rel="noopener noreferrer"
+            href=${attributeValue}
             >${attributeValue}</a
           >`;
       } catch (_) {

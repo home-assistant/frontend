@@ -34,7 +34,7 @@ export class HaNumberSelector extends LitElement {
         ${!isBox
           ? html`
               ${this.label
-                ? html`${this.label}${this.required ? " *" : ""}`
+                ? html`${this.label}${this.required ? "*" : ""}`
                 : ""}
               <ha-slider
                 .min=${this.selector.number?.min}

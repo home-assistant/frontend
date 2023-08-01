@@ -261,7 +261,11 @@ export const DOMAINS_TOGGLE = new Set([
 ]);
 
 /** Domains that have a dynamic entity image / picture. */
-export const DOMAINS_WITH_DYNAMIC_PICTURE = new Set(["camera", "media_player"]);
+export const DOMAINS_WITH_DYNAMIC_PICTURE = new Set([
+  "camera",
+  "image",
+  "media_player",
+]);
 
 /** Temperature units. */
 export const UNIT_C = "°C";
