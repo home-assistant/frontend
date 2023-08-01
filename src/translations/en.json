@@ -362,6 +362,7 @@
           "detected_tampering": "detected tampering",
           "cleared_tampering": "cleared tampering",
           "detected_event": "{event_type} event detected",
+          "detected_event_no_type": "detected an event",
           "detected_unknown_event": "detected an unknown event"
         }
       },

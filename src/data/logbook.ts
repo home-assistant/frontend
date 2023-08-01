@@ -345,6 +345,10 @@ export const localizeStateMessage = (
       break;
 
     case "event": {
+      return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_event_no_type`);
+
+      // TODO: This is not working yet, as we don't get historic attribute values
+
       const event_type = computeAttributeValueDisplay(
         hass!.localize,
         stateObj,
