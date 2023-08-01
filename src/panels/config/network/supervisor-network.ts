@@ -484,7 +484,7 @@ export class HassioNetwork extends LitElement {
     this._interface = { ...this._interfaces[ev.detail.index] };
   }
 
-  private _handleRadioValueChanged(ev: CustomEvent): void {
+  private _handleRadioValueChanged(ev: Event): void {
     const source = ev.target as HaRadio;
     const value = source.value as "disabled" | "auto" | "static";
     const version = (ev.target as any).version as "ipv4" | "ipv6";
@@ -502,7 +502,7 @@ export class HassioNetwork extends LitElement {
     this.requestUpdate("_interface");
   }
 
-  private _handleRadioValueChangedAp(ev: CustomEvent): void {
+  private _handleRadioValueChangedAp(ev: Event): void {
     const source = ev.target as HaRadio;
     const value = source.value as string as "open" | "wep" | "wpa-psk";
     this._wifiConfiguration!.auth = value;
@@ -510,7 +510,7 @@ export class HassioNetwork extends LitElement {
     this.requestUpdate("_wifiConfiguration");
   }
 
-  private _handleInputValueChanged(ev: CustomEvent): void {
+  private _handleInputValueChanged(ev: Event): void {
     const source = ev.target as HaTextField;
     const value = source.value;
     const version = (ev.target as any).version as "ipv4" | "ipv6";
@@ -528,7 +528,7 @@ export class HassioNetwork extends LitElement {
     this._interface[version]![id] = value;
   }
 
-  private _handleInputValueChangedWifi(ev: CustomEvent): void {
+  private _handleInputValueChangedWifi(ev: Event): void {
     const source = ev.target as HaTextField;
     const value = source.value;
     const id = source.id;
