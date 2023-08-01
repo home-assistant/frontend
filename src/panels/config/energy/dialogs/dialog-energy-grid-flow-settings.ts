@@ -87,10 +87,10 @@ export class DialogEnergyGridFlowSettings
     ).units;
 
     this._excludeList = [
-      ...(this._params.current_preference?.flow_from?.map(
+      ...(this._params.grid_source?.flow_from?.map(
         (entry) => entry.stat_energy_from
       ) || []),
-      ...(this._params.current_preference?.flow_to?.map(
+      ...(this._params.grid_source?.flow_to?.map(
         (entry) => entry.stat_energy_to
       ) || []),
     ].filter((id) => id !== initialSourceId);

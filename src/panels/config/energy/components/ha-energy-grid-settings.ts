@@ -298,7 +298,7 @@ export class EnergyGridSettings extends LitElement {
       (src) => src.type === "grid"
     ) as GridSourceTypeEnergyPreference | undefined;
     showEnergySettingsGridFlowFromDialog(this, {
-      current_preference: gridSource,
+      grid_source: gridSource,
       saveCallback: async (flow) => {
         let preferences: EnergyPreferences;
         if (!gridSource) {
@@ -332,7 +332,7 @@ export class EnergyGridSettings extends LitElement {
       (src) => src.type === "grid"
     ) as GridSourceTypeEnergyPreference | undefined;
     showEnergySettingsGridFlowToDialog(this, {
-      current_preference: gridSource,
+      grid_source: gridSource,
       saveCallback: async (flow) => {
         let preferences: EnergyPreferences;
         if (!gridSource) {
@@ -369,7 +369,7 @@ export class EnergyGridSettings extends LitElement {
     ) as GridSourceTypeEnergyPreference | undefined;
     showEnergySettingsGridFlowFromDialog(this, {
       source: { ...origSource },
-      current_preference: gridSource,
+      grid_source: gridSource,
       metadata: this.statsMetadata?.[origSource.stat_energy_from],
       saveCallback: async (source) => {
         const flowFrom = energySourcesByType(this.preferences).grid![0]
@@ -401,7 +401,7 @@ export class EnergyGridSettings extends LitElement {
     ) as GridSourceTypeEnergyPreference | undefined;
     showEnergySettingsGridFlowToDialog(this, {
       source: { ...origSource },
-      current_preference: gridSource,
+      grid_source: gridSource,
       metadata: this.statsMetadata?.[origSource.stat_energy_to],
       saveCallback: async (source) => {
         const flowTo = energySourcesByType(this.preferences).grid![0].flow_to;
