@@ -87,8 +87,7 @@ class PanelShoppingList extends LitElement {
           display: flex;
           flex-direction: row;
           justify-content: center;
-          margin-left: 4px;
-          margin-right: 4px;
+          margin: 8px;
         }
         .column {
           flex: 1 0 0;
