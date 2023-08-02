@@ -80,6 +80,10 @@ export class HuiEnergySourcesTableCard
     let totalWater = 0;
     let totalWaterCost = 0;
 
+    let hasGridCost = false;
+    let hasGasCost = false;
+    let hasWaterCost = false;
+
     let totalGridCompare = 0;
     let totalGridCostCompare = 0;
     let totalSolarCompare = 0;
@@ -477,6 +481,7 @@ export class HuiEnergySourcesTableCard
                         ) || 0
                       : null;
                     if (cost !== null) {
+                      hasGridCost = true;
                       totalGridCost += cost;
                     }
 
@@ -575,6 +580,7 @@ export class HuiEnergySourcesTableCard
                         ) || 0) * -1
                       : null;
                     if (cost !== null) {
+                      hasGridCost = true;
                       totalGridCost += cost;
                     }
 
@@ -686,14 +692,16 @@ export class HuiEnergySourcesTableCard
                             ? html`<td
                                 class="mdc-data-table__cell mdc-data-table__cell--numeric"
                               >
-                                ${formatNumber(
-                                  totalGridCostCompare,
-                                  this.hass.locale,
-                                  {
-                                    style: "currency",
-                                    currency: this.hass.config.currency!,
-                                  }
-                                )}
+                                ${hasGridCost
+                                  ? formatNumber(
+                                      totalGridCostCompare,
+                                      this.hass.locale,
+                                      {
+                                        style: "currency",
+                                        currency: this.hass.config.currency!,
+                                      }
+                                    )
+                                  : ""}
                               </td>`
                             : ""}`
                       : ""}
@@ -706,10 +714,12 @@ export class HuiEnergySourcesTableCard
                       ? html`<td
                           class="mdc-data-table__cell mdc-data-table__cell--numeric"
                         >
-                          ${formatNumber(totalGridCost, this.hass.locale, {
-                            style: "currency",
-                            currency: this.hass.config.currency!,
-                          })}
+                          ${hasGridCost
+                            ? formatNumber(totalGridCost, this.hass.locale, {
+                                style: "currency",
+                                currency: this.hass.config.currency!,
+                              })
+                            : ""}
                         </td>`
                       : ""}
                   </tr>`
@@ -737,6 +747,7 @@ export class HuiEnergySourcesTableCard
                     0
                   : null;
                 if (cost !== null) {
+                  hasGasCost = true;
                   totalGasCost += cost;
                 }
 
@@ -835,14 +846,16 @@ export class HuiEnergySourcesTableCard
                             ? html`<td
                                 class="mdc-data-table__cell mdc-data-table__cell--numeric"
                               >
-                                ${formatNumber(
-                                  totalGasCostCompare,
-                                  this.hass.locale,
-                                  {
-                                    style: "currency",
-                                    currency: this.hass.config.currency!,
-                                  }
-                                )}
+                                ${hasGasCost
+                                  ? formatNumber(
+                                      totalGasCostCompare,
+                                      this.hass.locale,
+                                      {
+                                        style: "currency",
+                                        currency: this.hass.config.currency!,
+                                      }
+                                    )
+                                  : ""}
                               </td>`
                             : ""}`
                       : ""}
@@ -855,10 +868,12 @@ export class HuiEnergySourcesTableCard
                       ? html`<td
                           class="mdc-data-table__cell mdc-data-table__cell--numeric"
                         >
-                          ${formatNumber(totalGasCost, this.hass.locale, {
-                            style: "currency",
-                            currency: this.hass.config.currency!,
-                          })}
+                          ${hasGasCost
+                            ? formatNumber(totalGasCost, this.hass.locale, {
+                                style: "currency",
+                                currency: this.hass.config.currency!,
+                              })
+                            : ""}
                         </td>`
                       : ""}
                   </tr>`
@@ -886,6 +901,7 @@ export class HuiEnergySourcesTableCard
                     0
                   : null;
                 if (cost !== null) {
+                  hasWaterCost = true;
                   totalWaterCost += cost;
                 }
 
@@ -984,14 +1000,16 @@ export class HuiEnergySourcesTableCard
                             ? html`<td
                                 class="mdc-data-table__cell mdc-data-table__cell--numeric"
                               >
-                                ${formatNumber(
-                                  totalWaterCostCompare,
-                                  this.hass.locale,
-                                  {
-                                    style: "currency",
-                                    currency: this.hass.config.currency!,
-                                  }
-                                )}
+                                ${hasWaterCost
+                                  ? formatNumber(
+                                      totalWaterCostCompare,
+                                      this.hass.locale,
+                                      {
+                                        style: "currency",
+                                        currency: this.hass.config.currency!,
+                                      }
+                                    )
+                                  : ""}
                               </td>`
                             : ""}`
                       : ""}
@@ -1004,16 +1022,18 @@ export class HuiEnergySourcesTableCard
                       ? html`<td
                           class="mdc-data-table__cell mdc-data-table__cell--numeric"
                         >
-                          ${formatNumber(totalWaterCost, this.hass.locale, {
-                            style: "currency",
-                            currency: this.hass.config.currency!,
-                          })}
+                          ${hasWaterCost
+                            ? formatNumber(totalWaterCost, this.hass.locale, {
+                                style: "currency",
+                                currency: this.hass.config.currency!,
+                              })
+                            : ""}
                         </td>`
                       : ""}
                   </tr>`
                 : ""}
-              ${[totalGasCost, totalWaterCost, totalGridCost].filter(Boolean)
-                .length > 1
+              ${[hasGasCost, hasWaterCost, hasGridCost].filter(Boolean).length >
+              1
                 ? html`<tr class="mdc-data-table__row total">
                     <td class="mdc-data-table__cell"></td>
                     <th class="mdc-data-table__cell" scope="row">
@@ -1022,9 +1042,7 @@ export class HuiEnergySourcesTableCard
                       )}
                     </th>
                     ${compare
-                      ? html`${showCosts
-                            ? html`<td class="mdc-data-table__cell"></td>`
-                            : ""}
+                      ? html`<td class="mdc-data-table__cell"></td>
                           <td
                             class="mdc-data-table__cell mdc-data-table__cell--numeric"
                           >
