@@ -26,7 +26,7 @@ export class HaLocationSelector extends LitElement {
 
   protected render() {
     return html`
-      ${this.label ? this.label : ""}
+      <div class="title">${this.label ? this.label : ""}</div>
       <ha-locations-editor
         class="flex"
         .hass=${this.hass}
@@ -82,6 +82,21 @@ export class HaLocationSelector extends LitElement {
     :host {
       display: block;
       height: 400px;
+    }
+    //.header {
+    //  display: flex;
+    //  flex-direction: row;
+    //  justify-content: space-between;
+    //  align-items: center;
+    //}
+    .title {
+      font-family: var(--paper-font-title_-_font-family);
+      -webkit-font-smoothing: var(--paper-font-title_-_-webkit-font-smoothing);
+      font-size: var(--paper-font-subhead_-_font-size);
+      font-weight: var(--paper-font-title_-_font-weight);
+      letter-spacing: var(--paper-font-title_-_letter-spacing);
+      line-height: var(--paper-font-title_-_line-height);
+      margin-bottom: 8px;
     }
   `;
 }
