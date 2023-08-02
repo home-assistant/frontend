@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, nothing, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -86,6 +86,8 @@ export class HaStatisticPicker extends LitElement {
   private _init = false;
 
   private _statistics: StatisticItem[] = [];
+
+  @state() private _filteredItems?: StatisticItem[] = undefined;
 
   private _rowRenderer: ComboBoxLitRenderer<StatisticItem> = (item) =>
     html`<mwc-list-item graphic="avatar" twoline>
@@ -254,7 +256,11 @@ export class HaStatisticPicker extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | typeof nothing {
+    if (this._statistics.length === 0) {
+      return nothing;
+    }
+
     return html`
       <ha-combo-box
         .hass=${this.hass}
@@ -265,9 +271,8 @@ export class HaStatisticPicker extends LitElement {
         .renderer=${this._rowRenderer}
         .disabled=${this.disabled}
         .allowCustomValue=${this.allowCustomEntity}
-        .filteredItems=${this.value && this._statistics.length === 0
-          ? undefined
-          : this._statistics}
+        .items=${this._statistics}
+        .filteredItems=${this._filteredItems ?? this._statistics}
         item-value-path="id"
         item-id-path="id"
         item-label-path="name"
@@ -303,11 +308,10 @@ export class HaStatisticPicker extends LitElement {
   }
 
   private _filterChanged(ev: CustomEvent): void {
-    const target = ev.target as HaComboBox;
     const filterString = ev.detail.value.toLowerCase();
-    target.filteredItems = filterString.length
+    this._filteredItems = filterString.length
       ? fuzzyFilterSort<StatisticItem>(filterString, this._statistics)
-      : this._statistics;
+      : undefined;
   }
 
   private _setValue(value: string) {
