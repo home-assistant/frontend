@@ -1295,6 +1295,11 @@ export class HaConfigDevicePage extends LitElement {
               }
             }
           }
+        } else if (
+          updates.disabled_by !== null &&
+          updates.disabled_by !== "user"
+        ) {
+          delete updates.disabled_by;
         }
         try {
           await updateDeviceRegistryEntry(this.hass, this.deviceId, updates);
