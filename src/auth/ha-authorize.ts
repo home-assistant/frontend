@@ -131,8 +131,8 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
       return;
     }
 
-    // eslint-disable-next-line no-script-url
     if (
+      // eslint-disable-next-line no-script-url
       ["javascript:", "data:", "vbscript:", "file:", "about:"].includes(
         url.protocol
       )
