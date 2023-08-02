@@ -1,11 +1,12 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, Route } from "../types";
-import "./ha-sidebar-title";
-import "./ha-sidebar-panels";
 import "./ha-sidebar-panel-notifications";
 import "./ha-sidebar-panel-user";
+import "./ha-sidebar-panels";
+import "./ha-sidebar-title";
 import "./ha-sidebar-tooltip";
 
 const styles = css`
@@ -41,7 +42,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public editMode = false;
 
-  static styles = styles;
+  static styles = [haStyleScrollbar, styles];
 
   protected render() {
     if (!this.hass) {
@@ -66,6 +67,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           .editMode=${this.editMode}
           @panel-hover=${this._panelHover}
           @panel-leave=${this._mouseLeave}
+          class="ha-scrollbar"
           role="listbox"
         ></ha-sidebar-panels>
         <hr />

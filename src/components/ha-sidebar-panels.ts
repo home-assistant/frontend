@@ -10,24 +10,25 @@ import {
   mdiTooltipAccount,
   mdiViewDashboard,
 } from "@mdi/js";
-import { css, html, LitElement, PropertyValues } from "lit";
+import { LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../common/decorators/storage";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import { HomeAssistant, PanelInfo } from "../types";
+import "./ha-sidebar-edit-panels";
+import "./ha-sidebar-panel";
 import "./ha-sidebar-panel-config";
 import "./ha-sidebar-panel-ext-config";
-import "./ha-sidebar-panel";
-import "./ha-sidebar-edit-panels";
 
 const styles = css`
   :host {
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
     flex-grow: 1;
+    margin: 0 -12px;
+    padding: 0 12px;
   }
   .spacer {
     flex: 1;
