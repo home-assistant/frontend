@@ -36,6 +36,11 @@ export class DeveloperYamlConfig extends LitElement {
 
   private _validateLog = "";
 
+  public connectedCallback() {
+    super.connectedCallback();
+    this._isValid = null;
+  }
+
   protected updated(changedProperties) {
     const oldHass = changedProperties.get("hass");
     if (
