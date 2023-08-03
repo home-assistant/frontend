@@ -39,6 +39,7 @@ export class DeveloperYamlConfig extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     this._isValid = null;
+    this._validateLog = "";
   }
 
   protected updated(changedProperties) {
