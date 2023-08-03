@@ -1879,7 +1879,7 @@
           "description": "Name, time zone, and locale settings",
           "section": {
             "core": {
-              "header": "General Configuration",
+              "header": "General configuration",
               "introduction": "Manage your location, network and analytics.",
               "core_config": {
                 "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
@@ -1888,10 +1888,10 @@
                 "longitude": "Longitude",
                 "elevation": "Elevation",
                 "elevation_meters": "meters",
-                "time_zone": "Time Zone",
+                "time_zone": "Time zone",
                 "language": "Language",
                 "country": "Country",
-                "unit_system": "Unit System",
+                "unit_system": "Unit system",
                 "unit_system_us_customary": "US customary",
                 "unit_system_metric": "Metric",
                 "us_customary_example": "Fahrenheit, pounds",
@@ -3605,7 +3605,7 @@
           "add_user": {
             "caption": "Add user",
             "password": "Password",
-            "password_confirm": "Confirm Password",
+            "password_confirm": "Confirm password",
             "password_not_match": "Passwords don't match",
             "local_only": "Local only",
             "create": "Create"
@@ -3613,7 +3613,7 @@
           "change_password": {
             "caption": "Change password",
             "new_password": "New password",
-            "password_confirm": "Confirm Password",
+            "password_confirm": "Confirm password",
             "change": "Change",
             "password_no_match": "Passwords don't match",
             "password_changed": "The password has been changed successfully."
@@ -5602,9 +5602,9 @@
             "name": "Name",
             "username": "Username",
             "password": "Password",
-            "password_confirm": "Confirm Password"
+            "password_confirm": "Confirm password"
           },
-          "create_account": "Create Account",
+          "create_account": "Create account",
           "error": {
             "password_not_match": "Passwords don't match"
           }
@@ -5625,7 +5625,7 @@
           "finish": "Next"
         },
         "integration": {
-          "intro": "Devices and services are represented in Home Assistant as integrations. You can set them up now, or do it later from the configuration screen.",
+          "intro": "Devices and services are represented in Home Assistant as integrations. You can set them up now, or do it later from the settings.",
           "more_integrations": "More",
           "finish": "Finish"
         },
