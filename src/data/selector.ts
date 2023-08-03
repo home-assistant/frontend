@@ -296,6 +296,7 @@ export interface SelectSelector {
     mode?: "list" | "dropdown";
     options: readonly string[] | readonly SelectOption[];
     translation_key?: string;
+    sort?: boolean;
   } | null;
 }
 
