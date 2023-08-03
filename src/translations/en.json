@@ -3605,7 +3605,7 @@
           "add_user": {
             "caption": "Add user",
             "password": "Password",
-            "password_confirm": "Confirm Password",
+            "password_confirm": "Confirm password",
             "password_not_match": "Passwords don't match",
             "local_only": "Local only",
             "create": "Create"
@@ -3613,7 +3613,7 @@
           "change_password": {
             "caption": "Change password",
             "new_password": "New Password",
-            "password_confirm": "Confirm Password",
+            "password_confirm": "Confirm password",
             "change": "Change",
             "password_no_match": "Passwords don't match",
             "password_changed": "The password has been changed successfully."
@@ -5602,9 +5602,9 @@
             "name": "Name",
             "username": "Username",
             "password": "Password",
-            "password_confirm": "Confirm Password"
+            "password_confirm": "Confirm password"
           },
-          "create_account": "Create Account",
+          "create_account": "Create account",
           "error": {
             "password_not_match": "Passwords don't match"
           }
