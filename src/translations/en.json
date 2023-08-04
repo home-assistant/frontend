@@ -5430,6 +5430,15 @@
       },
       "developer-tools": {
         "tabs": {
+          "assist": {
+            "title": "Sentences parser",
+            "description": "Enter sentences and see how they will be parsed by Home Assistant. Each line will be processed as an individual sentence. Intents will not be executed on your instance.",
+            "parse_sentences": "Parse sentences",
+            "sentences": "Sentences",
+            "download_results": "Download Results",
+            "no_match": "No intent matched",
+            "language": "[%key:ui::components::language-picker::language%]"
+          },
           "events": {
             "title": "Events",
             "description": "Fire an event on the event bus.",
