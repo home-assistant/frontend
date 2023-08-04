@@ -45,7 +45,8 @@ documentContainer.innerHTML = `<custom-style>
       --card-background-color: #ffffff;
       --primary-background-color: #fafafa;
       --secondary-background-color: #e5e5e5; /* behind the cards on state */
-
+      --clear-background-color: #ffffff;
+      
       /* for header */
       --header-height: 56px;
 
