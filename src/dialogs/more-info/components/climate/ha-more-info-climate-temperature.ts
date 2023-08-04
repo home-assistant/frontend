@@ -229,6 +229,10 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     const hvacModes = this.stateObj.attributes.hvac_modes;
 
     if (supportsTargetTemperature && this._targetTemperature.value != null) {
+      const hasOnlyCoolMode =
+        hvacModes.length === 2 &&
+        hvacModes.includes("cool") &&
+        hvacModes.includes("off");
       return html`
         <div
           class="container"
@@ -238,11 +242,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           })}
         >
           <ha-control-circular-slider
-            .inverted=${mode === "cool" ||
-            (mode === "off" &&
-              hvacModes.length === 2 &&
-              hvacModes.includes("cool") &&
-              hvacModes.includes("off"))}
+            .inverted=${mode === "cool" || hasOnlyCoolMode}
             .value=${this._targetTemperature.value}
             .min=${this._min}
             .max=${this._max}
