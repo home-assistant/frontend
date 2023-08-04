@@ -18,14 +18,14 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { clamp } from "../common/number/clamp";
-import { arc } from "../resources/svg-arc";
+import { svgArc } from "../resources/svg-arc";
 
 const MAX_ANGLE = 270;
 const ROTATE_ANGLE = 360 - MAX_ANGLE / 2 - 90;
 const RADIUS = 145;
+const MINIMAL_ARC_LENGTH = 0.1;
 
 function xy2polar(x: number, y: number) {
   const r = Math.sqrt(x * x + y * y);
@@ -392,22 +392,27 @@ export class HaControlCircularSlider extends LitElement {
     percentage: number,
     inverted?: boolean
   ): [string, string] {
-    const maxRatio = MAX_ANGLE / 360;
-    const f = RADIUS * 2 * Math.PI;
+    const track = (RADIUS * 2 * Math.PI * MAX_ANGLE) / 360;
     if (inverted) {
-      const arcLength = (1 - percentage) * f * maxRatio;
-      const strokeDasharray = `${arcLength} ${f - arcLength}`;
-      const strokeDashOffset = `${arcLength + f * (1 - maxRatio)}`;
+      const arc = Math.max((1 - percentage) * track, MINIMAL_ARC_LENGTH);
+      const strokeDasharray = `${arc} ${track - arc}`;
+      const strokeDashOffset = `${arc - track + MINIMAL_ARC_LENGTH * 2}`;
       return [strokeDasharray, strokeDashOffset];
     }
-    const arcLength = percentage * f * maxRatio;
-    const strokeDasharray = `${arcLength} ${f - arcLength}`;
+    const arc = Math.max(percentage * track, MINIMAL_ARC_LENGTH);
+    const strokeDasharray = `${arc} ${track - arc}`;
     const strokeDashOffset = "0";
     return [strokeDasharray, strokeDashOffset];
   }
 
   protected render(): TemplateResult {
-    const trackPath = arc({ x: 0, y: 0, start: 0, end: MAX_ANGLE, r: RADIUS });
+    const trackPath = svgArc({
+      x: 0,
+      y: 0,
+      start: 0,
+      end: MAX_ANGLE,
+      r: RADIUS,
+    });
 
     const lowValue = this.dual ? this._localLow : this._localValue;
     const highValue = this._localHigh;
@@ -423,9 +428,6 @@ export class HaControlCircularSlider extends LitElement {
       highPercentage,
       true
     );
-
-    const currentPercentage = this._valueToPercentage(this.current ?? 0);
-    const currentAngle = currentPercentage * MAX_ANGLE;
 
     return html`
       <svg
@@ -449,12 +451,10 @@ export class HaControlCircularSlider extends LitElement {
             <path class="background" d=${trackPath} />
             ${lowValue != null
               ? svg`
-                <circle
+                <path
                   .id=${this.dual ? "low" : "value"}
                   class="track"
-                  cx="0"
-                  cy="0"
-                  r=${RADIUS}
+                  d=${trackPath}
                   stroke-dasharray=${lowStrokeDasharray}
                   stroke-dashoffset=${lowStrokeDashOffset}
                   role="slider"
@@ -473,12 +473,10 @@ export class HaControlCircularSlider extends LitElement {
               : nothing}
             ${this.dual && highValue != null
               ? svg`
-                    <circle
+                    <path
                       id="high"
                       class="track"
-                      cx="0"
-                      cy="0"
-                      r=${RADIUS}
+                      d=${trackPath}
                       stroke-dasharray=${highStrokeDasharray}
                       stroke-dashoffset=${highStrokeDashOffset}
                       role="slider"
@@ -496,30 +494,6 @@ export class HaControlCircularSlider extends LitElement {
                       @keyup=${this._handleKeyUp}
                     />
                   `
-              : nothing}
-            ${this.current != null
-              ? svg`
-                <g
-                  style=${styleMap({ "--current-angle": `${currentAngle}deg` })}
-                  class="current"
-                >
-                  <line 
-                    x1=${RADIUS - 12} 
-                    y1="0" 
-                    x2=${RADIUS - 15} 
-                    y2="0" 
-                    stroke-width="4" 
-                  />
-                  <line
-                    x1=${RADIUS - 15}
-                    y1="0"
-                    x2=${RADIUS - 20}
-                    y2="0"
-                    stroke-linecap="round"
-                    stroke-width="4"
-                  />
-                </g>
-            `
               : nothing}
           </g>
         </g>
@@ -592,12 +566,6 @@ export class HaControlCircularSlider extends LitElement {
 
       .pressed .track {
         transition: stroke-width 300ms ease-in-out;
-      }
-
-      .current {
-        stroke: var(--primary-text-color);
-        transform: rotate(var(--current-angle, 0));
-        transition: transform 300ms ease-in-out;
       }
 
       #value {
