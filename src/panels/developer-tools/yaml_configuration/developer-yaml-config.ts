@@ -36,8 +36,8 @@ export class DeveloperYamlConfig extends LitElement {
 
   private _validateLog = "";
 
-  public connectedCallback() {
-    super.connectedCallback();
+  public disconnectedCallback() {
+    super.disconnectedCallback();
     this._isValid = null;
     this._validateLog = "";
   }
@@ -178,6 +178,9 @@ export class DeveloperYamlConfig extends LitElement {
 
     const configCheck = await checkCoreConfig(this.hass);
     this._validating = false;
+    if (!this.isConnected) {
+      return;
+    }
     this._isValid = configCheck.result === "valid";
 
     if (configCheck.errors) {
