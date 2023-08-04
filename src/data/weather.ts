@@ -525,9 +525,24 @@ export const weatherIcon = (state?: string, nightTime?: boolean): string =>
     ? mdiWeatherNightPartlyCloudy
     : weatherIcons[state];
 
+const EIGHT_HOURS = 28800000;
 const DAY_IN_MILLISECONDS = 86400000;
 
 const isForecastHourly = (
+  forecast?: ForecastAttribute[]
+): boolean | undefined => {
+  if (forecast && forecast?.length && forecast?.length > 2) {
+    const date1 = new Date(forecast[1].datetime);
+    const date2 = new Date(forecast[2].datetime);
+    const timeDiff = date2.getTime() - date1.getTime();
+
+    return timeDiff < EIGHT_HOURS;
+  }
+
+  return undefined;
+};
+
+const isForecastTwiceDaily = (
   forecast?: ForecastAttribute[]
 ): boolean | undefined => {
   if (forecast && forecast?.length && forecast?.length > 2) {
@@ -565,19 +580,16 @@ const getLegacyForecast = (
     }
   | undefined => {
   if (weather_attributes?.forecast && weather_attributes.forecast.length > 2) {
-    const hourly = isForecastHourly(weather_attributes.forecast);
-    if (hourly === true) {
-      const dateFirst = new Date(weather_attributes.forecast![0].datetime);
-      const datelast = new Date(
-        weather_attributes.forecast![
-          weather_attributes.forecast!.length - 1
-        ].datetime
-      );
-      const dayDiff = datelast.getTime() - dateFirst.getTime();
-      const dayNight = dayDiff > DAY_IN_MILLISECONDS;
+    if (isForecastHourly(weather_attributes.forecast)) {
       return {
         forecast: weather_attributes.forecast,
-        type: dayNight ? "twice_daily" : "hourly",
+        type: "hourly",
+      };
+    }
+    if (isForecastTwiceDaily(weather_attributes.forecast)) {
+      return {
+        forecast: weather_attributes.forecast,
+        type: "twice_daily",
       };
     }
     return { forecast: weather_attributes.forecast, type: "daily" };
