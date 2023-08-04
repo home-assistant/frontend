@@ -9776,7 +9776,7 @@ __metadata:
     luxon: 3.3.0
     magic-string: 0.30.1
     map-stream: 0.0.7
-    marked: 4.3.0
+    marked: 6.0.0
     memoize-one: 6.0.0
     merge-stream: 2.0.0
     mocha: 10.2.0
@@ -11760,12 +11760,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:4.3.0":
-  version: 4.3.0
-  resolution: "marked@npm:4.3.0"
+"marked@npm:6.0.0":
+  version: 6.0.0
+  resolution: "marked@npm:6.0.0"
   bin:
     marked: bin/marked.js
-  checksum: 0db6817893952c3ec710eb9ceafb8468bf5ae38cb0f92b7b083baa13d70b19774674be04db5b817681fa7c5c6a088f61300815e4dd75a59696f4716ad69f6260
+  checksum: 1b02d4254d8aeec4d54799d2191821fd86da8c743361065b523617d1c226ba14ebd8677dc7bef7fa183a4253217c53d0d56e82d378a78b5a1ebaf8409e90136e
   languageName: node
   linkType: hard
 
