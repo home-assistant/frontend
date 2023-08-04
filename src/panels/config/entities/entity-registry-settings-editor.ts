@@ -186,7 +186,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues) {
     super.willUpdate(changedProperties);
-    if (!changedProperties.has("entry")) {
+    if (
+      !changedProperties.has("entry") ||
+      changedProperties.get("entry")?.id === this.entry.id
+    ) {
       return;
     }
 
