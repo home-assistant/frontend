@@ -488,7 +488,9 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         background: none;
         border: none;
         opacity: 0.5;
-        transition: opacity 180ms ease-in-out, transform 180ms ease-in-out;
+        transition:
+          opacity 180ms ease-in-out,
+          transform 180ms ease-in-out;
         cursor: pointer;
       }
       .dual button:focus-visible {
