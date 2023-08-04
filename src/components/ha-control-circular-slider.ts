@@ -25,7 +25,6 @@ import { svgArc } from "../resources/svg-arc";
 const MAX_ANGLE = 270;
 const ROTATE_ANGLE = 360 - MAX_ANGLE / 2 - 90;
 const RADIUS = 145;
-const MINIMAL_ARC_LENGTH = 0.1;
 
 function xy2polar(x: number, y: number) {
   const r = Math.sqrt(x * x + y * y);
@@ -388,20 +387,20 @@ export class HaControlCircularSlider extends LitElement {
     }
   }
 
-  private _strokeDashArc(
-    percentage: number,
-    inverted?: boolean
-  ): [string, string] {
+  private _strokeCircleDashArc(value: number): [string, string] {
+    return this._strokeDashArc(value, value);
+  }
+
+  private _strokeDashArc(from: number, to: number): [string, string] {
+    const start = this._valueToPercentage(from);
+    const end = this._valueToPercentage(to);
+
     const track = (RADIUS * 2 * Math.PI * MAX_ANGLE) / 360;
-    if (inverted) {
-      const arc = Math.max((1 - percentage) * track, MINIMAL_ARC_LENGTH);
-      const strokeDasharray = `${arc} ${track - arc}`;
-      const strokeDashOffset = `${arc - track + MINIMAL_ARC_LENGTH * 2}`;
-      return [strokeDasharray, strokeDashOffset];
-    }
-    const arc = Math.max(percentage * track, MINIMAL_ARC_LENGTH);
+    const arc = Math.max((end - start) * track, 0);
+    const arcOffset = start * track - 0.5;
+
     const strokeDasharray = `${arc} ${track - arc}`;
-    const strokeDashOffset = "0";
+    const strokeDashOffset = `-${arcOffset}`;
     return [strokeDasharray, strokeDashOffset];
   }
 
@@ -416,18 +415,28 @@ export class HaControlCircularSlider extends LitElement {
 
     const lowValue = this.dual ? this._localLow : this._localValue;
     const highValue = this._localHigh;
-    const lowPercentage = this._valueToPercentage(lowValue ?? this.min);
-    const highPercentage = this._valueToPercentage(highValue ?? this.max);
+    const low = lowValue ?? this.min;
+    const high = highValue ?? this.max;
+    const current = this.current;
 
-    const [lowStrokeDasharray, lowStrokeDashOffset] = this._strokeDashArc(
-      lowPercentage,
-      this.inverted
-    );
+    const [lowStrokeDasharray, lowStrokeDashOffset] = this.inverted
+      ? this._strokeDashArc(low, this.max)
+      : this._strokeDashArc(this.min, low);
 
     const [highStrokeDasharray, highStrokeDashOffset] = this._strokeDashArc(
-      highPercentage,
-      true
+      high,
+      this.max
     );
+
+    const [targetLowStrokeDasharray, targetLowStrokeDashOffset] =
+      this._strokeCircleDashArc(low);
+
+    const [targetHighStrokeDasharray, targetHighStrokeDashOffset] =
+      this._strokeCircleDashArc(high);
+
+    const [currentStrokeDasharray, currentStrokeDashOffset] = current
+      ? this._strokeCircleDashArc(current)
+      : [undefined, undefined];
 
     return html`
       <svg
@@ -469,6 +478,12 @@ export class HaControlCircularSlider extends LitElement {
                   @keydown=${this._handleKeyDown}
                   @keyup=${this._handleKeyUp}
                 />
+                <path
+                  class="target"
+                  d=${trackPath}
+                  stroke-dasharray=${targetLowStrokeDasharray}
+                  stroke-dashoffset=${targetLowStrokeDashOffset}
+                />
               `
               : nothing}
             ${this.dual && highValue != null
@@ -493,7 +508,23 @@ export class HaControlCircularSlider extends LitElement {
                       @keydown=${this._handleKeyDown}
                       @keyup=${this._handleKeyUp}
                     />
+                    <path
+                      class="target"
+                      d=${trackPath}
+                      stroke-dasharray=${targetHighStrokeDasharray}
+                      stroke-dashoffset=${targetHighStrokeDashOffset}
+                    />
                   `
+              : nothing}
+            ${currentStrokeDasharray && currentStrokeDashOffset
+              ? svg`
+                  <path
+                    class="current"
+                    d=${trackPath}
+                    stroke-dasharray=${currentStrokeDasharray}
+                    stroke-dashoffset=${currentStrokeDashOffset}
+                  />
+                `
               : nothing}
           </g>
         </g>
@@ -560,12 +591,46 @@ export class HaControlCircularSlider extends LitElement {
           opacity 180ms ease-in-out;
       }
 
+      .target {
+        outline: none;
+        fill: none;
+        stroke-linecap: round;
+        stroke-width: 18px;
+        stroke: white;
+        transition:
+          stroke-width 300ms ease-in-out,
+          stroke-dasharray 300ms ease-in-out,
+          stroke-dashoffset 300ms ease-in-out,
+          stroke 180ms ease-in-out,
+          opacity 180ms ease-in-out;
+      }
+
+      .current {
+        outline: none;
+        fill: none;
+        stroke-linecap: round;
+        stroke-width: 8px;
+        stroke: white;
+        opacity: 0.5;
+        transition:
+          stroke-width 300ms ease-in-out,
+          stroke-dasharray 300ms ease-in-out,
+          stroke-dashoffset 300ms ease-in-out,
+          stroke 180ms ease-in-out,
+          opacity 180ms ease-in-out;
+      }
+
       .track:focus-visible {
         stroke-width: 28px;
       }
 
-      .pressed .track {
-        transition: stroke-width 300ms ease-in-out;
+      .pressed .track,
+      .pressed .target,
+      .pressed .current {
+        transition:
+          stroke-width 300ms ease-in-out,
+          stroke 180ms ease-in-out,
+          opacity 180ms ease-in-out;
       }
 
       #value {
