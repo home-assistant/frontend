@@ -4,7 +4,7 @@ import type {
   CompletionResult,
   CompletionSource,
 } from "@codemirror/autocomplete";
-import type { Extension } from "@codemirror/state";
+import type { Extension, TransactionSpec } from "@codemirror/state";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import { HassEntities } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
@@ -12,7 +12,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import { loadCodeMirror } from "../resources/codemirror.ondemand";
+import { CodeMirror, loadCodeMirror } from "../resources/codemirror.ondemand";
 import { HomeAssistant } from "../types";
 import "./ha-icon";
 
@@ -54,11 +54,11 @@ export class HaCodeEditor extends ReactiveElement {
   @property({ type: Boolean, attribute: "autocomplete-icons" })
   public autocompleteIcons = false;
 
-  @property() public error = false;
+  @property({ type: Boolean }) public error = false;
 
   @state() private _value = "";
 
-  private _loadedCodeMirror?: typeof import("../resources/codemirror");
+  private _loadedCodeMirror?: CodeMirror;
 
   private _iconList?: Completion[];
 
@@ -78,12 +78,19 @@ export class HaCodeEditor extends ReactiveElement {
       this.codemirror.state,
       [this._loadedCodeMirror.tags.comment]
     );
-    return !!this.shadowRoot!.querySelector(`span.${className}`);
+    return !!this.renderRoot.querySelector(`span.${className}`);
   }
 
   public connectedCallback() {
     super.connectedCallback();
+    // Force update on reconnection so editor is recreated
+    if (this.hasUpdated) {
+      this.requestUpdate();
+    }
     this.addEventListener("keydown", stopPropagation);
+    // This is unreachable as editor will not exist yet,
+    // but focus should not behave like this for good a11y.
+    // (@steverep to fix in autofocus PR)
     if (!this.codemirror) {
       return;
     }
@@ -95,31 +102,41 @@ export class HaCodeEditor extends ReactiveElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener("keydown", stopPropagation);
+    this.updateComplete.then(() => {
+      this.codemirror!.destroy();
+      delete this.codemirror;
+    });
+  }
+
+  // Ensure CodeMirror module is loaded before any update
+  protected override async scheduleUpdate() {
+    this._loadedCodeMirror ??= await loadCodeMirror();
+    super.scheduleUpdate();
   }
 
   protected update(changedProps: PropertyValues): void {
     super.update(changedProps);
-
     if (!this.codemirror) {
+      this._createCodeMirror();
       return;
     }
-
+    const transactions: TransactionSpec[] = [];
     if (changedProps.has("mode")) {
-      this.codemirror.dispatch({
+      transactions.push({
         effects: this._loadedCodeMirror!.langCompartment!.reconfigure(
           this._mode
         ),
       });
     }
     if (changedProps.has("readOnly")) {
-      this.codemirror.dispatch({
+      transactions.push({
         effects: this._loadedCodeMirror!.readonlyCompartment!.reconfigure(
           this._loadedCodeMirror!.EditorView!.editable.of(!this.readOnly)
         ),
       });
     }
     if (changedProps.has("_value") && this._value !== this.value) {
-      this.codemirror.dispatch({
+      transactions.push({
         changes: {
           from: 0,
           to: this.codemirror.state.doc.length,
@@ -127,46 +144,45 @@ export class HaCodeEditor extends ReactiveElement {
         },
       });
     }
+    if (transactions.length > 0) {
+      this.codemirror.dispatch(...transactions);
+    }
     if (changedProps.has("error")) {
       this.classList.toggle("error-state", this.error);
     }
-  }
-
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    this._load();
   }
 
   private get _mode() {
     return this._loadedCodeMirror!.langs[this.mode];
   }
 
-  private async _load(): Promise<void> {
-    this._loadedCodeMirror = await loadCodeMirror();
+  private _createCodeMirror() {
+    if (!this._loadedCodeMirror) {
+      throw new Error("Cannot create editor before CodeMirror is loaded");
+    }
     const extensions: Extension[] = [
       this._loadedCodeMirror.lineNumbers(),
-      this._loadedCodeMirror.EditorState.allowMultipleSelections.of(true),
       this._loadedCodeMirror.history(),
+      this._loadedCodeMirror.drawSelection(),
+      this._loadedCodeMirror.EditorState.allowMultipleSelections.of(true),
+      this._loadedCodeMirror.rectangularSelection(),
+      this._loadedCodeMirror.crosshairCursor(),
       this._loadedCodeMirror.highlightSelectionMatches(),
       this._loadedCodeMirror.highlightActiveLine(),
-      this._loadedCodeMirror.drawSelection(),
-      this._loadedCodeMirror.rectangularSelection(),
       this._loadedCodeMirror.keymap.of([
         ...this._loadedCodeMirror.defaultKeymap,
         ...this._loadedCodeMirror.searchKeymap,
         ...this._loadedCodeMirror.historyKeymap,
         ...this._loadedCodeMirror.tabKeyBindings,
         saveKeyBinding,
-      ] as KeyBinding[]),
+      ]),
       this._loadedCodeMirror.langCompartment.of(this._mode),
       this._loadedCodeMirror.haTheme,
       this._loadedCodeMirror.haSyntaxHighlighting,
       this._loadedCodeMirror.readonlyCompartment.of(
         this._loadedCodeMirror.EditorView.editable.of(!this.readOnly)
       ),
-      this._loadedCodeMirror.EditorView.updateListener.of((update) =>
-        this._onUpdate(update)
-      ),
+      this._loadedCodeMirror.EditorView.updateListener.of(this._onUpdate),
     ];
 
     if (!this.readOnly) {
@@ -192,8 +208,7 @@ export class HaCodeEditor extends ReactiveElement {
         doc: this._value,
         extensions,
       }),
-      root: this.shadowRoot!,
-      parent: this.shadowRoot!,
+      parent: this.renderRoot,
     });
   }
 
@@ -277,17 +292,13 @@ export class HaCodeEditor extends ReactiveElement {
     };
   }
 
-  private _onUpdate(update: ViewUpdate): void {
+  private _onUpdate = (update: ViewUpdate): void => {
     if (!update.docChanged) {
       return;
     }
-    const newValue = this.value;
-    if (newValue === this._value) {
-      return;
-    }
-    this._value = newValue;
+    this._value = update.state.doc.toString();
     fireEvent(this, "value-changed", { value: this._value });
-  }
+  };
 
   static get styles(): CSSResultGroup {
     return css`

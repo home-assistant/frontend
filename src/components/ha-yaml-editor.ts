@@ -27,7 +27,7 @@ export class HaYamlEditor extends LitElement {
 
   @property() public defaultValue?: any;
 
-  @property() public isValid = true;
+  @property({ type: Boolean }) public isValid = true;
 
   @property() public label?: string;
 
