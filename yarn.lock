@@ -1533,6 +1533,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cspotcode/source-map-support@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "@cspotcode/source-map-support@npm:0.8.1"
+  dependencies:
+    "@jridgewell/trace-mapping": 0.3.9
+  checksum: 5718f267085ed8edb3e7ef210137241775e607ee18b77d95aa5bd7514f47f5019aa2d82d96b3bf342ef7aa890a346fa1044532ff7cc3009e7d24fce3ce6200fa
+  languageName: node
+  linkType: hard
+
 "@discoveryjs/json-ext@npm:^0.5.0":
   version: 0.5.7
   resolution: "@discoveryjs/json-ext@npm:0.5.7"
@@ -1992,6 +2001,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jridgewell/resolve-uri@npm:^3.0.3":
+  version: 3.1.1
+  resolution: "@jridgewell/resolve-uri@npm:3.1.1"
+  checksum: f5b441fe7900eab4f9155b3b93f9800a916257f4e8563afbcd3b5a5337b55e52bd8ae6735453b1b745457d9f6cdb16d74cd6220bbdd98cf153239e13f6cbb653
+  languageName: node
+  linkType: hard
+
 "@jridgewell/set-array@npm:^1.0.1":
   version: 1.1.2
   resolution: "@jridgewell/set-array@npm:1.1.2"
@@ -2020,6 +2036,16 @@ __metadata:
   version: 1.4.15
   resolution: "@jridgewell/sourcemap-codec@npm:1.4.15"
   checksum: b881c7e503db3fc7f3c1f35a1dd2655a188cc51a3612d76efc8a6eb74728bef5606e6758ee77423e564092b4a518aba569bbb21c9bac5ab7a35b0c6ae7e344c8
+  languageName: node
+  linkType: hard
+
+"@jridgewell/trace-mapping@npm:0.3.9":
+  version: 0.3.9
+  resolution: "@jridgewell/trace-mapping@npm:0.3.9"
+  dependencies:
+    "@jridgewell/resolve-uri": ^3.0.3
+    "@jridgewell/sourcemap-codec": ^1.4.10
+  checksum: d89597752fd88d3f3480845691a05a44bd21faac18e2185b6f436c3b0fd0c5a859fbbd9aaa92050c4052caf325ad3e10e2e1d1b64327517471b7d51babc0ddef
   languageName: node
   linkType: hard
 
@@ -9763,7 +9789,7 @@ __metadata:
     html-minifier-terser: 7.2.0
     husky: 8.0.3
     idb-keyval: 6.2.1
-    instant-mocha: 1.5.1
+    instant-mocha: 1.5.2
     intl-messageformat: 10.5.0
     js-yaml: 4.1.0
     jszip: 3.10.1
@@ -10196,20 +10222,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"instant-mocha@npm:1.5.1":
-  version: 1.5.1
-  resolution: "instant-mocha@npm:1.5.1"
+"instant-mocha@npm:1.5.2":
+  version: 1.5.2
+  resolution: "instant-mocha@npm:1.5.2"
   dependencies:
+    "@cspotcode/source-map-support": ^0.8.1
     fs-require: ^1.6.0
     memfs: ^3.5.0
-    source-map-support: ^0.5.21
     yargs: ^16.2.0
   peerDependencies:
     mocha: 8 || 9 || 10
     webpack: 4 || 5
   bin:
     instant-mocha: dist/cli.js
-  checksum: c098a792ba3bddc1d421da7067c21818ccc64e45d98ccce735ab35c29132f01cf624a2106b1ecd5f1e5d9c9d9bbb8f947d92db8bcfa7ddae01425f7fd291ee6e
+  checksum: fc015e14825e2a4b9d14abee2212fefaeb65ef5d5cc9f4b0b569ac17505bd26d791ef8cddb91ab7dee09d7ff38356f19591d2bfe8ab2fafd7a75e31a67bf323d
   languageName: node
   linkType: hard
 
@@ -14509,7 +14535,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-support@npm:^0.5.21, source-map-support@npm:~0.5.12, source-map-support@npm:~0.5.20":
+"source-map-support@npm:~0.5.12, source-map-support@npm:~0.5.20":
   version: 0.5.21
   resolution: "source-map-support@npm:0.5.21"
   dependencies:
