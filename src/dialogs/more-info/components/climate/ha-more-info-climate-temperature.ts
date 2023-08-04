@@ -1,4 +1,4 @@
-import { mdiMinus, mdiPlus, mdiThermometer, mdiWaterPercent } from "@mdi/js";
+import { mdiMinus, mdiPlus } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -15,7 +15,6 @@ import { stateColorCss } from "../../../../common/entity/state_color";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { clamp } from "../../../../common/number/clamp";
 import { formatNumber } from "../../../../common/number/format_number";
-import { blankBeforePercent } from "../../../../common/translations/blank_before_percent";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-control-circular-slider";
 import "../../../../components/ha-svg-icon";
@@ -151,43 +150,6 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     `;
   }
 
-  private _renderCurrent() {
-    const currentTemperature = this.stateObj.attributes.current_temperature;
-    const currentHumidity = this.stateObj.attributes.current_humidity;
-
-    if (currentTemperature == null && currentHumidity == null) {
-      return nothing;
-    }
-
-    return html`
-      <p class="current-label">
-        ${this.hass.localize("ui.dialogs.more_info_control.climate.currently")}
-      </p>
-      <div class="current">
-        ${currentTemperature != null
-          ? html`
-              <p>
-                <ha-svg-icon .path=${mdiThermometer}></ha-svg-icon>
-                ${formatNumber(currentTemperature, this.hass.locale)}
-                ${this.hass.config.unit_system.temperature}
-              </p>
-            `
-          : nothing}
-        ${currentHumidity != null
-          ? html`
-              <p>
-                <ha-svg-icon .path=${mdiWaterPercent}></ha-svg-icon>
-                ${formatNumber(
-                  currentHumidity,
-                  this.hass.locale
-                )}${blankBeforePercent(this.hass.locale)}%
-              </p>
-            `
-          : nothing}
-      </div>
-    `;
-  }
-
   private _renderTemperatureButtons(target: Target) {
     return html`
       <div class="buttons">
@@ -257,13 +219,11 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     const highColor = stateColorCss(this.stateObj, "cool");
 
     let actionColor: string | undefined;
-    let backgroundColor: string | undefined;
     if (action && action !== "idle" && action !== "off" && mode !== "off") {
       actionColor = stateColorCss(
         this.stateObj,
         CLIMATE_HVAC_ACTION_TO_MODE[action]
       );
-      backgroundColor = stateColorCss(this.stateObj, mode);
     }
 
     const hvacModes = this.stateObj.attributes.hvac_modes;
@@ -274,7 +234,6 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           class="container"
           style=${styleMap({
             "--main-color": mainColor,
-            "--background-color": backgroundColor,
             "--action-color": actionColor,
           })}
         >
@@ -297,7 +256,6 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           <div class="info">
             ${this._renderHvacAction()}
             ${this._renderTargetTemperature(this._targetTemperature.value)}
-            ${this._renderCurrent()}
           </div>
           ${this._renderTemperatureButtons("value")}
         </div>
@@ -316,8 +274,6 @@ export class HaMoreInfoClimateTemperature extends LitElement {
             "--low-color": lowColor,
             "--high-color": highColor,
             "--action-color": actionColor,
-            "--low-opacity": action === "cooling" ? 0.3 : undefined,
-            "--high-opacity": action === "heating" ? 0.3 : undefined,
           })}
         >
           <ha-control-circular-slider
@@ -357,7 +313,6 @@ export class HaMoreInfoClimateTemperature extends LitElement {
                 ${this._renderTargetTemperature(this._targetTemperature.high)}
               </button>
             </div>
-            ${this._renderCurrent()}
           </div>
           ${this._renderTemperatureButtons(this._selectTargetTemperature)}
         </div>
@@ -368,7 +323,6 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       <div
         class="container"
         style=${styleMap({
-          "--background-color": mainColor,
           "--action-color": actionColor,
         })}
       >
@@ -380,9 +334,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           disabled
         >
         </ha-control-circular-slider>
-        <div class="info">
-          ${this._renderHvacAction()}${this._renderCurrent()}
-        </div>
+        <div class="info"></div>
       </div>
     `;
   }
@@ -528,10 +480,6 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           --main-color,
           var(--disabled-color)
         );
-        --control-circular-slider-background: var(
-          --background-color,
-          var(--disabled-color)
-        );
         --control-circular-slider-low-color: var(
           --low-color,
           var(--control-circular-slider-color)
@@ -540,9 +488,6 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           --high-color,
           var(--control-circular-slider-color)
         );
-        --control-circular-slider-background-opacity: 0.24;
-        --control-circular-slider-low-color-opacity: var(--low-opacity, 1);
-        --control-circular-slider-high-color-opacity: var(--high-opacity, 1);
       }
       ha-control-circular-slider::after {
         display: block;
