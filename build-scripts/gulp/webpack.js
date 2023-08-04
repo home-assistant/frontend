@@ -1,9 +1,9 @@
 // Tasks to run webpack.
 
-import log from "fancy-log";
 import fs from "fs";
-import gulp from "gulp";
 import path from "path";
+import log from "fancy-log";
+import gulp from "gulp";
 import webpack from "webpack";
 import WebpackDevServer from "webpack-dev-server";
 import env from "../env.cjs";
@@ -44,6 +44,7 @@ const runDevServer = async ({
 }) => {
   const server = new WebpackDevServer(
     {
+      hot: false,
       open: true,
       host: listenHost,
       port,
