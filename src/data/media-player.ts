@@ -498,3 +498,13 @@ export const mediaPlayerPlayMedia = (
     ...extra,
   });
 };
+
+export const mediaPlayerSelectSource = (
+  hass: HomeAssistant,
+  entity_id: string,
+  source: string
+) =>
+  hass.callService("media_player", "select_source", {
+    entity_id,
+    source,
+  });

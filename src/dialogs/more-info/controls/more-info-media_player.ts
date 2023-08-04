@@ -28,6 +28,7 @@ import {
   MediaPlayerEntity,
   MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
+  mediaPlayerSelectSource,
 } from "../../../data/media-player";
 import { HomeAssistant } from "../../../types";
 
@@ -304,10 +305,7 @@ class MoreInfoMediaPlayer extends LitElement {
       return;
     }
 
-    this.hass.callService("media_player", "select_source", {
-      entity_id: this.stateObj!.entity_id,
-      source: newVal,
-    });
+    mediaPlayerSelectSource(this.hass!, this.stateObj!.entity_id, newVal);
   }
 
   private _handleSoundModeChanged(e) {
