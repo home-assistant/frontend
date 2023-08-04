@@ -1445,10 +1445,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@braintree/sanitize-url@npm:6.0.2":
-  version: 6.0.2
-  resolution: "@braintree/sanitize-url@npm:6.0.2"
-  checksum: 6a9dfd4081cc96516eeb281d1a83d3b5f1ad3d2837adf968fcc2ba18889ee833554f9c641b4083c36d3360a932e4504ddf25b0b51e9933c3742622df82cf7c9a
+"@braintree/sanitize-url@npm:6.0.3":
+  version: 6.0.3
+  resolution: "@braintree/sanitize-url@npm:6.0.3"
+  checksum: c36151b33d38376956f108826aab7889bc30981c001a22faf3dda145697e5e7de8c4e613eaf33c93e417e74f34b91165d2c9d21395e13adf0d3239da259140b0
   languageName: node
   linkType: hard
 
@@ -9641,7 +9641,7 @@ __metadata:
     "@babel/preset-env": 7.22.9
     "@babel/preset-typescript": 7.22.5
     "@babel/runtime": 7.22.6
-    "@braintree/sanitize-url": 6.0.2
+    "@braintree/sanitize-url": 6.0.3
     "@codemirror/autocomplete": 6.9.0
     "@codemirror/commands": 6.2.4
     "@codemirror/language": 6.8.0
