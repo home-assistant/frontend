@@ -120,7 +120,7 @@
     "js-yaml": "4.1.0",
     "leaflet": "1.9.4",
     "leaflet-draw": "1.0.4",
-    "lit": "2.7.6",
+    "lit": "2.8.0",
     "luxon": "3.3.0",
     "marked": "4.3.0",
     "memoize-one": "6.0.0",
