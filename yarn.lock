@@ -9804,7 +9804,6 @@ __metadata:
     map-stream: 0.0.7
     marked: 4.3.0
     memoize-one: 6.0.0
-    merge-stream: 2.0.0
     mocha: 10.2.0
     node-vibrant: 3.2.1-alpha.1
     object-hash: 3.0.0
@@ -11844,7 +11843,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"merge-stream@npm:2.0.0, merge-stream@npm:^2.0.0":
+"merge-stream@npm:^2.0.0":
   version: 2.0.0
   resolution: "merge-stream@npm:2.0.0"
   checksum: 6fa4dcc8d86629705cea944a4b88ef4cb0e07656ebf223fa287443256414283dd25d91c1cd84c77987f2aec5927af1a9db6085757cb43d90eb170ebf4b47f4f4
