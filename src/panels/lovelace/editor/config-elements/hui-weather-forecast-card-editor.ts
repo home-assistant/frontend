@@ -141,8 +141,7 @@ export class HuiWeatherForecastCardEditor
             { name: "theme", selector: { theme: {} } },
           ],
         },
-        ...(!hasForecastLegacy &&
-        (hasForecastDaily || hasForecastHourly || hasForecastTwiceDaily)
+        ...(hasForecastDaily || hasForecastHourly || hasForecastTwiceDaily
           ? ([
               {
                 name: "forecast_type",
