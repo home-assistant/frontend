@@ -10,6 +10,7 @@ import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { hasTemplate } from "../../../common/string/has-template";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { HaProgressButton } from "../../../components/buttons/ha-progress-button";
+import { LocalizeFunc } from "../../../common/translations/localize";
 
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-card";
@@ -39,6 +40,8 @@ class HaPanelDevService extends LitElement {
   @state() private _uiAvailable = true;
 
   @state() private _response?: Record<string, any>;
+
+  @state() private _error?: string;
 
   @storage({
     key: "panel-dev-service-state-service-data",
@@ -96,7 +99,13 @@ class HaPanelDevService extends LitElement {
       this._serviceData?.service
     );
 
-    const isValid = this._isValid(this._serviceData, fields, target);
+    const isValid = this._isValid(
+      this._serviceData,
+      fields,
+      target,
+      this._yamlMode,
+      this.hass.localize
+    );
 
     const domain = this._serviceData?.service
       ? computeDomain(this._serviceData?.service)
@@ -138,6 +147,9 @@ class HaPanelDevService extends LitElement {
                   class="card-content"
                 ></ha-service-control>
               `}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing}
         </ha-card>
       </div>
       <div class="button-row">
@@ -292,34 +304,58 @@ class HaPanelDevService extends LitElement {
     fields.filter((field) => !field.selector)
   );
 
-  private _isValid = memoizeOne((serviceData, fields, target): boolean => {
-    if (!serviceData?.service) {
-      return false;
-    }
-    const domain = computeDomain(serviceData.service);
-    const service = computeObjectId(serviceData.service);
-    if (!domain || !service) {
-      return false;
-    }
-    if (
-      target &&
-      !serviceData.target &&
-      !serviceData.data?.entity_id &&
-      !serviceData.data?.device_id &&
-      !serviceData.data?.area_id
-    ) {
-      return false;
-    }
-    for (const field of fields) {
-      if (
-        field.required &&
-        (!serviceData.data || serviceData.data[field.key] === undefined)
-      ) {
+  private _isValid = memoizeOne(
+    (
+      serviceData,
+      fields,
+      target,
+      yamlMode: boolean,
+      localize: LocalizeFunc
+    ): boolean => {
+      this._error = undefined;
+      const errorCategory = yamlMode ? "yaml" : "ui";
+      if (!serviceData?.service) {
+        this._error = localize(
+          `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.no_service`
+        );
         return false;
       }
+      const domain = computeDomain(serviceData.service);
+      const service = computeObjectId(serviceData.service);
+      if (!domain || !service) {
+        this._error = localize(
+          `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.invalid_service`
+        );
+        return false;
+      }
+      if (
+        target &&
+        !serviceData.target &&
+        !serviceData.data?.entity_id &&
+        !serviceData.data?.device_id &&
+        !serviceData.data?.area_id
+      ) {
+        this._error = localize(
+          `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.no_target`
+        );
+        return false;
+      }
+      for (const field of fields) {
+        if (
+          field.required &&
+          (!serviceData.data || serviceData.data[field.key] === undefined)
+        ) {
+          this._error = localize(
+            `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.missing_required_field`,
+            "key",
+            field.key
+          );
+          return false;
+        }
+      }
+      return true;
     }
-    return true;
-  });
+  );
 
   private _fields = memoizeOne(
     (
