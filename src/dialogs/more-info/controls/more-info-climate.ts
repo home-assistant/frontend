@@ -17,6 +17,8 @@ import {
 } from "../../../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { formatNumber } from "../../../common/number/format_number";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-select";
 import "../../../components/ha-slider";
@@ -29,7 +31,6 @@ import {
 import { HomeAssistant } from "../../../types";
 import "../components/climate/ha-more-info-climate-temperature";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
-import "../components/ha-more-info-state-header";
 
 class MoreInfoClimate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -37,30 +38,6 @@ class MoreInfoClimate extends LitElement {
   @property() public stateObj?: ClimateEntity;
 
   private _resizeDebounce?: number;
-
-  private get _stateOverride() {
-    if (!this.stateObj) return undefined;
-
-    const stateDisplay = computeStateDisplay(
-      this.hass.localize,
-      this.stateObj,
-      this.hass.locale,
-      this.hass.config,
-      this.hass.entities
-    );
-    if (this.stateObj.attributes.preset_mode) {
-      const presetDisplay = computeAttributeValueDisplay(
-        this.hass.localize,
-        this.stateObj,
-        this.hass.locale,
-        this.hass.config,
-        this.hass.entities,
-        "preset_mode"
-      );
-      return `${stateDisplay} ⸱ ${presetDisplay}`;
-    }
-    return stateDisplay;
-  }
 
   protected render() {
     if (!this.stateObj) {
@@ -99,14 +76,54 @@ class MoreInfoClimate extends LitElement {
       ClimateEntityFeature.AUX_HEAT
     );
 
+    const currentTemperature = this.stateObj.attributes.current_temperature;
+    const currentHumidity = this.stateObj.attributes.current_humidity;
+
     const rtlDirection = computeRTLDirection(hass);
 
     return html`
-      <ha-more-info-state-header
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-        .stateOverride=${this._stateOverride}
-      ></ha-more-info-state-header>
+      ${currentTemperature || currentHumidity
+        ? html` <div class="current">
+            ${currentTemperature != null
+              ? html`
+                  <div>
+                    <p class="label">
+                      ${computeAttributeNameDisplay(
+                        this.hass.localize,
+                        this.stateObj,
+                        this.hass.entities,
+                        "current_temperature"
+                      )}
+                    </p>
+                    <p class="value">
+                      ${formatNumber(currentTemperature, this.hass.locale)}
+                      ${this.hass.config.unit_system.temperature}
+                    </p>
+                  </div>
+                `
+              : nothing}
+            ${currentHumidity != null
+              ? html`
+                  <div>
+                    <p class="label">
+                      ${computeAttributeNameDisplay(
+                        this.hass.localize,
+                        this.stateObj,
+                        this.hass.entities,
+                        "current_humidity"
+                      )}
+                    </p>
+                    <p class="value">
+                      ${formatNumber(
+                        currentHumidity,
+                        this.hass.locale
+                      )}${blankBeforePercent(this.hass.locale)}%
+                    </p>
+                  </div>
+                `
+              : nothing}
+          </div>`
+        : nothing}
       <div class="controls">
         <ha-more-info-climate-temperature
           .hass=${this.hass}
@@ -462,7 +479,7 @@ class MoreInfoClimate extends LitElement {
 
         .current .label {
           opacity: 0.8;
-          font-size: 12px;
+          font-size: 14px;
           line-height: 16px;
           letter-spacing: 0.4px;
           margin-bottom: 4px;

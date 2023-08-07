@@ -151,16 +151,11 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     `;
   }
 
-  private _renderTemperatureButtons(target: Target) {
+  private _renderTemperatureButtons(target: Target, colored?: boolean) {
     const lowColor = stateColorCss(this.stateObj, "heat");
     const highColor = stateColorCss(this.stateObj, "cool");
 
-    const supportsTargetTemperature = supportsFeature(
-      this.stateObj,
-      ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
-    );
-
-    const color = supportsTargetTemperature
+    const color = colored
       ? target === "high"
         ? highColor
         : lowColor
@@ -337,7 +332,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
               </button>
             </div>
           </div>
-          ${this._renderTemperatureButtons(this._selectTargetTemperature)}
+          ${this._renderTemperatureButtons(this._selectTargetTemperature, true)}
         </div>
       `;
     }
