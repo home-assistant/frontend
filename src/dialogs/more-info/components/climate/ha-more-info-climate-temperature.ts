@@ -458,17 +458,18 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       }
       .buttons {
         position: absolute;
-        bottom: 15px;
+        bottom: 10px;
         left: 0;
         right: 0;
         margin: 0 auto;
-        width: 140px;
+        width: 120px;
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
       }
-      .buttons .low {
+      .buttons ha-outlined-icon-button {
+        --md-outlined-icon-button-container-size: 48px;
       }
       /* Accessibility */
       .visually-hidden {
