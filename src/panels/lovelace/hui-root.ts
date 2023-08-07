@@ -564,7 +564,7 @@ class HUIRoot extends LitElement {
     super.firstUpdated(changedProps);
     // Check for requested edit mode
     const searchParams = extractSearchParamsObject();
-    if (searchParams.edit === "1") {
+    if (searchParams.edit === "1" && this.hass!.user?.is_admin) {
       this.lovelace!.setEditMode(true);
     } else if (searchParams.conversation === "1") {
       this._showVoiceCommandDialog();
