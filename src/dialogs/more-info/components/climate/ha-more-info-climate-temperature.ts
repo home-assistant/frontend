@@ -137,16 +137,27 @@ export class HaMoreInfoClimateTemperature extends LitElement {
   }
 
   private _renderHvacAction() {
+    const action = this.stateObj.attributes.hvac_action;
+
+    const actionLabel = computeAttributeValueDisplay(
+      this.hass.localize,
+      this.stateObj,
+      this.hass.locale,
+      this.hass.config,
+      this.hass.entities,
+      "hvac_action"
+    ) as string;
+
     return html`
       <p class="action">
-        ${computeAttributeValueDisplay(
-          this.hass.localize,
-          this.stateObj,
-          this.hass.locale,
-          this.hass.config,
-          this.hass.entities,
-          "hvac_action"
-        )}
+        ${action && ["preheating", "heating", "cooling"].includes(action)
+          ? this.hass.localize(
+              "ui.dialogs.more_info_control.climate.target_label",
+              { action: actionLabel }
+            )
+          : action !== "off" && action
+          ? actionLabel
+          : this.hass.localize("ui.dialogs.more_info_control.climate.target")}
       </p>
     `;
   }
@@ -272,8 +283,10 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            ${this._renderHvacAction()}
-            ${this._renderTargetTemperature(this._targetTemperature.value)}
+            <div class="action-container">${this._renderHvacAction()}</div>
+            <div class="temperature-container">
+              ${this._renderTargetTemperature(this._targetTemperature.value)}
+            </div>
           </div>
           ${this._renderTemperatureButtons("value")}
         </div>
@@ -310,8 +323,8 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            ${this._renderHvacAction()}
-            <div class="dual">
+            <div class="action-container">${this._renderHvacAction()}</div>
+            <div class="temperature-container dual">
               <button
                 @click=${this._handleSelectTemp}
                 .target=${"low"}
@@ -352,7 +365,6 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           disabled
         >
         </ha-control-circular-slider>
-        <div class="info"></div>
       </div>
     `;
   }
@@ -383,12 +395,15 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         pointer-events: auto;
       }
       /* Elements */
+      .temperature-container {
+        margin-bottom: 30px;
+      }
       .temperature {
         display: inline-flex;
         font-size: 58px;
         line-height: 64px;
         letter-spacing: -0.25px;
-        margin: 20px 0;
+        margin: 0;
       }
       .temperature span {
         display: inline-flex;
@@ -403,40 +418,25 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         align-self: flex-end;
         margin-right: -18px;
       }
+      .action-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 200px;
+        height: 48px;
+        margin-bottom: 6px;
+      }
       .action {
         font-weight: 500;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
+        text-align: center;
         color: var(--action-color, initial);
-      }
-      .current-label {
-        font-weight: 500;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        margin-bottom: 4px;
-      }
-      .current {
-        display: flex;
-        flex-direction: row;
-        gap: 12px;
-      }
-      .current p {
-        font-weight: 500;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-      }
-      .current ha-svg-icon {
-        --mdc-icon-size: 20px;
-        margin-right: 4px;
-        display: none;
       }
       .dual {
         display: flex;
         flex-direction: row;
-        gap: 18px;
+        gap: 24px;
+        margin-bottom: 40px;
       }
 
       .dual button {
@@ -445,6 +445,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         -webkit-tap-highlight-color: transparent;
         border: none;
         opacity: 0.5;
+        padding: 0;
         transition:
           opacity 180ms ease-in-out,
           transform 180ms ease-in-out;

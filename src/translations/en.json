@@ -998,7 +998,8 @@
           "unlock": "Unlock"
         },
         "climate": {
-          "currently": "Currently"
+          "target_label": "{action} to target",
+          "target": "Target"
         }
       },
       "entity_registry": {
