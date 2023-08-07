@@ -1,12 +1,5 @@
 import { mdiMinus, mdiPlus } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { stateColorCss } from "../../../../common/entity/state_color";
@@ -22,6 +15,8 @@ import {
 } from "../../../../data/humidifier";
 import { HomeAssistant } from "../../../../types";
 import { formatNumber } from "../../../../common/number/format_number";
+import { computeAttributeValueDisplay } from "../../../../common/entity/compute_attribute_display";
+import { stateActive } from "../../../../common/entity/state_active";
 
 @customElement("ha-more-info-humidifier-humidity")
 export class HaMoreInfoHumidifierHumidity extends LitElement {
@@ -83,26 +78,31 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
     this._debouncedCallService();
   }
 
-  private _renderCurrent(humidity: number | undefined) {
-    if (humidity == null) {
-      return nothing;
-    }
+  private _renderAction() {
+    const action = this.stateObj.attributes.action;
 
-    const formatted = formatNumber(humidity, this.hass.locale, {
-      maximumFractionDigits: 0,
-    });
+    const actionLabel = computeAttributeValueDisplay(
+      this.hass.localize,
+      this.stateObj,
+      this.hass.locale,
+      this.hass.config,
+      this.hass.entities,
+      "action"
+    ) as string;
 
     return html`
-      <div class="current">
-        <p class="label">
-          ${this.hass.localize(
-            "ui.dialogs.more_info_control.humidifier.currently"
-          )}
-        </p>
-        <p class="value">
-          ${formatted}${blankBeforePercent(this.hass.locale)}%
-        </p>
-      </div>
+      <p class="action">
+        ${action && ["preheating", "heating", "cooling"].includes(action)
+          ? this.hass.localize(
+              "ui.dialogs.more_info_control.humidifier.target_label",
+              { action: actionLabel }
+            )
+          : action && action !== "off" && action !== "idle"
+          ? actionLabel
+          : this.hass.localize(
+              "ui.dialogs.more_info_control.humidifier.target"
+            )}
+      </p>
     `;
   }
 
@@ -142,6 +142,14 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
 
   protected render() {
     const mainColor = stateColorCss(this.stateObj);
+    const active = stateActive(this.stateObj);
+
+    const action = this.stateObj.attributes.action;
+
+    let actionColor: string | undefined;
+    if (action && action !== "idle" && action !== "off" && active) {
+      actionColor = stateColorCss(this.stateObj, "on");
+    }
 
     const targetHumidity = this._targetHumidity;
     const currentHumidity = this.stateObj.attributes.current_humidity;
@@ -156,6 +164,7 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
           class="container"
           style=${styleMap({
             "--main-color": mainColor,
+            "--action-color": actionColor,
           })}
         >
           <ha-control-circular-slider
@@ -171,8 +180,10 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            ${this._renderTarget(targetHumidity)}
-            ${this._renderCurrent(currentHumidity)}
+            <div class="action-container">${this._renderAction()}</div>
+            <div class="target-container">
+              ${this._renderTarget(targetHumidity)}
+            </div>
           </div>
           ${this._renderButtons()}
         </div>
@@ -194,7 +205,6 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
           disabled
         >
         </ha-control-circular-slider>
-        <div class="info">${this._renderCurrent(currentHumidity)}</div>
       </div>
     `;
   }
@@ -219,13 +229,15 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
         font-size: 16px;
         line-height: 24px;
         letter-spacing: 0.1px;
-        gap: 20px;
       }
       .info * {
         margin: 0;
         pointer-events: auto;
       }
       /* Elements */
+      .target-container {
+        margin-bottom: 30px;
+      }
       .target .value {
         font-size: 56px;
         line-height: 1;
@@ -236,31 +248,35 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
         line-height: 1;
         margin-left: 2px;
       }
-      .current {
+      .action-container {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 2px;
+        justify-content: center;
+        width: 200px;
+        height: 48px;
+        margin-bottom: 6px;
       }
-      .current p {
+      .action {
         font-weight: 500;
         text-align: center;
-      }
-      .state ha-svg-icon {
-        --mdc-icon-size: 20px;
-        margin-right: 8px;
+        color: var(--action-color, initial);
       }
       .buttons {
         position: absolute;
-        bottom: 15px;
+        bottom: 10px;
         left: 0;
         right: 0;
         margin: 0 auto;
-        width: 140px;
+        width: 120px;
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
+      }
+      .buttons ha-outlined-icon-button {
+        --md-outlined-icon-button-container-size: 48px;
+        --md-outlined-icon-button-icon-size: 24px;
       }
       /* Accessibility */
       .visually-hidden {
@@ -279,11 +295,22 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
           --main-color,
           var(--disabled-color)
         );
-        --control-circular-slider-background: var(
-          --background-color,
-          var(--disabled-color)
+      }
+      ha-control-circular-slider::after {
+        display: block;
+        content: "";
+        position: absolute;
+        top: -10%;
+        left: -10%;
+        right: -10%;
+        bottom: -10%;
+        background: radial-gradient(
+          50% 50% at 50% 50%,
+          var(--action-color, transparent) 0%,
+          transparent 100%
         );
-        --control-circular-slider-background-opacity: 0.24;
+        opacity: 0.15;
+        pointer-events: none;
       }
     `;
   }

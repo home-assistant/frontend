@@ -15,6 +15,8 @@ import {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 
+export type HumidifierAction = "off" | "idle" | "humidifying" | "drying";
+
 export type HumidifierEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
     humidity?: number;
@@ -24,7 +26,6 @@ export type HumidifierEntity = HassEntityBase & {
     mode?: string;
     action?: HumidifierAction;
     available_modes?: string[];
-    current_humidity?: number;
   };
 };
 
