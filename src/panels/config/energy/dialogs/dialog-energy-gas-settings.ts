@@ -227,7 +227,7 @@ export class DialogEnergyGasSettings
                 "ui.panel.config.energy.gas.dialog.cost_number_input"
               )} ${unitPrice ? ` (${unitPrice})` : ""}`}
               class="price-options"
-              step=".01"
+              step="any"
               type="number"
               .value=${this._source.number_energy_price}
               @change=${this._numberPriceChanged}

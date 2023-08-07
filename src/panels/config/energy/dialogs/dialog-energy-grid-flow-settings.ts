@@ -96,9 +96,11 @@ export class DialogEnergyGridFlowSettings
 
     const pickableUnit = this._energy_units?.join(", ") || "";
 
-    const unitPrice = this._pickedDisplayUnit
+    const unitPriceSensor = this._pickedDisplayUnit
       ? `${this.hass.config.currency}/${this._pickedDisplayUnit}`
       : undefined;
+
+    const unitPriceFixed = `${this.hass.config.currency}/kWh`;
 
     const externalSource =
       this._source[
@@ -223,7 +225,7 @@ export class DialogEnergyGridFlowSettings
               .value=${this._source.entity_energy_price}
               .label=${`${this.hass.localize(
                 `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.cost_entity_input`
-              )} ${unitPrice ? ` (${unitPrice})` : ""}`}
+              )} ${unitPriceSensor ? ` (${unitPriceSensor})` : ""}`}
               @value-changed=${this._priceEntityChanged}
             ></ha-entity-picker>`
           : ""}
@@ -244,12 +246,12 @@ export class DialogEnergyGridFlowSettings
           ? html`<ha-textfield
               .label=${`${this.hass.localize(
                 `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.cost_number_input`
-              )} ${unitPrice ? ` (${unitPrice})` : ""}`}
+              )} (${unitPriceFixed})`}
               class="price-options"
-              step=".01"
+              step="any"
               type="number"
               .value=${this._source.number_energy_price}
-              .suffix=${unitPrice || ""}
+              .suffix=${unitPriceFixed}
               @change=${this._numberPriceChanged}
             >
             </ha-textfield>`
