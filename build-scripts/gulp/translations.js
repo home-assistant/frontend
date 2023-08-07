@@ -415,7 +415,7 @@ gulp.task("build-translation-write-metadata", () =>
 gulp.task(
   "create-translations",
   gulp.series(
-    env.isProdBuild() ? (done) => done() : "create-test-translation",
+    ...(env.isProdBuild() ? [] : ["create-test-translation"]),
     "build-master-translation",
     "build-merged-translations",
     gulp.parallel(...splitTasks),
