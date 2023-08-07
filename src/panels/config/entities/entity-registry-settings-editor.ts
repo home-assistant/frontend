@@ -264,7 +264,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   private precisionLabel(precision?: number, stateValue?: string) {
     const stateValueNumber = Number(stateValue);
-    const value = !isNaN(stateValueNumber) ? stateValueNumber : 0;
+    const value = !isNaN(stateValueNumber) ? stateValue! : 0;
     return formatNumber(value, this.hass.locale, {
       minimumFractionDigits: precision,
       maximumFractionDigits: precision,
