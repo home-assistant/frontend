@@ -474,6 +474,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       }
       .buttons ha-outlined-icon-button {
         --md-outlined-icon-button-container-size: 48px;
+        --md-outlined-icon-button-icon-size: 24px;
       }
       /* Accessibility */
       .visually-hidden {
