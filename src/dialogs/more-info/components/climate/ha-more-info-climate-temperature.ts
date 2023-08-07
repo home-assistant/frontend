@@ -18,6 +18,7 @@ import { formatNumber } from "../../../../common/number/format_number";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-control-circular-slider";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-outlined-icon-button";
 import {
   CLIMATE_HVAC_ACTION_TO_MODE,
   ClimateEntity,
@@ -151,20 +152,42 @@ export class HaMoreInfoClimateTemperature extends LitElement {
   }
 
   private _renderTemperatureButtons(target: Target) {
+    const lowColor = stateColorCss(this.stateObj, "heat");
+    const highColor = stateColorCss(this.stateObj, "cool");
+
+    const supportsTargetTemperature = supportsFeature(
+      this.stateObj,
+      ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
+    );
+
+    const color = supportsTargetTemperature
+      ? target === "high"
+        ? highColor
+        : lowColor
+      : undefined;
+
     return html`
       <div class="buttons">
-        <ha-icon-button
-          .path=${mdiMinus}
+        <ha-outlined-icon-button
+          style=${styleMap({
+            "--md-sys-color-outline": color,
+          })}
           .target=${target}
           .step=${-this._step}
           @click=${this._handleButton}
-        ></ha-icon-button>
-        <ha-icon-button
-          .path=${mdiPlus}
+        >
+          <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
+        </ha-outlined-icon-button>
+        <ha-outlined-icon-button
+          style=${styleMap({
+            "--md-sys-color-outline": color,
+          })}
           .target=${target}
           .step=${this._step}
           @click=${this._handleButton}
-        ></ha-icon-button>
+        >
+          <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+        </ha-outlined-icon-button>
       </div>
     `;
   }
@@ -462,6 +485,8 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
+      }
+      .buttons .low {
       }
       /* Accessibility */
       .visually-hidden {
