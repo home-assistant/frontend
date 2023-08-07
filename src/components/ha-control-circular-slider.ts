@@ -479,17 +479,11 @@ export class HaControlCircularSlider extends LitElement {
         @keydown=${this._handleKeyDown}
         @keyup=${this._handleKeyUp}
       />
-      <path
-        class="target"
-        d=${path}
-        stroke-dasharray=${targetCircleDashArray[0]}
-        stroke-dashoffset=${targetCircleDashArray[1]}
-      />
       ${
         currentCircleDashArray
           ? svg`
             <path
-              class="current"
+              class="current arc-current"
               d=${path}
               stroke-dasharray=${currentCircleDashArray[0]}
               stroke-dashoffset=${currentCircleDashArray[1]}
@@ -497,6 +491,12 @@ export class HaControlCircularSlider extends LitElement {
         `
           : nothing
       }
+      <path
+        class="target"
+        d=${path}
+        stroke-dasharray=${targetCircleDashArray[0]}
+        stroke-dashoffset=${targetCircleDashArray[1]}
+      />
     `;
   }
 
@@ -638,14 +638,18 @@ export class HaControlCircularSlider extends LitElement {
         fill: none;
         stroke-linecap: round;
         stroke-width: 8px;
-        stroke: var(--clear-background-color);
-        opacity: 0.6;
+        stroke: var(--primary-text-color);
+        opacity: 0.5;
         transition:
           stroke-width 300ms ease-in-out,
           stroke-dasharray 300ms ease-in-out,
           stroke-dashoffset 300ms ease-in-out,
           stroke 180ms ease-in-out,
           opacity 180ms ease-in-out;
+      }
+
+      .arc-current {
+        stroke: var(--clear-background-color);
       }
 
       .arc-clear {

@@ -156,7 +156,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
               "ui.dialogs.more_info_control.climate.target_label",
               { action: actionLabel }
             )
-          : action !== "off" && action
+          : action && action !== "off" && action !== "idle"
           ? actionLabel
           : this.hass.localize("ui.dialogs.more_info_control.climate.target")}
       </p>
@@ -444,6 +444,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       .dual button {
         outline: none;
         background: none;
+        font-family: inherit;
         -webkit-tap-highlight-color: transparent;
         border: none;
         opacity: 0.5;
