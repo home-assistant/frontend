@@ -567,11 +567,9 @@ export class HaControlCircularSlider extends LitElement {
         --control-circular-slider-low-color: var(
           --control-circular-slider-color
         );
-        --control-circular-slider-low-color-opacity: 1;
         --control-circular-slider-high-color: var(
           --control-circular-slider-color
         );
-        --control-circular-slider-high-color-opacity: 1;
       }
       svg {
         width: 320px;
@@ -669,17 +667,14 @@ export class HaControlCircularSlider extends LitElement {
 
       .value {
         stroke: var(--control-circular-slider-color);
-        opacity: var(--control-circular-slider-color-opacity);
       }
 
       .low {
         stroke: var(--control-circular-slider-low-color);
-        opacity: var(--control-circular-slider-low-color-opacity);
       }
 
       .high {
         stroke: var(--control-circular-slider-high-color);
-        opacity: var(--control-circular-slider-high-color-opacity);
       }
     `;
   }
