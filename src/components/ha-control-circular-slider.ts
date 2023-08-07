@@ -437,7 +437,10 @@ export class HaControlCircularSlider extends LitElement {
     const targetCircleDashArray = this._strokeCircleDashArc(target);
 
     const currentCircleDashArray =
-      this.current != null && showActive
+      this.current != null &&
+      showActive &&
+      current <= this.max &&
+      current >= this.min
         ? this._strokeCircleDashArc(this.current)
         : undefined;
 
@@ -633,7 +636,7 @@ export class HaControlCircularSlider extends LitElement {
         fill: none;
         stroke-linecap: round;
         stroke-width: 8px;
-        stroke: white;
+        stroke: var(--clear-background-color);
         opacity: 0.6;
         transition:
           stroke-width 300ms ease-in-out,

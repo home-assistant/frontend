@@ -436,26 +436,13 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       .dual {
         display: flex;
         flex-direction: row;
-        gap: 24px;
+        gap: 18px;
       }
-      /* Dual override */
-      .dual .temperature {
-        font-size: 45px;
-        line-height: 52px;
-        padding: 3px 0;
-      }
-      .dual .temperature .unit {
-        font-size: 18px;
-        line-height: 34px;
-      }
-      .dual .temperature .decimal {
-        font-size: 18px;
-        line-height: 34px;
-        margin-right: -14px;
-      }
+
       .dual button {
         outline: none;
         background: none;
+        -webkit-tap-highlight-color: transparent;
         border: none;
         opacity: 0.5;
         transition:
