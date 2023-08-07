@@ -18,7 +18,6 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
-import { forwardHaptic } from "../../../data/haptics";
 import {
   HumidifierEntity,
   HumidifierEntityFeature,
@@ -156,14 +155,6 @@ class MoreInfoHumidifier extends LitElement {
       </div>
     `;
   }
-
-  private _toggle = () => {
-    const service = this.stateObj?.state === "on" ? "turn_off" : "turn_on";
-    forwardHaptic("light");
-    this.hass.callService("humidifier", service, {
-      entity_id: this.stateObj!.entity_id,
-    });
-  };
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
