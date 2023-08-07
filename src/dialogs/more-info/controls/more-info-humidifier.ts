@@ -10,9 +10,14 @@ import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
+import {
+  computeAttributeNameDisplay,
+  computeAttributeValueDisplay,
+} from "../../../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { formatNumber } from "../../../common/number/format_number";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import { forwardHaptic } from "../../../data/haptics";
 import {
   HumidifierEntity,
@@ -20,7 +25,6 @@ import {
 } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
-import "../components/ha-more-info-state-header";
 import "../components/humidifier/ha-more-info-humidifier-humidity";
 
 class MoreInfoHumidifier extends LitElement {
@@ -52,11 +56,33 @@ class MoreInfoHumidifier extends LitElement {
       HumidifierEntityFeature.MODES
     );
 
+    const currentHumidity = this.stateObj.attributes.current_humidity;
+
     return html`
-      <ha-more-info-state-header
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-      ></ha-more-info-state-header>
+      ${currentHumidity
+        ? html` <div class="current">
+            ${currentHumidity != null
+              ? html`
+                  <div>
+                    <p class="label">
+                      ${computeAttributeNameDisplay(
+                        this.hass.localize,
+                        this.stateObj,
+                        this.hass.entities,
+                        "current_humidity"
+                      )}
+                    </p>
+                    <p class="value">
+                      ${formatNumber(
+                        currentHumidity,
+                        this.hass.locale
+                      )}${blankBeforePercent(this.hass.locale)}%
+                    </p>
+                  </div>
+                `
+              : nothing}
+          </div>`
+        : nothing}
       <div class="controls">
         <ha-more-info-humidifier-humidity
           .hass=${this.hass}
@@ -227,11 +253,6 @@ class MoreInfoHumidifier extends LitElement {
           color: var(--primary-text-color);
         }
 
-        ha-select {
-          width: 100%;
-          margin-top: 8px;
-        }
-
         .current {
           display: flex;
           flex-direction: row;
@@ -255,7 +276,7 @@ class MoreInfoHumidifier extends LitElement {
         }
         .current .label {
           opacity: 0.8;
-          font-size: 12px;
+          font-size: 14px;
           line-height: 16px;
           letter-spacing: 0.4px;
           margin-bottom: 4px;
@@ -266,8 +287,9 @@ class MoreInfoHumidifier extends LitElement {
           line-height: 28px;
         }
 
-        .single-row {
-          padding: 8px 0;
+        ha-select {
+          width: 100%;
+          margin-top: 8px;
         }
       `,
     ];
