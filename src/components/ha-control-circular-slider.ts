@@ -409,6 +409,8 @@ export class HaControlCircularSlider extends LitElement {
     value: number | undefined,
     inverted: boolean | undefined
   ) {
+    if (this.disabled) return nothing;
+
     const limit = inverted ? this.max : this.min;
 
     const path = svgArc({

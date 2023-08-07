@@ -11,14 +11,15 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeAttributeValueDisplay } from "../../../../common/entity/compute_attribute_display";
+import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { clamp } from "../../../../common/number/clamp";
 import { formatNumber } from "../../../../common/number/format_number";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-control-circular-slider";
-import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-outlined-icon-button";
+import "../../../../components/ha-svg-icon";
 import {
   CLIMATE_HVAC_ACTION_TO_MODE,
   ClimateEntity,
@@ -242,13 +243,14 @@ export class HaMoreInfoClimateTemperature extends LitElement {
 
     const mode = this.stateObj.state;
     const action = this.stateObj.attributes.hvac_action;
+    const active = stateActive(this.stateObj);
 
     const mainColor = stateColorCss(this.stateObj);
-    const lowColor = stateColorCss(this.stateObj, "heat");
-    const highColor = stateColorCss(this.stateObj, "cool");
+    const lowColor = stateColorCss(this.stateObj, active ? "heat" : "off");
+    const highColor = stateColorCss(this.stateObj, active ? "cool" : "off");
 
     let actionColor: string | undefined;
-    if (action && action !== "idle" && action !== "off" && mode !== "off") {
+    if (action && action !== "idle" && action !== "off" && active) {
       actionColor = stateColorCss(
         this.stateObj,
         CLIMATE_HVAC_ACTION_TO_MODE[action]
@@ -491,11 +493,11 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         );
         --control-circular-slider-low-color: var(
           --low-color,
-          var(--control-circular-slider-color)
+          var(--disabled-color)
         );
         --control-circular-slider-high-color: var(
           --high-color,
-          var(--control-circular-slider-color)
+          var(--disabled-color)
         );
       }
       ha-control-circular-slider::after {
