@@ -114,7 +114,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
     return html`
       <div class="content">
         <ha-card
-          header=${this.hass.localize(
+          .header=${this.hass.localize(
             "ui.panel.developer-tools.tabs.assist.title"
           )}
           class="form"
@@ -137,7 +137,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
               : nothing}
             <ha-textarea
               autogrow
-              label=${this.hass.localize(
+              .label=${this.hass.localize(
                 "ui.panel.developer-tools.tabs.assist.sentences"
               )}
               id="sentences-input"
