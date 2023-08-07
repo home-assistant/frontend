@@ -1,4 +1,3 @@
-import { mdiPower } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -8,25 +7,18 @@ import {
   nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import {
-  computeAttributeNameDisplay,
-  computeAttributeValueDisplay,
-} from "../../../common/entity/compute_attribute_display";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-icon-button-group";
-import "../../../components/ha-list-item";
-import "../../../components/ha-outlined-button";
-import { UNAVAILABLE } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
 import {
   HumidifierEntity,
   HumidifierEntityFeature,
-  computeHumidiferModeIcon,
 } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 import "../components/humidifier/ha-more-info-humidifier-humidity";
@@ -52,8 +44,11 @@ class MoreInfoHumidifier extends LitElement {
       return nothing;
     }
 
+    const hass = this.hass;
+    const stateObj = this.stateObj;
+
     const supportModes = supportsFeature(
-      this.stateObj,
+      stateObj,
       HumidifierEntityFeature.MODES
     );
 
@@ -67,17 +62,6 @@ class MoreInfoHumidifier extends LitElement {
           .hass=${this.hass}
           .stateObj=${this.stateObj}
         ></ha-more-info-humidifier-humidity>
-        <ha-icon-button-group>
-          <ha-icon-button
-            .disabled=${this.stateObj!.state === UNAVAILABLE}
-            .label=${this.hass.localize(
-              "ui.dialogs.more_info_control.humidifier.toggle"
-            )}
-            @click=${this._toggle}
-          >
-            <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
-          </ha-icon-button>
-        </ha-icon-button-group>
       </div>
       <div
         class=${classMap({
@@ -85,8 +69,8 @@ class MoreInfoHumidifier extends LitElement {
         })}
       >
         <ha-select
-          .label=${hass.localize("ui.card.humidifier.state")}
-          .value=${stateObj.state}
+          .label=${this.hass.localize("ui.card.humidifier.state")}
+          .value=${this.stateObj.state}
           fixedMenuPosition
           naturalMenuWidth
           @selected=${this._handleStateChanged}
@@ -94,83 +78,53 @@ class MoreInfoHumidifier extends LitElement {
         >
           <mwc-list-item value="off">
             ${computeStateDisplay(
-              hass.localize,
-              stateObj,
-              hass.locale,
+              this.hass.localize,
+              this.stateObj,
+              this.hass.locale,
               this.hass.config,
-              hass.entities,
+              this.hass.entities,
               "off"
             )}
           </mwc-list-item>
           <mwc-list-item value="on">
             ${computeStateDisplay(
-              hass.localize,
-              stateObj,
-              hass.locale,
+              this.hass.localize,
+              this.stateObj,
+              this.hass.locale,
               this.hass.config,
-              hass.entities,
+              this.hass.entities,
               "on"
             )}
           </mwc-list-item>
         </ha-select>
 
-        ${supportModes && this.stateObj.attributes.mode
+        ${supportModes
           ? html`
-              <ha-button-menu
+              <ha-select
+                .label=${hass.localize("ui.card.humidifier.mode")}
+                .value=${stateObj.attributes.mode}
+                fixedMenuPosition
+                naturalMenuWidth
+                @selected=${this._handleModeChanged}
                 @action=${this._handleModeChanged}
                 @closed=${stopPropagation}
-                fixed
-                .disabled=${this.stateObj.state === UNAVAILABLE}
               >
-                <ha-outlined-button
-                  slot="trigger"
-                  .disabled=${this.stateObj.state === UNAVAILABLE}
-                >
-                  ${this._mode
-                    ? computeAttributeValueDisplay(
-                        this.hass.localize,
-                        this.stateObj!,
-                        this.hass.locale,
-                        this.hass.config,
-                        this.hass.entities,
-                        "mode",
-                        this._mode
-                      )
-                    : computeAttributeNameDisplay(
-                        this.hass.localize,
-                        this.stateObj,
-                        this.hass.entities,
-                        "mode"
-                      )}
-                  <ha-svg-icon
-                    slot="icon"
-                    path=${computeHumidiferModeIcon(this._mode)}
-                  ></ha-svg-icon>
-                </ha-outlined-button>
-                ${this.stateObj.attributes.available_modes?.map(
+                ${stateObj.attributes.available_modes!.map(
                   (mode) => html`
-                    <ha-list-item
-                      graphic="icon"
-                      .value=${mode}
-                      .activated=${this._mode === mode}
-                    >
-                      <ha-svg-icon
-                        slot="graphic"
-                        path=${computeHumidiferModeIcon(mode)}
-                      ></ha-svg-icon>
+                    <mwc-list-item .value=${mode}>
                       ${computeAttributeValueDisplay(
-                        this.hass.localize,
-                        this.stateObj!,
-                        this.hass.locale,
-                        this.hass.config,
-                        this.hass.entities,
+                        hass.localize,
+                        stateObj!,
+                        hass.locale,
+                        hass.config,
+                        hass.entities,
                         "mode",
                         mode
                       )}
-                    </ha-list-item>
+                    </mwc-list-item>
                   `
                 )}
-              </ha-button-menu>
+              </ha-select>
             `
           : nothing}
       </div>
@@ -208,6 +162,44 @@ class MoreInfoHumidifier extends LitElement {
       newVal === "on" ? "turn_on" : "turn_off",
       {}
     );
+  }
+
+  private async _callServiceHelper(
+    oldVal: unknown,
+    newVal: unknown,
+    service: string,
+    data: {
+      entity_id?: string;
+      [key: string]: unknown;
+    }
+  ) {
+    if (oldVal === newVal) {
+      return;
+    }
+
+    data.entity_id = this.stateObj!.entity_id;
+    const curState = this.stateObj;
+
+    await this.hass.callService("humidifier", service, data);
+
+    // We reset stateObj to re-sync the inputs with the state. It will be out
+    // of sync if our service call did not result in the entity to be turned
+    // on. Since the state is not changing, the resync is not called automatic.
+    await new Promise((resolve) => {
+      setTimeout(resolve, 2000);
+    });
+
+    // No need to resync if we received a new state.
+    if (this.stateObj !== curState) {
+      return;
+    }
+
+    this.stateObj = undefined;
+    await this.updateComplete;
+    // Only restore if not set yet by a state change
+    if (this.stateObj === undefined) {
+      this.stateObj = curState;
+    }
   }
 
   private _handleModeChanged(ev) {
