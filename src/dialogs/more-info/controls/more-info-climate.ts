@@ -83,7 +83,7 @@ class MoreInfoClimate extends LitElement {
 
     return html`
       ${currentTemperature || currentHumidity
-        ? html` <div class="current">
+        ? html`<div class="current">
             ${currentTemperature != null
               ? html`
                   <div>
