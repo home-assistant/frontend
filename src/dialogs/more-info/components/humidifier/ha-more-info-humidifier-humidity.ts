@@ -263,7 +263,7 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
       .action {
         font-weight: 500;
         text-align: center;
-        color: var(--action-color, initial);
+        color: var(--action-color, inherit);
       }
       .buttons {
         position: absolute;
