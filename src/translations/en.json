@@ -5286,7 +5286,7 @@
       },
       "page-authorize": {
         "initializing": "Initializing",
-        "authorizing": "Welcome! Login to your Home Assistant instance.",
+        "authorizing": "Login to your Home Assistant instance",
         "authorizing_app": "You're about to give the Home Assistant Companion app for {app} access to your Home Assistant instance.",
         "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
         "logging_in_with": "Logging in with {authProviderName}.",

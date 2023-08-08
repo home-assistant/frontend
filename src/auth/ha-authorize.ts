@@ -1,4 +1,11 @@
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import punycode from "punycode";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
@@ -86,11 +93,13 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
                 })}
           </ha-alert>`
         : html`<p>${this.localize("ui.panel.page-authorize.authorizing")}</p>`}
-      <p>
-        ${this.localize("ui.panel.page-authorize.logging_in_with", {
-          authProviderName: html`<b>${this._authProvider!.name}</b>`,
-        })}
-      </p>
+      ${inactiveProviders.length > 0
+        ? html`<p>
+            ${this.localize("ui.panel.page-authorize.logging_in_with", {
+              authProviderName: html`<b>${this._authProvider!.name}</b>`,
+            })}
+          </p>`
+        : nothing}
 
       <ha-auth-flow
         .resources=${this.resources}
