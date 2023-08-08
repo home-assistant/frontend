@@ -225,6 +225,15 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
     }
 
+    if (domain === "humidifier" && stateActive(stateObj)) {
+      const humidity = (stateObj as HumidifierEntity).attributes.humidity;
+      if (humidity) {
+        return `${Math.round(humidity)}${blankBeforePercent(
+          this.hass!.locale
+        )}%`;
+      }
+    }
+
     const stateDisplay = computeStateDisplay(
       this.hass!.localize,
       stateObj,
