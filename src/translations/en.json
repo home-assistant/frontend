@@ -1000,6 +1000,10 @@
         "climate": {
           "target_label": "{action} to target",
           "target": "Target"
+        },
+        "humidifier": {
+          "target_label": "[%key:ui::dialogs::more_info_control::climate::target_label%]",
+          "target": "[%key:ui::dialogs::more_info_control::climate::target%]"
         }
       },
       "entity_registry": {
