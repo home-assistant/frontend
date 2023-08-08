@@ -1,9 +1,13 @@
 import {
   mdiAccountArrowRight,
   mdiAirHumidifier,
+  mdiArrowDownBold,
+  mdiArrowUpBold,
   mdiBabyCarriage,
+  mdiClockOutline,
   mdiHome,
   mdiLeaf,
+  mdiPower,
   mdiPowerSleep,
   mdiRefreshAuto,
   mdiRocketLaunch,
@@ -14,6 +18,8 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+
+export type HumidifierState = "off" | "on";
 
 export type HumidifierAction = "off" | "idle" | "humidifying" | "drying";
 
@@ -63,3 +69,18 @@ export const HUMIDIFIER_MODE_ICONS: Record<HumidifierBuiltInMode, string> = {
 
 export const computeHumidiferModeIcon = (mode?: string) =>
   HUMIDIFIER_MODE_ICONS[mode as HumidifierBuiltInMode] ?? mdiAirHumidifier;
+
+export const HUMIDIFIER_ACTION_ICONS: Record<HumidifierAction, string> = {
+  drying: mdiArrowDownBold,
+  humidifying: mdiArrowUpBold,
+  idle: mdiClockOutline,
+  off: mdiPower,
+};
+
+export const HUMIDIFIER_ACTION_MODE: Record<HumidifierAction, HumidifierState> =
+  {
+    drying: "on",
+    humidifying: "on",
+    idle: "off",
+    off: "off",
+  };

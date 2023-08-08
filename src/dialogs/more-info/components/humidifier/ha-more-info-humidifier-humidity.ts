@@ -14,6 +14,7 @@ import "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../../data/entity";
 import {
+  HUMIDIFIER_ACTION_MODE,
   HumidifierEntity,
   HumidifierEntityDeviceClass,
 } from "../../../../data/humidifier";
@@ -93,7 +94,7 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
 
     return html`
       <p class="action">
-        ${action && ["preheating", "heating", "cooling"].includes(action)
+        ${action && ["drying", "humidifying"].includes(action)
           ? this.hass.localize(
               "ui.dialogs.more_info_control.humidifier.target_label",
               { action: actionLabel }
@@ -151,7 +152,10 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
 
     let actionColor: string | undefined;
     if (action && action !== "idle" && action !== "off" && active) {
-      actionColor = stateColorCss(this.stateObj, "on");
+      actionColor = stateColorCss(
+        this.stateObj,
+        HUMIDIFIER_ACTION_MODE[action]
+      );
     }
 
     const targetHumidity = this._targetHumidity;
