@@ -188,6 +188,8 @@ class HaPanelProfile extends LitElement {
           )
             ? html`
                 <ha-change-password-card
+                  .refreshTokens=${this._refreshTokens}
+                  @hass-refresh-tokens=${this._refreshRefreshTokens}
                   .hass=${this.hass}
                 ></ha-change-password-card>
               `

@@ -14,6 +14,11 @@ import "../../components/ha-textfield";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../../components/ha-alert";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../dialogs/generic/show-dialog-box";
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-change-password-card")
 class HaChangePasswordCard extends LitElement {
@@ -30,6 +35,8 @@ class HaChangePasswordCard extends LitElement {
   @state() private _password = "";
 
   @state() private _passwordConfirm = "";
+
+  @property({ attribute: false }) public refreshTokens?: RefreshToken[];
 
   protected render(): TemplateResult {
     return html`
@@ -163,6 +170,44 @@ class HaChangePasswordCard extends LitElement {
     this._statusMsg = this.hass.localize(
       "ui.panel.profile.change_password.success"
     );
+
+    if (
+      this.refreshTokens &&
+      this.refreshTokens.length > 1 &&
+      (await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.profile.change_password.logout_all_sessions"
+        ),
+        text: this.hass.localize(
+          "ui.panel.profile.change_password.logout_all_sessions_text"
+        ),
+        dismissText: this.hass.localize("ui.common.no"),
+        confirmText: this.hass.localize("ui.common.yes"),
+        destructive: true,
+      }))
+    ) {
+      const promises = this.refreshTokens
+        .filter((token) => token.type === "normal" && !token.is_current)
+        .map((token) =>
+          this.hass.callWS({
+            type: "auth/delete_refresh_token",
+            refresh_token_id: token.id,
+          })
+        );
+      try {
+        await Promise.all(promises);
+      } catch (err: any) {
+        await showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.profile.change_password.delete_failed"
+          ),
+          text: err.message,
+        });
+      } finally {
+        fireEvent(this, "hass-refresh-tokens");
+      }
+    }
+
     this._currentPassword = "";
     this._password = "";
     this._passwordConfirm = "";
