@@ -59,7 +59,7 @@ class MoreInfoHumidifier extends LitElement {
 
     return html`
       ${currentHumidity
-        ? html` <div class="current">
+        ? html`<div class="current">
             ${currentHumidity != null
               ? html`
                   <div>
