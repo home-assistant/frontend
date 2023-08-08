@@ -432,7 +432,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       .action {
         font-weight: 500;
         text-align: center;
-        color: var(--action-color, initial);
+        color: var(--action-color, inherit);
       }
       .dual {
         display: flex;
@@ -444,6 +444,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       .dual button {
         outline: none;
         background: none;
+        color: inherit;
         font-family: inherit;
         -webkit-tap-highlight-color: transparent;
         border: none;
