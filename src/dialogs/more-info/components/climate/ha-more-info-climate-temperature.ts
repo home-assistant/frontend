@@ -91,7 +91,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
 
   private _debouncedCallService = debounce(
     (target: Target) => this._callService(target),
-    2000
+    1000
   );
 
   private _callService(type: string) {
