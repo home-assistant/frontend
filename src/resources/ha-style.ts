@@ -109,7 +109,7 @@ documentContainer.innerHTML = `<custom-style>
       --yellow-color: #ffeb3b;
       --amber-color: #ffc107;
       --orange-color: #ff9800;
-      --deep-orange-color: #ff5722;
+      --deep-orange-color: #ff6f22;
       --brown-color: #795548;
       --light-grey-color: #bdbdbd;
       --grey-color: #9e9e9e;

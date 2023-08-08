@@ -1,10 +1,10 @@
 import "@material/mwc-list/mwc-list-item";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { property } from "lit/decorators";
@@ -17,8 +17,9 @@ import {
 } from "../../../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { formatNumber } from "../../../common/number/format_number";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import "../../../components/ha-climate-control";
 import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-switch";
@@ -28,6 +29,8 @@ import {
   compareClimateHvacModes,
 } from "../../../data/climate";
 import { HomeAssistant } from "../../../types";
+import "../components/climate/ha-more-info-climate-temperature";
+import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 
 class MoreInfoClimate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -73,13 +76,60 @@ class MoreInfoClimate extends LitElement {
       ClimateEntityFeature.AUX_HEAT
     );
 
-    const temperatureStepSize =
-      stateObj.attributes.target_temp_step ||
-      (hass.config.unit_system.temperature.indexOf("F") === -1 ? 0.5 : 1);
+    const currentTemperature = this.stateObj.attributes.current_temperature;
+    const currentHumidity = this.stateObj.attributes.current_humidity;
 
     const rtlDirection = computeRTLDirection(hass);
 
     return html`
+      ${currentTemperature || currentHumidity
+        ? html`<div class="current">
+            ${currentTemperature != null
+              ? html`
+                  <div>
+                    <p class="label">
+                      ${computeAttributeNameDisplay(
+                        this.hass.localize,
+                        this.stateObj,
+                        this.hass.entities,
+                        "current_temperature"
+                      )}
+                    </p>
+                    <p class="value">
+                      ${formatNumber(currentTemperature, this.hass.locale)}
+                      ${this.hass.config.unit_system.temperature}
+                    </p>
+                  </div>
+                `
+              : nothing}
+            ${currentHumidity != null
+              ? html`
+                  <div>
+                    <p class="label">
+                      ${computeAttributeNameDisplay(
+                        this.hass.localize,
+                        this.stateObj,
+                        this.hass.entities,
+                        "current_humidity"
+                      )}
+                    </p>
+                    <p class="value">
+                      ${formatNumber(
+                        currentHumidity,
+                        this.hass.locale
+                      )}${blankBeforePercent(this.hass.locale)}%
+                    </p>
+                  </div>
+                `
+              : nothing}
+          </div>`
+        : nothing}
+      <div class="controls">
+        <ha-more-info-climate-temperature
+          .hass=${this.hass}
+          .stateObj=${this.stateObj}
+        ></ha-more-info-climate-temperature>
+      </div>
       <div
         class=${classMap({
           "has-current_temperature":
@@ -94,64 +144,6 @@ class MoreInfoClimate extends LitElement {
           "has-preset_mode": supportPresetMode,
         })}
       >
-        <div class="container-temperature">
-          <div class=${stateObj.state}>
-            ${supportTargetTemperature || supportTargetTemperatureRange
-              ? html`
-                  <div>
-                    ${computeAttributeNameDisplay(
-                      hass.localize,
-                      stateObj,
-                      hass.entities,
-                      "temperature"
-                    )}
-                  </div>
-                `
-              : ""}
-            ${stateObj.attributes.temperature !== undefined &&
-            stateObj.attributes.temperature !== null
-              ? html`
-                  <ha-climate-control
-                    .hass=${this.hass}
-                    .value=${stateObj.attributes.temperature}
-                    .unit=${hass.config.unit_system.temperature}
-                    .step=${temperatureStepSize}
-                    .min=${stateObj.attributes.min_temp}
-                    .max=${stateObj.attributes.max_temp}
-                    @change=${this._targetTemperatureChanged}
-                  ></ha-climate-control>
-                `
-              : ""}
-            ${(stateObj.attributes.target_temp_low !== undefined &&
-              stateObj.attributes.target_temp_low !== null) ||
-            (stateObj.attributes.target_temp_high !== undefined &&
-              stateObj.attributes.target_temp_high !== null)
-              ? html`
-                  <ha-climate-control
-                    .hass=${this.hass}
-                    .value=${stateObj.attributes.target_temp_low}
-                    .unit=${hass.config.unit_system.temperature}
-                    .step=${temperatureStepSize}
-                    .min=${stateObj.attributes.min_temp}
-                    .max=${stateObj.attributes.target_temp_high}
-                    class="range-control-left"
-                    @change=${this._targetTemperatureLowChanged}
-                  ></ha-climate-control>
-                  <ha-climate-control
-                    .hass=${this.hass}
-                    .value=${stateObj.attributes.target_temp_high}
-                    .unit=${hass.config.unit_system.temperature}
-                    .step=${temperatureStepSize}
-                    .min=${stateObj.attributes.target_temp_low}
-                    .max=${stateObj.attributes.max_temp}
-                    class="range-control-right"
-                    @change=${this._targetTemperatureHighChanged}
-                  ></ha-climate-control>
-                `
-              : ""}
-          </div>
-        </div>
-
         ${supportTargetHumidity
           ? html`
               <div class="container-humidity">
@@ -184,34 +176,32 @@ class MoreInfoClimate extends LitElement {
           : ""}
 
         <div class="container-hvac_modes">
-          <div class="controls">
-            <ha-select
-              .label=${hass.localize("ui.card.climate.operation")}
-              .value=${stateObj.state}
-              fixedMenuPosition
-              naturalMenuWidth
-              @selected=${this._handleOperationmodeChanged}
-              @closed=${stopPropagation}
-            >
-              ${stateObj.attributes.hvac_modes
-                .concat()
-                .sort(compareClimateHvacModes)
-                .map(
-                  (mode) => html`
-                    <mwc-list-item .value=${mode}>
-                      ${computeStateDisplay(
-                        hass.localize,
-                        stateObj,
-                        hass.locale,
-                        this.hass.config,
-                        hass.entities,
-                        mode
-                      )}
-                    </mwc-list-item>
-                  `
-                )}
-            </ha-select>
-          </div>
+          <ha-select
+            .label=${hass.localize("ui.card.climate.operation")}
+            .value=${stateObj.state}
+            fixedMenuPosition
+            naturalMenuWidth
+            @selected=${this._handleOperationmodeChanged}
+            @closed=${stopPropagation}
+          >
+            ${stateObj.attributes.hvac_modes
+              .concat()
+              .sort(compareClimateHvacModes)
+              .map(
+                (mode) => html`
+                  <mwc-list-item .value=${mode}>
+                    ${computeStateDisplay(
+                      hass.localize,
+                      stateObj,
+                      hass.locale,
+                      this.hass.config,
+                      hass.entities,
+                      mode
+                    )}
+                  </mwc-list-item>
+                `
+              )}
+          </ha-select>
         </div>
 
         ${supportPresetMode && stateObj.attributes.preset_modes
@@ -358,42 +348,6 @@ class MoreInfoClimate extends LitElement {
     }, 500);
   }
 
-  private _targetTemperatureChanged(ev) {
-    const newVal = ev.target.value;
-    this._callServiceHelper(
-      this.stateObj!.attributes.temperature,
-      newVal,
-      "set_temperature",
-      { temperature: newVal }
-    );
-  }
-
-  private _targetTemperatureLowChanged(ev) {
-    const newVal = ev.currentTarget.value;
-    this._callServiceHelper(
-      this.stateObj!.attributes.target_temp_low,
-      newVal,
-      "set_temperature",
-      {
-        target_temp_low: newVal,
-        target_temp_high: this.stateObj!.attributes.target_temp_high,
-      }
-    );
-  }
-
-  private _targetTemperatureHighChanged(ev) {
-    const newVal = ev.currentTarget.value;
-    this._callServiceHelper(
-      this.stateObj!.attributes.target_temp_high,
-      newVal,
-      "set_temperature",
-      {
-        target_temp_low: this.stateObj!.attributes.target_temp_low,
-        target_temp_high: newVal,
-      }
-    );
-  }
-
   private _targetHumiditySliderChanged(ev) {
     const newVal = ev.target.value;
     this._callServiceHelper(
@@ -492,48 +446,76 @@ class MoreInfoClimate extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        color: var(--primary-text-color);
-      }
+    return [
+      moreInfoControlStyle,
+      css`
+        :host {
+          color: var(--primary-text-color);
+        }
 
-      ha-select {
-        width: 100%;
-        margin-top: 8px;
-      }
+        .current {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          margin-bottom: 40px;
+        }
 
-      ha-slider {
-        width: 100%;
-      }
+        .current div {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          flex: 1;
+        }
 
-      .container-humidity .single-row {
-        display: flex;
-        height: 50px;
-      }
+        .current p {
+          margin: 0;
+          text-align: center;
+          color: var(--primary-text-color);
+        }
 
-      .target-humidity {
-        width: 90px;
-        font-size: 200%;
-        margin: auto;
-        direction: ltr;
-      }
+        .current .label {
+          opacity: 0.8;
+          font-size: 14px;
+          line-height: 16px;
+          letter-spacing: 0.4px;
+          margin-bottom: 4px;
+        }
 
-      ha-climate-control.range-control-left,
-      ha-climate-control.range-control-right {
-        float: left;
-        width: 46%;
-      }
-      ha-climate-control.range-control-left {
-        margin-right: 4%;
-      }
-      ha-climate-control.range-control-right {
-        margin-left: 4%;
-      }
+        .current .value {
+          font-size: 22px;
+          font-weight: 500;
+          line-height: 28px;
+        }
+        ha-select {
+          width: 100%;
+          margin-top: 8px;
+        }
 
-      .single-row {
-        padding: 8px 0;
-      }
-    `;
+        ha-slider {
+          width: 100%;
+        }
+
+        .container-humidity .single-row {
+          display: flex;
+          height: 50px;
+        }
+
+        .target-humidity {
+          width: 90px;
+          font-size: 200%;
+          margin: auto;
+          direction: ltr;
+        }
+
+        .single-row {
+          padding: 8px 0;
+        }
+      `,
+    ];
   }
 }
 
