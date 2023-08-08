@@ -60,7 +60,7 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
     this._targetHumidity = value;
   }
 
-  private _debouncedCallService = debounce(() => this._callService(), 2000);
+  private _debouncedCallService = debounce(() => this._callService(), 1000);
 
   private _callService() {
     this.hass.callService("humidifier", "set_humidity", {
