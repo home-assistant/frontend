@@ -1,4 +1,15 @@
 import {
+  mdiClockOutline,
+  mdiFan,
+  mdiFire,
+  mdiHeatWave,
+  mdiPower,
+  mdiSnowflake,
+  mdiSunSnowflakeVariant,
+  mdiThermostatAuto,
+  mdiWaterPercent,
+} from "@mdi/js";
+import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
@@ -74,7 +85,7 @@ const hvacModeOrdering: { [key in HvacMode]: number } = {
 export const compareClimateHvacModes = (mode1: HvacMode, mode2: HvacMode) =>
   hvacModeOrdering[mode1] - hvacModeOrdering[mode2];
 
-export const HVAC_ACTION_TO_MODE: Record<HvacAction, HvacMode> = {
+export const CLIMATE_HVAC_ACTION_TO_MODE: Record<HvacAction, HvacMode> = {
   cooling: "cool",
   drying: "dry",
   fan: "fan_only",
@@ -82,4 +93,24 @@ export const HVAC_ACTION_TO_MODE: Record<HvacAction, HvacMode> = {
   heating: "heat",
   idle: "off",
   off: "off",
+};
+
+export const CLIMATE_HVAC_ACTION_ICONS: Record<HvacAction, string> = {
+  cooling: mdiSnowflake,
+  drying: mdiWaterPercent,
+  fan: mdiFan,
+  heating: mdiFire,
+  idle: mdiClockOutline,
+  off: mdiPower,
+  preheating: mdiHeatWave,
+};
+
+export const CLIMATE_HVAC_MODE_ICONS: Record<HvacMode, string> = {
+  cool: mdiSnowflake,
+  dry: mdiWaterPercent,
+  fan_only: mdiFan,
+  auto: mdiThermostatAuto,
+  heat: mdiFire,
+  off: mdiPower,
+  heat_cool: mdiSunSnowflakeVariant,
 };
