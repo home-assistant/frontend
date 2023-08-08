@@ -19,6 +19,7 @@ import {
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import { fireEvent } from "../../common/dom/fire_event";
+import { RefreshToken } from "../../data/refresh_token";
 
 @customElement("ha-change-password-card")
 class HaChangePasswordCard extends LitElement {
