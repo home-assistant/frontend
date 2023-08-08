@@ -44,6 +44,11 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyUsageGraphCardConfig } from "../types";
 
+interface ColorSet {
+  base: string;
+  overrides?: string[];
+}
+
 @customElement("hui-energy-usage-graph-card")
 export class HuiEnergyUsageGraphCard
   extends SubscribeMixin(LitElement)
@@ -354,26 +359,68 @@ export class HuiEnergyUsageGraphCard
     }
 
     const computedStyles = getComputedStyle(this);
-    const colors = {
-      to_grid: computedStyles
-        .getPropertyValue("--energy-grid-return-color")
-        .trim(),
-      to_battery: computedStyles
-        .getPropertyValue("--energy-battery-in-color")
-        .trim(),
-      from_grid: computedStyles
-        .getPropertyValue("--energy-grid-consumption-color")
-        .trim(),
-      used_grid: computedStyles
-        .getPropertyValue("--energy-grid-consumption-color")
-        .trim(),
-      used_solar: computedStyles
-        .getPropertyValue("--energy-solar-color")
-        .trim(),
-      used_battery: computedStyles
-        .getPropertyValue("--energy-battery-out-color")
-        .trim(),
+
+    const colorPropertyMap = {
+      to_grid: "--energy-grid-return-color",
+      to_battery: "--energy-battery-in-color",
+      from_grid: "--energy-grid-consumption-color",
+      used_grid: "--energy-grid-consumption-color",
+      used_solar: "--energy-solar-color",
+      used_battery: "--energy-battery-out-color",
     };
+
+    const colors = {
+      to_grid: {
+        base: computedStyles.getPropertyValue(colorPropertyMap.to_grid).trim(),
+      },
+      to_battery: {
+        base: computedStyles
+          .getPropertyValue(colorPropertyMap.to_battery)
+          .trim(),
+      },
+      from_grid: {
+        base: computedStyles
+          .getPropertyValue(colorPropertyMap.from_grid)
+          .trim(),
+      },
+      used_grid: {
+        base: computedStyles
+          .getPropertyValue(colorPropertyMap.used_grid)
+          .trim(),
+      },
+      used_solar: {
+        base: computedStyles
+          .getPropertyValue(colorPropertyMap.used_solar)
+          .trim(),
+      },
+      used_battery: {
+        base: computedStyles
+          .getPropertyValue(colorPropertyMap.used_battery)
+          .trim(),
+      },
+    };
+
+    Object.entries(colorPropertyMap).forEach(([key, colorProp]) => {
+      if (
+        key === "used_grid" ||
+        key === "used_solar" ||
+        key === "used_battery"
+      ) {
+        return;
+      }
+      colors[key].overrides = [];
+      if (statIds[key]) {
+        Object.entries(statIds[key]).forEach((_, idx) => {
+          const override = computedStyles
+            .getPropertyValue(colorProp + "-" + idx)
+            .trim();
+          if (override.length > 0) {
+            colors[key].overrides[idx] = override;
+          }
+        });
+      }
+    });
+
     const labels = {
       used_grid: this.hass.localize(
         "ui.panel.lovelace.cards.energy.energy_usage_graph.combined_from_grid"
@@ -443,12 +490,12 @@ export class HuiEnergyUsageGraphCard
       from_battery?: string[] | undefined;
     },
     colors: {
-      to_grid: string;
-      to_battery: string;
-      from_grid: string;
-      used_grid: string;
-      used_solar: string;
-      used_battery: string;
+      to_grid: ColorSet;
+      to_battery: ColorSet;
+      from_grid: ColorSet;
+      used_grid: ColorSet;
+      used_solar: ColorSet;
+      used_battery: ColorSet;
     },
     labels: {
       used_grid: string;
@@ -487,11 +534,16 @@ export class HuiEnergyUsageGraphCard
       const add = !["solar", "from_battery"].includes(key);
       const totalStats: { [start: number]: number } = {};
       const sets: { [statId: string]: { [start: number]: number } } = {};
+      let colorIdx = 0;
       statIds!.forEach((id) => {
         const stats = statistics[id];
         if (!stats) {
+          if (colors[key].overrides?.length > colorIdx) {
+            colors[key].overrides.splice(colorIdx, 1);
+          }
           return;
         }
+        colorIdx++;
 
         const set = {};
         stats.forEach((stat) => {
@@ -598,15 +650,16 @@ export class HuiEnergyUsageGraphCard
 
     Object.entries(combinedData).forEach(([type, sources]) => {
       Object.entries(sources).forEach(([statId, source], idx) => {
+        const overrideColor = colors[type].overrides?.[idx];
         const modifiedColor =
           idx > 0
             ? this.hass.themes.darkMode
-              ? labBrighten(rgb2lab(hex2rgb(colors[type])), idx)
-              : labDarken(rgb2lab(hex2rgb(colors[type])), idx)
+              ? labBrighten(rgb2lab(hex2rgb(colors[type].base)), idx)
+              : labDarken(rgb2lab(hex2rgb(colors[type].base)), idx)
             : undefined;
-        const borderColor = modifiedColor
-          ? rgb2hex(lab2rgb(modifiedColor))
-          : colors[type];
+        const borderColor =
+          overrideColor ??
+          (modifiedColor ? rgb2hex(lab2rgb(modifiedColor)) : colors[type].base);
 
         const points: ScatterDataPoint[] = [];
         // Process chart data.
