@@ -2,11 +2,15 @@ import { mdiMinus, mdiPlus } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { computeAttributeValueDisplay } from "../../../../common/entity/compute_attribute_display";
+import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { clamp } from "../../../../common/number/clamp";
+import { formatNumber } from "../../../../common/number/format_number";
 import { blankBeforePercent } from "../../../../common/translations/blank_before_percent";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-control-circular-slider";
+import "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../../data/entity";
 import {
@@ -14,9 +18,6 @@ import {
   HumidifierEntityDeviceClass,
 } from "../../../../data/humidifier";
 import { HomeAssistant } from "../../../../types";
-import { formatNumber } from "../../../../common/number/format_number";
-import { computeAttributeValueDisplay } from "../../../../common/entity/compute_attribute_display";
-import { stateActive } from "../../../../common/entity/state_active";
 
 @customElement("ha-more-info-humidifier-humidity")
 export class HaMoreInfoHumidifierHumidity extends LitElement {
@@ -109,16 +110,18 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
   private _renderButtons() {
     return html`
       <div class="buttons">
-        <ha-icon-button
-          .path=${mdiMinus}
+        <ha-outlined-icon-button
           .step=${-this._step}
           @click=${this._handleButton}
-        ></ha-icon-button>
-        <ha-icon-button
-          .path=${mdiPlus}
+        >
+          <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
+        </ha-outlined-icon-button>
+        <ha-outlined-icon-button
           .step=${this._step}
           @click=${this._handleButton}
-        ></ha-icon-button>
+        >
+          <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+        </ha-outlined-icon-button>
       </div>
     `;
   }
@@ -194,7 +197,7 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
       <div
         class="container"
         style=${styleMap({
-          "--background-color": mainColor,
+          "--action-color": actionColor,
         })}
       >
         <ha-control-circular-slider
