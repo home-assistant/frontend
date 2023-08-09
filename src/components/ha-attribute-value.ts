@@ -2,9 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
-import { computeAttributeValueDisplay } from "../common/entity/compute_attribute_display";
 import { HomeAssistant } from "../types";
-import "./ha-expansion-panel";
 
 let jsYamlPromise: Promise<typeof import("../resources/js-yaml-dump")>;
 
@@ -55,14 +53,7 @@ class HaAttributeValue extends LitElement {
       return html`<pre>${until(yaml, "")}</pre>`;
     }
 
-    return computeAttributeValueDisplay(
-      this.hass.localize,
-      this.stateObj!,
-      this.hass.locale,
-      this.hass.config,
-      this.hass.entities,
-      this.attribute
-    );
+    return this.hass.formatEntityAttributeValue(this.stateObj!, this.attribute);
   }
 }
 
