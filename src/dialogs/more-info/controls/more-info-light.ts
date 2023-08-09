@@ -28,7 +28,6 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
 import "../../../components/ha-outlined-button";
-import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
 import { ExtEntityRegistryEntry } from "../../../data/entity_registry";

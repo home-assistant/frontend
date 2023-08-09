@@ -1,4 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
+import { mdiThermometer, mdiWaterPercent } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -7,7 +8,7 @@ import {
   html,
   nothing,
 } from "lit";
-import { property } from "lit/decorators";
+import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -19,23 +20,29 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import "../../../components/ha-icon-button-group";
+import "../../../components/ha-icon-button-toggle";
 import "../../../components/ha-select";
-import "../../../components/ha-slider";
 import "../../../components/ha-switch";
 import {
   ClimateEntity,
   ClimateEntityFeature,
   compareClimateHvacModes,
 } from "../../../data/climate";
+import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
+import "../components/climate/ha-more-info-climate-humidity";
 import "../components/climate/ha-more-info-climate-temperature";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
+
+type MainControl = "temperature" | "humidity";
 
 class MoreInfoClimate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public stateObj?: ClimateEntity;
+
+  @state() private _mainControl: MainControl = "temperature";
 
   private _resizeDebounce?: number;
 
@@ -79,56 +86,92 @@ class MoreInfoClimate extends LitElement {
     const currentTemperature = this.stateObj.attributes.current_temperature;
     const currentHumidity = this.stateObj.attributes.current_humidity;
 
-    const rtlDirection = computeRTLDirection(hass);
-
     return html`
-      ${currentTemperature || currentHumidity
-        ? html`<div class="current">
-            ${currentTemperature != null
-              ? html`
-                  <div>
-                    <p class="label">
-                      ${computeAttributeNameDisplay(
-                        this.hass.localize,
-                        this.stateObj,
-                        this.hass.entities,
-                        "current_temperature"
-                      )}
-                    </p>
-                    <p class="value">
-                      ${formatNumber(currentTemperature, this.hass.locale)}
-                      ${this.hass.config.unit_system.temperature}
-                    </p>
-                  </div>
-                `
-              : nothing}
-            ${currentHumidity != null
-              ? html`
-                  <div>
-                    <p class="label">
-                      ${computeAttributeNameDisplay(
-                        this.hass.localize,
-                        this.stateObj,
-                        this.hass.entities,
-                        "current_humidity"
-                      )}
-                    </p>
-                    <p class="value">
-                      ${formatNumber(
-                        currentHumidity,
-                        this.hass.locale
-                      )}${blankBeforePercent(this.hass.locale)}%
-                    </p>
-                  </div>
-                `
-              : nothing}
-          </div>`
-        : nothing}
+      <div class="current">
+        ${currentTemperature != null
+          ? html`
+              <div>
+                <p class="label">
+                  ${computeAttributeNameDisplay(
+                    this.hass.localize,
+                    this.stateObj,
+                    this.hass.entities,
+                    "current_temperature"
+                  )}
+                </p>
+                <p class="value">
+                  ${formatNumber(currentTemperature, this.hass.locale)}
+                  ${this.hass.config.unit_system.temperature}
+                </p>
+              </div>
+            `
+          : nothing}
+        ${currentHumidity != null
+          ? html`
+              <div>
+                <p class="label">
+                  ${computeAttributeNameDisplay(
+                    this.hass.localize,
+                    this.stateObj,
+                    this.hass.entities,
+                    "current_humidity"
+                  )}
+                </p>
+                <p class="value">
+                  ${formatNumber(
+                    currentHumidity,
+                    this.hass.locale
+                  )}${blankBeforePercent(this.hass.locale)}%
+                </p>
+              </div>
+            `
+          : nothing}
+      </div>
       <div class="controls">
-        <ha-more-info-climate-temperature
-          .hass=${this.hass}
-          .stateObj=${this.stateObj}
-        ></ha-more-info-climate-temperature>
+        ${this._mainControl === "temperature"
+          ? html`
+              <ha-more-info-climate-temperature
+                .hass=${this.hass}
+                .stateObj=${this.stateObj}
+              ></ha-more-info-climate-temperature>
+            `
+          : nothing}
+        ${this._mainControl === "humidity"
+          ? html`
+              <ha-more-info-climate-humidity
+                .hass=${this.hass}
+                .stateObj=${this.stateObj}
+              ></ha-more-info-climate-humidity>
+            `
+          : nothing}
+        ${supportTargetHumidity
+          ? html`
+              <ha-icon-button-group>
+                <ha-icon-button-toggle
+                  .selected=${this._mainControl === "temperature"}
+                  .disabled=${this.stateObj!.state === UNAVAILABLE}
+                  .label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.light.color"
+                  )}
+                  .control=${"temperature"}
+                  @click=${this._setMainControl}
+                >
+                  <ha-svg-icon .path=${mdiThermometer}></ha-svg-icon>
+                </ha-icon-button-toggle>
+                <ha-icon-button-toggle
+                  .selected=${this._mainControl === "humidity"}
+                  .disabled=${this.stateObj!.state === UNAVAILABLE}
+                  .label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.light.color_temp"
+                  )}
+                  .control=${"humidity"}
+                  @click=${this._setMainControl}
+                >
+                  <ha-svg-icon .path=${mdiWaterPercent}></ha-svg-icon>
+                </ha-icon-button-toggle>
+              </ha-icon-button-group>
+            `
+          : nothing}
       </div>
       <div
         class=${classMap({
@@ -144,37 +187,6 @@ class MoreInfoClimate extends LitElement {
           "has-preset_mode": supportPresetMode,
         })}
       >
-        ${supportTargetHumidity
-          ? html`
-              <div class="container-humidity">
-                <div>
-                  ${computeAttributeNameDisplay(
-                    hass.localize,
-                    stateObj,
-                    hass.entities,
-                    "humidity"
-                  )}
-                </div>
-                <div class="single-row">
-                  <div class="target-humidity">
-                    ${stateObj.attributes.humidity} %
-                  </div>
-                  <ha-slider
-                    step="1"
-                    pin
-                    ignore-bar-touch
-                    dir=${rtlDirection}
-                    .min=${stateObj.attributes.min_humidity}
-                    .max=${stateObj.attributes.max_humidity}
-                    .value=${stateObj.attributes.humidity}
-                    @change=${this._targetHumiditySliderChanged}
-                  >
-                  </ha-slider>
-                </div>
-              </div>
-            `
-          : ""}
-
         <div class="container-hvac_modes">
           <ha-select
             .label=${hass.localize("ui.card.climate.operation")}
@@ -348,14 +360,9 @@ class MoreInfoClimate extends LitElement {
     }, 500);
   }
 
-  private _targetHumiditySliderChanged(ev) {
-    const newVal = ev.target.value;
-    this._callServiceHelper(
-      this.stateObj!.attributes.humidity,
-      newVal,
-      "set_humidity",
-      { humidity: newVal }
-    );
+  private _setMainControl(ev: any) {
+    ev.stopPropagation();
+    this._mainControl = ev.currentTarget.control;
   }
 
   private _auxToggleChanged(ev) {
@@ -493,10 +500,6 @@ class MoreInfoClimate extends LitElement {
         ha-select {
           width: 100%;
           margin-top: 8px;
-        }
-
-        ha-slider {
-          width: 100%;
         }
 
         .container-humidity .single-row {
