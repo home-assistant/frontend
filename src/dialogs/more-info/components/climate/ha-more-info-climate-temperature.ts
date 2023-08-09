@@ -167,11 +167,12 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     const lowColor = stateColorCss(this.stateObj, "heat");
     const highColor = stateColorCss(this.stateObj, "cool");
 
-    const color = colored
-      ? target === "high"
-        ? highColor
-        : lowColor
-      : undefined;
+    const color =
+      colored && stateActive(this.stateObj)
+        ? target === "high"
+          ? highColor
+          : lowColor
+        : undefined;
 
     return html`
       <div class="buttons">
