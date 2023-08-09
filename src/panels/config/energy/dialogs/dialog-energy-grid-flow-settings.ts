@@ -49,6 +49,8 @@ export class DialogEnergyGridFlowSettings
 
   @state() private _error?: string;
 
+  private _excludeList?: string[];
+
   public async showDialog(
     params: EnergySettingsGridFlowDialogParams
   ): Promise<void> {
@@ -67,18 +69,31 @@ export class DialogEnergyGridFlowSettings
         ]
       ? "statistic"
       : "no-costs";
-    this._pickedDisplayUnit = getDisplayUnit(
-      this.hass,
+
+    const initialSourceId =
       this._source[
         this._params.direction === "from"
           ? "stat_energy_from"
           : "stat_energy_to"
-      ],
+      ];
+
+    this._pickedDisplayUnit = getDisplayUnit(
+      this.hass,
+      initialSourceId,
       params.metadata
     );
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
+
+    this._excludeList = [
+      ...(this._params.grid_source?.flow_from?.map(
+        (entry) => entry.stat_energy_from
+      ) || []),
+      ...(this._params.grid_source?.flow_to?.map(
+        (entry) => entry.stat_energy_to
+      ) || []),
+    ].filter((id) => id !== initialSourceId);
   }
 
   public closeDialog(): void {
@@ -154,6 +169,7 @@ export class DialogEnergyGridFlowSettings
           .label=${this.hass.localize(
             `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.energy_stat`
           )}
+          .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
           dialogInitialFocus
         ></ha-statistic-picker>

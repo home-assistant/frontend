@@ -79,6 +79,14 @@ export class HaStatisticPicker extends LitElement {
   @property({ type: Boolean, attribute: "entities-only" })
   public entitiesOnly = false;
 
+  /**
+   * List of statistics to be excluded.
+   * @type {Array}
+   * @attr exclude-statistics
+   */
+  @property({ type: Array, attribute: "exclude-statistics" })
+  public excludeStatistics?: string[];
+
   @state() private _opened?: boolean;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
@@ -118,7 +126,8 @@ export class HaStatisticPicker extends LitElement {
       includeStatisticsUnitOfMeasurement?: string | string[],
       includeUnitClass?: string | string[],
       includeDeviceClass?: string | string[],
-      entitiesOnly?: boolean
+      entitiesOnly?: boolean,
+      excludeStatistics?: string[]
     ): StatisticItem[] => {
       if (!statisticIds.length) {
         return [
@@ -163,6 +172,12 @@ export class HaStatisticPicker extends LitElement {
 
       const output: StatisticItem[] = [];
       statisticIds.forEach((meta) => {
+        if (
+          excludeStatistics &&
+          excludeStatistics.includes(meta.statistic_id)
+        ) {
+          return;
+        }
         const entityState = this.hass.states[meta.statistic_id];
         if (!entityState) {
           if (!entitiesOnly) {
@@ -240,7 +255,8 @@ export class HaStatisticPicker extends LitElement {
           this.includeStatisticsUnitOfMeasurement,
           this.includeUnitClass,
           this.includeDeviceClass,
-          this.entitiesOnly
+          this.entitiesOnly,
+          this.excludeStatistics
         );
       } else {
         this.updateComplete.then(() => {
@@ -249,7 +265,8 @@ export class HaStatisticPicker extends LitElement {
             this.includeStatisticsUnitOfMeasurement,
             this.includeUnitClass,
             this.includeDeviceClass,
-            this.entitiesOnly
+            this.entitiesOnly,
+            this.excludeStatistics
           );
         });
       }
