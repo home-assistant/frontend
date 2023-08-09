@@ -36,7 +36,7 @@ class FlowPreviewSensorGroup extends LitElement {
   }
 
   private async _updatePreview() {
-    if (this.flowType !== "config_flow" && this.flowType !== "options_flow") {
+    if (this.flowType === "repair_flow") {
       return;
     }
     if (!this.stepData.type) {

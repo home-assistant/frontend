@@ -2,11 +2,7 @@ import { Connection } from "home-assistant-js-websocket";
 import type { HaFormSchema } from "../components/ha-form/types";
 import { ConfigEntry } from "./config_entries";
 
-export type FlowType =
-  | "config_flow"
-  | "options_flow"
-  | "repair_flow"
-  | "auth_flow";
+export type FlowType = "config_flow" | "options_flow" | "repair_flow";
 
 export interface DataEntryFlowProgressedEvent {
   type: "data_entry_flow_progressed";
