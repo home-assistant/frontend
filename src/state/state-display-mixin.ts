@@ -1,4 +1,4 @@
-import { computeFormatFunctions } from "../common/translations/state";
+import { computeFormatFunctions } from "../common/translations/entity-state";
 import { Constructor, HomeAssistant } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
 
@@ -31,17 +31,20 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
 
     private _updateStateDisplay = async () => {
       if (!this.hass) return;
-      const { formatState, formatAttributeName, formatAttributeValue } =
-        await computeFormatFunctions(
-          this.hass.localize,
-          this.hass.locale,
-          this.hass.config,
-          this.hass.entities
-        );
+      const {
+        formatEntityState,
+        formatEntityAttributeName,
+        formatEntityAttributeValue,
+      } = await computeFormatFunctions(
+        this.hass.localize,
+        this.hass.locale,
+        this.hass.config,
+        this.hass.entities
+      );
       this._updateHass({
-        formatState,
-        formatAttributeName,
-        formatAttributeValue,
+        formatEntityState,
+        formatEntityAttributeName,
+        formatEntityAttributeValue,
       });
     };
   }

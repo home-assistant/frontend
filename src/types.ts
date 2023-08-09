@@ -257,13 +257,13 @@ export interface HomeAssistant {
     configFlow?: Parameters<typeof getHassTranslations>[4]
   ): Promise<LocalizeFunc>;
   loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
-  formatState(stateObj: HassEntity, state?: string): string;
-  formatAttributeValue(
+  formatEntityState(stateObj: HassEntity, state?: string): string;
+  formatEntityAttributeValue(
     stateObj: HassEntity,
     attribute: string,
     value?: string
   ): string;
-  formatAttributeName(stateObj: HassEntity, attribute: string): string;
+  formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
 }
 
 export interface Route {
