@@ -1,3 +1,4 @@
+import { mdiCircleMedium, mdiPower, mdiTuneVariant } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -7,7 +8,6 @@ import {
   nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import {
@@ -18,7 +18,9 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
+import "../../../components/ha-control-select-menu";
 import {
+  HUMIDIFIER_MODE_ICONS,
   HumidifierEntity,
   HumidifierEntityFeature,
 } from "../../../data/humidifier";
@@ -58,100 +60,111 @@ class MoreInfoHumidifier extends LitElement {
     const currentHumidity = this.stateObj.attributes.current_humidity;
 
     return html`
-      ${currentHumidity
-        ? html`<div class="current">
-            ${currentHumidity != null
-              ? html`
-                  <div>
-                    <p class="label">
-                      ${computeAttributeNameDisplay(
-                        this.hass.localize,
-                        this.stateObj,
-                        this.hass.entities,
-                        "current_humidity"
-                      )}
-                    </p>
-                    <p class="value">
-                      ${formatNumber(
-                        currentHumidity,
-                        this.hass.locale
-                      )}${blankBeforePercent(this.hass.locale)}%
-                    </p>
-                  </div>
-                `
-              : nothing}
-          </div>`
-        : nothing}
+      <div class="current">
+        ${currentHumidity != null
+          ? html`
+              <div>
+                <p class="label">
+                  ${computeAttributeNameDisplay(
+                    this.hass.localize,
+                    this.stateObj,
+                    this.hass.entities,
+                    "current_humidity"
+                  )}
+                </p>
+                <p class="value">
+                  ${formatNumber(
+                    currentHumidity,
+                    this.hass.locale
+                  )}${blankBeforePercent(this.hass.locale)}%
+                </p>
+              </div>
+            `
+          : nothing}
+      </div>
+
       <div class="controls">
         <ha-more-info-humidifier-humidity
           .hass=${this.hass}
           .stateObj=${this.stateObj}
         ></ha-more-info-humidifier-humidity>
       </div>
-      <div
-        class=${classMap({
-          "has-modes": supportModes,
-        })}
-      >
-        <ha-select
-          .label=${this.hass.localize("ui.card.humidifier.state")}
-          .value=${this.stateObj.state}
-          fixedMenuPosition
-          naturalMenuWidth
-          @selected=${this._handleStateChanged}
-          @closed=${stopPropagation}
-        >
-          <mwc-list-item value="off">
-            ${computeStateDisplay(
-              this.hass.localize,
-              this.stateObj,
-              this.hass.locale,
-              this.hass.config,
-              this.hass.entities,
-              "off"
-            )}
-          </mwc-list-item>
-          <mwc-list-item value="on">
-            ${computeStateDisplay(
-              this.hass.localize,
-              this.stateObj,
-              this.hass.locale,
-              this.hass.config,
-              this.hass.entities,
-              "on"
-            )}
-          </mwc-list-item>
-        </ha-select>
 
-        ${supportModes
-          ? html`
-              <ha-select
-                .label=${hass.localize("ui.card.humidifier.mode")}
-                .value=${stateObj.attributes.mode}
-                fixedMenuPosition
-                naturalMenuWidth
-                @selected=${this._handleModeChanged}
-                @action=${this._handleModeChanged}
-                @closed=${stopPropagation}
-              >
-                ${stateObj.attributes.available_modes!.map(
-                  (mode) => html`
-                    <mwc-list-item .value=${mode}>
-                      ${computeAttributeValueDisplay(
-                        hass.localize,
-                        stateObj!,
-                        hass.locale,
-                        hass.config,
-                        hass.entities,
-                        "mode",
-                        mode
-                      )}
-                    </mwc-list-item>
-                  `
-                )}
-              </ha-select>
-            `
-          : nothing}
+      <div class="secondary-controls">
+        <div class="secondary-controls-scroll">
+          <ha-control-select-menu
+            .label=${this.hass.localize("ui.card.humidifier.state")}
+            .value=${this.stateObj.state}
+            fixedMenuPosition
+            naturalMenuWidth
+            @selected=${this._handleStateChanged}
+            @closed=${stopPropagation}
+          >
+            <ha-svg-icon slot="icon" .path=${mdiPower}></ha-svg-icon>
+            <mwc-list-item value="off">
+              ${computeStateDisplay(
+                this.hass.localize,
+                this.stateObj,
+                this.hass.locale,
+                this.hass.config,
+                this.hass.entities,
+                "off"
+              )}
+            </mwc-list-item>
+            <mwc-list-item value="on">
+              ${computeStateDisplay(
+                this.hass.localize,
+                this.stateObj,
+                this.hass.locale,
+                this.hass.config,
+                this.hass.entities,
+                "on"
+              )}
+            </mwc-list-item>
+          </ha-control-select-menu>
+
+          ${supportModes
+            ? html`
+                <ha-control-select-menu
+                  .label=${hass.localize("ui.card.humidifier.mode")}
+                  .value=${stateObj.attributes.mode}
+                  fixedMenuPosition
+                  naturalMenuWidth
+                  @selected=${this._handleModeChanged}
+                  @action=${this._handleModeChanged}
+                  @closed=${stopPropagation}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${stateObj.attributes.mode
+                      ? HUMIDIFIER_MODE_ICONS[stateObj.attributes.mode] ||
+                        mdiCircleMedium
+                      : mdiTuneVariant}
+                  ></ha-svg-icon>
+                  ${stateObj.attributes.available_modes!.map(
+                    (mode) => html`
+                      <ha-list-item .value=${mode} graphic="icon">
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${HUMIDIFIER_MODE_ICONS[mode] ||
+                          mdiCircleMedium}
+                        ></ha-svg-icon>
+                        ${computeAttributeValueDisplay(
+                          hass.localize,
+                          stateObj!,
+                          hass.locale,
+                          hass.config,
+                          hass.entities,
+                          "mode",
+                          mode
+                        )}
+                      </ha-list-item>
+                    `
+                  )}
+                </ha-control-select-menu>
+              `
+            : nothing}
+        </div>
       </div>
     `;
   }
@@ -243,7 +256,6 @@ class MoreInfoHumidifier extends LitElement {
         :host {
           color: var(--primary-text-color);
         }
-
         .current {
           display: flex;
           flex-direction: row;
@@ -276,11 +288,6 @@ class MoreInfoHumidifier extends LitElement {
           font-size: 22px;
           font-weight: 500;
           line-height: 28px;
-        }
-
-        ha-select {
-          width: 100%;
-          margin-top: 8px;
         }
       `,
     ];
