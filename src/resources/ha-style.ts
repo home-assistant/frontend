@@ -176,6 +176,12 @@ documentContainer.innerHTML = `<custom-style>
       --state-sensor-battery-high-color: var(--green-color);
       --state-sensor-battery-low-color: var(--red-color);
       --state-sensor-battery-medium-color: var(--orange-color);
+      --state-water_heater-eco-color: var(--green-color);
+      --state-water_heater-electric-color: var(--orange-color);
+      --state-water_heater-gas-color: var(--orange-color);
+      --state-water_heater-heat_pump-color: var(--orange-color);
+      --state-water_heater-high_demand-color: var(--deep-orange-color);
+      --state-water_heater-performance-color: var(--deep-orange-color);
 
       /* history colors */
       --history-unavailable-color: transparent;
