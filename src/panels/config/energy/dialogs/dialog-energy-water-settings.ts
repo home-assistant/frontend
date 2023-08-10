@@ -44,6 +44,8 @@ export class DialogEnergyWaterSettings
 
   @state() private _error?: string;
 
+  private _excludeList?: string[];
+
   public async showDialog(
     params: EnergySettingsWaterDialogParams
   ): Promise<void> {
@@ -66,6 +68,9 @@ export class DialogEnergyWaterSettings
     this._water_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "water")
     ).units;
+    this._excludeList = this._params.water_sources
+      .map((entry) => entry.stat_energy_from)
+      .filter((id) => id !== this._source?.stat_energy_from);
   }
 
   public closeDialog(): void {
@@ -73,6 +78,7 @@ export class DialogEnergyWaterSettings
     this._source = undefined;
     this._error = undefined;
     this._pickedDisplayUnit = undefined;
+    this._excludeList = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -128,6 +134,7 @@ export class DialogEnergyWaterSettings
           .label=${this.hass.localize(
             "ui.panel.config.energy.water.dialog.water_usage"
           )}
+          .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
           dialogInitialFocus
         ></ha-statistic-picker>
