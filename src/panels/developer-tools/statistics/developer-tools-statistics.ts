@@ -112,6 +112,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         filterable: true,
         direction: "asc",
         width: "30%",
+        valueColumn: "issues_string",
         template: (issues) =>
           html`${issues
             ? issues.map(
@@ -225,6 +226,14 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           ...statistic,
           state: this.hass.states[statistic.statistic_id],
           issues: issues[statistic.statistic_id],
+          issues_string: issues[statistic.statistic_id]
+            ?.map((issue) =>
+              this.hass.localize(
+                `ui.panel.developer-tools.tabs.statistics.issues.${issue.type}`,
+                issue.data
+              )
+            )
+            .join(" "),
         };
       });
 
