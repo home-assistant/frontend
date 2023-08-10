@@ -32,6 +32,8 @@ export class DialogEnergyDeviceSettings
 
   @state() private _error?: string;
 
+  private _excludeList?: string[];
+
   public async showDialog(
     params: EnergySettingsDeviceDialogParams
   ): Promise<void> {
@@ -39,12 +41,16 @@ export class DialogEnergyDeviceSettings
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
+    this._excludeList = this._params.device_consumptions.map(
+      (entry) => entry.stat_consumption
+    );
   }
 
   public closeDialog(): void {
     this._params = undefined;
     this._device = undefined;
     this._error = undefined;
+    this._excludeList = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -81,6 +87,7 @@ export class DialogEnergyDeviceSettings
           .label=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.device_consumption_energy"
           )}
+          .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
           dialogInitialFocus
         ></ha-statistic-picker>
