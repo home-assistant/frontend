@@ -1,9 +1,9 @@
 import {
   mdiAccountArrowRight,
-  mdiAirHumidifier,
   mdiArrowDownBold,
   mdiArrowUpBold,
   mdiBabyCarriage,
+  mdiCircleMedium,
   mdiClockOutline,
   mdiHome,
   mdiLeaf,
@@ -68,7 +68,7 @@ export const HUMIDIFIER_MODE_ICONS: Record<HumidifierBuiltInMode, string> = {
 };
 
 export const computeHumidiferModeIcon = (mode?: string) =>
-  HUMIDIFIER_MODE_ICONS[mode as HumidifierBuiltInMode] ?? mdiAirHumidifier;
+  HUMIDIFIER_MODE_ICONS[mode as HumidifierBuiltInMode] ?? mdiCircleMedium;
 
 export const HUMIDIFIER_ACTION_ICONS: Record<HumidifierAction, string> = {
   drying: mdiArrowDownBold,

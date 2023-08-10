@@ -1,4 +1,4 @@
-import { mdiCircleMedium, mdiPower, mdiTuneVariant } from "@mdi/js";
+import { mdiPower, mdiTuneVariant } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -20,9 +20,9 @@ import { formatNumber } from "../../../common/number/format_number";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-control-select-menu";
 import {
-  HUMIDIFIER_MODE_ICONS,
   HumidifierEntity,
   HumidifierEntityFeature,
+  computeHumidiferModeIcon,
 } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
@@ -137,8 +137,7 @@ class MoreInfoHumidifier extends LitElement {
                   <ha-svg-icon
                     slot="icon"
                     .path=${stateObj.attributes.mode
-                      ? HUMIDIFIER_MODE_ICONS[stateObj.attributes.mode] ||
-                        mdiCircleMedium
+                      ? computeHumidiferModeIcon(stateObj.attributes.mode)
                       : mdiTuneVariant}
                   ></ha-svg-icon>
                   ${stateObj.attributes.available_modes!.map(
@@ -146,8 +145,7 @@ class MoreInfoHumidifier extends LitElement {
                       <ha-list-item .value=${mode} graphic="icon">
                         <ha-svg-icon
                           slot="graphic"
-                          .path=${HUMIDIFIER_MODE_ICONS[mode] ||
-                          mdiCircleMedium}
+                          .path=${computeHumidiferModeIcon(mode)}
                         ></ha-svg-icon>
                         ${computeAttributeValueDisplay(
                           hass.localize,
