@@ -25,7 +25,6 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { stateIconPath } from "../../../common/entity/state_icon_path";
@@ -234,13 +233,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
     }
 
-    const stateDisplay = computeStateDisplay(
-      this.hass!.localize,
-      stateObj,
-      this.hass!.locale,
-      this.hass!.config,
-      this.hass!.entities
-    );
+    const stateDisplay = this.hass!.formatEntityState(stateObj);
 
     if (domain === "cover") {
       const positionStateDisplay = computeCoverPositionStateDisplay(
