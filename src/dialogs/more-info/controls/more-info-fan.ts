@@ -16,7 +16,6 @@ import {
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-attributes";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
 import "../../../components/ha-outlined-icon-button";
