@@ -146,6 +146,9 @@ export class EnergyBatterySettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsBatteryDialog(this, {
+      battery_sources: this.preferences.energy_sources.filter(
+        (src) => src.type === "battery"
+      ) as BatterySourceTypeEnergyPreference[],
       saveCallback: async (source) => {
         await this._savePreferences({
           ...this.preferences,
@@ -160,6 +163,9 @@ export class EnergyBatterySettings extends LitElement {
       ev.currentTarget.closest(".row").source;
     showEnergySettingsBatteryDialog(this, {
       source: { ...origSource },
+      battery_sources: this.preferences.energy_sources.filter(
+        (src) => src.type === "battery"
+      ) as BatterySourceTypeEnergyPreference[],
       saveCallback: async (newSource) => {
         await this._savePreferences({
           ...this.preferences,
