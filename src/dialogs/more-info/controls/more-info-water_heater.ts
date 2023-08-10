@@ -1,4 +1,4 @@
-import { mdiWaterBoiler } from "@mdi/js";
+import { mdiAccount, mdiAccountArrowRight, mdiWaterBoiler } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -33,6 +33,11 @@ class MoreInfoWaterHeater extends LitElement {
     const supportOperationMode = supportsFeature(
       stateObj,
       WaterHeaterEntityFeature.OPERATION_MODE
+    );
+
+    const supportAwayMode = supportsFeature(
+      stateObj,
+      WaterHeaterEntityFeature.AWAY_MODE
     );
 
     const currentTemperature = this.stateObj.attributes.current_temperature;
@@ -100,6 +105,42 @@ class MoreInfoWaterHeater extends LitElement {
                 </ha-control-select-menu>
               `
             : nothing}
+          ${supportAwayMode
+            ? html`
+                <ha-control-select-menu
+                  .label=${this.hass.formatEntityAttributeName(
+                    stateObj,
+                    "away_mode"
+                  )}
+                  .value=${stateObj.attributes.away_mode}
+                  fixedMenuPosition
+                  naturalMenuWidth
+                  @selected=${this._handleAwayModeChanged}
+                  @closed=${stopPropagation}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${stateObj.attributes.away_mode === "on"
+                      ? mdiAccountArrowRight
+                      : mdiAccount}
+                  ></ha-svg-icon>
+                  <ha-list-item .value=${"on"} graphic="icon">
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiAccountArrowRight}
+                    ></ha-svg-icon>
+                    ${this.hass.localize("state.default.on")}
+                  </ha-list-item>
+                  <ha-list-item .value=${"off"} graphic="icon">
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiAccount}
+                    ></ha-svg-icon>
+                    ${this.hass.localize("state.default.off")}
+                  </ha-list-item>
+                </ha-control-select-menu>
+              `
+            : nothing}
         </div>
       </div>
     `;
@@ -115,6 +156,15 @@ class MoreInfoWaterHeater extends LitElement {
         operation_mode: newVal,
       }
     );
+  }
+
+  private _handleAwayModeChanged(ev) {
+    const newVal = ev.target.value === "on";
+    const oldVal = this.stateObj!.attributes.away_mode === "on";
+
+    this._callServiceHelper(oldVal, newVal, "set_away_mode", {
+      away_mode: newVal,
+    });
   }
 
   private async _callServiceHelper(
