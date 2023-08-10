@@ -1,5 +1,11 @@
 import "@material/mwc-list/mwc-list-item";
-import { mdiThermometer, mdiWaterPercent } from "@mdi/js";
+import {
+  mdiFan,
+  mdiThermometer,
+  mdiThermostat,
+  mdiTuneVariant,
+  mdiWaterPercent,
+} from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -20,20 +26,28 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
+import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
+import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import "../../../components/ha-switch";
 import {
   ClimateEntity,
   ClimateEntityFeature,
+  HvacMode,
   compareClimateHvacModes,
+  computeFanModeIcon,
+  computeHvacModeIcon,
+  computePresetModeIcon,
+  computeSwingModeIcon,
 } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import "../components/climate/ha-more-info-climate-humidity";
 import "../components/climate/ha-more-info-climate-temperature";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
+import { haOscillating } from "../../../data/icons/haOscillating";
 
 type MainControl = "temperature" | "humidity";
 
@@ -173,6 +187,174 @@ class MoreInfoClimate extends LitElement {
             `
           : nothing}
       </div>
+      <div class="secondary-controls">
+        <div class="secondary-controls-scroll">
+          <ha-control-select-menu
+            .label=${hass.localize("ui.card.climate.operation")}
+            .value=${stateObj.state}
+            fixedMenuPosition
+            naturalMenuWidth
+            @selected=${this._handleOperationmodeChanged}
+            @closed=${stopPropagation}
+          >
+            <ha-svg-icon
+              slot="icon"
+              .path=${computeHvacModeIcon(stateObj.state as HvacMode) ??
+              mdiThermostat}
+            ></ha-svg-icon>
+            ${stateObj.attributes.hvac_modes
+              .concat()
+              .sort(compareClimateHvacModes)
+              .map(
+                (mode) => html`
+                  <ha-list-item .value=${mode} graphic="icon">
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${computeHvacModeIcon(mode)}
+                    ></ha-svg-icon>
+                    ${computeStateDisplay(
+                      hass.localize,
+                      stateObj,
+                      hass.locale,
+                      this.hass.config,
+                      hass.entities,
+                      mode
+                    )}
+                  </ha-list-item>
+                `
+              )}
+          </ha-control-select-menu>
+          ${supportPresetMode && stateObj.attributes.preset_modes
+            ? html`
+                <ha-control-select-menu
+                  .label=${computeAttributeNameDisplay(
+                    hass.localize,
+                    stateObj,
+                    hass.entities,
+                    "preset_mode"
+                  )}
+                  .value=${stateObj.attributes.preset_mode}
+                  fixedMenuPosition
+                  naturalMenuWidth
+                  @selected=${this._handlePresetmodeChanged}
+                  @closed=${stopPropagation}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${stateObj.attributes.preset_mode
+                      ? computePresetModeIcon(stateObj.attributes.preset_mode)
+                      : mdiTuneVariant}
+                  ></ha-svg-icon>
+                  ${stateObj.attributes.preset_modes!.map(
+                    (mode) => html`
+                      <ha-list-item .value=${mode} graphic="icon">
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${computePresetModeIcon(mode)}
+                        ></ha-svg-icon>
+                        ${computeAttributeValueDisplay(
+                          hass.localize,
+                          stateObj,
+                          hass.locale,
+                          hass.config,
+                          hass.entities,
+                          "preset_mode",
+                          mode
+                        )}
+                      </ha-list-item>
+                    `
+                  )}
+                </ha-control-select-menu>
+              `
+            : nothing}
+          ${supportFanMode && stateObj.attributes.fan_modes
+            ? html`
+                <ha-control-select-menu
+                  .label=${computeAttributeNameDisplay(
+                    hass.localize,
+                    stateObj,
+                    hass.entities,
+                    "fan_mode"
+                  )}
+                  .value=${stateObj.attributes.fan_mode}
+                  fixedMenuPosition
+                  naturalMenuWidth
+                  @selected=${this._handleFanmodeChanged}
+                  @closed=${stopPropagation}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${stateObj.attributes.fan_mode
+                      ? computeFanModeIcon(stateObj.attributes.fan_mode)
+                      : mdiFan}
+                  ></ha-svg-icon>
+                  ${stateObj.attributes.fan_modes!.map(
+                    (mode) => html`
+                      <ha-list-item .value=${mode} graphic="icon">
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${computeFanModeIcon(mode)}
+                        ></ha-svg-icon>
+                        ${computeAttributeValueDisplay(
+                          hass.localize,
+                          stateObj,
+                          hass.locale,
+                          this.hass.config,
+                          hass.entities,
+                          "fan_mode",
+                          mode
+                        )}
+                      </ha-list-item>
+                    `
+                  )}
+                </ha-control-select-menu>
+              `
+            : nothing}
+          ${supportSwingMode && stateObj.attributes.swing_modes
+            ? html`
+                <ha-control-select-menu
+                  .label=${computeAttributeNameDisplay(
+                    hass.localize,
+                    stateObj,
+                    hass.entities,
+                    "swing_mode"
+                  )}
+                  .value=${stateObj.attributes.swing_mode}
+                  fixedMenuPosition
+                  naturalMenuWidth
+                  @selected=${this._handleSwingmodeChanged}
+                  @closed=${stopPropagation}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${stateObj.attributes.swing_mode
+                      ? computeSwingModeIcon(stateObj.attributes.swing_mode)
+                      : haOscillating}
+                  ></ha-svg-icon>
+                  ${stateObj.attributes.swing_modes!.map(
+                    (mode) => html`
+                      <ha-list-item .value=${mode} graphic="icon">
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${computeSwingModeIcon(mode)}
+                        ></ha-svg-icon>
+                        ${computeAttributeValueDisplay(
+                          hass.localize,
+                          stateObj,
+                          hass.locale,
+                          this.hass.config,
+                          hass.entities,
+                          "swing_mode",
+                          mode
+                        )}
+                      </ha-list-item>
+                    `
+                  )}
+                </ha-control-select-menu>
+              `
+            : nothing}
+        </div>
+      </div>
       <div
         class=${classMap({
           "has-current_temperature":
@@ -187,140 +369,6 @@ class MoreInfoClimate extends LitElement {
           "has-preset_mode": supportPresetMode,
         })}
       >
-        <div class="container-hvac_modes">
-          <ha-select
-            .label=${hass.localize("ui.card.climate.operation")}
-            .value=${stateObj.state}
-            fixedMenuPosition
-            naturalMenuWidth
-            @selected=${this._handleOperationmodeChanged}
-            @closed=${stopPropagation}
-          >
-            ${stateObj.attributes.hvac_modes
-              .concat()
-              .sort(compareClimateHvacModes)
-              .map(
-                (mode) => html`
-                  <mwc-list-item .value=${mode}>
-                    ${computeStateDisplay(
-                      hass.localize,
-                      stateObj,
-                      hass.locale,
-                      this.hass.config,
-                      hass.entities,
-                      mode
-                    )}
-                  </mwc-list-item>
-                `
-              )}
-          </ha-select>
-        </div>
-
-        ${supportPresetMode && stateObj.attributes.preset_modes
-          ? html`
-              <div class="container-preset_modes">
-                <ha-select
-                  .label=${computeAttributeNameDisplay(
-                    hass.localize,
-                    stateObj,
-                    hass.entities,
-                    "preset_mode"
-                  )}
-                  .value=${stateObj.attributes.preset_mode}
-                  fixedMenuPosition
-                  naturalMenuWidth
-                  @selected=${this._handlePresetmodeChanged}
-                  @closed=${stopPropagation}
-                >
-                  ${stateObj.attributes.preset_modes!.map(
-                    (mode) => html`
-                      <mwc-list-item .value=${mode}>
-                        ${computeAttributeValueDisplay(
-                          hass.localize,
-                          stateObj,
-                          hass.locale,
-                          hass.config,
-                          hass.entities,
-                          "preset_mode",
-                          mode
-                        )}
-                      </mwc-list-item>
-                    `
-                  )}
-                </ha-select>
-              </div>
-            `
-          : ""}
-        ${supportFanMode && stateObj.attributes.fan_modes
-          ? html`
-              <div class="container-fan_list">
-                <ha-select
-                  .label=${computeAttributeNameDisplay(
-                    hass.localize,
-                    stateObj,
-                    hass.entities,
-                    "fan_mode"
-                  )}
-                  .value=${stateObj.attributes.fan_mode}
-                  fixedMenuPosition
-                  naturalMenuWidth
-                  @selected=${this._handleFanmodeChanged}
-                  @closed=${stopPropagation}
-                >
-                  ${stateObj.attributes.fan_modes!.map(
-                    (mode) => html`
-                      <mwc-list-item .value=${mode}>
-                        ${computeAttributeValueDisplay(
-                          hass.localize,
-                          stateObj,
-                          hass.locale,
-                          this.hass.config,
-                          hass.entities,
-                          "fan_mode",
-                          mode
-                        )}
-                      </mwc-list-item>
-                    `
-                  )}
-                </ha-select>
-              </div>
-            `
-          : ""}
-        ${supportSwingMode && stateObj.attributes.swing_modes
-          ? html`
-              <div class="container-swing_list">
-                <ha-select
-                  .label=${computeAttributeNameDisplay(
-                    hass.localize,
-                    stateObj,
-                    hass.entities,
-                    "swing_mode"
-                  )}
-                  .value=${stateObj.attributes.swing_mode}
-                  fixedMenuPosition
-                  naturalMenuWidth
-                  @selected=${this._handleSwingmodeChanged}
-                  @closed=${stopPropagation}
-                >
-                  ${stateObj.attributes.swing_modes!.map(
-                    (mode) => html`
-                      <mwc-list-item .value=${mode}>
-                        ${computeAttributeValueDisplay(
-                          hass.localize,
-                          stateObj,
-                          hass.locale,
-                          this.hass.config,
-                          hass.entities,
-                          "swing_mode",
-                          mode
-                        )}
-                      </mwc-list-item>
-                    `
-                  )}
-                </ha-select>
-              </div>
-            `
-          : ""}
         ${supportAuxHeat
           ? html`
               <div class="container-aux_heat">
