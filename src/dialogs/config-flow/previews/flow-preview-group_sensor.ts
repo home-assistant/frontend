@@ -6,8 +6,8 @@ import { previewGroupSensor } from "../../../data/group";
 import { HomeAssistant } from "../../../types";
 import "./entity-preview-row";
 
-@customElement("flow-preview-sensor_group_preview")
-class FlowPreviewSensorGroup extends LitElement {
+@customElement("flow-preview-group_sensor")
+class FlowPreviewGroupSensor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public flowType!: FlowType;
@@ -66,6 +66,6 @@ class FlowPreviewSensorGroup extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "flow-preview-sensor_group_preview": FlowPreviewSensorGroup;
+    "flow-preview-group_sensor": FlowPreviewGroupSensor;
   }
 }
