@@ -113,16 +113,9 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         direction: "asc",
         width: "30%",
         valueColumn: "issues_string",
-        template: (issues) =>
-          html`${issues
-            ? issues.map(
-                (issue) =>
-                  localize(
-                    `ui.panel.developer-tools.tabs.statistics.issues.${issue.type}`,
-                    issue.data
-                  ) || issue.type
-              )
-            : localize("ui.panel.developer-tools.tabs.statistics.no_issue")}`,
+        template: (_, data: any) =>
+          html`${data.issues_string ??
+          localize("ui.panel.developer-tools.tabs.statistics.no_issue")}`,
       },
       fix: {
         title: "",
@@ -227,11 +220,12 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           state: this.hass.states[statistic.statistic_id],
           issues: issues[statistic.statistic_id],
           issues_string: issues[statistic.statistic_id]
-            ?.map((issue) =>
-              this.hass.localize(
-                `ui.panel.developer-tools.tabs.statistics.issues.${issue.type}`,
-                issue.data
-              )
+            ?.map(
+              (issue) =>
+                this.hass.localize(
+                  `ui.panel.developer-tools.tabs.statistics.issues.${issue.type}`,
+                  issue.data
+                ) || issue.type
             )
             .join(" "),
         };
