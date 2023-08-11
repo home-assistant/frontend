@@ -52,7 +52,6 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
-import "@material/mwc-list";
 import "../../../components/ha-list-item";
 
 declare type NameAndEntity<EntityType extends HassEntity> = {
