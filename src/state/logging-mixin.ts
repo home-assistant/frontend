@@ -1,9 +1,10 @@
 import { HASSDomEvent } from "../common/dom/fire_event";
+import { SystemLogLevel } from "../data/system_log";
 import { Constructor } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
 
 interface WriteLogParams {
-  level?: "debug" | "info" | "warning" | "error" | "critical";
+  level?: SystemLogLevel;
   message: string;
 }
 
@@ -21,6 +22,44 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
 ) =>
   class extends superClass {
+    protected hassConnected() {
+      super.hassConnected();
+      window.addEventListener("error", async (ev) => {
+        if (
+          !__DEV__ &&
+          (ev.message.includes("ResizeObserver loop limit exceeded") ||
+            ev.message.includes(
+              "ResizeObserver loop completed with undelivered notifications"
+            ))
+        ) {
+          ev.preventDefault();
+          ev.stopImmediatePropagation();
+          ev.stopPropagation();
+          return;
+        }
+        const { createLogMessage } = await import("../resources/log-message");
+        this._writeLog({
+          // The error object from browsers includes the message and a stack trace,
+          // so use the data in the error event just as fallback
+          message: await createLogMessage(
+            ev.error,
+            "Uncaught error",
+            ev.message,
+            `@${ev.filename}:${ev.lineno}:${ev.colno}`
+          ),
+        });
+      });
+      window.addEventListener("unhandledrejection", async (ev) => {
+        const { createLogMessage } = await import("../resources/log-message");
+        this._writeLog({
+          message: await createLogMessage(
+            ev.reason,
+            "Unhandled promise rejection"
+          ),
+        });
+      });
+    }
+
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("write_log", (ev) => {

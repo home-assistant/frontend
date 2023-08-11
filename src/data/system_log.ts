@@ -1,15 +1,17 @@
 import { HomeAssistant, TranslationDict } from "../types";
 
+export type SystemLogLevel =
+  keyof TranslationDict["ui"]["panel"]["config"]["logs"]["level"];
+
 export interface LoggedError {
   name: string;
   message: [string];
-  level: keyof TranslationDict["ui"]["panel"]["config"]["logs"]["level"];
+  level: SystemLogLevel;
   source: [string, number];
-  // unix timestamp in seconds
-  timestamp: number;
   exception: string;
   count: number;
-  // unix timestamp in seconds
+  // unix timestamps in seconds
+  timestamp: number;
   first_occurred: number;
 }
 
