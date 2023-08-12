@@ -22,6 +22,7 @@ const STATE_COLORED_DOMAIN = new Set([
   "group",
   "humidifier",
   "input_boolean",
+  "lawn_mower",
   "light",
   "lock",
   "media_player",

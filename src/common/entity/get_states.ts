@@ -26,6 +26,14 @@ export const FIXED_DOMAIN_STATES = {
   humidifier: ["on", "off"],
   input_boolean: ["on", "off"],
   input_button: [],
+  lawn_mower: [
+    "error",
+    "paused",
+    "mowing",
+    "docking",
+    "docked_schedule_disabled",
+    "docked_schedule_enabled",
+  ],
   light: ["on", "off"],
   lock: ["jammed", "locked", "locking", "unlocked", "unlocking"],
   media_player: [
