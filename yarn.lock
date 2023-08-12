@@ -9775,7 +9775,7 @@ __metadata:
     lit: 2.8.0
     lit-analyzer: 2.0.0-pre.3
     lodash.template: 4.5.0
-    luxon: 3.3.0
+    luxon: 3.4.0
     magic-string: 0.30.2
     map-stream: 0.0.7
     marked: 4.3.0
@@ -11672,10 +11672,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:3.3.0":
-  version: 3.3.0
-  resolution: "luxon@npm:3.3.0"
-  checksum: 50cf17a0dc155c3dcacbeae8c0b7e80db425e0ba97b9cbdf12a7fc142d841ff1ab1560919f033af46240ed44e2f70c49f76e3422524c7fc8bb8d81ca47c66187
+"luxon@npm:3.4.0":
+  version: 3.4.0
+  resolution: "luxon@npm:3.4.0"
+  checksum: ca9b6d0e0a8d156574b7e84014ac8e4b60d116d6d7a0fb65ef48eeb8e4415dad6350b76c5ee34f795cadf8b3f9a5fe7a6885733f561e554c50dffb0b704a840b
   languageName: node
   linkType: hard
 
