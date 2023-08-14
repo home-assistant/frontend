@@ -232,15 +232,20 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
         .temperature span {
           display: inline-flex;
         }
-        .temperature .unit {
-          font-size: 24px;
-          line-height: 40px;
-        }
         .temperature .decimal {
           font-size: 24px;
-          line-height: 40px;
+          line-height: 32px;
           align-self: flex-end;
-          margin-right: -18px;
+          width: 20px;
+          margin-bottom: 4px;
+        }
+        .temperature .unit {
+          font-size: 20px;
+          line-height: 24px;
+          align-self: flex-start;
+          margin-left: -20px;
+          width: 20px;
+          margin-top: 4px;
         }
       `,
     ];

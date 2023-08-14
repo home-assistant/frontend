@@ -210,7 +210,7 @@ export class HaMoreInfoClimateHumidity extends LitElement {
           margin-bottom: 30px;
         }
         .target .value {
-          font-size: 56px;
+          font-size: 58px;
           line-height: 1;
           letter-spacing: -0.25px;
         }
