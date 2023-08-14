@@ -2504,7 +2504,11 @@
               "type_select": "Condition type",
               "type": {
                 "and": {
-                  "label": "And"
+                  "label": "And",
+                  "description": {
+                    "no_conditions": "Test if multiple conditions match",
+                    "full": "Test if any of {count} {count, plural,\n one {condition match}\n other {conditions matches}\n}"
+                  }
                 },
                 "device": {
                   "label": "Device",
@@ -2518,7 +2522,12 @@
                   }
                 },
                 "not": {
-                  "label": "Not"
+                  "label": "Not",
+                  "description": {
+                    "no_conditions": "Test if no condition matches",
+                    "one_condition": "Test if 1 condition does not match",
+                    "full": "Test if none of {count} conditions match"
+                  }
                 },
                 "numeric_state": {
                   "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::type_value%]",
@@ -2531,7 +2540,11 @@
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]"
                 },
                 "or": {
-                  "label": "Or"
+                  "label": "Or",
+                  "description": {
+                    "no_conditions": "Test if any condition matches",
+                    "full": "Test if any of {count} {count, plural,\n  one {condition}\n other {conditions}\n} matches"
+                  }
                 },
                 "state": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
@@ -2577,7 +2590,10 @@
                 "zone": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "entity": "[%key:ui::panel::config::automation::editor::triggers::type::zone::entity%]",
-                  "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]"
+                  "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
+                  "description": {
+                    "full": "Confirm {entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n} "
+                  }
                 }
               }
             },

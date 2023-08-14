@@ -26,6 +26,8 @@ import { FrontendLocaleData } from "./translation";
 
 const triggerTranslationBaseKey =
   "ui.panel.config.automation.editor.triggers.type";
+const conditionsTranslationBaseKey =
+  "ui.panel.config.automation.editor.conditions.type";
 
 const describeDuration = (forTime: number | string | ForDict) => {
   let duration: string | null;
@@ -714,34 +716,53 @@ const tryDescribeCondition = (
     const conditions = ensureArray(condition.conditions);
 
     if (!conditions || conditions.length === 0) {
-      return "Test if any condition matches";
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.or.description.no_conditions`
+      );
     }
     const count = conditions.length;
-    return `Test if any of ${count} condition${count === 1 ? "" : "s"} matches`;
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.or.description.full`,
+      {
+        count: count,
+      }
+    );
   }
 
   if (condition.condition === "and") {
     const conditions = ensureArray(condition.conditions);
 
     if (!conditions || conditions.length === 0) {
-      return "Test if multiple conditions match";
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.and.description.no_conditions`
+      );
     }
     const count = conditions.length;
-    return `Test if ${count} condition${count === 1 ? "" : "s"} match${
-      count === 1 ? "es" : ""
-    }`;
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.and.description.full`,
+      {
+        count: count,
+      }
+    );
   }
 
   if (condition.condition === "not") {
     const conditions = ensureArray(condition.conditions);
 
     if (!conditions || conditions.length === 0) {
-      return "Test if no condition matches";
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.not.description.no_conditions`
+      );
     }
     if (conditions.length === 1) {
-      return "Test if 1 condition does not match";
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.not.description.one_condition`
+      );
     }
-    return `Test if none of ${conditions.length} conditions match`;
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.not.description.full`,
+      { count: conditions.length }
+    );
   }
 
   // State Condition
@@ -1018,9 +1039,15 @@ const tryDescribeCondition = (
 
     const entitiesString = disjunctionFormatter.format(entities);
     const zonesString = disjunctionFormatter.format(zones);
-    return `Confirm ${entitiesString} ${
-      entities.length > 1 ? "are" : "is"
-    } in ${zonesString} ${zones.length > 1 ? "zones" : "zone"}`;
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.zone.description.full`,
+      {
+        entity: entitiesString,
+        numberOfEntities: entities.length,
+        zone: zonesString,
+        numberOfZones: zones.length,
+      }
+    );
   }
 
   if (condition.condition === "device") {
