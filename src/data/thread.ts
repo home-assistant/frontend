@@ -1,24 +1,28 @@
 import { HomeAssistant } from "../types";
 
 export interface ThreadRouter {
+  addresses: [string] | null;
   brand: "google" | "apple" | "homeassistant";
-  server: string;
-  extended_pan_id: string;
-  extended_address: string;
+  extended_address: string | null;
+  extended_pan_id: string | null;
   model_name: string | null;
-  network_name: string;
-  vendor_name: string;
+  network_name: string | null;
+  server: string | null;
+  thread_version: string | null;
+  unconfigured: boolean | null;
+  vendor_name: string | null;
 }
 
 export interface ThreadDataSet {
+  channel: number | null;
   created: string;
   dataset_id: string;
+  extended_pan_id: string | null;
+  network_name: string;
+  pan_id: string | null;
+  preferred_border_agent_id: string | null;
   preferred: boolean;
   source: string;
-  network_name: string;
-  extended_pan_id?: string;
-  pan_id?: string;
-  channel?: number;
 }
 
 export interface ThreadRouterDiscoveryEvent {
