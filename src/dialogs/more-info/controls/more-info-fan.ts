@@ -1,19 +1,14 @@
 import {
-  mdiCreation,
   mdiFan,
   mdiFanOff,
   mdiPower,
   mdiRotateLeft,
   mdiRotateRight,
+  mdiTuneVariant,
 } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import {
-  computeAttributeNameDisplay,
-  computeAttributeValueDisplay,
-} from "../../../common/entity/compute_attribute_display";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
@@ -65,17 +60,15 @@ class MoreInfoFan extends LitElement {
     });
   };
 
-  _setReverseDirection() {
-    this.hass.callService("fan", "set_direction", {
-      entity_id: this.stateObj!.entity_id,
-      direction: "reverse",
-    });
-  }
+  _handleDirection(ev) {
+    const newVal = ev.target.value;
+    const oldVal = this.stateObj?.attributes.direction;
 
-  _setForwardDirection() {
+    if (!newVal || oldVal === newVal) return;
+
     this.hass.callService("fan", "set_direction", {
       entity_id: this.stateObj!.entity_id,
-      direction: "forward",
+      direction: newVal,
     });
   }
 
@@ -93,7 +86,7 @@ class MoreInfoFan extends LitElement {
   }
 
   _handleOscillating(ev) {
-    const newVal = ev.target.value === "yes";
+    const newVal = ev.target.value === "on";
 
     this.hass.callService("fan", "oscillate", {
       entity_id: this.stateObj!.entity_id,
@@ -113,12 +106,8 @@ class MoreInfoFan extends LitElement {
     const forcedState =
       liveValue != null ? (liveValue ? "on" : "off") : undefined;
 
-    const stateDisplay = computeStateDisplay(
-      this.hass.localize,
+    const stateDisplay = this.hass.formatEntityState(
       this.stateObj!,
-      this.hass.locale,
-      this.hass.config,
-      this.hass.entities,
       forcedState
     );
 
@@ -186,49 +175,21 @@ class MoreInfoFan extends LitElement {
                 .iconPathOff=${mdiFanOff}
               ></ha-more-info-toggle>
             `}
-        ${supportSpeedPercentage || supportsDirection
-          ? html`<div class="buttons">
-              ${supportSpeedPercentage
-                ? html`
-                    <ha-outlined-icon-button
-                      .disabled=${this.stateObj.state === UNAVAILABLE}
-                      @click=${this._toggle}
-                    >
-                      <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
-                    </ha-outlined-icon-button>
-                  `
-                : nothing}
-              ${supportsDirection
-                ? html`
-                    <ha-outlined-icon-button
-                      .disabled=${this.stateObj.state === UNAVAILABLE ||
-                      this.stateObj.attributes.direction === "reverse"}
-                      .title=${this.hass.localize(
-                        "ui.dialogs.more_info_control.fan.set_reverse_direction"
-                      )}
-                      .ariaLabel=${this.hass.localize(
-                        "ui.dialogs.more_info_control.fan.set_reverse_direction"
-                      )}
-                      @click=${this._setReverseDirection}
-                    >
-                      <ha-svg-icon .path=${mdiRotateLeft}></ha-svg-icon>
-                    </ha-outlined-icon-button>
-                    <ha-outlined-icon-button
-                      .disabled=${this.stateObj.state === UNAVAILABLE ||
-                      this.stateObj.attributes.direction === "forward"}
-                      .title=${this.hass.localize(
-                        "ui.dialogs.more_info_control.fan.set_forward_direction"
-                      )}
-                      .ariaLabel=${this.hass.localize(
-                        "ui.dialogs.more_info_control.fan.set_forward_direction"
-                      )}
-                      @click=${this._setForwardDirection}
-                    >
-                      <ha-svg-icon .path=${mdiRotateRight}></ha-svg-icon>
-                    </ha-outlined-icon-button>
-                  `
-                : nothing}
-            </div> `
+        ${supportSpeedPercentage
+          ? html`
+              <div class="buttons">
+                ${supportSpeedPercentage
+                  ? html`
+                      <ha-outlined-icon-button
+                        .disabled=${this.stateObj.state === UNAVAILABLE}
+                        @click=${this._toggle}
+                      >
+                        <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
+                      </ha-outlined-icon-button>
+                    `
+                  : nothing}
+              </div>
+            `
           : nothing}
       </div>
       <div class="secondary-controls">
@@ -236,10 +197,8 @@ class MoreInfoFan extends LitElement {
           ${supportsPresetMode && this.stateObj.attributes.preset_modes
             ? html`
                 <ha-control-select-menu
-                  .label=${computeAttributeNameDisplay(
-                    this.hass.localize,
+                  .label=${this.hass.formatEntityAttributeName(
                     this.stateObj,
-                    this.hass.entities,
                     "preset_mode"
                   )}
                   .value=${this.stateObj.attributes.preset_mode}
@@ -248,19 +207,15 @@ class MoreInfoFan extends LitElement {
                   @selected=${this._handlePresetMode}
                   @closed=${stopPropagation}
                 >
-                  <ha-svg-icon slot="icon" .path=${mdiCreation}></ha-svg-icon>
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiTuneVariant}
+                  ></ha-svg-icon>
                   ${this.stateObj.attributes.preset_modes?.map(
                     (mode) => html`
-                      <ha-list-item
-                        .value=${mode}
-                        .activated=${this._presetMode === mode}
-                      >
-                        ${computeAttributeValueDisplay(
-                          this.hass.localize,
+                      <ha-list-item .value=${mode}>
+                        ${this.hass.formatEntityAttributeValue(
                           this.stateObj!,
-                          this.hass.locale,
-                          this.hass.config,
-                          this.hass.entities,
                           "preset_mode",
                           mode
                         )}
@@ -270,16 +225,58 @@ class MoreInfoFan extends LitElement {
                 </ha-control-select-menu>
               `
             : nothing}
+          ${supportsDirection
+            ? html`
+                <ha-control-select-menu
+                  .label=${this.hass.formatEntityAttributeName(
+                    this.stateObj,
+                    "direction"
+                  )}
+                  .value=${this.stateObj.attributes.direction}
+                  fixedMenuPosition
+                  naturalMenuWidth
+                  @selected=${this._handleDirection}
+                  @closed=${stopPropagation}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${this.stateObj.attributes.direction === "reverse"
+                      ? mdiRotateLeft
+                      : mdiRotateRight}
+                  ></ha-svg-icon>
+                  <ha-list-item .value=${"forward"} graphic="icon">
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiRotateRight}
+                    ></ha-svg-icon>
+                    ${this.hass.formatEntityAttributeValue(
+                      this.stateObj,
+                      "direction",
+                      "forward"
+                    )}
+                  </ha-list-item>
+                  <ha-list-item .value=${"reverse"} graphic="icon">
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiRotateLeft}
+                    ></ha-svg-icon>
+                    ${this.hass.formatEntityAttributeValue(
+                      this.stateObj,
+                      "direction",
+                      "reverse"
+                    )}
+                  </ha-list-item>
+                </ha-control-select-menu>
+              `
+            : nothing}
           ${supportsOscillate
             ? html`
                 <ha-control-select-menu
-                  .label=${computeAttributeNameDisplay(
-                    this.hass.localize,
+                  .label=${this.hass.formatEntityAttributeName(
                     this.stateObj,
-                    this.hass.entities,
                     "oscillating"
                   )}
-                  .value=${this.stateObj.attributes.oscillating ? "yes" : "no"}
+                  .value=${this.stateObj.attributes.oscillating ? "on" : "off"}
                   fixedMenuPosition
                   naturalMenuWidth
                   @selected=${this._handleOscillating}
@@ -291,19 +288,19 @@ class MoreInfoFan extends LitElement {
                       ? haOscillating
                       : haOscillatingOff}
                   ></ha-svg-icon>
-                  <ha-list-item .value=${"yes"} graphic="icon">
+                  <ha-list-item .value=${"on"} graphic="icon">
                     <ha-svg-icon
                       slot="graphic"
                       .path=${haOscillating}
                     ></ha-svg-icon>
-                    ${this.hass.localize("ui.common.yes")}
+                    ${this.hass.localize("state.default.on")}
                   </ha-list-item>
-                  <ha-list-item .value=${"no"} graphic="icon">
+                  <ha-list-item .value=${"off"} graphic="icon">
                     <ha-svg-icon
                       slot="graphic"
                       .path=${haOscillatingOff}
                     ></ha-svg-icon>
-                    ${this.hass.localize("ui.common.no")}
+                    ${this.hass.localize("state.default.off")}
                   </ha-list-item>
                 </ha-control-select-menu>
               `
