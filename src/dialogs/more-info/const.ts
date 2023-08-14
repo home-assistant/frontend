@@ -27,6 +27,7 @@ export const DOMAINS_WITH_NEW_MORE_INFO = [
   "lock",
   "siren",
   "switch",
+  "water_heater",
 ];
 /** Domains with separate more info dialog. */
 export const DOMAINS_WITH_MORE_INFO = [
