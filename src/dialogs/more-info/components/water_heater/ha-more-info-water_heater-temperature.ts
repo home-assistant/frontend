@@ -155,7 +155,11 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
 
     const mainColor = stateColorCss(this.stateObj);
 
-    if (supportsTargetTemperature && this._targetTemperature != null) {
+    if (
+      supportsTargetTemperature &&
+      this._targetTemperature != null &&
+      this.stateObj.state !== UNAVAILABLE
+    ) {
       return html`
         <div
           class="container"
@@ -169,7 +173,6 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
             .max=${this._max}
             .step=${this._step}
             .current=${this.stateObj.attributes.current_temperature}
-            .disabled=${this.stateObj!.state === UNAVAILABLE}
             @value-changed=${this._valueChanged}
             @value-changing=${this._valueChanging}
           >
