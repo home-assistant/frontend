@@ -2,6 +2,7 @@ import { HomeAssistant } from "../types";
 
 export interface ThreadRouter {
   addresses: [string] | null;
+  border_agent_id: string | null;
   brand: "google" | "apple" | "homeassistant";
   extended_address: string | null;
   extended_pan_id: string | null;
