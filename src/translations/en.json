@@ -5263,6 +5263,10 @@
           "description": "Unlocks advanced features.",
           "link_promo": "Learn more"
         },
+        "safe_mode": {
+          "title": "Safe mode",
+          "description": "Disables loading of custom resources."
+        },
         "refresh_tokens": {
           "header": "Refresh tokens",
           "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. The following refresh tokens are currently active for your account.",

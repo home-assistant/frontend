@@ -5,6 +5,7 @@ const STORED_STATE = [
   "selectedTheme",
   "selectedLanguage",
   "vibrate",
+  "safemode",
   "suspendWhenHidden",
   "enableShortcuts",
   "defaultPanel",
