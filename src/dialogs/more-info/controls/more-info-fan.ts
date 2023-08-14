@@ -238,13 +238,9 @@ class MoreInfoFan extends LitElement {
                   naturalMenuWidth
                   @selected=${this._handleDirection}
                   @closed=${stopPropagation}
+                  .computeIconPath=${this._computeDirectionIcon}
                 >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${this.stateObj.attributes.direction === "reverse"
-                      ? mdiRotateLeft
-                      : mdiRotateRight}
-                  ></ha-svg-icon>
+                  <ha-svg-icon slot="icon" .path=${mdiRotateLeft}></ha-svg-icon>
                   <ha-list-item value="forward" graphic="icon">
                     <ha-svg-icon
                       slot="graphic"
@@ -283,12 +279,11 @@ class MoreInfoFan extends LitElement {
                   naturalMenuWidth
                   @selected=${this._handleOscillating}
                   @closed=${stopPropagation}
+                  .computeIconPath=${this._computeOscillatingIcon}
                 >
                   <ha-svg-icon
                     slot="icon"
-                    .path=${this.stateObj.attributes.oscillating
-                      ? haOscillating
-                      : haOscillatingOff}
+                    .path=${haOscillatingOff}
                   ></ha-svg-icon>
                   <ha-list-item value="on" graphic="icon">
                     <ha-svg-icon
@@ -311,6 +306,12 @@ class MoreInfoFan extends LitElement {
       </div>
     `;
   }
+
+  private _computeOscillatingIcon = (value: string) =>
+    value === "on" ? haOscillating : haOscillatingOff;
+
+  private _computeDirectionIcon = (value: string) =>
+    value === "reverse" ? mdiRotateLeft : mdiRotateRight;
 
   static get styles(): CSSResultGroup {
     return moreInfoControlStyle;

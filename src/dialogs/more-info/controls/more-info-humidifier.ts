@@ -137,12 +137,11 @@ class MoreInfoHumidifier extends LitElement {
                   @selected=${this._handleModeChanged}
                   @action=${this._handleModeChanged}
                   @closed=${stopPropagation}
+                  .computeIconPath=${computeHumidiferModeIcon}
                 >
                   <ha-svg-icon
                     slot="icon"
-                    .path=${stateObj.attributes.mode
-                      ? computeHumidiferModeIcon(stateObj.attributes.mode)
-                      : mdiTuneVariant}
+                    .path=${mdiTuneVariant}
                   ></ha-svg-icon>
                   ${stateObj.attributes.available_modes!.map(
                     (mode) => html`

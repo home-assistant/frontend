@@ -5,6 +5,7 @@ import { css, html, nothing } from "lit";
 import {
   customElement,
   eventOptions,
+  property,
   query,
   queryAsync,
   state,
@@ -24,6 +25,8 @@ export class HaControlSelectMenu extends SelectBase {
 
   @state() private _shouldRenderRipple = false;
 
+  @property() public computeIconPath?: (value: string) => string | undefined;
+
   public override render() {
     const classes = {
       "select-disabled": this.disabled,
@@ -33,6 +36,9 @@ export class HaControlSelectMenu extends SelectBase {
     };
 
     const labelledby = this.label ? "label" : undefined;
+
+    const selectedIconPath =
+      this.computeIconPath && this.value && this.computeIconPath(this.value);
 
     return html`
       <div class="select ${classMap(classes)}">
@@ -67,7 +73,9 @@ export class HaControlSelectMenu extends SelectBase {
           @touchcancel=${this.handleRippleDeactivate}
         >
           <div class="icon">
-            <slot name="icon"></slot>
+            ${selectedIconPath
+              ? html`<ha-svg-icon .path=${selectedIconPath}></ha-svg-icon>`
+              : html`<slot name="icon"></slot>`}
           </div>
           <div class="content">
             <p id="label" class="label">${this.label}</p>

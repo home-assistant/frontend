@@ -7,7 +7,6 @@ import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
 import {
-  OperationMode,
   WaterHeaterEntity,
   WaterHeaterEntityFeature,
   compareWaterHeaterOperationMode,
@@ -83,12 +82,11 @@ class MoreInfoWaterHeater extends LitElement {
                   naturalMenuWidth
                   @selected=${this._handleOperationModeChanged}
                   @closed=${stopPropagation}
+                  .computeIconPath=${computeOperationModeIcon}
                 >
                   <ha-svg-icon
                     slot="icon"
-                    .path=${computeOperationModeIcon(
-                      stateObj.state as OperationMode
-                    ) ?? mdiWaterBoiler}
+                    .path=${mdiWaterBoiler}
                   ></ha-svg-icon>
                   ${stateObj.attributes.operation_list
                     .concat()
@@ -120,13 +118,9 @@ class MoreInfoWaterHeater extends LitElement {
                   naturalMenuWidth
                   @selected=${this._handleAwayModeChanged}
                   @closed=${stopPropagation}
+                  .computeIconPath=${this._computeAwayModeIcon}
                 >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${stateObj.attributes.away_mode === "on"
-                      ? mdiAccountArrowRight
-                      : mdiAccount}
-                  ></ha-svg-icon>
+                  <ha-svg-icon slot="icon" .path=${mdiAccount}></ha-svg-icon>
                   <ha-list-item value="on" graphic="icon">
                     <ha-svg-icon
                       slot="graphic"
@@ -148,6 +142,9 @@ class MoreInfoWaterHeater extends LitElement {
       </div>
     `;
   }
+
+  private _computeAwayModeIcon = (value: string) =>
+    value === "on" ? mdiAccountArrowRight : mdiAccount;
 
   private _handleOperationModeChanged(ev) {
     const newVal = ev.target.value;
