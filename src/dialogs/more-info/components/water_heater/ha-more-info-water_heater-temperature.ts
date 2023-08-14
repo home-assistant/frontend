@@ -88,8 +88,16 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
   }
 
   private _renderLabel() {
+    if (this.stateObj.state === UNAVAILABLE) {
+      return html`
+        <p class="label disabled">
+          ${this.hass.formatEntityState(this.stateObj, UNAVAILABLE)}
+        </p>
+      `;
+    }
+
     return html`
-      <p class="action">
+      <p class="label">
         ${this.hass.localize(
           "ui.dialogs.more_info_control.water_heater.target"
         )}
@@ -178,7 +186,7 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            <div class="action-container">${this._renderLabel()}</div>
+            <div class="label-container">${this._renderLabel()}</div>
             <div class="temperature-container">
               ${this._renderTargetTemperature(this._targetTemperature)}
             </div>
@@ -198,6 +206,9 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
           disabled
         >
         </ha-control-circular-slider>
+        <div class="info">
+          <div class="label-container">${this._renderLabel()}</div>
+        </div>
       </div>
     `;
   }
@@ -251,7 +262,7 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
         align-self: flex-end;
         margin-right: -18px;
       }
-      .action-container {
+      .label-container {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -260,7 +271,7 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
         height: 48px;
         margin-bottom: 6px;
       }
-      .action {
+      .label {
         font-weight: 500;
         text-align: center;
         color: var(--action-color, inherit);
@@ -268,6 +279,9 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+      }
+      .label.disabled {
+        color: var(--secondary-text-color);
       }
       .buttons {
         position: absolute;

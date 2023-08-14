@@ -80,7 +80,15 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
     this._debouncedCallService();
   }
 
-  private _renderAction() {
+  private _renderLabel() {
+    if (this.stateObj.state === UNAVAILABLE) {
+      return html`
+        <p class="label disabled">
+          ${this.hass.formatEntityState(this.stateObj, UNAVAILABLE)}
+        </p>
+      `;
+    }
+
     const action = this.stateObj.attributes.action;
 
     const actionLabel = computeAttributeValueDisplay(
@@ -93,7 +101,7 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
     ) as string;
 
     return html`
-      <p class="action">
+      <p class="label">
         ${action && ["drying", "humidifying"].includes(action)
           ? this.hass.localize(
               "ui.dialogs.more_info_control.humidifier.target_label",
@@ -186,7 +194,7 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            <div class="action-container">${this._renderAction()}</div>
+            <div class="label-container">${this._renderLabel()}</div>
             <div class="target-container">
               ${this._renderTarget(targetHumidity)}
             </div>
@@ -211,6 +219,9 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
           disabled
         >
         </ha-control-circular-slider>
+        <div class="info">
+          <div class="label-container">${this._renderLabel()}</div>
+        </div>
       </div>
     `;
   }
@@ -254,7 +265,7 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
         line-height: 1;
         margin-left: 2px;
       }
-      .action-container {
+      .label-container {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -263,7 +274,7 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
         height: 48px;
         margin-bottom: 6px;
       }
-      .action {
+      .label {
         font-weight: 500;
         text-align: center;
         color: var(--action-color, inherit);
@@ -271,6 +282,9 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+      }
+      .label.disabled {
+        color: var(--secondary-text-color);
       }
       .buttons {
         position: absolute;

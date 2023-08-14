@@ -78,8 +78,16 @@ export class HaMoreInfoClimateHumidity extends LitElement {
   }
 
   private _renderLabel() {
+    if (this.stateObj.state === UNAVAILABLE) {
+      return html`
+        <p class="label disabled">
+          ${this.hass.formatEntityState(this.stateObj, UNAVAILABLE)}
+        </p>
+      `;
+    }
+
     return html`
-      <p class="action">
+      <p class="label">
         ${this.hass.localize(
           "ui.dialogs.more_info_control.climate.humidity_target"
         )}
@@ -165,7 +173,7 @@ export class HaMoreInfoClimateHumidity extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            <div class="action-container">${this._renderLabel()}</div>
+            <div class="label-container">${this._renderLabel()}</div>
             <div class="target-container">
               ${this._renderTarget(targetHumidity)}
             </div>
@@ -178,13 +186,16 @@ export class HaMoreInfoClimateHumidity extends LitElement {
     return html`
       <div class="container">
         <ha-control-circular-slider
-          .current=${this.stateObj.attributes.current_temperature}
+          .current=${this.stateObj.attributes.current_humidity}
           .min=${this._min}
           .max=${this._max}
           .step=${this._step}
           disabled
         >
         </ha-control-circular-slider>
+        <div class="info">
+          <div class="label-container">${this._renderLabel()}</div>
+        </div>
       </div>
     `;
   }
@@ -228,7 +239,7 @@ export class HaMoreInfoClimateHumidity extends LitElement {
         line-height: 1;
         margin-left: 2px;
       }
-      .action-container {
+      .label-container {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -237,14 +248,16 @@ export class HaMoreInfoClimateHumidity extends LitElement {
         height: 48px;
         margin-bottom: 6px;
       }
-      .action {
+      .label {
         font-weight: 500;
         text-align: center;
-        color: var(--action-color, inherit);
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+      }
+      .label.disabled {
+        color: var(--secondary-text-color);
       }
       .dual {
         display: flex;
@@ -252,7 +265,6 @@ export class HaMoreInfoClimateHumidity extends LitElement {
         gap: 24px;
         margin-bottom: 40px;
       }
-
       .dual button {
         outline: none;
         background: none;

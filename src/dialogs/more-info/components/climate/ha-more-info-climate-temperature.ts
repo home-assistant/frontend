@@ -137,7 +137,15 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     this._selectTargetTemperature = target;
   }
 
-  private _renderHvacAction() {
+  private _renderLabel() {
+    if (this.stateObj.state === UNAVAILABLE) {
+      return html`
+        <p class="label disabled">
+          ${this.hass.formatEntityState(this.stateObj, UNAVAILABLE)}
+        </p>
+      `;
+    }
+
     const action = this.stateObj.attributes.hvac_action;
 
     const actionLabel = computeAttributeValueDisplay(
@@ -150,7 +158,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     ) as string;
 
     return html`
-      <p class="action">
+      <p class="label">
         ${action && ["preheating", "heating", "cooling"].includes(action)
           ? this.hass.localize(
               "ui.dialogs.more_info_control.climate.target_label",
@@ -232,6 +240,8 @@ export class HaMoreInfoClimateTemperature extends LitElement {
   }
 
   protected render() {
+    this.stateObj.state = UNAVAILABLE;
+
     const supportsTargetTemperature = supportsFeature(
       this.stateObj,
       ClimateEntityFeature.TARGET_TEMPERATURE
@@ -289,7 +299,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            <div class="action-container">${this._renderHvacAction()}</div>
+            <div class="label-container">${this._renderLabel()}</div>
             <div class="temperature-container">
               ${this._renderTargetTemperature(this._targetTemperature.value)}
             </div>
@@ -329,7 +339,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            <div class="action-container">${this._renderHvacAction()}</div>
+            <div class="label-container">${this._renderLabel()}</div>
             <div class="temperature-container dual">
               <button
                 @click=${this._handleSelectTemp}
@@ -371,6 +381,9 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           disabled
         >
         </ha-control-circular-slider>
+        <div class="info">
+          <div class="label-container">${this._renderLabel()}</div>
+        </div>
       </div>
     `;
   }
@@ -424,7 +437,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         align-self: flex-end;
         margin-right: -18px;
       }
-      .action-container {
+      .label-container {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -433,7 +446,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         height: 48px;
         margin-bottom: 6px;
       }
-      .action {
+      .label {
         font-weight: 500;
         text-align: center;
         color: var(--action-color, inherit);
@@ -441,6 +454,9 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+      }
+      .label.disabled {
+        color: var(--secondary-text-color);
       }
       .dual {
         display: flex;
