@@ -158,6 +158,9 @@ documentContainer.innerHTML = `<custom-style>
       --state-device_tracker-home-color: var(--green-color);
       --state-fan-active-color: var(--cyan-color);
       --state-humidifier-on-color: var(--blue-color);
+      --state-lawn_mower-error-color: var(--red-color);
+      --state-lawn_mower-docking-color: var(--teal-color);
+      --state-lawn_mower-mowing-color: var(--green-color);
       --state-light-active-color: var(--amber-color);
       --state-lock-jammed-color: var(--red-color);
       --state-lock-locked-color: var(--green-color);
