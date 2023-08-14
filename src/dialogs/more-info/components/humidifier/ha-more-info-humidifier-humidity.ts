@@ -161,7 +161,7 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
     const targetHumidity = this._targetHumidity;
     const currentHumidity = this.stateObj.attributes.current_humidity;
 
-    if (targetHumidity != null) {
+    if (targetHumidity != null && this.stateObj.state !== UNAVAILABLE) {
       const inverted =
         this.stateObj.attributes.device_class ===
         HumidifierEntityDeviceClass.DEHUMIDIFIER;
@@ -181,7 +181,6 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
             .max=${this._max}
             .step=${this._step}
             .current=${currentHumidity}
-            .disabled=${this.stateObj.state === UNAVAILABLE}
             @value-changed=${this._valueChanged}
             @value-changing=${this._valueChanging}
           >
