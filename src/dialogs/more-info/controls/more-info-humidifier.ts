@@ -135,7 +135,6 @@ class MoreInfoHumidifier extends LitElement {
                   fixedMenuPosition
                   naturalMenuWidth
                   @selected=${this._handleModeChanged}
-                  @action=${this._handleModeChanged}
                   @closed=${stopPropagation}
                   .computeIconPath=${computeHumidiferModeIcon}
                 >
@@ -195,6 +194,19 @@ class MoreInfoHumidifier extends LitElement {
     );
   }
 
+  private _handleModeChanged(ev) {
+    const newVal = ev.target.value || null;
+    this._mode = newVal;
+    this._callServiceHelper(
+      this.stateObj!.attributes.mode,
+      newVal,
+      "set_mode",
+      {
+        mode: newVal,
+      }
+    );
+  }
+
   private async _callServiceHelper(
     oldVal: unknown,
     newVal: unknown,
@@ -231,23 +243,6 @@ class MoreInfoHumidifier extends LitElement {
     if (this.stateObj === undefined) {
       this.stateObj = curState;
     }
-  }
-
-  private _handleModeChanged(ev) {
-    ev.stopPropagation();
-    ev.preventDefault();
-
-    const index = ev.detail.index;
-    const newVal = this.stateObj!.attributes.available_modes![index];
-    const oldVal = this._mode;
-
-    if (!newVal || oldVal === newVal) return;
-
-    this._mode = newVal;
-    this.hass.callService("humidifier", "set_mode", {
-      entity_id: this.stateObj!.entity_id,
-      mode: newVal,
-    });
   }
 
   static get styles(): CSSResultGroup {
