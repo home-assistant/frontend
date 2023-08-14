@@ -238,6 +238,11 @@ export class HaControlSelectMenu extends SelectBase {
         opacity: var(--control-select-menu-background-opacity);
       }
 
+      .select-disabled .select-anchor {
+        cursor: not-allowed;
+        color: var(--disabled-color);
+      }
+
       mwc-menu {
         --mdc-shape-medium: 8px;
       }

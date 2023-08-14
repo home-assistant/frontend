@@ -142,7 +142,11 @@ export class HaMoreInfoClimateHumidity extends LitElement {
     const targetHumidity = this._targetHumidity;
     const currentHumidity = this.stateObj.attributes.current_humidity;
 
-    if (supportsTargetHumidity && targetHumidity != null) {
+    if (
+      supportsTargetHumidity &&
+      targetHumidity != null &&
+      this.stateObj.state !== UNAVAILABLE
+    ) {
       return html`
         <div
           class="container"
@@ -156,7 +160,6 @@ export class HaMoreInfoClimateHumidity extends LitElement {
             .max=${this._max}
             .step=${this._step}
             .current=${currentHumidity}
-            .disabled=${this.stateObj!.state === UNAVAILABLE}
             @value-changed=${this._valueChanged}
             @value-changing=${this._valueChanging}
           >

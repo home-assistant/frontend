@@ -260,7 +260,11 @@ export class HaMoreInfoClimateTemperature extends LitElement {
 
     const hvacModes = this.stateObj.attributes.hvac_modes;
 
-    if (supportsTargetTemperature && this._targetTemperature.value != null) {
+    if (
+      supportsTargetTemperature &&
+      this._targetTemperature.value != null &&
+      this.stateObj.state !== UNAVAILABLE
+    ) {
       const hasOnlyCoolMode =
         hvacModes.length === 2 &&
         hvacModes.includes("cool") &&
@@ -280,7 +284,6 @@ export class HaMoreInfoClimateTemperature extends LitElement {
             .max=${this._max}
             .step=${this._step}
             .current=${this.stateObj.attributes.current_temperature}
-            .disabled=${this.stateObj!.state === UNAVAILABLE}
             @value-changed=${this._valueChanged}
             @value-changing=${this._valueChanging}
           >
@@ -299,7 +302,8 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     if (
       supportsTargetTemperatureRange &&
       this._targetTemperature.low != null &&
-      this._targetTemperature.high != null
+      this._targetTemperature.high != null &&
+      this.stateObj.state !== UNAVAILABLE
     ) {
       return html`
         <div
@@ -312,7 +316,6 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         >
           <ha-control-circular-slider
             dual
-            .disabled=${this.stateObj!.state === UNAVAILABLE}
             .low=${this._targetTemperature.low}
             .high=${this._targetTemperature.high}
             .min=${this._min}
