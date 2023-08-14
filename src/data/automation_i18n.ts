@@ -425,7 +425,7 @@ const tryDescribeTrigger = (
         return "Invalid Time Pattern Seconds";
       }
 
-      if (seconds_all) {
+      if (seconds_all || seconds_interval === 1) {
         result += "every second of ";
       } else if (seconds_interval) {
         result += `every ${seconds} seconds of `;
@@ -454,7 +454,7 @@ const tryDescribeTrigger = (
         return "Invalid Time Pattern Minutes";
       }
 
-      if (minutes_all) {
+      if (minutes_all || minutes_interval === 1) {
         result += "every minute of ";
       } else if (minutes_interval) {
         result += `every ${minutes} minutes of `;
@@ -491,7 +491,7 @@ const tryDescribeTrigger = (
         return "Invalid Time Pattern Hours";
       }
 
-      if (hours_all) {
+      if (hours_all || hours_interval === 1) {
         result += "every hour";
       } else if (hours_interval) {
         result += `every ${hours} hours`;
