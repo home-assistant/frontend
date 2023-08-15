@@ -183,7 +183,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                     @error=${this._onImageError}
                     @load=${this._onImageLoad}
                   />
-                  ${router.model_name || router.server.replace(".local.", "")}
+                  ${router.model_name ||
+                  router.server?.replace(".local.", "") ||
+                  ""}
                   <span slot="secondary">${router.server}</span>
                   ${router.extended_address === this._otbrInfo?.extended_address
                     ? html`<ha-button-menu
@@ -311,7 +313,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         if (network in networks) {
           networks[network].routers!.push(router);
         } else {
-          networks[network] = { name: router.network_name, routers: [router] };
+          networks[network] = {
+            name: router.network_name || "",
+            routers: [router],
+          };
         }
       }
       for (const dataset of datasets) {
