@@ -18,7 +18,6 @@ import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagno
 import {
   getOTBRInfo,
   OTBRCreateNetwork,
-  OTBRGetExtendedAddress,
   OTBRInfo,
   OTBRSetChannel,
   OTBRSetNetwork,
@@ -63,7 +62,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
 
   @state() private _datasets: ThreadDataSet[] = [];
 
-  @state() private _otbrInfo?: OTBRInfo & { extended_address?: string };
+  @state() private _otbrInfo?: OTBRInfo;
 
   protected render(): TemplateResult {
     const networks = this._groupRoutersByNetwork(this._routers, this._datasets);
@@ -351,13 +350,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       return;
     }
     try {
-      const _otbrAddress = OTBRGetExtendedAddress(this.hass);
-      const _otbrInfo = getOTBRInfo(this.hass);
-      const [otbrAddress, otbrInfo] = await Promise.all([
-        _otbrAddress,
-        _otbrInfo,
-      ]);
-      this._otbrInfo = { ...otbrAddress, ...otbrInfo };
+      this._otbrInfo = await getOTBRInfo(this.hass);
     } catch (err) {
       this._otbrInfo = undefined;
     }
