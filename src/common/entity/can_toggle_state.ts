@@ -28,9 +28,6 @@ export const canToggleState = (hass: HomeAssistant, stateObj: HassEntity) => {
   if (domain === "climate") {
     return supportsFeature(stateObj, 4096);
   }
-  if (domain === "alert" && stateObj.state === "idle") {
-    return false;
-  }
 
   return canToggleDomain(hass, domain);
 };
