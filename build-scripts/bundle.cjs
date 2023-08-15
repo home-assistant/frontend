@@ -8,7 +8,7 @@ module.exports.sourceMapURL = () => {
   const ref = env.version().endsWith("dev")
     ? process.env.GITHUB_SHA || "dev"
     : env.version();
-  return `https://raw.githubusercontent.com/home-assistant/frontend/${ref}`;
+  return `https://raw.githubusercontent.com/home-assistant/frontend/${ref}/`;
 };
 
 // Files from NPM Packages that should not be imported
