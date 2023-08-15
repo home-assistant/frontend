@@ -294,6 +294,7 @@ class MoreInfoLight extends LitElement {
                       "effect"
                     )}
                     .value=${this.stateObj.attributes.effect}
+                    .disabled=${this.stateObj.state === UNAVAILABLE}
                     fixedMenuPosition
                     naturalMenuWidth
                     @selected=${this._handleEffect}

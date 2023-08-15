@@ -16,6 +16,7 @@ import {
 import { HomeAssistant } from "../../../types";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/water_heater/ha-more-info-water_heater-temperature";
+import { UNAVAILABLE } from "../../../data/entity";
 
 @customElement("more-info-water_heater")
 class MoreInfoWaterHeater extends LitElement {
@@ -77,6 +78,7 @@ class MoreInfoWaterHeater extends LitElement {
                     "operation"
                   )}
                   .value=${stateObj.state}
+                  .disabled=${stateObj.state === UNAVAILABLE}
                   fixedMenuPosition
                   naturalMenuWidth
                   @selected=${this._handleOperationModeChanged}
@@ -113,6 +115,7 @@ class MoreInfoWaterHeater extends LitElement {
                     "away_mode"
                   )}
                   .value=${stateObj.attributes.away_mode}
+                  .disabled=${stateObj.state === UNAVAILABLE}
                   fixedMenuPosition
                   naturalMenuWidth
                   @selected=${this._handleAwayModeChanged}
@@ -124,14 +127,14 @@ class MoreInfoWaterHeater extends LitElement {
                       ? mdiAccountArrowRight
                       : mdiAccount}
                   ></ha-svg-icon>
-                  <ha-list-item .value=${"on"} graphic="icon">
+                  <ha-list-item value="on" graphic="icon">
                     <ha-svg-icon
                       slot="graphic"
                       .path=${mdiAccountArrowRight}
                     ></ha-svg-icon>
                     ${this.hass.localize("state.default.on")}
                   </ha-list-item>
-                  <ha-list-item .value=${"off"} graphic="icon">
+                  <ha-list-item value="off" graphic="icon">
                     <ha-svg-icon
                       slot="graphic"
                       .path=${mdiAccount}

@@ -19,6 +19,8 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-control-select-menu";
+import "../../../components/ha-list-item";
+import { UNAVAILABLE } from "../../../data/entity";
 import {
   HumidifierEntity,
   HumidifierEntityFeature,
@@ -95,13 +97,14 @@ class MoreInfoHumidifier extends LitElement {
           <ha-control-select-menu
             .label=${this.hass.localize("ui.card.humidifier.state")}
             .value=${this.stateObj.state}
+            .disabled=${this.stateObj.state === UNAVAILABLE}
             fixedMenuPosition
             naturalMenuWidth
             @selected=${this._handleStateChanged}
             @closed=${stopPropagation}
           >
             <ha-svg-icon slot="icon" .path=${mdiPower}></ha-svg-icon>
-            <mwc-list-item value="off">
+            <ha-list-item value="off">
               ${computeStateDisplay(
                 this.hass.localize,
                 this.stateObj,
@@ -110,8 +113,8 @@ class MoreInfoHumidifier extends LitElement {
                 this.hass.entities,
                 "off"
               )}
-            </mwc-list-item>
-            <mwc-list-item value="on">
+            </ha-list-item>
+            <ha-list-item value="on">
               ${computeStateDisplay(
                 this.hass.localize,
                 this.stateObj,
@@ -120,7 +123,7 @@ class MoreInfoHumidifier extends LitElement {
                 this.hass.entities,
                 "on"
               )}
-            </mwc-list-item>
+            </ha-list-item>
           </ha-control-select-menu>
 
           ${supportModes
@@ -128,6 +131,7 @@ class MoreInfoHumidifier extends LitElement {
                 <ha-control-select-menu
                   .label=${hass.localize("ui.card.humidifier.mode")}
                   .value=${stateObj.attributes.mode}
+                  .disabled=${this.stateObj.state === UNAVAILABLE}
                   fixedMenuPosition
                   naturalMenuWidth
                   @selected=${this._handleModeChanged}

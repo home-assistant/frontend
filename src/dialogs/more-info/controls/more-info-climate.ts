@@ -170,6 +170,7 @@ class MoreInfoClimate extends LitElement {
           <ha-control-select-menu
             .label=${hass.localize("ui.card.climate.operation")}
             .value=${stateObj.state}
+            .disabled=${this.stateObj.state === UNAVAILABLE}
             fixedMenuPosition
             naturalMenuWidth
             @selected=${this._handleOperationModeChanged}
@@ -203,6 +204,7 @@ class MoreInfoClimate extends LitElement {
                     "preset_mode"
                   )}
                   .value=${stateObj.attributes.preset_mode}
+                  .disabled=${this.stateObj.state === UNAVAILABLE}
                   fixedMenuPosition
                   naturalMenuWidth
                   @selected=${this._handlePresetmodeChanged}
@@ -240,6 +242,7 @@ class MoreInfoClimate extends LitElement {
                     "fan_mode"
                   )}
                   .value=${stateObj.attributes.fan_mode}
+                  .disabled=${this.stateObj.state === UNAVAILABLE}
                   fixedMenuPosition
                   naturalMenuWidth
                   @selected=${this._handleFanModeChanged}
@@ -277,6 +280,7 @@ class MoreInfoClimate extends LitElement {
                     "swing_mode"
                   )}
                   .value=${stateObj.attributes.swing_mode}
+                  .disabled=${this.stateObj.state === UNAVAILABLE}
                   fixedMenuPosition
                   naturalMenuWidth
                   @selected=${this._handleSwingmodeChanged}
