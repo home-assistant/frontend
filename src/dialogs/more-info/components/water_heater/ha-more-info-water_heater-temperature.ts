@@ -23,6 +23,7 @@ import {
   WaterHeaterEntityFeature,
 } from "../../../../data/water_heater";
 import { HomeAssistant } from "../../../../types";
+import { moreInfoControlCircularSliderStyle } from "../ha-more-info-control-circular-slider-style";
 
 @customElement("ha-more-info-water_heater-temperature")
 export class HaMoreInfoWaterHeaterTemperature extends LitElement {
@@ -88,8 +89,16 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
   }
 
   private _renderLabel() {
+    if (this.stateObj.state === UNAVAILABLE) {
+      return html`
+        <p class="label disabled">
+          ${this.hass.formatEntityState(this.stateObj, UNAVAILABLE)}
+        </p>
+      `;
+    }
+
     return html`
-      <p class="action">
+      <p class="label">
         ${this.hass.localize(
           "ui.dialogs.more_info_control.water_heater.target"
         )}
@@ -153,14 +162,18 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
       WaterHeaterEntityFeature.TARGET_TEMPERATURE
     );
 
-    const mainColor = stateColorCss(this.stateObj);
+    const stateColor = stateColorCss(this.stateObj);
 
-    if (supportsTargetTemperature && this._targetTemperature != null) {
+    if (
+      supportsTargetTemperature &&
+      this._targetTemperature != null &&
+      this.stateObj.state !== UNAVAILABLE
+    ) {
       return html`
         <div
           class="container"
           style=${styleMap({
-            "--main-color": mainColor,
+            "--state-color": stateColor,
           })}
         >
           <ha-control-circular-slider
@@ -169,13 +182,12 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
             .max=${this._max}
             .step=${this._step}
             .current=${this.stateObj.attributes.current_temperature}
-            .disabled=${this.stateObj!.state === UNAVAILABLE}
             @value-changed=${this._valueChanged}
             @value-changing=${this._valueChanging}
           >
           </ha-control-circular-slider>
           <div class="info">
-            <div class="action-container">${this._renderLabel()}</div>
+            <div class="label-container">${this._renderLabel()}</div>
             <div class="temperature-container">
               ${this._renderTargetTemperature(this._targetTemperature)}
             </div>
@@ -195,128 +207,48 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
           disabled
         >
         </ha-control-circular-slider>
+        <div class="info">
+          <div class="label-container">${this._renderLabel()}</div>
+        </div>
       </div>
     `;
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      /* Layout */
-      .container {
-        position: relative;
-      }
-      .info {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        pointer-events: none;
-        font-size: 16px;
-        line-height: 24px;
-        letter-spacing: 0.1px;
-      }
-      .info * {
-        margin: 0;
-        pointer-events: auto;
-      }
-      /* Elements */
-      .temperature-container {
-        margin-bottom: 30px;
-      }
-      .temperature {
-        display: inline-flex;
-        font-size: 58px;
-        line-height: 64px;
-        letter-spacing: -0.25px;
-        margin: 0;
-      }
-      .temperature span {
-        display: inline-flex;
-      }
-      .temperature .unit {
-        font-size: 24px;
-        line-height: 40px;
-      }
-      .temperature .decimal {
-        font-size: 24px;
-        line-height: 40px;
-        align-self: flex-end;
-        margin-right: -18px;
-      }
-      .action-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 200px;
-        height: 48px;
-        margin-bottom: 6px;
-      }
-      .action {
-        font-weight: 500;
-        text-align: center;
-        color: var(--action-color, inherit);
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-      .buttons {
-        position: absolute;
-        bottom: 10px;
-        left: 0;
-        right: 0;
-        margin: 0 auto;
-        width: 120px;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .buttons ha-outlined-icon-button {
-        --md-outlined-icon-button-container-size: 48px;
-        --md-outlined-icon-button-icon-size: 24px;
-      }
-      /* Accessibility */
-      .visually-hidden {
-        position: absolute;
-        overflow: hidden;
-        clip: rect(0 0 0 0);
-        height: 1px;
-        width: 1px;
-        margin: -1px;
-        padding: 0;
-        border: 0;
-      }
-      /* Slider */
-      ha-control-circular-slider {
-        --control-circular-slider-color: var(
-          --main-color,
-          var(--disabled-color)
-        );
-      }
-      ha-control-circular-slider::after {
-        display: block;
-        content: "";
-        position: absolute;
-        top: -10%;
-        left: -10%;
-        right: -10%;
-        bottom: -10%;
-        background: radial-gradient(
-          50% 50% at 50% 50%,
-          var(--action-color, transparent) 0%,
-          transparent 100%
-        );
-        opacity: 0.15;
-        pointer-events: none;
-      }
-    `;
+    return [
+      moreInfoControlCircularSliderStyle,
+      css`
+        /* Elements */
+        .temperature-container {
+          margin-bottom: 30px;
+        }
+        .temperature {
+          display: inline-flex;
+          font-size: 58px;
+          line-height: 64px;
+          letter-spacing: -0.25px;
+          margin: 0;
+        }
+        .temperature span {
+          display: inline-flex;
+        }
+        .temperature .decimal {
+          font-size: 24px;
+          line-height: 32px;
+          align-self: flex-end;
+          width: 20px;
+          margin-bottom: 4px;
+        }
+        .temperature .unit {
+          font-size: 20px;
+          line-height: 24px;
+          align-self: flex-start;
+          margin-left: -20px;
+          width: 20px;
+          margin-top: 4px;
+        }
+      `,
+    ];
   }
 }
 
