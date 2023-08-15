@@ -1,7 +1,9 @@
 <script>
-  function _ls(src) {
+  function _ls(src, sync) {
     var script = document.createElement("script");
-    script.async = false;
+    if (sync) {
+      script.async = false;
+    }
     script.src = src;
     return document.head.appendChild(script);
   }
@@ -12,7 +14,7 @@
       "content" in document.createElement("template")
     )
   ) {
-    _ls("/static/polyfills/webcomponents-bundle.js");
+    _ls("/static/polyfills/webcomponents-bundle.js", true);
   }
   var isS11_12 =
     /(?:.*(?:iPhone|iPad).*OS (?:11|12)_\d)|(?:.*Version\/(?:11|12)(?:\.\d+)*.*Safari\/)/.test(
