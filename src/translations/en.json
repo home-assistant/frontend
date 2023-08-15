@@ -3707,6 +3707,8 @@
           "add_open_thread_border_router": "Add an OpenThread border router",
           "reset_border_router": "Reset border router",
           "add_to_my_network": "Add to preferred network",
+          "default_router": "Default router for network",
+          "set_default_router": "Set as default router for network",
           "no_routers_otbr_network": "No border routers where found, maybe the border router is not configured correctly. You can try to reset it to the factory settings.",
           "add_dataset_from_tlv": "Add dataset from TLV",
           "add_dataset": "Add Thread dataset",
