@@ -141,9 +141,6 @@ class MoreInfoWaterHeater extends LitElement {
     `;
   }
 
-  private _computeAwayModeIcon = (value: string) =>
-    value === "on" ? mdiAccountArrowRight : mdiAccount;
-
   private _handleOperationModeChanged(ev) {
     const newVal = ev.target.value;
     this._callServiceHelper(

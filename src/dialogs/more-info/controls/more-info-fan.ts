@@ -305,12 +305,6 @@ class MoreInfoFan extends LitElement {
     `;
   }
 
-  private _computeOscillatingIcon = (value: string) =>
-    value === "on" ? haOscillating : haOscillatingOff;
-
-  private _computeDirectionIcon = (value: string) =>
-    value === "reverse" ? mdiRotateLeft : mdiRotateRight;
-
   static get styles(): CSSResultGroup {
     return moreInfoControlStyle;
   }
