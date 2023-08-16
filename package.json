@@ -217,7 +217,7 @@
     "husky": "8.0.3",
     "instant-mocha": "1.5.2",
     "jszip": "3.10.1",
-    "lint-staged": "13.3.0",
+    "lint-staged": "14.0.0",
     "lit-analyzer": "2.0.0-pre.3",
     "lodash.template": "4.5.0",
     "magic-string": "0.30.2",
