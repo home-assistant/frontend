@@ -13,6 +13,10 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { debounce } from "../common/util/debounce";
 import { nextRender } from "../common/util/render-status";
+import "./ha-icon";
+import type { HaIcon } from "./ha-icon";
+import "./ha-svg-icon";
+import type { HaSvgIcon } from "./ha-svg-icon";
 
 @customElement("ha-control-select-menu")
 export class HaControlSelectMenu extends SelectBase {
@@ -66,9 +70,7 @@ export class HaControlSelectMenu extends SelectBase {
           @touchend=${this.handleRippleDeactivate}
           @touchcancel=${this.handleRippleDeactivate}
         >
-          <div class="icon">
-            <slot name="icon"></slot>
-          </div>
+          ${this.renderIcon()}
           <div class="content">
             <p id="label" class="label">${this.label}</p>
             ${this.selectedText
@@ -80,6 +82,25 @@ export class HaControlSelectMenu extends SelectBase {
             : nothing}
         </div>
         ${this.renderMenu()}
+      </div>
+    `;
+  }
+
+  private renderIcon() {
+    const index = this.mdcFoundation?.getSelectedIndex();
+    const items = this.menuElement?.items ?? [];
+    const item = index != null ? items[index] : undefined;
+    const icon =
+      item?.querySelector("[slot='graphic']") ??
+      (null as HaSvgIcon | HaIcon | null);
+
+    return html`
+      <div class="icon">
+        ${icon && "path" in icon
+          ? html`<ha-svg-icon .path=${icon.path}></ha-svg-icon>`
+          : icon && "icon" in icon
+          ? html`<ha-icon .path=${icon.icon}></ha-icon>`
+          : html`<slot name="icon"></slot>`}
       </div>
     `;
   }
