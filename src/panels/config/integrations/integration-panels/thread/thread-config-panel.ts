@@ -5,7 +5,7 @@ import {
   mdiDevices,
   mdiDotsVertical,
   mdiInformationOutline,
-  mdiStar,
+  mdiCellphoneKey,
 } from "@mdi/js";
 import { LitElement, PropertyValues, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -195,11 +195,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   ? html`${network.dataset &&
                       router.border_agent_id ===
                         network.dataset.preferred_border_agent_id
-                        ? html`<ha-svg-icon .path=${mdiStar} slot="meta">
-                            ${this.hass.localize(
+                        ? html`<ha-svg-icon
+                            .path=${mdiCellphoneKey}
+                            .title=${this.hass.localize(
                               "ui.panel.config.thread.default_router"
                             )}
-                          </ha-svg-icon>`
+                          ></ha-svg-icon>`
                         : ""}
                       <ha-button-menu
                         slot="meta"
