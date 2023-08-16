@@ -34,14 +34,17 @@ import {
 import { haOscillatingOff } from "./icons/haOscillatingOff";
 import { haOscillating } from "./icons/haOscillating";
 
-export type HvacMode =
-  | "off"
-  | "heat"
-  | "cool"
-  | "heat_cool"
-  | "auto"
-  | "dry"
-  | "fan_only";
+export const HVAC_MODES = [
+  "auto",
+  "heat_cool",
+  "heat",
+  "cool",
+  "dry",
+  "fan_only",
+  "off",
+] as const;
+
+export type HvacMode = (typeof HVAC_MODES)[number];
 
 export const CLIMATE_PRESET_NONE = "none";
 

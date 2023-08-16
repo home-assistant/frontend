@@ -59,7 +59,6 @@ class MoreInfoClimate extends LitElement {
       return nothing;
     }
 
-    const hass = this.hass;
     const stateObj = this.stateObj;
 
     const supportTargetHumidity = supportsFeature(
@@ -168,7 +167,10 @@ class MoreInfoClimate extends LitElement {
       <div class="secondary-controls">
         <div class="secondary-controls-scroll">
           <ha-control-select-menu
-            .label=${hass.localize("ui.card.climate.operation")}
+            .label=${this.hass.formatEntityAttributeName(
+              this.stateObj,
+              "hvac_mode"
+            )}
             .value=${stateObj.state}
             .disabled=${this.stateObj.state === UNAVAILABLE}
             fixedMenuPosition

@@ -3,25 +3,30 @@ import type { FrontendLocaleData } from "../../data/translation";
 import type { HomeAssistant } from "../../types";
 import type { LocalizeFunc } from "./localize";
 
-export type FormatEntityStateFunc = {
-  formatEntityState: (stateObj: HassEntity, state?: string) => string;
-  formatEntityAttributeValue: (
-    stateObj: HassEntity,
-    attribute: string,
-    value?: any
-  ) => string;
-  formatEntityAttributeName: (
-    stateObj: HassEntity,
-    attribute: string
-  ) => string;
-};
+export type FormatEntityStateFunc = (
+  stateObj: HassEntity,
+  state?: string
+) => string;
+export type FormatEntityAttributeValueFunc = (
+  stateObj: HassEntity,
+  attribute: string,
+  value?: any
+) => string;
+export type formatEntityAttributeNameFunc = (
+  stateObj: HassEntity,
+  attribute: string
+) => string;
 
 export const computeFormatFunctions = async (
   localize: LocalizeFunc,
   locale: FrontendLocaleData,
   config: HassConfig,
   entities: HomeAssistant["entities"]
-): Promise<FormatEntityStateFunc> => {
+): Promise<{
+  formatEntityState: FormatEntityStateFunc;
+  formatEntityAttributeValue: FormatEntityAttributeValueFunc;
+  formatEntityAttributeName: formatEntityAttributeNameFunc;
+}> => {
   const { computeStateDisplay } = await import(
     "../entity/compute_state_display"
   );
