@@ -4998,6 +4998,10 @@
                       "locate": "[%key:ui::dialogs::more_info_control::vacuum::locate%]",
                       "return_home": "[%key:ui::dialogs::more_info_control::vacuum::return_home%]"
                     }
+                  },
+                  "climate-hvac-modes": {
+                    "label": "HVAC modes",
+                    "hvac_modes": "Modes"
                   }
                 }
               }
