@@ -164,102 +164,95 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                 })}
               </h4>
             </div>
-            ${network.routers.map(
-              (router) =>
-                html`<ha-list-item
-                  class="router"
-                  twoline
-                  graphic="avatar"
-                  .hasMeta=${("dataset" in network && router.border_agent_id) ||
-                  router.extended_address === this._otbrInfo?.extended_address}
-                >
-                  <img
-                    slot="graphic"
-                    .src=${brandsUrl({
-                      domain: router.brand,
-                      brand: true,
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
-                    alt=${router.brand}
-                    referrerpolicy="no-referrer"
-                    @error=${this._onImageError}
-                    @load=${this._onImageLoad}
-                  />
-                  ${router.model_name ||
-                  router.server?.replace(".local.", "") ||
-                  ""}
-                  <span slot="secondary">${router.server}</span>
-                  ${(network.dataset && router.border_agent_id) ||
-                  router.extended_address === this._otbrInfo?.extended_address
-                    ? html`${network.dataset &&
-                        router.border_agent_id ===
-                          network.dataset.preferred_border_agent_id
-                          ? html`<ha-svg-icon .path=${mdiStar} slot="meta">
-                              ${this.hass.localize(
-                                "ui.panel.config.thread.default_router"
-                              )}
-                            </ha-svg-icon>`
-                          : ""}
-                        <ha-button-menu
-                          slot="meta"
-                          .network=${network}
-                          .router=${router}
-                          @action=${this._handleRouterAction}
-                        >
-                          <ha-icon-button
-                            .label=${this.hass.localize(
-                              "ui.common.overflow_menu"
+            ${network.routers.map((router) => {
+              const showOverflow =
+                ("dataset" in network && router.border_agent_id) ||
+                router.extended_address === this._otbrInfo?.extended_address;
+              return html`<ha-list-item
+                class="router"
+                twoline
+                graphic="avatar"
+                .hasMeta=${showOverflow}
+              >
+                <img
+                  slot="graphic"
+                  .src=${brandsUrl({
+                    domain: router.brand,
+                    brand: true,
+                    type: "icon",
+                    darkOptimized: this.hass.themes?.darkMode,
+                  })}
+                  alt=${router.brand}
+                  referrerpolicy="no-referrer"
+                  @error=${this._onImageError}
+                  @load=${this._onImageLoad}
+                />
+                ${router.model_name ||
+                router.server?.replace(".local.", "") ||
+                ""}
+                <span slot="secondary">${router.server}</span>
+                ${showOverflow
+                  ? html`${network.dataset &&
+                      router.border_agent_id ===
+                        network.dataset.preferred_border_agent_id
+                        ? html`<ha-svg-icon .path=${mdiStar} slot="meta">
+                            ${this.hass.localize(
+                              "ui.panel.config.thread.default_router"
                             )}
-                            .path=${mdiDotsVertical}
-                            slot="trigger"
-                          ></ha-icon-button>
-                          ${network.dataset && router.border_agent_id
-                            ? html`<ha-list-item
-                                .disabled=${router.border_agent_id ===
-                                network.dataset.preferred_border_agent_id}
-                              >
-                                ${router.border_agent_id ===
-                                network.dataset.preferred_border_agent_id
-                                  ? this.hass.localize(
-                                      "ui.panel.config.thread.default_router"
-                                    )
-                                  : this.hass.localize(
-                                      "ui.panel.config.thread.set_default_router"
-                                    )}
-                              </ha-list-item>`
-                            : ""}
-                          ${router.extended_address ===
-                          this._otbrInfo?.extended_address
-                            ? html`<ha-icon-button
-                                  .label=${this.hass.localize(
-                                    "ui.common.overflow_menu"
+                          </ha-svg-icon>`
+                        : ""}
+                      <ha-button-menu
+                        slot="meta"
+                        .network=${network}
+                        .router=${router}
+                        @action=${this._handleRouterAction}
+                      >
+                        <ha-icon-button
+                          .label=${this.hass.localize(
+                            "ui.common.overflow_menu"
+                          )}
+                          .path=${mdiDotsVertical}
+                          slot="trigger"
+                        ></ha-icon-button>
+                        ${network.dataset && router.border_agent_id
+                          ? html`<ha-list-item
+                              .disabled=${router.border_agent_id ===
+                              network.dataset.preferred_border_agent_id}
+                            >
+                              ${router.border_agent_id ===
+                              network.dataset.preferred_border_agent_id
+                                ? this.hass.localize(
+                                    "ui.panel.config.thread.default_router"
+                                  )
+                                : this.hass.localize(
+                                    "ui.panel.config.thread.set_default_router"
                                   )}
-                                  .path=${mdiDotsVertical}
-                                  slot="trigger"
-                                ></ha-icon-button>
-                                <ha-list-item>
-                                  ${this.hass.localize(
-                                    "ui.panel.config.thread.reset_border_router"
-                                  )}</ha-list-item
-                                >
-                                <ha-list-item>
-                                  ${this.hass.localize(
-                                    "ui.panel.config.thread.change_channel"
-                                  )}</ha-list-item
-                                >
-                                ${network.dataset?.preferred
-                                  ? ""
-                                  : html`<ha-list-item>
-                                      ${this.hass.localize(
-                                        "ui.panel.config.thread.add_to_my_network"
-                                      )}
-                                    </ha-list-item>`}`
-                            : ""}
-                        </ha-button-menu>`
-                    : ""}
-                </ha-list-item>`
-            )}`
+                            </ha-list-item>`
+                          : ""}
+                        ${router.extended_address ===
+                        this._otbrInfo?.extended_address
+                          ? html`<ha-list-item>
+                                ${this.hass.localize(
+                                  "ui.panel.config.thread.reset_border_router"
+                                )}</ha-list-item
+                              >
+                              <ha-list-item>
+                                ${this.hass.localize(
+                                  "ui.panel.config.thread.change_channel"
+                                )}</ha-list-item
+                              >
+                              ${network.dataset?.preferred
+                                ? ""
+                                : html`<ha-list-item>
+                                    ${this.hass.localize(
+                                      "ui.panel.config.thread.add_to_my_network"
+                                    )}
+                                  </ha-list-item>`}`
+                          : ""}
+                      </ha-button-menu>`
+                  : ""}
+              </ha-list-item>`;
+            })}`
         : html`<div class="card-content no-routers">
             <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
             ${network.dataset?.extended_pan_id &&
@@ -509,7 +502,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
   ) {
     const datasetId = dataset.dataset_id;
     const borderAgentId = router.border_agent_id;
-    if (!router.border_agent_id) {
+    if (!borderAgentId) {
       return;
     }
     await setPreferredBorderAgent(this.hass, datasetId, borderAgentId);
