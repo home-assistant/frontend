@@ -16,6 +16,7 @@ import { extractSearchParam } from "../../../../../common/url/search-params";
 import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-alert";
 import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
 import {
@@ -52,6 +53,7 @@ interface ThreadNetwork {
   name: string;
   dataset?: ThreadDataSet;
   routers?: ThreadRouter[];
+  preferred_border_agent_found?: boolean;
 }
 
 @customElement("thread-config-panel")
@@ -156,6 +158,13 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             </div>`
           : ""}
       </div>
+      ${network.preferred_border_agent_found === false
+        ? html`<ha-alert alert-type="warning">
+            ${this.hass.localize(
+              "ui.panel.config.thread.default_router_not_found"
+            )}
+          </ha-alert>`
+        : ""}
       ${network.routers?.length
         ? html`<div class="card-content routers">
               <h4>
@@ -195,10 +204,13 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   ? html`${network.dataset &&
                       router.border_agent_id ===
                         network.dataset.preferred_border_agent_id
-                        ? html`<ha-svg-icon .path=${mdiStar} slot="meta">
-                            ${this.hass.localize(
+                        ? html`<ha-svg-icon
+                            .path=${mdiStar}
+                            .title=${this.hass.localize(
                               "ui.panel.config.thread.default_router"
                             )}
+                            slot="meta"
+                          >
                           </ha-svg-icon>`
                         : ""}
                       <ha-button-menu
@@ -358,11 +370,20 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         if (!network) {
           continue;
         }
+        if (dataset.preferred_border_agent_id) {
+          networks[network].preferred_border_agent_found =
+            networks[network]?.routers?.find(
+              (router) =>
+                router.border_agent_id === dataset.preferred_border_agent_id
+            ) !== undefined;
+        }
         if (dataset.preferred) {
           preferred = {
             name: dataset.network_name,
             dataset: dataset,
             routers: networks[network]?.routers,
+            preferred_border_agent_found:
+              networks[network]?.preferred_border_agent_found || false,
           };
           delete networks[network];
           continue;
@@ -370,7 +391,11 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         if (network in networks) {
           networks[network].dataset = dataset;
         } else {
-          networks[network] = { name: dataset.network_name, dataset: dataset };
+          networks[network] = {
+            name: dataset.network_name,
+            dataset: dataset,
+            preferred_border_agent_found: false,
+          };
         }
       }
       return {
@@ -634,8 +659,15 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         cursor: default;
         overflow: visible;
       }
+      ha-alert {
+        margin-bottom: 16px;
+        display: block;
+      }
       ha-svg-icon[slot="meta"] {
         width: 24px;
+      }
+      ha-button-menu {
+        width: 48px;
       }
       ha-button-menu a {
         text-decoration: none;
