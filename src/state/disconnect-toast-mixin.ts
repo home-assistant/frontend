@@ -17,6 +17,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
     private _subscribedBootstrapIntegrations?: Promise<UnsubscribeFunc>;
 
+    private _disconnectedTimeout?: number;
+
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       // Need to load in advance because when disconnected, can't dynamically load code.
@@ -65,6 +67,11 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     protected hassReconnected() {
       super.hassReconnected();
+      if (this._disconnectedTimeout) {
+        clearTimeout(this._disconnectedTimeout);
+        this._disconnectedTimeout = undefined;
+        return;
+      }
       showToast(this, {
         message: "",
         duration: 1,
@@ -74,11 +81,14 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     protected hassDisconnected() {
       super.hassDisconnected();
 
-      showToast(this, {
-        message: this.hass!.localize("ui.notification_toast.connection_lost"),
-        duration: 0,
-        dismissable: false,
-      });
+      this._disconnectedTimeout = window.setTimeout(() => {
+        this._disconnectedTimeout = undefined;
+        showToast(this, {
+          message: this.hass!.localize("ui.notification_toast.connection_lost"),
+          duration: 0,
+          dismissable: false,
+        });
+      }, 1000);
     }
 
     private _handleMessage(message: BootstrapIntegrationsTimings): void {
