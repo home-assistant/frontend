@@ -32,6 +32,7 @@ import { supportsCoverTiltTileFeature } from "../../tile-features/hui-cover-tilt
 import { supportsFanSpeedTileFeature } from "../../tile-features/hui-fan-speed-tile-feature";
 import { supportsLightBrightnessTileFeature } from "../../tile-features/hui-light-brightness-tile-feature";
 import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
+import { supportsWaterHeaterOperationModesTileFeature } from "../../tile-features/hui-water-heater-operation-modes-tile-feature";
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
 
 type FeatureType = LovelaceTileFeatureConfig["type"];
@@ -45,12 +46,14 @@ const FEATURE_TYPES: FeatureType[] = [
   "fan-speed",
   "alarm-modes",
   "climate-hvac-modes",
+  "water-heater-operation-modes",
 ];
 
 const EDITABLES_FEATURE_TYPES = new Set<FeatureType>([
   "vacuum-commands",
   "alarm-modes",
   "climate-hvac-modes",
+  "water-heater-operation-modes",
 ]);
 
 const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
@@ -62,6 +65,8 @@ const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
     "fan-speed": supportsFanSpeedTileFeature,
     "alarm-modes": supportsAlarmModesTileFeature,
     "climate-hvac-modes": supportsClimateHvacModesTileFeature,
+    "water-heater-operation-modes":
+      supportsWaterHeaterOperationModesTileFeature,
   };
 
 const CUSTOM_FEATURE_ENTRIES: Record<
