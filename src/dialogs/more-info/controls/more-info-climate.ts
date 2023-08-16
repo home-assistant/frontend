@@ -174,7 +174,6 @@ class MoreInfoClimate extends LitElement {
             naturalMenuWidth
             @selected=${this._handleOperationModeChanged}
             @closed=${stopPropagation}
-            .computeIconPath=${computeHvacModeIcon}
           >
             <ha-svg-icon slot="icon" .path=${mdiThermostat}></ha-svg-icon>
             ${stateObj.attributes.hvac_modes
@@ -205,7 +204,6 @@ class MoreInfoClimate extends LitElement {
                   naturalMenuWidth
                   @selected=${this._handlePresetmodeChanged}
                   @closed=${stopPropagation}
-                  .computeIconPath=${computePresetModeIcon}
                 >
                   <ha-svg-icon
                     slot="icon"
@@ -242,7 +240,6 @@ class MoreInfoClimate extends LitElement {
                   naturalMenuWidth
                   @selected=${this._handleFanModeChanged}
                   @closed=${stopPropagation}
-                  .computeIconPath=${computeFanModeIcon}
                 >
                   <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
                   ${stateObj.attributes.fan_modes!.map(
@@ -276,7 +273,6 @@ class MoreInfoClimate extends LitElement {
                   naturalMenuWidth
                   @selected=${this._handleSwingmodeChanged}
                   @closed=${stopPropagation}
-                  .computeIconPath=${computeSwingModeIcon}
                 >
                   <ha-svg-icon slot="icon" .path=${haOscillating}></ha-svg-icon>
                   ${stateObj.attributes.swing_modes!.map(

@@ -136,7 +136,6 @@ class MoreInfoHumidifier extends LitElement {
                   naturalMenuWidth
                   @selected=${this._handleModeChanged}
                   @closed=${stopPropagation}
-                  .computeIconPath=${computeHumidiferModeIcon}
                 >
                   <ha-svg-icon
                     slot="icon"

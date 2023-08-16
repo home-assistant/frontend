@@ -82,7 +82,6 @@ class MoreInfoWaterHeater extends LitElement {
                   naturalMenuWidth
                   @selected=${this._handleOperationModeChanged}
                   @closed=${stopPropagation}
-                  .computeIconPath=${computeOperationModeIcon}
                 >
                   <ha-svg-icon
                     slot="icon"
@@ -118,7 +117,6 @@ class MoreInfoWaterHeater extends LitElement {
                   naturalMenuWidth
                   @selected=${this._handleAwayModeChanged}
                   @closed=${stopPropagation}
-                  .computeIconPath=${this._computeAwayModeIcon}
                 >
                   <ha-svg-icon slot="icon" .path=${mdiAccount}></ha-svg-icon>
                   <ha-list-item value="on" graphic="icon">
