@@ -1,4 +1,5 @@
 import { AlarmMode } from "../../../data/alarm_control_panel";
+import { HvacMode } from "../../../data/climate";
 
 export interface CoverOpenCloseTileFeatureConfig {
   type: "cover-open-close";
@@ -16,9 +17,14 @@ export interface FanSpeedTileFeatureConfig {
   type: "fan-speed";
 }
 
-export interface AlarmModesFileFeatureConfig {
+export interface AlarmModesTileFeatureConfig {
   type: "alarm-modes";
   modes?: AlarmMode[];
+}
+
+export interface ClimateHvacModesTileFeatureConfig {
+  type: "climate-hvac-modes";
+  hvac_modes?: HvacMode[];
 }
 
 export const VACUUM_COMMANDS = [
@@ -42,7 +48,8 @@ export type LovelaceTileFeatureConfig =
   | LightBrightnessTileFeatureConfig
   | VacuumCommandsTileFeatureConfig
   | FanSpeedTileFeatureConfig
-  | AlarmModesFileFeatureConfig;
+  | AlarmModesTileFeatureConfig
+  | ClimateHvacModesTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
   entity_id?: string;
