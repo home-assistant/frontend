@@ -103,3 +103,14 @@ export const setPreferredThreadDataSet = (
     type: "thread/set_preferred_dataset",
     dataset_id,
   });
+
+export const setPreferredBorderAgent = (
+  hass: HomeAssistant,
+  dataset_id: string,
+  border_agent_id: string
+): Promise<void> =>
+  hass.callWS({
+    type: "thread/set_preferred_border_agent_id",
+    dataset_id,
+    border_agent_id,
+  });
