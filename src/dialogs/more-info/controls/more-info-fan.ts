@@ -239,12 +239,7 @@ class MoreInfoFan extends LitElement {
                   @selected=${this._handleDirection}
                   @closed=${stopPropagation}
                 >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${this.stateObj.attributes.direction === "reverse"
-                      ? mdiRotateLeft
-                      : mdiRotateRight}
-                  ></ha-svg-icon>
+                  <ha-svg-icon slot="icon" .path=${mdiRotateLeft}></ha-svg-icon>
                   <ha-list-item value="forward" graphic="icon">
                     <ha-svg-icon
                       slot="graphic"
@@ -286,9 +281,7 @@ class MoreInfoFan extends LitElement {
                 >
                   <ha-svg-icon
                     slot="icon"
-                    .path=${this.stateObj.attributes.oscillating
-                      ? haOscillating
-                      : haOscillatingOff}
+                    .path=${haOscillatingOff}
                   ></ha-svg-icon>
                   <ha-list-item value="on" graphic="icon">
                     <ha-svg-icon

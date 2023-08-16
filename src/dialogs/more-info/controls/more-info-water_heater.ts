@@ -7,7 +7,6 @@ import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
 import {
-  OperationMode,
   WaterHeaterEntity,
   WaterHeaterEntityFeature,
   compareWaterHeaterOperationMode,
@@ -86,9 +85,7 @@ class MoreInfoWaterHeater extends LitElement {
                 >
                   <ha-svg-icon
                     slot="icon"
-                    .path=${computeOperationModeIcon(
-                      stateObj.state as OperationMode
-                    ) ?? mdiWaterBoiler}
+                    .path=${mdiWaterBoiler}
                   ></ha-svg-icon>
                   ${stateObj.attributes.operation_list
                     .concat()
@@ -121,12 +118,7 @@ class MoreInfoWaterHeater extends LitElement {
                   @selected=${this._handleAwayModeChanged}
                   @closed=${stopPropagation}
                 >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${stateObj.attributes.away_mode === "on"
-                      ? mdiAccountArrowRight
-                      : mdiAccount}
-                  ></ha-svg-icon>
+                  <ha-svg-icon slot="icon" .path=${mdiAccount}></ha-svg-icon>
                   <ha-list-item value="on" graphic="icon">
                     <ha-svg-icon
                       slot="graphic"

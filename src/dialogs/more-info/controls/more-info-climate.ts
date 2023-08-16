@@ -29,7 +29,6 @@ import "../../../components/ha-switch";
 import {
   ClimateEntity,
   ClimateEntityFeature,
-  HvacMode,
   compareClimateHvacModes,
   computeFanModeIcon,
   computeHvacModeIcon,
@@ -176,11 +175,7 @@ class MoreInfoClimate extends LitElement {
             @selected=${this._handleOperationModeChanged}
             @closed=${stopPropagation}
           >
-            <ha-svg-icon
-              slot="icon"
-              .path=${computeHvacModeIcon(stateObj.state as HvacMode) ??
-              mdiThermostat}
-            ></ha-svg-icon>
+            <ha-svg-icon slot="icon" .path=${mdiThermostat}></ha-svg-icon>
             ${stateObj.attributes.hvac_modes
               .concat()
               .sort(compareClimateHvacModes)
@@ -212,9 +207,7 @@ class MoreInfoClimate extends LitElement {
                 >
                   <ha-svg-icon
                     slot="icon"
-                    .path=${stateObj.attributes.preset_mode
-                      ? computePresetModeIcon(stateObj.attributes.preset_mode)
-                      : mdiTuneVariant}
+                    .path=${mdiTuneVariant}
                   ></ha-svg-icon>
                   ${stateObj.attributes.preset_modes!.map(
                     (mode) => html`
@@ -248,12 +241,7 @@ class MoreInfoClimate extends LitElement {
                   @selected=${this._handleFanModeChanged}
                   @closed=${stopPropagation}
                 >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${stateObj.attributes.fan_mode
-                      ? computeFanModeIcon(stateObj.attributes.fan_mode)
-                      : mdiFan}
-                  ></ha-svg-icon>
+                  <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
                   ${stateObj.attributes.fan_modes!.map(
                     (mode) => html`
                       <ha-list-item .value=${mode} graphic="icon">
@@ -286,12 +274,7 @@ class MoreInfoClimate extends LitElement {
                   @selected=${this._handleSwingmodeChanged}
                   @closed=${stopPropagation}
                 >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${stateObj.attributes.swing_mode
-                      ? computeSwingModeIcon(stateObj.attributes.swing_mode)
-                      : haOscillating}
-                  ></ha-svg-icon>
+                  <ha-svg-icon slot="icon" .path=${haOscillating}></ha-svg-icon>
                   ${stateObj.attributes.swing_modes!.map(
                     (mode) => html`
                       <ha-list-item .value=${mode} graphic="icon">
