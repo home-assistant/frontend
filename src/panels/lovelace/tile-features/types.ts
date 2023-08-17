@@ -14,6 +14,10 @@ export interface LightBrightnessTileFeatureConfig {
   type: "light-brightness";
 }
 
+export interface LightColorTempTileFeatureConfig {
+  type: "light-color-temp";
+}
+
 export interface FanSpeedTileFeatureConfig {
   type: "fan-speed";
 }
@@ -52,6 +56,7 @@ export type LovelaceTileFeatureConfig =
   | CoverOpenCloseTileFeatureConfig
   | CoverTiltTileFeatureConfig
   | LightBrightnessTileFeatureConfig
+  | LightColorTempTileFeatureConfig
   | VacuumCommandsTileFeatureConfig
   | FanSpeedTileFeatureConfig
   | AlarmModesTileFeatureConfig
