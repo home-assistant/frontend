@@ -28,6 +28,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { stateIconPath } from "../../../common/entity/state_icon_path";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-card";
 import "../../../components/tile/ha-tile-badge";
 import "../../../components/tile/ha-tile-icon";
