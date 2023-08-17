@@ -1,6 +1,5 @@
 import { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import {
-  GLOBAL_ATTRIBUTES_UNITS,
   DOMAIN_ATTRIBUTES_UNITS,
   TEMPERATURE_ATTRIBUTES,
 } from "../../data/entity_attributes";
@@ -43,9 +42,9 @@ export const computeAttributeValueDisplay = (
 
     const domain = computeStateDomain(stateObj);
 
-    let unit =
-      DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] ??
-      (GLOBAL_ATTRIBUTES_UNITS[attribute] as string | undefined);
+    let unit = DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] as
+      | string
+      | undefined;
 
     if (domain === "weather") {
       unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);

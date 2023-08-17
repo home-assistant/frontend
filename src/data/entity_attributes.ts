@@ -34,18 +34,14 @@ export const TEMPERATURE_ATTRIBUTES = new Set([
 ]);
 
 export const DOMAIN_ATTRIBUTES_UNITS: Record<string, Record<string, string>> = {
-  sun: {
-    elevation: "°",
-  },
-  light: {
-    color_temp: "mired",
-    max_mireds: "mired",
-    min_mireds: "mired",
-    color_temp_kelvin: "K",
-    min_color_temp_kelvin: "K",
-    max_color_temp_kelvin: "K",
-    brightness: "%",
-    brightness_pct: "%",
+  climate: {
+    humidity: "%",
+    current_humidity: "%",
+    target_humidity_low: "%",
+    target_humidity_high: "%",
+    target_humidity_step: "%",
+    min_humidity: "%",
+    max_humidity: "%",
   },
   cover: {
     current_position: "%",
@@ -54,16 +50,24 @@ export const DOMAIN_ATTRIBUTES_UNITS: Record<string, Record<string, string>> = {
   fan: {
     percentage: "%",
   },
-};
-
-export const GLOBAL_ATTRIBUTES_UNITS: Record<string, string> = {
-  humidity: "%",
-  current_humidity: "%",
-  target_humidity: "%",
-  target_humidity_low: "%",
-  target_humidity_high: "%",
-  target_humidity_step: "%",
-  min_humidity: "%",
-  max_humidity: "%",
-  battery_level: "%",
+  humidifier: {
+    humidity: "%",
+    current_humidity: "%",
+    min_humidity: "%",
+    max_humidity: "%",
+  },
+  light: {
+    color_temp: "mired",
+    max_mireds: "mired",
+    min_mireds: "mired",
+    color_temp_kelvin: "K",
+    min_color_temp_kelvin: "K",
+    max_color_temp_kelvin: "K",
+  },
+  sun: {
+    elevation: "°",
+  },
+  vaccum: {
+    battery_level: "%",
+  },
 };

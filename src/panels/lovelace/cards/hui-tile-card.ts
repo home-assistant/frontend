@@ -207,11 +207,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     if (domain === "light" && stateActive(stateObj)) {
       const brightness = (stateObj as LightEntity).attributes.brightness;
       if (brightness) {
-        return this.hass!.formatEntityAttributeValue(
-          stateObj,
-          "brightness",
-          Math.round((brightness * 100) / 255)
-        );
+        return `${Math.round((brightness * 100) / 255)}${blankBeforePercent(
+          this.hass!.locale
+        )}%`;
       }
     }
 
