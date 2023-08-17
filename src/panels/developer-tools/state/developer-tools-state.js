@@ -98,6 +98,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         ha-tip {
           display: flex;
           padding: 8px 0;
+          text-align: left;
         }
 
         th.attributes {
