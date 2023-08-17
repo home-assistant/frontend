@@ -28,7 +28,6 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { stateIconPath } from "../../../common/entity/state_icon_path";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-card";
 import "../../../components/tile/ha-tile-badge";
 import "../../../components/tile/ha-tile-icon";
@@ -208,9 +207,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     if (domain === "light" && stateActive(stateObj)) {
       const brightness = (stateObj as LightEntity).attributes.brightness;
       if (brightness) {
-        return `${Math.round((brightness * 100) / 255)}${blankBeforePercent(
-          this.hass!.locale
-        )}%`;
+        return this.hass!.formatEntityAttributeValue(
+          stateObj,
+          "brightness",
+          Math.round((brightness * 100) / 255)
+        );
       }
     }
 
@@ -221,15 +222,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       );
       if (speedStateDisplay) {
         return speedStateDisplay;
-      }
-    }
-
-    if (domain === "humidifier" && stateActive(stateObj)) {
-      const humidity = (stateObj as HumidifierEntity).attributes.humidity;
-      if (humidity) {
-        return `${Math.round(humidity)}${blankBeforePercent(
-          this.hass!.locale
-        )}%`;
       }
     }
 
@@ -248,9 +240,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     if (domain === "humidifier" && stateActive(stateObj)) {
       const humidity = (stateObj as HumidifierEntity).attributes.humidity;
       if (humidity) {
-        return `${stateDisplay} ⸱ ${Math.round(humidity)}${blankBeforePercent(
-          this.hass!.locale
-        )}%`;
+        const formattedHumidity = this.hass!.formatEntityAttributeValue(
+          stateObj,
+          "humidity",
+          Math.round(humidity)
+        );
+        return `${stateDisplay} ⸱ ${formattedHumidity}`;
       }
     }
 

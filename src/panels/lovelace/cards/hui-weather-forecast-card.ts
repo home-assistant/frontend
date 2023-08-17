@@ -284,7 +284,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                               this.hass.locale
                             )}&nbsp;<span
                               >${getWeatherUnit(
-                                this.hass,
+                                this.hass.config,
                                 stateObj,
                                 "temperature"
                               )}</span
@@ -317,14 +317,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                                   stateObj.attributes.wind_bearing
                                 )
                               : html`
-                                  ${formatNumber(
-                                    stateObj.attributes[
-                                      this._config.secondary_info_attribute
-                                    ],
-                                    this.hass.locale
-                                  )}
-                                  ${getWeatherUnit(
-                                    this.hass,
+                                  ${this.hass.formatEntityAttributeValue(
                                     stateObj,
                                     this._config.secondary_info_attribute
                                   )}

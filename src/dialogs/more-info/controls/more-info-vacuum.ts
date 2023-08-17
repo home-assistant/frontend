@@ -17,7 +17,6 @@ import { computeAttributeValueDisplay } from "../../../common/entity/compute_att
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon";
@@ -280,11 +279,7 @@ class MoreInfoVacuum extends LitElement {
       return html`
         <div>
           <span>
-            ${batteryIsBinary
-              ? ""
-              : `${Number(battery.state).toFixed()}${blankBeforePercent(
-                  this.hass.locale
-                )}%`}
+            ${batteryIsBinary ? "" : this.hass.formatEntityState(battery)}
             <ha-battery-icon
               .hass=${this.hass}
               .batteryStateObj=${battery}
@@ -303,9 +298,12 @@ class MoreInfoVacuum extends LitElement {
       return html`
         <div>
           <span>
-            ${stateObj.attributes.battery_level.toFixed()}${blankBeforePercent(
-              this.hass.locale
-            )}%
+            ${this.hass.formatEntityAttributeValue(
+              stateObj,
+              "battery_level",
+              Math.round(stateObj.attributes.battery_level)
+            )}
+
             <ha-icon .icon=${stateObj.attributes.battery_icon}></ha-icon>
           </span>
         </div>

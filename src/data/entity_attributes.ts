@@ -21,3 +21,32 @@ export const STATE_ATTRIBUTES = [
   "supported_features",
   "unit_of_measurement",
 ];
+
+export const TEMPERATURE_ATTRIBUTES = new Set([
+  "temperature",
+  "current_temperature",
+  "target_temperature",
+  "target_temp_temp",
+  "target_temp_high",
+]);
+
+export const ATTRIBUTES_UNITS: Record<string, string> = {
+  humidity: "%",
+  current_humidity: "%",
+  target_humidity: "%",
+  target_humidity_low: "%",
+  target_humidity_high: "%",
+  battery_level: "%",
+  brightness: "%",
+  brightness_pct: "%",
+  percentage: "%",
+  current_position: "%",
+  current_tilt_position: "%",
+  color_temp: "mired",
+  max_mireds: "mired",
+  min_mireds: "mired",
+  color_temp_kelvin: "K",
+  min_color_temp_kelvin: "K",
+  max_color_temp_kelvin: "K",
+  elevation: "°",
+};

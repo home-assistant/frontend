@@ -18,7 +18,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-attributes";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
@@ -105,9 +104,11 @@ class MoreInfoLight extends LitElement {
       return formatTempColor(this._colorTempPreview);
     }
     if (this._selectedBrightness) {
-      return `${Math.round(this._selectedBrightness)}${blankBeforePercent(
-        this.hass!.locale
-      )}%`;
+      return this.hass.formatEntityAttributeValue(
+        this.stateObj!,
+        "brightness",
+        Math.round(this._selectedBrightness)
+      );
     }
     return undefined;
   }

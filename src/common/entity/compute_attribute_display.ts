@@ -11,6 +11,13 @@ import { isDate } from "../string/is_date";
 import { isTimestamp } from "../string/is_timestamp";
 import { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
+import {
+  ATTRIBUTES_UNITS,
+  TEMPERATURE_ATTRIBUTES,
+} from "../../data/entity_attributes";
+import { blankBeforePercent } from "../translations/blank_before_percent";
+import { computeStateDomain } from "./compute_state_domain";
+import { WeatherEntity, getWeatherUnit } from "../../data/weather";
 
 export const computeAttributeValueDisplay = (
   localize: LocalizeFunc,
@@ -31,7 +38,33 @@ export const computeAttributeValueDisplay = (
 
   // Number value, return formatted number
   if (typeof attributeValue === "number") {
-    return formatNumber(attributeValue, locale);
+    const formattedValue = formatNumber(attributeValue, locale);
+
+    const domain = computeStateDomain(stateObj);
+
+    let unit = ATTRIBUTES_UNITS[attribute];
+
+    if (domain === "weather") {
+      unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
+    }
+
+    if (unit === "%") {
+      return `${formattedValue}${blankBeforePercent(locale)}${unit}`;
+    }
+
+    if (unit === "°") {
+      return `${formattedValue}${unit}`;
+    }
+
+    if (unit) {
+      return `${formattedValue} ${unit}`;
+    }
+
+    if (TEMPERATURE_ATTRIBUTES.has(attribute)) {
+      return `${formattedValue} ${config.unit_system.temperature}`;
+    }
+
+    return formattedValue;
   }
 
   // Special handling in case this is a string with an known format
