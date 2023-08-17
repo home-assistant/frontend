@@ -1,6 +1,14 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
+import { rgb2hex } from "../../../common/color/convert-color";
+import {
+  DEFAULT_MAX_KELVIN,
+  DEFAULT_MIN_KELVIN,
+  temperature2rgb,
+} from "../../../common/color/convert-light-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import "../../../components/ha-control-slider";
@@ -57,6 +65,13 @@ class HuiLightColorTempTileFeature
         ? this.stateObj.attributes.color_temp_kelvin
         : undefined;
 
+    const minKelvin =
+      this.stateObj.attributes.min_color_temp_kelvin ?? DEFAULT_MIN_KELVIN;
+    const maxKelvin =
+      this.stateObj.attributes.max_color_temp_kelvin ?? DEFAULT_MAX_KELVIN;
+
+    const gradient = this.generateTemperatureGradient(minKelvin!, maxKelvin);
+
     return html`
       <div class="container">
         <ha-control-slider
@@ -66,12 +81,37 @@ class HuiLightColorTempTileFeature
           .disabled=${this.stateObj!.state === UNAVAILABLE}
           @value-changed=${this._valueChanged}
           .label=${this.hass.localize("ui.card.light.color_temperature")}
-          .min=${this.stateObj.attributes.min_color_temp_kelvin!}
-          .max=${this.stateObj.attributes.max_color_temp_kelvin!}
+          .min=${minKelvin}
+          .max=${maxKelvin}
+          style=${styleMap({
+            "--control-slider-background": `-webkit-linear-gradient(left, ${gradient})`,
+          })}
         ></ha-control-slider>
       </div>
     `;
   }
+
+  private generateTemperatureGradient = memoizeOne(
+    (min: number, max: number) => {
+      const count = 10;
+
+      const gradient: [number, string][] = [];
+
+      const step = (max - min) / count;
+      const percentageStep = 1 / count;
+
+      for (let i = 0; i < count + 1; i++) {
+        const value = min + step * i;
+
+        const hex = rgb2hex(temperature2rgb(value));
+        gradient.push([percentageStep * i, hex]);
+      }
+
+      return gradient
+        .map(([stop, color]) => `${color} ${(stop as number) * 100}%`)
+        .join(", ");
+    }
+  );
 
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
@@ -86,12 +126,6 @@ class HuiLightColorTempTileFeature
   static get styles() {
     return css`
       ha-control-slider {
-        --control-slider-background: -webkit-linear-gradient(
-          left,
-          rgb(255, 160, 0) 0%,
-          white 50%,
-          rgb(166, 209, 255) 100%
-        );
         --control-slider-background-opacity: 1;
         --control-slider-thickness: 40px;
         --control-slider-border-radius: 10px;
