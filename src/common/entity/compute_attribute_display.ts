@@ -1,6 +1,12 @@
 import { HassConfig, HassEntity } from "home-assistant-js-websocket";
+import {
+  GLOBAL_ATTRIBUTES_UNITS,
+  DOMAIN_ATTRIBUTES_UNITS,
+  TEMPERATURE_ATTRIBUTES,
+} from "../../data/entity_attributes";
 import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { FrontendLocaleData } from "../../data/translation";
+import { WeatherEntity, getWeatherUnit } from "../../data/weather";
 import { HomeAssistant } from "../../types";
 import checkValidDate from "../datetime/check_valid_date";
 import { formatDate } from "../datetime/format_date";
@@ -9,15 +15,10 @@ import { formatNumber } from "../number/format_number";
 import { capitalizeFirstLetter } from "../string/capitalize-first-letter";
 import { isDate } from "../string/is_date";
 import { isTimestamp } from "../string/is_timestamp";
+import { blankBeforePercent } from "../translations/blank_before_percent";
 import { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
-import {
-  ATTRIBUTES_UNITS,
-  TEMPERATURE_ATTRIBUTES,
-} from "../../data/entity_attributes";
-import { blankBeforePercent } from "../translations/blank_before_percent";
 import { computeStateDomain } from "./compute_state_domain";
-import { WeatherEntity, getWeatherUnit } from "../../data/weather";
 
 export const computeAttributeValueDisplay = (
   localize: LocalizeFunc,
@@ -42,7 +43,9 @@ export const computeAttributeValueDisplay = (
 
     const domain = computeStateDomain(stateObj);
 
-    let unit = ATTRIBUTES_UNITS[attribute];
+    let unit =
+      DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] ??
+      (GLOBAL_ATTRIBUTES_UNITS[attribute] as string | undefined);
 
     if (domain === "weather") {
       unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
