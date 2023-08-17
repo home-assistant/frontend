@@ -61,8 +61,6 @@ class HuiLightColorTempTileFeature
       <div class="container">
         <ha-control-slider
           .value=${position}
-          min="1"
-          max="100"
           mode="cursor"
           .showHandle=${stateActive(this.stateObj)}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
