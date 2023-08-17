@@ -1,5 +1,6 @@
 import { AlarmMode } from "../../../data/alarm_control_panel";
 import { HvacMode } from "../../../data/climate";
+import { OperationMode } from "../../../data/water_heater";
 
 export interface CoverOpenCloseTileFeatureConfig {
   type: "cover-open-close";
@@ -27,6 +28,11 @@ export interface ClimateHvacModesTileFeatureConfig {
   hvac_modes?: HvacMode[];
 }
 
+export interface WaterHeaterOperationModesTileFeatureConfig {
+  type: "water-heater-operation-modes";
+  operation_modes?: OperationMode[];
+}
+
 export const VACUUM_COMMANDS = [
   "start_pause",
   "stop",
@@ -49,7 +55,8 @@ export type LovelaceTileFeatureConfig =
   | VacuumCommandsTileFeatureConfig
   | FanSpeedTileFeatureConfig
   | AlarmModesTileFeatureConfig
-  | ClimateHvacModesTileFeatureConfig;
+  | ClimateHvacModesTileFeatureConfig
+  | WaterHeaterOperationModesTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
   entity_id?: string;

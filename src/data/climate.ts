@@ -95,15 +95,13 @@ export const enum ClimateEntityFeature {
   AUX_HEAT = 64,
 }
 
-const hvacModeOrdering: { [key in HvacMode]: number } = {
-  auto: 1,
-  heat_cool: 2,
-  heat: 3,
-  cool: 4,
-  dry: 5,
-  fan_only: 6,
-  off: 7,
-};
+const hvacModeOrdering = HVAC_MODES.reduce(
+  (order, mode, index) => {
+    order[mode] = index;
+    return order;
+  },
+  {} as Record<HvacMode, number>
+);
 
 export const compareClimateHvacModes = (mode1: HvacMode, mode2: HvacMode) =>
   hvacModeOrdering[mode1] - hvacModeOrdering[mode2];

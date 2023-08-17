@@ -18,14 +18,17 @@ export const enum WaterHeaterEntityFeature {
   AWAY_MODE = 4,
 }
 
-export type OperationMode =
-  | "eco"
-  | "electric"
-  | "performance"
-  | "high_demand"
-  | "heat_pump"
-  | "gas"
-  | "off";
+export const OPERATION_MODES = [
+  "electric",
+  "gas",
+  "heat_pump",
+  "eco",
+  "performance",
+  "high_demand",
+  "off",
+] as const;
+
+export type OperationMode = (typeof OPERATION_MODES)[number];
 
 export type WaterHeaterEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
@@ -40,20 +43,20 @@ export type WaterHeaterEntity = HassEntityBase & {
   };
 };
 
-const hvacModeOrdering: { [key in OperationMode]: number } = {
-  eco: 1,
-  electric: 2,
-  performance: 3,
-  high_demand: 4,
-  heat_pump: 5,
-  gas: 6,
-  off: 7,
-};
+const waterHeaterOperationModeOrdering = OPERATION_MODES.reduce(
+  (order, mode, index) => {
+    order[mode] = index;
+    return order;
+  },
+  {} as Record<OperationMode, number>
+);
 
 export const compareWaterHeaterOperationMode = (
   mode1: OperationMode,
   mode2: OperationMode
-) => hvacModeOrdering[mode1] - hvacModeOrdering[mode2];
+) =>
+  waterHeaterOperationModeOrdering[mode1] -
+  waterHeaterOperationModeOrdering[mode2];
 
 export const WATER_HEATER_OPERATION_MODE_ICONS: Record<OperationMode, string> =
   {
