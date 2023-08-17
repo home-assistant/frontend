@@ -12,14 +12,13 @@ import type {
   AlarmPanelCardConfig,
   AlarmPanelCardConfigState,
 } from "../../cards/types";
-import { ALARM_MODE_STATE_MAP } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import {
   DEFAULT_STATES,
+  ALARM_MODE_STATE_MAP,
   filterSupportedAlarmStates,
 } from "../../cards/hui-alarm-panel-card";
-import { deepEqual } from "../../../../common/util/deep-equal";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { ALARM_MODES } from "../../../../data/alarm_control_panel";
 
@@ -116,45 +115,26 @@ export class HuiAlarmPanelCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    // Delete states key if it was inferred from default and still matches the default
-    if (!this._config?.states) {
-      if (this._config?.entity === ev.detail.value.entity) {
-        const stateObj = this.hass?.states[ev.detail.value.entity];
-        const defaultFilteredStates = filterSupportedAlarmStates(
-          stateObj,
-          DEFAULT_STATES
-        );
-        if (deepEqual(defaultFilteredStates, ev.detail.value.states)) {
-          delete ev.detail.value.states;
-        }
-      } else {
-        delete ev.detail.value.states;
-      }
-    }
+    const newConfig = ev.detail.value;
 
     // Sort states in a consistent order
-    if (ev.detail.value.states) {
-      const sortStates = states.filter((s) =>
-        ev.detail.value.states.includes(s)
-      );
-      ev.detail.value.states = sortStates;
+    if (newConfig.states) {
+      const sortStates = states.filter((s) => newConfig.states.includes(s));
+      newConfig.states = sortStates;
     }
 
     // When changing entities, clear any states that the new entity does not support
-    if (
-      ev.detail.value.states &&
-      ev.detail.value.entity !== this._config?.entity
-    ) {
-      const newStateObj = this.hass?.states[ev.detail.value.entity];
+    if (newConfig.states && newConfig.entity !== this._config?.entity) {
+      const newStateObj = this.hass?.states[newConfig.entity];
       if (newStateObj) {
-        ev.detail.value.states = filterSupportedAlarmStates(
+        newConfig.states = filterSupportedAlarmStates(
           newStateObj,
-          ev.detail.value.states
+          newConfig.states
         );
       }
     }
 
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    fireEvent(this, "config-changed", { config: newConfig });
   }
 
   private _computeLabelCallback = (

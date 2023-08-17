@@ -13,7 +13,6 @@ import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import { HaDurationData } from "../../../components/ha-duration-input";
 import { LovelaceTileFeatureConfig } from "../tile-features/types";
 import { ForecastType } from "../../../data/weather";
-import { AlarmMode } from "../../../data/alarm_control_panel";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -21,17 +20,6 @@ export type AlarmPanelCardConfigState =
   | "arm_night"
   | "arm_vacation"
   | "arm_custom_bypass";
-
-export const ALARM_MODE_STATE_MAP: Record<
-  AlarmPanelCardConfigState,
-  AlarmMode
-> = {
-  arm_home: "armed_home",
-  arm_away: "armed_away",
-  arm_night: "armed_night",
-  arm_vacation: "armed_vacation",
-  arm_custom_bypass: "armed_custom_bypass",
-};
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;

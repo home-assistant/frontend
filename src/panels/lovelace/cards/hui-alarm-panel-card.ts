@@ -22,17 +22,14 @@ import {
   callAlarmAction,
   FORMAT_NUMBER,
   ALARM_MODES,
+  AlarmMode,
 } from "../../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard } from "../types";
-import {
-  AlarmPanelCardConfig,
-  AlarmPanelCardConfigState,
-  ALARM_MODE_STATE_MAP,
-} from "./types";
+import { AlarmPanelCardConfig, AlarmPanelCardConfigState } from "./types";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 
 const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
@@ -41,6 +38,17 @@ export const DEFAULT_STATES = [
   "arm_home",
   "arm_away",
 ] as AlarmPanelCardConfigState[];
+
+export const ALARM_MODE_STATE_MAP: Record<
+  AlarmPanelCardConfigState,
+  AlarmMode
+> = {
+  arm_home: "armed_home",
+  arm_away: "armed_away",
+  arm_night: "armed_night",
+  arm_vacation: "armed_vacation",
+  arm_custom_bypass: "armed_custom_bypass",
+};
 
 export const filterSupportedAlarmStates = (
   stateObj: HassEntity | undefined,
