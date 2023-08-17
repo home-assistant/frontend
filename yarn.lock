@@ -2095,12 +2095,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/motion@npm:1.0.3":
-  version: 1.0.3
-  resolution: "@lit-labs/motion@npm:1.0.3"
+"@lit-labs/motion@npm:1.0.4":
+  version: 1.0.4
+  resolution: "@lit-labs/motion@npm:1.0.4"
   dependencies:
-    lit: ^2.0.0
-  checksum: 126fd10df999e10e669d82e3961a01d750ffa7597f32427ea452ab92a24fbb7070358fb3a6a19147bb76652aa2d452ba3d73fd7fca49e381f42858ed4baf482d
+    lit: ^2.8.0
+  checksum: 79ed93d6cd40e253c5a90b50f110e67ff034d6d7a8a3dac9d94ef7f9125acf8f2f770d4e0b55c2b2a86bee360467184eaff24589ca03710fb5809cc8d15287db
   languageName: node
   linkType: hard
 
@@ -9639,7 +9639,7 @@ __metadata:
     "@koa/cors": 4.0.0
     "@lezer/highlight": 1.1.6
     "@lit-labs/context": 0.3.3
-    "@lit-labs/motion": 1.0.3
+    "@lit-labs/motion": 1.0.4
     "@lit-labs/virtualizer": 2.0.4
     "@lrnwebcomponents/simple-tooltip": 7.0.15
     "@material/chips": =14.0.0-canary.53b3cad2f.0
@@ -11428,7 +11428,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:2.8.0, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.7.0, lit@npm:^2.7.4, lit@npm:^2.7.6":
+"lit@npm:2.8.0, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.7.0, lit@npm:^2.7.4, lit@npm:^2.7.6, lit@npm:^2.8.0":
   version: 2.8.0
   resolution: "lit@npm:2.8.0"
   dependencies:
