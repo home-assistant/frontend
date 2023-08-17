@@ -53,7 +53,7 @@
     "@lit-labs/context": "0.3.3",
     "@lit-labs/motion": "1.0.3",
     "@lit-labs/virtualizer": "2.0.4",
-    "@lrnwebcomponents/simple-tooltip": "7.0.11",
+    "@lrnwebcomponents/simple-tooltip": "7.0.15",
     "@material/chips": "=14.0.0-canary.53b3cad2f.0",
     "@material/data-table": "=14.0.0-canary.53b3cad2f.0",
     "@material/mwc-button": "0.27.0",
