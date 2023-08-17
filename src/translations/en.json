@@ -5000,8 +5000,12 @@
                     }
                   },
                   "climate-hvac-modes": {
-                    "label": "HVAC modes",
-                    "hvac_modes": "Modes"
+                    "label": "Climate HVAC modes",
+                    "hvac_modes": "HVAC modes"
+                  },
+                  "water-heater-operation-modes": {
+                    "label": "Water heater operation modes",
+                    "operation_modes": "Operation modes"
                   }
                 }
               }
