@@ -99,7 +99,6 @@ class DialogTagDetail
                 "ui.panel.config.tag.detail.required_error_msg"
               )}
               required
-              autoValidate
             ></ha-textfield>
             ${!this._params.entry
               ? html`<ha-textfield

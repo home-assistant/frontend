@@ -125,7 +125,6 @@ class DialogPersonDetail extends LitElement {
                 "ui.panel.config.person.detail.name_error_msg"
               )}
               required
-              autoValidate
             ></ha-textfield>
             <ha-picture-upload
               .hass=${this.hass}
