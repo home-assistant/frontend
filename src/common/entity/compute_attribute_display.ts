@@ -46,6 +46,11 @@ export const computeAttributeValueDisplay = (
       | string
       | undefined;
 
+    if (domain === "light" && attribute === "brightness") {
+      const percentage = Math.round((attributeValue / 255) * 100);
+      return `${percentage}${blankBeforePercent(locale)}%`;
+    }
+
     if (domain === "weather") {
       unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
     }

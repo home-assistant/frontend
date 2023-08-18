@@ -28,7 +28,6 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { stateIconPath } from "../../../common/entity/state_icon_path";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-card";
 import "../../../components/tile/ha-tile-badge";
 import "../../../components/tile/ha-tile-icon";
@@ -208,16 +207,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     if (domain === "light" && stateActive(stateObj)) {
       const brightness = (stateObj as LightEntity).attributes.brightness;
       if (brightness) {
-        return `${Math.round((brightness * 100) / 255)}${blankBeforePercent(
-          this.hass!.locale
-        )}%`;
+        return this.hass!.formatEntityAttributeValue(stateObj, "brightness");
       }
     }
 
     if (domain === "fan") {
       const speedStateDisplay = computeFanSpeedStateDisplay(
         stateObj as FanEntity,
-        this.hass!.locale
+        this.hass!
       );
       if (speedStateDisplay) {
         return speedStateDisplay;
@@ -229,7 +226,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     if (domain === "cover") {
       const positionStateDisplay = computeCoverPositionStateDisplay(
         stateObj as CoverEntity,
-        this.hass!.locale
+        this.hass!
       );
       if (positionStateDisplay) {
         return `${stateDisplay} ⸱ ${positionStateDisplay}`;
