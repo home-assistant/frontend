@@ -15,7 +15,7 @@ import { CoverEntity } from "../../../../data/cover";
 import { UNAVAILABLE } from "../../../../data/entity";
 import { HomeAssistant } from "../../../../types";
 
-function generateTiltSliderTrackBackgroundGradient() {
+export function generateTiltSliderTrackBackgroundGradient() {
   const count = 24;
   const minStrokeWidth = 0.2;
   const gradient: [number, string][] = [];
@@ -87,7 +87,7 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
           this.hass.localize,
           this.stateObj,
           this.hass.entities,
-          "tilt_position"
+          "current_tilt_position"
         )}
         style=${styleMap({
           "--control-slider-color": color,
