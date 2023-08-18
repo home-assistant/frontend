@@ -97,7 +97,7 @@ class MoreInfoLawnMower extends LitElement {
                   "ui.dialogs.more_info_control.lawn_mower.commands"
                 )}
               </div>
-              <div class="flex-horizontal">
+              <div class="flex-horizontal space-around">
                 ${LAWN_MOWER_COMMANDS.filter((item) =>
                   item.isVisible(stateObj)
                 ).map(
@@ -198,7 +198,9 @@ class MoreInfoLawnMower extends LitElement {
       .flex-horizontal {
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
+      }
+      .space-around {
+        justify-content: space-around;
       }
     `;
   }
