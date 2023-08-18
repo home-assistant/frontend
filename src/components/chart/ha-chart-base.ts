@@ -15,6 +15,12 @@ import { HomeAssistant } from "../../types";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
+export interface ChartResizeOptions {
+  aspectRatio?: number;
+  height?: number;
+  width?: number;
+}
+
 interface Tooltip
   extends Omit<TooltipModel<any>, "tooltipPosition" | "hasValue" | "getProps"> {
   top: string;
@@ -22,7 +28,7 @@ interface Tooltip
 }
 
 @customElement("ha-chart-base")
-export default class HaChartBase extends LitElement {
+export class HaChartBase extends LitElement {
   public chart?: Chart;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -46,14 +52,6 @@ export default class HaChartBase extends LitElement {
 
   @state() private _hiddenDatasets: Set<number> = new Set();
 
-  private _releaseCanvas() {
-    // release the canvas memory to prevent
-    // safari from running out of memory.
-    if (this.chart) {
-      this.chart.destroy();
-    }
-  }
-
   public disconnectedCallback() {
     this._releaseCanvas();
     super.disconnectedCallback();
@@ -65,6 +63,36 @@ export default class HaChartBase extends LitElement {
       this._setupChart();
     }
   }
+
+  public updateChart = (
+    mode:
+      | "resize"
+      | "reset"
+      | "none"
+      | "hide"
+      | "show"
+      | "default"
+      | "active"
+      | undefined
+  ): void => {
+    this.chart?.update(mode);
+  };
+
+  public resize = (options?: ChartResizeOptions): void => {
+    if (options?.aspectRatio && !options.height) {
+      options.height = Math.round(
+        (options.width ?? this.clientWidth) / options.aspectRatio
+      );
+    } else if (options?.aspectRatio && !options.width) {
+      options.width = Math.round(
+        (options.height ?? this.clientHeight) * options.aspectRatio
+      );
+    }
+    this.chart?.resize(
+      options?.width ?? this.clientWidth,
+      options?.height ?? this.clientHeight
+    );
+  };
 
   protected firstUpdated() {
     this._setupChart();
@@ -129,55 +157,68 @@ export default class HaChartBase extends LitElement {
           </div>`
         : ""}
       <div
-        class="chartContainer"
+        class="animationContainer"
         style=${styleMap({
-          height: `${this.height ?? this._chartHeight}px`,
+          height: `${this.height || this._chartHeight || 0}px`,
           overflow: this._chartHeight ? "initial" : "hidden",
-          "padding-left": `${computeRTL(this.hass) ? 0 : this.paddingYAxis}px`,
-          "padding-right": `${computeRTL(this.hass) ? this.paddingYAxis : 0}px`,
         })}
       >
-        <canvas></canvas>
-        ${this._tooltip
-          ? html`<div
-              class="chartTooltip ${classMap({ [this._tooltip.yAlign]: true })}"
-              style=${styleMap({
-                top: this._tooltip.top,
-                left: this._tooltip.left,
-              })}
-            >
-              <div class="title">${this._tooltip.title}</div>
-              ${this._tooltip.beforeBody
-                ? html`<div class="beforeBody">
-                    ${this._tooltip.beforeBody}
-                  </div>`
-                : ""}
-              <div>
-                <ul>
-                  ${this._tooltip.body.map(
-                    (item, i) =>
-                      html`<li>
-                        <div
-                          class="bullet"
-                          style=${styleMap({
-                            backgroundColor: this._tooltip!.labelColors[i]
-                              .backgroundColor as string,
-                            borderColor: this._tooltip!.labelColors[i]
-                              .borderColor as string,
-                          })}
-                        ></div>
-                        ${item.lines.join("\n")}
-                      </li>`
-                  )}
-                </ul>
-              </div>
-              ${this._tooltip.footer.length
-                ? html`<div class="footer">
-                    ${this._tooltip.footer.map((item) => html`${item}<br />`)}
-                  </div>`
-                : ""}
-            </div>`
-          : ""}
+        <div
+          class="chartContainer"
+          style=${styleMap({
+            height: `${this.height ?? this._chartHeight}px`,
+            "padding-left": `${
+              computeRTL(this.hass) ? 0 : this.paddingYAxis
+            }px`,
+            "padding-right": `${
+              computeRTL(this.hass) ? this.paddingYAxis : 0
+            }px`,
+          })}
+        >
+          <canvas></canvas>
+          ${this._tooltip
+            ? html`<div
+                class="chartTooltip ${classMap({
+                  [this._tooltip.yAlign]: true,
+                })}"
+                style=${styleMap({
+                  top: this._tooltip.top,
+                  left: this._tooltip.left,
+                })}
+              >
+                <div class="title">${this._tooltip.title}</div>
+                ${this._tooltip.beforeBody
+                  ? html`<div class="beforeBody">
+                      ${this._tooltip.beforeBody}
+                    </div>`
+                  : ""}
+                <div>
+                  <ul>
+                    ${this._tooltip.body.map(
+                      (item, i) =>
+                        html`<li>
+                          <div
+                            class="bullet"
+                            style=${styleMap({
+                              backgroundColor: this._tooltip!.labelColors[i]
+                                .backgroundColor as string,
+                              borderColor: this._tooltip!.labelColors[i]
+                                .borderColor as string,
+                            })}
+                          ></div>
+                          ${item.lines.join("\n")}
+                        </li>`
+                    )}
+                  </ul>
+                </div>
+                ${this._tooltip.footer.length
+                  ? html`<div class="footer">
+                      ${this._tooltip.footer.map((item) => html`${item}<br />`)}
+                    </div>`
+                  : ""}
+              </div>`
+            : ""}
+        </div>
       </div>
     `;
   }
@@ -231,8 +272,8 @@ export default class HaChartBase extends LitElement {
     return [
       ...(this.plugins || []),
       {
-        id: "afterRenderHook",
-        afterRender: (chart) => {
+        id: "resizeHook",
+        resize: (chart) => {
           const change = chart.height - (this._chartHeight ?? 0);
           if (!this._chartHeight || change > 12 || change < -12) {
             // hysteresis to prevent infinite render loops
@@ -286,21 +327,13 @@ export default class HaChartBase extends LitElement {
     };
   }
 
-  public updateChart = (
-    mode:
-      | "resize"
-      | "reset"
-      | "none"
-      | "hide"
-      | "show"
-      | "default"
-      | "active"
-      | undefined
-  ): void => {
+  private _releaseCanvas() {
+    // release the canvas memory to prevent
+    // safari from running out of memory.
     if (this.chart) {
-      this.chart.update(mode);
+      this.chart.destroy();
     }
-  };
+  }
 
   static get styles(): CSSResultGroup {
     return css`
@@ -308,10 +341,14 @@ export default class HaChartBase extends LitElement {
         display: block;
         position: var(--chart-base-position, relative);
       }
-      .chartContainer {
+      .animationContainer {
         overflow: hidden;
         height: 0;
-        // transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .chartContainer {
+        position: relative;
+        height: var(--chart-init-height, 200px);
       }
       canvas {
         max-height: var(--chart-max-height, 400px);
