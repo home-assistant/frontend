@@ -23,8 +23,8 @@ export const createLogMessage = async (
     } = parser.getBrowser();
     const { name: osName = "unknown OS", version: osVersion = "" } =
       parser.getOS();
-    const browser = `${browserName} ${browserVersion}`.trimEnd();
-    const os = `${osName} ${osVersion}`.trimEnd();
+    const browser = `${browserName} ${browserVersion}`.trim();
+    const os = `${osName} ${osVersion}`.trim();
     lines.push(`${intro} from ${browser} on ${os}`);
   }
   // In most cases, an Error instance will be thrown, which can have many details to log:
