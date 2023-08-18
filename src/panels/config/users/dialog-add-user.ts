@@ -113,7 +113,6 @@ export class DialogAddUser extends LitElement {
                 @input=${this._handleValueChanged}
                 @blur=${this._maybePopulateUsername}
                 dialogInitialFocus
-                autoValidate
               ></ha-textfield>`
             : ""}
           <ha-textfield
@@ -127,7 +126,6 @@ export class DialogAddUser extends LitElement {
             @input=${this._handleValueChanged}
             .validationMessage=${this.hass.localize("ui.common.error_required")}
             dialogInitialFocus
-            autoValidate
           ></ha-textfield>
 
           <ha-textfield
@@ -140,7 +138,6 @@ export class DialogAddUser extends LitElement {
             required
             @input=${this._handleValueChanged}
             .validationMessage=${this.hass.localize("ui.common.error_required")}
-            autoValidate
           ></ha-textfield>
 
           <ha-textfield
@@ -158,7 +155,6 @@ export class DialogAddUser extends LitElement {
             .validationMessage=${this.hass.localize(
               "ui.panel.config.users.add_user.password_not_match"
             )}
-            autoValidate
           ></ha-textfield>
           <div class="row">
             <ha-formfield

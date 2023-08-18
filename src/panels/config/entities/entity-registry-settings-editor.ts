@@ -523,7 +523,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
               .invalid=${invalidDefaultCode}
               .disabled=${this.disabled}
               @input=${this._defaultcodeChanged}
-              autoValidate
             ></ha-textfield>
           `
         : ""}

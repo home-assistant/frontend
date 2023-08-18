@@ -97,7 +97,6 @@ class DialogAreaDetail extends LitElement {
                 "ui.panel.config.areas.editor.name_required"
               )}
               required
-              autoValidate
               dialogInitialFocus
             ></ha-textfield>
 
