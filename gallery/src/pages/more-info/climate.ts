@@ -43,6 +43,28 @@ const ENTITIES = [
     target_temp_low: 20,
     target_temp_high: 25,
   }),
+  getEntity("climate", "advanced", "auto", {
+    friendly_name: "Advanced hvac",
+    supported_features:
+      // eslint-disable-next-line no-bitwise
+      ClimateEntityFeature.TARGET_TEMPERATURE_RANGE |
+      ClimateEntityFeature.TARGET_HUMIDITY |
+      ClimateEntityFeature.PRESET_MODE,
+    hvac_modes: ["auto", "off"],
+    hvac_mode: "auto",
+    preset_modes: ["eco", "comfort", "boost"],
+    preset_mode: "eco",
+    current_temperature: 18,
+    min_temp: 10,
+    max_temp: 30,
+    target_temp_step: 1,
+    target_temp_low: 20,
+    target_temp_high: 25,
+    current_humidity: 40,
+    min_humidity: 0,
+    max_humidity: 100,
+    humidity: 50,
+  }),
   getEntity("climate", "unavailable", "unavailable", {
     friendly_name: "Unavailable heater",
     hvac_modes: ["heat", "off"],
