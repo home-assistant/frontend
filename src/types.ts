@@ -261,7 +261,7 @@ export interface HomeAssistant {
   formatEntityAttributeValue(
     stateObj: HassEntity,
     attribute: string,
-    value?: string
+    value?: any
   ): string;
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
 }

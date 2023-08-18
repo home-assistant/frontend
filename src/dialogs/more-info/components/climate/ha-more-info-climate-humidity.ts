@@ -6,8 +6,6 @@ import { stateActive } from "../../../../common/entity/state_active";
 import { domainStateColorProperties } from "../../../../common/entity/state_color";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { clamp } from "../../../../common/number/clamp";
-import { formatNumber } from "../../../../common/number/format_number";
-import { blankBeforePercent } from "../../../../common/translations/blank_before_percent";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-control-circular-slider";
 import "../../../../components/ha-outlined-icon-button";
@@ -116,18 +114,19 @@ export class HaMoreInfoClimateHumidity extends LitElement {
   }
 
   private _renderTarget(humidity: number) {
-    const formatted = formatNumber(humidity, this.hass.locale, {
-      maximumFractionDigits: 0,
-    });
+    const rounded = Math.round(humidity);
+    const formatted = this.hass.formatEntityAttributeValue(
+      this.stateObj,
+      "humidity",
+      rounded
+    );
 
     return html`
       <div class="target">
         <p class="value" aria-hidden="true">
-          ${formatted}<span class="unit">%</span>
+          ${rounded}<span class="unit">%</span>
         </p>
-        <p class="visually-hidden">
-          ${formatted}${blankBeforePercent(this.hass.locale)}%
-        </p>
+        <p class="visually-hidden">${formatted}</p>
       </div>
     `;
   }
