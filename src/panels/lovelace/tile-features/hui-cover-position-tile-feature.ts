@@ -64,7 +64,9 @@ class HuiCoverPositionTileFeature
         .value=${value}
         min="0"
         max="100"
-        .step="1"
+        step="1"
+        inverted
+        show-handle
         @value-changed=${this._valueChanged}
         .ariaLabel=${computeAttributeNameDisplay(
           this.hass.localize,
@@ -90,6 +92,7 @@ class HuiCoverPositionTileFeature
   static get styles() {
     return css`
       ha-control-slider {
+        /* Force inactive state to be colored for the slider */
         --control-slider-color: var(--tile-color);
         --control-slider-background: var(--tile-color);
         --control-slider-background-opacity: 0.2;
