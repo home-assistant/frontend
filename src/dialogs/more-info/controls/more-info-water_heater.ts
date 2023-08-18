@@ -3,9 +3,9 @@ import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
+import { UNAVAILABLE } from "../../../data/entity";
 import {
   WaterHeaterEntity,
   WaterHeaterEntityFeature,
@@ -15,7 +15,6 @@ import {
 import { HomeAssistant } from "../../../types";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/water_heater/ha-more-info-water_heater-temperature";
-import { UNAVAILABLE } from "../../../data/entity";
 
 @customElement("more-info-water_heater")
 class MoreInfoWaterHeater extends LitElement {
@@ -54,8 +53,10 @@ class MoreInfoWaterHeater extends LitElement {
                   )}
                 </p>
                 <p class="value">
-                  ${formatNumber(currentTemperature, this.hass.locale)}
-                  ${this.hass.config.unit_system.temperature}
+                  ${this.hass.formatEntityAttributeValue(
+                    this.stateObj,
+                    "current_temperature"
+                  )}
                 </p>
               </div>
             `

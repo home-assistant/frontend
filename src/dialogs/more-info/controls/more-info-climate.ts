@@ -18,8 +18,6 @@ import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { formatNumber } from "../../../common/number/format_number";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
@@ -92,8 +90,10 @@ class MoreInfoClimate extends LitElement {
                   )}
                 </p>
                 <p class="value">
-                  ${formatNumber(currentTemperature, this.hass.locale)}
-                  ${this.hass.config.unit_system.temperature}
+                  ${this.hass.formatEntityAttributeValue(
+                    this.stateObj,
+                    "current_temperature"
+                  )}
                 </p>
               </div>
             `
@@ -108,10 +108,10 @@ class MoreInfoClimate extends LitElement {
                   )}
                 </p>
                 <p class="value">
-                  ${formatNumber(
-                    currentHumidity,
-                    this.hass.locale
-                  )}${blankBeforePercent(this.hass.locale)}%
+                  ${this.hass.formatEntityAttributeValue(
+                    this.stateObj,
+                    "current_humidity"
+                  )}
                 </p>
               </div>
             `

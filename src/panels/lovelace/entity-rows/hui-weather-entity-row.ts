@@ -1,29 +1,26 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/entity/state-badge";
 import { isUnavailableState } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import {
+  ForecastEvent,
+  WeatherEntity,
   getDefaultForecastType,
   getForecast,
   getSecondaryWeatherAttribute,
   getWeatherStateIcon,
-  getWeatherUnit,
   subscribeForecast,
-  ForecastEvent,
-  WeatherEntity,
   weatherSVGStyles,
 } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
@@ -200,20 +197,8 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           ${isUnavailableState(stateObj.state) ||
           stateObj.attributes.temperature === undefined ||
           stateObj.attributes.temperature === null
-            ? computeStateDisplay(
-                this.hass.localize,
-                stateObj,
-                this.hass.locale,
-                this.hass.config,
-                this.hass.entities
-              )
-            : html`
-                ${formatNumber(
-                  stateObj.attributes.temperature,
-                  this.hass.locale
-                )}
-                ${getWeatherUnit(this.hass, stateObj, "temperature")}
-              `}
+            ? this.hass.formatEntityState(stateObj)
+            : this.hass.formatEntityAttributeValue(stateObj, "temperature")}
         </div>
         <div class="secondary">
           ${getSecondaryWeatherAttribute(this.hass!, stateObj, forecast!)}

@@ -16,8 +16,6 @@ import {
 } from "../../../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { formatNumber } from "../../../common/number/format_number";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -59,7 +57,7 @@ class MoreInfoHumidifier extends LitElement {
       HumidifierEntityFeature.MODES
     );
 
-    const currentHumidity = this.stateObj.attributes.current_humidity;
+    const currentHumidity = this.stateObj.attributes.current_humidity as number;
 
     return html`
       <div class="current">
@@ -75,10 +73,11 @@ class MoreInfoHumidifier extends LitElement {
                   )}
                 </p>
                 <p class="value">
-                  ${formatNumber(
-                    currentHumidity,
-                    this.hass.locale
-                  )}${blankBeforePercent(this.hass.locale)}%
+                  ${this.hass.formatEntityAttributeValue(
+                    this.stateObj,
+                    "current_humidity",
+                    currentHumidity
+                  )}
                 </p>
               </div>
             `
