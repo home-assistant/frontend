@@ -1,7 +1,11 @@
-import { HomeAssistant, TranslationDict } from "../types";
+import { HomeAssistant } from "../types";
 
 export type SystemLogLevel =
-  keyof TranslationDict["ui"]["panel"]["config"]["logs"]["level"];
+  | "critical"
+  | "error"
+  | "warning"
+  | "info"
+  | "debug";
 
 export interface LoggedError {
   name: string;
