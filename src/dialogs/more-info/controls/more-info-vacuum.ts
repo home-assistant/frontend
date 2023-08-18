@@ -264,11 +264,15 @@ class MoreInfoVacuum extends LitElement {
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
 
-    const batteryIsBinary =
-      battery && computeStateDomain(battery) === "binary_sensor";
+    const batteryDomain = battery ? computeStateDomain(battery) : undefined;
 
     // Use device battery entity
-    if (battery && (batteryIsBinary || !isNaN(battery.state as any))) {
+    if (
+      battery &&
+      (batteryDomain === "sensor" ||
+        batteryDomain === "binary_sensor" ||
+        !isNaN(battery.state as any))
+    ) {
       const batteryChargingEntity = findBatteryChargingEntity(
         this.hass,
         entities
@@ -280,16 +284,16 @@ class MoreInfoVacuum extends LitElement {
       return html`
         <div>
           <span>
-            ${batteryIsBinary
-              ? ""
-              : `${Number(battery.state).toFixed()}${blankBeforePercent(
-                  this.hass.locale
-                )}%`}
-            <ha-battery-icon
-              .hass=${this.hass}
-              .batteryStateObj=${battery}
-              .batteryChargingStateObj=${batteryCharging}
-            ></ha-battery-icon>
+            ${batteryDomain === "sensor"
+              ? battery.state + blankBeforePercent(this.hass.locale) + "%"
+              : ""}
+            ${batteryDomain === "sensor" || batteryDomain === "binary_sensor"
+              ? html`<ha-battery-icon
+                  .hass=${this.hass!}
+                  .batteryStateObj=${battery}
+                  .batteryChargingStateObj=${batteryCharging}
+                ></ha-battery-icon>`
+              : ""}
           </span>
         </div>
       `;

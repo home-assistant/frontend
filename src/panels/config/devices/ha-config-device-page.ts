@@ -332,8 +332,9 @@ export class HaConfigDevicePage extends LitElement {
     const batteryState = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
-    const batteryIsBinary =
-      batteryState && computeStateDomain(batteryState) === "binary_sensor";
+    const batteryDomain = batteryState
+      ? computeStateDomain(batteryState)
+      : undefined;
     const batteryChargingState = batteryChargingEntity
       ? this.hass.states[batteryChargingEntity.entity_id]
       : undefined;
@@ -715,16 +716,19 @@ export class HaConfigDevicePage extends LitElement {
                     batteryState
                       ? html`
                           <div class="battery">
-                            ${batteryIsBinary
-                              ? ""
-                              : batteryState.state +
+                            ${batteryDomain === "sensor"
+                              ? batteryState.state +
                                 blankBeforePercent(this.hass.locale) +
-                                "%"}
-                            <ha-battery-icon
-                              .hass=${this.hass!}
-                              .batteryStateObj=${batteryState}
-                              .batteryChargingStateObj=${batteryChargingState}
-                            ></ha-battery-icon>
+                                "%"
+                              : ""}
+                            ${batteryDomain === "sensor" ||
+                            batteryDomain === "binary_sensor"
+                              ? html`<ha-battery-icon
+                                  .hass=${this.hass!}
+                                  .batteryStateObj=${batteryState}
+                                  .batteryChargingStateObj=${batteryChargingState}
+                                ></ha-battery-icon>`
+                              : ""}
                           </div>
                         `
                       : ""
