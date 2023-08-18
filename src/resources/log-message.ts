@@ -52,9 +52,11 @@ export const createLogMessage = async (
       lines.push(`Caused by: ${await createLogMessage(error.cause)}`);
     }
     if (error instanceof AggregateError) {
-      for (const [i, subError] of error.errors.entries()) {
-        const prependNote = `Part ${i + 1} of ${error.errors.length}:`;
-        lines.push(`${prependNote} ${await createLogMessage(subError)}`);
+      const subMessageEntries = error.errors.map(
+        async (e, i) => [i, await createLogMessage(e)] as const
+      );
+      for await (const [i, m] of subMessageEntries) {
+        lines.push(`Part ${i + 1} of ${error.errors.length}: ${m}`);
       }
     }
   } else {
