@@ -1,5 +1,4 @@
 import { createHash } from "crypto";
-import { deleteSync } from "del";
 import {
   mkdirSync,
   readdirSync,
@@ -7,12 +6,13 @@ import {
   renameSync,
   writeFile,
 } from "fs";
+import path from "path";
+import { deleteSync } from "del";
 import gulp from "gulp";
 import flatmap from "gulp-flatmap";
 import transform from "gulp-json-transform";
 import merge from "gulp-merge-json";
 import rename from "gulp-rename";
-import path from "path";
 import vinylBuffer from "vinyl-buffer";
 import source from "vinyl-source-stream";
 import env from "../env.cjs";
@@ -20,8 +20,8 @@ import paths from "../paths.cjs";
 import { mapFiles } from "../util.cjs";
 import "./fetch-nightly-translations.js";
 
-const inFrontendDir = "translations/frontend";
-const inBackendDir = "translations/backend";
+const inFrontendDir = "translations/frontend/locale";
+const inBackendDir = "translations/backend/locale";
 const workDir = "build/translations";
 const fullDir = workDir + "/full";
 const coreDir = workDir + "/core";

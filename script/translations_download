@@ -25,23 +25,23 @@ declare -A PROJECT_ID=( \
     [backend]="130246255a974bd3b5e8a1.51616605" \
     )
 
+if [[ $(uname -s) == Linux* ]] ; then
+    curl -sfL https://raw.githubusercontent.com/lokalise/lokalise-cli-2-go/master/install.sh | sh
+fi
+
 for project in ${!PROJECT_ID[*]}; do
-LOCAL_DIR=`pwd`/translations/${project}
-rm -f ${LOCAL_DIR}/* || mkdir -p ${LOCAL_DIR}
-    docker run \
-        -v ${LOCAL_DIR}:/opt/dest/locale \
-        --rm \
-        lokalise/lokalise-cli-2@sha256:f1860b26be22fa73b8c93bc5f8690f2afc867610a42de6fc27adc790e5d4425d \
-        lokalise2 \
-            --token ${LOKALISE_TOKEN} \
-            --project-id ${PROJECT_ID[${project}]} \
-            file download \
-            --export-empty-as skip \
-            --format json \
-            --json-unescaped-slashes=true \
-            --replace-breaks=false \
-            --original-filenames=false \
-            --unzip-to /opt/dest
+    LOCAL_DIR=`pwd`/translations/${project}
+    rm -f ${LOCAL_DIR}/locale/* || mkdir -p ${LOCAL_DIR}
+    lokalise2 \
+        --token ${LOKALISE_TOKEN} \
+        --project-id ${PROJECT_ID[${project}]} \
+        file download \
+        --export-empty-as skip \
+        --format json \
+        --json-unescaped-slashes=true \
+        --replace-breaks=false \
+        --original-filenames=false \
+        --unzip-to ${LOCAL_DIR}
 done
 
 ./node_modules/.bin/gulp check-downloaded-translations

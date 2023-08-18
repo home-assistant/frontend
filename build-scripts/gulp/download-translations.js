@@ -3,8 +3,8 @@ import gulp from "gulp";
 import mapStream from "map-stream";
 import transform from "gulp-json-transform";
 
-const inDirFrontend = "translations/frontend";
-const inDirBackend = "translations/backend";
+const inDirFrontend = "translations/frontend/locale";
+const inDirBackend = "translations/backend/locale";
 const srcMeta = "src/translations/translationMetadata.json";
 const encoding = "utf8";
 
@@ -68,8 +68,9 @@ gulp.task("convert-backend-translations", function () {
 });
 
 gulp.task("check-translations-html", function () {
-  // We exclude backend translations because they are not compliant with the HTML rule for now
-  return gulp.src([`${inDirFrontend}/*.json`]).pipe(checkHtml());
+  return gulp
+    .src([`${inDirFrontend}/*.json`, `${inDirBackend}/*.json`])
+    .pipe(checkHtml());
 });
 
 gulp.task("check-all-files-exist", async function () {
@@ -91,5 +92,9 @@ gulp.task("check-all-files-exist", async function () {
 
 gulp.task(
   "check-downloaded-translations",
-  gulp.series("check-translations-html", "check-all-files-exist")
+  gulp.series(
+    "convert-backend-translations",
+    "check-translations-html",
+    "check-all-files-exist"
+  )
 );
