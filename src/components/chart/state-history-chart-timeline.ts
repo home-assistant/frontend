@@ -311,7 +311,6 @@ export class StateHistoryChartTimeline extends LitElement {
     return css`
       ha-chart-base {
         --chart-max-height: none;
-        --chart-init-height: none;
       }
     `;
   }

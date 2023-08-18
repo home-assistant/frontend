@@ -166,7 +166,9 @@ export class HaChartBase extends LitElement {
         <div
           class="chartContainer"
           style=${styleMap({
-            height: `${this.height ?? this._chartHeight}px`,
+            height: `${
+              this.height ?? this._chartHeight ?? this.clientWidth / 2
+            }px`,
             "padding-left": `${
               computeRTL(this.hass) ? 0 : this.paddingYAxis
             }px`,
@@ -252,6 +254,7 @@ export class HaChartBase extends LitElement {
 
   private _createOptions() {
     return {
+      maintainAspectRatio: false,
       ...this.options,
       plugins: {
         ...this.options?.plugins,
@@ -348,7 +351,6 @@ export class HaChartBase extends LitElement {
       }
       .chartContainer {
         position: relative;
-        height: var(--chart-init-height, 200px);
       }
       canvas {
         max-height: var(--chart-max-height, 400px);
