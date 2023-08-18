@@ -84,7 +84,7 @@ class HuiLightColorTempTileFeature
           .min=${minKelvin}
           .max=${maxKelvin}
           style=${styleMap({
-            "--control-slider-background": `-webkit-linear-gradient(left, ${gradient})`,
+            "--gradient": gradient,
           })}
         ></ha-control-slider>
       </div>
@@ -126,6 +126,11 @@ class HuiLightColorTempTileFeature
   static get styles() {
     return css`
       ha-control-slider {
+        --control-slider-color: var(--tile-color);
+        --control-slider-background: -webkit-linear-gradient(
+          left,
+          var(--gradient)
+        );
         --control-slider-background-opacity: 1;
         --control-slider-thickness: 40px;
         --control-slider-border-radius: 10px;
