@@ -104,7 +104,7 @@ export const provideHass = (
     fireEvent(window, "translations-updated");
   }
 
-  async function updateStates(newStates: HassEntities) {
+  function updateStates(newStates: HassEntities) {
     hass().updateHass({
       states: { ...hass().states, ...newStates },
     });
