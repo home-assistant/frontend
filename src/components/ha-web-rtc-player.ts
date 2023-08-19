@@ -102,9 +102,8 @@ class HaWebRtcPlayer extends LitElement {
       offerToReceiveAudio: true,
       offerToReceiveVideo: true,
     };
-    const offer: RTCSessionDescriptionInit = await peerConnection.createOffer(
-      offerOptions
-    );
+    const offer: RTCSessionDescriptionInit =
+      await peerConnection.createOffer(offerOptions);
     await peerConnection.setLocalDescription(offer);
 
     let candidates = ""; // Build an Offer SDP string with ice candidates
