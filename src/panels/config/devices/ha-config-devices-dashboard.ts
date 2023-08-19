@@ -386,7 +386,7 @@ export class HaConfigDeviceDashboard extends LitElement {
               !isNaN(battery.state as any))
             ? html`
                 ${batteryDomain === "sensor"
-                  ? battery.state + blankBeforePercent(this.hass.locale) + "%"
+                  ? this.hass.formatEntityState(battery)
                   : ""}
                 ${batteryDomain === "sensor" ||
                 batteryDomain === "binary_sensor"

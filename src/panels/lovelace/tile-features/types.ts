@@ -6,6 +6,10 @@ export interface CoverOpenCloseTileFeatureConfig {
   type: "cover-open-close";
 }
 
+export interface CoverPositionTileFeatureConfig {
+  type: "cover-position";
+}
+
 export interface CoverTiltTileFeatureConfig {
   type: "cover-tilt";
 }
@@ -54,6 +58,7 @@ export interface VacuumCommandsTileFeatureConfig {
 
 export type LovelaceTileFeatureConfig =
   | CoverOpenCloseTileFeatureConfig
+  | CoverPositionTileFeatureConfig
   | CoverTiltTileFeatureConfig
   | LightBrightnessTileFeatureConfig
   | LightColorTempTileFeatureConfig

@@ -28,7 +28,6 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
@@ -329,12 +328,10 @@ export class HaConfigDevicePage extends LitElement {
     const entitiesByCategory = this._entitiesByCategory(entities);
     const batteryEntity = this._batteryEntity(entities);
     const batteryChargingEntity = this._batteryChargingEntity(entities);
-    const batteryState = batteryEntity
+    const battery = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
-    const batteryDomain = batteryState
-      ? computeStateDomain(batteryState)
-      : undefined;
+    const batteryDomain = battery ? computeStateDomain(battery) : undefined;
     const batteryChargingState = batteryChargingEntity
       ? this.hass.states[batteryChargingEntity.entity_id]
       : undefined;
@@ -713,19 +710,17 @@ export class HaConfigDevicePage extends LitElement {
             }
                 <div class="header-right">
                   ${
-                    batteryState
+                    battery
                       ? html`
                           <div class="battery">
                             ${batteryDomain === "sensor"
-                              ? batteryState.state +
-                                blankBeforePercent(this.hass.locale) +
-                                "%"
+                              ? this.hass.formatEntityState(battery)
                               : ""}
                             ${batteryDomain === "sensor" ||
                             batteryDomain === "binary_sensor"
                               ? html`<ha-battery-icon
                                   .hass=${this.hass!}
-                                  .batteryStateObj=${batteryState}
+                                  .batteryStateObj=${battery}
                                   .batteryChargingStateObj=${batteryChargingState}
                                 ></ha-battery-icon>`
                               : ""}

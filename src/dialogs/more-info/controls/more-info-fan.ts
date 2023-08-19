@@ -112,7 +112,7 @@ class MoreInfoFan extends LitElement {
 
     const positionStateDisplay = computeFanSpeedStateDisplay(
       this.stateObj!,
-      this.hass.locale,
+      this.hass,
       liveValue
     );
 

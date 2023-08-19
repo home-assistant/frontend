@@ -18,7 +18,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-attributes";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
@@ -31,7 +30,6 @@ import {
   LightColorMode,
   LightEntity,
   LightEntityFeature,
-  formatTempColor,
   lightSupportsBrightness,
   lightSupportsColor,
   lightSupportsColorMode,
@@ -70,7 +68,7 @@ class MoreInfoLight extends LitElement {
   private _brightnessChanged(ev) {
     const value = (ev.detail as any).value;
     if (isNaN(value)) return;
-    this._selectedBrightness = value;
+    this._selectedBrightness = (value * 255) / 100;
   }
 
   private _tempColorHovered(ev: CustomEvent<HASSDomEvents["color-hovered"]>) {
@@ -83,9 +81,7 @@ class MoreInfoLight extends LitElement {
 
   protected updated(changedProps: PropertyValues<typeof this>): void {
     if (changedProps.has("stateObj")) {
-      this._selectedBrightness = this.stateObj?.attributes.brightness
-        ? Math.round((this.stateObj.attributes.brightness * 100) / 255)
-        : undefined;
+      this._selectedBrightness = this.stateObj?.attributes.brightness;
       this._effect = this.stateObj?.attributes.effect;
     }
   }
@@ -102,12 +98,18 @@ class MoreInfoLight extends LitElement {
 
   private get _stateOverride() {
     if (this._colorTempPreview) {
-      return formatTempColor(this._colorTempPreview);
+      return this.hass.formatEntityAttributeValue(
+        this.stateObj!,
+        "color_temp_kelvin",
+        this._colorTempPreview
+      );
     }
     if (this._selectedBrightness) {
-      return `${Math.round(this._selectedBrightness)}${blankBeforePercent(
-        this.hass!.locale
-      )}%`;
+      return this.hass.formatEntityAttributeValue(
+        this.stateObj!,
+        "brightness",
+        this._selectedBrightness
+      );
     }
     return undefined;
   }

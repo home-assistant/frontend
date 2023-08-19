@@ -3,6 +3,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
 import { HomeAssistant } from "../types";
+import { formatNumber } from "../common/number/format_number";
 
 let jsYamlPromise: Promise<typeof import("../resources/js-yaml-dump")>;
 
@@ -14,11 +15,19 @@ class HaAttributeValue extends LitElement {
 
   @property() public attribute!: string;
 
+  @property({ type: Boolean, attribute: "hide-unit" })
+  public hideUnit?: boolean;
+
   protected render() {
     if (!this.stateObj) {
       return nothing;
     }
     const attributeValue = this.stateObj.attributes[this.attribute];
+
+    if (typeof attributeValue === "number" && this.hideUnit) {
+      return formatNumber(attributeValue, this.hass.locale);
+    }
+
     if (typeof attributeValue === "string") {
       // URL handling
       if (attributeValue.startsWith("http")) {
