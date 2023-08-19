@@ -11,7 +11,6 @@ import {
   PROTOCOL_INTEGRATIONS,
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import {
