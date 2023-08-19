@@ -233,7 +233,7 @@
     "serve-handler": "6.1.5",
     "sinon": "15.2.0",
     "source-map-url": "0.4.1",
-    "systemjs": "6.14.1",
+    "systemjs": "6.14.2",
     "tar": "6.1.15",
     "terser-webpack-plugin": "5.3.9",
     "ts-lit-plugin": "2.0.0-pre.1",
