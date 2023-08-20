@@ -47,11 +47,12 @@ export const computeInitialHaFormData = (
       } else if ("boolean" in selector) {
         data[field.name] = false;
       } else if (
-        "text" in selector ||
         "addon" in selector ||
         "attribute" in selector ||
         "file" in selector ||
         "icon" in selector ||
+        "template" in selector ||
+        "text" in selector ||
         "theme" in selector
       ) {
         data[field.name] = "";
