@@ -108,7 +108,7 @@ class StateInfo extends LitElement {
         margin-left: 56px;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: start;
         height: 100%;
       }
 
