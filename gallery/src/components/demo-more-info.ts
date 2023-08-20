@@ -1,83 +1,47 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-/* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../src/components/ha-card";
 import "../../../src/dialogs/more-info/more-info-content";
 import "../../../src/state-summary/state-card-content";
+import "../ha-demo-options";
+import { HomeAssistant } from "../../../src/types";
+import { customElement, property } from "lit/decorators";
+import { LitElement, css, html } from "lit";
 
-class DemoMoreInfo extends PolymerElement {
-  static get template() {
+@customElement("demo-more-info")
+class DemoMoreInfo extends LitElement {
+  @property() public hass!: HomeAssistant;
+
+  @property() public entityId!: string;
+
+  @property() public showConfig!: boolean;
+
+  render() {
+    const state = this._getState(this.entityId, this.hass.states);
     return html`
-      <style>
-        .root {
-          display: flex;
-        }
-        #card {
-          max-width: 400px;
-          width: 100vw;
-        }
-        ha-card {
-          width: 352px;
-          padding: 20px 24px;
-        }
-        state-card-content {
-          display: block;
-          margin-bottom: 16px;
-        }
-        pre {
-          width: 400px;
-          margin: 0 16px;
-          overflow: auto;
-          color: var(--primary-text-color);
-        }
-        @media only screen and (max-width: 800px) {
-          .root {
-            flex-direction: column;
-          }
-          pre {
-            margin: 16px 0;
-          }
-        }
-      </style>
       <div class="root">
         <div id="card">
           <ha-card>
             <state-card-content
-              state-obj="[[_stateObj]]"
-              hass="[[hass]]"
+              .stateObj=${state}
+              .hass=${this.hass}
               in-dialog
             ></state-card-content>
 
             <more-info-content
-              hass="[[hass]]"
-              state-obj="[[_stateObj]]"
+              .hass=${this.hass}
+              .stateObj=${state}
             ></more-info-content>
           </ha-card>
         </div>
-        <template is="dom-if" if="[[showConfig]]">
-          <pre>[[_jsonEntity(_stateObj)]]</pre>
-        </template>
+        ${this.showConfig ? html`<pre>${this._jsonEntity(state)}</pre>` : ""}
       </div>
     `;
   }
 
-  static get properties() {
-    return {
-      hass: Object,
-      entityId: String,
-      showConfig: Boolean,
-      _stateObj: {
-        type: Object,
-        computed: "_getState(entityId, hass.states)",
-      },
-    };
-  }
-
-  _getState(entityId, states) {
+  private _getState(entityId, states) {
     return states[entityId];
   }
 
-  _jsonEntity(stateObj) {
+  private _jsonEntity(stateObj) {
     // We are caching some things on stateObj
     // (it sucks, we will remove in the future)
     const tmp = {};
@@ -88,6 +52,42 @@ class DemoMoreInfo extends PolymerElement {
     });
     return JSON.stringify(tmp, null, 2);
   }
+
+  static styles = css`
+    .root {
+      display: flex;
+    }
+    #card {
+      max-width: 400px;
+      width: 100vw;
+    }
+    ha-card {
+      width: 352px;
+      padding: 20px 24px;
+    }
+    state-card-content {
+      display: block;
+      margin-bottom: 16px;
+    }
+    pre {
+      width: 400px;
+      margin: 0 16px;
+      overflow: auto;
+      color: var(--primary-text-color);
+    }
+    @media only screen and (max-width: 800px) {
+      .root {
+        flex-direction: column;
+      }
+      pre {
+        margin: 16px 0;
+      }
+    }
+  `;
 }
 
-customElements.define("demo-more-info", DemoMoreInfo);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-more-info": DemoMoreInfo;
+  }
+}

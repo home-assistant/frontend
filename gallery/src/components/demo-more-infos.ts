@@ -1,83 +1,87 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-/* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
 import "./demo-more-info";
+import "../ha-demo-options";
+import { customElement, property } from "lit/decorators";
+import { LitElement, css, html } from "lit";
+import { HomeAssistant } from "../../../src/types";
 
-class DemoMoreInfos extends PolymerElement {
-  static get template() {
+@customElement("demo-more-infos")
+class DemoMoreInfos extends LitElement {
+  @property() public hass!: HomeAssistant;
+
+  @property() public entities!: [];
+
+  @property({ attribute: false }) _showConfig: boolean = false;
+
+  render() {
     return html`
-      <style>
-        #container {
-          min-height: calc(100vh - 128px);
-          background: var(--primary-background-color);
-        }
-        .cards {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-        }
-        demo-more-info {
-          margin: 16px 16px 32px;
-        }
-        app-toolbar {
-          background-color: var(--light-primary-color);
-        }
-        .filters {
-          margin-left: 60px;
-        }
-        ha-formfield {
-          margin-right: 16px;
-        }
-      </style>
-      <app-toolbar>
-        <div class="filters">
-          <ha-formfield label="Show entities">
-            <ha-switch checked="[[_showConfig]]" on-change="_showConfigToggled">
-            </ha-switch>
-          </ha-formfield>
-          <ha-formfield label="Dark theme">
-            <ha-switch on-change="_darkThemeToggled"> </ha-switch>
-          </ha-formfield>
-        </div>
-      </app-toolbar>
+      <ha-demo-options>
+        <ha-formfield label="Show config">
+          <ha-switch @change=${this._showConfigToggled}> </ha-switch>
+        </ha-formfield>
+        <ha-formfield label="Dark theme">
+          <ha-switch @change=${this._darkThemeToggled}> </ha-switch>
+        </ha-formfield>
+      </ha-demo-options>
       <div id="container">
         <div class="cards">
-          <template is="dom-repeat" items="[[entities]]">
-            <demo-more-info
-              entity-id="[[item]]"
-              show-config="[[_showConfig]]"
-              hass="[[hass]]"
-            ></demo-more-info>
-          </template>
+          ${this.entities.map(
+            (item) =>
+              html`<demo-more-info
+                .entityId=${item}
+                .showConfig=${this._showConfig}
+                .hass=${this.hass}
+              ></demo-more-info>`
+          )}
         </div>
       </div>
     `;
   }
 
-  static get properties() {
-    return {
-      entities: Array,
-      hass: Object,
-      _showConfig: {
-        type: Boolean,
-        value: false,
-      },
-    };
-  }
+  static styles = css`
+    #container {
+      min-height: calc(100vh - 128px);
+      background: var(--primary-background-color);
+    }
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    demo-more-info {
+      margin: 16px 16px 32px;
+    }
+    ha-formfield {
+      margin-right: 16px;
+    }
+  `;
 
   _showConfigToggled(ev) {
     this._showConfig = ev.target.checked;
   }
 
   _darkThemeToggled(ev) {
-    applyThemesOnElement(this.$.container, { themes: {} }, "default", {
-      dark: ev.target.checked,
-    });
+    applyThemesOnElement(
+      this.shadowRoot!.querySelector("#container"),
+      {
+        default_theme: "default",
+        default_dark_theme: "default",
+        themes: {},
+        darkMode: false,
+        theme: "default",
+      },
+      "default",
+      {
+        dark: ev.target.checked,
+      }
+    );
   }
 }
 
-customElements.define("demo-more-infos", DemoMoreInfos);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-more-infos": DemoMoreInfos;
+  }
+}
