@@ -85,7 +85,8 @@ export class StateCardDisplay extends LitElement {
           margin-inline-start: 16px;
           margin-inline-end: initial;
           text-align: var(--float-end, right);
-          flex: 0 0 auto;
+          flex: 0 0 50%;
+          justify-content: right;
           overflow-wrap: break-word;
           display: flex;
           align-items: center;
