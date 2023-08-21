@@ -19,7 +19,7 @@ class HaCallServiceButton extends LitElement {
 
   @property({ type: Object }) public serviceData = {};
 
-  @property() public confirmation;
+  @property() public confirmation?;
 
   public render(): TemplateResult {
     return html`
