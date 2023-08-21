@@ -59,7 +59,7 @@ export class HuiWeatherForecastCardEditor
     if (
       !config.forecast_type ||
       !this._forecastSupported(config.forecast_type) ||
-      (config.forecast_type == "legacy" && this._modernForecastSupported())
+      (config.forecast_type === "legacy" && this._modernForecastSupported())
     ) {
       let forecastType: string | undefined;
       if (this._forecastSupported("daily")) {
