@@ -16,6 +16,7 @@ export { highlightingFor } from "@codemirror/language";
 export { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 export { EditorState } from "@codemirror/state";
 export {
+  crosshairCursor,
   drawSelection,
   EditorView,
   highlightActiveLine,

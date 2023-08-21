@@ -50,7 +50,7 @@ export class HaMoreInfoCoverPosition extends LitElement {
           this.hass.localize,
           this.stateObj,
           this.hass.entities,
-          "position"
+          "current_position"
         )}
         style=${styleMap({
           "--control-slider-color": color,

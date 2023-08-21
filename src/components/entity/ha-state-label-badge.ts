@@ -62,6 +62,8 @@ export class HaStateLabelBadge extends LitElement {
 
   @property() public image?: string;
 
+  @property() public showName?: boolean;
+
   @state() private _timerTimeRemaining?: number;
 
   private _connected?: boolean;
@@ -132,7 +134,9 @@ export class HaStateLabelBadge extends LitElement {
           entityState,
           this._timerTimeRemaining
         )}
-        .description=${this.name ?? computeStateName(entityState)}
+        .description=${this.showName === false
+          ? undefined
+          : this.name ?? computeStateName(entityState)}
       >
         ${!image && showIcon
           ? html`<ha-state-icon

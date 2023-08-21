@@ -1,9 +1,10 @@
 import { HomeAssistant } from "../types";
 
 export interface OTBRInfo {
-  url: string;
   active_dataset_tlvs: string;
   channel: number;
+  extended_address: string;
+  url: string;
 }
 
 export const getOTBRInfo = (hass: HomeAssistant): Promise<OTBRInfo> =>
@@ -23,13 +24,6 @@ export const OTBRSetNetwork = (
   hass.callWS({
     type: "otbr/set_network",
     dataset_id,
-  });
-
-export const OTBRGetExtendedAddress = (
-  hass: HomeAssistant
-): Promise<{ extended_address: string }> =>
-  hass.callWS({
-    type: "otbr/get_extended_address",
   });
 
 export const OTBRSetChannel = (

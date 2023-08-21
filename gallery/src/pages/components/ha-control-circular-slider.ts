@@ -150,17 +150,13 @@ export class DemoHaCircularSlider extends LitElement {
       }
       ha-control-circular-slider {
         --control-circular-slider-color: #ff9800;
-        --control-circular-slider-background: #ff9800;
-        --control-circular-slider-background-opacity: 0.3;
       }
       ha-control-circular-slider[inverted] {
         --control-circular-slider-color: #2196f3;
-        --control-circular-slider-background: #2196f3;
       }
       ha-control-circular-slider[dual] {
         --control-circular-slider-high-color: #2196f3;
         --control-circular-slider-low-color: #ff9800;
-        --control-circular-slider-background: var(--disabled-color);
       }
       .field {
         display: flex;

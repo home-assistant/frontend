@@ -207,7 +207,8 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
         for (let i = 0; i < arrayLength; i++) {
           const datetime = formatDateTime(
             new Date(values[i].info.origtime * 1000),
-            this.hass.locale
+            this.hass.locale,
+            this.hass.config
           );
           platformItems.push({
             timestamp: datetime,

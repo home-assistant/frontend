@@ -1,7 +1,13 @@
 import { AlarmMode } from "../../../data/alarm_control_panel";
+import { HvacMode } from "../../../data/climate";
+import { OperationMode } from "../../../data/water_heater";
 
 export interface CoverOpenCloseTileFeatureConfig {
   type: "cover-open-close";
+}
+
+export interface CoverPositionTileFeatureConfig {
+  type: "cover-position";
 }
 
 export interface CoverTiltTileFeatureConfig {
@@ -12,13 +18,27 @@ export interface LightBrightnessTileFeatureConfig {
   type: "light-brightness";
 }
 
+export interface LightColorTempTileFeatureConfig {
+  type: "light-color-temp";
+}
+
 export interface FanSpeedTileFeatureConfig {
   type: "fan-speed";
 }
 
-export interface AlarmModesFileFeatureConfig {
+export interface AlarmModesTileFeatureConfig {
   type: "alarm-modes";
   modes?: AlarmMode[];
+}
+
+export interface ClimateHvacModesTileFeatureConfig {
+  type: "climate-hvac-modes";
+  hvac_modes?: HvacMode[];
+}
+
+export interface WaterHeaterOperationModesTileFeatureConfig {
+  type: "water-heater-operation-modes";
+  operation_modes?: OperationMode[];
 }
 
 export const VACUUM_COMMANDS = [
@@ -36,13 +56,27 @@ export interface VacuumCommandsTileFeatureConfig {
   commands?: VacuumCommand[];
 }
 
+export const LAWN_MOWER_COMMANDS = ["start_pause", "dock"] as const;
+
+export type LawnMowerCommand = (typeof LAWN_MOWER_COMMANDS)[number];
+
+export interface LawnMowerCommandsTileFeatureConfig {
+  type: "lawn-mower-commands";
+  commands?: LawnMowerCommand[];
+}
+
 export type LovelaceTileFeatureConfig =
+  | AlarmModesTileFeatureConfig
+  | ClimateHvacModesTileFeatureConfig
   | CoverOpenCloseTileFeatureConfig
+  | CoverPositionTileFeatureConfig
   | CoverTiltTileFeatureConfig
-  | LightBrightnessTileFeatureConfig
-  | VacuumCommandsTileFeatureConfig
   | FanSpeedTileFeatureConfig
-  | AlarmModesFileFeatureConfig;
+  | LawnMowerCommandsTileFeatureConfig
+  | LightBrightnessTileFeatureConfig
+  | LightColorTempTileFeatureConfig
+  | VacuumCommandsTileFeatureConfig
+  | WaterHeaterOperationModesTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
   entity_id?: string;
