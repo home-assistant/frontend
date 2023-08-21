@@ -62,6 +62,7 @@ class HaPanelDevTemplate extends LitElement {
   }
 
   public disconnectedCallback() {
+    super.disconnectedCallback();
     this._unsubscribeTemplate();
   }
 

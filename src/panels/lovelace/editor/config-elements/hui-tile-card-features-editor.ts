@@ -107,6 +107,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
   private _sortable?: SortableInstance;
 
   public disconnectedCallback() {
+    super.disconnectedCallback();
     this._destroySortable();
   }
 
