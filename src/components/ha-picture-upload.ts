@@ -156,7 +156,7 @@ export class HaPictureUpload extends LitElement {
       }
       img {
         max-width: 100%;
-        max-height: 200px;
+        max-height: 240px;
         border-radius: var(--file-upload-image-border-radius);
       }
     `;
