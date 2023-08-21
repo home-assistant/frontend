@@ -200,7 +200,7 @@
     "eslint-config-prettier": "9.0.0",
     "eslint-import-resolver-webpack": "0.13.6",
     "eslint-plugin-disable": "2.0.3",
-    "eslint-plugin-import": "2.28.0",
+    "eslint-plugin-import": "2.28.1",
     "eslint-plugin-lit": "1.9.1",
     "eslint-plugin-lit-a11y": "3.0.0",
     "eslint-plugin-unused-imports": "3.0.0",
