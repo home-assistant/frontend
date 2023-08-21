@@ -46,6 +46,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   "image",
   "input_boolean",
   "input_datetime",
+  "lawn_mower",
   "light",
   "lock",
   "media_player",
