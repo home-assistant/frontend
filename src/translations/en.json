@@ -139,6 +139,13 @@
         "drying": "{name} drying",
         "on_entity": "{name} on"
       },
+      "lawn_mower": {
+        "actions": {
+          "resume_mowing": "Resume mowing",
+          "start_mowing": "Start mowing",
+          "dock": "Return to dock"
+        }
+      },
       "light": {
         "brightness": "Brightness",
         "color_temperature": "Color temperature",
@@ -1005,6 +1012,13 @@
         "humidifier": {
           "target_label": "[%key:ui::dialogs::more_info_control::climate::target_label%]",
           "target": "[%key:ui::dialogs::more_info_control::climate::target%]"
+        },
+        "lawn_mower": {
+          "activity": "Activity",
+          "commands": "Lawn mower commands:",
+          "start_mowing": "Start mowing",
+          "pause": "Pause",
+          "dock": "Return to dock"
         },
         "water_heater": {
           "target": "[%key:ui::dialogs::more_info_control::climate::target%]"
