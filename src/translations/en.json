@@ -498,8 +498,16 @@
         "filtered_by_device": "device: {device_name}",
         "filtered_by_area": "area: {area_name}"
       },
+      "file-upload": {
+        "uploading": "Uploading...",
+        "label": "Drop your file here, or {browse}",
+        "browse": "browse",
+        "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
+      },
       "picture-upload": {
-        "label": "Picture",
+        "label": "Drop your picture here, or {browse}",
+        "browse": "browse",
+        "supported_formats": "Supports JPEG, PNG, or GIF image.",
         "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
       },
       "date-range-picker": {

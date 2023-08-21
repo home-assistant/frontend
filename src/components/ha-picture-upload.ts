@@ -1,5 +1,5 @@
-import { mdiImagePlus } from "@mdi/js";
-import { html, LitElement, TemplateResult } from "lit";
+import { mdiImagePlus, mdiPencilOutline } from "@mdi/js";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { createImage, generateImageThumbnailUrl } from "../data/image_upload";
@@ -11,6 +11,7 @@ import {
 import { HomeAssistant } from "../types";
 import "./ha-circular-progress";
 import "./ha-file-upload";
+import "./ha-fab";
 
 @customElement("ha-picture-upload")
 export class HaPictureUpload extends LitElement {
@@ -29,19 +30,42 @@ export class HaPictureUpload extends LitElement {
   @state() private _uploading = false;
 
   public render(): TemplateResult {
-    return html`
-      <ha-file-upload
-        .hass=${this.hass}
-        .icon=${mdiImagePlus}
-        .label=${this.label ||
-        this.hass.localize("ui.components.picture-upload.label")}
-        .uploading=${this._uploading}
-        .value=${this.value ? html`<img .src=${this.value} />` : ""}
-        @file-picked=${this._handleFilePicked}
-        @change=${this._handleFileCleared}
-        accept="image/png, image/jpeg, image/gif"
-      ></ha-file-upload>
-    `;
+    if (!this.value) {
+      return html`
+        <ha-file-upload
+          .hass=${this.hass}
+          .icon=${mdiImagePlus}
+          .label=${this.label ||
+          this.hass.localize("ui.components.picture-upload.label", {
+            browse: html`<span class="highlight"
+              >${this.hass.localize(
+                "ui.components.picture-upload.browse"
+              )}</span
+            >`,
+          })}
+          .secondary=${this.hass.localize(
+            "ui.components.picture-upload.supported_formats"
+          )}
+          .uploading=${this._uploading}
+          @file-picked=${this._handleFilePicked}
+          @change=${this._handleFileCleared}
+          accept="image/png, image/jpeg, image/gif"
+        ></ha-file-upload>
+      `;
+    }
+    return html`<div class="center-vertical">
+      <div class="value">
+        <img .src=${this.value} />
+        <ha-fab @click=${this._handleChangeClick}>
+          <ha-svg-icon slot="icon" .path=${mdiPencilOutline}></ha-svg-icon>
+        </ha-fab>
+      </div>
+    </div>`;
+  }
+
+  private _handleChangeClick() {
+    this.value = null;
+    fireEvent(this, "change");
   }
 
   private async _handleFilePicked(ev) {
@@ -99,6 +123,38 @@ export class HaPictureUpload extends LitElement {
     } finally {
       this._uploading = false;
     }
+  }
+
+  static get styles() {
+    return css`
+      :host {
+        display: block;
+        height: 240px;
+      }
+      ha-file-upload {
+        height: 100%;
+      }
+      .center-vertical {
+        display: flex;
+        align-items: center;
+        height: 100%;
+      }
+      .value {
+        position: relative;
+        width: max-content;
+        margin: auto;
+      }
+      .value ha-fab {
+        position: absolute;
+        right: var(--image-upload-fab-distance, -16px);
+        bottom: var(--image-upload-fab-distance, -16px);
+      }
+      img {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: var(--file-upload-image-border-radius);
+      }
+    `;
   }
 }
 

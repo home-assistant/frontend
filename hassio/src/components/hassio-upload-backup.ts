@@ -31,6 +31,7 @@ export class HassioUploadBackup extends LitElement {
         .icon=${mdiFolderUpload}
         accept="application/x-tar"
         label="Upload backup"
+        secondary="Supports .TAR files"
         @file-picked=${this._uploadFile}
         auto-open-file-dialog
       ></ha-file-upload>
