@@ -300,7 +300,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
           hasDoubleClick: hasAction(entityConf.double_tap_action),
         })}
         tabindex=${ifDefined(
-          hasAction(entityConf.tap_action) ? "0" : undefined
+          !entityConf.tap_action || hasAction(entityConf.tap_action)
+            ? "0"
+            : undefined
         )}
       >
         ${this._config!.show_name
