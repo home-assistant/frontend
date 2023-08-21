@@ -55,8 +55,13 @@ export class HaPictureUpload extends LitElement {
     }
     return html`<div class="center-vertical">
       <div class="value">
-        <img .src=${this.value} />
-        <ha-fab @click=${this._handleChangeClick}>
+        <img .src=${this.value} alt="" />
+        <ha-fab
+          @click=${this._handleChangeClick}
+          .label=${this.hass.localize(
+            "ui.components.picture-upload.change_picture"
+          )}
+        >
           <ha-svg-icon slot="icon" .path=${mdiPencilOutline}></ha-svg-icon>
         </ha-fab>
       </div>

@@ -66,9 +66,14 @@ export class HaFileUpload extends LitElement {
         ${this.uploading
           ? html`<div class="row">
                 <span class="header"
-                  >${this.hass?.localize(
-                    "ui.components.file-upload.uploading"
-                  )}</span
+                  >${this.value
+                    ? this.hass?.localize(
+                        "ui.components.file-upload.uploading_name",
+                        { name: this.value }
+                      )
+                    : this.hass?.localize(
+                        "ui.components.file-upload.uploading"
+                      )}</span
                 >
                 ${this.progress
                   ? html`<span class="progress"
@@ -179,7 +184,6 @@ export class HaFileUpload extends LitElement {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        // background-color: var(--mdc-text-field-fill-color, whitesmoke);
         border: dashed 1px
           var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
         border-radius: var(--mdc-shape-small, 4px);

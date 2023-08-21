@@ -500,6 +500,7 @@
       },
       "file-upload": {
         "uploading": "Uploading...",
+        "uploading_name": "Uploading {name}",
         "label": "Drop your file here, or {browse}",
         "browse": "browse",
         "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
@@ -507,6 +508,7 @@
       "picture-upload": {
         "label": "Drop your picture here, or {browse}",
         "browse": "browse",
+        "change_picture": "Change picture",
         "supported_formats": "Supports JPEG, PNG, or GIF image.",
         "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
       },
