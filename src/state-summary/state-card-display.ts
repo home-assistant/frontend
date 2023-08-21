@@ -77,7 +77,7 @@ export class StateCardDisplay extends LitElement {
       haStyle,
       css`
         state-info {
-          flex: 1 1 auto;
+          flex: 0 1 fit-content;
           min-width: 0;
         }
         .state {
@@ -85,9 +85,10 @@ export class StateCardDisplay extends LitElement {
           margin-inline-start: 16px;
           margin-inline-end: initial;
           text-align: var(--float-end, right);
-          flex: 0 0 auto;
-          overflow-wrap: break-word;
+          flex: 0 2 fit-content;
+          word-break: break-word;
           display: flex;
+          justify-content: flex-end;
           align-items: center;
           direction: ltr;
         }
