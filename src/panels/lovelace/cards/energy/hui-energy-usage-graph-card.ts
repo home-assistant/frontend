@@ -650,16 +650,18 @@ export class HuiEnergyUsageGraphCard
 
     Object.entries(combinedData).forEach(([type, sources]) => {
       Object.entries(sources).forEach(([statId, source], idx) => {
-        const overrideColor = colors[type].overrides?.[idx];
-        const modifiedColor =
-          idx > 0
-            ? this.hass.themes.darkMode
-              ? labBrighten(rgb2lab(hex2rgb(colors[type].base)), idx)
-              : labDarken(rgb2lab(hex2rgb(colors[type].base)), idx)
-            : undefined;
-        const borderColor =
-          overrideColor ??
-          (modifiedColor ? rgb2hex(lab2rgb(modifiedColor)) : colors[type].base);
+        let borderColor = colors[type].overrides?.[idx];
+        if (!borderColor) {
+          const modifiedColor =
+            idx > 0
+              ? this.hass.themes.darkMode
+                ? labBrighten(rgb2lab(hex2rgb(colors[type].base)), idx)
+                : labDarken(rgb2lab(hex2rgb(colors[type].base)), idx)
+              : undefined;
+          borderColor = modifiedColor
+            ? rgb2hex(lab2rgb(modifiedColor))
+            : colors[type].base;
+        }
 
         const points: ScatterDataPoint[] = [];
         // Process chart data.
