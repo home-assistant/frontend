@@ -416,11 +416,12 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           font-size: 20px;
           line-height: 24px;
           align-self: flex-start;
-          margin-left: -20px;
           width: 20px;
           margin-top: 4px;
         }
-
+        .decimal + .unit {
+          margin-left: -20px;
+        }
         .dual {
           display: flex;
           flex-direction: row;

@@ -356,6 +356,26 @@ class ClimateEntity extends Entity {
   }
 }
 
+class WaterHeaterEntity extends Entity {
+  public async handleService(domain, service, data) {
+    if (domain !== this.domain) {
+      return;
+    }
+
+    if (service === "set_operation_mode") {
+      this.update(data.operation_mode, this.attributes);
+    } else if (["set_temperature"].includes(service)) {
+      const { entity_id, ...toSet } = data;
+      this.update(this.state, {
+        ...this.attributes,
+        ...toSet,
+      });
+    } else {
+      super.handleService(domain, service, data);
+    }
+  }
+}
+
 class GroupEntity extends Entity {
   public async handleService(domain, service, data) {
     if (!["homeassistant", this.domain].includes(domain)) {
@@ -386,6 +406,7 @@ const TYPES = {
   lock: LockEntity,
   media_player: MediaPlayerEntity,
   switch: ToggleEntity,
+  water_heater: WaterHeaterEntity,
 };
 
 export const getEntity = (
