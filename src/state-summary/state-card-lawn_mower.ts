@@ -2,7 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/state-info";
-import "../components/ha-lawn_mower-state";
+import "../components/ha-lawn_mower-action-button";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 
@@ -23,10 +23,10 @@ class StateCardLawnMower extends LitElement {
           .stateObj=${stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
-        <ha-lawn_mower-state
+        <ha-lawn_mower-action-button
           .hass=${this.hass}
           .stateObj=${stateObj}
-        ></ha-lawn_mower-state>
+        ></ha-lawn_mower-action-button>
       </div>
     `;
   }
