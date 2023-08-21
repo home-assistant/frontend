@@ -46,7 +46,7 @@ import { EnergyUsageGraphCardConfig } from "../types";
 
 interface ColorSet {
   base: string;
-  overrides?: string[];
+  overrides?: Record<string, string>;
 }
 
 @customElement("hui-energy-usage-graph-card")
