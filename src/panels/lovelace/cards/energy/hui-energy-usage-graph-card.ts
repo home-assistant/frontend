@@ -410,12 +410,12 @@ export class HuiEnergyUsageGraphCard
       }
       colors[key].overrides = [];
       if (statIds[key]) {
-        Object.entries(statIds[key]).forEach((_, idx) => {
+        Object.values(statIds[key]).forEach((id, idx) => {
           const override = computedStyles
             .getPropertyValue(colorProp + "-" + idx)
             .trim();
           if (override.length > 0) {
-            colors[key].overrides[idx] = override;
+            colors[key].overrides[id] = override;
           }
         });
       }
@@ -534,16 +534,11 @@ export class HuiEnergyUsageGraphCard
       const add = !["solar", "from_battery"].includes(key);
       const totalStats: { [start: number]: number } = {};
       const sets: { [statId: string]: { [start: number]: number } } = {};
-      let colorIdx = 0;
       statIds!.forEach((id) => {
         const stats = statistics[id];
         if (!stats) {
-          if (colors[key].overrides?.length > colorIdx) {
-            colors[key].overrides.splice(colorIdx, 1);
-          }
           return;
         }
-        colorIdx++;
 
         const set = {};
         stats.forEach((stat) => {
@@ -650,7 +645,7 @@ export class HuiEnergyUsageGraphCard
 
     Object.entries(combinedData).forEach(([type, sources]) => {
       Object.entries(sources).forEach(([statId, source], idx) => {
-        let borderColor = colors[type].overrides?.[idx];
+        let borderColor = colors[type].overrides?.[statId];
         if (!borderColor) {
           const modifiedColor =
             idx > 0
