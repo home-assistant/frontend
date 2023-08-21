@@ -107,7 +107,9 @@ export class DialogAddUser extends LitElement {
                 )}
                 .value=${this._name}
                 required
-                .errorMessage=${this.hass.localize("ui.common.error_required")}
+                .validationMessage=${this.hass.localize(
+                  "ui.common.error_required"
+                )}
                 @input=${this._handleValueChanged}
                 @blur=${this._maybePopulateUsername}
                 dialogInitialFocus
@@ -122,7 +124,7 @@ export class DialogAddUser extends LitElement {
             .value=${this._username}
             required
             @input=${this._handleValueChanged}
-            .errorMessage=${this.hass.localize("ui.common.error_required")}
+            .validationMessage=${this.hass.localize("ui.common.error_required")}
             dialogInitialFocus
           ></ha-textfield>
 
@@ -135,7 +137,7 @@ export class DialogAddUser extends LitElement {
             .value=${this._password}
             required
             @input=${this._handleValueChanged}
-            .errorMessage=${this.hass.localize("ui.common.error_required")}
+            .validationMessage=${this.hass.localize("ui.common.error_required")}
           ></ha-textfield>
 
           <ha-textfield
@@ -150,7 +152,7 @@ export class DialogAddUser extends LitElement {
             .invalid=${this._password !== "" &&
             this._passwordConfirm !== "" &&
             this._passwordConfirm !== this._password}
-            .errorMessage=${this.hass.localize(
+            .validationMessage=${this.hass.localize(
               "ui.panel.config.users.add_user.password_not_match"
             )}
           ></ha-textfield>

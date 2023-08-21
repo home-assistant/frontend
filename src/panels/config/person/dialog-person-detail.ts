@@ -121,11 +121,10 @@ class DialogPersonDetail extends LitElement {
               .value=${this._name}
               @input=${this._nameChanged}
               label=${this.hass!.localize("ui.panel.config.person.detail.name")}
-              error-message=${this.hass!.localize(
+              .validationMessage=${this.hass!.localize(
                 "ui.panel.config.person.detail.name_error_msg"
               )}
               required
-              auto-validate
             ></ha-textfield>
             <ha-picture-upload
               .hass=${this.hass}
