@@ -35,8 +35,8 @@ const LAWN_MOWER_ACTIONS: Partial<
   },
 };
 
-@customElement("ha-lawn_mower-state")
-class HaLawnMowerState extends LitElement {
+@customElement("ha-lawn_mower-action-button")
+class HaLawnMowerActionButton extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: LawnMowerEntity;
@@ -86,6 +86,6 @@ class HaLawnMowerState extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-lawn_mower-state": HaLawnMowerState;
+    "ha-lawn_mower-action-button": HaLawnMowerActionButton;
   }
 }
