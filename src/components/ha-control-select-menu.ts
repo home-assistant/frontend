@@ -207,8 +207,8 @@ export class HaControlSelectMenu extends SelectBase {
         font-size: 14px;
         font-style: normal;
         font-weight: 400;
-        line-height: 24px;
-        letter-spacing: 0.5px;
+        line-height: 20px;
+        letter-spacing: 0.25px;
       }
       .content {
         display: flex;
@@ -230,13 +230,12 @@ export class HaControlSelectMenu extends SelectBase {
 
       .label {
         font-size: 12px;
-        font-weight: 400;
         line-height: 16px;
         letter-spacing: 0.4px;
       }
 
       .select-no-value .label {
-        font-size: inherit
+        font-size: inherit;
         line-height: inherit;
         letter-spacing: inherit;
       }
