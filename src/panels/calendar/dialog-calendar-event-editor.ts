@@ -176,7 +176,7 @@ class DialogCalendarEventEditor extends LitElement {
             .value=${this._summary}
             required
             @change=${this._handleSummaryChanged}
-            error-message=${this.hass.localize("ui.common.error_required")}
+            .validationMessage=${this.hass.localize("ui.common.error_required")}
             dialogInitialFocus
           ></ha-textfield>
           <ha-textarea
