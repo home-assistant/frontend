@@ -1,8 +1,8 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { FlowType } from "../../../data/data_entry_flow";
-import { previewGroupSensor } from "../../../data/group";
+import { subscribePreviewGroupSensor } from "../../../data/group";
 import { HomeAssistant } from "../../../types";
 import "./entity-preview-row";
 
@@ -22,9 +22,19 @@ class FlowPreviewGroupSensor extends LitElement {
 
   @state() private _preview?: HassEntity;
 
+  private _unsub?: Promise<UnsubscribeFunc>;
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this._unsub) {
+      this._unsub.then((unsub) => unsub());
+      this._unsub = undefined;
+    }
+  }
+
   willUpdate(changedProps) {
     if (changedProps.has("stepData")) {
-      this._updatePreview();
+      this._subscribePreview();
     }
   }
 
@@ -35,7 +45,22 @@ class FlowPreviewGroupSensor extends LitElement {
     ></entity-preview-row>`;
   }
 
-  private async _updatePreview() {
+  private _setPreview = (preview) => {
+    const now = new Date().toISOString();
+    this._preview = {
+      entity_id: "sensor.flow_preview",
+      last_changed: now,
+      last_updated: now,
+      context: { id: "", parent_id: null, user_id: null },
+      ...preview,
+    };
+  };
+
+  private async _subscribePreview() {
+    if (this._unsub) {
+      (await this._unsub)();
+      this._unsub = undefined;
+    }
     if (this.flowType === "repair_flow") {
       return;
     }
@@ -44,20 +69,13 @@ class FlowPreviewGroupSensor extends LitElement {
       return;
     }
     try {
-      const preview = await previewGroupSensor(
+      this._unsub = subscribePreviewGroupSensor(
         this.hass,
         this.flowId,
         this.flowType,
-        this.stepData
+        this.stepData,
+        this._setPreview
       );
-      const now = new Date().toISOString();
-      this._preview = {
-        entity_id: "sensor.flow_preview",
-        last_changed: now,
-        last_updated: now,
-        context: { id: "", parent_id: null, user_id: null },
-        ...preview,
-      };
     } catch (err) {
       this._preview = undefined;
     }
