@@ -56,16 +56,26 @@ export interface VacuumCommandsTileFeatureConfig {
   commands?: VacuumCommand[];
 }
 
+export const LAWN_MOWER_COMMANDS = ["start_pause", "dock"] as const;
+
+export type LawnMowerCommand = (typeof LAWN_MOWER_COMMANDS)[number];
+
+export interface LawnMowerCommandsTileFeatureConfig {
+  type: "lawn-mower-commands";
+  commands?: LawnMowerCommand[];
+}
+
 export type LovelaceTileFeatureConfig =
+  | AlarmModesTileFeatureConfig
+  | ClimateHvacModesTileFeatureConfig
   | CoverOpenCloseTileFeatureConfig
   | CoverPositionTileFeatureConfig
   | CoverTiltTileFeatureConfig
+  | FanSpeedTileFeatureConfig
+  | LawnMowerCommandsTileFeatureConfig
   | LightBrightnessTileFeatureConfig
   | LightColorTempTileFeatureConfig
   | VacuumCommandsTileFeatureConfig
-  | FanSpeedTileFeatureConfig
-  | AlarmModesTileFeatureConfig
-  | ClimateHvacModesTileFeatureConfig
   | WaterHeaterOperationModesTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {

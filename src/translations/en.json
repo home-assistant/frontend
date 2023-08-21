@@ -5026,6 +5026,14 @@
                   "water-heater-operation-modes": {
                     "label": "Water heater operation modes",
                     "operation_modes": "Operation modes"
+                  },
+                  "lawn-mower-commands": {
+                    "label": "Lawn mower commands",
+                    "commands": "Commands",
+                    "commands_list": {
+                      "start_pause": "Start Pause",
+                      "dock": "[%key:ui::dialogs::more_info_control::lawn_mower::dock%]"
+                    }
                   }
                 }
               }
