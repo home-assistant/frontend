@@ -2521,7 +2521,7 @@
                   "label": "And",
                   "description": {
                     "no_conditions": "Test if multiple conditions match",
-                    "full": "Test if any of {count} {count, plural,\n one {condition match}\n other {conditions matches}\n}"
+                    "full": "Test if {count} {count, plural,\n one {condition match}\n other {conditions matches}\n}"
                   }
                 },
                 "device": {
