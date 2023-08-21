@@ -170,18 +170,18 @@ export class HaControlSelectMenu extends SelectBase {
         --control-select-menu-text-color: var(--primary-text-color);
         --control-select-menu-background-color: var(--disabled-color);
         --control-select-menu-background-opacity: 0.2;
-        --control-select-menu-border-radius: 16px;
+        --control-select-menu-border-radius: 14px;
         --control-select-menu-min-width: 120px;
         --control-select-menu-max-width: 200px;
         --control-select-menu-width: 100%;
-        --mdc-icon-size: 24px;
+        --mdc-icon-size: 20px;
         color: var(--primary-text-color);
         -webkit-tap-highlight-color: transparent;
       }
       .select-anchor {
         color: var(--control-select-menu-text-color);
-        height: 56px;
-        padding: 8px 12px;
+        height: 48px;
+        padding: 6px 10px;
         overflow: hidden;
         position: relative;
         cursor: pointer;
@@ -199,11 +199,16 @@ export class HaControlSelectMenu extends SelectBase {
         font-size: inherit;
         transition: color 180ms ease-in-out;
         color: var(--control-text-icon-color);
-        gap: 12px;
+        gap: 10px;
         min-width: var(--control-select-menu-min-width);
         max-width: var(--control-select-menu-max-width);
         width: var(--control-select-menu-width);
         user-select: none;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px;
+        letter-spacing: 0.25px;
       }
       .content {
         display: flex;
@@ -225,24 +230,14 @@ export class HaControlSelectMenu extends SelectBase {
 
       .label {
         font-size: 12px;
-        font-style: normal;
-        font-weight: 400;
         line-height: 16px;
         letter-spacing: 0.4px;
       }
 
       .select-no-value .label {
-        font-size: 16px;
-        line-height: 24px;
-        letter-spacing: 0.5px;
-      }
-
-      .value {
-        font-size: 16px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 24px;
-        letter-spacing: 0.5px;
+        font-size: inherit;
+        line-height: inherit;
+        letter-spacing: inherit;
       }
 
       .select-anchor::before {
