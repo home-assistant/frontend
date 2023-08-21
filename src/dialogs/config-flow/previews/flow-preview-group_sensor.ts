@@ -45,7 +45,10 @@ class FlowPreviewGroupSensor extends LitElement {
     ></entity-preview-row>`;
   }
 
-  private _setPreview = (preview) => {
+  private _setPreview = (preview: {
+    state: string;
+    attributes: Record<string, any>;
+  }) => {
     const now = new Date().toISOString();
     this._preview = {
       entity_id: "sensor.flow_preview",
