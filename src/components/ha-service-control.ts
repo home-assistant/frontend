@@ -1,10 +1,18 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircle, mdiAutoFix } from "@mdi/js";
 import {
   HassService,
   HassServices,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { load } from "js-yaml";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
@@ -483,8 +491,21 @@ export class HaServiceControl extends LitElement {
                     .placeholder=${dataField.default}
                     .localizeValue=${this._localizeValueCallback}
                   ></ha-selector>
+                  ${dataField.example &&
+                  dataField.selector &&
+                  "object" in dataField.selector
+                    ? html`<ha-icon-button
+                        class="example-button"
+                        .label=${this.hass.localize(
+                          "ui.components.service-control.fill_example_data"
+                        )}
+                        .path=${mdiAutoFix}
+                        .key=${dataField.key}
+                        @click=${this._fillExampleData}
+                      ></ha-icon-button>`
+                    : nothing}
                 </ha-settings-row>`
-              : "";
+              : nothing;
           })}`;
   }
 
@@ -590,6 +611,44 @@ export class HaServiceControl extends LitElement {
     });
   }
 
+  private _fillExampleData(ev: CustomEvent) {
+    ev.stopPropagation();
+    const key = (ev.currentTarget as any).key;
+    const serviceData = this._getServiceInfo(
+      this.value?.service,
+      this.hass.services
+    );
+
+    const domain = this.value?.service
+      ? computeDomain(this.value?.service)
+      : undefined;
+
+    const serviceName = this.value?.service
+      ? computeObjectId(this.value?.service)
+      : undefined;
+
+    const field = serviceData?.fields.find((f) => f.key === key);
+    if (field?.example) {
+      let value: any = "";
+      try {
+        value = load(field.example);
+      } catch (err: any) {
+        value =
+          this.hass.localize(
+            `component.${domain}.services.${serviceName}.fields.${key}.example`
+          ) || field.example;
+      }
+
+      const data = { ...this._value?.data, [key]: value };
+      fireEvent(this, "value-changed", {
+        value: {
+          ...this._value,
+          data,
+        },
+      });
+    }
+  }
+
   private _serviceDataChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const key = (ev.currentTarget as any).key;
@@ -672,6 +731,9 @@ export class HaServiceControl extends LitElement {
       }
       .help-icon {
         color: var(--secondary-text-color);
+      }
+      .example-button {
+        width: 48px;
       }
       .description {
         justify-content: space-between;

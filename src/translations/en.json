@@ -549,7 +549,8 @@
         "target": "Targets",
         "target_description": "What should this service use as targeted areas, devices or entities.",
         "data": "Service data",
-        "integration_doc": "Integration documentation"
+        "integration_doc": "Integration documentation",
+        "fill_example_data": "[%key:ui::panel::developer-tools::tabs::services::fill_example_data%]"
       },
       "related-items": {
         "no_related_found": "No related items found.",
