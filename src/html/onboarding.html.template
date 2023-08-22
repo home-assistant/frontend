@@ -14,24 +14,9 @@
         padding: 64px 0;
       }
       .content {
-        box-sizing: border-box;
-        padding: 20px 16px;
-        border-radius: var(--ha-card-border-radius, 12px);
         max-width: 432px;
         margin: 0 auto;
-        box-shadow: var(
-          --ha-card-box-shadow,
-          rgba(0, 0, 0, 0.25) 0px 54px 55px,
-          rgba(0, 0, 0, 0.12) 0px -12px 30px,
-          rgba(0, 0, 0, 0.12) 0px 4px 6px,
-          rgba(0, 0, 0, 0.17) 0px 12px 13px,
-          rgba(0, 0, 0, 0.09) 0px -3px 5px
-        );
-        background: var(
-          --ha-card-background,
-          var(--card-background-color, white)
-        );
-        color: var(--primary-text-color, #212121);
+        box-sizing: border-box;
       }
 
       .header {
@@ -41,6 +26,8 @@
         align-items: center;
         justify-content: center;
         font-weight: 300;
+        color: var(--text-primary-color, #fff);
+        margin-bottom: 16px;
       }
 
       .header img {
