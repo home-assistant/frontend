@@ -1,8 +1,8 @@
+import { LitElement, TemplateResult, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import "./ha-progress-button";
 import { HomeAssistant } from "../../types";
-import { LitElement, TemplateResult, html } from "lit";
 import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-call-service-button")
@@ -89,7 +89,7 @@ declare global {
     "hass-service-called": {
       domain: string;
       service: string;
-      serviceData: Object;
+      serviceData: object;
       success: boolean;
     };
   }
