@@ -20,7 +20,7 @@ We want to make it as easy for designers to contribute as it is for developers. 
 
 - Meet us at <a href="https://discord.gg/BPBc8rZ9" rel="noopener noreferrer" target="_blank">devs_ux Discord</a>. Feel free to share your designs, user test or strategic ideas.
 - Start designing with our <a href="https://www.figma.com/community/file/967153512097289521/Home-Assistant-DesignKit" rel="noopener noreferrer" target="_blank">Figma DesignKit</a>.
-- Find the lates UX <a href="https://github.com/home-assistant/frontend/discussions?discussions_q=label%3Aux" rel="noopener noreferrer" target="_blank">discussions</a> and <a href="https://github.com/home-assistant/frontend/labels/ux" rel="noopener noreferrer" target="_blank">issues</a> on GitHub. Everyone can start a new issue or discussion!
+- Find the latest UX <a href="https://github.com/home-assistant/frontend/discussions?discussions_q=label%3Aux" rel="noopener noreferrer" target="_blank">discussions</a> and <a href="https://github.com/home-assistant/frontend/labels/ux" rel="noopener noreferrer" target="_blank">issues</a> on GitHub. Everyone can start a new issue or discussion!
 
 ## Developers
 
