@@ -59,6 +59,8 @@ const A11Y_KEY_CODES = new Set([
   "End",
 ]);
 
+export type ControlCircularSliderMode = "start" | "end" | "full";
+
 @customElement("ha-control-circular-slider")
 export class HaControlCircularSlider extends LitElement {
   @property({ type: Boolean, reflect: true })
@@ -67,8 +69,11 @@ export class HaControlCircularSlider extends LitElement {
   @property({ type: Boolean })
   public dual?: boolean;
 
-  @property({ type: Boolean, reflect: true })
-  public inverted?: boolean;
+  @property({ type: String })
+  public mode?: ControlCircularSliderMode;
+
+  @property({ type: Boolean })
+  public inactive?: boolean;
 
   @property({ type: String })
   public label?: string;
@@ -407,11 +412,9 @@ export class HaControlCircularSlider extends LitElement {
   protected renderArc(
     id: string,
     value: number | undefined,
-    inverted: boolean | undefined
+    mode: ControlCircularSliderMode
   ) {
     if (this.disabled) return nothing;
-
-    const limit = inverted ? this.max : this.min;
 
     const path = svgArc({
       x: 0,
@@ -421,33 +424,48 @@ export class HaControlCircularSlider extends LitElement {
       r: RADIUS,
     });
 
+    const limit = mode === "end" ? this.max : this.min;
+
     const current = this.current ?? limit;
     const target = value ?? limit;
 
-    const showActive = inverted ? target <= current : current <= target;
+    const showActive =
+      !this.inactive &&
+      (mode === "end"
+        ? target <= current
+        : mode === "start"
+        ? current <= target
+        : false);
+
+    const showBackground = !this.inactive;
 
     const activeArcDashArray = showActive
-      ? inverted
+      ? mode === "end"
         ? this._strokeDashArc(target, current)
         : this._strokeDashArc(current, target)
       : this._strokeCircleDashArc(target);
 
-    const arcDashArray = inverted
-      ? this._strokeDashArc(target, limit)
-      : this._strokeDashArc(limit, target);
+    const arcDashArray = showBackground
+      ? mode === "full"
+        ? this._strokeDashArc(this.min, this.max)
+        : mode === "end"
+        ? this._strokeDashArc(target, limit)
+        : this._strokeDashArc(limit, target)
+      : this._strokeCircleDashArc(target);
 
     const targetCircleDashArray = this._strokeCircleDashArc(target);
 
     const currentCircleDashArray =
       this.current != null &&
-      showActive &&
-      current <= this.max &&
-      current >= this.min
+      this.current <= this.max &&
+      this.current >= this.min &&
+      (showActive || this.mode === "full") &&
+      !this.inactive
         ? this._strokeCircleDashArc(this.current)
         : undefined;
 
     return svg`
-       <path
+      <path
         class="arc arc-clear"
         d=${path}
         stroke-dasharray=${arcDashArray[0]}
@@ -551,11 +569,11 @@ export class HaControlCircularSlider extends LitElement {
               ? this.renderArc(
                   this.dual ? "low" : "value",
                   lowValue,
-                  this.inverted
+                  (!this.dual && this.mode) || "start"
                 )
               : nothing}
             ${this.dual && highValue != null
-              ? this.renderArc("high", highValue, true)
+              ? this.renderArc("high", highValue, "end")
               : nothing}
           </g>
         </g>
