@@ -46,23 +46,19 @@ class HaCallServiceButton extends LitElement {
     const progressElement =
       this.shadowRoot!.querySelector("ha-progress-button")!;
 
-    await this.hass
-      .callService(this.domain, this.service, this.serviceData)
-      .then(
-        () => {
-          this.progress = false;
-          progressElement.actionSuccess();
-          eventData.success = true;
-        },
-        () => {
-          this.progress = false;
-          progressElement.actionError();
-          eventData.success = false;
-        }
-      )
-      .then(() => {
-        fireEvent(this, "hass-service-called", eventData);
-      });
+    try {
+      await this.hass.callService(this.domain, this.service, this.serviceData);
+      this.progress = false;
+      progressElement.actionSuccess();
+      eventData.success = true;
+    } catch (e) {
+      this.progress = false;
+      progressElement.actionError();
+      eventData.success = false;
+      return;
+    } finally {
+      fireEvent(this, "hass-service-called", eventData);
+    }
   }
 
   private _buttonTapped() {
