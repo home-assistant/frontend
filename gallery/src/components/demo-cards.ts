@@ -63,9 +63,6 @@ class DemoCards extends LitElement {
     demo-card {
       margin: 16px 16px 32px;
     }
-    .filters {
-      margin-left: 60px;
-    }
     ha-formfield {
       margin-right: 16px;
     }

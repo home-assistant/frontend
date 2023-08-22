@@ -1,10 +1,10 @@
+import { LitElement, css, html } from "lit";
+import { customElement, property } from "lit/decorators";
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
 import "./demo-more-info";
 import "../ha-demo-options";
-import { customElement, property } from "lit/decorators";
-import { LitElement, css, html } from "lit";
 import { HomeAssistant } from "../../../src/types";
 
 @customElement("demo-more-infos")
