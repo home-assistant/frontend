@@ -8,10 +8,12 @@ import { HomeAssistant } from "../types";
 import "./ha-button";
 import "./ha-icon-button";
 import { blankBeforePercent } from "../common/translations/blank_before_percent";
+import { ensureArray } from "../common/array/ensure-array";
+import { bytesToString } from "../util/bytes-to-string";
 
 declare global {
   interface HASSDomEvents {
-    "file-picked": { files: FileList };
+    "file-picked": { files: File[] };
   }
 }
 
@@ -27,7 +29,9 @@ export class HaFileUpload extends LitElement {
 
   @property() public secondary?: string;
 
-  @property() public value: string | TemplateResult | null = null;
+  @property() public value?: File | File[] | FileList | string;
+
+  @property({ type: Boolean }) private multiple = false;
 
   @property({ type: Boolean, reflect: true }) public disabled: boolean = false;
 
@@ -55,6 +59,7 @@ export class HaFileUpload extends LitElement {
         for=${this.value ? "" : "input"}
         class=${classMap({
           dragged: this._drag,
+          multiple: this.multiple,
           value: Boolean(this.value),
         })}
         @drop=${this._handleDrop}
@@ -104,13 +109,14 @@ export class HaFileUpload extends LitElement {
                       })}</span
                     >
                     <span class="secondary" id="label">${this.secondary}</span>`
-                : html`<div class="row">
+                : typeof this.value === "string"
+                ? html`<div class="row">
                     <div class="value" @click=${this._openFilePicker}>
                       <ha-svg-icon
                         slot="icon"
                         .path=${this.icon || mdiFileUpload}
-                      ></ha-svg-icon
-                      >${this.value}
+                      ></ha-svg-icon>
+                      ${this.value}
                     </div>
                     <ha-icon-button
                       slot="suffix"
@@ -119,12 +125,35 @@ export class HaFileUpload extends LitElement {
                       "Delete"}
                       .path=${mdiDelete}
                     ></ha-icon-button>
-                  </div>`}
+                  </div>`
+                : (this.value instanceof FileList
+                    ? Array.from(this.value)
+                    : ensureArray(this.value)
+                  ).map(
+                    (file) =>
+                      html`<div class="row">
+                        <div class="value" @click=${this._openFilePicker}>
+                          <ha-svg-icon
+                            slot="icon"
+                            .path=${this.icon || mdiFileUpload}
+                          ></ha-svg-icon>
+                          ${file.name} - ${bytesToString(file.size)}
+                        </div>
+                        <ha-icon-button
+                          slot="suffix"
+                          @click=${this._clearValue}
+                          .label=${this.hass?.localize("ui.common.delete") ||
+                          "Delete"}
+                          .path=${mdiDelete}
+                        ></ha-icon-button>
+                      </div>`
+                  )}
               <input
                 id="input"
                 type="file"
                 class="file"
-                accept=${this.accept}
+                .accept=${this.accept}
+                .multiple=${this.multiple}
                 @change=${this._handleFilePicked}
                 aria-labelledby="label"
               />`}
@@ -140,7 +169,12 @@ export class HaFileUpload extends LitElement {
     ev.preventDefault();
     ev.stopPropagation();
     if (ev.dataTransfer?.files) {
-      fireEvent(this, "file-picked", { files: ev.dataTransfer.files });
+      fireEvent(this, "file-picked", {
+        files:
+          this.multiple || ev.dataTransfer.files.length === 1
+            ? Array.from(ev.dataTransfer.files)
+            : [ev.dataTransfer.files[0]],
+      });
     }
     this._drag = false;
   }
@@ -158,13 +192,14 @@ export class HaFileUpload extends LitElement {
   }
 
   private _handleFilePicked(ev) {
+    this.value = ev.target.files;
     fireEvent(this, "file-picked", { files: ev.target.files });
   }
 
   private _clearValue(ev: Event) {
     ev.preventDefault();
-    this.value = null;
     this._input!.value = "";
+    this.value = undefined;
     fireEvent(this, "change");
   }
 
@@ -211,6 +246,10 @@ export class HaFileUpload extends LitElement {
       label.value {
         cursor: default;
       }
+      label.value.multiple {
+        justify-content: unset;
+        overflow: auto;
+      }
       .highlight {
         color: var(--primary-color);
       }
@@ -256,11 +295,6 @@ export class HaFileUpload extends LitElement {
       }
       .progress {
         color: var(--secondary-text-color);
-      }
-      img {
-        max-width: 100%;
-        max-height: 200px;
-        border-radius: var(--file-upload-image-border-radius);
       }
     `;
   }

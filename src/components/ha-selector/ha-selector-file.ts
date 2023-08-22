@@ -39,7 +39,9 @@ export class HaFileSelector extends LitElement {
         .disabled=${this.disabled}
         .helper=${this.helper}
         .uploading=${this._busy}
-        .value=${this.value ? this._filename?.name || "Unknown file" : ""}
+        .value=${this.value
+          ? this._filename?.name || "Unknown file"
+          : undefined}
         @file-picked=${this._uploadFile}
         @change=${this._removeFile}
       ></ha-file-upload>
