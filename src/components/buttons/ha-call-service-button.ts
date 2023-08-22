@@ -7,15 +7,15 @@ import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-call-service-button")
 class HaCallServiceButton extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public progress = false;
 
-  @property() public domain?;
+  @property() public domain!: string;
 
-  @property() public service?;
+  @property() public service!: string;
 
   @property({ type: Object }) public serviceData = {};
 
@@ -26,17 +26,15 @@ class HaCallServiceButton extends LitElement {
       <ha-progress-button
         .progress=${this.progress}
         .disabled=${this.disabled}
-        @click=${this.buttonTapped}
+        @click=${this._buttonTapped}
         tabindex="0"
         ><slot></slot
       ></ha-progress-button>
     `;
   }
 
-  callService() {
+  private async _callService() {
     this.progress = true;
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const el = this;
     const eventData = {
       domain: this.domain,
       service: this.service,
@@ -47,32 +45,33 @@ class HaCallServiceButton extends LitElement {
     const progressElement =
       this.shadowRoot!.querySelector("ha-progress-button")!;
 
-    this.hass!.callService(this.domain, this.service, this.serviceData)
+    await this.hass
+      .callService(this.domain, this.service, this.serviceData)
       .then(
         () => {
-          el.progress = false;
+          this.progress = false;
           progressElement.actionSuccess();
           eventData.success = true;
         },
         () => {
-          el.progress = false;
+          this.progress = false;
           progressElement.actionError();
           eventData.success = false;
         }
       )
       .then(() => {
-        fireEvent(el, "hass-service-called", eventData);
+        fireEvent(this, "hass-service-called", eventData);
       });
   }
 
-  buttonTapped() {
+  private _buttonTapped() {
     if (this.confirmation) {
       showConfirmationDialog(this, {
         text: this.confirmation,
-        confirm: () => this.callService(),
+        confirm: () => this._callService(),
       });
     } else {
-      this.callService();
+      this._callService();
     }
   }
 }
