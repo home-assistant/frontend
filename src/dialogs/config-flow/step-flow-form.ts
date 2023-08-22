@@ -1,15 +1,18 @@
-import "@material/mwc-button";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import "@material/mwc-button";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
+import { isNavigationClick } from "../../common/dom/is-navigation-click";
 import "../../components/ha-alert";
 import "../../components/ha-circular-progress";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
@@ -21,7 +24,7 @@ import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
-import { isNavigationClick } from "../../common/dom/is-navigation-click";
+import { haStyle } from "../../resources/styles";
 
 @customElement("step-flow-form")
 class StepFlowForm extends LitElement {
@@ -66,6 +69,23 @@ class StepFlowForm extends LitElement {
           .localizeValue=${this._localizeValueCallback}
         ></ha-form>
       </div>
+      ${step.preview
+        ? html`<div class="preview">
+            <h3>
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_flow.preview"
+              )}:
+            </h3>
+            ${dynamicElement(`flow-preview-${this.step.preview}`, {
+              hass: this.hass,
+              flowType: this.flowConfig.flowType,
+              handler: step.handler,
+              stepId: step.step_id,
+              flowId: step.flow_id,
+              stepData,
+            })}
+          </div>`
+        : nothing}
       <div class="buttons">
         ${this._loading
           ? html`
@@ -91,6 +111,13 @@ class StepFlowForm extends LitElement {
     super.firstUpdated(changedProps);
     setTimeout(() => this.shadowRoot!.querySelector("ha-form")!.focus(), 0);
     this.addEventListener("keydown", this._handleKeyDown);
+  }
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (changedProps.has("step") && this.step?.preview) {
+      import(`./previews/flow-preview-${this.step.preview}`);
+    }
   }
 
   private _clickHandler(ev: MouseEvent) {
@@ -199,6 +226,7 @@ class StepFlowForm extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      haStyle,
       configFlowContentStyles,
       css`
         .error {

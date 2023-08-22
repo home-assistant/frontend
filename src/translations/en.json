@@ -3572,6 +3572,7 @@
             "finish": "Finish",
             "submit": "Submit",
             "next": "Next",
+            "preview": "Preview",
             "found_following_devices": "We found the following devices",
             "yaml_only_title": "This device cannot be added from the UI",
             "yaml_only": "You can add this device by adding it to your ''configuration.yaml''. See the documentation for more information.",
