@@ -69,7 +69,7 @@ type SystemHealthEvent =
 
 export const subscribeSystemHealthInfo = (
   hass: HomeAssistant,
-  callback: (info: SystemHealthInfo) => void
+  callback: (info: SystemHealthInfo | undefined) => void
 ) => {
   let data = {};
 
@@ -82,6 +82,7 @@ export const subscribeSystemHealthInfo = (
       }
       if (updateEvent.type === "finish") {
         unsubProm.then((unsub) => unsub());
+        callback(undefined);
         return;
       }
 
