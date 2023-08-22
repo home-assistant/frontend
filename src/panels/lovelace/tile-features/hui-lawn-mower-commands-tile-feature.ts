@@ -1,4 +1,4 @@
-import { mdiHomeMapMarker, mdiPause, mdiPlay } from "@mdi/js";
+import { mdiHomeImportOutline, mdiPause, mdiPlay } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -69,7 +69,7 @@ export const LAWN_MOWER_COMMANDS_BUTTONS: Record<
   },
   dock: (stateObj) => ({
     translationKey: "dock",
-    icon: mdiHomeMapMarker,
+    icon: mdiHomeImportOutline,
     serviceName: "dock",
     disabled: !canDock(stateObj),
   }),
