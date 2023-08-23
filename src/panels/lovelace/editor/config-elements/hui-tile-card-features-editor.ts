@@ -58,6 +58,7 @@ const EDITABLES_FEATURE_TYPES = new Set<FeatureType>([
   "alarm-modes",
   "climate-hvac-modes",
   "water-heater-operation-modes",
+  "cover-position",
 ]);
 
 const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =

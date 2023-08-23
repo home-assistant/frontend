@@ -8,6 +8,7 @@ export interface CoverOpenCloseTileFeatureConfig {
 
 export interface CoverPositionTileFeatureConfig {
   type: "cover-position";
+  inverted_direction?: boolean;
 }
 
 export interface CoverTiltTileFeatureConfig {

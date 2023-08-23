@@ -5,7 +5,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { CoverEntityFeature } from "../../../data/cover";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature } from "../types";
+import { LovelaceTileFeature, LovelaceTileFeatureEditor } from "../types";
 import { CoverPositionTileFeatureConfig } from "./types";
 import { stateActive } from "../../../common/entity/state_active";
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
@@ -33,7 +33,15 @@ class HuiCoverPositionTileFeature
   static getStubConfig(): CoverPositionTileFeatureConfig {
     return {
       type: "cover-position",
+      inverted_direction: false,
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceTileFeatureEditor> {
+    await import(
+      "../editor/config-elements/hui-cover-position-tile-feature-editor"
+    );
+    return document.createElement("hui-cover-position-tile-feature-editor");
   }
 
   public setConfig(config: CoverPositionTileFeatureConfig): void {
@@ -65,7 +73,7 @@ class HuiCoverPositionTileFeature
         min="0"
         max="100"
         step="1"
-        inverted
+        .inverted=${!this._config.inverted_direction}
         show-handle
         @value-changed=${this._valueChanged}
         .ariaLabel=${computeAttributeNameDisplay(

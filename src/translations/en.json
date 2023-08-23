@@ -4968,7 +4968,8 @@
                     "label": "Cover open/close"
                   },
                   "cover-position": {
-                    "label": "Cover position"
+                    "label": "Cover position",
+                    "inverted_direction": "Inverted direction"
                   },
                   "cover-tilt": {
                     "label": "Cover tilt"
