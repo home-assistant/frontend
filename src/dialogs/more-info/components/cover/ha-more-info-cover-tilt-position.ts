@@ -102,12 +102,14 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      :host {
+        /* Force inactive state to be colored for the slider */
+        --state-cover-inactive-color: var(--state-cover-active-color);
+      }
       ha-control-slider {
         height: 45vh;
         max-height: 320px;
         min-height: 200px;
-        /* Force inactive state to be colored for the slider */
-        --state-cover-inactive-color: var(--state-cover-active-color);
         --control-slider-thickness: 100px;
         --control-slider-border-radius: 24px;
         --control-slider-color: var(--primary-color);

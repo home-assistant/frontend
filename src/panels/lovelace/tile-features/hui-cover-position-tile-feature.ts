@@ -1,15 +1,18 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import { computeCssColor } from "../../../common/color/compute-color";
+import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { stateActive } from "../../../common/entity/state_active";
+import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { CoverEntityFeature } from "../../../data/cover";
+import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
 import { CoverPositionTileFeatureConfig } from "./types";
-import { stateActive } from "../../../common/entity/state_active";
-import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
-import { UNAVAILABLE } from "../../../data/entity";
 
 export const supportsCoverPositionTileFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -27,6 +30,8 @@ class HuiCoverPositionTileFeature
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
+
+  @property({ attribute: false }) public color?: string;
 
   @state() private _config?: CoverPositionTileFeatureConfig;
 
@@ -59,24 +64,34 @@ class HuiCoverPositionTileFeature
 
     const value = Math.max(Math.round(percentage), 0);
 
-    return html` <div class="container">
-      <ha-control-slider
-        .value=${value}
-        min="0"
-        max="100"
-        step="1"
-        inverted
-        show-handle
-        @value-changed=${this._valueChanged}
-        .ariaLabel=${computeAttributeNameDisplay(
-          this.hass.localize,
-          this.stateObj,
-          this.hass.entities,
-          "current_position"
-        )}
-        .disabled=${this.stateObj!.state === UNAVAILABLE}
-      ></ha-control-slider>
-    </div>`;
+    const color = this.color
+      ? computeCssColor(this.color)
+      : stateColorCss(this.stateObj);
+
+    const style = {
+      "--color": color,
+    };
+
+    return html`
+      <div class="container" style=${styleMap(style)}>
+        <ha-control-slider
+          .value=${value}
+          min="0"
+          max="100"
+          step="1"
+          inverted
+          show-handle
+          @value-changed=${this._valueChanged}
+          .ariaLabel=${computeAttributeNameDisplay(
+            this.hass.localize,
+            this.stateObj,
+            this.hass.entities,
+            "current_position"
+          )}
+          .disabled=${this.stateObj!.state === UNAVAILABLE}
+        ></ha-control-slider>
+      </div>
+    `;
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -91,10 +106,13 @@ class HuiCoverPositionTileFeature
 
   static get styles() {
     return css`
-      ha-control-slider {
+      :host {
         /* Force inactive state to be colored for the slider */
-        --control-slider-color: var(--tile-color);
-        --control-slider-background: var(--tile-color);
+        --state-cover-inactive-color: var(--state-cover-active-color);
+      }
+      ha-control-slider {
+        --control-slider-color: var(--color);
+        --control-slider-background: var(--color);
         --control-slider-background-opacity: 0.2;
         --control-slider-thickness: 40px;
         --control-slider-border-radius: 10px;
