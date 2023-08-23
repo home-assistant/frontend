@@ -279,6 +279,10 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       );
     }
 
+    const activeModes = this.stateObj.attributes.hvac_modes.filter(
+      (m) => m !== "off"
+    );
+
     if (
       supportsTargetTemperature &&
       this._targetTemperature.value != null &&
@@ -294,7 +298,9 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         >
           <ha-control-circular-slider
             .inactive=${!active}
-            .mode=${SLIDER_MODES[mode]}
+            .mode=${mode === "off" && activeModes.length === 1
+              ? SLIDER_MODES[activeModes[0]]
+              : SLIDER_MODES[mode]}
             .value=${this._targetTemperature.value}
             .min=${this._min}
             .max=${this._max}
