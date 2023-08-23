@@ -10,7 +10,7 @@ import { AlarmMode, ALARM_MODES } from "../../../../data/alarm_control_panel";
 import type { HomeAssistant } from "../../../../types";
 import {
   LovelaceTileFeatureContext,
-  AlarmModesFileFeatureConfig,
+  AlarmModesTileFeatureConfig,
 } from "../../tile-features/types";
 import type { LovelaceTileFeatureEditor } from "../../types";
 import "../../../../components/ha-form/ha-form";
@@ -24,9 +24,9 @@ export class HuiAlarmModesTileFeatureEditor
 
   @property({ attribute: false }) public context?: LovelaceTileFeatureContext;
 
-  @state() private _config?: AlarmModesFileFeatureConfig;
+  @state() private _config?: AlarmModesTileFeatureConfig;
 
-  public setConfig(config: AlarmModesFileFeatureConfig): void {
+  public setConfig(config: AlarmModesTileFeatureConfig): void {
     this._config = config;
   }
 

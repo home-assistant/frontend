@@ -329,8 +329,14 @@ class StatisticsChart extends LitElement {
 
       const statTypes: this["statTypes"] = [];
 
-      const drawBands =
+      const hasMean =
         this.statTypes.includes("mean") && statisticsHaveType(stats, "mean");
+      const drawBands =
+        hasMean ||
+        (this.statTypes.includes("min") &&
+          statisticsHaveType(stats, "min") &&
+          this.statTypes.includes("max") &&
+          statisticsHaveType(stats, "max"));
 
       const sortedTypes = drawBands
         ? [...this.statTypes].sort((a, b) => {
@@ -358,13 +364,14 @@ class StatisticsChart extends LitElement {
                   `ui.components.statistics_charts.statistic_types.${type}`
                 ),
             fill: drawBands
-              ? type === "min"
+              ? type === "min" && hasMean
                 ? "+1"
                 : type === "max"
                 ? "-1"
                 : false
               : false,
-            borderColor: band ? color + (this.hideLegend ? "00" : "7F") : color,
+            borderColor:
+              band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color,
             backgroundColor: band ? color + "3F" : color + "7F",
             pointRadius: 0,
             data: [],

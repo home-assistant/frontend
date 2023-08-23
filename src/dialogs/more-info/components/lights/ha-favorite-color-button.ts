@@ -9,7 +9,8 @@ import {
   temperature2rgb,
 } from "../../../../common/color/convert-light-color";
 import { luminosity } from "../../../../common/color/rgb";
-import { HaOutlinedIconButton } from "../../../../components/ha-outlined-icon-button";
+import type { HaOutlinedIconButton } from "../../../../components/ha-outlined-icon-button";
+import "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-svg-icon";
 import { LightColor, LightEntity } from "../../../../data/light";
 

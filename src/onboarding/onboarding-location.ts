@@ -376,7 +376,7 @@ class OnboardingLocation extends LitElement {
           );
           this._location = [result.coords.latitude, result.coords.longitude];
           if (result.coords.altitude) {
-            this._elevation = String(result.coords.altitude);
+            this._elevation = String(Math.round(result.coords.altitude));
           }
           try {
             await this._reverseGeocode();

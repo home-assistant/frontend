@@ -206,9 +206,11 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: column;
         align-items: center;
-        cursor: pointer;
         margin-bottom: 12px;
         width: var(--glance-column-width, 20%);
+      }
+      .entity.action {
+        cursor: pointer;
       }
       .entity:focus {
         outline: none;
@@ -282,9 +284,15 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
 
     const name = entityConf.name ?? computeStateName(stateObj);
 
+    const hasAnyAction =
+      !entityConf.tap_action ||
+      hasAction(entityConf.tap_action) ||
+      hasAction(entityConf.hold_action) ||
+      hasAction(entityConf.double_tap_action);
+
     return html`
       <div
-        class="entity"
+        class=${classMap({ entity: true, action: hasAnyAction })}
         .config=${entityConf}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
@@ -292,7 +300,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
           hasDoubleClick: hasAction(entityConf.double_tap_action),
         })}
         tabindex=${ifDefined(
-          hasAction(entityConf.tap_action) ? "0" : undefined
+          !entityConf.tap_action || hasAction(entityConf.tap_action)
+            ? "0"
+            : undefined
         )}
       >
         ${this._config!.show_name

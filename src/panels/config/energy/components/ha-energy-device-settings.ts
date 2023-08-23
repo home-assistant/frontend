@@ -116,6 +116,8 @@ export class EnergyDeviceSettings extends LitElement {
 
   private _addDevice() {
     showEnergySettingsDeviceDialog(this, {
+      device_consumptions: this.preferences
+        .device_consumption as DeviceConsumptionEnergyPreference[],
       saveCallback: async (device) => {
         await this._savePreferences({
           ...this.preferences,

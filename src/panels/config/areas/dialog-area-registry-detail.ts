@@ -93,10 +93,10 @@ class DialogAreaDetail extends LitElement {
               .value=${this._name}
               @input=${this._nameChanged}
               .label=${this.hass.localize("ui.panel.config.areas.editor.name")}
-              .errorMessage=${this.hass.localize(
+              .validationMessage=${this.hass.localize(
                 "ui.panel.config.areas.editor.name_required"
               )}
-              .invalid=${nameInvalid}
+              required
               dialogInitialFocus
             ></ha-textfield>
 

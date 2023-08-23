@@ -44,6 +44,8 @@ export class DialogEnergySolarSettings
 
   @state() private _error?: string;
 
+  private _excludeList?: string[];
+
   public async showDialog(
     params: EnergySettingsSolarDialogParams
   ): Promise<void> {
@@ -56,12 +58,16 @@ export class DialogEnergySolarSettings
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
+    this._excludeList = this._params.solar_sources
+      .map((entry) => entry.stat_energy_from)
+      .filter((id) => id !== this._source?.stat_energy_from);
   }
 
   public closeDialog(): void {
     this._params = undefined;
     this._source = undefined;
     this._error = undefined;
+    this._excludeList = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -97,6 +103,7 @@ export class DialogEnergySolarSettings
           .label=${this.hass.localize(
             "ui.panel.config.energy.solar.dialog.solar_production_energy"
           )}
+          .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
           dialogInitialFocus
         ></ha-statistic-picker>
