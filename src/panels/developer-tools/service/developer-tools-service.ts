@@ -43,6 +43,8 @@ class HaPanelDevService extends LitElement {
 
   @state() private _error?: string;
 
+  private _yamlValid = true;
+
   @storage({
     key: "panel-dev-service-state-service-data",
     state: true,
@@ -99,14 +101,6 @@ class HaPanelDevService extends LitElement {
       this._serviceData?.service
     );
 
-    const isValid = this._isValid(
-      this._serviceData,
-      fields,
-      target,
-      this._yamlMode,
-      this.hass.localize
-    );
-
     const domain = this._serviceData?.service
       ? computeDomain(this._serviceData?.service)
       : undefined;
@@ -147,9 +141,6 @@ class HaPanelDevService extends LitElement {
                   class="card-content"
                 ></ha-service-control>
               `}
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
         </ha-card>
       </div>
       <div class="button-row">
@@ -175,11 +166,7 @@ class HaPanelDevService extends LitElement {
                 >`
               : ""}
           </div>
-          <ha-progress-button
-            .disabled=${!isValid}
-            raised
-            @click=${this._callService}
-          >
+          <ha-progress-button raised @click=${this._callService}>
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.services.call_service"
             )}
@@ -389,19 +376,50 @@ class HaPanelDevService extends LitElement {
 
   private async _callService(ev) {
     const button = ev.currentTarget as HaProgressButton;
-    if (!this._serviceData?.service) {
+
+    if (this._yamlMode && !this._yamlValid) {
+      forwardHaptic("failure");
+      button.actionError();
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.developer-tools.tabs.services.errors.yaml.invalid_yaml"
+        ),
+      });
       return;
     }
-    const [domain, service] = this._serviceData.service.split(".", 2);
+
+    const { target, fields } = this._fields(
+      this.hass.services,
+      this._serviceData?.service
+    );
+
+    const isValid = this._isValid(
+      this._serviceData,
+      fields,
+      target,
+      this._yamlMode,
+      this.hass.localize
+    );
+
+    if (!isValid) {
+      forwardHaptic("failure");
+      button.actionError();
+      showToast(this, { message: this._error! });
+      return;
+    }
+    const [domain, service] = this._serviceData!.service!.split(".", 2);
     const script: Action[] = [];
-    if ("response" in this.hass.services[domain][service]) {
+    if (
+      this.hass.services?.[domain]?.[service] &&
+      "response" in this.hass.services[domain][service]
+    ) {
       script.push({
-        ...this._serviceData,
+        ...this._serviceData!,
         response_variable: "service_result",
       });
       script.push({ stop: "done", response_variable: "service_result" });
     } else {
-      script.push(this._serviceData);
+      script.push(this._serviceData!);
     }
     try {
       this._response = (await callExecuteScript(this.hass, script)).response;
@@ -419,7 +437,7 @@ class HaPanelDevService extends LitElement {
           this.hass.localize(
             "ui.notification_toast.service_call_failed",
             "service",
-            this._serviceData.service
+            this._serviceData!.service!
           ) + ` ${err.message}`,
       });
       return;
@@ -429,12 +447,15 @@ class HaPanelDevService extends LitElement {
 
   private _toggleYaml() {
     this._yamlMode = !this._yamlMode;
+    this._yamlValid = true;
   }
 
   private _yamlChanged(ev) {
     if (!ev.detail.isValid) {
+      this._yamlValid = false;
       return;
     }
+    this._yamlValid = true;
     this._serviceDataChanged(ev);
   }
 
