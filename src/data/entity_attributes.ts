@@ -67,7 +67,7 @@ export const DOMAIN_ATTRIBUTES_UNITS: Record<string, Record<string, string>> = {
   sun: {
     elevation: "°",
   },
-  vaccum: {
+  vacuum: {
     battery_level: "%",
   },
 };
