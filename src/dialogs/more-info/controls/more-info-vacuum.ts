@@ -263,15 +263,8 @@ class MoreInfoVacuum extends LitElement {
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
 
-    const batteryDomain = battery ? computeStateDomain(battery) : undefined;
-
     // Use device battery entity
-    if (
-      battery &&
-      (batteryDomain === "sensor" ||
-        batteryDomain === "binary_sensor" ||
-        !isNaN(battery.state as any))
-    ) {
+    if (battery && !isNaN(battery.state as any)) {
       const batteryChargingEntity = findBatteryChargingEntity(
         this.hass,
         entities
@@ -283,16 +276,14 @@ class MoreInfoVacuum extends LitElement {
       return html`
         <div>
           <span>
-            ${batteryDomain === "sensor"
+            ${computeStateDomain(battery) === "sensor"
               ? this.hass.formatEntityState(battery)
-              : ""}
-            ${batteryDomain === "sensor" || batteryDomain === "binary_sensor"
-              ? html`<ha-battery-icon
-                  .hass=${this.hass}
-                  .batteryStateObj=${battery}
-                  .batteryChargingStateObj=${batteryCharging}
-                ></ha-battery-icon>`
-              : ""}
+              : nothing}
+            <ha-battery-icon
+              .hass=${this.hass}
+              .batteryStateObj=${battery}
+              .batteryChargingStateObj=${batteryCharging}
+            ></ha-battery-icon>
           </span>
         </div>
       `;
@@ -311,6 +302,7 @@ class MoreInfoVacuum extends LitElement {
               "battery_level",
               Math.round(stateObj.attributes.battery_level)
             )}
+            %
 
             <ha-icon .icon=${stateObj.attributes.battery_icon}></ha-icon>
           </span>

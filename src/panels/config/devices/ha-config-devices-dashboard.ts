@@ -1,7 +1,14 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiCancel, mdiFilterVariant, mdiPlus } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -377,24 +384,17 @@ export class HaConfigDeviceDashboard extends LitElement {
             batteryEntityPair && batteryEntityPair[1]
               ? this.hass.states[batteryEntityPair[1]]
               : undefined;
-          const batteryDomain = battery ? computeStateDomain(battery) : "";
 
-          return battery &&
-            (batteryDomain === "sensor" ||
-              batteryDomain === "binary_sensor" ||
-              !isNaN(battery.state as any))
+          return battery && !isNaN(battery.state as any)
             ? html`
-                ${batteryDomain === "sensor"
+                ${computeStateDomain(battery) === "sensor"
                   ? this.hass.formatEntityState(battery)
-                  : ""}
-                ${batteryDomain === "sensor" ||
-                batteryDomain === "binary_sensor"
-                  ? html`<ha-battery-icon
-                      .hass=${this.hass!}
-                      .batteryStateObj=${battery}
-                      .batteryChargingStateObj=${batteryCharging}
-                    ></ha-battery-icon>`
-                  : ""}
+                  : nothing}
+                <ha-battery-icon
+                  .hass=${this.hass}
+                  .batteryStateObj=${battery}
+                  .batteryChargingStateObj=${batteryCharging}
+                ></ha-battery-icon>
               `
             : html`—`;
         },
