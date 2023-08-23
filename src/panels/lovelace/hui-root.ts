@@ -12,8 +12,10 @@ import {
   mdiMagnify,
   mdiPencil,
   mdiPlus,
+  mdiRedo,
   mdiRefresh,
   mdiShape,
+  mdiUndo,
   mdiViewDashboard,
 } from "@mdi/js";
 import "@polymer/paper-tabs/paper-tab";
@@ -106,11 +108,30 @@ class HUIRoot extends LitElement {
     );
   }
 
+  private _undo() {
+    if (this.lovelace) {
+      this.lovelace.restoreConfigFromHistory(
+        this.lovelace.configHistoryIndex + 1
+      );
+    }
+  }
+
+  private _redo() {
+    if (this.lovelace) {
+      this.lovelace.restoreConfigFromHistory(
+        this.lovelace.configHistoryIndex - 1
+      );
+    }
+  }
+
   protected render(): TemplateResult {
     const views = this.lovelace?.config.views ?? [];
 
     const curViewConfig =
       typeof this._curView === "number" ? views[this._curView] : undefined;
+
+    const historyTotal = this.lovelace?.configHistory.length ?? 0 - 1;
+    const historyIndex = this.lovelace?.configHistoryIndex ?? 0;
 
     return html`
       <div
@@ -144,6 +165,18 @@ class HUIRoot extends LitElement {
                       )}
                       @click=${this._editModeDisable}
                     ></mwc-button>
+                    <ha-icon-button
+                      label="Undo"
+                      .path=${mdiUndo}
+                      .disabled=${historyIndex + 1 >= historyTotal}
+                      @click=${this._undo}
+                    ></ha-icon-button>
+                    <ha-icon-button
+                      label="Redo"
+                      .path=${mdiRedo}
+                      .disabled=${historyIndex === 0}
+                      @click=${this._redo}
+                    ></ha-icon-button>
                     <a
                       href=${documentationUrl(this.hass, "/dashboards/")}
                       rel="noreferrer"

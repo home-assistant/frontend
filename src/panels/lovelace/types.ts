@@ -32,6 +32,9 @@ export interface Lovelace {
   setEditMode: (editMode: boolean) => void;
   saveConfig: (newConfig: LovelaceConfig) => Promise<void>;
   deleteConfig: () => Promise<void>;
+  configHistory: LovelaceConfig[];
+  configHistoryIndex: number;
+  restoreConfigFromHistory: (index: number) => Promise<void>;
 }
 
 export interface LovelaceBadge extends HTMLElement {

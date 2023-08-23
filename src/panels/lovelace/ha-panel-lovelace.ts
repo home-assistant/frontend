@@ -324,6 +324,8 @@ export class LovelacePanel extends LitElement {
       urlPath: this.urlPath,
       editMode: this.lovelace ? this.lovelace.editMode : false,
       locale: this.hass!.locale,
+      configHistory: this.lovelace ? this.lovelace.configHistory : [config],
+      configHistoryIndex: this.lovelace ? this.lovelace.configHistoryIndex : 0,
       enableFullEditMode: () => {
         if (!editorLoaded) {
           editorLoaded = true;
@@ -358,6 +360,8 @@ export class LovelacePanel extends LitElement {
           config: previousConfig,
           rawConfig: previousRawConfig,
           mode: previousMode,
+          configHistory: previousConfigHistory,
+          configHistoryIndex: previousConfigHistoryIndex,
         } = this.lovelace!;
         newConfig = this._checkLovelaceConfig(newConfig);
         let conf: LovelaceConfig;
@@ -372,11 +376,22 @@ export class LovelacePanel extends LitElement {
           conf = newConfig;
         }
         try {
+          const newConfigHistory = [...previousConfigHistory];
+          let newConfigHistoryIndex = previousConfigHistoryIndex;
+
+          if (previousConfigHistoryIndex !== 0) {
+            newConfigHistory.splice(0, previousConfigHistoryIndex);
+            newConfigHistoryIndex = 0;
+          }
+          newConfigHistory.unshift(newConfig);
+
           // Optimistic update
           this._updateLovelace({
             config: conf,
             rawConfig: newConfig,
             mode: "storage",
+            configHistory: newConfigHistory,
+            configHistoryIndex: newConfigHistoryIndex,
           });
           this._ignoreNextUpdateEvent = true;
           await saveConfig(this.hass!, urlPath, newConfig);
@@ -388,6 +403,7 @@ export class LovelacePanel extends LitElement {
             config: previousConfig,
             rawConfig: previousRawConfig,
             mode: previousMode,
+            configHistory: previousConfigHistory,
           });
           throw err;
         }
@@ -423,6 +439,57 @@ export class LovelacePanel extends LitElement {
             config: previousConfig,
             rawConfig: previousRawConfig,
             mode: previousMode,
+          });
+          throw err;
+        }
+      },
+      restoreConfigFromHistory: async (
+        configHistoryIndex: number
+      ): Promise<void> => {
+        const {
+          configHistory,
+          configHistoryIndex: previousConfigHistoryIndex,
+          config: previousConfig,
+          rawConfig: previousRawConfig,
+        } = this.lovelace!;
+
+        if (
+          previousConfigHistoryIndex === configHistoryIndex ||
+          configHistoryIndex < 0 ||
+          configHistoryIndex >= configHistory.length
+        ) {
+          return;
+        }
+
+        let conf: LovelaceConfig;
+        const newConfig = configHistory[configHistoryIndex];
+
+        if (newConfig.strategy) {
+          conf = await generateLovelaceDashboardStrategy({
+            config: newConfig,
+            hass: this.hass!,
+            narrow: this.narrow,
+          });
+        } else {
+          conf = newConfig;
+        }
+        try {
+          // Optimistic update
+          this._updateLovelace({
+            config: conf,
+            rawConfig: newConfig,
+            configHistoryIndex: configHistoryIndex,
+          });
+          this._ignoreNextUpdateEvent = true;
+          await saveConfig(this.hass!, urlPath, newConfig);
+        } catch (err: any) {
+          // eslint-disable-next-line
+          console.error(err);
+          // Rollback the optimistic update
+          this._updateLovelace({
+            config: previousConfig,
+            rawConfig: previousRawConfig,
+            configHistoryIndex: previousConfigHistoryIndex,
           });
           throw err;
         }
