@@ -1,32 +1,21 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/ha-svg-icon";
-import { brandsUrl } from "../util/brands-url";
 
-@customElement("integration-badge")
-class IntegrationBadge extends LitElement {
-  @property() public domain!: string;
+@customElement("action-badge")
+class ActionBadge extends LitElement {
+  @property() public icon!: string;
 
   @property() public title!: string;
 
   @property() public badgeIcon?: string;
-
-  @property({ type: Boolean }) public darkOptimizedIcon?: boolean;
 
   @property({ type: Boolean, reflect: true }) public clickable = false;
 
   protected render(): TemplateResult {
     return html`
       <div class="icon">
-        <img
-          alt=""
-          src=${brandsUrl({
-            domain: this.domain,
-            type: "icon",
-            darkOptimized: this.darkOptimizedIcon,
-          })}
-          referrerpolicy="no-referrer"
-        />
+        <ha-svg-icon .path=${this.icon}></ha-svg-icon>
         ${this.badgeIcon
           ? html`<ha-svg-icon
               class="badge"
@@ -51,31 +40,34 @@ class IntegrationBadge extends LitElement {
         color: var(--primary-text-color);
       }
 
-      img {
-        max-width: 100%;
-        max-height: 100%;
-      }
-
       .icon {
         position: relative;
+        box-sizing: border-box;
         margin: 0 auto 8px;
         height: 40px;
         width: 40px;
+        border-radius: 50%;
+        border: 1px solid var(--secondary-text-color);
         display: flex;
         align-items: center;
         justify-content: center;
       }
 
+      :host([clickable]) .icon {
+        border-color: var(--primary-color);
+        border-width: 2px;
+      }
+
       .badge {
         position: absolute;
-        color: white;
-        bottom: -7px;
-        right: -10px;
-        background-color: var(--label-badge-green);
+        color: var(--primary-color);
+        bottom: -5px;
+        right: -5px;
+        background-color: white;
         border-radius: 50%;
+        width: 18px;
         display: block;
-        --mdc-icon-size: 18px;
-        border: 2px solid white;
+        height: 18px;
       }
 
       .title {
@@ -88,6 +80,6 @@ class IntegrationBadge extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "integration-badge": IntegrationBadge;
+    "action-badge": ActionBadge;
   }
 }
