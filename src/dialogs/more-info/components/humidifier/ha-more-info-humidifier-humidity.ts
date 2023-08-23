@@ -184,7 +184,8 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
           })}
         >
           <ha-control-circular-slider
-            .inverted=${inverted}
+            .inactive=${!active}
+            .mode=${inverted ? "end" : "start"}
             .value=${targetHumidity}
             .min=${this._min}
             .max=${this._max}
