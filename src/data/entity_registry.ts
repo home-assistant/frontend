@@ -139,9 +139,9 @@ export const findBatteryEntity = <T extends { entity_id: string }>(
     .filter(
       (entity) =>
         hass.states[entity.entity_id] &&
-        hass.states[entity.entity_id].attributes.device_class === "battery"
+        hass.states[entity.entity_id].attributes.device_class === "battery" &&
+        batteryPriorities.includes(computeDomain(entity.entity_id))
     )
-    .filter((item) => batteryPriorities.includes(computeDomain(item.entity_id)))
     .sort(
       (a, b) =>
         batteryPriorities.indexOf(computeDomain(a.entity_id)) -
