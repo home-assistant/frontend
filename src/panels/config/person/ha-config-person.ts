@@ -276,8 +276,10 @@ class HaConfigPerson extends LitElement {
         overflow: hidden;
       }
       .empty {
-        text-align: center;
         padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
       }
       paper-icon-item {
         padding-top: 4px;

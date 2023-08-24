@@ -163,6 +163,7 @@ export class HaMoreInfoClimateHumidity extends LitElement {
           })}
         >
           <ha-control-circular-slider
+            .inactive=${!active}
             .value=${this._targetHumidity}
             .min=${this._min}
             .max=${this._max}

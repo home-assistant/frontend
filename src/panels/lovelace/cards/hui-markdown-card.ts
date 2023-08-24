@@ -69,6 +69,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   }
 
   public disconnectedCallback() {
+    super.disconnectedCallback();
     this._tryDisconnect();
   }
 

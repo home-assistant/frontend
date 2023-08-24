@@ -1,3 +1,4 @@
+import punycode from "punycode";
 import {
   css,
   CSSResultGroup,
@@ -7,7 +8,6 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import punycode from "punycode";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import "../components/ha-alert";

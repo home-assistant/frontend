@@ -146,6 +146,7 @@ export class HaFileUpload extends LitElement {
   private _clearValue(ev: Event) {
     ev.preventDefault();
     this.value = null;
+    this._input!.value = "";
     fireEvent(this, "change");
   }
 

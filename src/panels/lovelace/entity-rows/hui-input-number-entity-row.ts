@@ -49,6 +49,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     this._resizeObserver?.disconnect();
   }
 

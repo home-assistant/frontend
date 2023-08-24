@@ -15,6 +15,10 @@ export interface CoverTiltTileFeatureConfig {
   type: "cover-tilt";
 }
 
+export interface CoverTiltPositionTileFeatureConfig {
+  type: "cover-tilt-position";
+}
+
 export interface LightBrightnessTileFeatureConfig {
   type: "light-brightness";
 }
@@ -57,16 +61,27 @@ export interface VacuumCommandsTileFeatureConfig {
   commands?: VacuumCommand[];
 }
 
+export const LAWN_MOWER_COMMANDS = ["start_pause", "dock"] as const;
+
+export type LawnMowerCommand = (typeof LAWN_MOWER_COMMANDS)[number];
+
+export interface LawnMowerCommandsTileFeatureConfig {
+  type: "lawn-mower-commands";
+  commands?: LawnMowerCommand[];
+}
+
 export type LovelaceTileFeatureConfig =
+  | AlarmModesTileFeatureConfig
+  | ClimateHvacModesTileFeatureConfig
   | CoverOpenCloseTileFeatureConfig
   | CoverPositionTileFeatureConfig
+  | CoverTiltPositionTileFeatureConfig
   | CoverTiltTileFeatureConfig
+  | FanSpeedTileFeatureConfig
+  | LawnMowerCommandsTileFeatureConfig
   | LightBrightnessTileFeatureConfig
   | LightColorTempTileFeatureConfig
   | VacuumCommandsTileFeatureConfig
-  | FanSpeedTileFeatureConfig
-  | AlarmModesTileFeatureConfig
-  | ClimateHvacModesTileFeatureConfig
   | WaterHeaterOperationModesTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {

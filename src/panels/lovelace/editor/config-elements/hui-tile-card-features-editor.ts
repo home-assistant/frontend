@@ -31,6 +31,7 @@ import { supportsCoverOpenCloseTileFeature } from "../../tile-features/hui-cover
 import { supportsCoverPositionTileFeature } from "../../tile-features/hui-cover-position-tile-feature";
 import { supportsCoverTiltTileFeature } from "../../tile-features/hui-cover-tilt-tile-feature";
 import { supportsFanSpeedTileFeature } from "../../tile-features/hui-fan-speed-tile-feature";
+import { supportsLawnMowerCommandTileFeature } from "../../tile-features/hui-lawn-mower-commands-tile-feature";
 import { supportsLightBrightnessTileFeature } from "../../tile-features/hui-light-brightness-tile-feature";
 import { supportsLightColorTempTileFeature } from "../../tile-features/hui-light-color-temp-tile-feature";
 import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
@@ -41,15 +42,17 @@ type FeatureType = LovelaceTileFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
 
 const FEATURE_TYPES: FeatureType[] = [
+  "alarm-modes",
+  "climate-hvac-modes",
   "cover-open-close",
   "cover-position",
+  "cover-tilt-position",
   "cover-tilt",
+  "fan-speed",
+  "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
   "vacuum-commands",
-  "fan-speed",
-  "alarm-modes",
-  "climate-hvac-modes",
   "water-heater-operation-modes",
 ];
 
@@ -59,19 +62,22 @@ const EDITABLES_FEATURE_TYPES = new Set<FeatureType>([
   "climate-hvac-modes",
   "water-heater-operation-modes",
   "cover-position",
+  "lawn-mower-commands",
 ]);
 
 const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
   {
+    "alarm-modes": supportsAlarmModesTileFeature,
+    "climate-hvac-modes": supportsClimateHvacModesTileFeature,
     "cover-open-close": supportsCoverOpenCloseTileFeature,
     "cover-position": supportsCoverPositionTileFeature,
+    "cover-tilt-position": supportsCoverPositionTileFeature,
     "cover-tilt": supportsCoverTiltTileFeature,
+    "fan-speed": supportsFanSpeedTileFeature,
+    "lawn-mower-commands": supportsLawnMowerCommandTileFeature,
     "light-brightness": supportsLightBrightnessTileFeature,
     "light-color-temp": supportsLightColorTempTileFeature,
     "vacuum-commands": supportsVacuumCommandTileFeature,
-    "fan-speed": supportsFanSpeedTileFeature,
-    "alarm-modes": supportsAlarmModesTileFeature,
-    "climate-hvac-modes": supportsClimateHvacModesTileFeature,
     "water-heater-operation-modes":
       supportsWaterHeaterOperationModesTileFeature,
   };
@@ -108,6 +114,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
   private _sortable?: SortableInstance;
 
   public disconnectedCallback() {
+    super.disconnectedCallback();
     this._destroySortable();
   }
 

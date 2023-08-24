@@ -9,6 +9,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { clamp } from "../../../../common/number/clamp";
@@ -163,6 +164,7 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
     );
 
     const stateColor = stateColorCss(this.stateObj);
+    const active = stateActive(this.stateObj);
 
     if (
       supportsTargetTemperature &&
@@ -177,6 +179,7 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
           })}
         >
           <ha-control-circular-slider
+            .inactive=${!active}
             .value=${this._targetTemperature}
             .min=${this._min}
             .max=${this._max}
@@ -243,9 +246,11 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
           font-size: 20px;
           line-height: 24px;
           align-self: flex-start;
-          margin-left: -20px;
           width: 20px;
           margin-top: 4px;
+        }
+        .decimal + .unit {
+          margin-left: -20px;
         }
       `,
     ];

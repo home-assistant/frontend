@@ -18,18 +18,30 @@ import { clamp } from "../../../../common/number/clamp";
 import { formatNumber } from "../../../../common/number/format_number";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-control-circular-slider";
+import type { ControlCircularSliderMode } from "../../../../components/ha-control-circular-slider";
 import "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-svg-icon";
 import {
   CLIMATE_HVAC_ACTION_TO_MODE,
   ClimateEntity,
   ClimateEntityFeature,
+  HvacMode,
 } from "../../../../data/climate";
 import { UNAVAILABLE } from "../../../../data/entity";
 import { HomeAssistant } from "../../../../types";
 import { moreInfoControlCircularSliderStyle } from "../ha-more-info-control-circular-slider-style";
 
 type Target = "value" | "low" | "high";
+
+const SLIDER_MODES: Record<HvacMode, ControlCircularSliderMode> = {
+  auto: "full",
+  cool: "end",
+  dry: "full",
+  fan_only: "full",
+  heat: "start",
+  heat_cool: "full",
+  off: "full",
+};
 
 @customElement("ha-more-info-climate-temperature")
 export class HaMoreInfoClimateTemperature extends LitElement {
@@ -267,17 +279,15 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       );
     }
 
-    const hvacModes = this.stateObj.attributes.hvac_modes;
+    const activeModes = this.stateObj.attributes.hvac_modes.filter(
+      (m) => m !== "off"
+    );
 
     if (
       supportsTargetTemperature &&
       this._targetTemperature.value != null &&
       this.stateObj.state !== UNAVAILABLE
     ) {
-      const hasOnlyCoolMode =
-        hvacModes.length === 2 &&
-        hvacModes.includes("cool") &&
-        hvacModes.includes("off");
       return html`
         <div
           class="container"
@@ -287,7 +297,10 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           })}
         >
           <ha-control-circular-slider
-            .inverted=${mode === "cool" || hasOnlyCoolMode}
+            .inactive=${!active}
+            .mode=${mode === "off" && activeModes.length === 1
+              ? SLIDER_MODES[activeModes[0]]
+              : SLIDER_MODES[mode]}
             .value=${this._targetTemperature.value}
             .min=${this._min}
             .max=${this._max}
@@ -324,6 +337,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           })}
         >
           <ha-control-circular-slider
+            .inactive=${!active}
             dual
             .low=${this._targetTemperature.low}
             .high=${this._targetTemperature.high}
@@ -416,11 +430,12 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           font-size: 20px;
           line-height: 24px;
           align-self: flex-start;
-          margin-left: -20px;
           width: 20px;
           margin-top: 4px;
         }
-
+        .decimal + .unit {
+          margin-left: -20px;
+        }
         .dual {
           display: flex;
           flex-direction: row;

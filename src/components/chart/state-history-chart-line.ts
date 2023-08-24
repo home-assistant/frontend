@@ -7,6 +7,7 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import {
   formatNumber,
   numberFormatToLocale,
+  getNumberFormatOptions,
 } from "../../common/number/format_number";
 import { LineChartEntity, LineChartState } from "../../data/history";
 import { HomeAssistant } from "../../types";
@@ -125,7 +126,13 @@ class StateHistoryChartLine extends LitElement {
               label: (context) =>
                 `${context.dataset.label}: ${formatNumber(
                   context.parsed.y,
-                  this.hass.locale
+                  this.hass.locale,
+                  getNumberFormatOptions(
+                    this.hass.states[this.data[context.datasetIndex].entity_id],
+                    this.hass.entities[
+                      this.data[context.datasetIndex].entity_id
+                    ]
+                  )
                 )} ${this.unit}`,
             },
           },

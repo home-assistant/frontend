@@ -139,6 +139,13 @@
         "drying": "{name} drying",
         "on_entity": "{name} on"
       },
+      "lawn_mower": {
+        "actions": {
+          "resume_mowing": "Resume mowing",
+          "start_mowing": "Start mowing",
+          "dock": "Return to dock"
+        }
+      },
       "light": {
         "brightness": "Brightness",
         "color_temperature": "Color temperature",
@@ -1005,6 +1012,13 @@
         "humidifier": {
           "target_label": "[%key:ui::dialogs::more_info_control::climate::target_label%]",
           "target": "[%key:ui::dialogs::more_info_control::climate::target%]"
+        },
+        "lawn_mower": {
+          "activity": "Activity",
+          "commands": "Lawn mower commands:",
+          "start_mowing": "Start mowing",
+          "pause": "Pause",
+          "dock": "Return to dock"
         },
         "water_heater": {
           "target": "[%key:ui::dialogs::more_info_control::climate::target%]"
@@ -2507,7 +2521,7 @@
                   "label": "And",
                   "description": {
                     "no_conditions": "Test if multiple conditions match",
-                    "full": "Test if any of {count} {count, plural,\n one {condition match}\n other {conditions matches}\n}"
+                    "full": "Test if {count} {count, plural,\n one {condition match}\n other {conditions matches}\n}"
                   }
                 },
                 "device": {
@@ -3558,6 +3572,7 @@
             "finish": "Finish",
             "submit": "Submit",
             "next": "Next",
+            "preview": "Preview",
             "found_following_devices": "We found the following devices",
             "yaml_only_title": "This device cannot be added from the UI",
             "yaml_only": "You can add this device by adding it to your ''configuration.yaml''. See the documentation for more information.",
@@ -4974,6 +4989,9 @@
                   "cover-tilt": {
                     "label": "Cover tilt"
                   },
+                  "cover-tilt-position": {
+                    "label": "Cover tilt position"
+                  },
                   "fan-speed": {
                     "label": "Fan speed"
                   },
@@ -5013,6 +5031,14 @@
                   "water-heater-operation-modes": {
                     "label": "Water heater operation modes",
                     "operation_modes": "Operation modes"
+                  },
+                  "lawn-mower-commands": {
+                    "label": "Lawn mower commands",
+                    "commands": "Commands",
+                    "commands_list": {
+                      "start_pause": "Start Pause",
+                      "dock": "[%key:ui::dialogs::more_info_control::lawn_mower::dock%]"
+                    }
                   }
                 }
               }
