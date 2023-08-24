@@ -1,8 +1,9 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import { mdiDelete } from "@mdi/js";
+import { mdiDelete, mdiDrag } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-picker";
@@ -12,6 +13,10 @@ import type { InputSelect } from "../../../../data/input_select";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import {
+  loadSortable,
+  SortableInstance,
+} from "../../../../resources/sortable.ondemand";
 
 @customElement("ha-input_select-form")
 class HaInputSelectForm extends LitElement {
@@ -27,7 +32,58 @@ class HaInputSelectForm extends LitElement {
 
   @state() private _options: string[] = [];
 
+  private _sortable?: SortableInstance;
+
   @query("#option_input", true) private _optionInput?: HaTextField;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._createSortable();
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._destroySortable();
+  }
+
+  private async _createSortable() {
+    const Sortable = await loadSortable();
+    this._sortable = new Sortable(this.shadowRoot!.querySelector(".options")!, {
+      animation: 150,
+      fallbackClass: "sortable-fallback",
+      handle: ".handle",
+      onChoose: (evt: SortableEvent) => {
+        (evt.item as any).placeholder =
+          document.createComment("sort-placeholder");
+        evt.item.after((evt.item as any).placeholder);
+      },
+      onEnd: (evt: SortableEvent) => {
+        // put back in original location
+        if ((evt.item as any).placeholder) {
+          (evt.item as any).placeholder.replaceWith(evt.item);
+          delete (evt.item as any).placeholder;
+        }
+        this._dragged(evt);
+      },
+    });
+  }
+
+  private _dragged(ev: SortableEvent): void {
+    if (ev.oldIndex === ev.newIndex) return;
+
+    const options = this._options.concat();
+    const option = options.splice(ev.oldIndex, 1)[0];
+    options.splice(ev.newIndex, 0, option);
+
+    fireEvent(this, "value-changed", {
+      value: { ...this._item, options },
+    });
+  }
+
+  private _destroySortable() {
+    this._sortable?.destroy();
+    this._sortable = undefined;
+  }
 
   set item(item: InputSelect) {
     this._item = item;
@@ -86,30 +142,39 @@ class HaInputSelectForm extends LitElement {
             "ui.dialogs.helper_settings.input_select.options"
           )}:
         </div>
-        ${this._options.length
-          ? this._options.map(
-              (option, index) => html`
-                <mwc-list-item class="option" hasMeta>
-                  ${option}
-                  <ha-icon-button
-                    slot="meta"
-                    .index=${index}
-                    .label=${this.hass.localize(
-                      "ui.dialogs.helper_settings.input_select.remove_option"
-                    )}
-                    @click=${this._removeOption}
-                    .path=${mdiDelete}
-                  ></ha-icon-button>
+        <div class="options">
+          ${this._options.length
+            ? repeat(
+                this._options,
+                (option) => option,
+                (option, index) => html`
+                  <mwc-list-item class="option" hasMeta>
+                    <div class="optioncontent">
+                      <div class="handle">
+                        <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                      </div>
+                      ${option}
+                    </div>
+                    <ha-icon-button
+                      slot="meta"
+                      .index=${index}
+                      .label=${this.hass.localize(
+                        "ui.dialogs.helper_settings.input_select.remove_option"
+                      )}
+                      @click=${this._removeOption}
+                      .path=${mdiDelete}
+                    ></ha-icon-button>
+                  </mwc-list-item>
+                `
+              )
+            : html`
+                <mwc-list-item noninteractive>
+                  ${this.hass!.localize(
+                    "ui.dialogs.helper_settings.input_select.no_options"
+                  )}
                 </mwc-list-item>
-              `
-            )
-          : html`
-              <mwc-list-item noninteractive>
-                ${this.hass!.localize(
-                  "ui.dialogs.helper_settings.input_select.no_options"
-                )}
-              </mwc-list-item>
-            `}
+              `}
+        </div>
         <div class="layout horizontal center">
           <ha-textfield
             class="flex-auto"
@@ -213,6 +278,18 @@ class HaInputSelectForm extends LitElement {
         .header {
           margin-top: 8px;
           margin-bottom: 8px;
+        }
+        .handle {
+          cursor: move;
+          padding-right: 12px;
+        }
+        .handle ha-svg-icon {
+          pointer-events: none;
+          height: 24px;
+        }
+        .optioncontent {
+          display: flex;
+          align-items: center;
         }
       `,
     ];
