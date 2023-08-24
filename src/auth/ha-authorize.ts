@@ -35,6 +35,8 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
   @property() public oauth2State?: string;
 
+  @property() public translationFragment = "page-authorize";
+
   @state() private _authProvider?: AuthProvider;
 
   @state() private _authProviders?: AuthProvider[];
@@ -45,7 +47,6 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
   constructor() {
     super();
-    this.translationFragment = "page-authorize";
     const query = extractSearchParamsObject() as AuthUrlSearchParams;
     if (query.client_id) {
       this.clientId = query.client_id;
@@ -102,7 +103,6 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         : nothing}
 
       <ha-auth-flow
-        .resources=${this.resources}
         .clientId=${this.clientId}
         .redirectUri=${this.redirectUri}
         .oauth2State=${this.oauth2State}
