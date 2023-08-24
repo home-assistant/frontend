@@ -54,10 +54,6 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property() public computeWarning?: (schema: any, warning) => string;
 
-  @property({ type: Boolean }) public nested = false;
-
-  @property() public reOrderMode?: boolean;
-
   @property() public computeLabel?: (
     schema: any,
     data: HaFormDataContainer
@@ -138,8 +134,6 @@ export class HaForm extends LitElement implements HaFormElement {
                   .localizeValue=${this.localizeValue}
                   .required=${item.required || false}
                   .context=${this._generateContext(item)}
-                  .reOrderMode=${this.reOrderMode}
-                  .nested=${this.nested}
                 ></ha-selector>`
               : dynamicElement(`ha-form-${item.type}`, {
                   schema: item,

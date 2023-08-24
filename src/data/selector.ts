@@ -54,8 +54,10 @@ export type Selector =
   | UiColorSelector;
 
 export interface ActionSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  action: {} | null;
+  action: {
+    reorder_mode?: boolean;
+    nested?: boolean;
+  } | null;
 }
 
 export interface AddonSelector {
@@ -98,8 +100,10 @@ export interface ColorTempSelector {
 }
 
 export interface ConditionSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  condition: {} | null;
+  condition: {
+    reorder_mode?: boolean;
+    nested?: boolean;
+  } | null;
 }
 
 export interface ConversationAgentSelector {

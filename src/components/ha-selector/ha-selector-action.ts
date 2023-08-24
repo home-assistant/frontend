@@ -17,10 +17,6 @@ export class HaActionSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @property() public nested?: boolean;
-
-  @property() public reOrderMode?: boolean;
-
   protected render() {
     return html`
       ${this.label}
@@ -28,8 +24,8 @@ export class HaActionSelector extends LitElement {
         .disabled=${this.disabled}
         .actions=${this.value || []}
         .hass=${this.hass}
-        .nested=${this.nested}
-        .reOrderMode=${this.reOrderMode}
+        .nested=${this.selector.action?.nested}
+        .reOrderMode=${this.selector.action?.reorder_mode}
       ></ha-automation-action>
     `;
   }

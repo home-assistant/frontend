@@ -32,7 +32,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, type: string) =>
+    (localize: LocalizeFunc, type: string, reOrderMode: boolean) =>
       [
         {
           name: "type",
@@ -61,7 +61,9 @@ export class HaRepeatAction extends LitElement implements ActionElement {
           ? ([
               {
                 name: type,
-                selector: { condition: {} },
+                selector: {
+                  condition: { nested: true, reorder_mode: reOrderMode },
+                },
               },
             ] as const)
           : []),
@@ -74,18 +76,23 @@ export class HaRepeatAction extends LitElement implements ActionElement {
               },
             ] as const)
           : []),
-        { name: "sequence", selector: { action: {} } },
+        {
+          name: "sequence",
+          selector: { action: { nested: true, reorder_mode: reOrderMode } },
+        },
       ] as const
   );
 
   protected render() {
     const action = this.action.repeat;
     const type = getType(action);
-    const schema = this._schema(this.hass.localize, type ?? "count");
+    const schema = this._schema(
+      this.hass.localize,
+      type ?? "count",
+      this.reOrderMode
+    );
     const data = { ...action, type };
     return html` <ha-form
-      nested
-      .reOrderMode=${this.reOrderMode}
       .hass=${this.hass}
       .data=${data}
       .schema=${schema}
