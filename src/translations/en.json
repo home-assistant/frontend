@@ -5717,8 +5717,9 @@
           "finish": "Next"
         },
         "integration": {
-          "intro": "Devices and services are represented in Home Assistant as integrations. You can set them up now, or do it later from the settings.",
-          "more_integrations": "More",
+          "header": "We already found compatible devices on your network!",
+          "intro": "We have set some of them up for you. Some might need more configuration.",
+          "more_integrations": "+{count} more",
           "finish": "Finish"
         },
         "analytics": {
