@@ -380,14 +380,18 @@ export class HaConfigDeviceDashboard extends LitElement {
             batteryEntityPair && batteryEntityPair[0]
               ? this.hass.states[batteryEntityPair[0]]
               : undefined;
+          const batteryDomain = battery
+            ? computeStateDomain(battery)
+            : undefined;
           const batteryCharging =
             batteryEntityPair && batteryEntityPair[1]
               ? this.hass.states[batteryEntityPair[1]]
               : undefined;
 
-          return battery && !isNaN(battery.state as any)
+          return battery &&
+            (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
             ? html`
-                ${computeStateDomain(battery) === "sensor"
+                ${batteryDomain === "sensor"
                   ? this.hass.formatEntityState(battery)
                   : nothing}
                 <ha-battery-icon
