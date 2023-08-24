@@ -1,7 +1,6 @@
 import "@material/mwc-button";
 import { genClientId } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
   html,
   LitElement,
@@ -16,6 +15,7 @@ import type { HaForm } from "../components/ha-form/ha-form";
 import { HaFormDataContainer, HaFormSchema } from "../components/ha-form/types";
 import { onboardUserStep } from "../data/onboarding";
 import { ValueChangedEvent } from "../types";
+import { onBoardingStyles } from "./styles";
 
 const CREATE_USER_SCHEMA: HaFormSchema[] = [
   {
@@ -58,7 +58,7 @@ class OnboardingCreateUser extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <p>${this.localize("ui.panel.page-onboarding.intro")}</p>
+      <h1>Create user</h1>
       <p>${this.localize("ui.panel.page-onboarding.user.intro")}</p>
 
       ${this._errorMsg
@@ -67,25 +67,27 @@ class OnboardingCreateUser extends LitElement {
 
       <ha-form
         .computeLabel=${this._computeLabel(this.localize)}
+        .computeHelper=${this._computeHelper(this.localize)}
         .data=${this._newUser}
         .disabled=${this._loading}
         .error=${this._formError}
         .schema=${CREATE_USER_SCHEMA}
         @value-changed=${this._handleValueChanged}
       ></ha-form>
-
-      <mwc-button
-        raised
-        @click=${this._submitForm}
-        .disabled=${this._loading ||
-        !this._newUser.name ||
-        !this._newUser.username ||
-        !this._newUser.password ||
-        !this._newUser.password_confirm ||
-        this._newUser.password !== this._newUser.password_confirm}
-      >
-        ${this.localize("ui.panel.page-onboarding.user.create_account")}
-      </mwc-button>
+      <div class="footer">
+        <mwc-button
+          unelevated
+          @click=${this._submitForm}
+          .disabled=${this._loading ||
+          !this._newUser.name ||
+          !this._newUser.username ||
+          !this._newUser.password ||
+          !this._newUser.password_confirm ||
+          this._newUser.password !== this._newUser.password_confirm}
+        >
+          ${this.localize("ui.panel.page-onboarding.user.create_account")}
+        </mwc-button>
+      </div>
     `;
   }
 
@@ -111,6 +113,11 @@ class OnboardingCreateUser extends LitElement {
       localize(`ui.panel.page-onboarding.user.data.${schema.name}`);
   }
 
+  private _computeHelper(localize) {
+    return (schema: HaFormSchema) =>
+      localize(`ui.panel.page-onboarding.user.helper.${schema.name}`);
+  }
+
   private _handleValueChanged(
     ev: ValueChangedEvent<HaFormDataContainer>
   ): void {
@@ -120,6 +127,7 @@ class OnboardingCreateUser extends LitElement {
       this._maybePopulateUsername();
     }
     this._formError.password_confirm =
+      this._newUser.password_confirm &&
       this._newUser.password !== this._newUser.password_confirm
         ? this.localize(
             "ui.panel.page-onboarding.user.error.password_not_match"
@@ -167,14 +175,7 @@ class OnboardingCreateUser extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      mwc-button {
-        margin: 32px 0 0;
-        text-align: center;
-        display: block;
-        text-align: right;
-      }
-    `;
+    return onBoardingStyles;
   }
 }
 

@@ -35,6 +35,7 @@ import {
   loadTokens,
   saveTokens,
 } from "../common/auth/token_storage";
+import { storeState } from "../util/ha-pref-storage";
 
 type OnboardingEvent =
   | {
@@ -80,15 +81,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     return html`<ha-card>
         <div class="card-content">${this._renderStep()}</div>
       </ha-card>
-      ${this.hass
-        ? html`<ha-language-picker
-            .hass=${this.hass}
-            .value=${this.language}
-            .label=${this.localize("ui.panel.page-onboarding.language")}
-            nativeName
-            @value-changed=${this._languageChanged}
-          ></ha-language-picker>`
-        : nothing} `;
+      <ha-language-picker
+        .value=${this.language}
+        .label=${""}
+        nativeName
+        @value-changed=${this._languageChanged}
+      ></ha-language-picker>`;
   }
 
   private _renderStep() {
@@ -348,6 +346,14 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       subscribeOne(conn, subscribeUser),
     ]);
     this.initializeHass(auth, conn);
+    if (this.language && this.language !== this.hass!.language) {
+      this._updateHass({
+        locale: { ...this.hass!.locale, language: this.language },
+        language: this.language,
+        selectedLanguage: this.language,
+      });
+      storeState(this.hass!);
+    }
     // Load config strings for integrations
     (this as any)._loadFragmentTranslations(this.hass!.language, "config");
     // Make sure hass is initialized + the config/user callbacks have called.
@@ -359,12 +365,14 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   private _languageChanged(ev: CustomEvent) {
     const language = ev.detail.value;
     this.language = language;
-    this._updateHass({
-      locale: { ...this.hass!.locale, language },
-      language,
-      selectedLanguage: language,
-    });
-    storeState(this.hass!);
+    if (this.hass) {
+      this._updateHass({
+        locale: { ...this.hass!.locale, language },
+        language,
+        selectedLanguage: language,
+      });
+      storeState(this.hass!);
+    }
   }
 
   static styles = css`
@@ -372,12 +380,15 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       display: block;
       width: 200px;
       margin-top: 8px;
+      border-radius: 4px;
+      overflow: hidden;
       --mdc-select-fill-color: none;
-      --mdc-select-label-ink-color: var(--text-primary-color, #fff);
-      --mdc-select-ink-color: var(--text-primary-color, #fff);
-      --mdc-select-idle-line-color: var(--text-primary-color, #fff);
-      --mdc-select-hover-line-color: var(--text-primary-color, #fff);
-      --mdc-select-dropdown-icon-color: var(--text-primary-color, #fff);
+      --mdc-select-label-ink-color: var(--primary-text-color, #212121);
+      --mdc-select-ink-color: var(--primary-text-color, #212121);
+      --mdc-select-idle-line-color: transparent;
+      --mdc-select-hover-line-color: transparent;
+      --mdc-select-dropdown-icon-color: var(--primary-text-color, #212121);
+      --mdc-shape-small: 0;
     }
   `;
 }

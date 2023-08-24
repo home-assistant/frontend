@@ -5687,6 +5687,9 @@
             "password": "Password",
             "password_confirm": "Confirm password"
           },
+          "helper": {
+            "password": "Choose a strong and unique password. Make sure to save it, so you don't forget it."
+          },
           "create_account": "Create account",
           "error": {
             "password_not_match": "Passwords don't match"
@@ -5706,8 +5709,8 @@
           "finish": "Next"
         },
         "integration": {
-          "header": "We already found compatible devices on your network!",
-          "intro": "We have set some of them up for you. Some might need more configuration.",
+          "header": "We found compatible devices!",
+          "intro": "These are found on your local network. Some are already added, others may need extra configuration.",
           "more_integrations": "+{count} more",
           "finish": "Finish"
         },
