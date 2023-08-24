@@ -17,6 +17,12 @@ export interface GroupEntity extends HassEntityBase {
   attributes: GroupEntityAttributes;
 }
 
+export interface GroupPreview {
+  state: string;
+  attributes: Record<string, any>;
+  group_type: string;
+}
+
 export const computeGroupDomain = (
   stateObj: GroupEntity
 ): string | undefined => {
@@ -27,35 +33,15 @@ export const computeGroupDomain = (
   return uniqueDomains.length === 1 ? uniqueDomains[0] : undefined;
 };
 
-export const subscribePreviewGroupSensor = (
+export const subscribePreviewGroup = (
   hass: HomeAssistant,
   flow_id: string,
   flow_type: "config_flow" | "options_flow",
   user_input: Record<string, any>,
-  callback: (preview: {
-    state: string;
-    attributes: Record<string, any>;
-  }) => void
+  callback: (preview: GroupPreview) => void
 ): Promise<UnsubscribeFunc> =>
   hass.connection.subscribeMessage(callback, {
-    type: "group/sensor/start_preview",
-    flow_id,
-    flow_type,
-    user_input,
-  });
-
-export const subscribePreviewGroupBinarySensor = (
-  hass: HomeAssistant,
-  flow_id: string,
-  flow_type: "config_flow" | "options_flow",
-  user_input: Record<string, any>,
-  callback: (preview: {
-    state: string;
-    attributes: Record<string, any>;
-  }) => void
-): Promise<UnsubscribeFunc> =>
-  hass.connection.subscribeMessage(callback, {
-    type: "group/binary_sensor/start_preview",
+    type: "group/start_preview",
     flow_id,
     flow_type,
     user_input,
