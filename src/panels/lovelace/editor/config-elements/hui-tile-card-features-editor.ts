@@ -154,8 +154,10 @@ export class HuiTileCardFeaturesEditor extends LitElement {
       const customFeatureEntry = CUSTOM_FEATURE_ENTRIES[customType];
       return customFeatureEntry?.name || type;
     }
-    return this.hass!.localize(
-      `ui.panel.lovelace.editor.card.tile.features.types.${type}.label`
+    return (
+      this.hass!.localize(
+        `ui.panel.lovelace.editor.card.tile.features.types.${type}.label`
+      ) || type
     );
   }
 
