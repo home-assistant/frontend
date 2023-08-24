@@ -64,9 +64,11 @@ class HuiCoverTiltPositionTileFeature
 
     const value = Math.max(Math.round(percentage), 0);
 
+    const forcedState = this.stateObj.state === "closed" ? "open" : undefined;
+
     const color = this.color
       ? computeCssColor(this.color)
-      : stateColorCss(this.stateObj);
+      : stateColorCss(this.stateObj, forcedState);
 
     const style = {
       "--color": color,
@@ -107,10 +109,6 @@ class HuiCoverTiltPositionTileFeature
 
   static get styles() {
     return css`
-      :host {
-        /* Force inactive state to be colored for the slider */
-        --state-cover-inactive-color: var(--state-cover-active-color);
-      }
       ha-control-slider {
         /* Force inactive state to be colored for the slider */
         --control-slider-color: var(--color);

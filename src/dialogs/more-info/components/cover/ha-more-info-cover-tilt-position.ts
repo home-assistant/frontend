@@ -72,8 +72,9 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const color = stateColorCss(this.stateObj);
-    const isUnavailable = this.stateObj.state === UNAVAILABLE;
+    const forcedState = this.stateObj.state === "closed" ? "open" : undefined;
+
+    const color = stateColorCss(this.stateObj, forcedState);
 
     return html`
       <ha-control-slider
@@ -93,7 +94,7 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
           "--control-slider-color": color,
           "--control-slider-background": color,
         })}
-        .disabled=${isUnavailable}
+        .disabled=${this.stateObj.state === UNAVAILABLE}
       >
         <div slot="background" class="gradient"></div>
       </ha-control-slider>
@@ -102,10 +103,6 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      :host {
-        /* Force inactive state to be colored for the slider */
-        --state-cover-inactive-color: var(--state-cover-active-color);
-      }
       ha-control-slider {
         height: 45vh;
         max-height: 320px;

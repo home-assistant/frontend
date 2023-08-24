@@ -35,7 +35,9 @@ export class HaMoreInfoCoverPosition extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const color = stateColorCss(this.stateObj);
+    const forcedState = this.stateObj.state === "closed" ? "open" : undefined;
+
+    const color = stateColorCss(this.stateObj, forcedState);
 
     return html`
       <ha-control-slider
@@ -64,10 +66,6 @@ export class HaMoreInfoCoverPosition extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      :host {
-        /* Force inactive state to be colored for the slider */
-        --state-cover-inactive-color: var(--state-cover-active-color);
-      }
       ha-control-slider {
         height: 45vh;
         max-height: 320px;
