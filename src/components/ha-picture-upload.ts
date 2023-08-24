@@ -1,4 +1,4 @@
-import { mdiImagePlus, mdiPencilOutline } from "@mdi/js";
+import { mdiClose, mdiImagePlus } from "@mdi/js";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -62,7 +62,7 @@ export class HaPictureUpload extends LitElement {
             "ui.components.picture-upload.change_picture"
           )}
         >
-          <ha-svg-icon slot="icon" .path=${mdiPencilOutline}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiClose}></ha-svg-icon>
         </ha-fab>
       </div>
     </div>`;
