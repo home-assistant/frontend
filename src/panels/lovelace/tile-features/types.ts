@@ -14,6 +14,10 @@ export interface CoverTiltTileFeatureConfig {
   type: "cover-tilt";
 }
 
+export interface CoverTiltPositionTileFeatureConfig {
+  type: "cover-tilt-position";
+}
+
 export interface LightBrightnessTileFeatureConfig {
   type: "light-brightness";
 }
@@ -70,6 +74,7 @@ export type LovelaceTileFeatureConfig =
   | ClimateHvacModesTileFeatureConfig
   | CoverOpenCloseTileFeatureConfig
   | CoverPositionTileFeatureConfig
+  | CoverTiltPositionTileFeatureConfig
   | CoverTiltTileFeatureConfig
   | FanSpeedTileFeatureConfig
   | LawnMowerCommandsTileFeatureConfig

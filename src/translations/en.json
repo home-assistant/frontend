@@ -4988,6 +4988,9 @@
                   "cover-tilt": {
                     "label": "Cover tilt"
                   },
+                  "cover-tilt-position": {
+                    "label": "Cover tilt position"
+                  },
                   "fan-speed": {
                     "label": "Fan speed"
                   },
@@ -5690,9 +5693,7 @@
           }
         },
         "core-config": {
-          "intro": "Hello {name}, welcome to Home Assistant. How would you like to name your home?",
-          "intro_core": "We will set up the basics together. You can always change this later in the settings.",
-          "intro_location": "Let's set up the location of your home so that you can display information such as the local weather and use sun-based or presence-based automations. This data is never shared outside of your network.",
+          "intro_location": "Let's set up the location of your home so that you can display information such as the local weather and use sun-based or presence-based automations.",
           "location_address": "Powered by {openstreetmap} ({osm_privacy_policy}).",
           "osm_privacy_policy": "Privacy policy",
           "title_location_detect": "Do you want us to detect your location?",
@@ -5705,8 +5706,9 @@
           "finish": "Next"
         },
         "integration": {
-          "intro": "Devices and services are represented in Home Assistant as integrations. You can set them up now, or do it later from the settings.",
-          "more_integrations": "More",
+          "header": "We already found compatible devices on your network!",
+          "intro": "We have set some of them up for you. Some might need more configuration.",
+          "more_integrations": "+{count} more",
           "finish": "Finish"
         },
         "analytics": {

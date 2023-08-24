@@ -1,7 +1,7 @@
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiFan,
-  mdiHomeMapMarker,
+  mdiHomeImportOutline,
   mdiMapMarker,
   mdiPause,
   mdiPlay,
@@ -91,7 +91,7 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
   },
   {
     translationKey: "return_home",
-    icon: mdiHomeMapMarker,
+    icon: mdiHomeImportOutline,
     serviceName: "return_to_base",
     isVisible: (stateObj) =>
       supportsFeature(stateObj, VacuumEntityFeature.RETURN_HOME),

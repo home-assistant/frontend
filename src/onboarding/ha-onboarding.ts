@@ -30,6 +30,11 @@ import "./onboarding-loading";
 import "../components/ha-language-picker";
 import "../components/ha-card";
 import { storeState } from "../util/ha-pref-storage";
+import {
+  enableWrite,
+  loadTokens,
+  saveTokens,
+} from "../common/auth/token_storage";
 
 type OnboardingEvent =
   | {
@@ -229,6 +234,8 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         const auth = await getAuth({
           hassUrl,
           limitHassInstance: true,
+          saveTokens,
+          loadTokens: () => Promise.resolve(loadTokens()),
         });
         history.replaceState(null, "", location.pathname);
         await this._connectHass(auth);
@@ -252,11 +259,13 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     if (stepResult.type === "user") {
       const result = stepResult.result as OnboardingResponses["user"];
       this._loading = true;
+      enableWrite();
       try {
         const auth = await getAuth({
           hassUrl,
           limitHassInstance: true,
           authCode: result.auth_code,
+          saveTokens,
         });
         await this._connectHass(auth);
       } catch (err: any) {
