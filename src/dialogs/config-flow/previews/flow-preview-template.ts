@@ -9,6 +9,7 @@ import {
 } from "../../../data/ws-templates";
 import { HomeAssistant } from "../../../types";
 import "./entity-preview-row";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("flow-preview-template")
 class FlowPreviewTemplate extends LitElement {
@@ -93,7 +94,12 @@ class FlowPreviewTemplate extends LitElement {
       );
       await this._unsub;
     } catch (err: any) {
-      this._error = err.message;
+      if (typeof err.message === "string") {
+        this._error = err.message;
+      } else {
+        this._error = undefined;
+        fireEvent(this, "set-error", err.message);
+      }
       this._unsub = undefined;
       this._preview = undefined;
     }

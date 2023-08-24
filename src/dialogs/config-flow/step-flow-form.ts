@@ -70,7 +70,7 @@ class StepFlowForm extends LitElement {
         ></ha-form>
       </div>
       ${step.preview
-        ? html`<div class="preview">
+        ? html`<div class="preview" @set-error=${this._setError}>
             <h3>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_flow.preview"
@@ -105,6 +105,10 @@ class StepFlowForm extends LitElement {
             `}
       </div>
     `;
+  }
+
+  private _setError(ev: CustomEvent) {
+    this.step.errors = ev.detail;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
