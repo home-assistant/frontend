@@ -5,37 +5,36 @@ import {
   getAuth,
   subscribeConfig,
 } from "home-assistant-js-websocket";
-import { html, PropertyValues, nothing, css } from "lit";
+import { PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  enableWrite,
+  loadTokens,
+  saveTokens,
+} from "../common/auth/token_storage";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
+import "../components/ha-card";
+import "../components/ha-language-picker";
 import { AuthUrlSearchParams, hassUrl } from "../data/auth";
 import {
-  fetchInstallationType,
-  fetchOnboardingOverview,
   OnboardingResponses,
   OnboardingStep,
+  fetchInstallationType,
+  fetchOnboardingOverview,
   onboardIntegrationStep,
 } from "../data/onboarding";
 import { subscribeUser } from "../data/ws-user";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { HassElement } from "../state/hass-element";
 import { HomeAssistant } from "../types";
+import { storeState } from "../util/ha-pref-storage";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./onboarding-analytics";
 import "./onboarding-create-user";
 import "./onboarding-loading";
-import "../components/ha-language-picker";
-import "../components/ha-card";
-import { storeState } from "../util/ha-pref-storage";
-import {
-  enableWrite,
-  loadTokens,
-  saveTokens,
-} from "../common/auth/token_storage";
-import { storeState } from "../util/ha-pref-storage";
 
 type OnboardingEvent =
   | {
