@@ -3,7 +3,14 @@ import "../../components/ha-dialog";
 import "../../components/ha-circular-progress";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../../types";
 import { haStyleDialog } from "../../resources/styles";
@@ -41,12 +48,12 @@ class HaDialogShowAudioMessage extends LitElement {
                   ? html`<div id="transcribe">
                       ${this._currentMessage?.message}
                     </div>`
-                  : ""
+                  : nothing
               }
                 ${
                   this._errorMsg
                     ? html`<div class="error">${this._errorMsg}</div>`
-                    : ""
+                    : nothing
                 }
                 ${
                   this._blobUrl
@@ -57,7 +64,7 @@ class HaDialogShowAudioMessage extends LitElement {
                           type="audio/mpeg"
                         />
                       </audio>`
-                    : ""
+                    : nothing
                 }
               </div>`}
       </ha-dialog>

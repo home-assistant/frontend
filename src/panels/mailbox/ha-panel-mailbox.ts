@@ -1,4 +1,11 @@
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "@material/mwc-button";
 import { formatDateTime } from "../../common/datetime/format_date_time";
@@ -72,7 +79,7 @@ class HaPanelMailbox extends LitElement {
             ? html`<div class="card-content empty">
                 ${this.hass.localize("ui.panel.mailbox.empty")}
               </div>`
-            : ""}
+            : nothing}
           ${this._messages?.map(
             (message) =>
               html` <paper-item
