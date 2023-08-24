@@ -17,12 +17,19 @@ export class HaConditionSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  @property() public nested?: boolean;
+
+  @property() public reOrderMode?: boolean;
+
   protected render() {
     return html`
+      ${this.label}
       <ha-automation-condition
         .disabled=${this.disabled}
         .conditions=${this.value || []}
         .hass=${this.hass}
+        .nested=${this.nested}
+        .reOrderMode=${this.reOrderMode}
       ></ha-automation-condition>
     `;
   }

@@ -77,6 +77,10 @@ export class HaSelector extends LitElement {
 
   @property() public context?: Record<string, any>;
 
+  @property() public nested?: boolean;
+
+  @property() public reOrderMode?: boolean;
+
   public async focus() {
     await this.updateComplete;
     (this.renderRoot.querySelector("#selector") as HTMLElement)?.focus();
@@ -125,6 +129,8 @@ export class HaSelector extends LitElement {
         context: this.context,
         localizeValue: this.localizeValue,
         id: "selector",
+        nested: this.nested,
+        reOrderMode: this.reOrderMode,
       })}
     `;
   }

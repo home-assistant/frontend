@@ -2735,6 +2735,10 @@
                     "until": {
                       "label": "Until",
                       "conditions": "Until conditions"
+                    },
+                    "for_each": {
+                      "label": "For each",
+                      "items": "For each item in list"
                     }
                   },
                   "sequence": "Actions",
