@@ -35,7 +35,7 @@ class FlowPreviewGroup extends LitElement {
 
   willUpdate(changedProps) {
     if (changedProps.has("stepData")) {
-      this._debouncesSubscribePreview();
+      this._debouncedSubscribePreview();
     }
   }
 
@@ -57,7 +57,7 @@ class FlowPreviewGroup extends LitElement {
     };
   };
 
-  private _debouncesSubscribePreview = debounce(() => {
+  private _debouncedSubscribePreview = debounce(() => {
     this._subscribePreview();
   }, 250);
 
