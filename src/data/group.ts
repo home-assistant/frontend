@@ -20,7 +20,6 @@ export interface GroupEntity extends HassEntityBase {
 export interface GroupPreview {
   state: string;
   attributes: Record<string, any>;
-  group_type: string;
 }
 
 export const computeGroupDomain = (

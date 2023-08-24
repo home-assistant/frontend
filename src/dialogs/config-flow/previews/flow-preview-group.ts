@@ -15,7 +15,7 @@ class FlowPreviewGroup extends LitElement {
 
   public handler!: string;
 
-  public stepId!: string;
+  @property() public stepId!: string;
 
   @property() public flowId!: string;
 
@@ -49,7 +49,7 @@ class FlowPreviewGroup extends LitElement {
   private _setPreview = (preview: GroupPreview) => {
     const now = new Date().toISOString();
     this._preview = {
-      entity_id: `${preview.group_type}.flow_preview`,
+      entity_id: `${this.stepId}.flow_preview`,
       last_changed: now,
       last_updated: now,
       context: { id: "", parent_id: null, user_id: null },
