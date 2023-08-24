@@ -26,13 +26,13 @@ class HaDialogShowAudioMessage extends LitElement {
     return html`
       <ha-dialog
         .open=${this._opened}
-        @closed=${this.closeDialog}
+        @closed=${this._closeDialog}
         heading=${this.hass.localize("ui.panel.mailbox.playback_title")}
       >
         ${this._loading
           ? html`<ha-circular-progress active></ha-circular-progress>`
           : html`<div class="icon">
-                <ha-icon-button id="delicon" @click=${this.openDeleteDialog}>
+                <ha-icon-button id="delicon" @click=${this._openDeleteDialog}>
                   <ha-icon icon="hass:delete"></ha-icon>
                 </ha-icon-button>
               </div>
@@ -97,22 +97,22 @@ class HaDialogShowAudioMessage extends LitElement {
     }
   }
 
-  openDeleteDialog() {
+  private _openDeleteDialog() {
     if (confirm(this.hass.localize("ui.panel.mailbox.delete_prompt"))) {
-      this.deleteSelected();
+      this._deleteSelected();
     }
   }
 
-  deleteSelected() {
+  private _deleteSelected() {
     const msg = this._currentMessage;
     this.hass.callApi(
       "DELETE",
       `mailbox/delete/${msg.platform.name}/${msg.sha}`
     );
-    this.closeDialog();
+    this._closeDialog();
   }
 
-  closeDialog() {
+  private _closeDialog() {
     const mp3 = this.shadowRoot!.querySelector("#mp3")! as any;
     mp3.pause();
     this._currentMessage = undefined;

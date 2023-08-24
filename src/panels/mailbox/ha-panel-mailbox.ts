@@ -49,17 +49,17 @@ class HaPanelMailbox extends LitElement {
           .narrow=${this.narrow}
         ></ha-menu-button>
         <div slot="title">${this.hass.localize("panel.mailbox")}</div>
-        ${!this.areTabsHidden(this.platforms)
+        ${!this._areTabsHidden(this.platforms)
           ? html`<div sticky>
               <ha-tabs
                 scrollable
                 .selected=${this._currentPlatform}
-                @iron-activate=${this.handlePlatformSelected}
+                @iron-activate=${this._handlePlatformSelected}
               >
                 ${this.platforms?.map(
                   (platform) =>
                     html` <paper-tab data-entity=${platform}>
-                      ${this.getPlatformName(platform)}
+                      ${this._getPlatformName(platform)}
                     </paper-tab>`
                 )}
               </ha-tabs>
@@ -77,7 +77,7 @@ class HaPanelMailbox extends LitElement {
             (message) =>
               html` <paper-item
                 .message=${message}
-                @click=${this.openMP3Dialog}
+                @click=${this._openMP3Dialog}
               >
                 <paper-item-body style="width:100%" two-line>
                   <div class="row">
@@ -118,7 +118,7 @@ class HaPanelMailbox extends LitElement {
       .then((unsub) => {
         this._unsubEvents = unsub;
       });
-    this.computePlatforms().then((platforms) => {
+    this._computePlatforms().then((platforms) => {
       this.platforms = platforms;
       this.hassChanged();
     });
@@ -133,12 +133,12 @@ class HaPanelMailbox extends LitElement {
     if (!this._messages) {
       this._messages = [];
     }
-    this.getMessages().then((items) => {
+    this._getMessages().then((items) => {
       this._messages = items;
     });
   }
 
-  openMP3Dialog(ev) {
+  private _openMP3Dialog(ev) {
     const message: any = (ev.currentTarget! as any).message;
     fireEvent(this, "show-audio-message-dialog", {
       hass: this.hass,
@@ -146,7 +146,7 @@ class HaPanelMailbox extends LitElement {
     });
   }
 
-  getMessages() {
+  private _getMessages() {
     const platform = this.platforms![this._currentPlatform];
     return this.hass
       .callApi<MailboxMessage[]>("GET", `mailbox/messages/${platform.name}`)
@@ -172,11 +172,11 @@ class HaPanelMailbox extends LitElement {
       });
   }
 
-  computePlatforms(): Promise<any[]> {
+  private _computePlatforms(): Promise<any[]> {
     return this.hass.callApi<any[]>("GET", "mailbox/platforms");
   }
 
-  handlePlatformSelected(ev) {
+  private _handlePlatformSelected(ev) {
     const newPlatform = ev.detail.selected;
     if (newPlatform !== this._currentPlatform) {
       this._currentPlatform = newPlatform;
@@ -184,11 +184,11 @@ class HaPanelMailbox extends LitElement {
     }
   }
 
-  areTabsHidden(platforms) {
+  private _areTabsHidden(platforms) {
     return !platforms || platforms.length < 2;
   }
 
-  getPlatformName(item) {
+  private _getPlatformName(item) {
     const entity = `mailbox.${item.name}`;
     const stateObj = this.hass.states[entity.toLowerCase()];
     return stateObj.attributes.friendly_name;
