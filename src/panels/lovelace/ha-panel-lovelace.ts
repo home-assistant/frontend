@@ -345,7 +345,11 @@ export class LovelacePanel extends LitElement {
         }
 
         if (!editMode || this.lovelace!.mode !== "generated") {
-          this._updateLovelace({ editMode });
+          this._updateLovelace({
+            editMode,
+            configHistory: [this.lovelace!.config],
+            configHistoryIndex: 0,
+          });
           return;
         }
 
