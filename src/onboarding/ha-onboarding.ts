@@ -5,7 +5,7 @@ import {
   getAuth,
   subscribeConfig,
 } from "home-assistant-js-websocket";
-import { html, PropertyValues, nothing } from "lit";
+import { html, PropertyValues, nothing, css } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../common/dom/fire_event";
@@ -27,6 +27,9 @@ import { registerServiceWorker } from "../util/register-service-worker";
 import "./onboarding-analytics";
 import "./onboarding-create-user";
 import "./onboarding-loading";
+import "../components/ha-language-picker";
+import "../components/ha-card";
+import { storeState } from "../util/ha-pref-storage";
 import {
   enableWrite,
   loadTokens,
@@ -74,6 +77,21 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   @state() private _steps?: OnboardingStep[];
 
   protected render() {
+    return html`<ha-card>
+        <div class="card-content">${this._renderStep()}</div>
+      </ha-card>
+      ${this.hass
+        ? html`<ha-language-picker
+            .hass=${this.hass}
+            .value=${this.language}
+            .label=${this.localize("ui.panel.page-onboarding.language")}
+            nativeName
+            @value-changed=${this._languageChanged}
+          ></ha-language-picker>`
+        : nothing} `;
+  }
+
+  private _renderStep() {
     const step = this._curStep()!;
 
     if (this._loading || !step) {
@@ -114,7 +132,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         ></onboarding-analytics>
       `;
     }
-
     if (step.step === "integration") {
       return html`
         <onboarding-integrations
@@ -338,6 +355,31 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       setTimeout(resolve, 0);
     });
   }
+
+  private _languageChanged(ev: CustomEvent) {
+    const language = ev.detail.value;
+    this.language = language;
+    this._updateHass({
+      locale: { ...this.hass!.locale, language },
+      language,
+      selectedLanguage: language,
+    });
+    storeState(this.hass!);
+  }
+
+  static styles = css`
+    ha-language-picker {
+      display: block;
+      width: 200px;
+      margin-top: 8px;
+      --mdc-select-fill-color: none;
+      --mdc-select-label-ink-color: var(--text-primary-color, #fff);
+      --mdc-select-ink-color: var(--text-primary-color, #fff);
+      --mdc-select-idle-line-color: var(--text-primary-color, #fff);
+      --mdc-select-hover-line-color: var(--text-primary-color, #fff);
+      --mdc-select-dropdown-icon-color: var(--text-primary-color, #fff);
+    }
+  `;
 }
 
 declare global {
