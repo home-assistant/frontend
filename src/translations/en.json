@@ -2374,7 +2374,7 @@
                   "enter": "Enter",
                   "leave": "Leave",
                   "description": {
-                    "full": "When {entity} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone}\n other {zones}\n}"
+                    "full": "When {source} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone}\n other {zones}\n}"
                   }
                 },
                 "state": {

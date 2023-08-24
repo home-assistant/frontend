@@ -578,12 +578,15 @@ const tryDescribeTrigger = (
       );
     }
 
-    return hass.localize(`${triggerTranslationBaseKey}.zone.description.full`, {
-      entity: formatListWithOrs(hass.locale, sources),
-      event: trigger.event.toString(),
-      zone: formatListWithOrs(hass.locale, zones),
-      numberOfZones: zones.length,
-    });
+    return hass.localize(
+      `${triggerTranslationBaseKey}.geo_location.description.full`,
+      {
+        source: formatListWithOrs(hass.locale, sources),
+        event: trigger.event.toString(),
+        zone: formatListWithOrs(hass.locale, zones),
+        numberOfZones: zones.length,
+      }
+    );
   }
 
   // MQTT Trigger
