@@ -1,5 +1,5 @@
-import { mdiClose, mdiImagePlus } from "@mdi/js";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { mdiImagePlus } from "@mdi/js";
+import { LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { createImage, generateImageThumbnailUrl } from "../data/image_upload";
@@ -9,9 +9,9 @@ import {
   showImageCropperDialog,
 } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { HomeAssistant } from "../types";
+import "./ha-button";
 import "./ha-circular-progress";
 import "./ha-file-upload";
-import "./ha-fab";
 
 @customElement("ha-picture-upload")
 export class HaPictureUpload extends LitElement {
@@ -56,14 +56,13 @@ export class HaPictureUpload extends LitElement {
     return html`<div class="center-vertical">
       <div class="value">
         <img .src=${this.value} alt="" />
-        <ha-fab
+        <ha-button
           @click=${this._handleChangeClick}
           .label=${this.hass.localize(
             "ui.components.picture-upload.change_picture"
           )}
         >
-          <ha-svg-icon slot="icon" .path=${mdiClose}></ha-svg-icon>
-        </ha-fab>
+        </ha-button>
       </div>
     </div>`;
   }
@@ -145,18 +144,15 @@ export class HaPictureUpload extends LitElement {
         height: 100%;
       }
       .value {
-        position: relative;
-        width: max-content;
-        margin: auto;
-      }
-      .value ha-fab {
-        position: absolute;
-        right: var(--image-upload-fab-distance, -16px);
-        bottom: var(--image-upload-fab-distance, -16px);
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
       img {
         max-width: 100%;
-        max-height: 240px;
+        max-height: 200px;
+        margin-bottom: 4px;
         border-radius: var(--file-upload-image-border-radius);
       }
     `;

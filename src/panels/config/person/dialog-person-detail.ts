@@ -425,7 +425,6 @@ class DialogPersonDetail extends LitElement {
         ha-picture-upload {
           margin-bottom: 16px;
           --file-upload-image-border-radius: 50%;
-          --image-upload-fab-distance: 0;
         }
         ha-formfield {
           display: block;
