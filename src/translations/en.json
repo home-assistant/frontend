@@ -2372,7 +2372,10 @@
                   "zone": "Zone",
                   "event": "Event",
                   "enter": "Enter",
-                  "leave": "Leave"
+                  "leave": "Leave",
+                  "description": {
+                    "full": "When {entity} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone}\n other {zones}\n}"
+                  }
                 },
                 "state": {
                   "label": "State",
@@ -2419,6 +2422,9 @@
                     "removed": "removed",
                     "current": "current",
                     "updated": "updated"
+                  },
+                  "description": {
+                    "full": "When a persistent notification is updated"
                   }
                 },
                 "sun": {
@@ -2490,7 +2496,10 @@
                   "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "enter": "Enter",
-                  "leave": "Leave"
+                  "leave": "Leave",
+                  "description": {
+                    "full": "When {entity} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
+                  }
                 }
               }
             },
