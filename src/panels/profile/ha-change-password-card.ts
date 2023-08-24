@@ -18,8 +18,8 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
-import { fireEvent } from "../../common/dom/fire_event";
 import { RefreshToken } from "../../data/refresh_token";
+import { changePassword, deleteAllRefreshTokens } from "../../data/auth";
 
 @customElement("ha-change-password-card")
 class HaChangePasswordCard extends LitElement {
@@ -156,11 +156,7 @@ class HaChangePasswordCard extends LitElement {
     this._errorMsg = undefined;
 
     try {
-      await this.hass.callWS({
-        type: "config/auth_provider/homeassistant/change_password",
-        current_password: this._currentPassword,
-        new_password: this._password,
-      });
+      await changePassword(this.hass, this._currentPassword, this._password);
     } catch (err: any) {
       this._errorMsg = err.message;
       return;
@@ -174,7 +170,6 @@ class HaChangePasswordCard extends LitElement {
 
     if (
       this.refreshTokens &&
-      this.refreshTokens.length > 1 &&
       (await showConfirmationDialog(this, {
         title: this.hass.localize(
           "ui.panel.profile.change_password.logout_all_sessions"
@@ -187,16 +182,8 @@ class HaChangePasswordCard extends LitElement {
         destructive: true,
       }))
     ) {
-      const promises = this.refreshTokens
-        .filter((token) => token.type === "normal" && !token.is_current)
-        .map((token) =>
-          this.hass.callWS({
-            type: "auth/delete_refresh_token",
-            refresh_token_id: token.id,
-          })
-        );
       try {
-        await Promise.all(promises);
+        await deleteAllRefreshTokens(this.hass);
       } catch (err: any) {
         await showAlertDialog(this, {
           title: this.hass.localize(
@@ -204,8 +191,6 @@ class HaChangePasswordCard extends LitElement {
           ),
           text: err.message,
         });
-      } finally {
-        fireEvent(this, "hass-refresh-tokens");
       }
     }
 
