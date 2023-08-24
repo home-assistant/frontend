@@ -109,6 +109,7 @@ class StepFlowForm extends LitElement {
 
   private _setError(ev: CustomEvent) {
     this.step.errors = ev.detail;
+    this.requestUpdate();
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
