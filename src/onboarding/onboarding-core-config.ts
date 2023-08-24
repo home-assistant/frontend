@@ -28,7 +28,6 @@ import { onboardCoreConfigStep } from "../data/onboarding";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
 import "./onboarding-location";
-import "./onboarding-name";
 
 @customElement("onboarding-core-config")
 class OnboardingCoreConfig extends LitElement {
@@ -37,8 +36,6 @@ class OnboardingCoreConfig extends LitElement {
   @property() public onboardingLocalize!: LocalizeFunc;
 
   @state() private _working = false;
-
-  @state() private _name?: ConfigUpdateValues["location_name"];
 
   @state() private _location?: [number, number];
 
@@ -56,20 +53,20 @@ class OnboardingCoreConfig extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _skipCore = false;
+
   protected render(): TemplateResult {
-    if (!this._name) {
-      return html`<onboarding-name
-        .hass=${this.hass}
-        .onboardingLocalize=${this.onboardingLocalize}
-        @value-changed=${this._nameChanged}
-      ></onboarding-name>`;
-    }
     if (!this._location) {
       return html`<onboarding-location
         .hass=${this.hass}
         .onboardingLocalize=${this.onboardingLocalize}
         @value-changed=${this._locationChanged}
       ></onboarding-location>`;
+    }
+    if (this._skipCore) {
+      return html`<div class="row center">
+        <ha-circular-progress active></ha-circular-progress>
+      </div>`;
     }
     return html`
       ${
@@ -289,10 +286,6 @@ class OnboardingCoreConfig extends LitElement {
     this[`_${target.name}`] = target.value;
   }
 
-  private _nameChanged(ev: CustomEvent) {
-    this._name = ev.detail.value;
-  }
-
   private async _locationChanged(ev) {
     this._location = ev.detail.value.location;
     this._country = ev.detail.value.country;
@@ -303,6 +296,11 @@ class OnboardingCoreConfig extends LitElement {
       ev.detail.value.timezone ||
       Intl.DateTimeFormat?.().resolvedOptions?.().timeZone;
     this._unitSystem = ev.detail.value.unit_system;
+    if (this._country) {
+      this._skipCore = true;
+      this._save(ev);
+      return;
+    }
     await this.updateComplete;
     setTimeout(
       () => this.renderRoot.querySelector("ha-textfield")!.focus(),
@@ -324,7 +322,9 @@ class OnboardingCoreConfig extends LitElement {
     this._working = true;
     try {
       await saveCoreConfig(this.hass, {
-        location_name: this._name,
+        location_name: this.onboardingLocalize(
+          "ui.panel.page-onboarding.core-config.location_name_default"
+        ),
         latitude: this._location[0],
         longitude: this._location[1],
         elevation: Number(this._elevationValue),
@@ -340,6 +340,7 @@ class OnboardingCoreConfig extends LitElement {
         result,
       });
     } catch (err: any) {
+      this._skipCore = false;
       this._working = false;
       this._error = err.message;
     }
@@ -378,6 +379,10 @@ class OnboardingCoreConfig extends LitElement {
 
       .row {
         margin-top: 16px;
+      }
+
+      .center {
+        justify-content: center;
       }
 
       .row > * {
