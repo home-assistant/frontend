@@ -13,7 +13,6 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
 import { ClimateTargetTemperatureTileFeatureConfig } from "./types";
-import { stateActive } from "../../../common/entity/state_active";
 
 type Target = "value" | "low" | "high";
 
@@ -163,11 +162,6 @@ class HuiClimateTargetTemperatureTileFeature
         ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
       )
     ) {
-      const active = stateActive(this.stateObj);
-
-      const lowColor = stateColorCss(this.stateObj, active ? "heat" : "off");
-      const highColor = stateColorCss(this.stateObj, active ? "cool" : "off");
-
       return html`
       <ha-control-button-group>
         <ha-control-number-buttons
@@ -183,14 +177,7 @@ class HuiClimateTargetTemperatureTileFeature
             "temperature"
           )}
           style=${styleMap({
-            "--control-number-buttons-color": lowColor,
-            color: active ? lowColor : undefined,
-            "--control-number-buttons-background-color": active
-              ? lowColor
-              : undefined,
-            "--control-number-buttons-background-opacity": active
-              ? 0.15
-              : undefined,
+            "--control-number-buttons-color": stateColor,
           })}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
         >
@@ -208,14 +195,7 @@ class HuiClimateTargetTemperatureTileFeature
             "temperature"
           )}
           style=${styleMap({
-            "--control-number-buttons-color": highColor,
-            color: active ? highColor : undefined,
-            "--control-number-buttons-background-color": active
-              ? highColor
-              : undefined,
-            "--control-number-buttons-background-opacity": active
-              ? 0.15
-              : undefined,
+            "--control-number-buttons-color": stateColor,
           })}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
         >
