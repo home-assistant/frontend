@@ -74,6 +74,7 @@ class HuiCoverPositionTileFeature
         max="100"
         step="1"
         .inverted=${!this._config.inverted_direction}
+        .mode=${this._config.inverted_direction ? "end" : "start"}
         show-handle
         @value-changed=${this._valueChanged}
         .ariaLabel=${computeAttributeNameDisplay(

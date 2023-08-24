@@ -34,7 +34,6 @@ export class HuiCoverPositionTileFeatureEditor
         selector: {
           boolean: {
             mode: "toggle",
-            value: false,
           },
         },
       },
