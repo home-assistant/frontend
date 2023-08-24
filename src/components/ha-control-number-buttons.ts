@@ -1,6 +1,6 @@
 import { mdiMinus, mdiPlus } from "@mdi/js";
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { conditionalClamp } from "../common/number/clamp";
 import { formatNumber } from "../common/number/format_number";
@@ -37,6 +37,8 @@ export class HaControlNumberButton extends LitElement {
   @property({ attribute: "false" })
   public formatOptions: Intl.NumberFormatOptions = {};
 
+  @query("#input") _input!: HTMLDivElement;
+
   private boundedValue(value: number) {
     const clamped = conditionalClamp(value, this.min, this.max);
     return Math.round(clamped / this._step) * this._step;
@@ -58,16 +60,16 @@ export class HaControlNumberButton extends LitElement {
     return Math.max(range / 10);
   }
 
-  private _increment(ev) {
-    ev.stopPropagation();
+  private _increment() {
     this.value = this.boundedValue(this._value + this._step);
     fireEvent(this, "value-changed", { value: this.value });
+    this._input.focus();
   }
 
-  private _decrement(ev) {
-    ev.stopPropagation();
+  private _decrement() {
     this.value = this.boundedValue(this._value - this._step);
     fireEvent(this, "value-changed", { value: this.value });
+    this._input.focus();
   }
 
   _handleKeyDown(e: KeyboardEvent) {
@@ -111,11 +113,11 @@ export class HaControlNumberButton extends LitElement {
     return html`
       <div class="container">
         <div
+          id="input"
           class="value"
           role="number-button"
           tabindex="0"
           aria-valuenow=${this.value}
-          aria-valuetext="first"
           aria-valuemin=${this.min}
           aria-valuemax=${this.max}
           aria-label=${ifDefined(this.label)}
@@ -158,13 +160,17 @@ export class HaControlNumberButton extends LitElement {
         --control-number-buttons-background-color: var(--disabled-color);
         --control-number-buttons-background-opacity: 0.2;
         --control-number-buttons-border-radius: 10px;
-        --mdc-icon-size: 20px;
+        --mdc-icon-size: 16px;
         height: 40px;
         width: 200px;
         color: var(--primary-text-color);
         -webkit-tap-highlight-color: transparent;
         font-style: normal;
         font-weight: 500;
+        transition: color 180ms ease-in-out;
+      }
+      :host([disabled]) {
+        color: var(--disabled-color);
       }
       .container {
         position: relative;
@@ -215,12 +221,17 @@ export class HaControlNumberButton extends LitElement {
         position: absolute;
         top: 0;
         bottom: 0;
-        width: 40px;
+        padding: 0;
+        width: 35px;
         height: 40px;
         border: none;
         background: none;
         cursor: pointer;
         outline: none;
+      }
+      .button[disabled] {
+        opacity: 0.4;
+        pointer-events: none;
       }
       .button.minus {
         left: 0;
