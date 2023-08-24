@@ -60,6 +60,7 @@ class FlowPreviewTemplate extends LitElement {
       this._preview = undefined;
       return;
     }
+    this._error = undefined;
     const now = new Date().toISOString();
     this._preview = {
       entity_id: `${this.stepId}.flow_preview`,
@@ -92,8 +93,8 @@ class FlowPreviewTemplate extends LitElement {
       );
       await this._unsub;
     } catch (err: any) {
-      this._unsub = undefined;
       this._error = err.message;
+      this._unsub = undefined;
       this._preview = undefined;
     }
   }
