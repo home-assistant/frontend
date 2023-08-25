@@ -4,6 +4,7 @@ import { mdiDelete, mdiDrag } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-picker";
@@ -72,8 +73,8 @@ class HaInputSelectForm extends LitElement {
     if (ev.oldIndex === ev.newIndex) return;
 
     const options = this._options.concat();
-    const option = options.splice(ev.oldIndex, 1)[0];
-    options.splice(ev.newIndex, 0, option);
+    const option = options.splice(ev.oldIndex!, 1)[0];
+    options.splice(ev.newIndex!, 0, option);
 
     fireEvent(this, "value-changed", {
       value: { ...this._item, options },
