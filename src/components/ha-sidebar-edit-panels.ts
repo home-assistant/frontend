@@ -1,5 +1,5 @@
 import { mdiClose, mdiPlus } from "@mdi/js";
-import { css, CSSResult, html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { loadSortable, SortableInstance } from "../resources/sortable.ondemand";
@@ -9,6 +9,11 @@ import "./ha-icon-button";
 import "./ha-svg-icon";
 
 const styles = css`
+  :host {
+    display: flex;
+    flex-direction: column;
+    padding: 0 12px;
+  }
   .panel {
     --rgb-text: var(--rgb-sidebar-text-color);
     background-color: transparent;
@@ -25,12 +30,19 @@ const styles = css`
     display: flex;
     align-items: center;
     padding: 0 16px;
-    border-radius: var(--sidebar-item-radius, 56px);
-    height: 52px;
+    border-radius: var(--sidebar-item-radius, 25px);
+    height: 50px;
   }
   .panel .icon {
     width: 36px;
     text-align: left;
+  }
+  .panel ha-icon-button {
+    margin-left: auto;
+    margin-right: -12px;
+  }
+  .panel ha-svg-icon {
+    margin-left: auto;
   }
   .panel:hover {
     color: rgb(var(--rgb-text));
@@ -43,17 +55,46 @@ const styles = css`
   }
   #sortable {
     overflow: visible;
-    padding: 0 12px;
   }
   #sortable .panel {
     cursor: grab;
   }
-  .panel ha-icon-button {
-    margin-left: auto;
-    margin-right: -11px;
+  .sortable-fallback {
+    display: none;
   }
-  .panel ha-svg-icon {
-    margin-left: auto;
+  .sortable-ghost {
+    opacity: 0.4;
+  }
+  #sortable .panel:nth-child(even) {
+    animation: keyframes1 infinite 0.37s;
+    transform-origin: 50% 10%;
+  }
+  #sortable .panel:nth-child(odd) {
+    animation: keyframes2 infinite alternate 0.5s 0.15s;
+    transform-origin: 30% 5%;
+  }
+  @keyframes keyframes1 {
+    0% {
+      transform: rotate(-1deg);
+      animation-timing-function: ease-in;
+    }
+
+    50% {
+      transform: rotate(1.5deg);
+      animation-timing-function: ease-out;
+    }
+  }
+
+  @keyframes keyframes2 {
+    0% {
+      transform: rotate(1deg);
+      animation-timing-function: ease-in;
+    }
+
+    50% {
+      transform: rotate(-1.5deg);
+      animation-timing-function: ease-out;
+    }
   }
 `;
 @customElement("ha-sidebar-edit-panels")
@@ -67,8 +108,6 @@ class HaSidebarEditPanels extends LitElement {
   static styles = styles;
 
   private _sortable?: SortableInstance;
-
-  private sortableStyleLoaded = false;
 
   protected render() {
     const renderPanel = (panel) =>
@@ -111,23 +150,6 @@ class HaSidebarEditPanels extends LitElement {
   }
 
   protected async firstUpdated() {
-    await Promise.all([this._loadSortableStyle(), this._createSortable()]);
-  }
-
-  private async _loadSortableStyle() {
-    if (this.sortableStyleLoaded) return;
-
-    const sortStylesImport = await import("../resources/ha-sortable-style");
-
-    const style = document.createElement("style");
-    style.innerHTML = (sortStylesImport.sortableStyles as CSSResult).cssText;
-    this.shadowRoot!.appendChild(style);
-
-    this.sortableStyleLoaded = true;
-    await this.updateComplete;
-  }
-
-  private async _createSortable() {
     const Sortable = await loadSortable();
     this._sortable = new Sortable(
       this.shadowRoot!.getElementById("sortable")!,

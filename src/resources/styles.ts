@@ -359,7 +359,7 @@ export const haStyleSidebarItem = css`
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--sidebar-item-radius, 56px);
+    border-radius: var(--sidebar-item-radius, 25px);
     height: 50px;
   }
   .item .icon {
