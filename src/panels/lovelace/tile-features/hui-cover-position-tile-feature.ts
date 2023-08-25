@@ -65,7 +65,7 @@ class HuiCoverPositionTileFeature
         min="0"
         max="100"
         step="1"
-        inverted
+        mode="end"
         show-handle
         @value-changed=${this._valueChanged}
         .ariaLabel=${computeAttributeNameDisplay(
