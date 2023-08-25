@@ -14,7 +14,7 @@ const ENTITIES = [
   }),
   getEntity("light", "bed_light", "on", {
     friendly_name: "Bed Light",
-    supported_color_modes: [LightColorMode.HS],
+    supported_color_modes: [LightColorMode.HS, LightColorMode.COLOR_TEMP],
   }),
   getEntity("light", "unavailable", "unavailable", {
     friendly_name: "Unavailable entity",
@@ -114,6 +114,15 @@ const CONFIGS = [
   entity: light.bed_light
   features:
     - type: "light-brightness"
+    `,
+  },
+  {
+    heading: "Light color temperature feature",
+    config: `
+- type: tile
+  entity: light.bed_light
+  features:
+    - type: "color-temp"
     `,
   },
   {

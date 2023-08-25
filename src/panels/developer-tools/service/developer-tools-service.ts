@@ -58,6 +58,9 @@ class HaPanelDevService extends LitElement {
 
   protected firstUpdated(params) {
     super.firstUpdated(params);
+    this.hass.loadBackendTranslation("services");
+    this.hass.loadBackendTranslation("selector");
+
     const serviceParam = extractSearchParam("service");
     if (serviceParam) {
       this._serviceData = {
@@ -66,8 +69,8 @@ class HaPanelDevService extends LitElement {
         data: {},
       };
       if (this._yamlMode) {
-        this.updateComplete.then(() =>
-          this._yamlEditor?.setValue(this._serviceData)
+        this.updateComplete.then(
+          () => this._yamlEditor?.setValue(this._serviceData)
         );
       }
     } else if (!this._serviceData?.service) {
@@ -79,8 +82,8 @@ class HaPanelDevService extends LitElement {
         data: {},
       };
       if (this._yamlMode) {
-        this.updateComplete.then(() =>
-          this._yamlEditor?.setValue(this._serviceData)
+        this.updateComplete.then(
+          () => this._yamlEditor?.setValue(this._serviceData)
         );
       }
     }
@@ -94,6 +97,14 @@ class HaPanelDevService extends LitElement {
     );
 
     const isValid = this._isValid(this._serviceData, fields, target);
+
+    const domain = this._serviceData?.service
+      ? computeDomain(this._serviceData?.service)
+      : undefined;
+
+    const serviceName = this._serviceData?.service
+      ? computeObjectId(this._serviceData?.service)
+      : undefined;
 
     return html`
       <div class="content">
@@ -248,11 +259,20 @@ class HaPanelDevService extends LitElement {
                   ? fields
                   : this._filterSelectorFields(fields)
                 ).map(
-                  (field) => html` <tr>
-                    <td><pre>${field.key}</pre></td>
-                    <td>${field.description}</td>
-                    <td>${field.example}</td>
-                  </tr>`
+                  (field) =>
+                    html` <tr>
+                      <td><pre>${field.key}</pre></td>
+                      <td>
+                        ${this.hass.localize(
+                          `component.${domain}.services.${serviceName}.fields.${field.key}.description`
+                        ) || field.description}
+                      </td>
+                      <td>
+                        ${this.hass.localize(
+                          `component.${domain}.services.${serviceName}.fields.${field.key}.example`
+                        ) || field.example}
+                      </td>
+                    </tr>`
                 )}
               </table>
               ${this._yamlMode
@@ -429,6 +449,14 @@ class HaPanelDevService extends LitElement {
       this.hass.services,
       this._serviceData?.service
     );
+    const domain = this._serviceData?.service
+      ? computeDomain(this._serviceData?.service)
+      : undefined;
+
+    const serviceName = this._serviceData?.service
+      ? computeObjectId(this._serviceData?.service)
+      : undefined;
+
     const example = {};
     fields.forEach((field) => {
       if (field.example) {
@@ -436,7 +464,10 @@ class HaPanelDevService extends LitElement {
         try {
           value = load(field.example);
         } catch (err: any) {
-          value = field.example;
+          value =
+            this.hass.localize(
+              `component.${domain}.services.${serviceName}.fields.${field.key}.example`
+            ) || field.example;
         }
         example[field.key] = value;
       }

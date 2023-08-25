@@ -35,6 +35,7 @@ const SENSOR_DEVICE_CLASSES = [
   "nitrogen_monoxide",
   "nitrous_oxide",
   "ozone",
+  "ph",
   "pm1",
   "pm10",
   "pm25",
@@ -283,6 +284,13 @@ const ENTITIES: HassEntity[] = [
     installed_version: "1.0.0",
     latest_version: "2.0.0",
   }),
+  createEntity("water_heater.off", "off"),
+  createEntity("water_heater.eco", "eco"),
+  createEntity("water_heater.electric", "electric"),
+  createEntity("water_heater.performance", "performance"),
+  createEntity("water_heater.high_demand", "high_demand"),
+  createEntity("water_heater.heat_pump", "heat_pump"),
+  createEntity("water_heater.gas", "gas"),
 ];
 
 function createEntity(

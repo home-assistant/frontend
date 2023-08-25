@@ -11,10 +11,12 @@ export type LocalizeKeys =
   | `ui.card.alarm_control_panel.${string}`
   | `ui.card.weather.attributes.${string}`
   | `ui.card.weather.cardinal_direction.${string}`
+  | `ui.card.lawn_mower.actions.${string}`
   | `ui.components.calendar.event.rrule.${string}`
   | `ui.components.logbook.${string}`
   | `ui.components.selectors.file.${string}`
   | `ui.dialogs.entity_registry.editor.${string}`
+  | `ui.dialogs.more_info_control.lawn_mower.${string}`
   | `ui.dialogs.more_info_control.vacuum.${string}`
   | `ui.dialogs.quick-bar.commands.${string}`
   | `ui.dialogs.unhealthy.reason.${string}`
@@ -38,7 +40,7 @@ export type LocalizeKeys =
 // Tweaked from https://www.raygesualdo.com/posts/flattening-object-keys-with-typescript-types
 export type FlattenObjectKeys<
   T extends Record<string, any>,
-  Key extends keyof T = keyof T
+  Key extends keyof T = keyof T,
 > = Key extends string
   ? T[Key] extends Record<string, unknown>
     ? `${Key}.${FlattenObjectKeys<T[Key]>}`

@@ -75,19 +75,18 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
         >
           ${stateObj.attributes.options
             ? stateObj.attributes.options.map(
-                (option) =>
-                  html`
-                    <mwc-list-item .value=${option}>
-                      ${computeStateDisplay(
-                        this.hass!.localize,
-                        stateObj,
-                        this.hass!.locale,
-                        this.hass!.config,
-                        this.hass!.entities,
-                        option
-                      )}
-                    </mwc-list-item>
-                  `
+                (option) => html`
+                  <mwc-list-item .value=${option}>
+                    ${computeStateDisplay(
+                      this.hass!.localize,
+                      stateObj,
+                      this.hass!.locale,
+                      this.hass!.config,
+                      this.hass!.entities,
+                      option
+                    )}
+                  </mwc-list-item>
+                `
               )
             : ""}
         </ha-select>

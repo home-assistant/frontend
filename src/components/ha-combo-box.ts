@@ -173,7 +173,7 @@ export class HaComboBox extends LitElement {
           autocapitalize="none"
           autocomplete="off"
           autocorrect="off"
-          spellcheck="false"
+          input-spellcheck="false"
           .suffix=${html`<div
             style="width: 28px;"
             role="none presentation"
@@ -312,6 +312,10 @@ export class HaComboBox extends LitElement {
 
   private _valueChanged(ev: ComboBoxLightValueChangedEvent) {
     ev.stopPropagation();
+    if (!this.allowCustomValue) {
+      // @ts-ignore
+      this._comboBox._closeOnBlurIsPrevented = true;
+    }
     const newValue = ev.detail.value;
 
     if (newValue !== this.value) {

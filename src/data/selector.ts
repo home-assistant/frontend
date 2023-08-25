@@ -19,6 +19,7 @@ export type Selector =
   | BooleanSelector
   | ColorRGBSelector
   | ColorTempSelector
+  | ConditionSelector
   | ConversationAgentSelector
   | ConfigEntrySelector
   | ConstantSelector
@@ -53,8 +54,10 @@ export type Selector =
   | UiColorSelector;
 
 export interface ActionSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  action: {} | null;
+  action: {
+    reorder_mode?: boolean;
+    nested?: boolean;
+  } | null;
 }
 
 export interface AddonSelector {
@@ -93,6 +96,13 @@ export interface ColorTempSelector {
   color_temp: {
     min_mireds?: number;
     max_mireds?: number;
+  } | null;
+}
+
+export interface ConditionSelector {
+  condition: {
+    reorder_mode?: boolean;
+    nested?: boolean;
   } | null;
 }
 
@@ -139,21 +149,20 @@ export interface DeviceSelector {
 }
 
 export interface LegacyDeviceSelector {
-  device:
-    | DeviceSelector["device"] & {
-        /**
-         * @deprecated Use filter instead
-         */
-        integration?: DeviceSelectorFilter["integration"];
-        /**
-         * @deprecated Use filter instead
-         */
-        manufacturer?: DeviceSelectorFilter["manufacturer"];
-        /**
-         * @deprecated Use filter instead
-         */
-        model?: DeviceSelectorFilter["model"];
-      };
+  device: DeviceSelector["device"] & {
+    /**
+     * @deprecated Use filter instead
+     */
+    integration?: DeviceSelectorFilter["integration"];
+    /**
+     * @deprecated Use filter instead
+     */
+    manufacturer?: DeviceSelectorFilter["manufacturer"];
+    /**
+     * @deprecated Use filter instead
+     */
+    model?: DeviceSelectorFilter["model"];
+  };
 }
 
 export interface DurationSelector {
@@ -179,21 +188,20 @@ export interface EntitySelector {
 }
 
 export interface LegacyEntitySelector {
-  entity:
-    | EntitySelector["entity"] & {
-        /**
-         * @deprecated Use filter instead
-         */
-        integration?: EntitySelectorFilter["integration"];
-        /**
-         * @deprecated Use filter instead
-         */
-        domain?: EntitySelectorFilter["domain"];
-        /**
-         * @deprecated Use filter instead
-         */
-        device_class?: EntitySelectorFilter["device_class"];
-      };
+  entity: EntitySelector["entity"] & {
+    /**
+     * @deprecated Use filter instead
+     */
+    integration?: EntitySelectorFilter["integration"];
+    /**
+     * @deprecated Use filter instead
+     */
+    domain?: EntitySelectorFilter["domain"];
+    /**
+     * @deprecated Use filter instead
+     */
+    device_class?: EntitySelectorFilter["device_class"];
+  };
 }
 
 export interface StatisticSelector {
@@ -274,7 +282,9 @@ export interface ObjectSelector {
 
 export interface AssistPipelineSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  assist_pipeline: {} | null;
+  assist_pipeline: {
+    include_last_used?: boolean;
+  } | null;
 }
 
 export interface SelectOption {
@@ -290,6 +300,7 @@ export interface SelectSelector {
     mode?: "list" | "dropdown";
     options: readonly string[] | readonly SelectOption[];
     translation_key?: string;
+    sort?: boolean;
   } | null;
 }
 
@@ -323,6 +334,7 @@ export interface StringSelector {
       | "time"
       | "datetime-local"
       | "color";
+    prefix?: string;
     suffix?: string;
     autocomplete?: string;
   } | null;

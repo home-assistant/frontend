@@ -65,6 +65,7 @@ export class HaTextSelector extends LitElement {
         .type=${this._unmaskedPassword ? "text" : this.selector.text?.type}
         @input=${this._handleChange}
         .label=${this.label || ""}
+        .prefix=${this.selector.text?.prefix}
         .suffix=${this.selector.text?.type === "password"
           ? // reserve some space for the icon.
             html`<div style="width: 24px"></div>`

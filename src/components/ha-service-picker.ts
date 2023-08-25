@@ -10,12 +10,13 @@ import "./ha-combo-box";
 
 const rowRenderer: ComboBoxLitRenderer<{ service: string; name: string }> = (
   item
-) => html`<mwc-list-item twoline>
-  <span>${item.name}</span>
-  <span slot="secondary"
-    >${item.name === item.service ? "" : item.service}</span
-  >
-</mwc-list-item>`;
+) =>
+  html`<mwc-list-item twoline>
+    <span>${item.name}</span>
+    <span slot="secondary"
+      >${item.name === item.service ? "" : item.service}</span
+    >
+  </mwc-list-item>`;
 
 @customElement("ha-service-picker")
 class HaServicePicker extends LitElement {
@@ -26,6 +27,12 @@ class HaServicePicker extends LitElement {
   @property() public value?: string;
 
   @state() private _filter?: string;
+
+  protected willUpdate() {
+    if (!this.hasUpdated) {
+      this.hass.loadBackendTranslation("services");
+    }
+  }
 
   protected render() {
     return html`
@@ -71,7 +78,11 @@ class HaServicePicker extends LitElement {
             result.push({
               service: `${domain}.${service}`,
               name: `${domainToName(localize, domain)}: ${
-                services[domain][service].name || service
+                this.hass.localize(
+                  `component.${domain}.services.${service}.name`
+                ) ||
+                services[domain][service].name ||
+                service
               }`,
             });
           }

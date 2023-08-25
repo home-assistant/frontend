@@ -26,9 +26,18 @@ export const FIXED_DOMAIN_STATES = {
   humidifier: ["on", "off"],
   input_boolean: ["on", "off"],
   input_button: [],
+  lawn_mower: ["error", "paused", "mowing", "docked"],
   light: ["on", "off"],
   lock: ["jammed", "locked", "locking", "unlocked", "unlocking"],
-  media_player: ["idle", "off", "paused", "playing", "standby"],
+  media_player: [
+    "off",
+    "on",
+    "idle",
+    "playing",
+    "paused",
+    "standby",
+    "buffering",
+  ],
   person: ["home", "not_home"],
   plant: ["ok", "problem"],
   remote: ["on", "off"],
@@ -186,6 +195,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "nitrogen_monoxide",
       "nitrous_oxide",
       "ozone",
+      "ph",
       "pm1",
       "pm10",
       "pm25",
@@ -248,6 +258,11 @@ export const getStates = (
     case "person":
       if (!attribute) {
         result.push("home", "not_home");
+      }
+      break;
+    case "event":
+      if (attribute === "event_type") {
+        result.push(...state.attributes.event_types);
       }
       break;
     case "fan":

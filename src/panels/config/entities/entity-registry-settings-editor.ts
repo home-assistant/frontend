@@ -186,7 +186,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues) {
     super.willUpdate(changedProperties);
-    if (!changedProperties.has("entry")) {
+    if (
+      !changedProperties.has("entry") ||
+      changedProperties.get("entry")?.id === this.entry.id
+    ) {
       return;
     }
 
@@ -261,7 +264,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   private precisionLabel(precision?: number, stateValue?: string) {
     const stateValueNumber = Number(stateValue);
-    const value = !isNaN(stateValueNumber) ? stateValueNumber : 0;
+    const value = !isNaN(stateValueNumber) ? stateValue! : 0;
     return formatNumber(value, this.hass.locale, {
       minimumFractionDigits: precision,
       maximumFractionDigits: precision,
@@ -513,7 +516,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       ${domain === "lock"
         ? html`
             <ha-textfield
-              .errorMessage=${this.hass.localize(
+              .validationMessage=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.default_code_error"
               )}
               .value=${this._defaultCode == null ? "" : this._defaultCode}
@@ -687,6 +690,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
         required
         @input=${this._entityIdChanged}
         iconTrailing
+        autocapitalize="none"
+        autocomplete="off"
+        autocorrect="off"
+        input-spellcheck="false"
       >
         <ha-icon-button
           @click=${this._copyEntityId}
@@ -888,11 +895,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   "ui.dialogs.entity_registry.editor.use_device_area"
                 )}
                 ${this.hass.devices[this.entry.device_id].area_id
-                  ? `(${
-                      this.hass.areas[
-                        this.hass.devices[this.entry.device_id].area_id!
-                      ]?.name
-                    })`
+                  ? `(${this.hass.areas[
+                      this.hass.devices[this.entry.device_id].area_id!
+                    ]?.name})`
                   : ""}</span
               >
               <span slot="description"

@@ -10,6 +10,7 @@ export const SCENE_IGNORED_DOMAINS = [
   "button",
   "configuration",
   "device_tracker",
+  "event",
   "image_processing",
   "input_button",
   "persistent_notification",

@@ -75,13 +75,12 @@ export class EnergyWaterSettings extends LitElement {
             >
           </p>
           ${waterValidation.map(
-            (result) =>
-              html`
-                <ha-energy-validation-result
-                  .hass=${this.hass}
-                  .issues=${result}
-                ></ha-energy-validation-result>
-              `
+            (result) => html`
+              <ha-energy-validation-result
+                .hass=${this.hass}
+                .issues=${result}
+              ></ha-energy-validation-result>
+            `
           )}
           <h3>
             ${this.hass.localize(
@@ -136,6 +135,9 @@ export class EnergyWaterSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsWaterDialog(this, {
+      water_sources: this.preferences.energy_sources.filter(
+        (src) => src.type === "water"
+      ) as WaterSourceTypeEnergyPreference[],
       saveCallback: async (source) => {
         delete source.unit_of_measurement;
         await this._savePreferences({
@@ -152,6 +154,9 @@ export class EnergyWaterSettings extends LitElement {
     showEnergySettingsWaterDialog(this, {
       source: { ...origSource },
       metadata: this.statsMetadata?.[origSource.stat_energy_from],
+      water_sources: this.preferences.energy_sources.filter(
+        (src) => src.type === "water"
+      ) as WaterSourceTypeEnergyPreference[],
       saveCallback: async (newSource) => {
         await this._savePreferences({
           ...this.preferences,

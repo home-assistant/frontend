@@ -179,32 +179,34 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               item.endpoint.toString()
             )
           ).map(
-            ([endpoint, configParamEntries]) => html`<div class="content">
-              <h3>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.node_config.endpoint",
-                  "endpoint",
-                  endpoint
-                )}
-              </h3>
-              <ha-card>
-                ${configParamEntries
-                  .sort(([_, paramA], [__, paramB]) =>
-                    paramA.property !== paramB.property
-                      ? paramA.property - paramB.property
-                      : paramA.property_key! - paramB.property_key!
-                  )
-                  .map(
-                    ([id, item]) => html` <ha-settings-row
-                      class="config-item"
-                      .configId=${id}
-                      .narrow=${this.narrow}
-                    >
-                      ${this._generateConfigBox(id, item)}
-                    </ha-settings-row>`
+            ([endpoint, configParamEntries]) =>
+              html`<div class="content">
+                <h3>
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.node_config.endpoint",
+                    "endpoint",
+                    endpoint
                   )}
-              </ha-card>
-            </div>`
+                </h3>
+                <ha-card>
+                  ${configParamEntries
+                    .sort(([_, paramA], [__, paramB]) =>
+                      paramA.property !== paramB.property
+                        ? paramA.property - paramB.property
+                        : paramA.property_key! - paramB.property_key!
+                    )
+                    .map(
+                      ([id, item]) =>
+                        html` <ha-settings-row
+                          class="config-item"
+                          .configId=${id}
+                          .narrow=${this.narrow}
+                        >
+                          ${this._generateConfigBox(id, item)}
+                        </ha-settings-row>`
+                    )}
+                </ha-card>
+              </div>`
           )}
         </ha-config-section>
       </hass-tabs-subpage>
@@ -269,9 +271,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
     // Numeric entries with a min value of 0 and max of 1 are considered boolean
     if (
-      (item.configuration_value_type === "manual_entry" &&
-        item.metadata.min === 0 &&
-        item.metadata.max === 1) ||
+      item.configuration_value_type === "boolean" ||
       this._isEnumeratedBool(item)
     ) {
       return html`

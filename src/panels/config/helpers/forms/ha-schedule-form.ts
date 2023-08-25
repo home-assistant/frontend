@@ -98,10 +98,11 @@ class HaScheduleForm extends LitElement {
   }
 
   public focus() {
-    this.updateComplete.then(() =>
-      (
-        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
-      )?.focus()
+    this.updateComplete.then(
+      () =>
+        (
+          this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
+        )?.focus()
     );
   }
 
@@ -111,6 +112,7 @@ class HaScheduleForm extends LitElement {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }

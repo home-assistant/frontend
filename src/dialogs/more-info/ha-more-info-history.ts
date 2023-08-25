@@ -90,8 +90,8 @@ export class MoreInfoHistory extends LitElement {
       : ""}`;
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
 
     if (changedProps.has("entityId")) {
       this._stateHistory = undefined;

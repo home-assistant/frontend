@@ -68,7 +68,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     `;
   }
 
-  willUpdate(changedProps: PropertyValues<this>) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
     if (
       this._databaseMigration === undefined &&
       changedProps.has("hass") &&
@@ -79,7 +80,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     }
   }
 
-  update(changedProps: PropertyValues<this>) {
+  protected update(changedProps: PropertyValues<this>) {
     if (
       this.hass?.states &&
       this.hass.config &&

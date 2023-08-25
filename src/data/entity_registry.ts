@@ -6,6 +6,7 @@ import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
 import { LightColor } from "./light";
+import { computeDomain } from "../common/entity/compute_domain";
 
 type entityCategory = "config" | "diagnostic";
 
@@ -129,20 +130,34 @@ export interface EntityRegistryEntryUpdateParams {
   aliases?: string[];
 }
 
-export const findBatteryEntity = (
+const batteryPriorities = ["sensor", "binary_sensor"];
+export const findBatteryEntity = <T extends { entity_id: string }>(
   hass: HomeAssistant,
-  entities: EntityRegistryEntry[]
-): EntityRegistryEntry | undefined =>
-  entities.find(
-    (entity) =>
-      hass.states[entity.entity_id] &&
-      hass.states[entity.entity_id].attributes.device_class === "battery"
-  );
+  entities: T[]
+): T | undefined => {
+  const batteryEntities = entities
+    .filter(
+      (entity) =>
+        hass.states[entity.entity_id] &&
+        hass.states[entity.entity_id].attributes.device_class === "battery" &&
+        batteryPriorities.includes(computeDomain(entity.entity_id))
+    )
+    .sort(
+      (a, b) =>
+        batteryPriorities.indexOf(computeDomain(a.entity_id)) -
+        batteryPriorities.indexOf(computeDomain(b.entity_id))
+    );
+  if (batteryEntities.length > 0) {
+    return batteryEntities[0];
+  }
 
-export const findBatteryChargingEntity = (
+  return undefined;
+};
+
+export const findBatteryChargingEntity = <T extends { entity_id: string }>(
   hass: HomeAssistant,
-  entities: EntityRegistryEntry[]
-): EntityRegistryEntry | undefined =>
+  entities: T[]
+): T | undefined =>
   entities.find(
     (entity) =>
       hass.states[entity.entity_id] &&

@@ -2,7 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     ":ignoreModulesAndTests",
-    ":label(dependencies)",
+    ":label(Dependencies)",
     ":pinVersions",
     ":prConcurrentLimit10",
     ":semanticCommitsDisabled",
@@ -15,7 +15,7 @@
   "lockFileMaintenance": {
     "description": ["Run after patch releases but before next beta"],
     "enabled": true,
-    "schedule": ["on the 19th day of the month"]
+    "schedule": ["on the 19th day of the month before 4am"]
   },
   "packageRules": [
     {

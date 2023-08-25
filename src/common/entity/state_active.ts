@@ -6,7 +6,7 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
   const domain = computeDomain(stateObj.entity_id);
   const compareState = state !== undefined ? state : stateObj?.state;
 
-  if (["button", "input_button", "scene"].includes(domain)) {
+  if (["button", "event", "input_button", "scene"].includes(domain)) {
     return compareState !== UNAVAILABLE;
   }
 
@@ -34,6 +34,8 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
     case "device_tracker":
     case "person":
       return compareState !== "not_home";
+    case "lawn_mower":
+      return ["mowing", "error"].includes(compareState);
     case "lock":
       return compareState !== "locked";
     case "media_player":

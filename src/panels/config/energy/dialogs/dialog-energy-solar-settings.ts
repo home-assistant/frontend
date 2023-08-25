@@ -44,6 +44,8 @@ export class DialogEnergySolarSettings
 
   @state() private _error?: string;
 
+  private _excludeList?: string[];
+
   public async showDialog(
     params: EnergySettingsSolarDialogParams
   ): Promise<void> {
@@ -56,12 +58,16 @@ export class DialogEnergySolarSettings
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
+    this._excludeList = this._params.solar_sources
+      .map((entry) => entry.stat_energy_from)
+      .filter((id) => id !== this._source?.stat_energy_from);
   }
 
   public closeDialog(): void {
     this._params = undefined;
     this._source = undefined;
     this._error = undefined;
+    this._excludeList = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -97,6 +103,7 @@ export class DialogEnergySolarSettings
           .label=${this.hass.localize(
             "ui.panel.config.energy.solar.dialog.solar_production_energy"
           )}
+          .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
           dialogInitialFocus
         ></ha-statistic-picker>
@@ -139,31 +146,32 @@ export class DialogEnergySolarSettings
         ${this._forecast
           ? html`<div class="forecast-options">
               ${this._configEntries?.map(
-                (entry) => html`<ha-formfield
-                  .label=${html`<div
-                    style="display: flex; align-items: center;"
+                (entry) =>
+                  html`<ha-formfield
+                    .label=${html`<div
+                      style="display: flex; align-items: center;"
+                    >
+                      <img
+                        alt=""
+                        referrerpolicy="no-referrer"
+                        style="height: 24px; margin-right: 16px;"
+                        src=${brandsUrl({
+                          domain: entry.domain,
+                          type: "icon",
+                          darkOptimized: this.hass.themes?.darkMode,
+                        })}
+                      />${entry.title}
+                    </div>`}
                   >
-                    <img
-                      alt=""
-                      referrerpolicy="no-referrer"
-                      style="height: 24px; margin-right: 16px;"
-                      src=${brandsUrl({
-                        domain: entry.domain,
-                        type: "icon",
-                        darkOptimized: this.hass.themes?.darkMode,
-                      })}
-                    />${entry.title}
-                  </div>`}
-                >
-                  <ha-checkbox
-                    .entry=${entry}
-                    @change=${this._forecastCheckChanged}
-                    .checked=${this._source?.config_entry_solar_forecast?.includes(
-                      entry.entry_id
-                    )}
-                  >
-                  </ha-checkbox>
-                </ha-formfield>`
+                    <ha-checkbox
+                      .entry=${entry}
+                      @change=${this._forecastCheckChanged}
+                      .checked=${this._source?.config_entry_solar_forecast?.includes(
+                        entry.entry_id
+                      )}
+                    >
+                    </ha-checkbox>
+                  </ha-formfield>`
               )}
               <mwc-button @click=${this._addForecast}>
                 ${this.hass.localize(

@@ -76,7 +76,7 @@ class PanelShoppingList extends LitElement {
   }
 
   private _showVoiceCommandDialog(): void {
-    showVoiceCommandDialog(this, this.hass);
+    showVoiceCommandDialog(this, this.hass, { pipeline_id: "last_used" });
   }
 
   static get styles(): CSSResultGroup {
@@ -87,8 +87,7 @@ class PanelShoppingList extends LitElement {
           display: flex;
           flex-direction: row;
           justify-content: center;
-          margin-left: 4px;
-          margin-right: 4px;
+          margin: 8px;
         }
         .column {
           flex: 1 0 0;

@@ -338,7 +338,8 @@ export class HaDataTable extends LitElement {
                 <div class="mdc-data-table__content">
                   <div class="mdc-data-table__row" role="row">
                     <div class="mdc-data-table__cell grows center" role="cell">
-                      ${this.noDataText || "No data"}
+                      ${this.noDataText ||
+                      this.hass.localize("ui.components.data-table.no-data")}
                     </div>
                   </div>
                 </div>

@@ -21,6 +21,7 @@ const LAZY_LOADED_MORE_INFO_CONTROL = {
   image: () => import("./controls/more-info-image"),
   input_boolean: () => import("./controls/more-info-input_boolean"),
   input_datetime: () => import("./controls/more-info-input_datetime"),
+  lawn_mower: () => import("./controls/more-info-lawn_mower"),
   light: () => import("./controls/more-info-light"),
   lock: () => import("./controls/more-info-lock"),
   media_player: () => import("./controls/more-info-media_player"),

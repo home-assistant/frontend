@@ -4,11 +4,11 @@ import { HomeAssistant } from "../types";
 import { debounce } from "../common/util/debounce";
 
 export const integrationsWithPanel = {
-  matter: "/config/matter",
-  mqtt: "/config/mqtt",
-  thread: "/config/thread",
-  zha: "/config/zha/dashboard",
-  zwave_js: "/config/zwave_js/dashboard",
+  matter: "config/matter",
+  mqtt: "config/mqtt",
+  thread: "config/thread",
+  zha: "config/zha/dashboard",
+  zwave_js: "config/zwave_js/dashboard",
 };
 
 export type IntegrationType =
@@ -54,10 +54,8 @@ export interface IntegrationLogInfo {
 
 export enum LogSeverity {
   CRITICAL = 50,
-  FATAL = 50,
   ERROR = 40,
   WARNING = 30,
-  WARN = 30,
   INFO = 20,
   DEBUG = 10,
   NOTSET = 0,

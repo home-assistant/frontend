@@ -574,6 +574,7 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
+    this.hass.loadBackendTranslation("services");
     if (isComponentLoaded(this.hass, "cloud")) {
       this._updateCloudStatus();
       this.addEventListener("connection-status", (ev) => {

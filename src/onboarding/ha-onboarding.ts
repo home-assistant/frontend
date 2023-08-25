@@ -27,6 +27,11 @@ import { registerServiceWorker } from "../util/register-service-worker";
 import "./onboarding-analytics";
 import "./onboarding-create-user";
 import "./onboarding-loading";
+import {
+  enableWrite,
+  loadTokens,
+  saveTokens,
+} from "../common/auth/token_storage";
 
 type OnboardingEvent =
   | {
@@ -211,6 +216,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         // First step is already done, so we need to get auth somewhere else.
         const auth = await getAuth({
           hassUrl,
+          limitHassInstance: true,
+          saveTokens,
+          loadTokens: () => Promise.resolve(loadTokens()),
         });
         history.replaceState(null, "", location.pathname);
         await this._connectHass(auth);
@@ -234,10 +242,13 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     if (stepResult.type === "user") {
       const result = stepResult.result as OnboardingResponses["user"];
       this._loading = true;
+      enableWrite();
       try {
         const auth = await getAuth({
           hassUrl,
+          limitHassInstance: true,
           authCode: result.auth_code,
+          saveTokens,
         });
         await this._connectHass(auth);
       } catch (err: any) {

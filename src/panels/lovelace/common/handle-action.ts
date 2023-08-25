@@ -60,9 +60,12 @@ export const handleAction = async (
       const [domain, service] = actionConfig.service.split(".", 2);
       const serviceDomains = hass.services;
       if (domain in serviceDomains && service in serviceDomains[domain]) {
-        const localize = await hass.loadBackendTranslation("title");
+        await hass.loadBackendTranslation("title");
+        const localize = await hass.loadBackendTranslation("services");
         serviceName = `${domainToName(localize, domain)}: ${
-          serviceDomains[domain][service].name || service
+          localize(`component.${domain}.services.${serviceName}.name`) ||
+          serviceDomains[domain][service].name ||
+          service
         }`;
       }
     }
@@ -161,8 +164,8 @@ export const handleAction = async (
     }
     case "assist": {
       showVoiceCommandDialog(node, hass, {
-        start_listening: actionConfig.start_listening,
-        pipeline_id: actionConfig.pipeline_id,
+        start_listening: actionConfig.start_listening ?? false,
+        pipeline_id: actionConfig.pipeline_id ?? "last_used",
       });
       break;
     }

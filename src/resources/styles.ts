@@ -4,6 +4,7 @@ export const darkStyles = {
   "primary-background-color": "#111111",
   "card-background-color": "#1c1c1c",
   "secondary-background-color": "#282828",
+  "clear-background-color": "#111111",
   "primary-text-color": "#e1e1e1",
   "secondary-text-color": "#9b9b9b",
   "disabled-text-color": "#6f6f6f",

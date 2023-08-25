@@ -31,10 +31,11 @@ class HaInputBooleanForm extends LitElement {
   }
 
   public focus() {
-    this.updateComplete.then(() =>
-      (
-        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
-      )?.focus()
+    this.updateComplete.then(
+      () =>
+        (
+          this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
+        )?.focus()
     );
   }
 

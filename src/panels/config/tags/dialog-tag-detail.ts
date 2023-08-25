@@ -95,11 +95,10 @@ class DialogTagDetail
               .configValue=${"name"}
               @input=${this._valueChanged}
               .label=${this.hass!.localize("ui.panel.config.tag.detail.name")}
-              .errorMessage=${this.hass!.localize(
+              .validationMessage=${this.hass!.localize(
                 "ui.panel.config.tag.detail.required_error_msg"
               )}
               required
-              auto-validate
             ></ha-textfield>
             ${!this._params.entry
               ? html`<ha-textfield
@@ -154,7 +153,7 @@ class DialogTagDetail
         <mwc-button
           slot="primaryAction"
           @click=${this._updateEntry}
-          .disabled=${this._submitting}
+          .disabled=${this._submitting || !this._name}
         >
           ${this._params.entry
             ? this.hass!.localize("ui.panel.config.tag.detail.update")
@@ -164,7 +163,7 @@ class DialogTagDetail
           ? html` <mwc-button
               slot="primaryAction"
               @click=${this._updateWriteEntry}
-              .disabled=${this._submitting}
+              .disabled=${this._submitting || !this._name}
             >
               ${this.hass!.localize(
                 "ui.panel.config.tag.detail.create_and_write"
@@ -270,6 +269,10 @@ class DialogTagDetail
         }
         #qr {
           text-align: center;
+        }
+        ha-textfield {
+          display: block;
+          margin: 8px 0;
         }
       `,
     ];

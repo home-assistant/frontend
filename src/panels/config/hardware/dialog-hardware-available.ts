@@ -110,51 +110,50 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
           </search-input>
         </div>
         ${devices.map(
-          (device) =>
-            html`
-              <ha-expansion-panel
-                .header=${device.name}
-                .secondary=${device.by_id || undefined}
-                outlined
-              >
-                <div class="device-property">
-                  <span>
-                    ${this.hass.localize(
-                      "ui.panel.config.hardware.available_hardware.subsystem"
-                    )}:
-                  </span>
-                  <span>${device.subsystem}</span>
-                </div>
-                <div class="device-property">
-                  <span>
-                    ${this.hass.localize(
-                      "ui.panel.config.hardware.available_hardware.device_path"
-                    )}:
-                  </span>
-                  <code>${device.dev_path}</code>
-                </div>
-                ${device.by_id
-                  ? html`
-                      <div class="device-property">
-                        <span>
-                          ${this.hass.localize(
-                            "ui.panel.config.hardware.available_hardware.id"
-                          )}:
-                        </span>
-                        <code>${device.by_id}</code>
-                      </div>
-                    `
-                  : ""}
-                <div class="attributes">
-                  <span>
-                    ${this.hass.localize(
-                      "ui.panel.config.hardware.available_hardware.attributes"
-                    )}:
-                  </span>
-                  <pre>${dump(device.attributes, { indent: 2 })}</pre>
-                </div>
-              </ha-expansion-panel>
-            `
+          (device) => html`
+            <ha-expansion-panel
+              .header=${device.name}
+              .secondary=${device.by_id || undefined}
+              outlined
+            >
+              <div class="device-property">
+                <span>
+                  ${this.hass.localize(
+                    "ui.panel.config.hardware.available_hardware.subsystem"
+                  )}:
+                </span>
+                <span>${device.subsystem}</span>
+              </div>
+              <div class="device-property">
+                <span>
+                  ${this.hass.localize(
+                    "ui.panel.config.hardware.available_hardware.device_path"
+                  )}:
+                </span>
+                <code>${device.dev_path}</code>
+              </div>
+              ${device.by_id
+                ? html`
+                    <div class="device-property">
+                      <span>
+                        ${this.hass.localize(
+                          "ui.panel.config.hardware.available_hardware.id"
+                        )}:
+                      </span>
+                      <code>${device.by_id}</code>
+                    </div>
+                  `
+                : ""}
+              <div class="attributes">
+                <span>
+                  ${this.hass.localize(
+                    "ui.panel.config.hardware.available_hardware.attributes"
+                  )}:
+                </span>
+                <pre>${dump(device.attributes, { indent: 2 })}</pre>
+              </div>
+            </ha-expansion-panel>
+          `
         )}
       </ha-dialog>
     `;

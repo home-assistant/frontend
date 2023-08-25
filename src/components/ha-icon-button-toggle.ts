@@ -38,7 +38,7 @@ export class HaIconButtonToggle extends HaIconButton {
       :host([selected]) mwc-icon-button {
         color: var(--primary-background-color);
       }
-      :host([selected]) mwc-icon-button::before {
+      :host([selected]:not([disabled])) mwc-icon-button::before {
         opacity: 1;
       }
     `;

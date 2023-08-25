@@ -98,8 +98,8 @@ interface EMOutgoingMessageSidebarShow extends EMMessage {
 interface EMOutgoingMessageAssistShow extends EMMessage {
   type: "assist/show";
   payload?: {
-    pipeline_id?: string;
-    start_listening?: boolean;
+    pipeline_id: "preferred" | "last_used" | string;
+    start_listening: boolean;
   };
 }
 

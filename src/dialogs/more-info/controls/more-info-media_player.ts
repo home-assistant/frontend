@@ -15,12 +15,12 @@ import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import { stateActive } from "../../../common/entity/state_active";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
-import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import {
   computeMediaControls,
   handleMediaControlClick,
@@ -83,7 +83,7 @@ class MoreInfoMediaPlayer extends LitElement {
       </div>
       ${(supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET) ||
         supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_BUTTONS)) &&
-      ![UNAVAILABLE, UNKNOWN, "off"].includes(stateObj.state)
+      stateActive(stateObj)
         ? html`
             <div class="volume">
               ${supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_MUTE)
@@ -141,7 +141,7 @@ class MoreInfoMediaPlayer extends LitElement {
             </div>
           `
         : ""}
-      ${![UNAVAILABLE, UNKNOWN, "off"].includes(stateObj.state) &&
+      ${stateActive(stateObj) &&
       supportsFeature(stateObj, MediaPlayerEntityFeature.SELECT_SOURCE) &&
       stateObj.attributes.source_list?.length
         ? html`
@@ -156,27 +156,26 @@ class MoreInfoMediaPlayer extends LitElement {
                 @closed=${stopPropagation}
               >
                 ${stateObj.attributes.source_list!.map(
-                  (source) =>
-                    html`
-                      <mwc-list-item .value=${source}
-                        >${computeAttributeValueDisplay(
-                          this.hass.localize,
-                          stateObj,
-                          this.hass.locale,
-                          this.hass.config,
-                          this.hass.entities,
-                          "source",
-                          source
-                        )}</mwc-list-item
-                      >
-                    `
+                  (source) => html`
+                    <mwc-list-item .value=${source}
+                      >${computeAttributeValueDisplay(
+                        this.hass.localize,
+                        stateObj,
+                        this.hass.locale,
+                        this.hass.config,
+                        this.hass.entities,
+                        "source",
+                        source
+                      )}</mwc-list-item
+                    >
+                  `
                 )}
                 <ha-svg-icon .path=${mdiLoginVariant} slot="icon"></ha-svg-icon>
               </ha-select>
             </div>
           `
         : ""}
-      ${![UNAVAILABLE, UNKNOWN, "off"].includes(stateObj.state) &&
+      ${stateActive(stateObj) &&
       supportsFeature(stateObj, MediaPlayerEntityFeature.SELECT_SOUND_MODE) &&
       stateObj.attributes.sound_mode_list?.length
         ? html`

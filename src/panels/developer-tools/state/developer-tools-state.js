@@ -61,7 +61,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         .inputs {
           width: 100%;
-          max-width: 400px;
+          max-width: 800px;
         }
 
         .info {
@@ -202,7 +202,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               autocapitalize="none"
               autocomplete="off"
               autocorrect="off"
-              spellcheck="false"
+              input-spellcheck="false"
               value="[[_state]]"
               on-change="stateChanged"
               class="state-input"

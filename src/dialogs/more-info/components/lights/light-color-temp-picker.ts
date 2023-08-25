@@ -16,6 +16,10 @@ import {
   LightEntity,
 } from "../../../../data/light";
 import { HomeAssistant } from "../../../../types";
+import {
+  DEFAULT_MAX_KELVIN,
+  DEFAULT_MIN_KELVIN,
+} from "../../../../common/color/convert-light-color";
 
 declare global {
   interface HASSDomEvents {
@@ -37,12 +41,17 @@ class LightColorTempPicker extends LitElement {
       return nothing;
     }
 
+    const minKelvin =
+      this.stateObj.attributes.min_color_temp_kelvin ?? DEFAULT_MIN_KELVIN;
+    const maxKelvin =
+      this.stateObj.attributes.max_color_temp_kelvin ?? DEFAULT_MAX_KELVIN;
+
     return html`
       <ha-temp-color-picker
         @value-changed=${this._ctColorChanged}
         @cursor-moved=${this._ctColorCursorMoved}
-        .min=${this.stateObj.attributes.min_color_temp_kelvin!}
-        .max=${this.stateObj.attributes.max_color_temp_kelvin!}
+        .min=${minKelvin}
+        .max=${maxKelvin}
         .value=${this._ctPickerValue}
       >
       </ha-temp-color-picker>

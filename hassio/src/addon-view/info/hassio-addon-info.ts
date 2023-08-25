@@ -544,14 +544,13 @@ class HassioAddonInfo extends LitElement {
                       <code slot="description"> ${this.addon.hostname} </code>
                     </ha-settings-row>
                     ${metrics.map(
-                      (metric) =>
-                        html`
-                          <supervisor-metric
-                            .description=${metric.description}
-                            .value=${metric.value ?? 0}
-                            .tooltip=${metric.tooltip}
-                          ></supervisor-metric>
-                        `
+                      (metric) => html`
+                        <supervisor-metric
+                          .description=${metric.description}
+                          .value=${metric.value ?? 0}
+                          .tooltip=${metric.tooltip}
+                        ></supervisor-metric>
+                      `
                     )}`
                 : ""}
             </div>

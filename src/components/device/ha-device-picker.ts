@@ -45,12 +45,11 @@ export type HaDevicePickerDeviceFilterFunc = (
 
 export type HaDevicePickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
-const rowRenderer: ComboBoxLitRenderer<Device> = (item) => html`<mwc-list-item
-  .twoline=${!!item.area}
->
-  <span>${item.name}</span>
-  <span slot="secondary">${item.area}</span>
-</mwc-list-item>`;
+const rowRenderer: ComboBoxLitRenderer<Device> = (item) =>
+  html`<mwc-list-item .twoline=${!!item.area}>
+    <span>${item.name}</span>
+    <span slot="secondary">${item.area}</span>
+  </mwc-list-item>`;
 
 @customElement("ha-device-picker")
 export class HaDevicePicker extends SubscribeMixin(LitElement) {
@@ -231,19 +230,23 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         );
       }
 
-      const outputDevices = inputDevices.map((device) => ({
-        id: device.id,
-        name: computeDeviceName(
+      const outputDevices = inputDevices.map((device) => {
+        const name = computeDeviceName(
           device,
           this.hass,
           deviceEntityLookup[device.id]
-        ),
-        area:
-          device.area_id && areaLookup[device.area_id]
-            ? areaLookup[device.area_id].name
-            : this.hass.localize("ui.components.device-picker.no_area"),
-        strings: [device.name || ""],
-      }));
+        );
+
+        return {
+          id: device.id,
+          name: name,
+          area:
+            device.area_id && areaLookup[device.area_id]
+              ? areaLookup[device.area_id].name
+              : this.hass.localize("ui.components.device-picker.no_area"),
+          strings: [name || ""],
+        };
+      });
       if (!outputDevices.length) {
         return [
           {
@@ -321,6 +324,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         .renderer=${rowRenderer}
         .disabled=${this.disabled}
         .required=${this.required}
+        item-id-path="id"
         item-value-path="id"
         item-label-path="name"
         @opened-changed=${this._openedChanged}

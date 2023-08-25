@@ -5,6 +5,7 @@ import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
@@ -42,6 +43,7 @@ type StatisticData = StatisticsMetaData & {
 
 type DisplayedStatisticData = StatisticData & {
   displayName: string;
+  issues_string?: string;
 };
 
 @customElement("developer-tools-statistics")
@@ -59,17 +61,26 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
   }
 
   private _displayData = memoizeOne(
-    (data: StatisticData[]): DisplayedStatisticData[] =>
+    (data: StatisticData[], localize: LocalizeFunc): DisplayedStatisticData[] =>
       data.map((item) => ({
         ...item,
         displayName: item.state
           ? computeStateName(item.state)
           : item.name || item.statistic_id,
+        issues_string: item.issues
+          ?.map(
+            (issue) =>
+              localize(
+                `ui.panel.developer-tools.tabs.statistics.issues.${issue.type}`,
+                issue.data
+              ) || issue.type
+          )
+          .join(" "),
       }))
   );
 
   private _columns = memoizeOne(
-    (localize): DataTableColumnContainer => ({
+    (localize: LocalizeFunc): DataTableColumnContainer => ({
       displayName: {
         title: localize(
           "ui.panel.developer-tools.tabs.statistics.data_table.name"
@@ -104,7 +115,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         filterable: true,
         width: "10%",
       },
-      issues: {
+      issues_string: {
         title: localize(
           "ui.panel.developer-tools.tabs.statistics.data_table.issue"
         ),
@@ -112,16 +123,9 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         filterable: true,
         direction: "asc",
         width: "30%",
-        template: (issues) =>
-          html`${issues
-            ? issues.map(
-                (issue) =>
-                  localize(
-                    `ui.panel.developer-tools.tabs.statistics.issues.${issue.type}`,
-                    issue.data
-                  ) || issue.type
-              )
-            : localize("ui.panel.developer-tools.tabs.statistics.no_issue")}`,
+        template: (issues_string) =>
+          html`${issues_string ??
+          localize("ui.panel.developer-tools.tabs.statistics.no_issue")}`,
       },
       fix: {
         title: "",
@@ -162,8 +166,9 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
   protected render() {
     return html`
       <ha-data-table
+        .hass=${this.hass}
         .columns=${this._columns(this.hass.localize)}
-        .data=${this._displayData(this._data)}
+        .data=${this._displayData(this._data, this.hass.localize)}
         noDataText="No statistics"
         id="statistic_id"
         clickable

@@ -2,8 +2,6 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { computeAttributeValueDisplay } from "../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
-import { formatNumber } from "../common/number/format_number";
-import { blankBeforePercent } from "../common/translations/blank_before_percent";
 import { isUnavailableState, OFF } from "../data/entity";
 import { HumidifierEntity } from "../data/humidifier";
 import type { HomeAssistant } from "../types";
@@ -51,10 +49,10 @@ class HaHumidifierState extends LitElement {
     }
 
     if (this.stateObj.attributes.current_humidity != null) {
-      return `${formatNumber(
-        this.stateObj.attributes.current_humidity,
-        this.hass.locale
-      )}${blankBeforePercent(this.hass.locale)}%`;
+      return `${this.hass.formatEntityAttributeValue(
+        this.stateObj,
+        "current_humidity"
+      )}`;
     }
 
     return undefined;
@@ -66,10 +64,10 @@ class HaHumidifierState extends LitElement {
     }
 
     if (this.stateObj.attributes.humidity != null) {
-      return `${formatNumber(
-        this.stateObj.attributes.humidity,
-        this.hass.locale
-      )}${blankBeforePercent(this.hass.locale)}%`;
+      return `${this.hass.formatEntityAttributeValue(
+        this.stateObj,
+        "humidity"
+      )}`;
     }
 
     return "";
@@ -119,7 +117,6 @@ class HaHumidifierState extends LitElement {
 
       .state-label {
         font-weight: bold;
-        text-transform: capitalize;
       }
 
       .unit {

@@ -28,7 +28,6 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
@@ -207,16 +206,25 @@ export class HaConfigDevicePage extends LitElement {
       const result = groupBy(entities, (entry) =>
         entry.entity_category
           ? entry.entity_category
+          : computeDomain(entry.entity_id) === "event"
+          ? "event"
           : SENSOR_ENTITIES.includes(computeDomain(entry.entity_id))
           ? "sensor"
           : "control"
       ) as Record<
         | "control"
+        | "event"
         | "sensor"
         | NonNullable<EntityRegistryEntry["entity_category"]>,
         EntityRegistryStateEntry[]
       >;
-      for (const key of ["control", "sensor", "diagnostic", "config"]) {
+      for (const key of [
+        "config",
+        "control",
+        "diagnostic",
+        "event",
+        "sensor",
+      ]) {
         if (!(key in result)) {
           result[key] = [];
         }
@@ -320,11 +328,11 @@ export class HaConfigDevicePage extends LitElement {
     const entitiesByCategory = this._entitiesByCategory(entities);
     const batteryEntity = this._batteryEntity(entities);
     const batteryChargingEntity = this._batteryChargingEntity(entities);
-    const batteryState = batteryEntity
+    const battery = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
-    const batteryIsBinary =
-      batteryState && computeStateDomain(batteryState) === "binary_sensor";
+    const batteryDomain = battery ? computeStateDomain(battery) : undefined;
+
     const batteryChargingState = batteryChargingEntity
       ? this.hass.states[batteryChargingEntity.entity_id]
       : undefined;
@@ -376,32 +384,30 @@ export class HaConfigDevicePage extends LitElement {
     const firstDeviceAction = actions.shift();
 
     if (device.disabled_by) {
-      deviceInfo.push(
-        html`
-          <ha-alert alert-type="warning">
-            ${this.hass.localize(
-              "ui.panel.config.devices.enabled_cause",
-              "type",
-              this.hass.localize(
-                `ui.panel.config.devices.type.${device.entry_type || "device"}`
-              ),
-              "cause",
-              this.hass.localize(
-                `ui.panel.config.devices.disabled_by.${device.disabled_by}`
-              )
-            )}
-          </ha-alert>
-          ${device.disabled_by === "user"
-            ? html`
-                <div class="card-actions" slot="actions">
-                  <mwc-button unelevated @click=${this._enableDevice}>
-                    ${this.hass.localize("ui.common.enable")}
-                  </mwc-button>
-                </div>
-              `
-            : ""}
-        `
-      );
+      deviceInfo.push(html`
+        <ha-alert alert-type="warning">
+          ${this.hass.localize(
+            "ui.panel.config.devices.enabled_cause",
+            "type",
+            this.hass.localize(
+              `ui.panel.config.devices.type.${device.entry_type || "device"}`
+            ),
+            "cause",
+            this.hass.localize(
+              `ui.panel.config.devices.disabled_by.${device.disabled_by}`
+            )
+          )}
+        </ha-alert>
+        ${device.disabled_by === "user"
+          ? html`
+              <div class="card-actions" slot="actions">
+                <mwc-button unelevated @click=${this._enableDevice}>
+                  ${this.hass.localize("ui.common.enable")}
+                </mwc-button>
+              </div>
+            `
+          : ""}
+      `);
     }
 
     this._renderIntegrationInfo(device, integrations, deviceInfo);
@@ -705,17 +711,17 @@ export class HaConfigDevicePage extends LitElement {
             }
                 <div class="header-right">
                   ${
-                    batteryState
+                    battery &&
+                    (batteryDomain === "binary_sensor" ||
+                      !isNaN(battery.state as any))
                       ? html`
                           <div class="battery">
-                            ${batteryIsBinary
-                              ? ""
-                              : batteryState.state +
-                                blankBeforePercent(this.hass.locale) +
-                                "%"}
+                            ${batteryDomain === "sensor"
+                              ? this.hass.formatEntityState(battery)
+                              : nothing}
                             <ha-battery-icon
-                              .hass=${this.hass!}
-                              .batteryStateObj=${batteryState}
+                              .hass=${this.hass}
+                              .batteryStateObj=${battery}
                               .batteryChargingStateObj=${batteryChargingState}
                             ></ha-battery-icon>
                           </div>
@@ -751,12 +757,11 @@ export class HaConfigDevicePage extends LitElement {
                   ? html`
                       <div>
                         ${this._deviceAlerts.map(
-                          (alert) =>
-                            html`
-                              <ha-alert .alertType=${alert.level}>
-                                ${alert.text}
-                              </ha-alert>
-                            `
+                          (alert) => html`
+                            <ha-alert .alertType=${alert.level}>
+                              ${alert.text}
+                            </ha-alert>
+                          `
                         )}
                       </div>
                     `
@@ -880,24 +885,25 @@ export class HaConfigDevicePage extends LitElement {
             ${!this.narrow ? [automationCard, sceneCard, scriptCard] : ""}
           </div>
           <div class="column">
-            ${(["control", "sensor", "config", "diagnostic"] as const).map(
-              (category) =>
-                // Make sure we render controls if no other cards will be rendered
-                entitiesByCategory[category].length > 0 ||
-                (entities.length === 0 && category === "control")
-                  ? html`
-                      <ha-device-entities-card
-                        .hass=${this.hass}
-                        .header=${this.hass.localize(
-                          `ui.panel.config.devices.entities.${category}`
-                        )}
-                        .deviceName=${deviceName}
-                        .entities=${entitiesByCategory[category]}
-                        .showHidden=${device.disabled_by !== null}
-                      >
-                      </ha-device-entities-card>
-                    `
-                  : ""
+            ${(
+              ["control", "sensor", "event", "config", "diagnostic"] as const
+            ).map((category) =>
+              // Make sure we render controls if no other cards will be rendered
+              entitiesByCategory[category].length > 0 ||
+              (entities.length === 0 && category === "control")
+                ? html`
+                    <ha-device-entities-card
+                      .hass=${this.hass}
+                      .header=${this.hass.localize(
+                        `ui.panel.config.devices.entities.${category}`
+                      )}
+                      .deviceName=${deviceName}
+                      .entities=${entitiesByCategory[category]}
+                      .showHidden=${device.disabled_by !== null}
+                    >
+                    </ha-device-entities-card>
+                  `
+                : ""
             )}
             <ha-device-via-devices-card
               .hass=${this.hass}
@@ -1288,6 +1294,11 @@ export class HaConfigDevicePage extends LitElement {
               }
             }
           }
+        } else if (
+          updates.disabled_by !== null &&
+          updates.disabled_by !== "user"
+        ) {
+          delete updates.disabled_by;
         }
         try {
           await updateDeviceRegistryEntry(this.hass, this.deviceId, updates);

@@ -10,6 +10,7 @@ import {
   mdiBookmark,
   mdiBrightness5,
   mdiBullhorn,
+  mdiButtonPointer,
   mdiCalendar,
   mdiCalendarClock,
   mdiCarCoolantLevel,
@@ -28,7 +29,6 @@ import {
   mdiFormatListBulleted,
   mdiFormTextbox,
   mdiGauge,
-  mdiGestureTapButton,
   mdiGoogleAssistant,
   mdiGoogleCirclesCommunities,
   mdiHomeAssistant,
@@ -45,9 +45,11 @@ import {
   mdiMoleculeCo,
   mdiMoleculeCo2,
   mdiPalette,
+  mdiPh,
   mdiProgressClock,
   mdiRayVertex,
   mdiRemote,
+  mdiRobotMower,
   mdiRobotVacuum,
   mdiScriptText,
   mdiSineWave,
@@ -93,11 +95,12 @@ export const FIXED_DOMAIN_ICONS = {
   homekit: mdiHomeAutomation,
   image: mdiImage,
   image_processing: mdiImageFilterFrames,
-  input_button: mdiGestureTapButton,
+  input_button: mdiButtonPointer,
   input_datetime: mdiCalendarClock,
   input_number: mdiRayVertex,
   input_select: mdiFormatListBulleted,
   input_text: mdiFormTextbox,
+  lawn_mower: mdiRobotMower,
   light: mdiLightbulb,
   mailbox: mdiMailbox,
   notify: mdiCommentAlert,
@@ -148,6 +151,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   nitrogen_monoxide: mdiMolecule,
   nitrous_oxide: mdiMolecule,
   ozone: mdiMolecule,
+  ph: mdiPh,
   pm1: mdiMolecule,
   pm10: mdiMolecule,
   pm25: mdiMolecule,
@@ -174,15 +178,18 @@ export const FIXED_DEVICE_CLASS_ICONS = {
 
 /** Domains that have a state card. */
 export const DOMAINS_WITH_CARD = [
+  "alert",
   "button",
   "climate",
   "cover",
   "configurator",
+  "event",
   "input_button",
   "input_select",
   "input_number",
   "input_text",
   "humidifier",
+  "lawn_mower",
   "lock",
   "media_player",
   "number",
@@ -258,7 +265,11 @@ export const DOMAINS_TOGGLE = new Set([
 ]);
 
 /** Domains that have a dynamic entity image / picture. */
-export const DOMAINS_WITH_DYNAMIC_PICTURE = new Set(["camera", "media_player"]);
+export const DOMAINS_WITH_DYNAMIC_PICTURE = new Set([
+  "camera",
+  "image",
+  "media_player",
+]);
 
 /** Temperature units. */
 export const UNIT_C = "°C";

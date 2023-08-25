@@ -36,6 +36,12 @@ export class DeveloperYamlConfig extends LitElement {
 
   private _validateLog = "";
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._isValid = null;
+    this._validateLog = "";
+  }
+
   protected updated(changedProperties) {
     const oldHass = changedProperties.get("hass");
     if (
@@ -142,24 +148,23 @@ export class DeveloperYamlConfig extends LitElement {
             </ha-call-service-button>
           </div>
           ${this._reloadableDomains.map(
-            (domain) =>
-              html`
-                <div class="card-actions">
-                  <ha-call-service-button
-                    .hass=${this.hass}
-                    .domain=${domain}
-                    service="reload"
-                    >${this.hass.localize(
-                      `ui.panel.developer-tools.tabs.yaml.section.reloading.${domain}`
-                    ) ||
-                    this.hass.localize(
-                      "ui.panel.developer-tools.tabs.yaml.section.reloading.reload",
-                      "domain",
-                      domainToName(this.hass.localize, domain)
-                    )}
-                  </ha-call-service-button>
-                </div>
-              `
+            (domain) => html`
+              <div class="card-actions">
+                <ha-call-service-button
+                  .hass=${this.hass}
+                  .domain=${domain}
+                  service="reload"
+                  >${this.hass.localize(
+                    `ui.panel.developer-tools.tabs.yaml.section.reloading.${domain}`
+                  ) ||
+                  this.hass.localize(
+                    "ui.panel.developer-tools.tabs.yaml.section.reloading.reload",
+                    "domain",
+                    domainToName(this.hass.localize, domain)
+                  )}
+                </ha-call-service-button>
+              </div>
+            `
           )}
         </ha-card>
       </div>
@@ -173,6 +178,9 @@ export class DeveloperYamlConfig extends LitElement {
 
     const configCheck = await checkCoreConfig(this.hass);
     this._validating = false;
+    if (!this.isConnected) {
+      return;
+    }
     this._isValid = configCheck.result === "valid";
 
     if (configCheck.errors) {

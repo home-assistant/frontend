@@ -1,6 +1,6 @@
 import { mdiDelete, mdiDrag, mdiListBox, mdiPencil, mdiPlus } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import type { SortableEvent } from "sortablejs";
@@ -12,52 +12,73 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-svg-icon";
 import {
+  CUSTOM_TYPE_PREFIX,
   CustomTileFeatureEntry,
   customTileFeatures,
-  CUSTOM_TYPE_PREFIX,
   isCustomType,
   stripCustomPrefix,
 } from "../../../../data/lovelace_custom_cards";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import {
-  loadSortable,
   SortableInstance,
+  loadSortable,
 } from "../../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../../types";
 import { getTileFeatureElementClass } from "../../create-element/create-tile-feature-element";
 import { supportsAlarmModesTileFeature } from "../../tile-features/hui-alarm-modes-tile-feature";
+import { supportsClimateHvacModesTileFeature } from "../../tile-features/hui-climate-hvac-modes-tile-feature";
 import { supportsCoverOpenCloseTileFeature } from "../../tile-features/hui-cover-open-close-tile-feature";
+import { supportsCoverPositionTileFeature } from "../../tile-features/hui-cover-position-tile-feature";
 import { supportsCoverTiltTileFeature } from "../../tile-features/hui-cover-tilt-tile-feature";
 import { supportsFanSpeedTileFeature } from "../../tile-features/hui-fan-speed-tile-feature";
+import { supportsLawnMowerCommandTileFeature } from "../../tile-features/hui-lawn-mower-commands-tile-feature";
 import { supportsLightBrightnessTileFeature } from "../../tile-features/hui-light-brightness-tile-feature";
+import { supportsLightColorTempTileFeature } from "../../tile-features/hui-light-color-temp-tile-feature";
 import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
+import { supportsWaterHeaterOperationModesTileFeature } from "../../tile-features/hui-water-heater-operation-modes-tile-feature";
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
 
 type FeatureType = LovelaceTileFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
 
 const FEATURE_TYPES: FeatureType[] = [
-  "cover-open-close",
-  "cover-tilt",
-  "light-brightness",
-  "vacuum-commands",
-  "fan-speed",
   "alarm-modes",
+  "climate-hvac-modes",
+  "cover-open-close",
+  "cover-position",
+  "cover-tilt-position",
+  "cover-tilt",
+  "fan-speed",
+  "lawn-mower-commands",
+  "light-brightness",
+  "light-color-temp",
+  "vacuum-commands",
+  "water-heater-operation-modes",
 ];
 
 const EDITABLES_FEATURE_TYPES = new Set<FeatureType>([
   "vacuum-commands",
   "alarm-modes",
+  "climate-hvac-modes",
+  "water-heater-operation-modes",
+  "lawn-mower-commands",
 ]);
 
 const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
   {
-    "cover-open-close": supportsCoverOpenCloseTileFeature,
-    "cover-tilt": supportsCoverTiltTileFeature,
-    "light-brightness": supportsLightBrightnessTileFeature,
-    "vacuum-commands": supportsVacuumCommandTileFeature,
-    "fan-speed": supportsFanSpeedTileFeature,
     "alarm-modes": supportsAlarmModesTileFeature,
+    "climate-hvac-modes": supportsClimateHvacModesTileFeature,
+    "cover-open-close": supportsCoverOpenCloseTileFeature,
+    "cover-position": supportsCoverPositionTileFeature,
+    "cover-tilt-position": supportsCoverPositionTileFeature,
+    "cover-tilt": supportsCoverTiltTileFeature,
+    "fan-speed": supportsFanSpeedTileFeature,
+    "lawn-mower-commands": supportsLawnMowerCommandTileFeature,
+    "light-brightness": supportsLightBrightnessTileFeature,
+    "light-color-temp": supportsLightColorTempTileFeature,
+    "vacuum-commands": supportsVacuumCommandTileFeature,
+    "water-heater-operation-modes":
+      supportsWaterHeaterOperationModesTileFeature,
   };
 
 const CUSTOM_FEATURE_ENTRIES: Record<
@@ -92,6 +113,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
   private _sortable?: SortableInstance;
 
   public disconnectedCallback() {
+    super.disconnectedCallback();
     this._destroySortable();
   }
 

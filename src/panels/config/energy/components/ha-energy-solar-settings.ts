@@ -79,13 +79,12 @@ export class EnergySolarSettings extends LitElement {
             >
           </p>
           ${solarValidation.map(
-            (result) =>
-              html`
-                <ha-energy-validation-result
-                  .hass=${this.hass}
-                  .issues=${result}
-                ></ha-energy-validation-result>
-              `
+            (result) => html`
+              <ha-energy-validation-result
+                .hass=${this.hass}
+                .issues=${result}
+              ></ha-energy-validation-result>
+            `
           )}
 
           <h3>
@@ -150,6 +149,9 @@ export class EnergySolarSettings extends LitElement {
   private _addSource() {
     showEnergySettingsSolarDialog(this, {
       info: this.info!,
+      solar_sources: this.preferences.energy_sources.filter(
+        (src) => src.type === "solar"
+      ) as SolarSourceTypeEnergyPreference[],
       saveCallback: async (source) => {
         await this._savePreferences({
           ...this.preferences,
@@ -165,6 +167,9 @@ export class EnergySolarSettings extends LitElement {
     showEnergySettingsSolarDialog(this, {
       info: this.info!,
       source: { ...origSource },
+      solar_sources: this.preferences.energy_sources.filter(
+        (src) => src.type === "solar"
+      ) as SolarSourceTypeEnergyPreference[],
       saveCallback: async (newSource) => {
         await this._savePreferences({
           ...this.preferences,

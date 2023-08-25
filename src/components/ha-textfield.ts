@@ -17,6 +17,11 @@ export class HaTextField extends TextFieldBase {
 
   @property() public autocomplete?: string;
 
+  @property() public autocorrect?: string;
+
+  @property({ attribute: "input-spellcheck" })
+  public inputSpellcheck?: string;
+
   @query("input") public formElement!: HTMLInputElement;
 
   override updated(changedProperties: PropertyValues) {
@@ -36,6 +41,20 @@ export class HaTextField extends TextFieldBase {
         this.formElement.setAttribute("autocomplete", this.autocomplete);
       } else {
         this.formElement.removeAttribute("autocomplete");
+      }
+    }
+    if (changedProperties.has("autocorrect")) {
+      if (this.autocorrect) {
+        this.formElement.setAttribute("autocorrect", this.autocorrect);
+      } else {
+        this.formElement.removeAttribute("autocorrect");
+      }
+    }
+    if (changedProperties.has("inputSpellcheck")) {
+      if (this.inputSpellcheck) {
+        this.formElement.setAttribute("spellcheck", this.inputSpellcheck);
+      } else {
+        this.formElement.removeAttribute("spellcheck");
       }
     }
   }

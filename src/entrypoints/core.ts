@@ -25,7 +25,6 @@ import { subscribeUser } from "../data/ws-user";
 import type { ExternalAuth } from "../external_app/external_auth";
 import "../resources/array.flat.polyfill";
 import "../resources/safari-14-attachshadow-patch";
-import { HomeAssistant } from "../types";
 import { MAIN_WINDOW_NAME } from "../data/main_window";
 
 window.name = MAIN_WINDOW_NAME;
@@ -65,6 +64,7 @@ const authProm = isExternal
   : () =>
       getAuth({
         hassUrl,
+        limitHassInstance: true,
         saveTokens,
         loadTokens: () => Promise.resolve(loadTokens()),
       });
@@ -129,34 +129,5 @@ window.hassConnection.then(({ conn }) => {
       // Ignore it, it is handled by Lovelace panel.
     });
     llWindow.llResProm = fetchResources(conn);
-  }
-});
-
-window.addEventListener("error", (e) => {
-  if (
-    !__DEV__ &&
-    typeof e.message === "string" &&
-    (e.message.includes("ResizeObserver loop limit exceeded") ||
-      e.message.includes(
-        "ResizeObserver loop completed with undelivered notifications"
-      ))
-  ) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    e.stopPropagation();
-    return;
-  }
-  const homeAssistant = document.querySelector("home-assistant") as any;
-  if (
-    homeAssistant &&
-    homeAssistant.hass &&
-    (homeAssistant.hass as HomeAssistant).callService
-  ) {
-    homeAssistant.hass.callService("system_log", "write", {
-      logger: `frontend.${
-        __DEV__ ? "js_dev" : "js"
-      }.${__BUILD__}.${__VERSION__.replace(".", "")}`,
-      message: `${e.filename}:${e.lineno}:${e.colno} ${e.message}`,
-    });
   }
 });

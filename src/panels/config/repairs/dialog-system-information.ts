@@ -71,7 +71,9 @@ class DialogSystemInformation extends LitElement {
 
   @state() private _opened = false;
 
-  private _subscriptions?: Array<UnsubscribeFunc | Promise<UnsubscribeFunc>>;
+  private _systemHealthSubscription?: Promise<UnsubscribeFunc>;
+
+  private _hassIOSubscription?: UnsubscribeFunc;
 
   public showDialog(): void {
     this._opened = true;
@@ -86,48 +88,43 @@ class DialogSystemInformation extends LitElement {
   }
 
   private _subscribe(): void {
-    const subs: Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> = [];
     if (isComponentLoaded(this.hass, "system_health")) {
-      subs.push(
-        subscribeSystemHealthInfo(this.hass!, (info) => {
-          this._systemInfo = info;
-        })
+      this._systemHealthSubscription = subscribeSystemHealthInfo(
+        this.hass,
+        (info) => {
+          if (!info) {
+            this._systemHealthSubscription = undefined;
+          } else {
+            this._systemInfo = info;
+          }
+        }
       );
     }
 
     if (isComponentLoaded(this.hass, "hassio")) {
-      subs.push(
-        subscribePollingCollection(
-          this.hass,
-          async () => {
-            this._supervisorStats = await fetchHassioStats(
-              this.hass,
-              "supervisor"
-            );
-            this._coreStats = await fetchHassioStats(this.hass, "core");
-          },
-          10000
-        )
+      this._hassIOSubscription = subscribePollingCollection(
+        this.hass,
+        async () => {
+          this._supervisorStats = await fetchHassioStats(
+            this.hass,
+            "supervisor"
+          );
+          this._coreStats = await fetchHassioStats(this.hass, "core");
+        },
+        10000
       );
 
       fetchHassioResolution(this.hass).then((data) => {
         this._resolutionInfo = data;
       });
     }
-
-    this._subscriptions = subs;
   }
 
   private _unsubscribe() {
-    while (this._subscriptions?.length) {
-      const unsub = this._subscriptions.pop()!;
-      if (unsub instanceof Promise) {
-        unsub.then((unsubFunc) => unsubFunc());
-      } else {
-        unsub();
-      }
-    }
-    this._subscriptions = undefined;
+    this._systemHealthSubscription?.then((unsubFunc) => unsubFunc());
+    this._systemHealthSubscription = undefined;
+    this._hassIOSubscription?.();
+    this._hassIOSubscription = undefined;
 
     this._systemInfo = undefined;
     this._resolutionInfo = undefined;
@@ -305,13 +302,11 @@ class DialogSystemInformation extends LitElement {
     const sections: TemplateResult[] = [];
 
     if (!this._systemInfo) {
-      sections.push(
-        html`
-          <div class="loading-container">
-            <ha-circular-progress active></ha-circular-progress>
-          </div>
-        `
-      );
+      sections.push(html`
+        <div class="loading-container">
+          <ha-circular-progress active></ha-circular-progress>
+        </div>
+      `);
     } else {
       const domains = Object.keys(this._systemInfo).sort(sortKeys);
       for (const domain of domains) {
@@ -371,24 +366,22 @@ class DialogSystemInformation extends LitElement {
           `);
         }
         if (domain !== "homeassistant") {
-          sections.push(
-            html`
-              <div class="card-header">
-                <h3>${domainToName(this.hass.localize, domain)}</h3>
-                ${!domainInfo.manage_url
-                  ? ""
-                  : html`
-                      <a class="manage" href=${domainInfo.manage_url}>
-                        <mwc-button>
-                          ${this.hass.localize(
-                            "ui.panel.config.info.system_health.manage"
-                          )}
-                        </mwc-button>
-                      </a>
-                    `}
-              </div>
-            `
-          );
+          sections.push(html`
+            <div class="card-header">
+              <h3>${domainToName(this.hass.localize, domain)}</h3>
+              ${!domainInfo.manage_url
+                ? ""
+                : html`
+                    <a class="manage" href=${domainInfo.manage_url}>
+                      <mwc-button>
+                        ${this.hass.localize(
+                          "ui.panel.config.info.system_health.manage"
+                        )}
+                      </mwc-button>
+                    </a>
+                  `}
+            </div>
+          `);
         }
         sections.push(html`
           <table>

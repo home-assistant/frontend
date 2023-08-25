@@ -16,6 +16,7 @@ import "../ha-formfield";
 import "../ha-radio";
 import "../ha-select";
 import "../ha-input-helper-text";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
@@ -51,10 +52,23 @@ export class HaSelectSelector extends LitElement {
 
     if (this.localizeValue && translationKey) {
       options.forEach((option) => {
-        option.label =
-          this.localizeValue!(`${translationKey}.options.${option.value}`) ||
-          option.label;
+        const localizedLabel = this.localizeValue!(
+          `${translationKey}.options.${option.value}`
+        );
+        if (localizedLabel) {
+          option.label = localizedLabel;
+        }
       });
+    }
+
+    if (this.selector.select?.sort) {
+      options.sort((a, b) =>
+        caseInsensitiveStringCompare(
+          a.label,
+          b.label,
+          this.hass.locale.language
+        )
+      );
     }
 
     if (!this.selector.select?.custom_value && this._mode === "list") {
@@ -112,19 +126,18 @@ export class HaSelectSelector extends LitElement {
         ${value?.length
           ? html`<ha-chip-set>
               ${value.map(
-                (item, idx) =>
-                  html`
-                    <ha-chip hasTrailingIcon>
-                      ${options.find((option) => option.value === item)
-                        ?.label || item}
-                      <ha-svg-icon
-                        slot="trailing-icon"
-                        .path=${mdiClose}
-                        .idx=${idx}
-                        @click=${this._removeItem}
-                      ></ha-svg-icon>
-                    </ha-chip>
-                  `
+                (item, idx) => html`
+                  <ha-chip hasTrailingIcon>
+                    ${options.find((option) => option.value === item)?.label ||
+                    item}
+                    <ha-svg-icon
+                      slot="trailing-icon"
+                      .path=${mdiClose}
+                      .idx=${idx}
+                      @click=${this._removeItem}
+                    ></ha-svg-icon>
+                  </ha-chip>
+                `
               )}
             </ha-chip-set>`
           : ""}

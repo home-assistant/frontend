@@ -147,10 +147,12 @@ class HuiShoppingListCard
         ${this._reordering
           ? html`
               <div id="sortable">
-                ${guard([this._uncheckedItems, this._renderEmptySortable], () =>
-                  this._renderEmptySortable
-                    ? ""
-                    : this._renderItems(this._uncheckedItems!)
+                ${guard(
+                  [this._uncheckedItems, this._renderEmptySortable],
+                  () =>
+                    this._renderEmptySortable
+                      ? ""
+                      : this._renderItems(this._uncheckedItems!)
                 )}
               </div>
             `
@@ -178,23 +180,22 @@ class HuiShoppingListCard
               ${repeat(
                 this._checkedItems!,
                 (item) => item.id,
-                (item) =>
-                  html`
-                    <div class="editRow">
-                      <ha-checkbox
-                        tabindex="0"
-                        .checked=${item.complete}
-                        .itemId=${item.id}
-                        @change=${this._completeItem}
-                      ></ha-checkbox>
-                      <ha-textfield
-                        class="item"
-                        .value=${item.name}
-                        .itemId=${item.id}
-                        @change=${this._saveEdit}
-                      ></ha-textfield>
-                    </div>
-                  `
+                (item) => html`
+                  <div class="editRow">
+                    <ha-checkbox
+                      tabindex="0"
+                      .checked=${item.complete}
+                      .itemId=${item.id}
+                      @change=${this._completeItem}
+                    ></ha-checkbox>
+                    <ha-textfield
+                      class="item"
+                      .value=${item.name}
+                      .itemId=${item.id}
+                      @change=${this._saveEdit}
+                    ></ha-textfield>
+                  </div>
+                `
               )}
             `
           : ""}
@@ -207,35 +208,34 @@ class HuiShoppingListCard
       ${repeat(
         items,
         (item) => item.id,
-        (item) =>
-          html`
-            <div class="editRow" item-id=${item.id}>
-              <ha-checkbox
-                tabindex="0"
-                .checked=${item.complete}
-                .itemId=${item.id}
-                @change=${this._completeItem}
-              ></ha-checkbox>
-              <ha-textfield
-                class="item"
-                .value=${item.name}
-                .itemId=${item.id}
-                @change=${this._saveEdit}
-              ></ha-textfield>
-              ${this._reordering
-                ? html`
-                    <ha-svg-icon
-                      .title=${this.hass!.localize(
-                        "ui.panel.lovelace.cards.shopping-list.drag_and_drop"
-                      )}
-                      class="reorderButton"
-                      .path=${mdiDrag}
-                    >
-                    </ha-svg-icon>
-                  `
-                : ""}
-            </div>
-          `
+        (item) => html`
+          <div class="editRow" item-id=${item.id}>
+            <ha-checkbox
+              tabindex="0"
+              .checked=${item.complete}
+              .itemId=${item.id}
+              @change=${this._completeItem}
+            ></ha-checkbox>
+            <ha-textfield
+              class="item"
+              .value=${item.name}
+              .itemId=${item.id}
+              @change=${this._saveEdit}
+            ></ha-textfield>
+            ${this._reordering
+              ? html`
+                  <ha-svg-icon
+                    .title=${this.hass!.localize(
+                      "ui.panel.lovelace.cards.shopping-list.drag_and_drop"
+                    )}
+                    class="reorderButton"
+                    .path=${mdiDrag}
+                  >
+                  </ha-svg-icon>
+                `
+              : ""}
+          </div>
+        `
       )}
     `;
   }

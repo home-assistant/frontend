@@ -1,17 +1,18 @@
+import { ensureArray } from "../common/array/ensure-array";
 import { formatDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
-import { ensureArray } from "../common/array/ensure-array";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { formatListWithAnds } from "../common/string/format-list";
 import { isTemplate } from "../common/string/has-template";
 import { HomeAssistant } from "../types";
 import { Condition } from "./automation";
-import { describeCondition, describeTrigger } from "./automation_i18n";
+import { describeCondition } from "./automation_i18n";
 import { localizeDeviceAutomationAction } from "./device_automation";
 import { computeDeviceName } from "./device_registry";
 import {
+  EntityRegistryEntry,
   computeEntityRegistryName,
   entityRegistryById,
-  EntityRegistryEntry,
 } from "./entity_registry";
 import { domainToName } from "./integration";
 import {
@@ -21,7 +22,6 @@ import {
   DelayAction,
   DeviceAction,
   EventAction,
-  getActionType,
   IfAction,
   ParallelAction,
   PlayMediaAction,
@@ -30,8 +30,8 @@ import {
   StopAction,
   VariablesAction,
   WaitForTriggerAction,
+  getActionType,
 } from "./script";
-import { formatListWithAnds } from "../common/string/format-list";
 
 const actionTranslationBaseKey =
   "ui.panel.config.automation.editor.actions.type";
@@ -165,12 +165,14 @@ const tryDescribeAction = <T extends ActionType>(
 
     if (config.service) {
       const [domain, serviceName] = config.service.split(".", 2);
-      const service = hass.services[domain][serviceName];
+      const service =
+        hass.localize(`component.${domain}.services.${serviceName}.name`) ||
+        hass.services[domain][serviceName]?.name;
       return hass.localize(
         `${actionTranslationBaseKey}.service.description.service_based_on_name`,
         {
           name: service
-            ? `${domainToName(hass.localize, domain)}: ${service.name}`
+            ? `${domainToName(hass.localize, domain)}: ${service}`
             : config.service,
           targets: formatListWithAnds(hass.locale, targets),
         }
@@ -273,12 +275,9 @@ const tryDescribeAction = <T extends ActionType>(
         `${actionTranslationBaseKey}.wait_for_trigger.description.wait_for_a_trigger`
       );
     }
-    const triggerNames = triggers.map((trigger) =>
-      describeTrigger(trigger, hass, entityRegistry)
-    );
     return hass.localize(
-      `${actionTranslationBaseKey}.wait_for_trigger.description.wait_for_triggers_with_name`,
-      { triggers: formatListWithAnds(hass.locale, triggerNames) }
+      `${actionTranslationBaseKey}.wait_for_trigger.description.wait_for_triggers`,
+      { count: triggers.length }
     );
   }
 
@@ -326,52 +325,13 @@ const tryDescribeAction = <T extends ActionType>(
   if (actionType === "if") {
     const config = action as IfAction;
 
-    let ifConditions: string[] = [];
-    if (Array.isArray(config.if)) {
-      const conditions = ensureArray(config.if);
-      conditions.forEach((condition) => {
-        ifConditions.push(describeCondition(condition, hass, entityRegistry));
-      });
-    } else {
-      ifConditions = [config.if];
+    if (config.else !== undefined) {
+      return hass.localize(
+        `${actionTranslationBaseKey}.if.description.if_else`
+      );
     }
 
-    let elseActions: string[] = [];
-    if (config.else) {
-      if (Array.isArray(config.else)) {
-        const actions = ensureArray(config.else);
-        actions.forEach((currentAction) => {
-          elseActions.push(
-            describeAction(hass, entityRegistry, currentAction, undefined)
-          );
-        });
-      } else {
-        elseActions = [
-          describeAction(hass, entityRegistry, config.else, undefined),
-        ];
-      }
-    }
-
-    let thenActions: string[] = [];
-    if (Array.isArray(config.then)) {
-      const actions = ensureArray(config.then);
-      actions.forEach((currentAction) => {
-        thenActions.push(
-          describeAction(hass, entityRegistry, currentAction, undefined)
-        );
-      });
-    } else {
-      thenActions = [
-        describeAction(hass, entityRegistry, config.then, undefined),
-      ];
-    }
-
-    return hass.localize(`${actionTranslationBaseKey}.if.description.full`, {
-      hasElse: config.else !== undefined,
-      action: formatListWithAnds(hass.locale, thenActions),
-      conditions: formatListWithAnds(hass.locale, ifConditions),
-      elseAction: formatListWithAnds(hass.locale, elseActions),
-    });
+    return hass.localize(`${actionTranslationBaseKey}.if.description.if`);
   }
 
   if (actionType === "choose") {
@@ -400,20 +360,16 @@ const tryDescribeAction = <T extends ActionType>(
         { count: count }
       );
     } else if ("while" in config.repeat) {
-      const conditions = ensureArray(config.repeat.while).map((condition) =>
-        describeCondition(condition, hass, entityRegistry)
-      );
+      const conditions = ensureArray(config.repeat.while);
       chosenAction = hass.localize(
-        `${actionTranslationBaseKey}.repeat.description.while`,
-        { conditions: formatListWithAnds(hass.locale, conditions) }
+        `${actionTranslationBaseKey}.repeat.description.while_count`,
+        { count: conditions.length }
       );
     } else if ("until" in config.repeat) {
-      const conditions = ensureArray(config.repeat.until).map((condition) =>
-        describeCondition(condition, hass, entityRegistry)
-      );
+      const conditions = ensureArray(config.repeat.until);
       chosenAction = hass.localize(
-        `${actionTranslationBaseKey}.repeat.description.until`,
-        { conditions: formatListWithAnds(hass.locale, conditions) }
+        `${actionTranslationBaseKey}.repeat.description.until_count`,
+        { count: conditions.length }
       );
     } else if ("for_each" in config.repeat) {
       const items = ensureArray(config.repeat.for_each).map((item) =>

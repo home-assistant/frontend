@@ -19,7 +19,7 @@ import {
 } from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
-import { HVAC_ACTION_TO_MODE } from "../../data/climate";
+import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import type { HomeAssistant } from "../../types";
 import "../ha-state-icon";
 
@@ -160,10 +160,10 @@ export class StateBadge extends LitElement {
         }
         if (stateObj.attributes.hvac_action) {
           const hvacAction = stateObj.attributes.hvac_action;
-          if (hvacAction in HVAC_ACTION_TO_MODE) {
+          if (hvacAction in CLIMATE_HVAC_ACTION_TO_MODE) {
             iconStyle.color = stateColorCss(
               stateObj,
-              HVAC_ACTION_TO_MODE[hvacAction]
+              CLIMATE_HVAC_ACTION_TO_MODE[hvacAction]
             )!;
           } else {
             delete iconStyle.color;
@@ -211,7 +211,9 @@ export class StateBadge extends LitElement {
           background: var(--divider-color);
         }
         ha-state-icon {
-          transition: color 0.3s ease-in-out, filter 0.3s ease-in-out;
+          transition:
+            color 0.3s ease-in-out,
+            filter 0.3s ease-in-out;
         }
         .missing {
           color: #fce588;
