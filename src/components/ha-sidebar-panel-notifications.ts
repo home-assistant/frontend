@@ -12,14 +12,8 @@ import { HomeAssistant } from "../types";
 import "./ha-svg-icon";
 
 const styles = css`
-  :host {
-    width: 100%;
-  }
   .item {
     width: 100%;
-  }
-  .count {
-    margin-inline-start: auto;
   }
 `;
 @customElement("ha-sidebar-panel-notifications")
@@ -40,6 +34,7 @@ class HaSidebarPanelNotifications extends LitElement {
       class="item ${this.expanded ? "expanded" : ""}"
       @click=${this._showNotifications}
     >
+      <div class="target"></div>
       <span class="icon">
         <ha-svg-icon slot="item-icon" .path=${mdiBell}></ha-svg-icon>
         ${!this.expanded && notificationCount > 0

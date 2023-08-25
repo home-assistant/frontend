@@ -27,8 +27,6 @@ const styles = css`
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    margin: 0 -12px;
-    padding: 0 12px;
   }
   .spacer {
     flex: 1;

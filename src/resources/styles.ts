@@ -338,14 +338,18 @@ export const haStyleDialog = css`
 `;
 
 export const haStyleSidebarItem = css`
+  :host {
+    padding-inline: 12px;
+  }
   .item {
     --rgb-text: var(--rgb-sidebar-text-color);
     background-color: transparent;
     color: rgb(var(--rgb-text));
-    font-family: inherit;
     text-decoration: none;
     border: none;
+    padding: 0;
     cursor: pointer;
+    font-family: inherit;
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
@@ -356,8 +360,7 @@ export const haStyleSidebarItem = css`
     align-items: center;
     justify-content: center;
     border-radius: var(--sidebar-item-radius, 56px);
-    height: 56px;
-    margin: auto;
+    height: 50px;
   }
   .item .icon {
     position: relative;
@@ -366,6 +369,7 @@ export const haStyleSidebarItem = css`
   }
   .item .name {
     display: none;
+    white-space: nowrap;
   }
   .item:hover {
     color: rgb(var(--rgb-text));
@@ -387,7 +391,6 @@ export const haStyleSidebarItem = css`
     background-color: rgba(var(--rgb-text), 0.2);
   }
   .item.expanded {
-    margin: 0;
     padding-inline-start: 16px;
     padding-inline-end: 24px;
     justify-content: initial;
@@ -398,14 +401,21 @@ export const haStyleSidebarItem = css`
   .item.expanded .name {
     display: initial;
   }
-  .icon .badge {
+  .target {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -12px;
+    right: -12px;
+  }
+  .badge {
     position: absolute;
     top: 0;
     right: 0;
     width: 16px;
     height: 16px;
     transform: translateX(50%);
-    border-radius: 16px;
+    border-radius: 8px;
     background-color: var(--accent-color);
     color: var(--text-accent-color, var(--text-primary-color));
     font-weight: 500;
@@ -413,6 +423,17 @@ export const haStyleSidebarItem = css`
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+  .count {
+    margin-inline-start: auto;
+    margin-inline-end: -9px;
+    background-color: var(--accent-color);
+    color: var(--text-accent-color, var(--text-primary-color));
+    padding: 0 6px;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    box-sizing: border-box;
   }
 `;
 

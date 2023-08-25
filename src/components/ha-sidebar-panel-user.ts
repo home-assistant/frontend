@@ -36,6 +36,7 @@ class HaSidebarPanelUser extends LitElement {
       @keydown=${keydown((e) => (e.currentTarget as HTMLElement).click())}
       @keyup=${keyup((e) => (e.currentTarget as HTMLElement).click())}
     >
+      <div class="target"></div>
       <span class="icon">
         <span class="user-icon">
           <ha-user-badge

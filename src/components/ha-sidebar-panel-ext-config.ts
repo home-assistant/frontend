@@ -8,9 +8,6 @@ import "./ha-svg-icon";
 import { HomeAssistant } from "../types";
 
 const styles = css`
-  :host {
-    width: 100%;
-  }
   .item {
     width: 100%;
   }
@@ -31,6 +28,7 @@ class HaSidebarPanelExtConfig extends LitElement {
       aria-label=${this.name}
       @click=${this._showConfig}
     >
+      <div class="target"></div>
       <span class="icon">
         <ha-svg-icon .path=${mdiCellphoneCog}></ha-svg-icon>
       </span>

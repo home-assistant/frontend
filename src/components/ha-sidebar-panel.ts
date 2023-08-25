@@ -7,9 +7,6 @@ import "./ha-icon";
 import { keydown, keyup } from "../resources/button-handlers";
 
 const styles = css`
-  :host {
-    width: 100%;
-  }
   .item.expanded {
     width: 100%;
   }
@@ -42,6 +39,7 @@ class HaSidebarPanel extends LitElement {
       @keydown=${keydown((e) => (e.currentTarget as HTMLElement).click())}
       @keyup=${keyup((e) => (e.currentTarget as HTMLElement).click())}
     >
+      <div class="target"></div>
       <span class="icon">
         ${this.iconPath
           ? html`<ha-svg-icon

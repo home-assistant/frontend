@@ -20,11 +20,11 @@ const styles = css`
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    padding: 0 12px 12px;
+    padding-bottom: 12px;
     overflow: hidden;
   }
   hr {
-    width: 100%;
+    margin-inline: 12px;
     height: 1px;
     border: none;
     background-color: var(--divider-color);

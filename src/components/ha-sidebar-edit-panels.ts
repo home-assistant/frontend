@@ -26,7 +26,7 @@ const styles = css`
     align-items: center;
     padding: 0 16px;
     border-radius: var(--sidebar-item-radius, 56px);
-    height: 56px;
+    height: 52px;
   }
   .panel .icon {
     width: 36px;
@@ -43,6 +43,7 @@ const styles = css`
   }
   #sortable {
     overflow: visible;
+    padding: 0 12px;
   }
   #sortable .panel {
     cursor: grab;

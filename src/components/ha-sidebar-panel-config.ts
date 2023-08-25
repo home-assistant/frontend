@@ -12,14 +12,8 @@ import "./ha-svg-icon";
 import { keydown, keyup } from "../resources/button-handlers";
 
 const styles = css`
-  :host {
-    width: 100%;
-  }
   .item.expanded {
     width: 100%;
-  }
-  .count {
-    margin-inline-start: auto;
   }
 `;
 @customElement("ha-sidebar-panel-config")
@@ -48,6 +42,7 @@ class HaSidebarPanelConfig extends LitElement {
       @keydown=${keydown((e) => (e.currentTarget as HTMLElement).click())}
       @keyup=${keyup((e) => (e.currentTarget as HTMLElement).click())}
     >
+      <div class="target"></div>
       <span class="icon">
         <ha-svg-icon slot="item-icon" .path=${mdiCog}></ha-svg-icon>
         ${!this.expanded && notices > 0
