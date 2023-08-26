@@ -1637,7 +1637,8 @@
             "create_area": "Create Area"
           },
           "editor": {
-            "default_name": "New area",
+            "create_area": "Create area",
+            "update_area": "Update area",
             "delete": "Delete",
             "update": "Update",
             "create": "Create",

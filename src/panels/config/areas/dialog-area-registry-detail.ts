@@ -1,21 +1,19 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
-import { mdiPencil } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-alert";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/ha-textfield";
 import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
-import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
 import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { ValueChangedEvent, HomeAssistant } from "../../../types";
 import { haStyleDialog } from "../../../resources/styles";
 import { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
+import "../../../components/ha-aliases-editor";
 
 const cropOptions: CropOptions = {
   round: false,
@@ -69,8 +67,8 @@ class DialogAreaDetail extends LitElement {
         .heading=${createCloseHeading(
           this.hass,
           entry
-            ? entry.name
-            : this.hass.localize("ui.panel.config.areas.editor.default_name")
+            ? this.hass.localize("ui.panel.config.areas.editor.update_area")
+            : this.hass.localize("ui.panel.config.areas.editor.create_area")
         )}
       >
         <div>
@@ -80,14 +78,15 @@ class DialogAreaDetail extends LitElement {
           <div class="form">
             ${entry
               ? html`
-                  <div>
-                    ${this.hass.localize(
+                  <ha-textfield
+                    .value=${entry.area_id}
+                    .label=${this.hass.localize(
                       "ui.panel.config.areas.editor.area_id"
-                    )}:
-                    ${entry.area_id}
-                  </div>
+                    )}
+                    disabled
+                  ></ha-textfield>
                 `
-              : ""}
+              : nothing}
 
             <ha-textfield
               .value=${this._name}
@@ -100,39 +99,6 @@ class DialogAreaDetail extends LitElement {
               dialogInitialFocus
             ></ha-textfield>
 
-            <div class="label">
-              ${this.hass.localize(
-                "ui.panel.config.areas.editor.aliases_section"
-              )}
-            </div>
-            <mwc-list class="aliases" @action=${this._handleAliasesClicked}>
-              <mwc-list-item .twoline=${this._aliases.length > 0} hasMeta>
-                <span>
-                  ${this._aliases.length > 0
-                    ? this.hass.localize(
-                        "ui.panel.config.areas.editor.configured_aliases",
-                        { count: this._aliases.length }
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.areas.editor.no_aliases"
-                      )}
-                </span>
-                <span slot="secondary">
-                  ${[...this._aliases]
-                    .sort((a, b) =>
-                      stringCompare(a, b, this.hass.locale.language)
-                    )
-                    .join(", ")}
-                </span>
-                <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
-              </mwc-list-item>
-            </mwc-list>
-            <div class="secondary">
-              ${this.hass.localize(
-                "ui.panel.config.areas.editor.aliases_description"
-              )}
-            </div>
-
             <ha-picture-upload
               .hass=${this.hass}
               .value=${this._picture}
@@ -140,41 +106,37 @@ class DialogAreaDetail extends LitElement {
               .cropOptions=${cropOptions}
               @change=${this._pictureChanged}
             ></ha-picture-upload>
+
+            <h3 class="header">
+              ${this.hass.localize(
+                "ui.panel.config.areas.editor.aliases_section"
+              )}
+            </h3>
+
+            <p class="description">
+              ${this.hass.localize(
+                "ui.panel.config.areas.editor.aliases_description"
+              )}
+            </p>
+            <ha-aliases-editor
+              .hass=${this.hass}
+              .aliases=${this._aliases}
+              @value-changed=${this._aliasesChanged}
+            ></ha-aliases-editor>
           </div>
         </div>
-        ${entry
-          ? html`
-              <mwc-button
-                slot="secondaryAction"
-                class="warning"
-                @click=${this._deleteEntry}
-                .disabled=${this._submitting}
-              >
-                ${this.hass.localize("ui.panel.config.areas.editor.delete")}
-              </mwc-button>
-            `
-          : nothing}
+        <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+          ${this.hass.localize("ui.common.cancel")}
+        </mwc-button>
         <mwc-button
           slot="primaryAction"
           @click=${this._updateEntry}
           .disabled=${nameInvalid || this._submitting}
         >
-          ${entry
-            ? this.hass.localize("ui.panel.config.areas.editor.update")
-            : this.hass.localize("ui.panel.config.areas.editor.create")}
+          ${this.hass.localize("ui.common.save")}
         </mwc-button>
       </ha-dialog>
     `;
-  }
-
-  private _handleAliasesClicked() {
-    showAliasesDialog(this, {
-      name: this._name,
-      aliases: this._aliases,
-      updateAliases: async (aliases: string[]) => {
-        this._aliases = aliases;
-      },
-    });
   }
 
   private _isNameValid() {
@@ -214,15 +176,8 @@ class DialogAreaDetail extends LitElement {
     }
   }
 
-  private async _deleteEntry() {
-    this._submitting = true;
-    try {
-      if (await this._params!.removeEntry!()) {
-        this.closeDialog();
-      }
-    } finally {
-      this._submitting = false;
-    }
+  private _aliasesChanged(ev: CustomEvent): void {
+    this._aliases = ev.detail.value;
   }
 
   static get styles(): CSSResultGroup {
