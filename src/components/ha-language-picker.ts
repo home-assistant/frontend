@@ -32,6 +32,8 @@ export class HaLanguagePicker extends LitElement {
 
   @state() _defaultLanguages: string[] = [];
 
+  @state() redrawFlag = false;
+
   @query("ha-select") private _select!: HaSelect;
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -41,6 +43,17 @@ export class HaLanguagePicker extends LitElement {
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
+    this.redrawFlag = false;
+    if (changedProperties.has("hass")) {
+      const oldHass = changedProperties.get("hass");
+      if (
+        this.hass &&
+        oldHass &&
+        oldHass.locale.language !== this.hass.locale.language
+      ) {
+        this.redrawFlag = true;
+      }
+    }
     if (changedProperties.has("languages") || changedProperties.has("value")) {
       this._select.layoutOptions();
       if (this._select.value !== this.value) {
@@ -120,8 +133,9 @@ export class HaLanguagePicker extends LitElement {
       this.nativeName
     );
 
-    const value =
-      this.value ?? (this.required ? languageOptions[0]?.value : this.value);
+    const value = this.redrawFlag
+      ? ""
+      : this.value ?? (this.required ? languageOptions[0]?.value : this.value);
 
     return html`
       <ha-select
