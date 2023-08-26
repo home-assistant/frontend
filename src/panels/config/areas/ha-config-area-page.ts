@@ -7,6 +7,7 @@ import {
 } from "home-assistant-js-websocket/dist/types";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -53,7 +54,6 @@ import {
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
 import "../../../components/ha-list-item";
-import { classMap } from "lit/directives/class-map";
 
 declare type NameAndEntity<EntityType extends HassEntity> = {
   name: string;
