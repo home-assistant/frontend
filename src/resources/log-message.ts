@@ -38,7 +38,6 @@ export const createLogMessage = async (
       .slice(0, MAX_STACK_FRAMES)
       .map((frame) => {
         frame.fileName ??= "";
-        // @ts-expect-error canParse not in DOM library yet
         if (URL.canParse(frame.fileName)) {
           frame.fileName = new URL(frame.fileName).pathname;
         }
