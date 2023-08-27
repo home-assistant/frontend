@@ -6,6 +6,7 @@ interface IpConfiguration {
   address: string[];
   gateway: string;
   method: "disabled" | "static" | "auto";
+  addr_gen_mode: "eui64" | "stable-privacy";
   nameservers: string[];
 }
 

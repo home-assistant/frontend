@@ -346,6 +346,42 @@ export class HassioNetwork extends LitElement {
             </ha-radio>
           </ha-formfield>
         </div>
+        ${version === "ipv6" && this._interface![version]?.method === "auto"
+          ? html`
+              <div class="radio-row">
+                <ha-formfield
+                  .label=${this.hass.localize(
+                    "ui.panel.config.network.supervisor.eui64"
+                  )}
+                >
+                  <ha-radio
+                    @change=${this._handleRadioValueChangedAddrGenMode}
+                    .version=${version}
+                    value="eui64"
+                    name="${version}addr_gen_mode"
+                    .checked=${this._interface![version]?.addr_gen_mode ===
+                    "eui64"}
+                  >
+                  </ha-radio>
+                </ha-formfield>
+                <ha-formfield
+                  .label=${this.hass.localize(
+                    "ui.panel.config.network.supervisor.stable_privacy"
+                  )}
+                >
+                  <ha-radio
+                    @change=${this._handleRadioValueChangedAddrGenMode}
+                    .version=${version}
+                    value="stable-privacy"
+                    name="${version}addr_gen_mode"
+                    .checked=${this._interface![version]?.addr_gen_mode ===
+                    "stable-privacy"}
+                  >
+                  </ha-radio>
+                </ha-formfield>
+              </div>
+            `
+          : ""}
         ${this._interface![version].method === "static"
           ? html`
               <ha-textfield
@@ -416,6 +452,9 @@ export class HassioNetwork extends LitElement {
     IP_VERSIONS.forEach((version) => {
       interfaceOptions[version] = {
         method: this._interface![version]?.method || "auto",
+        ...(version === "ipv6" && {
+          addr_gen_mode: this._interface![version]?.addr_gen_mode,
+        }),
       };
       if (this._interface![version]?.method === "static") {
         interfaceOptions[version] = {
@@ -499,6 +538,24 @@ export class HassioNetwork extends LitElement {
     this._dirty = true;
 
     this._interface[version]!.method = value;
+    this.requestUpdate("_interface");
+  }
+
+  private _handleRadioValueChangedAddrGenMode(ev: Event): void {
+    const source = ev.target as HaRadio;
+    const value = source.value as "eui64" | "stable-privacy";
+    const version = (ev.target as any).version as "ipv4" | "ipv6";
+
+    if (
+      !value ||
+      !this._interface ||
+      this._interface[version]!.addr_gen_mode === value
+    ) {
+      return;
+    }
+    this._dirty = true;
+
+    this._interface[version]!.addr_gen_mode = value;
     this.requestUpdate("_interface");
   }
 

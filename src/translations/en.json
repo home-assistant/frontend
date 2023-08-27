@@ -4263,6 +4263,8 @@
             "static": "Static",
             "auto": "Automatic",
             "disabled": "Disabled",
+            "eui64": "EUI64",
+            "stable_privacy": "Stable Privacy",
             "ip_netmask": "IP address/Netmask",
             "gateway": "Gateway address",
             "dns_servers": "DNS Servers",
