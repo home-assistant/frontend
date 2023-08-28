@@ -5685,7 +5685,11 @@
           "restore_backup": "Restore from backup",
           "vision": "Read our vision",
           "community": "Join our community",
-          "download_app": "Download our app"
+          "download_app": "Download our app",
+          "forums": "Home Assistant forums",
+          "open_home_newsletter": "Building the Open Home newsletter",
+          "discord": "Discord chat",
+          "twitter": "Twitter"
         },
         "user": {
           "header": "Create user",
