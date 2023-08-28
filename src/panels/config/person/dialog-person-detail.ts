@@ -116,14 +116,6 @@ class DialogPersonDetail extends LitElement {
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
-            <ha-picture-upload
-              .hass=${this.hass}
-              .value=${this._picture}
-              crop
-              .cropOptions=${cropOptions}
-              @change=${this._pictureChanged}
-            ></ha-picture-upload>
-
             <ha-textfield
               dialogInitialFocus
               .value=${this._name}
@@ -134,6 +126,14 @@ class DialogPersonDetail extends LitElement {
               )}
               required
             ></ha-textfield>
+
+            <ha-picture-upload
+              .hass=${this.hass}
+              .value=${this._picture}
+              crop
+              .cropOptions=${cropOptions}
+              @change=${this._pictureChanged}
+            ></ha-picture-upload>
 
             <ha-formfield
               .label=${this.hass!.localize(

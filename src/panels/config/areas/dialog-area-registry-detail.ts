@@ -78,13 +78,6 @@ class DialogAreaDetail extends LitElement {
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
           <div class="form">
-            <ha-picture-upload
-              .hass=${this.hass}
-              .value=${this._picture}
-              crop
-              .cropOptions=${cropOptions}
-              @change=${this._pictureChanged}
-            ></ha-picture-upload>
             ${entry
               ? html`
                   <div>
@@ -106,6 +99,14 @@ class DialogAreaDetail extends LitElement {
               required
               dialogInitialFocus
             ></ha-textfield>
+
+            <ha-picture-upload
+              .hass=${this.hass}
+              .value=${this._picture}
+              crop
+              .cropOptions=${cropOptions}
+              @change=${this._pictureChanged}
+            ></ha-picture-upload>
 
             <div class="label">
               ${this.hass.localize(
