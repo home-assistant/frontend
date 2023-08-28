@@ -221,7 +221,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         "Home Assistant OS",
         "Home Assistant Supervised",
       ].includes(response.installation_type);
-      this._supervisor = true;
       if (this._supervisor) {
         // Only load if we have supervisor
         import("./onboarding-restore-backup");

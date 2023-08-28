@@ -1,8 +1,8 @@
 import { LitElement, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { LocalizeFunc } from "../../common/translations/localize";
-import "../../components/ha-dialog";
 import { fireEvent } from "../../common/dom/fire_event";
+import { createCloseHeading } from "../../components/ha-dialog";
 
 @customElement("community-dialog")
 class DialogCommunity extends LitElement {
@@ -21,9 +21,14 @@ class DialogCommunity extends LitElement {
     if (!this.localize) {
       return nothing;
     }
-    return html`<ha-dialog open @closed=${this.closeDialog}>
-      <h1>Community</h1>
-      <p>Community</p>
+    return html`<ha-dialog
+      open
+      @closed=${this.closeDialog}
+      .heading=${createCloseHeading(
+        undefined,
+        this.localize("ui.panel.page-onboarding.welcome.community")
+      )}
+    >
     </ha-dialog>`;
   }
 }

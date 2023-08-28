@@ -10,12 +10,12 @@ import "./ha-icon-button";
 const SUPPRESS_DEFAULT_PRESS_SELECTOR = ["button", "ha-list-item"];
 
 export const createCloseHeading = (
-  hass: HomeAssistant,
+  hass: HomeAssistant | undefined,
   title: string | TemplateResult
 ) => html`
   <div class="header_title">${title}</div>
   <ha-icon-button
-    .label=${hass.localize("ui.dialogs.generic.close")}
+    .label=${hass?.localize("ui.dialogs.generic.close")}
     .path=${mdiClose}
     dialogAction="close"
     class="header_button"
