@@ -424,6 +424,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       margin-top: 8px;
       border-radius: 4px;
       overflow: hidden;
+      --ha-select-height: 40px;
       --mdc-select-fill-color: none;
       --mdc-select-label-ink-color: var(--primary-text-color, #212121);
       --mdc-select-ink-color: var(--primary-text-color, #212121);
