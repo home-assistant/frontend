@@ -58,7 +58,7 @@ class OnboardingCreateUser extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <h1>Create user</h1>
+      <h1>${this.localize("ui.panel.page-onboarding.user.header")}</h1>
       <p>${this.localize("ui.panel.page-onboarding.user.intro")}</p>
 
       ${this._errorMsg

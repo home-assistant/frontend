@@ -25,7 +25,7 @@ class OnboardingAnalytics extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <h1>Help us help you</h1>
+      <h1>${this.localize("ui.panel.page-onboarding.analytics.header")}</h1>
       <p>${this.localize("ui.panel.page-onboarding.analytics.intro")}</p>
       <p>
         <a

@@ -5679,6 +5679,7 @@
         "finish": "Finish",
         "language": "Language",
         "user": {
+          "header": "Create user",
           "intro": "Let's get started by creating a user account.",
           "required_field": "Required",
           "data": {
@@ -5696,6 +5697,7 @@
           }
         },
         "core-config": {
+          "location_header": "Home location",
           "intro_location": "Let's set up the location of your home so that you can display information such as the local weather and use sun-based or presence-based automations.",
           "location_address": "Powered by {openstreetmap} ({osm_privacy_policy}).",
           "osm_privacy_policy": "Privacy policy",
@@ -5715,6 +5717,7 @@
           "finish": "Finish"
         },
         "analytics": {
+          "header": "Help us help you",
           "finish": "Next",
           "preferences": {
             "base": {

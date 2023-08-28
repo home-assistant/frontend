@@ -93,7 +93,11 @@ class OnboardingLocation extends LitElement {
     );
 
     return html`
-      <h1>Home location</h1>
+      <h1>
+        ${this.onboardingLocalize(
+          "ui.panel.page-onboarding.core-config.location_header"
+        )}
+      </h1>
       ${this._error
         ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
         : nothing}
