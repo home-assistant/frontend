@@ -4,8 +4,9 @@ import { customElement, property } from "lit/decorators";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
 import type { HomeAssistant } from "../types";
-import { showCommunityDialog } from "./dialogs/show-community-dialog";
 import { showAppDialog } from "./dialogs/show-app-dialog";
+import { showCommunityDialog } from "./dialogs/show-community-dialog";
+import "./onboarding-welcome-link";
 
 @customElement("onboarding-welcome-links")
 class OnboardingWelcomeLinks extends LitElement {
@@ -19,25 +20,26 @@ class OnboardingWelcomeLinks extends LitElement {
         rel="noreferrer noopener"
         href="https://www.home-assistant.io/blog/2016/01/19/perfect-home-automation/"
       >
-        <ha-card>
-          <div class="card-content">
-            <ha-svg-icon .path=${mdiFileDocument}></ha-svg-icon>
-            ${this.localize("ui.panel.page-onboarding.welcome.vision")}
-          </div>
-        </ha-card>
+        <onboarding-welcome-link
+          .iconPath=${mdiFileDocument}
+          .label=${this.localize("ui.panel.page-onboarding.welcome.vision")}
+        >
+        </onboarding-welcome-link>
       </a>
-      <ha-card class="community" @click=${this._openCommunity}>
-        <div class="card-content">
-          <ha-svg-icon .path=${mdiAccountGroup}></ha-svg-icon>
-          ${this.localize("ui.panel.page-onboarding.welcome.community")}
-        </div>
-      </ha-card>
-      <ha-card class="app" @click=${this._openApp}>
-        <div class="card-content">
-          <ha-svg-icon .path=${mdiTabletCellphone}></ha-svg-icon>
-          ${this.localize("ui.panel.page-onboarding.welcome.download_app")}
-        </div>
-      </ha-card>`;
+      <onboarding-welcome-link
+        class="community"
+        @click=${this._openCommunity}
+        .iconPath=${mdiAccountGroup}
+        .label=${this.localize("ui.panel.page-onboarding.welcome.community")}
+      >
+      </onboarding-welcome-link>
+      <onboarding-welcome-link
+        class="app"
+        @click=${this._openApp}
+        .iconPath=${mdiTabletCellphone}
+        .label=${this.localize("ui.panel.page-onboarding.welcome.download_app")}
+      >
+      </onboarding-welcome-link>`;
   }
 
   private _openCommunity(): void {
@@ -62,29 +64,11 @@ class OnboardingWelcomeLinks extends LitElement {
           grid-template-columns: 1fr;
         }
       }
-      ha-card {
-        cursor: pointer;
+      .community {
+        --welcome-link-color: #008142;
       }
-      .card-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        font-weight: 500;
-        padding-bottom: 32px;
-      }
-      ha-svg-icon {
-        color: var(--text-primary-color);
-        background: var(--primary-color);
-        border-radius: 50%;
-        padding: 8px;
-        margin: 16px 0;
-      }
-      .community ha-svg-icon {
-        background: #008142;
-      }
-      .app ha-svg-icon {
-        background: #6e41ab;
+      .app {
+        --welcome-link-color: #6e41ab;
       }
       a {
         text-decoration: none;
