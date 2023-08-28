@@ -80,12 +80,20 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     return html`<ha-card>
         <div class="card-content">${this._renderStep()}</div>
       </ha-card>
-      <ha-language-picker
-        .value=${this.language}
-        .label=${""}
-        nativeName
-        @value-changed=${this._languageChanged}
-      ></ha-language-picker>`;
+      <div class="footer">
+        <ha-language-picker
+          .value=${this.language}
+          .label=${""}
+          nativeName
+          @value-changed=${this._languageChanged}
+        ></ha-language-picker>
+        <a
+          href="https://www.home-assistant.io/getting-started/onboarding/"
+          target="_blank"
+          rel="noreferrer noopener"
+          >${this.localize("ui.panel.page-onboarding.help")}</a
+        >
+      </div>`;
   }
 
   private _renderStep() {
@@ -375,6 +383,11 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   }
 
   static styles = css`
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
     ha-language-picker {
       display: block;
       width: 200px;
@@ -388,6 +401,11 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       --mdc-select-hover-line-color: transparent;
       --mdc-select-dropdown-icon-color: var(--primary-text-color, #212121);
       --mdc-shape-small: 0;
+    }
+    a {
+      text-decoration: none;
+      color: var(--primary-text-color);
+      margin-right: 16px;
     }
   `;
 }
