@@ -21,6 +21,10 @@ export class HaPictureUpload extends LitElement {
 
   @property() public label?: string;
 
+  @property() public secondary?: string;
+
+  @property() public supports?: string;
+
   @property() public currentImageAltText?: string;
 
   @property({ type: Boolean }) public crop = false;
@@ -38,16 +42,10 @@ export class HaPictureUpload extends LitElement {
           .hass=${this.hass}
           .icon=${mdiImagePlus}
           .label=${this.label ||
-          this.hass.localize("ui.components.picture-upload.label", {
-            browse: html`<span class="highlight"
-              >${this.hass.localize(
-                "ui.components.picture-upload.browse"
-              )}</span
-            >`,
-          })}
-          .secondary=${this.hass.localize(
-            "ui.components.picture-upload.supported_formats"
-          )}
+          this.hass.localize("ui.components.picture-upload.label")}
+          .secondary=${this.secondary}
+          .supports=${this.supports ||
+          this.hass.localize("ui.components.picture-upload.supported_formats")}
           .uploading=${this._uploading}
           @file-picked=${this._handleFilePicked}
           @change=${this._handleFileCleared}

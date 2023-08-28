@@ -29,6 +29,8 @@ export class HaFileUpload extends LitElement {
 
   @property() public secondary?: string;
 
+  @property() public supports?: string;
+
   @property() public value?: File | File[] | FileList | string;
 
   @property({ type: Boolean }) private multiple = false;
@@ -98,17 +100,17 @@ export class HaFileUpload extends LitElement {
                     class="big-icon"
                     .path=${this.icon || mdiFileUpload}
                   ></ha-svg-icon>
-                  <span class="header"
-                    >${this.label ||
-                    this.hass?.localize("ui.components.file-upload.label", {
-                      browse: html`<span class="highlight"
-                        >${this.hass?.localize(
-                          "ui.components.file-upload.browse"
-                        )}</span
-                      >`,
-                    })}</span
+                  <ha-button unelevated @click=${this._openFilePicker}>
+                    ${this.label ||
+                    this.hass?.localize("ui.components.file-upload.label")}
+                  </ha-button>
+                  <span class="secondary"
+                    >${this.secondary ||
+                    this.hass?.localize(
+                      "ui.components.file-upload.secondary"
+                    )}</span
                   >
-                  <span class="secondary" id="label">${this.secondary}</span>`
+                  <span class="supports">${this.supports}</span>`
               : typeof this.value === "string"
               ? html`<div class="row">
                   <div class="value" @click=${this._openFilePicker}>
@@ -186,6 +188,9 @@ export class HaFileUpload extends LitElement {
   }
 
   private _handleFilePicked(ev) {
+    if (ev.target.files.length === 0) {
+      return;
+    }
     this.value = ev.target.files;
     fireEvent(this, "file-picked", { files: ev.target.files });
   }
@@ -259,7 +264,10 @@ export class HaFileUpload extends LitElement {
         padding: 0 16px;
         box-sizing: border-box;
       }
-      .secondary {
+      ha-button {
+        margin-bottom: 4px;
+      }
+      .supports {
         color: var(--secondary-text-color);
         font-size: 12px;
       }
