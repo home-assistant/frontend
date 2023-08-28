@@ -38,6 +38,7 @@ import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum
 import { supportsWaterHeaterOperationModesTileFeature } from "../../tile-features/hui-water-heater-operation-modes-tile-feature";
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
 import { supportsClimateTargetTemperatureTileFeature } from "../../tile-features/hui-climate-target-temperature-tile-feature";
+import { supportsWaterHeaterTargetTemperatureTileFeature } from "../../tile-features/hui-water-heater-target-temperature-tile-feature";
 
 type FeatureType = LovelaceTileFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
@@ -56,6 +57,7 @@ const FEATURE_TYPES: FeatureType[] = [
   "light-color-temp",
   "vacuum-commands",
   "water-heater-operation-modes",
+  "water-heater-target-temperature",
 ];
 
 const EDITABLES_FEATURE_TYPES = new Set<FeatureType>([
@@ -82,6 +84,8 @@ const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
     "vacuum-commands": supportsVacuumCommandTileFeature,
     "water-heater-operation-modes":
       supportsWaterHeaterOperationModesTileFeature,
+    "water-heater-target-temperature":
+      supportsWaterHeaterTargetTemperatureTileFeature,
   };
 
 const CUSTOM_FEATURE_ENTRIES: Record<

@@ -5038,6 +5038,9 @@
                     "label": "Water heater operation modes",
                     "operation_modes": "Operation modes"
                   },
+                  "water-heater-target-temperature": {
+                    "label": "Water heater target temperature"
+                  },
                   "lawn-mower-commands": {
                     "label": "Lawn mower commands",
                     "commands": "Commands",

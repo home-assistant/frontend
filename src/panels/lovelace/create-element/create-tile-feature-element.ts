@@ -11,6 +11,7 @@ import "../tile-features/hui-light-brightness-tile-feature";
 import "../tile-features/hui-light-color-temp-tile-feature";
 import "../tile-features/hui-vacuum-commands-tile-feature";
 import "../tile-features/hui-water-heater-operation-modes-tile-feature";
+import "../tile-features/hui-water-heater-target-temperature-tile-feature";
 import { LovelaceTileFeatureConfig } from "../tile-features/types";
 import {
   createLovelaceElement,
@@ -31,6 +32,7 @@ const TYPES: Set<LovelaceTileFeatureConfig["type"]> = new Set([
   "light-color-temp",
   "vacuum-commands",
   "water-heater-operation-modes",
+  "water-heater-target-temperature",
 ]);
 
 export const createTileFeatureElement = (config: LovelaceTileFeatureConfig) =>

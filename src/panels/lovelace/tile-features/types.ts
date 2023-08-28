@@ -49,6 +49,10 @@ export interface WaterHeaterOperationModesTileFeatureConfig {
   operation_modes?: OperationMode[];
 }
 
+export interface WaterHeaterTargetTemperatureTileFeatureConfig {
+  type: "water-heater-target-temperature";
+}
+
 export const VACUUM_COMMANDS = [
   "start_pause",
   "stop",
@@ -86,7 +90,8 @@ export type LovelaceTileFeatureConfig =
   | LightBrightnessTileFeatureConfig
   | LightColorTempTileFeatureConfig
   | VacuumCommandsTileFeatureConfig
-  | WaterHeaterOperationModesTileFeatureConfig;
+  | WaterHeaterOperationModesTileFeatureConfig
+  | WaterHeaterTargetTemperatureTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
   entity_id?: string;
