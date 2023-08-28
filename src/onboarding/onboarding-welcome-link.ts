@@ -34,10 +34,8 @@ class OnboardingWelcomeLink extends LitElement {
         @touchend=${this.handleRippleDeactivate}
         @touchcancel=${this.handleRippleDeactivate}
       >
-        <div class="card-content">
-          <ha-svg-icon .path=${this.iconPath}></ha-svg-icon>
-          ${this.label}
-        </div>
+        <ha-svg-icon .path=${this.iconPath}></ha-svg-icon>
+        ${this.label}
         ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : ""}
       </ha-card>
     `;
@@ -80,21 +78,19 @@ class OnboardingWelcomeLink extends LitElement {
       }
       ha-card {
         overflow: hidden;
-      }
-      .card-content {
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
         font-weight: 500;
-        padding-bottom: 32px;
+        padding: 32px 16px;
       }
       ha-svg-icon {
         color: var(--text-primary-color);
         background: var(--welcome-link-color, var(--primary-color));
         border-radius: 50%;
         padding: 8px;
-        margin: 16px 0;
+        margin-bottom: 16px;
       }
     `;
   }
