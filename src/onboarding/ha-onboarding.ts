@@ -1,3 +1,4 @@
+import "@material/mwc-linear-progress/mwc-linear-progress";
 import {
   Auth,
   createConnection,
@@ -68,6 +69,8 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   @property() public translationFragment = "page-onboarding";
 
+  @state() private _progress = 0;
+
   @state() private _loading = false;
 
   @state() private _restoring = false;
@@ -77,7 +80,10 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   @state() private _steps?: OnboardingStep[];
 
   protected render() {
-    return html`<ha-card>
+    return html`<mwc-linear-progress
+        .progress=${this._progress}
+      ></mwc-linear-progress>
+      <ha-card>
         <div class="card-content">${this._renderStep()}</div>
       </ha-card>
       <div class="footer">
@@ -244,7 +250,19 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         });
         history.replaceState(null, "", location.pathname);
         await this._connectHass(auth);
+        const currentStep = steps.find((stp) => !stp.done);
+        switch (currentStep?.step) {
+          case "core_config":
+            this._progress = 0.5;
+            break;
+          case "analytics":
+            this._progress = 0.75;
+            break;
+          default:
+            this._progress = 1;
+        }
       } else {
+        this._progress = 0.25;
         // User creating screen needs to know the installation type.
         this._fetchInstallationType();
       }
@@ -264,6 +282,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     if (stepResult.type === "user") {
       const result = stepResult.result as OnboardingResponses["user"];
       this._loading = true;
+      this._progress = 0.5;
       enableWrite();
       try {
         const auth = await getAuth({
@@ -280,6 +299,10 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         this._loading = false;
       }
     } else if (stepResult.type === "core_config") {
+      this._progress = 0.75;
+      // We do nothing
+    } else if (stepResult.type === "analytics") {
+      this._progress = 1;
       // We do nothing
     } else if (stepResult.type === "integration") {
       this._loading = true;
@@ -383,6 +406,13 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   }
 
   static styles = css`
+    mwc-linear-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+    }
     .footer {
       display: flex;
       justify-content: space-between;
