@@ -55,109 +55,103 @@ export class HaFileUpload extends LitElement {
 
   public render(): TemplateResult {
     return html`
-      <label
-        for=${this.value ? "" : "input"}
-        class=${classMap({
-          dragged: this._drag,
-          multiple: this.multiple,
-          value: Boolean(this.value),
-        })}
-        @drop=${this._handleDrop}
-        @dragenter=${this._handleDragStart}
-        @dragover=${this._handleDragStart}
-        @dragleave=${this._handleDragEnd}
-        @dragend=${this._handleDragEnd}
-      >
-        ${this.uploading
-          ? html`<div class="row">
-                <span class="header"
-                  >${this.value
-                    ? this.hass?.localize(
-                        "ui.components.file-upload.uploading_name",
-                        { name: this.value }
-                      )
-                    : this.hass?.localize(
-                        "ui.components.file-upload.uploading"
-                      )}</span
-                >
-                ${this.progress
-                  ? html`<span class="progress"
-                      >${this.progress}${blankBeforePercent(
-                        this.hass!.locale
-                      )}%</span
-                    >`
-                  : ""}
-              </div>
-              <mwc-linear-progress
-                .indeterminate=${!this.progress}
-                .progress=${this.progress ? this.progress / 100 : undefined}
-              ></mwc-linear-progress>`
-          : html`${!this.value
-                ? html`<ha-svg-icon
-                      class="big-icon"
-                      slot="icon"
+      ${this.uploading
+        ? html`<div class="container">
+            <div class="row">
+              <span class="header"
+                >${this.value
+                  ? this.hass?.localize(
+                      "ui.components.file-upload.uploading_name",
+                      { name: this.value }
+                    )
+                  : this.hass?.localize(
+                      "ui.components.file-upload.uploading"
+                    )}</span
+              >
+              ${this.progress
+                ? html`<span class="progress"
+                    >${this.progress}${blankBeforePercent(
+                      this.hass!.locale
+                    )}%</span
+                  >`
+                : ""}
+            </div>
+            <mwc-linear-progress
+              .indeterminate=${!this.progress}
+              .progress=${this.progress ? this.progress / 100 : undefined}
+            ></mwc-linear-progress>
+          </div>`
+        : html`<label
+            for=${this.value ? "" : "input"}
+            class="container ${classMap({
+              dragged: this._drag,
+              multiple: this.multiple,
+              value: Boolean(this.value),
+            })}"
+            @drop=${this._handleDrop}
+            @dragenter=${this._handleDragStart}
+            @dragover=${this._handleDragStart}
+            @dragleave=${this._handleDragEnd}
+            @dragend=${this._handleDragEnd}
+            >${!this.value
+              ? html`<ha-svg-icon
+                    class="big-icon"
+                    .path=${this.icon || mdiFileUpload}
+                  ></ha-svg-icon>
+                  <span class="header"
+                    >${this.label ||
+                    this.hass?.localize("ui.components.file-upload.label", {
+                      browse: html`<span class="highlight"
+                        >${this.hass?.localize(
+                          "ui.components.file-upload.browse"
+                        )}</span
+                      >`,
+                    })}</span
+                  >
+                  <span class="secondary" id="label">${this.secondary}</span>`
+              : typeof this.value === "string"
+              ? html`<div class="row">
+                  <div class="value" @click=${this._openFilePicker}>
+                    <ha-svg-icon
                       .path=${this.icon || mdiFileUpload}
                     ></ha-svg-icon>
-                    <span class="header"
-                      >${this.label ||
-                      this.hass?.localize("ui.components.file-upload.label", {
-                        browse: html`<span class="highlight"
-                          >${this.hass?.localize(
-                            "ui.components.file-upload.browse"
-                          )}</span
-                        >`,
-                      })}</span
-                    >
-                    <span class="secondary" id="label">${this.secondary}</span>`
-                : typeof this.value === "string"
-                ? html`<div class="row">
-                    <div class="value" @click=${this._openFilePicker}>
-                      <ha-svg-icon
-                        slot="icon"
-                        .path=${this.icon || mdiFileUpload}
-                      ></ha-svg-icon>
-                      ${this.value}
-                    </div>
-                    <ha-icon-button
-                      slot="suffix"
-                      @click=${this._clearValue}
-                      .label=${this.hass?.localize("ui.common.delete") ||
-                      "Delete"}
-                      .path=${mdiDelete}
-                    ></ha-icon-button>
-                  </div>`
-                : (this.value instanceof FileList
-                    ? Array.from(this.value)
-                    : ensureArray(this.value)
-                  ).map(
-                    (file) =>
-                      html`<div class="row">
-                        <div class="value" @click=${this._openFilePicker}>
-                          <ha-svg-icon
-                            slot="icon"
-                            .path=${this.icon || mdiFileUpload}
-                          ></ha-svg-icon>
-                          ${file.name} - ${bytesToString(file.size)}
-                        </div>
-                        <ha-icon-button
-                          slot="suffix"
-                          @click=${this._clearValue}
-                          .label=${this.hass?.localize("ui.common.delete") ||
-                          "Delete"}
-                          .path=${mdiDelete}
-                        ></ha-icon-button>
-                      </div>`
-                  )}
-              <input
-                id="input"
-                type="file"
-                class="file"
-                .accept=${this.accept}
-                .multiple=${this.multiple}
-                @change=${this._handleFilePicked}
-                aria-labelledby="label"
-              />`}
-      </label>
+                    ${this.value}
+                  </div>
+                  <ha-icon-button
+                    @click=${this._clearValue}
+                    .label=${this.hass?.localize("ui.common.delete") ||
+                    "Delete"}
+                    .path=${mdiDelete}
+                  ></ha-icon-button>
+                </div>`
+              : (this.value instanceof FileList
+                  ? Array.from(this.value)
+                  : ensureArray(this.value)
+                ).map(
+                  (file) =>
+                    html`<div class="row">
+                      <div class="value" @click=${this._openFilePicker}>
+                        <ha-svg-icon
+                          .path=${this.icon || mdiFileUpload}
+                        ></ha-svg-icon>
+                        ${file.name} - ${bytesToString(file.size)}
+                      </div>
+                      <ha-icon-button
+                        @click=${this._clearValue}
+                        .label=${this.hass?.localize("ui.common.delete") ||
+                        "Delete"}
+                        .path=${mdiDelete}
+                      ></ha-icon-button>
+                    </div>`
+                )}
+            <input
+              id="input"
+              type="file"
+              class="file"
+              .accept=${this.accept}
+              .multiple=${this.multiple}
+              @change=${this._handleFilePicked}
+          /></label>`}
     `;
   }
 
@@ -213,19 +207,23 @@ export class HaFileUpload extends LitElement {
         pointer-events: none;
         color: var(--disabled-text-color);
       }
-      label {
+      .container {
         position: relative;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        border: dashed 1px
+        border: solid 1px
           var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
         border-radius: var(--mdc-shape-small, 4px);
         height: 100%;
+      }
+      label.container {
+        border: dashed 1px
+          var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
         cursor: pointer;
       }
-      :host([disabled]) label {
+      :host([disabled]) .container {
         border-color: var(--disabled-color);
       }
       label.dragged {

@@ -21,6 +21,8 @@ export class HaPictureUpload extends LitElement {
 
   @property() public label?: string;
 
+  @property() public currentImageAltText?: string;
+
   @property({ type: Boolean }) public crop = false;
 
   @property({ attribute: false }) public cropOptions?: CropOptions;
@@ -55,7 +57,11 @@ export class HaPictureUpload extends LitElement {
     }
     return html`<div class="center-vertical">
       <div class="value">
-        <img .src=${this.value} alt="" />
+        <img
+          .src=${this.value}
+          alt=${this.currentImageAltText ||
+          this.hass.localize("ui.components.picture-upload.current_image_alt")}
+        />
         <ha-button
           @click=${this._handleChangeClick}
           .label=${this.hass.localize(
