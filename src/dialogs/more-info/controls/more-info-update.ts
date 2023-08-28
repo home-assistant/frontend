@@ -13,13 +13,9 @@ import "../../../components/ha-markdown";
 import { isUnavailableState } from "../../../data/entity";
 import {
   UpdateEntity,
+  UpdateEntityFeature,
   updateIsInstalling,
   updateReleaseNotes,
-  UPDATE_SUPPORT_BACKUP,
-  UPDATE_SUPPORT_INSTALL,
-  UPDATE_SUPPORT_PROGRESS,
-  UPDATE_SUPPORT_RELEASE_NOTES,
-  UPDATE_SUPPORT_SPECIFIC_VERSION,
 } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
 
@@ -49,7 +45,7 @@ class MoreInfoUpdate extends LitElement {
 
     return html`
       ${this.stateObj.attributes.in_progress
-        ? supportsFeature(this.stateObj, UPDATE_SUPPORT_PROGRESS) &&
+        ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
           typeof this.stateObj.attributes.in_progress === "number"
           ? html`<mwc-linear-progress
               .progress=${this.stateObj.attributes.in_progress / 100}
@@ -101,7 +97,7 @@ class MoreInfoUpdate extends LitElement {
             </div>
           </div>`
         : ""}
-      ${supportsFeature(this.stateObj!, UPDATE_SUPPORT_RELEASE_NOTES) &&
+      ${supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES) &&
       !this._error
         ? !this._releaseNotes
           ? html`<div class="flex center">
@@ -117,7 +113,7 @@ class MoreInfoUpdate extends LitElement {
                 .content=${this.stateObj.attributes.release_summary}
               ></ha-markdown>`
           : ""}
-      ${supportsFeature(this.stateObj, UPDATE_SUPPORT_BACKUP)
+      ${supportsFeature(this.stateObj, UpdateEntityFeature.BACKUP)
         ? html`<hr />
             <ha-formfield
               .label=${this.hass.localize(
@@ -155,7 +151,7 @@ class MoreInfoUpdate extends LitElement {
                   )}
                 </mwc-button>
               `}
-        ${supportsFeature(this.stateObj, UPDATE_SUPPORT_INSTALL)
+        ${supportsFeature(this.stateObj, UpdateEntityFeature.INSTALL)
           ? html`
               <mwc-button
                 @click=${this._handleInstall}
@@ -174,7 +170,7 @@ class MoreInfoUpdate extends LitElement {
   }
 
   protected firstUpdated(): void {
-    if (supportsFeature(this.stateObj!, UPDATE_SUPPORT_RELEASE_NOTES)) {
+    if (supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES)) {
       updateReleaseNotes(this.hass, this.stateObj!.entity_id)
         .then((result) => {
           this._releaseNotes = result;
@@ -186,7 +182,7 @@ class MoreInfoUpdate extends LitElement {
   }
 
   get _shouldCreateBackup(): boolean | null {
-    if (!supportsFeature(this.stateObj!, UPDATE_SUPPORT_BACKUP)) {
+    if (!supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
       return null;
     }
     const checkbox = this.shadowRoot?.querySelector("ha-checkbox");
@@ -206,7 +202,7 @@ class MoreInfoUpdate extends LitElement {
     }
 
     if (
-      supportsFeature(this.stateObj!, UPDATE_SUPPORT_SPECIFIC_VERSION) &&
+      supportsFeature(this.stateObj!, UpdateEntityFeature.SPECIFIC_VERSION) &&
       this.stateObj!.attributes.latest_version
     ) {
       installData.version = this.stateObj!.attributes.latest_version;
