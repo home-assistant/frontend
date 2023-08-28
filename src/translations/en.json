@@ -5678,6 +5678,15 @@
         "next": "Next",
         "finish": "Finish",
         "help": "Help",
+        "welcome": {
+          "header": "HA!",
+          "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
+          "start": "Create my smart home",
+          "restore_backup": "Restore from backup",
+          "vision": "Read our vision",
+          "community": "Join our community",
+          "download_app": "Download our app"
+        },
         "user": {
           "header": "Create user",
           "intro": "Let's get started by creating a user account.",
@@ -5742,20 +5751,8 @@
           "intro": "[%key:ui::panel::config::analytics::intro%]"
         },
         "restore": {
-          "description": "Alternatively you can restore from a previous backup.",
+          "header": "Restore a backup",
           "in_progress": "Restore in progress",
-          "show_log": "Show full log",
-          "hide_log": "Hide full log",
-          "full_backup": "[%key:supervisor::backup::full_backup%]",
-          "partial_backup": "[%key:supervisor::backup::partial_backup%]",
-          "name": "[%key:supervisor::backup::name%]",
-          "type": "[%key:supervisor::backup::type%]",
-          "select_type": "[%key:supervisor::backup::select_type%]",
-          "folders": "[%key:supervisor::backup::folders%]",
-          "addons": "[%key:supervisor::backup::addons%]",
-          "password_protection": "[%key:supervisor::backup::password_protection%]",
-          "password": "[%key:supervisor::backup::password%]",
-          "confirm_password": "[%key:supervisor::backup::confirm_password%]",
           "upload_backup": "[%key:supervisor::backup::upload_backup%]"
         }
       },

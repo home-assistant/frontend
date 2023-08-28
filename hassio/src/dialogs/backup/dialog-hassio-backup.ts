@@ -173,6 +173,7 @@ class HassioBackupDialog
   private async _restoreClicked() {
     const backupDetails = this._backupContent.backupDetails();
     this._restoringBackup = true;
+    this._dialogParams?.onRestoring?.();
     if (this._backupContent.backupType === "full") {
       await this._fullRestoreClicked(backupDetails);
     } else {

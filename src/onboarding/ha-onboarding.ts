@@ -36,8 +36,13 @@ import { registerServiceWorker } from "../util/register-service-worker";
 import "./onboarding-analytics";
 import "./onboarding-create-user";
 import "./onboarding-loading";
+import "./onboarding-welcome";
 
 type OnboardingEvent =
+  | {
+      type: "init";
+      result: { restore: boolean };
+    }
   | {
       type: "user";
       result: OnboardingResponses["user"];
@@ -73,6 +78,8 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   @state() private _loading = false;
 
+  @state() private _init = false;
+
   @state() private _restoring = false;
 
   @state() private _supervisor?: boolean;
@@ -103,29 +110,30 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   }
 
   private _renderStep() {
+    if (this._init) {
+      return html`<onboarding-welcome
+        .localize=${this.localize}
+        .language=${this.language}
+        .supervisor=${this._supervisor}
+      ></onboarding-welcome>`;
+    }
+
+    if (this._restoring) {
+      return html`<onboarding-restore-backup .localize=${this.localize}>
+      </onboarding-restore-backup>`;
+    }
+
     const step = this._curStep()!;
 
     if (this._loading || !step) {
       return html`<onboarding-loading></onboarding-loading> `;
     }
     if (step.step === "user") {
-      return html`
-        ${!this._restoring
-          ? html`<onboarding-create-user
-              .localize=${this.localize}
-              .language=${this.language}
-            >
-            </onboarding-create-user>`
-          : ""}
-        ${this._supervisor
-          ? html`<onboarding-restore-backup
-              .localize=${this.localize}
-              .restoring=${this._restoring}
-              @restoring=${this._restoringBackup}
-            >
-            </onboarding-restore-backup>`
-          : ""}
-      `;
+      return html`<onboarding-create-user
+        .localize=${this.localize}
+        .language=${this.language}
+      >
+      </onboarding-create-user>`;
     }
     if (step.step === "core_config") {
       return html`
@@ -198,10 +206,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     return this._steps ? this._steps.find((stp) => !stp.done) : undefined;
   }
 
-  private _restoringBackup() {
-    this._restoring = true;
-  }
-
   private async _fetchInstallationType(): Promise<void> {
     try {
       const response = await fetchInstallationType();
@@ -262,8 +266,8 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
             this._progress = 1;
         }
       } else {
-        this._progress = 0.25;
-        // User creating screen needs to know the installation type.
+        this._init = true;
+        // Init screen needs to know the installation type.
         this._fetchInstallationType();
       }
 
@@ -279,7 +283,13 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       step.step === stepResult.type ? { ...step, done: true } : step
     );
 
-    if (stepResult.type === "user") {
+    if (stepResult.type === "init") {
+      this._init = false;
+      this._restoring = stepResult.result.restore;
+      if (!this._restoring) {
+        this._progress = 0.25;
+      }
+    } else if (stepResult.type === "user") {
       const result = stepResult.result as OnboardingResponses["user"];
       this._loading = true;
       this._progress = 0.5;
