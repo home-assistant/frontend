@@ -5031,15 +5031,12 @@
                     "label": "Climate HVAC modes",
                     "hvac_modes": "HVAC modes"
                   },
-                  "climate-target-temperature": {
-                    "label": "Climate target temperature"
+                  "target-temperature": {
+                    "label": "Target temperature"
                   },
                   "water-heater-operation-modes": {
                     "label": "Water heater operation modes",
                     "operation_modes": "Operation modes"
-                  },
-                  "water-heater-target-temperature": {
-                    "label": "Water heater target temperature"
                   },
                   "lawn-mower-commands": {
                     "label": "Lawn mower commands",

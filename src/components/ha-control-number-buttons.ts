@@ -156,7 +156,7 @@ export class HaControlNumberButton extends LitElement {
     return css`
       :host {
         display: block;
-        --control-number-buttons-color: var(--primary-color);
+        --control-number-buttons-focus-color: var(--primary-color);
         --control-number-buttons-background-color: var(--disabled-color);
         --control-number-buttons-background-opacity: 0.2;
         --control-number-buttons-border-radius: 10px;
@@ -214,7 +214,7 @@ export class HaControlNumberButton extends LitElement {
         opacity: var(--control-number-buttons-background-opacity);
       }
       .value:focus-visible {
-        box-shadow: 0 0 0 2px var(--control-number-buttons-color);
+        box-shadow: 0 0 0 2px var(--control-number-buttons-focus-color);
       }
       .button {
         color: inherit;

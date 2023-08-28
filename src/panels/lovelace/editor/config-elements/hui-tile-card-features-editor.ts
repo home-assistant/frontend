@@ -37,8 +37,7 @@ import { supportsLightColorTempTileFeature } from "../../tile-features/hui-light
 import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
 import { supportsWaterHeaterOperationModesTileFeature } from "../../tile-features/hui-water-heater-operation-modes-tile-feature";
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
-import { supportsClimateTargetTemperatureTileFeature } from "../../tile-features/hui-climate-target-temperature-tile-feature";
-import { supportsWaterHeaterTargetTemperatureTileFeature } from "../../tile-features/hui-water-heater-target-temperature-tile-feature";
+import { supportsTargetTemperatureTileFeature } from "../../tile-features/hui-target-temperature-tile-feature";
 
 type FeatureType = LovelaceTileFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
@@ -46,7 +45,7 @@ type SupportsFeature = (stateObj: HassEntity) => boolean;
 const FEATURE_TYPES: FeatureType[] = [
   "alarm-modes",
   "climate-hvac-modes",
-  "climate-target-temperature",
+  "target-temperature",
   "cover-open-close",
   "cover-position",
   "cover-tilt-position",
@@ -57,7 +56,6 @@ const FEATURE_TYPES: FeatureType[] = [
   "light-color-temp",
   "vacuum-commands",
   "water-heater-operation-modes",
-  "water-heater-target-temperature",
 ];
 
 const EDITABLES_FEATURE_TYPES = new Set<FeatureType>([
@@ -72,7 +70,6 @@ const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
   {
     "alarm-modes": supportsAlarmModesTileFeature,
     "climate-hvac-modes": supportsClimateHvacModesTileFeature,
-    "climate-target-temperature": supportsClimateTargetTemperatureTileFeature,
     "cover-open-close": supportsCoverOpenCloseTileFeature,
     "cover-position": supportsCoverPositionTileFeature,
     "cover-tilt-position": supportsCoverPositionTileFeature,
@@ -81,11 +78,10 @@ const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
     "lawn-mower-commands": supportsLawnMowerCommandTileFeature,
     "light-brightness": supportsLightBrightnessTileFeature,
     "light-color-temp": supportsLightColorTempTileFeature,
+    "target-temperature": supportsTargetTemperatureTileFeature,
     "vacuum-commands": supportsVacuumCommandTileFeature,
     "water-heater-operation-modes":
       supportsWaterHeaterOperationModesTileFeature,
-    "water-heater-target-temperature":
-      supportsWaterHeaterTargetTemperatureTileFeature,
   };
 
 const CUSTOM_FEATURE_ENTRIES: Record<

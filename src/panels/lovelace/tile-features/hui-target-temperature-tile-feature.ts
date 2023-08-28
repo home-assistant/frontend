@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { debounce } from "../../../common/util/debounce";
@@ -10,43 +11,52 @@ import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
 import { ClimateEntity, ClimateEntityFeature } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
+import {
+  WaterHeaterEntity,
+  WaterHeaterEntityFeature,
+} from "../../../data/water_heater";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
-import { ClimateTargetTemperatureTileFeatureConfig } from "./types";
+import { TargetTemperatureTileFeatureConfig } from "./types";
 
 type Target = "value" | "low" | "high";
 
-export const supportsClimateTargetTemperatureTileFeature = (
-  stateObj: HassEntity
-) => {
+export const supportsTargetTemperatureTileFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return (
-    domain === "climate" &&
-    (supportsFeature(stateObj, ClimateEntityFeature.TARGET_TEMPERATURE) ||
-      supportsFeature(stateObj, ClimateEntityFeature.TARGET_TEMPERATURE_RANGE))
+    (domain === "climate" &&
+      (supportsFeature(stateObj, ClimateEntityFeature.TARGET_TEMPERATURE) ||
+        supportsFeature(
+          stateObj,
+          ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
+        ))) ||
+    (domain === "water_heater" &&
+      supportsFeature(stateObj, WaterHeaterEntityFeature.TARGET_TEMPERATURE))
   );
 };
 
-@customElement("hui-climate-target-temperature-tile-feature")
-class HuiClimateTargetTemperatureTileFeature
+@customElement("hui-target-temperature-tile-feature")
+class HuiTargetTemperatureTileFeature
   extends LitElement
   implements LovelaceTileFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: ClimateEntity;
+  @property({ attribute: false }) public stateObj?:
+    | ClimateEntity
+    | WaterHeaterEntity;
 
-  @state() private _config?: ClimateTargetTemperatureTileFeatureConfig;
+  @state() private _config?: TargetTemperatureTileFeatureConfig;
 
   @state() private _targetTemperature: Partial<Record<Target, number>> = {};
 
-  static getStubConfig(): ClimateTargetTemperatureTileFeatureConfig {
+  static getStubConfig(): TargetTemperatureTileFeatureConfig {
     return {
-      type: "climate-target-temperature",
+      type: "target-temperature",
     };
   }
 
-  public setConfig(config: ClimateTargetTemperatureTileFeatureConfig): void {
+  public setConfig(config: TargetTemperatureTileFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -58,8 +68,14 @@ class HuiClimateTargetTemperatureTileFeature
     if (changedProp.has("stateObj")) {
       this._targetTemperature = {
         value: this.stateObj!.attributes.temperature,
-        low: this.stateObj!.attributes.target_temp_low,
-        high: this.stateObj!.attributes.target_temp_high,
+        low:
+          "target_temp_low" in this.stateObj!.attributes
+            ? this.stateObj!.attributes.target_temp_low
+            : undefined,
+        high:
+          "target_temp_high" in this.stateObj!.attributes
+            ? this.stateObj!.attributes.target_temp_high
+            : undefined,
       };
     }
   }
@@ -97,15 +113,16 @@ class HuiClimateTargetTemperatureTileFeature
   );
 
   private _callService(type: string) {
+    const domain = computeStateDomain(this.stateObj!);
     if (type === "high" || type === "low") {
-      this.hass!.callService("climate", "set_temperature", {
+      this.hass!.callService(domain, "set_temperature", {
         entity_id: this.stateObj!.entity_id,
         target_temp_low: this._targetTemperature.low,
         target_temp_high: this._targetTemperature.high,
       });
       return;
     }
-    this.hass!.callService("climate", "set_temperature", {
+    this.hass!.callService(domain, "set_temperature", {
       entity_id: this.stateObj!.entity_id,
       temperature: this._targetTemperature.value,
     });
@@ -116,7 +133,7 @@ class HuiClimateTargetTemperatureTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsClimateTargetTemperatureTileFeature(this.stateObj)
+      !supportsTargetTemperatureTileFeature(this.stateObj)
     ) {
       return nothing;
     }
@@ -129,8 +146,19 @@ class HuiClimateTargetTemperatureTileFeature
       minimumFractionDigits: digits,
     };
 
+    const domain = computeStateDomain(this.stateObj!);
+
     if (
-      supportsFeature(this.stateObj, ClimateEntityFeature.TARGET_TEMPERATURE)
+      (domain === "climate" &&
+        supportsFeature(
+          this.stateObj,
+          ClimateEntityFeature.TARGET_TEMPERATURE
+        )) ||
+      (domain === "water_heater" &&
+        supportsFeature(
+          this.stateObj,
+          WaterHeaterEntityFeature.TARGET_TEMPERATURE
+        ))
     ) {
       return html`
       <ha-control-button-group>
@@ -147,7 +175,7 @@ class HuiClimateTargetTemperatureTileFeature
             "temperature"
           )}
           style=${styleMap({
-            "--control-number-buttons-color": stateColor,
+            "--control-number-buttons-focus-color": stateColor,
           })}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
         >
@@ -157,6 +185,7 @@ class HuiClimateTargetTemperatureTileFeature
     }
 
     if (
+      domain === "climate" &&
       supportsFeature(
         this.stateObj,
         ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
@@ -167,7 +196,7 @@ class HuiClimateTargetTemperatureTileFeature
         <ha-control-number-buttons
           .formatOptions=${options}
           .target=${"low"}
-          .value=${this.stateObj.attributes.target_temp_low}
+          .value=${(this.stateObj as ClimateEntity).attributes.target_temp_low}
           .min=${this._min}
           .max=${Math.min(this._max, this._targetTemperature.high ?? this._max)}
           .step=${this._step}
@@ -177,7 +206,7 @@ class HuiClimateTargetTemperatureTileFeature
             "temperature"
           )}
           style=${styleMap({
-            "--control-number-buttons-color": stateColor,
+            "--control-number-buttons-focus-color": stateColor,
           })}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
         >
@@ -185,7 +214,7 @@ class HuiClimateTargetTemperatureTileFeature
         <ha-control-number-buttons
           .formatOptions=${options}
           .target=${"high"}
-          .value=${this.stateObj.attributes.target_temp_high}
+          .value=${(this.stateObj as ClimateEntity).attributes.target_temp_high}
           .min=${Math.max(this._min, this._targetTemperature.low ?? this._min)}
           .max=${this._max}
           .step=${this._step}
@@ -195,7 +224,7 @@ class HuiClimateTargetTemperatureTileFeature
             "temperature"
           )}
           style=${styleMap({
-            "--control-number-buttons-color": stateColor,
+            "--control-number-buttons-focus-color": stateColor,
           })}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
         >
@@ -219,6 +248,6 @@ class HuiClimateTargetTemperatureTileFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-climate-target-temperature-tile-feature": HuiClimateTargetTemperatureTileFeature;
+    "hui-target-temperature-tile-feature": HuiTargetTemperatureTileFeature;
   }
 }
