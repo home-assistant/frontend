@@ -7,13 +7,11 @@ import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-ansi-to-html";
 import "../components/ha-card";
 import { fetchInstallationType } from "../data/onboarding";
-import { makeDialogManager } from "../dialogs/make-dialog-manager";
-import { ProvideHassLitMixin } from "../mixins/provide-hass-lit-mixin";
 import "./onboarding-loading";
 import { onBoardingStyles } from "./styles";
 
 @customElement("onboarding-restore-backup")
-class OnboardingRestoreBackup extends ProvideHassLitMixin(LitElement) {
+class OnboardingRestoreBackup extends LitElement {
   @property() public localize!: LocalizeFunc;
 
   @property() public language!: string;
@@ -43,7 +41,6 @@ class OnboardingRestoreBackup extends ProvideHassLitMixin(LitElement) {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    makeDialogManager(this, this.shadowRoot!);
     setInterval(() => this._checkRestoreStatus(), 1000);
   }
 

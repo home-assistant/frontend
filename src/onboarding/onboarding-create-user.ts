@@ -16,6 +16,7 @@ import { HaFormDataContainer, HaFormSchema } from "../components/ha-form/types";
 import { onboardUserStep } from "../data/onboarding";
 import { ValueChangedEvent } from "../types";
 import { onBoardingStyles } from "./styles";
+import { debounce } from "../common/util/debounce";
 
 const CREATE_USER_SCHEMA: HaFormSchema[] = [
   {
@@ -122,10 +123,29 @@ class OnboardingCreateUser extends LitElement {
     ev: ValueChangedEvent<HaFormDataContainer>
   ): void {
     const nameChanged = ev.detail.value.name !== this._newUser.name;
+    const passwordChanged =
+      ev.detail.value.password !== this._newUser.password ||
+      ev.detail.value.password_confirm !== this._newUser.password_confirm;
     this._newUser = ev.detail.value;
     if (nameChanged) {
       this._maybePopulateUsername();
     }
+    if (passwordChanged) {
+      if (this._formError.password_confirm) {
+        this._checkPasswordMatch();
+      } else {
+        this._debouncedCheckPasswordMatch();
+      }
+    }
+  }
+
+  private _debouncedCheckPasswordMatch = debounce(
+    () => this._checkPasswordMatch(),
+    500
+  );
+
+  private _checkPasswordMatch(): void {
+    const old = this._formError.password_confirm;
     this._formError.password_confirm =
       this._newUser.password_confirm &&
       this._newUser.password !== this._newUser.password_confirm
@@ -133,6 +153,9 @@ class OnboardingCreateUser extends LitElement {
             "ui.panel.page-onboarding.user.error.password_not_match"
           )
         : "";
+    if (old !== this._formError.password_confirm) {
+      this.requestUpdate("_formError");
+    }
   }
 
   private _maybePopulateUsername(): void {

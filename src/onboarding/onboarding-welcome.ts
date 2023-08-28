@@ -64,6 +64,7 @@ class OnboardingWelcome extends LitElement {
         .start {
           --button-height: 48px;
           --mdc-typography-button-font-size: 1rem;
+          --mdc-button-horizontal-padding: 24px;
           margin: 16px 0;
         }
       `,

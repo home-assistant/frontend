@@ -37,6 +37,8 @@ import "./onboarding-analytics";
 import "./onboarding-create-user";
 import "./onboarding-loading";
 import "./onboarding-welcome";
+import "./onboarding-welcome-links";
+import { makeDialogManager } from "../dialogs/make-dialog-manager";
 
 type OnboardingEvent =
   | {
@@ -93,6 +95,11 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       <ha-card>
         <div class="card-content">${this._renderStep()}</div>
       </ha-card>
+      ${this._init
+        ? html`<onboarding-welcome-links
+            .localize=${this.localize}
+          ></onboarding-welcome-links>`
+        : nothing}
       <div class="footer">
         <ha-language-picker
           .value=${this.language}
@@ -172,6 +179,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     if (window.innerWidth > 450) {
       import("./particles");
     }
+    makeDialogManager(this, this.shadowRoot!);
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -213,6 +221,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         "Home Assistant OS",
         "Home Assistant Supervised",
       ].includes(response.installation_type);
+      this._supervisor = true;
       if (this._supervisor) {
         // Only load if we have supervisor
         import("./onboarding-restore-backup");
