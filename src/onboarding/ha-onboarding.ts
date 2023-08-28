@@ -262,17 +262,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         });
         history.replaceState(null, "", location.pathname);
         await this._connectHass(auth);
-        const currentStep = steps.find((stp) => !stp.done);
-        switch (currentStep?.step) {
-          case "core_config":
-            this._progress = 0.5;
-            break;
-          case "analytics":
-            this._progress = 0.75;
-            break;
-          default:
-            this._progress = 1;
-        }
+        const currentStep = steps.findIndex((stp) => !stp.done);
+        const singelStepProgress = 1 / steps.length;
+        this._progress = currentStep * singelStepProgress + singelStepProgress;
       } else {
         this._init = true;
         // Init screen needs to know the installation type.
