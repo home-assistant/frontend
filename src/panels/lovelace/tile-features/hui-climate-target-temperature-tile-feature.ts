@@ -21,9 +21,9 @@ export const supportsClimateTargetTemperatureTileFeature = (
 ) => {
   const domain = computeDomain(stateObj.entity_id);
   return (
-    (domain === "climate" &&
-      supportsFeature(stateObj, ClimateEntityFeature.TARGET_TEMPERATURE)) ||
-    supportsFeature(stateObj, ClimateEntityFeature.TARGET_TEMPERATURE_RANGE)
+    domain === "climate" &&
+    (supportsFeature(stateObj, ClimateEntityFeature.TARGET_TEMPERATURE) ||
+      supportsFeature(stateObj, ClimateEntityFeature.TARGET_TEMPERATURE_RANGE))
   );
 };
 
