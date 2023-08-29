@@ -93,13 +93,13 @@ class FlowPreviewTemplate extends LitElement {
         this._setPreview
       );
       await this._unsub;
-      fireEvent(this, "set-error", undefined);
+      fireEvent(this, "set-flow-errors", { errors: {} });
     } catch (err: any) {
       if (typeof err.message === "string") {
         this._error = err.message;
       } else {
         this._error = undefined;
-        fireEvent(this, "set-error", err.message);
+        fireEvent(this, "set-flow-errors", err.message);
       }
       this._unsub = undefined;
       this._preview = undefined;
