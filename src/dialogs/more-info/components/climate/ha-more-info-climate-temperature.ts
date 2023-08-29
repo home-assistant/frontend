@@ -10,6 +10,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { UNIT_F } from "../../../../common/const";
 import { computeAttributeValueDisplay } from "../../../../common/entity/compute_attribute_display";
 import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
@@ -67,7 +68,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
   private get _step() {
     return (
       this.stateObj.attributes.target_temp_step ||
-      (this.hass.config.unit_system.temperature.indexOf("F") === -1 ? 0.5 : 1)
+      (this.hass.config.unit_system.temperature === UNIT_F ? 1 : 0.5)
     );
   }
 

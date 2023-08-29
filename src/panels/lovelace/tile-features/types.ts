@@ -40,6 +40,10 @@ export interface ClimateHvacModesTileFeatureConfig {
   hvac_modes?: HvacMode[];
 }
 
+export interface TargetTemperatureTileFeatureConfig {
+  type: "target-temperature";
+}
+
 export interface WaterHeaterOperationModesTileFeatureConfig {
   type: "water-heater-operation-modes";
   operation_modes?: OperationMode[];
@@ -81,6 +85,7 @@ export type LovelaceTileFeatureConfig =
   | LightBrightnessTileFeatureConfig
   | LightColorTempTileFeatureConfig
   | VacuumCommandsTileFeatureConfig
+  | TargetTemperatureTileFeatureConfig
   | WaterHeaterOperationModesTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
