@@ -1454,15 +1454,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/commands@npm:6.2.4":
-  version: 6.2.4
-  resolution: "@codemirror/commands@npm:6.2.4"
+"@codemirror/commands@npm:6.2.5":
+  version: 6.2.5
+  resolution: "@codemirror/commands@npm:6.2.5"
   dependencies:
     "@codemirror/language": ^6.0.0
     "@codemirror/state": ^6.2.0
     "@codemirror/view": ^6.0.0
     "@lezer/common": ^1.0.0
-  checksum: 468895fa19ff0554181b698c81f850820de5c0289cab92c44392fb127286f09ca72b921d6ea4353b70b616a4fd0c3667d86b6f917202a3ad2e196eb7b581f7b6
+  checksum: 6d373bcfd4337160243e1493c8703a8e367e208811742331679a6410a3645de36ae8a5664e11790fec521137b45f34d703e9292932a98c4de10139510f3f29a3
   languageName: node
   linkType: hard
 
@@ -1489,14 +1489,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/search@npm:6.5.1":
-  version: 6.5.1
-  resolution: "@codemirror/search@npm:6.5.1"
+"@codemirror/search@npm:6.5.2":
+  version: 6.5.2
+  resolution: "@codemirror/search@npm:6.5.2"
   dependencies:
     "@codemirror/state": ^6.0.0
     "@codemirror/view": ^6.0.0
     crelt: ^1.0.5
-  checksum: 672515c20238f69ff5cd8b662128699178ba7e020fc44a8ed2b0dcc25d8d5f5579418865616dd8809317a408fb08b6001a442f0fb706a772250b4284d7437045
+  checksum: bc535151277fda0a370ac496b9b0d5751fd91bd8e3eb29dafbfe6bf3125dc450a7e361ebc302f0ebc4193ac337bdf555ab3d5ec753dbb44452225618a5630dd3
   languageName: node
   linkType: hard
 
@@ -9611,10 +9611,10 @@ __metadata:
     "@babel/runtime": 7.22.11
     "@braintree/sanitize-url": 6.0.4
     "@codemirror/autocomplete": 6.9.0
-    "@codemirror/commands": 6.2.4
+    "@codemirror/commands": 6.2.5
     "@codemirror/language": 6.9.0
     "@codemirror/legacy-modes": 6.3.3
-    "@codemirror/search": 6.5.1
+    "@codemirror/search": 6.5.2
     "@codemirror/state": 6.2.1
     "@codemirror/view": 6.16.0
     "@egjs/hammerjs": 2.0.17
