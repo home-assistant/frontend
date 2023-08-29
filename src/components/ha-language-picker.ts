@@ -41,7 +41,18 @@ export class HaLanguagePicker extends LitElement {
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
-    if (changedProperties.has("languages") || changedProperties.has("value")) {
+
+    const localeChanged =
+      changedProperties.has("hass") &&
+      this.hass &&
+      changedProperties.get("hass") &&
+      changedProperties.get("hass").locale.language !==
+        this.hass.locale.language;
+    if (
+      changedProperties.has("languages") ||
+      changedProperties.has("value") ||
+      localeChanged
+    ) {
       this._select.layoutOptions();
       if (this._select.value !== this.value) {
         fireEvent(this, "value-changed", { value: this._select.value });
@@ -54,11 +65,14 @@ export class HaLanguagePicker extends LitElement {
         this.hass.locale,
         this.nativeName
       );
-      const selectedItem = languageOptions.find(
+      const selectedItemIndex = languageOptions.findIndex(
         (option) => option.value === this.value
       );
-      if (!selectedItem) {
+      if (selectedItemIndex === -1) {
         this.value = undefined;
+      }
+      if (localeChanged) {
+        this._select.select(selectedItemIndex);
       }
     }
   }
