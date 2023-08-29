@@ -76,7 +76,6 @@ export interface LawnMowerCommandsTileFeatureConfig {
 export type LovelaceTileFeatureConfig =
   | AlarmModesTileFeatureConfig
   | ClimateHvacModesTileFeatureConfig
-  | TargetTemperatureTileFeatureConfig
   | CoverOpenCloseTileFeatureConfig
   | CoverPositionTileFeatureConfig
   | CoverTiltPositionTileFeatureConfig
@@ -86,6 +85,7 @@ export type LovelaceTileFeatureConfig =
   | LightBrightnessTileFeatureConfig
   | LightColorTempTileFeatureConfig
   | VacuumCommandsTileFeatureConfig
+  | TargetTemperatureTileFeatureConfig
   | WaterHeaterOperationModesTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
