@@ -133,7 +133,9 @@ class DialogAreaDetail extends LitElement {
           @click=${this._updateEntry}
           .disabled=${nameInvalid || this._submitting}
         >
-          ${this.hass.localize("ui.common.save")}
+          ${entry
+            ? this.hass.localize("ui.common.save")
+            : this.hass.localize("ui.common.add")}
         </mwc-button>
       </ha-dialog>
     `;
