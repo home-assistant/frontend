@@ -1641,8 +1641,6 @@
             "create_area": "Create area",
             "update_area": "Update area",
             "delete": "Delete",
-            "update": "Update",
-            "create": "Create",
             "name": "Name",
             "name_required": "Name is required",
             "area_id": "Area ID",

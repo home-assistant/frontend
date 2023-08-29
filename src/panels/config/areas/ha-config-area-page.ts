@@ -7,7 +7,6 @@ import {
 } from "home-assistant-js-websocket/dist/types";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -264,16 +263,12 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
           </mwc-list-item>
 
           <mwc-list-item
-            class=${classMap({ warning: Boolean(this.areaId) })}
+            class="warning"
             graphic="icon"
             @click=${this._deleteConfirm}
           >
             ${this.hass.localize("ui.panel.config.areas.editor.delete")}
-            <ha-svg-icon
-              class=${classMap({ warning: Boolean(this.areaId) })}
-              slot="graphic"
-              .path=${mdiDelete}
-            >
+            <ha-svg-icon class="warning" slot="graphic" .path=${mdiDelete}>
             </ha-svg-icon>
           </mwc-list-item>
         </ha-button-menu>
