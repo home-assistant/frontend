@@ -267,6 +267,7 @@ class HaInputSelectForm extends LitElement {
           --mdc-icon-button-size: 24px;
           --mdc-ripple-color: transparent;
           cursor: default;
+          background-color: var(--card-background-color);
         }
         mwc-button {
           margin-left: 8px;
