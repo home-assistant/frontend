@@ -5312,7 +5312,10 @@
           "submit": "Submit",
           "error_new_mismatch": "Entered new password values do not match",
           "error_new_is_old": "New password must be different than current password",
-          "success": "Password changed successfully"
+          "success": "Password changed successfully",
+          "logout_all_sessions": "Do you want to log out from all devices?",
+          "logout_all_sessions_text": "This will require you to log in again on all devices with your new password, including this one.",
+          "delete_failed": "Not all devices could be logged out"
         },
         "mfa": {
           "header": "Multi-factor authentication modules",
