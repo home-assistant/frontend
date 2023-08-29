@@ -90,7 +90,8 @@ class DialogCommunity extends LitElement {
       --dialog-content-padding: 0;
     }
     ha-list-item {
-      --mdc-list-item-meta-size: 16px;
+      height: 56px;
+      --mdc-list-item-meta-size: 20px;
     }
     a {
       text-decoration: none;

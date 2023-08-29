@@ -5679,8 +5679,7 @@
         "finish": "Finish",
         "help": "Help",
         "welcome": {
-          "header": "HA!",
-          "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
+          "header": "Welcome!",
           "start": "Create my smart home",
           "restore_backup": "Restore from backup",
           "vision": "Read our vision",
@@ -5716,7 +5715,7 @@
           "osm_privacy_policy": "Privacy policy",
           "title_location_detect": "Do you want us to detect your location?",
           "intro_location_detect": "We can detect your location by making a one-time request to an external service.",
-          "intro_core_config": "We filled out some details about your location. Please check if they are correct and continue.",
+          "country_intro": "We would like to know the country your home is in, so we can use the correct units for you.",
           "location_name": "Name of your Home Assistant installation",
           "location_name_default": "Home",
           "address_label": "Search address",

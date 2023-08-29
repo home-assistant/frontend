@@ -60,13 +60,21 @@ type OnboardingEvent =
       type: "analytics";
     };
 
+interface OnboardingProgressEvent {
+  increase?: number;
+  decrease?: number;
+  progress?: number;
+}
+
 declare global {
   interface HASSDomEvents {
     "onboarding-step": OnboardingEvent;
+    "onboarding-progress": OnboardingProgressEvent;
   }
 
   interface GlobalEventHandlersEventMap {
     "onboarding-step": HASSDomEvent<OnboardingEvent>;
+    "onboarding-progress": HASSDomEvent<OnboardingProgressEvent>;
   }
 }
 
@@ -176,6 +184,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     import("./onboarding-core-config");
     registerServiceWorker(this, false);
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
+    this.addEventListener("onboarding-progress", (ev) =>
+      this._handleProgress(ev)
+    );
     if (window.innerWidth > 450) {
       import("./particles");
     }
@@ -274,6 +285,19 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       this._steps = steps;
     } catch (err: any) {
       alert("Something went wrong loading onboarding, try refreshing");
+    }
+  }
+
+  private _handleProgress(ev: HASSDomEvent<OnboardingProgressEvent>) {
+    const stepSize = 1 / this._steps!.length;
+    if (ev.detail.increase) {
+      this._progress += ev.detail.increase * stepSize;
+    }
+    if (ev.detail.decrease) {
+      this._progress -= ev.detail.decrease * stepSize;
+    }
+    if (ev.detail.progress) {
+      this._progress = ev.detail.progress;
     }
   }
 
@@ -412,6 +436,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         selectedLanguage: language,
       });
       storeState(this.hass!);
+    } else {
+      try {
+        localStorage.setItem("selectedLanguage", JSON.stringify(language));
+      } catch (err: any) {
+        // Ignore
+      }
     }
   }
 
