@@ -5031,6 +5031,9 @@
                     "label": "Climate HVAC modes",
                     "hvac_modes": "HVAC modes"
                   },
+                  "target-temperature": {
+                    "label": "Target temperature"
+                  },
                   "water-heater-operation-modes": {
                     "label": "Water heater operation modes",
                     "operation_modes": "Operation modes"
