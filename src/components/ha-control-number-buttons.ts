@@ -60,16 +60,24 @@ export class HaControlNumberButton extends LitElement {
     return Math.max(range / 10);
   }
 
-  private _increment() {
-    this.value = this.boundedValue(this._value + this._step);
+  private _handlePlusButton() {
+    this._increment();
     fireEvent(this, "value-changed", { value: this.value });
     this._input.focus();
   }
 
-  private _decrement() {
-    this.value = this.boundedValue(this._value - this._step);
+  private _handleMinusButton() {
+    this._decrement();
     fireEvent(this, "value-changed", { value: this.value });
     this._input.focus();
+  }
+
+  private _increment() {
+    this.value = this.boundedValue(this._value + this._step);
+  }
+
+  private _decrement() {
+    this.value = this.boundedValue(this._value - this._step);
   }
 
   _handleKeyDown(e: KeyboardEvent) {
@@ -78,11 +86,11 @@ export class HaControlNumberButton extends LitElement {
     switch (e.code) {
       case "ArrowRight":
       case "ArrowUp":
-        this.value = this.boundedValue(this._value + this._step);
+        this._increment();
         break;
       case "ArrowLeft":
       case "ArrowDown":
-        this.value = this.boundedValue(this._value - this._step);
+        this._decrement();
         break;
       case "PageUp":
         this.value = this.boundedValue(this._value + this._tenPercentStep);
@@ -131,7 +139,7 @@ export class HaControlNumberButton extends LitElement {
           type="button"
           tabindex="-1"
           aria-label="decrement"
-          @click=${this._decrement}
+          @click=${this._handleMinusButton}
           .disabled=${this.disabled ||
           (this.min != null && this._value <= this.min)}
         >
@@ -142,7 +150,7 @@ export class HaControlNumberButton extends LitElement {
           type="button"
           tabindex="-1"
           aria-label="increment"
-          @click=${this._increment}
+          @click=${this._handlePlusButton}
           .disabled=${this.disabled ||
           (this.max != null && this._value >= this.max)}
         >

@@ -2,6 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { UNIT_F } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
@@ -83,7 +84,7 @@ class HuiTargetTemperatureTileFeature
   private get _step() {
     return (
       this.stateObj!.attributes.target_temp_step ||
-      (this.hass!.config.unit_system.temperature.indexOf("F") === -1 ? 0.5 : 1)
+      (this.hass!.config.unit_system.temperature === UNIT_F ? 1 : 0.5)
     );
   }
 
