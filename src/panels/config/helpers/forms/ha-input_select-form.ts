@@ -5,6 +5,7 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import type { SortableEvent } from "sortablejs";
+import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-picker";
@@ -256,6 +257,7 @@ class HaInputSelectForm extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      sortableStyles,
       css`
         .form {
           color: var(--primary-text-color);
