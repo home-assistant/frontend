@@ -424,6 +424,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     if (this.hass) {
       element.hass = this.hass;
       (element as LovelaceTileFeature).stateObj = stateObj;
+      (element as LovelaceTileFeature).color = this._config!.color;
     }
 
     return html`${element}`;
