@@ -26,6 +26,7 @@ class DialogCommunity extends LitElement {
     }
     return html`<ha-dialog
       open
+      hideActions
       @closed=${this.closeDialog}
       .heading=${createCloseHeading(
         undefined,
