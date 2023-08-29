@@ -4053,6 +4053,11 @@
             "parameter": "Parameter",
             "bitmask": "Bitmask"
           },
+          "controller_status": {
+            "ready": "Ready",
+            "unresponsive": "Unresponsive",
+            "jammed": "Jammed"
+          },
           "node_status": {
             "unknown": "Unknown",
             "asleep": "Asleep",

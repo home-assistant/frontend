@@ -15,11 +15,15 @@ import {
 } from "../../../../../../data/config_entries";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
+  fetchZwaveNetworkStatus,
   fetchZwaveNodeStatus,
+  controllerStatus,
   nodeStatus,
   SecurityClass,
+  subscribeZwaveControllerStatus,
   subscribeZwaveNodeStatus,
   ZWaveJSNodeStatus,
+  ZWaveJSController,
 } from "../../../../../../data/zwave_js";
 import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../../resources/styles";
@@ -37,6 +41,8 @@ export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
 
   @state() private _node?: ZWaveJSNodeStatus;
 
+  @state() private _controller?: ZWaveJSController;
+
   public willUpdate(changedProperties: PropertyValues) {
     super.willUpdate(changedProperties);
     if (changedProperties.has("device")) {
@@ -45,6 +51,23 @@ export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
   }
 
   public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
+    if (this._node?.is_controller_node) {
+      return [
+        subscribeZwaveControllerStatus(
+          this.hass,
+          this.device!.id,
+          (message) => {
+            if (!this._controller) {
+              return;
+            }
+            this._controller = {
+              ...this._controller,
+              status: message.status,
+            };
+          }
+        ),
+      ];
+    }
     return [
       subscribeZwaveNodeStatus(this.hass, this.device!.id, (message) => {
         if (!this._node) {
@@ -81,6 +104,12 @@ export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
     this._configEntry = configEntry;
 
     this._node = await fetchZwaveNodeStatus(this.hass, this.device.id);
+    if (this._node.is_controller_node) {
+      const networkStatus = await fetchZwaveNetworkStatus(this.hass, {
+        device_id: this.device.id,
+      });
+      this._controller = networkStatus.controller;
+    }
   }
 
   protected render() {
@@ -110,18 +139,22 @@ export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
             )}:
             ${this._node.node_id}
           </div>
+          <div>
+            ${this.hass.localize(
+              "ui.panel.config.zwave_js.device_info.node_status"
+            )}:
+            ${this.hass.localize(
+              this._node.is_controller_node
+                ? `ui.panel.config.zwave_js.controller_status.${
+                    controllerStatus[this._controller!.status]
+                  }`
+                : `ui.panel.config.zwave_js.node_status.${
+                    nodeStatus[this._node.status]
+                  }`
+            )}
+          </div>
           ${!this._node.is_controller_node
             ? html`
-                <div>
-                  ${this.hass.localize(
-                    "ui.panel.config.zwave_js.device_info.node_status"
-                  )}:
-                  ${this.hass.localize(
-                    `ui.panel.config.zwave_js.node_status.${
-                      nodeStatus[this._node.status]
-                    }`
-                  )}
-                </div>
                 <div>
                   ${this.hass.localize(
                     "ui.panel.config.zwave_js.device_info.node_ready"

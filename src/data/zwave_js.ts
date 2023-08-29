@@ -194,6 +194,7 @@ export interface ZWaveJSController {
   supports_timers: boolean;
   is_heal_network_active: boolean;
   inclusion_state: InclusionState;
+  status: ControllerStatus;
   nodes: ZWaveJSNodeStatus[];
 }
 
@@ -332,6 +333,11 @@ export interface ZWaveJSRouteStatistics {
   route_failed_between: [string, string] | null;
 }
 
+export interface ZWaveJSControllerStatusUpdatedMessage {
+  event: "status changed";
+  status: ControllerStatus;
+}
+
 export interface ZWaveJSNodeStatusUpdatedMessage {
   event: "ready" | "wake up" | "sleep" | "dead" | "alive";
   ready: boolean;
@@ -376,6 +382,15 @@ export interface ZWaveJSRemovedNode {
   label: string;
 }
 
+export const enum ControllerStatus {
+  /** The controller is ready to accept commands and transmit */
+  Ready,
+  /** The controller is unresponsive */
+  Unresponsive,
+  /** The controller is unable to transmit */
+  Jammed,
+}
+
 export const enum NodeStatus {
   Unknown,
   Asleep,
@@ -403,6 +418,8 @@ export interface RequestedGrant {
   /** Whether client side authentication is requested or to be granted */
   clientSideAuth: boolean;
 }
+
+export const controllerStatus = ["ready", "unresponsive", "jammed"];
 
 export const nodeStatus = ["unknown", "asleep", "awake", "dead", "alive"];
 
@@ -571,6 +588,19 @@ export const unprovisionZwaveSmartStartNode = (
     dsk,
     node_id,
   });
+
+export const subscribeZwaveControllerStatus = (
+  hass: HomeAssistant,
+  device_id: string,
+  callbackFunction: (message: ZWaveJSControllerStatusUpdatedMessage) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/subscribe_controller_status",
+      device_id,
+    }
+  );
 
 export const fetchZwaveNodeStatus = (
   hass: HomeAssistant,
