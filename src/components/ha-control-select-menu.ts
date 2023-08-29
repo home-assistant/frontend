@@ -171,15 +171,12 @@ export class HaControlSelectMenu extends SelectBase {
         --control-select-menu-background-color: var(--disabled-color);
         --control-select-menu-background-opacity: 0.2;
         --control-select-menu-border-radius: 14px;
-        --control-select-menu-min-width: 120px;
-        --control-select-menu-max-width: 200px;
-        --control-select-menu-width: 100%;
         --mdc-icon-size: 20px;
+        width: auto;
         color: var(--primary-text-color);
         -webkit-tap-highlight-color: transparent;
       }
       .select-anchor {
-        color: var(--control-select-menu-text-color);
         height: 48px;
         padding: 6px 10px;
         overflow: hidden;
@@ -198,11 +195,8 @@ export class HaControlSelectMenu extends SelectBase {
         z-index: 0;
         font-size: inherit;
         transition: color 180ms ease-in-out;
-        color: var(--control-text-icon-color);
         gap: 10px;
-        min-width: var(--control-select-menu-min-width);
-        max-width: var(--control-select-menu-max-width);
-        width: var(--control-select-menu-width);
+        width: 100%;
         user-select: none;
         font-size: 14px;
         font-style: normal;
