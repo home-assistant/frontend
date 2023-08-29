@@ -15,7 +15,7 @@ export const createCloseHeading = (
 ) => html`
   <div class="header_title">${title}</div>
   <ha-icon-button
-    .label=${hass?.localize("ui.dialogs.generic.close")}
+    .label=${hass?.localize("ui.dialogs.generic.close") ?? "Close"}
     .path=${mdiClose}
     dialogAction="close"
     class="header_button"
