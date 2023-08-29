@@ -106,7 +106,7 @@
     "chart.js": "3.3.2",
     "comlink": "4.4.1",
     "core-js": "3.32.1",
-    "cropperjs": "1.5.13",
+    "cropperjs": "1.6.0",
     "date-fns": "2.30.0",
     "date-fns-tz": "2.0.0",
     "deep-clone-simple": "1.1.1",
