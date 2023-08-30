@@ -595,7 +595,8 @@ export const subscribeZwaveControllerStatus = (
   callbackFunction: (message: ZWaveJSControllerStatusUpdatedMessage) => void
 ): Promise<UnsubscribeFunc> =>
   hass.connection.subscribeMessage(
-    (message: any) => callbackFunction(message),
+    (message: ZWaveJSControllerStatusUpdatedMessage) =>
+      callbackFunction(message),
     {
       type: "zwave_js/subscribe_controller_status",
       device_id,
