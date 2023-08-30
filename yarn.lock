@@ -2039,6 +2039,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kurkle/color@npm:^0.3.0":
+  version: 0.3.2
+  resolution: "@kurkle/color@npm:0.3.2"
+  checksum: 79e97b31f8f6efb28c69d373f94b0c7480226fe8ec95221f518ac998e156444a496727ce47de6d728eb5c3369288e794cba82cae34253deb0d472d3bfe080e49
+  languageName: node
+  linkType: hard
+
 "@leichtgewicht/ip-codec@npm:^2.0.1":
   version: 2.0.4
   resolution: "@leichtgewicht/ip-codec@npm:2.0.4"
@@ -6570,10 +6577,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:3.3.2":
-  version: 3.3.2
-  resolution: "chart.js@npm:3.3.2"
-  checksum: 0aaebab52cb5eacfc969210f7c304cad7e20b03a37b33f4e0332b5eeb9319e2929b085e0a8654ec33752566a55982ffe6bb3f2ba620c2a9b3bc71806ca7b9cb7
+"chart.js@npm:4.3.3":
+  version: 4.3.3
+  resolution: "chart.js@npm:4.3.3"
+  dependencies:
+    "@kurkle/color": ^0.3.0
+  checksum: 548605fc0a0a64fdc591a41159a2be86c1b408339d6e57b566c04dc157331b003db285a6139801d1700596acde8f0521bc6a156da29388025581619db6600073
   languageName: node
   linkType: hard
 
@@ -9720,7 +9729,7 @@ __metadata:
     babel-loader: 9.1.3
     babel-plugin-template-html-minifier: 4.1.0
     chai: 4.3.8
-    chart.js: 3.3.2
+    chart.js: 4.3.3
     comlink: 4.4.1
     core-js: 3.32.1
     cropperjs: 1.6.0
