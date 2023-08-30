@@ -173,6 +173,7 @@ class HassioBackupDialog
   private async _restoreClicked() {
     const backupDetails = this._backupContent.backupDetails();
     this._restoringBackup = true;
+    this._dialogParams?.onRestoring?.();
     if (this._backupContent.backupType === "full") {
       await this._fullRestoreClicked(backupDetails);
     } else {
@@ -219,7 +220,7 @@ class HassioBackupDialog
         this._error = error.body.message;
       }
     } else {
-      fireEvent(this, "restoring");
+      this._dialogParams?.onRestoring?.();
       await fetch(`/api/hassio/backups/${this._backup!.slug}/restore/partial`, {
         method: "POST",
         body: JSON.stringify(backupDetails),
@@ -268,7 +269,7 @@ class HassioBackupDialog
         }
       );
     } else {
-      fireEvent(this, "restoring");
+      this._dialogParams?.onRestoring?.();
       fetch(`/api/hassio/backups/${this._backup!.slug}/restore/full`, {
         method: "POST",
         body: JSON.stringify(backupDetails),
