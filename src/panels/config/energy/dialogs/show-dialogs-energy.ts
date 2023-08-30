@@ -7,6 +7,7 @@ import {
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
   GasSourceTypeEnergyPreference,
+  GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
   WaterSourceTypeEnergyPreference,
 } from "../../../../data/energy";
@@ -18,6 +19,7 @@ export interface EnergySettingsGridFlowDialogParams {
     | FlowToGridSourceEnergyPreference;
   metadata?: StatisticsMetaData;
   direction: "from" | "to";
+  grid_source?: GridSourceTypeEnergyPreference;
   saveCallback: (
     source:
       | FlowFromGridSourceEnergyPreference
@@ -28,23 +30,27 @@ export interface EnergySettingsGridFlowDialogParams {
 export interface EnergySettingsGridFlowFromDialogParams {
   source?: FlowFromGridSourceEnergyPreference;
   metadata?: StatisticsMetaData;
+  grid_source?: GridSourceTypeEnergyPreference;
   saveCallback: (source: FlowFromGridSourceEnergyPreference) => Promise<void>;
 }
 
 export interface EnergySettingsGridFlowToDialogParams {
   source?: FlowToGridSourceEnergyPreference;
   metadata?: StatisticsMetaData;
+  grid_source?: GridSourceTypeEnergyPreference;
   saveCallback: (source: FlowToGridSourceEnergyPreference) => Promise<void>;
 }
 
 export interface EnergySettingsSolarDialogParams {
   info: EnergyInfo;
   source?: SolarSourceTypeEnergyPreference;
+  solar_sources: SolarSourceTypeEnergyPreference[];
   saveCallback: (source: SolarSourceTypeEnergyPreference) => Promise<void>;
 }
 
 export interface EnergySettingsBatteryDialogParams {
   source?: BatterySourceTypeEnergyPreference;
+  battery_sources: BatterySourceTypeEnergyPreference[];
   saveCallback: (source: BatterySourceTypeEnergyPreference) => Promise<void>;
 }
 
@@ -52,16 +58,19 @@ export interface EnergySettingsGasDialogParams {
   source?: GasSourceTypeEnergyPreference;
   allowedGasUnitClass?: EnergyGasUnitClass;
   metadata?: StatisticsMetaData;
+  gas_sources: GasSourceTypeEnergyPreference[];
   saveCallback: (source: GasSourceTypeEnergyPreference) => Promise<void>;
 }
 
 export interface EnergySettingsWaterDialogParams {
   source?: WaterSourceTypeEnergyPreference;
   metadata?: StatisticsMetaData;
+  water_sources: WaterSourceTypeEnergyPreference[];
   saveCallback: (source: WaterSourceTypeEnergyPreference) => Promise<void>;
 }
 
 export interface EnergySettingsDeviceDialogParams {
+  device_consumptions: DeviceConsumptionEnergyPreference[];
   saveCallback: (device: DeviceConsumptionEnergyPreference) => Promise<void>;
 }
 

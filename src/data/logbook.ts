@@ -62,12 +62,6 @@ const triggerPhrases = {
   "Home Assistant starting": "triggered_by_homeassistant_starting", // start event
 };
 
-const DATA_CACHE: {
-  [cacheKey: string]: {
-    [entityId: string]: Promise<LogbookEntry[]> | undefined;
-  };
-} = {};
-
 export const getLogbookDataForContext = async (
   hass: HomeAssistant,
   startDate: string,
@@ -142,10 +136,6 @@ export const subscribeLogbook = (
     (message) => callbackFunction(message),
     params
   );
-};
-
-export const clearLogbookCache = (startDate: string, endDate: string) => {
-  DATA_CACHE[`${startDate}${endDate}`] = {};
 };
 
 export const createHistoricState = (

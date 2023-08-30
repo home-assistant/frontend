@@ -16,7 +16,7 @@ export interface TextBaroptions extends BarOptions {
 export class TextBarElement extends BarElement {
   static id = "textbar";
 
-  draw(ctx) {
+  draw(ctx: CanvasRenderingContext2D) {
     super.draw(ctx);
     const options = this.options as TextBaroptions;
     const { x, y, base, width, text } = (

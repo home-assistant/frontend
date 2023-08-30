@@ -1,44 +1,34 @@
 import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { showBackupUploadDialog } from "../../hassio/src/dialogs/backup/show-dialog-backup-upload";
 import { showHassioBackupDialog } from "../../hassio/src/dialogs/backup/show-dialog-hassio-backup";
 import type { LocalizeFunc } from "../common/translations/localize";
-import "../components/ha-card";
 import "../components/ha-ansi-to-html";
+import "../components/ha-card";
 import { fetchInstallationType } from "../data/onboarding";
-import { makeDialogManager } from "../dialogs/make-dialog-manager";
-import { ProvideHassLitMixin } from "../mixins/provide-hass-lit-mixin";
-import { haStyle } from "../resources/styles";
 import "./onboarding-loading";
-
-declare global {
-  interface HASSDomEvents {
-    restoring: undefined;
-  }
-}
+import { onBoardingStyles } from "./styles";
 
 @customElement("onboarding-restore-backup")
-class OnboardingRestoreBackup extends ProvideHassLitMixin(LitElement) {
+class OnboardingRestoreBackup extends LitElement {
   @property() public localize!: LocalizeFunc;
 
   @property() public language!: string;
 
-  @property({ type: Boolean }) public restoring = false;
+  @state() public _restoring = false;
 
   protected render(): TemplateResult {
-    return this.restoring
-      ? html`<ha-card
-          .header=${this.localize(
-            "ui.panel.page-onboarding.restore.in_progress"
-          )}
-        >
-          <onboarding-loading></onboarding-loading>
-        </ha-card>`
+    return this._restoring
+      ? html`<h1>
+            ${this.localize("ui.panel.page-onboarding.restore.in_progress")}
+          </h1>
+          <onboarding-loading></onboarding-loading>`
       : html`
-          <button class="link" @click=${this._uploadBackup}>
-            ${this.localize("ui.panel.page-onboarding.restore.description")}
-          </button>
+          <h1>${this.localize("ui.panel.page-onboarding.restore.header")}</h1>
+          <ha-button unelevated @click=${this._uploadBackup}>
+            ${this.localize("ui.panel.page-onboarding.restore.upload_backup")}
+          </ha-button>
         `;
   }
 
@@ -51,12 +41,11 @@ class OnboardingRestoreBackup extends ProvideHassLitMixin(LitElement) {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    makeDialogManager(this, this.shadowRoot!);
     setInterval(() => this._checkRestoreStatus(), 1000);
   }
 
   private async _checkRestoreStatus(): Promise<void> {
-    if (this.restoring) {
+    if (this._restoring) {
       try {
         await fetchInstallationType();
       } catch (err: any) {
@@ -72,32 +61,20 @@ class OnboardingRestoreBackup extends ProvideHassLitMixin(LitElement) {
       slug,
       onboarding: true,
       localize: this.localize,
+      onRestoring: () => {
+        this._restoring = true;
+      },
     });
   }
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      onBoardingStyles,
       css`
-        .logentry {
-          text-align: center;
-        }
-        ha-card {
-          padding: 4px;
-          margin-top: 8px;
-        }
-        ha-ansi-to-html {
-          display: block;
-          line-height: 22px;
-          padding: 0 8px;
-          white-space: pre-wrap;
-        }
-
-        @media all and (min-width: 600px) {
-          ha-card {
-            width: 600px;
-            margin-left: -100px;
-          }
+        :host {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
       `,
     ];

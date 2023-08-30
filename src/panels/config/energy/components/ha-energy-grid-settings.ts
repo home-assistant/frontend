@@ -294,13 +294,13 @@ export class EnergyGridSettings extends LitElement {
   }
 
   private _addFromSource() {
+    const gridSource = this.preferences.energy_sources.find(
+      (src) => src.type === "grid"
+    ) as GridSourceTypeEnergyPreference | undefined;
     showEnergySettingsGridFlowFromDialog(this, {
+      grid_source: gridSource,
       saveCallback: async (flow) => {
         let preferences: EnergyPreferences;
-        const gridSource = this.preferences.energy_sources.find(
-          (src) => src.type === "grid"
-        ) as GridSourceTypeEnergyPreference | undefined;
-
         if (!gridSource) {
           preferences = {
             ...this.preferences,
@@ -328,13 +328,13 @@ export class EnergyGridSettings extends LitElement {
   }
 
   private _addToSource() {
+    const gridSource = this.preferences.energy_sources.find(
+      (src) => src.type === "grid"
+    ) as GridSourceTypeEnergyPreference | undefined;
     showEnergySettingsGridFlowToDialog(this, {
+      grid_source: gridSource,
       saveCallback: async (flow) => {
         let preferences: EnergyPreferences;
-        const gridSource = this.preferences.energy_sources.find(
-          (src) => src.type === "grid"
-        ) as GridSourceTypeEnergyPreference | undefined;
-
         if (!gridSource) {
           preferences = {
             ...this.preferences,
@@ -364,8 +364,12 @@ export class EnergyGridSettings extends LitElement {
   private _editFromSource(ev) {
     const origSource: FlowFromGridSourceEnergyPreference =
       ev.currentTarget.closest(".row").source;
+    const gridSource = this.preferences.energy_sources.find(
+      (src) => src.type === "grid"
+    ) as GridSourceTypeEnergyPreference | undefined;
     showEnergySettingsGridFlowFromDialog(this, {
       source: { ...origSource },
+      grid_source: gridSource,
       metadata: this.statsMetadata?.[origSource.stat_energy_from],
       saveCallback: async (source) => {
         const flowFrom = energySourcesByType(this.preferences).grid![0]
@@ -392,8 +396,12 @@ export class EnergyGridSettings extends LitElement {
   private _editToSource(ev) {
     const origSource: FlowToGridSourceEnergyPreference =
       ev.currentTarget.closest(".row").source;
+    const gridSource = this.preferences.energy_sources.find(
+      (src) => src.type === "grid"
+    ) as GridSourceTypeEnergyPreference | undefined;
     showEnergySettingsGridFlowToDialog(this, {
       source: { ...origSource },
+      grid_source: gridSource,
       metadata: this.statsMetadata?.[origSource.stat_energy_to],
       saveCallback: async (source) => {
         const flowTo = energySourcesByType(this.preferences).grid![0].flow_to;

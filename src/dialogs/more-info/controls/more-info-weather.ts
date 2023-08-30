@@ -16,14 +16,12 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { formatDateWeekdayDay } from "../../../common/datetime/format_date";
 import { formatTimeWeekday } from "../../../common/datetime/format_time";
-import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-svg-icon";
 import {
   ForecastEvent,
   WeatherEntity,
   getDefaultForecastType,
   getForecast,
-  getWeatherUnit,
   getWind,
   subscribeForecast,
   weatherIcons,
@@ -133,11 +131,10 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.temperature")}
               </div>
               <div>
-                ${formatNumber(
-                  this.stateObj.attributes.temperature!,
-                  this.hass.locale
+                ${this.hass.formatEntityAttributeValue(
+                  this.stateObj,
+                  "temperature"
                 )}
-                ${getWeatherUnit(this.hass, this.stateObj, "temperature")}
               </div>
             </div>
           `
@@ -150,11 +147,10 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.air_pressure")}
               </div>
               <div>
-                ${formatNumber(
-                  this.stateObj.attributes.pressure!,
-                  this.hass.locale
+                ${this.hass.formatEntityAttributeValue(
+                  this.stateObj,
+                  "pressure"
                 )}
-                ${getWeatherUnit(this.hass, this.stateObj, "pressure")}
               </div>
             </div>
           `
@@ -167,11 +163,10 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.humidity")}
               </div>
               <div>
-                ${formatNumber(
-                  this.stateObj.attributes.humidity!,
-                  this.hass.locale
+                ${this.hass.formatEntityAttributeValue(
+                  this.stateObj,
+                  "humidity"
                 )}
-                %
               </div>
             </div>
           `
@@ -202,11 +197,10 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.visibility")}
               </div>
               <div>
-                ${formatNumber(
-                  this.stateObj.attributes.visibility!,
-                  this.hass.locale
+                ${this.hass.formatEntityAttributeValue(
+                  this.stateObj,
+                  "visibility"
                 )}
-                ${getWeatherUnit(this.hass, this.stateObj, "visibility")}
               </div>
             </div>
           `
@@ -256,24 +250,20 @@ class MoreInfoWeather extends LitElement {
                     </div>
                     <div class="templow">
                       ${this._showValue(item.templow)
-                        ? `${formatNumber(item.templow!, this.hass.locale)}
-                          ${getWeatherUnit(
-                            this.hass,
+                        ? this.hass.formatEntityAttributeValue(
                             this.stateObj!,
-                            "temperature"
-                          )}`
+                            "templow"
+                          )
                         : hourly
                         ? ""
                         : "—"}
                     </div>
                     <div class="temp">
                       ${this._showValue(item.temperature)
-                        ? `${formatNumber(item.temperature!, this.hass.locale)}
-                        ${getWeatherUnit(
-                          this.hass,
-                          this.stateObj!,
-                          "temperature"
-                        )}`
+                        ? this.hass.formatEntityAttributeValue(
+                            this.stateObj!,
+                            "temperature"
+                          )
                         : "—"}
                     </div>
                   </div>`

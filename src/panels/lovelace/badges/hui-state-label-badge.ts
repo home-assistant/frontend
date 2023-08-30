@@ -34,6 +34,7 @@ export class HuiStateLabelBadge extends LitElement implements LovelaceBadge {
         .name=${this._config.name}
         .icon=${this._config.icon}
         .image=${this._config.image}
+        .showName=${this._config.show_name}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),

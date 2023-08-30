@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { Action } from "../../data/script";
 import { ActionSelector } from "../../data/selector";
@@ -19,10 +19,13 @@ export class HaActionSelector extends LitElement {
 
   protected render() {
     return html`
+      ${this.label ? html`<label>${this.label}</label>` : nothing}
       <ha-automation-action
         .disabled=${this.disabled}
         .actions=${this.value || []}
         .hass=${this.hass}
+        .nested=${this.selector.action?.nested}
+        .reOrderMode=${this.selector.action?.reorder_mode}
       ></ha-automation-action>
     `;
   }
@@ -36,6 +39,11 @@ export class HaActionSelector extends LitElement {
       :host([disabled]) ha-automation-action {
         opacity: var(--light-disabled-opacity);
         pointer-events: none;
+      }
+      label {
+        display: block;
+        margin-bottom: 4px;
+        font-weight: 500;
       }
     `;
   }

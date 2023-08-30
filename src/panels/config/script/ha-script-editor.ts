@@ -761,6 +761,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         })
       : await this.confirmUnsavedChanged();
     if (result) {
+      this._entityId = undefined;
       showScriptEditor({
         ...this._config,
         alias: this._readOnly

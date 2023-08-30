@@ -47,11 +47,12 @@ export const computeInitialHaFormData = (
       } else if ("boolean" in selector) {
         data[field.name] = false;
       } else if (
-        "text" in selector ||
         "addon" in selector ||
         "attribute" in selector ||
         "file" in selector ||
         "icon" in selector ||
+        "template" in selector ||
+        "text" in selector ||
         "theme" in selector
       ) {
         data[field.name] = "";
@@ -59,7 +60,8 @@ export const computeInitialHaFormData = (
         data[field.name] = selector.number?.min ?? 0;
       } else if ("select" in selector) {
         if (selector.select?.options.length) {
-          data[field.name] = selector.select.options[0][0];
+          const val = selector.select.options[0];
+          data[field.name] = Array.isArray(val) ? val[0] : val;
         }
       } else if ("duration" in selector) {
         data[field.name] = {
