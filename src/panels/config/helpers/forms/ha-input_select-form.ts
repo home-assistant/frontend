@@ -1,5 +1,4 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-list/mwc-list";
 import { mdiDelete, mdiDrag } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -7,7 +6,9 @@ import { repeat } from "lit/directives/repeat";
 import type { SortableEvent } from "sortablejs";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-list-item";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../components/ha-textfield";
@@ -144,13 +145,13 @@ class HaInputSelectForm extends LitElement {
             "ui.dialogs.helper_settings.input_select.options"
           )}:
         </div>
-        <div class="options">
+        <mwc-list class="options">
           ${this._options.length
             ? repeat(
                 this._options,
                 (option) => option,
                 (option, index) => html`
-                  <mwc-list-item class="option" hasMeta>
+                  <ha-list-item class="option" hasMeta>
                     <div class="optioncontent">
                       <div class="handle">
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
@@ -166,17 +167,17 @@ class HaInputSelectForm extends LitElement {
                       @click=${this._removeOption}
                       .path=${mdiDelete}
                     ></ha-icon-button>
-                  </mwc-list-item>
+                  </ha-list-item>
                 `
               )
             : html`
-                <mwc-list-item noninteractive>
+                <ha-list-item noninteractive>
                   ${this.hass!.localize(
                     "ui.dialogs.helper_settings.input_select.no_options"
                   )}
-                </mwc-list-item>
+                </ha-list-item>
               `}
-        </div>
+        </mwc-list>
         <div class="layout horizontal center">
           <ha-textfield
             class="flex-auto"
@@ -186,10 +187,10 @@ class HaInputSelectForm extends LitElement {
             )}
             @keydown=${this._handleKeyAdd}
           ></ha-textfield>
-          <mwc-button @click=${this._addOption}
+          <ha-button @click=${this._addOption}
             >${this.hass!.localize(
               "ui.dialogs.helper_settings.input_select.add"
-            )}</mwc-button
+            )}</ha-button
           >
         </div>
       </div>
@@ -268,6 +269,7 @@ class HaInputSelectForm extends LitElement {
           margin-top: 4px;
           --mdc-icon-button-size: 24px;
           --mdc-ripple-color: transparent;
+          --mdc-list-side-padding: 16px;
           cursor: default;
           background-color: var(--card-background-color);
         }
