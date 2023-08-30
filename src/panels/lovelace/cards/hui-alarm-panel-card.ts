@@ -9,6 +9,7 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { HassEntity } from "home-assistant-js-websocket";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { alarmPanelIcon } from "../../../common/entity/alarm_panel_icon";
@@ -20,15 +21,47 @@ import type { HaTextField } from "../../../components/ha-textfield";
 import {
   callAlarmAction,
   FORMAT_NUMBER,
+  ALARM_MODES,
+  AlarmMode,
 } from "../../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard } from "../types";
-import { AlarmPanelCardConfig } from "./types";
+import { AlarmPanelCardConfig, AlarmPanelCardConfigState } from "./types";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 
 const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
+
+export const DEFAULT_STATES = [
+  "arm_home",
+  "arm_away",
+] as AlarmPanelCardConfigState[];
+
+export const ALARM_MODE_STATE_MAP: Record<
+  AlarmPanelCardConfigState,
+  AlarmMode
+> = {
+  arm_home: "armed_home",
+  arm_away: "armed_away",
+  arm_night: "armed_night",
+  arm_vacation: "armed_vacation",
+  arm_custom_bypass: "armed_custom_bypass",
+};
+
+export const filterSupportedAlarmStates = (
+  stateObj: HassEntity | undefined,
+  states: AlarmPanelCardConfigState[]
+): AlarmPanelCardConfigState[] =>
+  states.filter(
+    (s) =>
+      stateObj &&
+      supportsFeature(
+        stateObj,
+        ALARM_MODES[ALARM_MODE_STATE_MAP[s]].feature || 0
+      )
+  );
 
 @customElement("hui-alarm-panel-card")
 class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
@@ -52,10 +85,13 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
+    const entity = foundEntities[0] || "";
+    const stateObj = hass.states[entity];
+
     return {
       type: "alarm-panel",
-      states: ["arm_home", "arm_away"],
-      entity: foundEntities[0] || "",
+      states: filterSupportedAlarmStates(stateObj, DEFAULT_STATES),
+      entity,
     };
   }
 
@@ -86,11 +122,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       throw new Error("Invalid configuration");
     }
 
-    const defaults = {
-      states: ["arm_away", "arm_home"] as const,
-    };
-
-    this._config = { ...defaults, ...config };
+    this._config = { ...config };
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -138,6 +170,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       return nothing;
     }
     const stateObj = this.hass.states[this._config.entity];
+    const states =
+      this._config.states ||
+      filterSupportedAlarmStates(stateObj, DEFAULT_STATES);
 
     if (!stateObj) {
       return html`
@@ -170,7 +205,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         </h1>
         <div id="armActions" class="actions">
           ${(stateObj.state === "disarmed"
-            ? this._config.states!
+            ? states
             : (["disarm"] as const)
           ).map(
             (stateAction) => html`
