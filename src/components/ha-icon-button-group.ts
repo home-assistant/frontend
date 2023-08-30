@@ -14,17 +14,17 @@ export class HaIconButtonGroup extends LitElement {
         display: flex;
         flex-direction: row;
         align-items: center;
-        height: 56px;
+        height: 48px;
         border-radius: 28px;
         background-color: rgba(139, 145, 151, 0.1);
         box-sizing: border-box;
         width: auto;
-        padding: 4px;
-        gap: 4px;
+        padding: 0;
       }
       ::slotted(.separator) {
         background-color: rgba(var(--rgb-primary-text-color), 0.15);
         width: 1px;
+        margin: 0 1px;
         height: 40px;
       }
     `;

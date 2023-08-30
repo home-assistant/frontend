@@ -68,6 +68,7 @@ export class HaFormString extends LitElement implements HaFormElement {
           : this.schema.description?.suffix}
         .validationMessage=${this.schema.required ? "Required" : undefined}
         @input=${this._valueChanged}
+        @change=${this._valueChanged}
       ></ha-textfield>
       ${isPassword
         ? html`<ha-icon-button

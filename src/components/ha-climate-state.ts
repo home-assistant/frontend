@@ -2,9 +2,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { computeAttributeValueDisplay } from "../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
-import { formatNumber } from "../common/number/format_number";
-import { blankBeforePercent } from "../common/translations/blank_before_percent";
-import { ClimateEntity, CLIMATE_PRESET_NONE } from "../data/climate";
+import { CLIMATE_PRESET_NONE, ClimateEntity } from "../data/climate";
 import { isUnavailableState } from "../data/entity";
 import type { HomeAssistant } from "../types";
 
@@ -54,28 +52,28 @@ class HaClimateState extends LitElement {
       this.stateObj.attributes.current_temperature != null &&
       this.stateObj.attributes.current_humidity != null
     ) {
-      return `${formatNumber(
-        this.stateObj.attributes.current_temperature,
-        this.hass.locale
-      )} ${this.hass.config.unit_system.temperature}/
-      ${formatNumber(
-        this.stateObj.attributes.current_humidity,
-        this.hass.locale
-      )}${blankBeforePercent(this.hass.locale)}%`;
+      return `${this.hass.formatEntityAttributeValue(
+        this.stateObj,
+        "current_temperature"
+      )}/
+      ${this.hass.formatEntityAttributeValue(
+        this.stateObj,
+        "current_humidity"
+      )}`;
     }
 
     if (this.stateObj.attributes.current_temperature != null) {
-      return `${formatNumber(
-        this.stateObj.attributes.current_temperature,
-        this.hass.locale
-      )} ${this.hass.config.unit_system.temperature}`;
+      return this.hass.formatEntityAttributeValue(
+        this.stateObj,
+        "current_temperature"
+      );
     }
 
     if (this.stateObj.attributes.current_humidity != null) {
-      return `${formatNumber(
-        this.stateObj.attributes.current_humidity,
-        this.hass.locale
-      )}${blankBeforePercent(this.hass.locale)}%`;
+      return this.hass.formatEntityAttributeValue(
+        this.stateObj,
+        "current_humidity"
+      );
     }
 
     return undefined;
@@ -90,39 +88,33 @@ class HaClimateState extends LitElement {
       this.stateObj.attributes.target_temp_low != null &&
       this.stateObj.attributes.target_temp_high != null
     ) {
-      return `${formatNumber(
-        this.stateObj.attributes.target_temp_low,
-        this.hass.locale
-      )}-${formatNumber(
-        this.stateObj.attributes.target_temp_high,
-        this.hass.locale
-      )} ${this.hass.config.unit_system.temperature}`;
+      return `${this.hass.formatEntityAttributeValue(
+        this.stateObj,
+        "target_temp_low"
+      )}-${this.hass.formatEntityAttributeValue(
+        this.stateObj,
+        "target_temp_high"
+      )}`;
     }
 
     if (this.stateObj.attributes.temperature != null) {
-      return `${formatNumber(
-        this.stateObj.attributes.temperature,
-        this.hass.locale
-      )} ${this.hass.config.unit_system.temperature}`;
+      return this.hass.formatEntityAttributeValue(this.stateObj, "temperature");
     }
     if (
       this.stateObj.attributes.target_humidity_low != null &&
       this.stateObj.attributes.target_humidity_high != null
     ) {
-      return `${formatNumber(
-        this.stateObj.attributes.target_humidity_low,
-        this.hass.locale
-      )}-${formatNumber(
-        this.stateObj.attributes.target_humidity_high,
-        this.hass.locale
-      )} %`;
+      return `${this.hass.formatEntityAttributeValue(
+        this.stateObj,
+        "target_humidity_low"
+      )}-${this.hass.formatEntityAttributeValue(
+        this.stateObj,
+        "target_humidity_high"
+      )}`;
     }
 
     if (this.stateObj.attributes.humidity != null) {
-      return `${formatNumber(
-        this.stateObj.attributes.humidity,
-        this.hass.locale
-      )} %`;
+      return this.hass.formatEntityAttributeValue(this.stateObj, "humidity");
     }
 
     return "";

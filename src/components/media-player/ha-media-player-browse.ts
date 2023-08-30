@@ -122,6 +122,7 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }

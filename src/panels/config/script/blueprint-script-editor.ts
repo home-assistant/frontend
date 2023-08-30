@@ -5,7 +5,6 @@ import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-markdown";
-import "../../../components/ha-textfield";
 import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
 
@@ -108,27 +107,19 @@ export class HaBlueprintScriptEditor extends LitElement {
                           breaks
                           .content=${value?.description}
                         ></ha-markdown>
-                        ${value?.selector
-                          ? html`<ha-selector
-                              .hass=${this.hass}
-                              .selector=${value.selector}
-                              .key=${key}
-                              .disabled=${this.disabled}
-                              .required=${value?.default === undefined}
-                              .value=${(this.config.use_blueprint.input &&
-                                this.config.use_blueprint.input[key]) ??
-                              value?.default}
-                              @value-changed=${this._inputChanged}
-                            ></ha-selector>`
-                          : html`<ha-textfield
-                              .key=${key}
-                              .required=${value?.default === undefined}
-                              .disabled=${this.disabled}
-                              .value=${(this.config.use_blueprint.input &&
-                                this.config.use_blueprint.input[key]) ??
-                              value?.default}
-                              @change=${this._inputChanged}
-                            ></ha-textfield>`}
+                        ${html`<ha-selector
+                          .hass=${this.hass}
+                          .selector=${value?.selector ?? { text: undefined }}
+                          .key=${key}
+                          .disabled=${this.disabled}
+                          .required=${value?.default === undefined}
+                          .placeholder=${value?.default}
+                          .value=${this.config.use_blueprint.input &&
+                          key in this.config.use_blueprint.input
+                            ? this.config.use_blueprint.input[key]
+                            : value?.default}
+                          @value-changed=${this._inputChanged}
+                        ></ha-selector>`}
                       </ha-settings-row>`
                   )
                 : html`<p class="padding">
@@ -173,17 +164,6 @@ export class HaBlueprintScriptEditor extends LitElement {
       return;
     }
     const input = { ...this.config.use_blueprint.input, [key]: value };
-
-    const blueprint = this._blueprint;
-    const metaValue =
-      !blueprint || "error" in blueprint
-        ? undefined
-        : blueprint?.metadata.input && blueprint?.metadata?.input[key];
-    const keyDefault = metaValue && metaValue.default;
-
-    if ((value === "" && !keyDefault) || value === undefined) {
-      delete input[key];
-    }
 
     fireEvent(this, "value-changed", {
       value: {

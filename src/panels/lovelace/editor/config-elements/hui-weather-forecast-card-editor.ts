@@ -58,6 +58,7 @@ export class HuiWeatherForecastCardEditor
     }
     if (
       !config.forecast_type ||
+      (config.forecast_type === "legacy" && this._modernForecastSupported()) ||
       !this._forecastSupported(config.forecast_type)
     ) {
       let forecastType: string | undefined;
@@ -114,6 +115,14 @@ export class HuiWeatherForecastCardEditor
     return false;
   }
 
+  private _modernForecastSupported(): boolean {
+    return (
+      this._forecastSupported("daily") ||
+      this._forecastSupported("hourly") ||
+      this._forecastSupported("twice_daily")
+    );
+  }
+
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
@@ -141,8 +150,7 @@ export class HuiWeatherForecastCardEditor
             { name: "theme", selector: { theme: {} } },
           ],
         },
-        ...(!hasForecastLegacy &&
-        (hasForecastDaily || hasForecastHourly || hasForecastTwiceDaily)
+        ...(hasForecastDaily || hasForecastHourly || hasForecastTwiceDaily
           ? ([
               {
                 name: "forecast_type",

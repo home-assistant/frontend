@@ -49,6 +49,8 @@ export class DialogEnergyGasSettings
 
   @state() private _error?: string;
 
+  private _excludeList?: string[];
+
   public async showDialog(
     params: EnergySettingsGasDialogParams
   ): Promise<void> {
@@ -74,6 +76,9 @@ export class DialogEnergyGasSettings
     this._gas_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "gas")
     ).units;
+    this._excludeList = this._params.gas_sources
+      .map((entry) => entry.stat_energy_from)
+      .filter((id) => id !== this._source?.stat_energy_from);
   }
 
   public closeDialog(): void {
@@ -81,6 +86,7 @@ export class DialogEnergyGasSettings
     this._source = undefined;
     this._pickedDisplayUnit = undefined;
     this._error = undefined;
+    this._excludeList = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -139,6 +145,7 @@ export class DialogEnergyGasSettings
           .label=${this.hass.localize(
             "ui.panel.config.energy.gas.dialog.gas_usage"
           )}
+          .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
           dialogInitialFocus
         ></ha-statistic-picker>
@@ -227,7 +234,7 @@ export class DialogEnergyGasSettings
                 "ui.panel.config.energy.gas.dialog.cost_number_input"
               )} ${unitPrice ? ` (${unitPrice})` : ""}`}
               class="price-options"
-              step=".01"
+              step="any"
               type="number"
               .value=${this._source.number_energy_price}
               @change=${this._numberPriceChanged}

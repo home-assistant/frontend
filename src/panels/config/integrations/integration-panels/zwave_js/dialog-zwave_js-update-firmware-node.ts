@@ -110,10 +110,10 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         .hass=${this.hass}
         .uploading=${this._uploading}
         .icon=${mdiFileUpload}
-        label=${this._firmwareFile?.name ??
-        this.hass.localize(
+        .label=${this.hass.localize(
           "ui.panel.config.zwave_js.update_firmware.upload_firmware"
         )}
+        .value=${this._firmwareFile}
         @file-picked=${this._uploadFile}
       ></ha-file-upload>
       ${this._nodeStatus.is_controller_node
