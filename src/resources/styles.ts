@@ -299,6 +299,7 @@ export const haStyleDialog = css`
   ha-dialog {
     --mdc-dialog-min-width: 400px;
     --mdc-dialog-max-width: 600px;
+    --mdc-dialog-max-width: min(600px, 95vw);
     --justify-action-buttons: space-between;
   }
 
