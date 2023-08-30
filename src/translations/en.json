@@ -318,6 +318,10 @@
           "manual": "Manually enter media ID",
           "media_content_id": "Media content ID",
           "media_content_type": "Media content type"
+        },
+        "file": {
+          "upload_failed": "Upload failed",
+          "unknown_file": "Unknown file"
         }
       },
       "logbook": {
@@ -498,8 +502,18 @@
         "filtered_by_device": "device: {device_name}",
         "filtered_by_area": "area: {area_name}"
       },
+      "file-upload": {
+        "uploading": "Uploading...",
+        "uploading_name": "Uploading {name}",
+        "label": "Add file",
+        "secondary": "Or drop your file here",
+        "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
+      },
       "picture-upload": {
-        "label": "Picture",
+        "label": "Add picture",
+        "change_picture": "Change picture",
+        "current_image_alt": "Current picture",
+        "supported_formats": "Supports JPEG, PNG, or GIF image.",
         "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
       },
       "date-range-picker": {
