@@ -8,6 +8,7 @@ import type { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
   computeShowLogBookComponent,
+  computeCustomShowNewMoreInfo,
   computeShowNewMoreInfo,
   DOMAINS_NO_INFO,
   DOMAINS_WITH_MORE_INFO,
@@ -39,7 +40,9 @@ export class MoreInfoInfo extends LitElement {
     const stateObj = this.hass.states[entityId] as HassEntity | undefined;
     const entityRegObj = this.hass.entities[entityId];
     const domain = computeDomain(entityId);
-    const isNewMoreInfo = stateObj && computeShowNewMoreInfo(stateObj);
+    const isCustomNewMoreInfo = stateObj && computeCustomShowNewMoreInfo(stateObj);
+    const isNewMoreInfo = stateObj &&
+      (computeShowNewMoreInfo(stateObj) || isCustomNewMoreInfo);
 
     return html`
       <div class="container" data-domain=${domain}>
@@ -71,6 +74,7 @@ export class MoreInfoInfo extends LitElement {
                 ></state-card-content>
               `}
           ${DOMAINS_WITH_MORE_INFO.includes(domain) ||
+          isCustomNewMoreInfo ||
           !computeShowHistoryComponent(this.hass, entityId)
             ? ""
             : html`<ha-more-info-history
@@ -78,6 +82,7 @@ export class MoreInfoInfo extends LitElement {
                 .entityId=${this.entityId}
               ></ha-more-info-history>`}
           ${DOMAINS_WITH_MORE_INFO.includes(domain) ||
+          isCustomNewMoreInfo ||
           !computeShowLogBookComponent(this.hass, entityId)
             ? ""
             : html`<ha-more-info-logbook

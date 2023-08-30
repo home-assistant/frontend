@@ -15,6 +15,15 @@ export const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
  * Entity Domains that should always be editable; {@see shouldShowEditIcon}.
  * */
 export const EDITABLE_DOMAINS_WITH_UNIQUE_ID = ["script"];
+
+/**
+ * Entities from custom domains can access the new more info design by
+ * setting on each entity:
+ *   custom_ui_more_info attribute to the desired HTML element name
+ *        (e.g., one declared with customElements.define(...) )
+ *   custom_ui_new_more_info to True
+ * */
+
 /** Domains with with new more info design. */
 export const DOMAINS_WITH_NEW_MORE_INFO = [
   "alarm_control_panel",
@@ -112,6 +121,12 @@ export const computeShowLogBookComponent = (
 
   return true;
 };
+
+export const computeCustomShowNewMoreInfo = (stateObj: HassEntity): boolean => {
+    return stateObj.attributes &&
+           "custom_ui_new_more_info" in stateObj.attributes &&
+           stateObj.attributes.custom_ui_new_more_info;
+}
 
 export const computeShowNewMoreInfo = (stateObj: HassEntity): boolean => {
   const domain = computeDomain(stateObj.entity_id);

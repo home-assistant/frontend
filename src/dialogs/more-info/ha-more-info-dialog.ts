@@ -43,6 +43,7 @@ import {
   EDITABLE_DOMAINS_WITH_UNIQUE_ID,
   computeShowHistoryComponent,
   computeShowLogBookComponent,
+  computeCustomShowNewMoreInfo,
 } from "./const";
 import "./controls/more-info-default";
 import "./ha-more-info-history-and-logbook";
@@ -150,9 +151,13 @@ export class MoreInfoDialog extends LitElement {
     return false;
   }
 
-  private shouldShowHistory(domain: string): boolean {
+  private shouldShowHistory(
+    domain: string,
+    stateObj: HassEntity | undefined
+  ): boolean {
+    const isCustomNewMoreInfo = stateObj && computeCustomShowNewMoreInfo(stateObj);
     return (
-      DOMAINS_WITH_MORE_INFO.includes(domain) &&
+      (DOMAINS_WITH_MORE_INFO.includes(domain) || isCustomNewMoreInfo) &&
       (computeShowHistoryComponent(this.hass, this._entityId!) ||
         computeShowLogBookComponent(this.hass, this._entityId!))
     );
@@ -299,7 +304,7 @@ export class MoreInfoDialog extends LitElement {
           </span>
           ${isInfoView
             ? html`
-                ${this.shouldShowHistory(domain)
+                ${this.shouldShowHistory(domain, stateObj)
                   ? html`
                       <ha-icon-button
                         slot="actionItems"

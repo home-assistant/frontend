@@ -3,6 +3,7 @@ export const STATE_ATTRIBUTES = [
   "assumed_state",
   "attribution",
   "custom_ui_more_info",
+  "custom_ui_new_more_info",
   "custom_ui_state_card",
   "device_class",
   "editable",
