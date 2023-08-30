@@ -1,4 +1,3 @@
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -16,9 +15,7 @@ import {
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
   fetchZwaveNodeStatus,
-  nodeStatus,
   SecurityClass,
-  subscribeZwaveNodeStatus,
   ZWaveJSNodeStatus,
 } from "../../../../../../data/zwave_js";
 import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
@@ -42,21 +39,6 @@ export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
     if (changedProperties.has("device")) {
       this._fetchNodeDetails();
     }
-  }
-
-  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
-    return [
-      subscribeZwaveNodeStatus(this.hass, this.device!.id, (message) => {
-        if (!this._node) {
-          return;
-        }
-        this._node = {
-          ...this._node,
-          status: message.status,
-          ready: message.ready,
-        };
-      }),
-    ];
   }
 
   protected async _fetchNodeDetails() {
@@ -112,16 +94,6 @@ export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
           </div>
           ${!this._node.is_controller_node
             ? html`
-                <div>
-                  ${this.hass.localize(
-                    "ui.panel.config.zwave_js.device_info.node_status"
-                  )}:
-                  ${this.hass.localize(
-                    `ui.panel.config.zwave_js.node_status.${
-                      nodeStatus[this._node.status]
-                    }`
-                  )}
-                </div>
                 <div>
                   ${this.hass.localize(
                     "ui.panel.config.zwave_js.device_info.node_ready"
