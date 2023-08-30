@@ -3960,7 +3960,6 @@
           "device_info": {
             "zwave_info": "Z-Wave info",
             "node_id": "ID",
-            "node_status": "Status",
             "node_ready": "Ready",
             "device_config": "Configure",
             "reinterview_device": "Re-interview",
@@ -4066,13 +4065,6 @@
             "set_param_error": "An error occurred.",
             "parameter": "Parameter",
             "bitmask": "Bitmask"
-          },
-          "node_status": {
-            "unknown": "Unknown",
-            "asleep": "Asleep",
-            "awake": "Awake",
-            "dead": "Dead",
-            "alive": "Alive"
           },
           "network_status": {
             "connected": "Connected",
