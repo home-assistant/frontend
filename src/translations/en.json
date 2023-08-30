@@ -5701,7 +5701,21 @@
         "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
         "next": "Next",
         "finish": "Finish",
+        "help": "Help",
+        "welcome": {
+          "header": "Welcome!",
+          "start": "Create my smart home",
+          "restore_backup": "Restore from backup",
+          "vision": "Read our vision",
+          "community": "Join our community",
+          "download_app": "Download our app",
+          "forums": "Home Assistant forums",
+          "open_home_newsletter": "Building the Open Home newsletter",
+          "discord": "Discord chat",
+          "twitter": "Twitter"
+        },
         "user": {
+          "header": "Create user",
           "intro": "Let's get started by creating a user account.",
           "required_field": "Required",
           "data": {
@@ -5710,20 +5724,22 @@
             "password": "Password",
             "password_confirm": "Confirm password"
           },
+          "helper": {
+            "password": "Choose a strong and unique password. Make sure to save it, so you don't forget it."
+          },
           "create_account": "Create account",
           "error": {
             "password_not_match": "Passwords don't match"
           }
         },
         "core-config": {
-          "intro": "Hello {name}, welcome to Home Assistant. How would you like to name your home?",
-          "intro_core": "We will set up the basics together. You can always change this later in the settings.",
-          "intro_location": "Let's set up the location of your home so that you can display information such as the local weather and use sun-based or presence-based automations. This data is never shared outside of your network.",
+          "location_header": "Home location",
+          "intro_location": "Let's set up the location of your home so that you can display information such as the local weather and use sun-based or presence-based automations.",
           "location_address": "Powered by {openstreetmap} ({osm_privacy_policy}).",
           "osm_privacy_policy": "Privacy policy",
           "title_location_detect": "Do you want us to detect your location?",
           "intro_location_detect": "We can detect your location by making a one-time request to an external service.",
-          "intro_core_config": "We filled out some details about your location. Please check if they are correct and continue.",
+          "country_intro": "We would like to know the country your home is in, so we can use the correct units for you.",
           "location_name": "Name of your Home Assistant installation",
           "location_name_default": "Home",
           "address_label": "Search address",
@@ -5731,11 +5747,13 @@
           "finish": "Next"
         },
         "integration": {
-          "intro": "Devices and services are represented in Home Assistant as integrations. You can set them up now, or do it later from the settings.",
-          "more_integrations": "More",
+          "header": "We found compatible devices!",
+          "intro": "These are found on your local network. Some are already added, others may need extra configuration.",
+          "more_integrations": "+{count} more",
           "finish": "Finish"
         },
         "analytics": {
+          "header": "Help us help you",
           "finish": "Next",
           "preferences": {
             "base": {
@@ -5760,8 +5778,9 @@
           "intro": "[%key:ui::panel::config::analytics::intro%]"
         },
         "restore": {
-          "description": "Alternatively you can restore from a previous backup.",
+          "header": "Restore a backup",
           "in_progress": "Restore in progress",
+          "upload_backup": "[%key:supervisor::backup::upload_backup%]",
           "show_log": "Show full log",
           "hide_log": "Hide full log",
           "full_backup": "[%key:supervisor::backup::full_backup%]",
@@ -5773,8 +5792,7 @@
           "addons": "[%key:supervisor::backup::addons%]",
           "password_protection": "[%key:supervisor::backup::password_protection%]",
           "password": "[%key:supervisor::backup::password%]",
-          "confirm_password": "[%key:supervisor::backup::confirm_password%]",
-          "upload_backup": "[%key:supervisor::backup::upload_backup%]"
+          "confirm_password": "[%key:supervisor::backup::confirm_password%]"
         }
       },
       "custom": {
