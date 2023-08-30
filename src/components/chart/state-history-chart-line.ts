@@ -1,23 +1,28 @@
 import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { html, LitElement, PropertyValues } from "lit";
-import { property, state } from "lit/decorators";
+import { property, query, state } from "lit/decorators";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTL } from "../../common/util/compute_rtl";
 import {
   formatNumber,
   numberFormatToLocale,
+  getNumberFormatOptions,
 } from "../../common/number/format_number";
 import { LineChartEntity, LineChartState } from "../../data/history";
 import { HomeAssistant } from "../../types";
-import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
+import {
+  ChartResizeOptions,
+  HaChartBase,
+  MIN_TIME_BETWEEN_UPDATES,
+} from "./ha-chart-base";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
   return isFinite(parsed) ? parsed : null;
 };
 
-class StateHistoryChartLine extends LitElement {
+export class StateHistoryChartLine extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public data: LineChartEntity[] = [];
@@ -45,6 +50,12 @@ class StateHistoryChartLine extends LitElement {
   @state() private _yWidth = 0;
 
   private _chartTime: Date = new Date();
+
+  @query("ha-chart-base") private _chart?: HaChartBase;
+
+  public resize = (options?: ChartResizeOptions): void => {
+    this._chart?.resize(options);
+  };
 
   protected render() {
     return html`
@@ -125,7 +136,13 @@ class StateHistoryChartLine extends LitElement {
               label: (context) =>
                 `${context.dataset.label}: ${formatNumber(
                   context.parsed.y,
-                  this.hass.locale
+                  this.hass.locale,
+                  getNumberFormatOptions(
+                    this.hass.states[this.data[context.datasetIndex].entity_id],
+                    this.hass.entities[
+                      this.data[context.datasetIndex].entity_id
+                    ]
+                  )
                 )} ${this.unit}`,
             },
           },

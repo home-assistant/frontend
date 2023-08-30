@@ -1,4 +1,5 @@
 import { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HomeAssistant } from "../types";
 
 export interface RenderTemplateResult {
   result: string;
@@ -10,6 +11,17 @@ interface TemplateListeners {
   domains: string[];
   entities: string[];
   time: boolean;
+}
+
+export type TemplatePreview = TemplatePreviewState | TemplatePreviewError;
+
+interface TemplatePreviewState {
+  state: string;
+  attributes: Record<string, any>;
+}
+
+interface TemplatePreviewError {
+  error: string;
 }
 
 export const subscribeRenderTemplate = (
@@ -26,4 +38,18 @@ export const subscribeRenderTemplate = (
   conn.subscribeMessage((msg: RenderTemplateResult) => onChange(msg), {
     type: "render_template",
     ...params,
+  });
+
+export const subscribePreviewTemplate = (
+  hass: HomeAssistant,
+  flow_id: string,
+  flow_type: "config_flow" | "options_flow",
+  user_input: Record<string, any>,
+  callback: (preview: TemplatePreview) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(callback, {
+    type: "template/start_preview",
+    flow_id,
+    flow_type,
+    user_input,
   });

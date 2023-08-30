@@ -35,6 +35,7 @@ class StateCardInputNumber extends LitElement {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     this._resizeObserver?.disconnect();
   }
 

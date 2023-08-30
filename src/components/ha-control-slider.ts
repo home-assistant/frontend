@@ -43,6 +43,9 @@ export class HaControlSlider extends LitElement {
   @property({ type: Boolean, attribute: "show-handle" })
   public showHandle = false;
 
+  @property({ type: Boolean, attribute: "inverted" })
+  public inverted = false;
+
   @property({ type: Number })
   public value?: number;
 
@@ -61,11 +64,16 @@ export class HaControlSlider extends LitElement {
   public pressed = false;
 
   valueToPercentage(value: number) {
-    return (this.boundedValue(value) - this.min) / (this.max - this.min);
+    const percentage =
+      (this.boundedValue(value) - this.min) / (this.max - this.min);
+    return this.inverted ? 1 - percentage : percentage;
   }
 
-  percentageToValue(value: number) {
-    return (this.max - this.min) * value + this.min;
+  percentageToValue(percentage: number) {
+    return (
+      (this.max - this.min) * (this.inverted ? 1 - percentage : percentage) +
+      this.min
+    );
   }
 
   steppedValue(value: number) {

@@ -107,6 +107,7 @@ export class HaPasswordManagerPolyfill extends LitElement {
         .value=${this.stepData[schema.name] || ""}
         .autocomplete=${schema.autocomplete}
         @input=${this._valueChanged}
+        @change=${this._valueChanged}
       />
     `;
   }

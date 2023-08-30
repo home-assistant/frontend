@@ -36,6 +36,12 @@ export class DeveloperYamlConfig extends LitElement {
 
   private _validateLog = "";
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._isValid = null;
+    this._validateLog = "";
+  }
+
   protected updated(changedProperties) {
     const oldHass = changedProperties.get("hass");
     if (
@@ -172,6 +178,9 @@ export class DeveloperYamlConfig extends LitElement {
 
     const configCheck = await checkCoreConfig(this.hass);
     this._validating = false;
+    if (!this.isConnected) {
+      return;
+    }
     this._isValid = configCheck.result === "valid";
 
     if (configCheck.errors) {

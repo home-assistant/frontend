@@ -94,7 +94,7 @@ class MoreInfoCover extends LitElement {
 
     const positionStateDisplay = computeCoverPositionStateDisplay(
       this.stateObj!,
-      this.hass.locale,
+      this.hass,
       liveValue
     );
 

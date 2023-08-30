@@ -34,7 +34,7 @@ import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-card";
-import { HVAC_ACTION_TO_MODE } from "../../../data/climate";
+import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import {
   configContext,
   entitiesContext,
@@ -343,8 +343,8 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     }
     if (stateObj.attributes.hvac_action) {
       const hvacAction = stateObj.attributes.hvac_action;
-      if (hvacAction in HVAC_ACTION_TO_MODE) {
-        return stateColorCss(stateObj, HVAC_ACTION_TO_MODE[hvacAction]);
+      if (hvacAction in CLIMATE_HVAC_ACTION_TO_MODE) {
+        return stateColorCss(stateObj, CLIMATE_HVAC_ACTION_TO_MODE[hvacAction]);
       }
       return undefined;
     }

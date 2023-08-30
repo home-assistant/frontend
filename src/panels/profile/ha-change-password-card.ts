@@ -14,6 +14,12 @@ import "../../components/ha-textfield";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../../components/ha-alert";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../dialogs/generic/show-dialog-box";
+import { RefreshToken } from "../../data/refresh_token";
+import { changePassword, deleteAllRefreshTokens } from "../../data/auth";
 
 @customElement("ha-change-password-card")
 class HaChangePasswordCard extends LitElement {
@@ -30,6 +36,8 @@ class HaChangePasswordCard extends LitElement {
   @state() private _password = "";
 
   @state() private _passwordConfirm = "";
+
+  @property({ attribute: false }) public refreshTokens?: RefreshToken[];
 
   protected render(): TemplateResult {
     return html`
@@ -148,11 +156,7 @@ class HaChangePasswordCard extends LitElement {
     this._errorMsg = undefined;
 
     try {
-      await this.hass.callWS({
-        type: "config/auth_provider/homeassistant/change_password",
-        current_password: this._currentPassword,
-        new_password: this._password,
-      });
+      await changePassword(this.hass, this._currentPassword, this._password);
     } catch (err: any) {
       this._errorMsg = err.message;
       return;
@@ -163,6 +167,33 @@ class HaChangePasswordCard extends LitElement {
     this._statusMsg = this.hass.localize(
       "ui.panel.profile.change_password.success"
     );
+
+    if (
+      this.refreshTokens &&
+      (await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.profile.change_password.logout_all_sessions"
+        ),
+        text: this.hass.localize(
+          "ui.panel.profile.change_password.logout_all_sessions_text"
+        ),
+        dismissText: this.hass.localize("ui.common.no"),
+        confirmText: this.hass.localize("ui.common.yes"),
+        destructive: true,
+      }))
+    ) {
+      try {
+        await deleteAllRefreshTokens(this.hass);
+      } catch (err: any) {
+        await showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.profile.change_password.delete_failed"
+          ),
+          text: err.message,
+        });
+      }
+    }
+
     this._currentPassword = "";
     this._password = "";
     this._passwordConfirm = "";
