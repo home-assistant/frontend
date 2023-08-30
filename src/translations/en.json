@@ -5766,7 +5766,19 @@
         "restore": {
           "header": "Restore a backup",
           "in_progress": "Restore in progress",
-          "upload_backup": "[%key:supervisor::backup::upload_backup%]"
+          "upload_backup": "[%key:supervisor::backup::upload_backup%]",
+          "show_log": "Show full log",
+          "hide_log": "Hide full log",
+          "full_backup": "[%key:supervisor::backup::full_backup%]",
+          "partial_backup": "[%key:supervisor::backup::partial_backup%]",
+          "name": "[%key:supervisor::backup::name%]",
+          "type": "[%key:supervisor::backup::type%]",
+          "select_type": "[%key:supervisor::backup::select_type%]",
+          "folders": "[%key:supervisor::backup::folders%]",
+          "addons": "[%key:supervisor::backup::addons%]",
+          "password_protection": "[%key:supervisor::backup::password_protection%]",
+          "password": "[%key:supervisor::backup::password%]",
+          "confirm_password": "[%key:supervisor::backup::confirm_password%]"
         }
       },
       "custom": {
