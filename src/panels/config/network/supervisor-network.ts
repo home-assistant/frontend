@@ -301,6 +301,9 @@ export class HassioNetwork extends LitElement {
         .header=${`IPv${version.charAt(version.length - 1)}`}
         outlined
       >
+        <div class="group-label">
+          ${this.hass.localize("ui.panel.config.network.supervisor.method")}
+        </div>
         <div class="radio-row">
           <ha-formfield
             .label=${this.hass.localize(
@@ -348,6 +351,11 @@ export class HassioNetwork extends LitElement {
         </div>
         ${version === "ipv6" && this._interface![version]?.method === "auto"
           ? html`
+              <div class="group-label">
+                ${this.hass.localize(
+                  "ui.panel.config.network.supervisor.addr_gen_mode"
+                )}
+              </div>
               <div class="radio-row">
                 <ha-formfield
                   .label=${this.hass.localize(
@@ -638,6 +646,10 @@ export class HassioNetwork extends LitElement {
           flex-direction: row-reverse;
           justify-content: space-between;
           align-items: center;
+        }
+        .group-label {
+          margin-left: 8px;
+          margin-top: 2px;
         }
       `,
     ];
