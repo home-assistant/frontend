@@ -404,8 +404,6 @@ export interface RequestedGrant {
   clientSideAuth: boolean;
 }
 
-export const nodeStatus = ["unknown", "asleep", "awake", "dead", "alive"];
-
 export const fetchZwaveNetworkStatus = (
   hass: HomeAssistant,
   device_or_entry_id: {
@@ -580,19 +578,6 @@ export const fetchZwaveNodeStatus = (
     type: "zwave_js/node_status",
     device_id,
   });
-
-export const subscribeZwaveNodeStatus = (
-  hass: HomeAssistant,
-  device_id: string,
-  callbackFunction: (message: ZWaveJSNodeStatusUpdatedMessage) => void
-): Promise<UnsubscribeFunc> =>
-  hass.connection.subscribeMessage(
-    (message: any) => callbackFunction(message),
-    {
-      type: "zwave_js/subscribe_node_status",
-      device_id,
-    }
-  );
 
 export const fetchZwaveNodeMetadata = (
   hass: HomeAssistant,
