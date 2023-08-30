@@ -21,6 +21,7 @@ import { scanUSBDevices } from "../data/usb";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { HomeAssistant } from "../types";
 import "./integration-badge";
+import { onBoardingStyles } from "./styles";
 
 const HIDDEN_DOMAINS = new Set([
   "hassio",
@@ -131,11 +132,11 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      <h2>
+      <h1>
         ${this.onboardingLocalize(
           "ui.panel.page-onboarding.integration.header"
         )}
-      </h2>
+      </h1>
       <p>
         ${this.onboardingLocalize("ui.panel.page-onboarding.integration.intro")}
       </p>
@@ -158,7 +159,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
           : nothing}
       </div>
       <div class="footer">
-        <mwc-button @click=${this._finish}>
+        <mwc-button unelevated @click=${this._finish}>
           ${this.onboardingLocalize(
             "ui.panel.page-onboarding.integration.finish"
           )}
@@ -187,30 +188,23 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      h2 {
-        text-align: center;
-      }
-      p {
-        font-size: 14px;
-        line-height: 20px;
-      }
-      .badges {
-        margin-top: 24px;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
-        row-gap: 24px;
-      }
-      .more {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-      }
-      .footer {
-        text-align: right;
-      }
-    `;
+    return [
+      onBoardingStyles,
+      css`
+        .badges {
+          margin-top: 24px;
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(106px, 1fr));
+          row-gap: 24px;
+        }
+        .more {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
+      `,
+    ];
   }
 }
 
