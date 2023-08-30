@@ -11,7 +11,6 @@ import "../../../components/ha-service-control";
 import {
   ActionConfig,
   CallServiceActionConfig,
-  NavigateActionConfig,
   UrlActionConfig,
 } from "../../../data/lovelace";
 import { ServiceAction } from "../../../data/script";
@@ -29,6 +28,21 @@ const DEFAULT_ACTIONS: UiAction[] = [
   "assist",
   "none",
 ];
+
+const NAVIGATE_SCHEMA = [
+  {
+    name: "navigation_path",
+    selector: {
+      navigation: {},
+    },
+  },
+  {
+    name: "navigation_replace",
+    selector: {
+      boolean: {},
+    },
+  },
+] as const satisfies readonly HaFormSchema[];
 
 const ASSIST_SCHEMA = [
   {
@@ -64,11 +78,6 @@ export class HuiActionEditor extends LitElement {
   @property() public tooltipText?: string;
 
   @property() protected hass?: HomeAssistant;
-
-  get _navigation_path(): string {
-    const config = this.config as NavigateActionConfig | undefined;
-    return config?.navigation_path || "";
-  }
 
   get _url_path(): string {
     const config = this.config as UrlActionConfig | undefined;
@@ -131,14 +140,14 @@ export class HuiActionEditor extends LitElement {
       </div>
       ${this.config?.action === "navigate"
         ? html`
-            <ha-navigation-picker
+            <ha-form
               .hass=${this.hass}
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.action-editor.navigation_path"
-              )}
-              .value=${this._navigation_path}
-              @value-changed=${this._navigateValueChanged}
-            ></ha-navigation-picker>
+              .schema=${NAVIGATE_SCHEMA}
+              .data=${this.config}
+              .computeLabel=${this._computeFormLabel}
+              @value-changed=${this._formValueChanged}
+            >
+            </ha-form>
           `
         : nothing}
       ${this.config?.action === "url"
@@ -203,10 +212,6 @@ export class HuiActionEditor extends LitElement {
         data = { service: this._service };
         break;
       }
-      case "navigate": {
-        data = { navigation_path: this._navigation_path };
-        break;
-      }
     }
 
     fireEvent(this, "value-changed", {
@@ -261,16 +266,6 @@ export class HuiActionEditor extends LitElement {
     if ("service_data" in value) {
       delete value.service_data;
     }
-
-    fireEvent(this, "value-changed", { value });
-  }
-
-  private _navigateValueChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const value = {
-      ...this.config!,
-      navigation_path: ev.detail.value,
-    };
 
     fireEvent(this, "value-changed", { value });
   }
