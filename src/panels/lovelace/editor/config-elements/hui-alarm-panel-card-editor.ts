@@ -2,14 +2,25 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { array, assert, assign, object, optional, string } from "superstruct";
+import { HassEntity } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { AlarmPanelCardConfig } from "../../cards/types";
+import type {
+  AlarmPanelCardConfig,
+  AlarmPanelCardConfigState,
+} from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import {
+  DEFAULT_STATES,
+  ALARM_MODE_STATE_MAP,
+  filterSupportedAlarmStates,
+} from "../../cards/hui-alarm-panel-card";
+import { supportsFeature } from "../../../../common/entity/supports-feature";
+import { ALARM_MODES } from "../../../../data/alarm_control_panel";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -21,13 +32,7 @@ const cardConfigStruct = assign(
   })
 );
 
-const states = [
-  "arm_home",
-  "arm_away",
-  "arm_night",
-  "arm_vacation",
-  "arm_custom_bypass",
-] as const;
+const states = Object.keys(ALARM_MODE_STATE_MAP) as AlarmPanelCardConfigState[];
 
 @customElement("hui-alarm-panel-card-editor")
 export class HuiAlarmPanelCardEditor
@@ -44,7 +49,11 @@ export class HuiAlarmPanelCardEditor
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (
+      localize: LocalizeFunc,
+      stateObj: HassEntity | undefined,
+      config_states: AlarmPanelCardConfigState[]
+    ) =>
       [
         {
           name: "entity",
@@ -60,12 +69,24 @@ export class HuiAlarmPanelCardEditor
           ],
         },
         {
-          type: "multi_select",
           name: "states",
-          options: states.map((s) => [
-            s,
-            localize(`ui.card.alarm_control_panel.${s}`),
-          ]) as [string, string][],
+          selector: {
+            select: {
+              multiple: true,
+              mode: "list",
+              options: states.map((s) => ({
+                value: s,
+                label: localize(`ui.card.alarm_control_panel.${s}`),
+                disabled:
+                  !config_states.includes(s) &&
+                  (!stateObj ||
+                    !supportsFeature(
+                      stateObj,
+                      ALARM_MODES[ALARM_MODE_STATE_MAP[s]].feature || 0
+                    )),
+              })),
+            },
+          },
         },
       ] as const
   );
@@ -75,11 +96,18 @@ export class HuiAlarmPanelCardEditor
       return nothing;
     }
 
+    const stateObj = this.hass.states[this._config.entity];
+    const defaultFilteredStates = filterSupportedAlarmStates(
+      stateObj,
+      DEFAULT_STATES
+    );
+    const config = { states: defaultFilteredStates, ...this._config };
+
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
-        .schema=${this._schema(this.hass.localize)}
+        .data=${config}
+        .schema=${this._schema(this.hass.localize, stateObj, config.states)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -87,7 +115,26 @@ export class HuiAlarmPanelCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const newConfig = ev.detail.value;
+
+    // Sort states in a consistent order
+    if (newConfig.states) {
+      const sortStates = states.filter((s) => newConfig.states.includes(s));
+      newConfig.states = sortStates;
+    }
+
+    // When changing entities, clear any states that the new entity does not support
+    if (newConfig.states && newConfig.entity !== this._config?.entity) {
+      const newStateObj = this.hass?.states[newConfig.entity];
+      if (newStateObj) {
+        newConfig.states = filterSupportedAlarmStates(
+          newStateObj,
+          newConfig.states
+        );
+      }
+    }
+
+    fireEvent(this, "config-changed", { config: newConfig });
   }
 
   private _computeLabelCallback = (

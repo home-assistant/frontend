@@ -59,6 +59,8 @@ const A11Y_KEY_CODES = new Set([
   "End",
 ]);
 
+export type ControlCircularSliderMode = "start" | "end" | "full";
+
 @customElement("ha-control-circular-slider")
 export class HaControlCircularSlider extends LitElement {
   @property({ type: Boolean, reflect: true })
@@ -67,8 +69,11 @@ export class HaControlCircularSlider extends LitElement {
   @property({ type: Boolean })
   public dual?: boolean;
 
-  @property({ type: Boolean, reflect: true })
-  public inverted?: boolean;
+  @property({ type: String })
+  public mode?: ControlCircularSliderMode;
+
+  @property({ type: Boolean })
+  public inactive?: boolean;
 
   @property({ type: String })
   public label?: string;
@@ -407,11 +412,9 @@ export class HaControlCircularSlider extends LitElement {
   protected renderArc(
     id: string,
     value: number | undefined,
-    inverted: boolean | undefined
+    mode: ControlCircularSliderMode
   ) {
     if (this.disabled) return nothing;
-
-    const limit = inverted ? this.max : this.min;
 
     const path = svgArc({
       x: 0,
@@ -421,82 +424,100 @@ export class HaControlCircularSlider extends LitElement {
       r: RADIUS,
     });
 
+    const limit = mode === "end" ? this.max : this.min;
+
     const current = this.current ?? limit;
     const target = value ?? limit;
 
-    const showActive = inverted ? target <= current : current <= target;
+    const showActive =
+      mode === "end"
+        ? target <= current
+        : mode === "start"
+        ? current <= target
+        : false;
 
-    const activeArcDashArray = showActive
-      ? inverted
+    const activeArc = showActive
+      ? mode === "end"
         ? this._strokeDashArc(target, current)
         : this._strokeDashArc(current, target)
       : this._strokeCircleDashArc(target);
 
-    const arcDashArray = inverted
-      ? this._strokeDashArc(target, limit)
-      : this._strokeDashArc(limit, target);
+    const coloredArc =
+      mode === "full"
+        ? this._strokeDashArc(this.min, this.max)
+        : mode === "end"
+        ? this._strokeDashArc(target, limit)
+        : this._strokeDashArc(limit, target);
 
-    const targetCircleDashArray = this._strokeCircleDashArc(target);
+    const targetCircle = this._strokeCircleDashArc(target);
 
-    const currentCircleDashArray =
+    const currentCircle =
       this.current != null &&
-      showActive &&
-      current <= this.max &&
-      current >= this.min
+      this.current <= this.max &&
+      this.current >= this.min &&
+      (showActive || this.mode === "full")
         ? this._strokeCircleDashArc(this.current)
         : undefined;
 
     return svg`
-       <path
-        class="arc arc-clear"
-        d=${path}
-        stroke-dasharray=${arcDashArray[0]}
-        stroke-dashoffset=${arcDashArray[1]}
-      />
-      <path
-        class="arc arc-background ${classMap({ [id]: true })}"
-        d=${path}
-        stroke-dasharray=${arcDashArray[0]}
-        stroke-dashoffset=${arcDashArray[1]}
-      />
-      <path
-        .id=${id}
-        d=${path}
-        class="arc arc-active ${classMap({ [id]: true })}"
-        stroke-dasharray=${activeArcDashArray[0]}
-        stroke-dashoffset=${activeArcDashArray[1]}
-        role="slider"
-        tabindex="0"
-        aria-valuemin=${this.min}
-        aria-valuemax=${this.max}
-        aria-valuenow=${
-          this._localValue != null
-            ? this._steppedValue(this._localValue)
-            : undefined
+      <g class=${classMap({ inactive: Boolean(this.inactive) })}>
+        <path
+          class="arc arc-clear"
+          d=${path}
+          stroke-dasharray=${coloredArc[0]}
+          stroke-dashoffset=${coloredArc[1]}
+        />
+        <path
+          class="arc arc-colored ${classMap({ [id]: true })}"
+          d=${path}
+          stroke-dasharray=${coloredArc[0]}
+          stroke-dashoffset=${coloredArc[1]}
+        />
+        <path
+          .id=${id}
+          d=${path}
+          class="arc arc-active ${classMap({ [id]: true })}"
+          stroke-dasharray=${activeArc[0]}
+          stroke-dashoffset=${activeArc[1]}
+          role="slider"
+          tabindex="0"
+          aria-valuemin=${this.min}
+          aria-valuemax=${this.max}
+          aria-valuenow=${
+            this._localValue != null
+              ? this._steppedValue(this._localValue)
+              : undefined
+          }
+          aria-disabled=${this.disabled}
+          aria-label=${ifDefined(this.lowLabel ?? this.label)}
+          @keydown=${this._handleKeyDown}
+          @keyup=${this._handleKeyUp}
+        />
+        ${
+          currentCircle
+            ? svg`
+              <path
+                class="current arc-current"
+                d=${path}
+                stroke-dasharray=${currentCircle[0]}
+                stroke-dashoffset=${currentCircle[1]}
+              />
+          `
+            : nothing
         }
-        aria-disabled=${this.disabled}
-        aria-label=${ifDefined(this.lowLabel ?? this.label)}
-        @keydown=${this._handleKeyDown}
-        @keyup=${this._handleKeyUp}
-      />
-      ${
-        currentCircleDashArray
-          ? svg`
-            <path
-              class="current arc-current"
-              d=${path}
-              stroke-dasharray=${currentCircleDashArray[0]}
-              stroke-dashoffset=${currentCircleDashArray[1]}
-            />
-        `
-          : nothing
-      }
-      <path
-        class="target"
-        d=${path}
-        stroke-dasharray=${targetCircleDashArray[0]}
-        stroke-dashoffset=${targetCircleDashArray[1]}
-      />
+        <path
+          class="target-border ${classMap({ [id]: true })}"
+          d=${path}
+          stroke-dasharray=${targetCircle[0]}
+          stroke-dashoffset=${targetCircle[1]}
+        />
+        <path
+          class="target"
+          d=${path}
+          stroke-dasharray=${targetCircle[0]}
+          stroke-dashoffset=${targetCircle[1]}
+        />
+      </g>
     `;
   }
 
@@ -551,11 +572,11 @@ export class HaControlCircularSlider extends LitElement {
               ? this.renderArc(
                   this.dual ? "low" : "value",
                   lowValue,
-                  this.inverted
+                  (!this.dual && this.mode) || "start"
                 )
               : nothing}
             ${this.dual && highValue != null
-              ? this.renderArc("high", highValue, true)
+              ? this.renderArc("high", highValue, "end")
               : nothing}
           </g>
         </g>
@@ -634,6 +655,19 @@ export class HaControlCircularSlider extends LitElement {
           opacity 180ms ease-in-out;
       }
 
+      .target-border {
+        fill: none;
+        stroke-linecap: round;
+        stroke-width: 24px;
+        stroke: white;
+        transition:
+          stroke-width 300ms ease-in-out,
+          stroke-dasharray 300ms ease-in-out,
+          stroke-dashoffset 300ms ease-in-out,
+          stroke 180ms ease-in-out,
+          opacity 180ms ease-in-out;
+      }
+
       .current {
         fill: none;
         stroke-linecap: round;
@@ -655,7 +689,7 @@ export class HaControlCircularSlider extends LitElement {
       .arc-clear {
         stroke: var(--clear-background-color);
       }
-      .arc-background {
+      .arc-colored {
         opacity: 0.5;
       }
       .arc-active {
@@ -667,11 +701,17 @@ export class HaControlCircularSlider extends LitElement {
 
       .pressed .arc,
       .pressed .target,
+      .pressed .target-border,
       .pressed .current {
         transition:
           stroke-width 300ms ease-in-out,
           stroke 180ms ease-in-out,
           opacity 180ms ease-in-out;
+      }
+
+      .inactive .arc,
+      .inactive .arc-current {
+        opacity: 0;
       }
 
       .value {

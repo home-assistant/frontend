@@ -19,7 +19,7 @@ import {
   numberFormatToLocale,
 } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
-import type HaChartBase from "../../../../components/chart/ha-chart-base";
+import type { HaChartBase } from "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import {

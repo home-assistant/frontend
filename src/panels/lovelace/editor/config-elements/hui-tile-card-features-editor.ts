@@ -37,6 +37,7 @@ import { supportsLightColorTempTileFeature } from "../../tile-features/hui-light
 import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
 import { supportsWaterHeaterOperationModesTileFeature } from "../../tile-features/hui-water-heater-operation-modes-tile-feature";
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
+import { supportsTargetTemperatureTileFeature } from "../../tile-features/hui-target-temperature-tile-feature";
 
 type FeatureType = LovelaceTileFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
@@ -44,8 +45,10 @@ type SupportsFeature = (stateObj: HassEntity) => boolean;
 const FEATURE_TYPES: FeatureType[] = [
   "alarm-modes",
   "climate-hvac-modes",
+  "target-temperature",
   "cover-open-close",
   "cover-position",
+  "cover-tilt-position",
   "cover-tilt",
   "fan-speed",
   "lawn-mower-commands",
@@ -69,11 +72,13 @@ const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
     "climate-hvac-modes": supportsClimateHvacModesTileFeature,
     "cover-open-close": supportsCoverOpenCloseTileFeature,
     "cover-position": supportsCoverPositionTileFeature,
+    "cover-tilt-position": supportsCoverPositionTileFeature,
     "cover-tilt": supportsCoverTiltTileFeature,
     "fan-speed": supportsFanSpeedTileFeature,
     "lawn-mower-commands": supportsLawnMowerCommandTileFeature,
     "light-brightness": supportsLightBrightnessTileFeature,
     "light-color-temp": supportsLightColorTempTileFeature,
+    "target-temperature": supportsTargetTemperatureTileFeature,
     "vacuum-commands": supportsVacuumCommandTileFeature,
     "water-heater-operation-modes":
       supportsWaterHeaterOperationModesTileFeature,
@@ -149,8 +154,10 @@ export class HuiTileCardFeaturesEditor extends LitElement {
       const customFeatureEntry = CUSTOM_FEATURE_ENTRIES[customType];
       return customFeatureEntry?.name || type;
     }
-    return this.hass!.localize(
-      `ui.panel.lovelace.editor.card.tile.features.types.${type}.label`
+    return (
+      this.hass!.localize(
+        `ui.panel.lovelace.editor.card.tile.features.types.${type}.label`
+      ) || type
     );
   }
 

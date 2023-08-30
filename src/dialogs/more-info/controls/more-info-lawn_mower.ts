@@ -1,4 +1,4 @@
-import { mdiHomeMapMarker, mdiPause, mdiPlay } from "@mdi/js";
+import { mdiHomeImportOutline, mdiPause, mdiPlay } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -44,7 +44,7 @@ const LAWN_MOWER_COMMANDS: LawnMowerCommand[] = [
   },
   {
     translationKey: "dock",
-    icon: mdiHomeMapMarker,
+    icon: mdiHomeImportOutline,
     serviceName: "dock",
     isVisible: (stateObj) =>
       supportsFeature(stateObj, LawnMowerEntityFeature.DOCK),

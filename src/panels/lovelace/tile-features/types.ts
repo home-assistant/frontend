@@ -14,6 +14,10 @@ export interface CoverTiltTileFeatureConfig {
   type: "cover-tilt";
 }
 
+export interface CoverTiltPositionTileFeatureConfig {
+  type: "cover-tilt-position";
+}
+
 export interface LightBrightnessTileFeatureConfig {
   type: "light-brightness";
 }
@@ -34,6 +38,10 @@ export interface AlarmModesTileFeatureConfig {
 export interface ClimateHvacModesTileFeatureConfig {
   type: "climate-hvac-modes";
   hvac_modes?: HvacMode[];
+}
+
+export interface TargetTemperatureTileFeatureConfig {
+  type: "target-temperature";
 }
 
 export interface WaterHeaterOperationModesTileFeatureConfig {
@@ -70,12 +78,14 @@ export type LovelaceTileFeatureConfig =
   | ClimateHvacModesTileFeatureConfig
   | CoverOpenCloseTileFeatureConfig
   | CoverPositionTileFeatureConfig
+  | CoverTiltPositionTileFeatureConfig
   | CoverTiltTileFeatureConfig
   | FanSpeedTileFeatureConfig
   | LawnMowerCommandsTileFeatureConfig
   | LightBrightnessTileFeatureConfig
   | LightColorTempTileFeatureConfig
   | VacuumCommandsTileFeatureConfig
+  | TargetTemperatureTileFeatureConfig
   | WaterHeaterOperationModesTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {

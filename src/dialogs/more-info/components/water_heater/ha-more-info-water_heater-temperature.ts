@@ -9,6 +9,8 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { UNIT_F } from "../../../../common/const";
+import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { clamp } from "../../../../common/number/clamp";
@@ -43,7 +45,7 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
   private get _step() {
     return (
       this.stateObj.attributes.target_temp_step ||
-      (this.hass.config.unit_system.temperature.indexOf("F") === -1 ? 0.5 : 1)
+      (this.hass.config.unit_system.temperature === UNIT_F ? 1 : 0.5)
     );
   }
 
@@ -163,6 +165,7 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
     );
 
     const stateColor = stateColorCss(this.stateObj);
+    const active = stateActive(this.stateObj);
 
     if (
       supportsTargetTemperature &&
@@ -177,6 +180,7 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
           })}
         >
           <ha-control-circular-slider
+            .inactive=${!active}
             .value=${this._targetTemperature}
             .min=${this._min}
             .max=${this._max}

@@ -1,7 +1,7 @@
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiFan,
-  mdiHomeMapMarker,
+  mdiHomeImportOutline,
   mdiMapMarker,
   mdiPause,
   mdiPlay,
@@ -91,7 +91,7 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
   },
   {
     translationKey: "return_home",
-    icon: mdiHomeMapMarker,
+    icon: mdiHomeImportOutline,
     serviceName: "return_to_base",
     isVisible: (stateObj) =>
       supportsFeature(stateObj, VacuumEntityFeature.RETURN_HOME),
@@ -262,12 +262,13 @@ class MoreInfoVacuum extends LitElement {
     const battery = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
-
-    const batteryIsBinary =
-      battery && computeStateDomain(battery) === "binary_sensor";
+    const batteryDomain = battery ? computeStateDomain(battery) : undefined;
 
     // Use device battery entity
-    if (battery && (batteryIsBinary || !isNaN(battery.state as any))) {
+    if (
+      battery &&
+      (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
+    ) {
       const batteryChargingEntity = findBatteryChargingEntity(
         this.hass,
         entities
@@ -279,7 +280,9 @@ class MoreInfoVacuum extends LitElement {
       return html`
         <div>
           <span>
-            ${batteryIsBinary ? "" : this.hass.formatEntityState(battery)}
+            ${batteryDomain === "sensor"
+              ? this.hass.formatEntityState(battery)
+              : nothing}
             <ha-battery-icon
               .hass=${this.hass}
               .batteryStateObj=${battery}
