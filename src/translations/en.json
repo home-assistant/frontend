@@ -15,8 +15,6 @@
   },
   "state": {
     "default": {
-      "on": "On",
-      "off": "Off",
       "unknown": "Unknown",
       "unavailable": "Unavailable"
     }
