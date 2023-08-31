@@ -777,6 +777,7 @@
         "commands": {
           "reload": {
             "all": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::all%]",
+            "alert": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::alert%]",
             "reload": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::reload%]",
             "core": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::core%]",
             "group": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::group%]",
@@ -5641,6 +5642,7 @@
               },
               "reloading": {
                 "all": "All YAML configuration",
+                "alert": "Alerts",
                 "heading": "YAML configuration reloading",
                 "introduction": "Some parts of Home Assistant can reload without requiring a restart. Clicking one of the options below will unload their current YAML configuration and load the new one.",
                 "reload": "{domain}",
