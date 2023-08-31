@@ -279,6 +279,12 @@ class HaPanelDevTemplate extends LitElement {
             max(16px, env(safe-area-inset-right))
             max(16px, env(safe-area-inset-bottom))
             max(16px, env(safe-area-inset-left));
+          --code-mirror-max-height: calc(100vh - 310px);
+        }
+        @media all and (max-width: 870px) {
+          .content {
+            --code-mirror-max-height: initial;
+          }
         }
 
         ha-card {
@@ -317,6 +323,13 @@ class HaPanelDevTemplate extends LitElement {
           background-color: var(--secondary-background-color);
           padding: 8px;
           direction: ltr;
+          max-height: calc(var(--code-mirror-max-height) + 86px);
+          overflow: auto;
+        }
+        @media all and (max-width: 870px) {
+          .rendered {
+            max-height: initial;
+          }
         }
 
         .all_listeners {
