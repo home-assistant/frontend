@@ -32,16 +32,16 @@ class OnboardingCoreConfig extends LitElement {
 
   private _elevation = "0";
 
-  private _unitSystem: ConfigUpdateValues["unit_system"] = "metric";
-
-  private _currency: ConfigUpdateValues["currency"] = "EUR";
-
   private _timeZone: ConfigUpdateValues["time_zone"] =
     Intl.DateTimeFormat?.().resolvedOptions?.().timeZone;
 
   private _language: ConfigUpdateValues["language"] = getLocalLanguage();
 
   @state() private _country?: ConfigUpdateValues["country"];
+
+  private _unitSystem?: ConfigUpdateValues["unit_system"];
+
+  private _currency?: ConfigUpdateValues["currency"];
 
   @state() private _error?: string;
 
