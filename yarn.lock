@@ -3418,19 +3418,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/app-layout@npm:3.1.0":
-  version: 3.1.0
-  resolution: "@polymer/app-layout@npm:3.1.0"
-  dependencies:
-    "@polymer/iron-flex-layout": ^3.0.0-pre.26
-    "@polymer/iron-media-query": ^3.0.0-pre.26
-    "@polymer/iron-resizable-behavior": ^3.0.0-pre.26
-    "@polymer/iron-scroll-target-behavior": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.0.0
-  checksum: 0da7158de7a44db6f25482ef28a75a4a9372706b0d6a0d08f7b45eb4f75d60dd2e769275bf926f986588bc8273545b55f90a68429c6081cb5cb3f16b1e1f9746
-  languageName: node
-  linkType: hard
-
 "@polymer/font-roboto@npm:^3.0.1":
   version: 3.0.2
   resolution: "@polymer/font-roboto@npm:3.0.2"
@@ -3548,15 +3535,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-media-query@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/iron-media-query@npm:3.0.1"
-  dependencies:
-    "@polymer/polymer": ^3.0.0
-  checksum: 15d7c77608925adea02bf12af1f1eb7dd70abc3349bdff88906a3f0fa5bdfe41171bda1b346f9b7ccfd6de9550ac2a34278a74182ce1407097d3972c23984c5e
-  languageName: node
-  linkType: hard
-
 "@polymer/iron-menu-behavior@npm:^3.0.0-pre.26":
   version: 3.0.2
   resolution: "@polymer/iron-menu-behavior@npm:3.0.2"
@@ -3605,15 +3583,6 @@ __metadata:
   dependencies:
     "@polymer/polymer": ^3.0.0
   checksum: 2adf29387b5253a011438aadff3fbc8027814e0f3bd410baf25242f3fc300664425e38844f1de48e5a161d8c242d9cf08f092c1095560d360c1ed6e01707a24e
-  languageName: node
-  linkType: hard
-
-"@polymer/iron-scroll-target-behavior@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/iron-scroll-target-behavior@npm:3.0.1"
-  dependencies:
-    "@polymer/polymer": ^3.0.0
-  checksum: abf2864aee6049b336aa303110a65cd51cda75247b89edc4f21a6b5290062eb19cd8d2d125198354497df53368bbd305b30d9d31475fd327833cd549d83eb7b9
   languageName: node
   linkType: hard
 
@@ -9679,7 +9648,6 @@ __metadata:
     "@octokit/plugin-retry": 6.0.0
     "@octokit/rest": 20.0.1
     "@open-wc/dev-server-hmr": 0.1.4
-    "@polymer/app-layout": 3.1.0
     "@polymer/iron-flex-layout": 3.0.1
     "@polymer/iron-input": 3.0.1
     "@polymer/iron-resizable-behavior": 3.0.1

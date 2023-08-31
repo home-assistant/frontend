@@ -336,7 +336,7 @@ class OnboardingLocation extends LitElement {
     );
     try {
       this._places = await searchPlaces(address, this.hass, true, 3);
-      if (this._places?.length === 1) {
+      if (this._places?.length) {
         this._highlightedMarker = this._places[0].place_id;
         this._location = [
           Number(this._places[0].lat),
