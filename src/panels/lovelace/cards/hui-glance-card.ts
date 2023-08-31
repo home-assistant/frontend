@@ -343,7 +343,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                         capitalize
                       ></ha-relative-time>
                     `
-                  : this.hass.formatEntityState(stateObj)}
+                  : this.hass!.formatEntityState(stateObj)}
               </div>
             `
           : ""}
