@@ -12,7 +12,6 @@ import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-card";
 import "../../components/ha-menu-button";
 import "../../components/ha-tabs";
-import "../../layouts/ha-app-layout";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-tabs/paper-tab";

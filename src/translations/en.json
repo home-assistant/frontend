@@ -15,8 +15,6 @@
   },
   "state": {
     "default": {
-      "on": "On",
-      "off": "Off",
       "unknown": "Unknown",
       "unavailable": "Unavailable"
     }
@@ -107,8 +105,7 @@
         "cooling": "{name} cooling",
         "high": "high",
         "low": "low",
-        "operation": "Operation",
-        "away_mode": "Away mode"
+        "mode": "Mode"
       },
       "counter": {
         "actions": {
@@ -228,8 +225,8 @@
         "currently": "Currently",
         "on_off": "On / off",
         "target_temperature": "Target temperature",
-        "operation": "Operation",
-        "away_mode": "Away mode"
+        "away_mode": "Away mode",
+        "mode": "Mode"
       },
       "weather": {
         "attributes": {
@@ -1021,7 +1018,9 @@
         "climate": {
           "target_label": "{action} to target",
           "target": "Target",
-          "humidity_target": "Humidity target"
+          "humidity_target": "Humidity target",
+          "temperature": "Temperature",
+          "humidity": "Humidity"
         },
         "humidifier": {
           "target_label": "[%key:ui::dialogs::more_info_control::climate::target_label%]",
@@ -3960,7 +3959,6 @@
           "device_info": {
             "zwave_info": "Z-Wave info",
             "node_id": "ID",
-            "node_status": "Status",
             "node_ready": "Ready",
             "device_config": "Configure",
             "reinterview_device": "Re-interview",
@@ -4066,13 +4064,6 @@
             "set_param_error": "An error occurred.",
             "parameter": "Parameter",
             "bitmask": "Bitmask"
-          },
-          "node_status": {
-            "unknown": "Unknown",
-            "asleep": "Asleep",
-            "awake": "Awake",
-            "dead": "Dead",
-            "alive": "Alive"
           },
           "network_status": {
             "connected": "Connected",

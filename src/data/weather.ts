@@ -649,11 +649,11 @@ export const getDefaultForecastType = (stateObj: HassEntityBase) => {
   if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_DAILY)) {
     return "daily";
   }
-  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_HOURLY)) {
-    return "hourly";
-  }
   if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_TWICE_DAILY)) {
     return "twice_daily";
+  }
+  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_HOURLY)) {
+    return "hourly";
   }
   return undefined;
 };

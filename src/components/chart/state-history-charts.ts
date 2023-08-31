@@ -84,8 +84,8 @@ export class StateHistoryCharts extends LitElement {
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
-  @queryAll("state-history-chart-line, state-history-chart-timeline")
-  private _charts?: StateHistoryChartLine[] | StateHistoryChartTimeline[];
+  @queryAll("state-history-chart-line")
+  private _charts?: StateHistoryChartLine[];
 
   public resize = (options?: ChartResizeOptions): void => {
     this._charts?.forEach(

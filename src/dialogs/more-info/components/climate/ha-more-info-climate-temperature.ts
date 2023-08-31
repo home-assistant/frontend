@@ -280,15 +280,21 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       );
     }
 
-    const activeModes = this.stateObj.attributes.hvac_modes.filter(
-      (m) => m !== "off"
-    );
-
     if (
       supportsTargetTemperature &&
       this._targetTemperature.value != null &&
       this.stateObj.state !== UNAVAILABLE
     ) {
+      const heatCoolModes = this.stateObj.attributes.hvac_modes.filter((m) =>
+        ["heat", "cool", "heat_cool"].includes(m)
+      );
+      const sliderMode =
+        SLIDER_MODES[
+          heatCoolModes.length === 1 && ["off", "auto"].includes(mode)
+            ? heatCoolModes[0]
+            : mode
+        ];
+
       return html`
         <div
           class="container"
@@ -299,9 +305,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         >
           <ha-control-circular-slider
             .inactive=${!active}
-            .mode=${mode === "off" && activeModes.length === 1
-              ? SLIDER_MODES[activeModes[0]]
-              : SLIDER_MODES[mode]}
+            .mode=${sliderMode}
             .value=${this._targetTemperature.value}
             .min=${this._min}
             .max=${this._max}
