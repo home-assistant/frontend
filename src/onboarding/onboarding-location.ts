@@ -336,14 +336,12 @@ class OnboardingLocation extends LitElement {
     );
     try {
       this._places = await searchPlaces(address, this.hass, true, 3);
-      if (this._places?.length === 1) {
-        this._highlightedMarker = this._places[0].place_id;
-        this._location = [
-          Number(this._places[0].lat),
-          Number(this._places[0].lon),
-        ];
-        this._country = this._places[0].address.country_code.toUpperCase();
-      }
+      this._highlightedMarker = this._places[0].place_id;
+      this._location = [
+        Number(this._places[0].lat),
+        Number(this._places[0].lon),
+      ];
+      this._country = this._places[0].address.country_code.toUpperCase();
     } catch (e: any) {
       this._places = undefined;
       this._error = e.message;
