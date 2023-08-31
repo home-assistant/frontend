@@ -14,6 +14,7 @@ import { LocalizeFunc } from "../../../common/translations/localize";
 
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-card";
+import "../../../components/ha-alert";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-service-control";
@@ -30,7 +31,6 @@ import { haStyle } from "../../../resources/styles";
 import "../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import { showToast } from "../../../util/toast";
 
 class HaPanelDevService extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -141,6 +141,9 @@ class HaPanelDevService extends LitElement {
                   class="card-content"
                 ></ha-service-control>
               `}
+          ${this._error !== undefined
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing}
         </ha-card>
       </div>
       <div class="button-row">
@@ -380,11 +383,9 @@ class HaPanelDevService extends LitElement {
     if (this._yamlMode && !this._yamlValid) {
       forwardHaptic("failure");
       button.actionError();
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.panel.developer-tools.tabs.services.errors.yaml.invalid_yaml"
-        ),
-      });
+      this._error = this.hass.localize(
+        "ui.panel.developer-tools.tabs.services.errors.yaml.invalid_yaml"
+      );
       return;
     }
 
@@ -404,7 +405,6 @@ class HaPanelDevService extends LitElement {
     if (!isValid) {
       forwardHaptic("failure");
       button.actionError();
-      showToast(this, { message: this._error! });
       return;
     }
     const [domain, service] = this._serviceData!.service!.split(".", 2);
@@ -432,14 +432,12 @@ class HaPanelDevService extends LitElement {
       }
       forwardHaptic("failure");
       button.actionError();
-      showToast(this, {
-        message:
-          this.hass.localize(
-            "ui.notification_toast.service_call_failed",
-            "service",
-            this._serviceData!.service!
-          ) + ` ${err.message}`,
-      });
+      this._error =
+        this.hass.localize(
+          "ui.notification_toast.service_call_failed",
+          "service",
+          this._serviceData!.service!
+        ) + ` ${err.message}`;
       return;
     }
     button.actionSuccess();
@@ -448,6 +446,7 @@ class HaPanelDevService extends LitElement {
   private _toggleYaml() {
     this._yamlMode = !this._yamlMode;
     this._yamlValid = true;
+    this._error = undefined;
   }
 
   private _yamlChanged(ev) {
@@ -489,6 +488,9 @@ class HaPanelDevService extends LitElement {
   }
 
   private _serviceDataChanged(ev) {
+    if (this._serviceData?.service !== ev.detail.value.service) {
+      this._error = undefined;
+    }
     this._serviceData = ev.detail.value;
     this._checkUiSupported();
   }
@@ -497,6 +499,7 @@ class HaPanelDevService extends LitElement {
     ev.stopPropagation();
     this._serviceData = { service: ev.detail.value || "", data: {} };
     this._response = undefined;
+    this._error = undefined;
     this._yamlEditor?.setValue(this._serviceData);
     this._checkUiSupported();
   }
