@@ -1,11 +1,10 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
+import { stateActive } from "../common/entity/state_active";
 import { computeRTL } from "../common/util/compute_rtl";
 import "../components/entity/state-info";
 import { haStyle } from "../resources/styles";
-import { stateActive } from "../common/entity/state_active";
 import type { HomeAssistant } from "../types";
 
 @customElement("state-card-alert")
@@ -34,13 +33,7 @@ export class StateCardAlert extends LitElement {
                 .hass=${this.hass}
                 .stateObj=${this.stateObj}
               ></ha-entity-toggle>`
-            : computeStateDisplay(
-                this.hass!.localize,
-                this.stateObj,
-                this.hass.locale,
-                this.hass.config,
-                this.hass.entities
-              )}
+            : this.hass.formatEntityState(this.stateObj)}
         </div>
       </div>
     `;

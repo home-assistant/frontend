@@ -2,7 +2,6 @@ import { mdiHomeImportOutline, mdiPause, mdiPlay } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
@@ -74,15 +73,7 @@ class MoreInfoLawnMower extends LitElement {
                 )}:
               </span>
               <span>
-                <strong>
-                  ${computeStateDisplay(
-                    this.hass.localize,
-                    stateObj,
-                    this.hass.locale,
-                    this.hass.config,
-                    this.hass.entities
-                  )}
-                </strong>
+                <strong>${this.hass.formatEntityState(stateObj)}</strong>
               </span>
             </div>
             ${this._renderBattery()}

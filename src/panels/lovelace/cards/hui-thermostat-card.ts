@@ -11,12 +11,12 @@ import {
 import "@thomasloven/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
+  css,
+  html,
+  nothing,
   svg,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -25,8 +25,6 @@ import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { formatNumber } from "../../../common/number/format_number";
@@ -34,10 +32,10 @@ import "../../../components/ha-card";
 import type { HaCard } from "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import {
-  ClimateEntity,
   CLIMATE_PRESET_NONE,
-  compareClimateHvacModes,
+  ClimateEntity,
   HvacMode,
+  compareClimateHvacModes,
 } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
@@ -207,21 +205,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           >
             ${
               stateObj.state !== UNAVAILABLE && stateObj.attributes.hvac_action
-                ? computeAttributeValueDisplay(
-                    this.hass.localize,
-                    stateObj,
-                    this.hass.locale,
-                    this.hass.config,
-                    this.hass.entities,
-                    "hvac_action"
-                  )
-                : computeStateDisplay(
-                    this.hass.localize,
-                    stateObj,
-                    this.hass.locale,
-                    this.hass.config,
-                    this.hass.entities
-                  )
+                ? this.hass.formatEntityAttributeValue(stateObj, "hvac_action")
+                : this.hass.formatEntityState(stateObj)
             }
             ${
               stateObj.state !== UNAVAILABLE &&
@@ -229,12 +214,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
               stateObj.attributes.preset_mode !== CLIMATE_PRESET_NONE
                 ? html`
                     -
-                    ${computeAttributeValueDisplay(
-                      this.hass.localize,
+                    ${this.hass.formatEntityAttributeValue(
                       stateObj,
-                      this.hass.locale,
-                      this.hass.config,
-                      this.hass.entities,
                       "preset_mode"
                     )}
                   `

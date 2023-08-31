@@ -1,16 +1,16 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 import { formatTime } from "../../../common/datetime/format_time";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { formatNumber } from "../../../common/number/format_number";
@@ -20,28 +20,27 @@ import "../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import {
+  ForecastEvent,
+  WeatherEntity,
   getForecast,
   getSecondaryWeatherAttribute,
   getWeatherStateIcon,
   getWeatherUnit,
   getWind,
   subscribeForecast,
-  ForecastEvent,
   weatherAttrIcons,
-  WeatherEntity,
   weatherSVGStyles,
 } from "../../../data/weather";
+import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { WeatherForecastCardConfig } from "./types";
-import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 
 @customElement("hui-weather-forecast-card")
 class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
@@ -265,13 +264,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                 <div class="info">
                   <div class="name-state">
                     <div class="state">
-                      ${computeStateDisplay(
-                        this.hass.localize,
-                        stateObj,
-                        this.hass.locale,
-                        this.hass.config,
-                        this.hass.entities
-                      )}
+                      ${this.hass.formatEntityState(stateObj)}
                     </div>
                     <div class="name" .title=${name}>${name}</div>
                   </div>

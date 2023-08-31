@@ -1,7 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isUnavailableState } from "../../../data/entity";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
@@ -35,13 +34,7 @@ class EntityPreviewRow extends LitElement {
                 capitalize
               ></hui-timestamp-display>
             `
-          : computeStateDisplay(
-              this.hass!.localize,
-              stateObj,
-              this.hass.locale,
-              this.hass.config,
-              this.hass.entities
-            )}
+          : this.hass.formatEntityState(stateObj)}
       </div>`;
   }
 

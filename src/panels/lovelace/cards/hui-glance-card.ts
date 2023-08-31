@@ -1,10 +1,10 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -12,7 +12,6 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
@@ -344,13 +343,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                         capitalize
                       ></ha-relative-time>
                     `
-                  : computeStateDisplay(
-                      this.hass!.localize,
-                      stateObj,
-                      this.hass!.locale,
-                      this.hass!.config,
-                      this.hass!.entities
-                    )}
+                  : this.hass.formatEntityState(stateObj)}
               </div>
             `
           : ""}

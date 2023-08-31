@@ -186,7 +186,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
   );
 
-  private _computeStateDisplay(stateObj: HassEntity): TemplateResult | string {
+  private _formatState(stateObj: HassEntity): TemplateResult | string {
     const domain = computeDomain(stateObj.entity_id);
 
     if (
@@ -314,7 +314,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const name = this._config.name || stateObj.attributes.friendly_name;
 
-    const stateDisplay = this._computeStateDisplay(stateObj);
+    const localizedState = this._formatState(stateObj);
 
     const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);
@@ -387,7 +387,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             <ha-tile-info
               class="info"
               .primary=${name}
-              .secondary=${stateDisplay}
+              .secondary=${localizedState}
             ></ha-tile-info>
           </div>
         </div>

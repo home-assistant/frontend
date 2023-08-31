@@ -1,11 +1,11 @@
 import { mdiDotsVertical } from "@mdi/js";
 import "@thomasloven/round-slider";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -13,12 +13,12 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateColorBrightness } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
-import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE, isUnavailableState } from "../../../data/entity";
 import { LightEntity, lightSupportsBrightness } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
@@ -30,7 +30,6 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LightCardConfig } from "./types";
-import { stateColorBrightness } from "../../../common/entity/state_color";
 
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
@@ -156,17 +155,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
           <div id="info" .title=${name}>
             ${isUnavailableState(stateObj.state)
-              ? html`
-                  <div>
-                    ${computeStateDisplay(
-                      this.hass.localize,
-                      stateObj,
-                      this.hass.locale,
-                      this.hass.config,
-                      this.hass.entities
-                    )}
-                  </div>
-                `
+              ? html` <div>${this.hass.formatEntityState(stateObj)}</div> `
               : html` <div class="brightness">%</div> `}
             ${name}
           </div>
