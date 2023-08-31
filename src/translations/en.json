@@ -107,8 +107,7 @@
         "cooling": "{name} cooling",
         "high": "high",
         "low": "low",
-        "operation": "Operation",
-        "away_mode": "Away mode"
+        "mode": "Mode"
       },
       "counter": {
         "actions": {
@@ -228,8 +227,8 @@
         "currently": "Currently",
         "on_off": "On / off",
         "target_temperature": "Target temperature",
-        "operation": "Operation",
-        "away_mode": "Away mode"
+        "away_mode": "Away mode",
+        "mode": "Mode"
       },
       "weather": {
         "attributes": {

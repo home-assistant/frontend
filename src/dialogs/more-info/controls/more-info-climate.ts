@@ -166,10 +166,7 @@ class MoreInfoClimate extends LitElement {
       </div>
       <ha-more-info-control-select-container>
         <ha-control-select-menu
-          .label=${this.hass.formatEntityAttributeName(
-            this.stateObj,
-            "hvac_mode"
-          )}
+          .label=${this.hass.localize("ui.card.climate.mode")}
           .value=${stateObj.state}
           .disabled=${this.stateObj.state === UNAVAILABLE}
           fixedMenuPosition
