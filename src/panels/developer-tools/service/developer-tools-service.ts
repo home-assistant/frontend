@@ -294,58 +294,51 @@ class HaPanelDevService extends LitElement {
     fields.filter((field) => !field.selector)
   );
 
-  private _isValid = memoizeOne(
-    (
-      serviceData,
-      fields,
-      target,
-      yamlMode: boolean,
-      localize: LocalizeFunc
-    ): boolean => {
-      this._error = undefined;
-      const errorCategory = yamlMode ? "yaml" : "ui";
-      if (!serviceData?.service) {
-        this._error = localize(
-          `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.no_service`
-        );
-        return false;
-      }
-      const domain = computeDomain(serviceData.service);
-      const service = computeObjectId(serviceData.service);
-      if (!domain || !service) {
-        this._error = localize(
-          `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.invalid_service`
-        );
-        return false;
-      }
-      if (
-        target &&
-        !serviceData.target &&
-        !serviceData.data?.entity_id &&
-        !serviceData.data?.device_id &&
-        !serviceData.data?.area_id
-      ) {
-        this._error = localize(
-          `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.no_target`
-        );
-        return false;
-      }
-      for (const field of fields) {
-        if (
-          field.required &&
-          (!serviceData.data || serviceData.data[field.key] === undefined)
-        ) {
-          this._error = localize(
-            `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.missing_required_field`,
-            "key",
-            field.key
-          );
-          return false;
-        }
-      }
-      return true;
+  private _validateServiceData = (
+    serviceData,
+    fields,
+    target,
+    yamlMode: boolean,
+    localize: LocalizeFunc
+  ): string | undefined => {
+    const errorCategory = yamlMode ? "yaml" : "ui";
+    if (!serviceData?.service) {
+      return localize(
+        `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.no_service`
+      );
     }
-  );
+    const domain = computeDomain(serviceData.service);
+    const service = computeObjectId(serviceData.service);
+    if (!domain || !service) {
+      return localize(
+        `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.invalid_service`
+      );
+    }
+    if (
+      target &&
+      !serviceData.target &&
+      !serviceData.data?.entity_id &&
+      !serviceData.data?.device_id &&
+      !serviceData.data?.area_id
+    ) {
+      return localize(
+        `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.no_target`
+      );
+    }
+    for (const field of fields) {
+      if (
+        field.required &&
+        (!serviceData.data || serviceData.data[field.key] === undefined)
+      ) {
+        return localize(
+          `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.missing_required_field`,
+          "key",
+          field.key
+        );
+      }
+    }
+    return undefined;
+  };
 
   private _fields = memoizeOne(
     (
@@ -394,7 +387,7 @@ class HaPanelDevService extends LitElement {
       this._serviceData?.service
     );
 
-    const isValid = this._isValid(
+    this._error = this._validateServiceData(
       this._serviceData,
       fields,
       target,
@@ -402,7 +395,7 @@ class HaPanelDevService extends LitElement {
       this.hass.localize
     );
 
-    if (!isValid) {
+    if (this._error !== undefined) {
       forwardHaptic("failure");
       button.actionError();
       return;
