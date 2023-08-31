@@ -142,7 +142,7 @@ class MoreInfoClimate extends LitElement {
                   .selected=${this._mainControl === "temperature"}
                   .disabled=${this.stateObj!.state === UNAVAILABLE}
                   .label=${this.hass.localize(
-                    "ui.dialogs.more_info_control.light.color"
+                    "ui.dialogs.more_info_control.climate.temperature"
                   )}
                   .control=${"temperature"}
                   @click=${this._setMainControl}
@@ -153,7 +153,7 @@ class MoreInfoClimate extends LitElement {
                   .selected=${this._mainControl === "humidity"}
                   .disabled=${this.stateObj!.state === UNAVAILABLE}
                   .label=${this.hass.localize(
-                    "ui.dialogs.more_info_control.light.color_temp"
+                    "ui.dialogs.more_info_control.climate.humidity"
                   )}
                   .control=${"humidity"}
                   @click=${this._setMainControl}
