@@ -130,7 +130,7 @@ export class HuiEnergyDevicesGraphCard
           },
         },
       },
-      elements: { bar: { borderWidth: 1.5, borderRadius: 4 } },
+      elements: { bar: { borderWidth: 1, borderRadius: 4 } },
       plugins: {
         tooltip: {
           mode: "nearest",
@@ -292,6 +292,7 @@ export class HuiEnergyDevicesGraphCard
     });
 
     this._chartData = {
+      labels: chartData.map((d) => d.y),
       datasets,
     };
     await this.updateComplete;
