@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, nothing, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -79,6 +79,14 @@ export class HaStatisticPicker extends LitElement {
   @property({ type: Boolean, attribute: "entities-only" })
   public entitiesOnly = false;
 
+  /**
+   * List of statistics to be excluded.
+   * @type {Array}
+   * @attr exclude-statistics
+   */
+  @property({ type: Array, attribute: "exclude-statistics" })
+  public excludeStatistics?: string[];
+
   @state() private _opened?: boolean;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
@@ -86,6 +94,8 @@ export class HaStatisticPicker extends LitElement {
   private _init = false;
 
   private _statistics: StatisticItem[] = [];
+
+  @state() private _filteredItems?: StatisticItem[] = undefined;
 
   private _rowRenderer: ComboBoxLitRenderer<StatisticItem> = (item) =>
     html`<mwc-list-item graphic="avatar" twoline>
@@ -116,7 +126,8 @@ export class HaStatisticPicker extends LitElement {
       includeStatisticsUnitOfMeasurement?: string | string[],
       includeUnitClass?: string | string[],
       includeDeviceClass?: string | string[],
-      entitiesOnly?: boolean
+      entitiesOnly?: boolean,
+      excludeStatistics?: string[]
     ): StatisticItem[] => {
       if (!statisticIds.length) {
         return [
@@ -161,6 +172,12 @@ export class HaStatisticPicker extends LitElement {
 
       const output: StatisticItem[] = [];
       statisticIds.forEach((meta) => {
+        if (
+          excludeStatistics &&
+          excludeStatistics.includes(meta.statistic_id)
+        ) {
+          return;
+        }
         const entityState = this.hass.states[meta.statistic_id];
         if (!entityState) {
           if (!entitiesOnly) {
@@ -238,7 +255,8 @@ export class HaStatisticPicker extends LitElement {
           this.includeStatisticsUnitOfMeasurement,
           this.includeUnitClass,
           this.includeDeviceClass,
-          this.entitiesOnly
+          this.entitiesOnly,
+          this.excludeStatistics
         );
       } else {
         this.updateComplete.then(() => {
@@ -247,14 +265,19 @@ export class HaStatisticPicker extends LitElement {
             this.includeStatisticsUnitOfMeasurement,
             this.includeUnitClass,
             this.includeDeviceClass,
-            this.entitiesOnly
+            this.entitiesOnly,
+            this.excludeStatistics
           );
         });
       }
     }
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | typeof nothing {
+    if (this._statistics.length === 0) {
+      return nothing;
+    }
+
     return html`
       <ha-combo-box
         .hass=${this.hass}
@@ -265,9 +288,8 @@ export class HaStatisticPicker extends LitElement {
         .renderer=${this._rowRenderer}
         .disabled=${this.disabled}
         .allowCustomValue=${this.allowCustomEntity}
-        .filteredItems=${this.value && this._statistics.length === 0
-          ? undefined
-          : this._statistics}
+        .items=${this._statistics}
+        .filteredItems=${this._filteredItems ?? this._statistics}
         item-value-path="id"
         item-id-path="id"
         item-label-path="name"
@@ -303,11 +325,10 @@ export class HaStatisticPicker extends LitElement {
   }
 
   private _filterChanged(ev: CustomEvent): void {
-    const target = ev.target as HaComboBox;
     const filterString = ev.detail.value.toLowerCase();
-    target.filteredItems = filterString.length
+    this._filteredItems = filterString.length
       ? fuzzyFilterSort<StatisticItem>(filterString, this._statistics)
-      : this._statistics;
+      : undefined;
   }
 
   private _setValue(value: string) {

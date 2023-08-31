@@ -1,7 +1,7 @@
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiFan,
-  mdiHomeMapMarker,
+  mdiHomeImportOutline,
   mdiMapMarker,
   mdiPause,
   mdiPlay,
@@ -17,7 +17,6 @@ import { computeAttributeValueDisplay } from "../../../common/entity/compute_att
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon";
@@ -92,7 +91,7 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
   },
   {
     translationKey: "return_home",
-    icon: mdiHomeMapMarker,
+    icon: mdiHomeImportOutline,
     serviceName: "return_to_base",
     isVisible: (stateObj) =>
       supportsFeature(stateObj, VacuumEntityFeature.RETURN_HOME),
@@ -263,12 +262,13 @@ class MoreInfoVacuum extends LitElement {
     const battery = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
-
-    const batteryIsBinary =
-      battery && computeStateDomain(battery) === "binary_sensor";
+    const batteryDomain = battery ? computeStateDomain(battery) : undefined;
 
     // Use device battery entity
-    if (battery && (batteryIsBinary || !isNaN(battery.state as any))) {
+    if (
+      battery &&
+      (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
+    ) {
       const batteryChargingEntity = findBatteryChargingEntity(
         this.hass,
         entities
@@ -280,11 +280,9 @@ class MoreInfoVacuum extends LitElement {
       return html`
         <div>
           <span>
-            ${batteryIsBinary
-              ? ""
-              : `${Number(battery.state).toFixed()}${blankBeforePercent(
-                  this.hass.locale
-                )}%`}
+            ${batteryDomain === "sensor"
+              ? this.hass.formatEntityState(battery)
+              : nothing}
             <ha-battery-icon
               .hass=${this.hass}
               .batteryStateObj=${battery}
@@ -303,9 +301,12 @@ class MoreInfoVacuum extends LitElement {
       return html`
         <div>
           <span>
-            ${stateObj.attributes.battery_level.toFixed()}${blankBeforePercent(
-              this.hass.locale
-            )}%
+            ${this.hass.formatEntityAttributeValue(
+              stateObj,
+              "battery_level",
+              Math.round(stateObj.attributes.battery_level)
+            )}
+
             <ha-icon .icon=${stateObj.attributes.battery_icon}></ha-icon>
           </span>
         </div>

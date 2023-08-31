@@ -25,7 +25,7 @@ type ArcOptions = {
   rotate?: number;
 };
 
-export const arc = (options: ArcOptions) => {
+export const svgArc = (options: ArcOptions) => {
   const { x, y, r, start, end, rotate = 0 } = options;
   const cx = x;
   const cy = y;

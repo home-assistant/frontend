@@ -34,6 +34,10 @@ export const moreInfoControlStyle = css`
   }
 
   ha-attributes {
+    display: block;
     width: 100%;
+  }
+  ha-more-info-control-select-container + ha-attributes:not([empty]) {
+    margin-top: 16px;
   }
 `;

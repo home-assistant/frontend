@@ -67,6 +67,9 @@ export class HaChooseAction extends LitElement implements ActionElement {
   }
 
   private _getDescription(option, idx: number) {
+    if (option.alias) {
+      return option.alias;
+    }
     if (this.isExpanded(idx)) {
       return "";
     }

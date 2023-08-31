@@ -62,12 +62,6 @@ const triggerPhrases = {
   "Home Assistant starting": "triggered_by_homeassistant_starting", // start event
 };
 
-const DATA_CACHE: {
-  [cacheKey: string]: {
-    [entityId: string]: Promise<LogbookEntry[]> | undefined;
-  };
-} = {};
-
 export const getLogbookDataForContext = async (
   hass: HomeAssistant,
   startDate: string,
@@ -144,10 +138,6 @@ export const subscribeLogbook = (
   );
 };
 
-export const clearLogbookCache = (startDate: string, endDate: string) => {
-  DATA_CACHE[`${startDate}${endDate}`] = {};
-};
-
 export const createHistoricState = (
   currentStateObj: HassEntity,
   state?: string
@@ -157,7 +147,6 @@ export const createHistoricState = (
     attributes: {
       // Rebuild the historical state by copying static attributes only
       device_class: currentStateObj?.attributes.device_class,
-      event_type: currentStateObj?.attributes.event_type,
       source_type: currentStateObj?.attributes.source_type,
       has_date: currentStateObj?.attributes.has_date,
       has_time: currentStateObj?.attributes.has_time,
@@ -346,16 +335,22 @@ export const localizeStateMessage = (
       break;
 
     case "event": {
-      const event_type =
-        computeAttributeValueDisplay(
-          hass!.localize,
-          stateObj,
-          hass.locale,
-          hass.config,
-          hass.entities,
-          "event_type"
-        )?.toString() ||
-        localize(`${LOGBOOK_LOCALIZE_PATH}.detected_unknown_event`);
+      return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_event_no_type`);
+
+      // TODO: This is not working yet, as we don't get historic attribute values
+
+      const event_type = computeAttributeValueDisplay(
+        hass!.localize,
+        stateObj,
+        hass.locale,
+        hass.config,
+        hass.entities,
+        "event_type"
+      )?.toString();
+
+      if (!event_type) {
+        return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_unknown_event`);
+      }
 
       return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_event`, {
         event_type: autoCaseNoun(event_type, hass.language),

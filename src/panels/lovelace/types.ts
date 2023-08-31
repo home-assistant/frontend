@@ -116,6 +116,7 @@ export interface LovelaceTileFeature extends HTMLElement {
   hass?: HomeAssistant;
   stateObj?: HassEntity;
   setConfig(config: LovelaceTileFeatureConfig);
+  color?: string;
 }
 
 export interface LovelaceTileFeatureConstructor

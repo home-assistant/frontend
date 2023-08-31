@@ -1,9 +1,8 @@
 import { css } from "lit";
 import { customElement } from "lit/decorators";
-
-import { IconButton } from "@material/web/iconbutton/lib/icon-button";
-import { styles as outlinedStyles } from "@material/web/iconbutton/lib/outlined-styles.css";
-import { styles as sharedStyles } from "@material/web/iconbutton/lib/shared-styles.css";
+import { IconButton } from "@material/web/iconbutton/internal/icon-button";
+import { styles as outlinedStyles } from "@material/web/iconbutton/internal/outlined-styles.css";
+import { styles as sharedStyles } from "@material/web/iconbutton/internal/shared-styles.css";
 
 @customElement("ha-outlined-icon-button")
 export class HaOutlinedIconButton extends IconButton {

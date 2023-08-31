@@ -9,7 +9,7 @@
         }
       <% } else { %>
         <% for (const entry of es5EntryJS) { %>
-          _ls("<%= entry %>");
+          _ls("<%= entry %>", true);
         <% } %>
       <% } %>
     }

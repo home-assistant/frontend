@@ -124,6 +124,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
@@ -284,7 +285,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                               this.hass.locale
                             )}&nbsp;<span
                               >${getWeatherUnit(
-                                this.hass,
+                                this.hass.config,
                                 stateObj,
                                 "temperature"
                               )}</span
@@ -317,14 +318,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                                   stateObj.attributes.wind_bearing
                                 )
                               : html`
-                                  ${formatNumber(
-                                    stateObj.attributes[
-                                      this._config.secondary_info_attribute
-                                    ],
-                                    this.hass.locale
-                                  )}
-                                  ${getWeatherUnit(
-                                    this.hass,
+                                  ${this.hass.formatEntityAttributeValue(
                                     stateObj,
                                     this._config.secondary_info_attribute
                                   )}
@@ -352,9 +346,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                           <div>
                             ${dayNight
                               ? html`
-                                  ${new Date(item.datetime).toLocaleDateString(
-                                    this.hass!.language,
-                                    { weekday: "short" }
+                                  ${formatDateWeekdayShort(
+                                    new Date(item.datetime),
+                                    this.hass!.locale,
+                                    this.hass!.config
                                   )}
                                   <div class="daynight">
                                     ${item.is_daytime !== false

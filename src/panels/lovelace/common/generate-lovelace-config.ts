@@ -36,6 +36,9 @@ const HIDE_DOMAIN = new Set([
   "script",
   "sun",
   "zone",
+  "event",
+  "tts",
+  "stt",
 ]);
 
 const HIDE_PLATFORM = new Set(["mobile_app"]);

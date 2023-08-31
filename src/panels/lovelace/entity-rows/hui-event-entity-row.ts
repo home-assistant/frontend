@@ -68,7 +68,7 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
             hasDoubleClick: hasAction(this._config.double_tap_action),
           })}
         >
-          <div class="what">
+          <div class="when">
             ${isUnavailableState(stateObj.state)
               ? computeStateDisplay(
                   this.hass!.localize,
@@ -77,6 +77,16 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
                   this.hass.config,
                   this.hass.entities
                 )
+              : html`<hui-timestamp-display
+                  .hass=${this.hass}
+                  .ts=${new Date(stateObj.state)}
+                  .format=${this._config.format}
+                  capitalize
+                ></hui-timestamp-display>`}
+          </div>
+          <div class="what">
+            ${isUnavailableState(stateObj.state)
+              ? ``
               : computeAttributeValueDisplay(
                   this.hass!.localize,
                   stateObj,
@@ -85,18 +95,6 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
                   this.hass.entities,
                   "event_type"
                 )}
-          </div>
-          <div class="when">
-            ${isUnavailableState(stateObj.state)
-              ? ``
-              : html`
-                  <hui-timestamp-display
-                    .hass=${this.hass}
-                    .ts=${new Date(stateObj.state)}
-                    .format=${this._config.format}
-                    capitalize
-                  ></hui-timestamp-display>
-                `}
           </div>
         </div>
       </hui-generic-entity-row>
@@ -113,10 +111,10 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
         text-align: right;
       }
       .when {
-        color: var(--secondary-text-color);
+        color: var(--primary-text-color);
       }
       .what {
-        color: var(--primary-text-color);
+        color: var(--secondary-text-color);
       }
     `;
   }

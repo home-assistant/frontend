@@ -38,6 +38,7 @@ import {
 import { loadVirtualizer } from "../../resources/virtualizer";
 import { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
+import { domainToName } from "../../data/integration";
 
 declare global {
   interface HASSDomEvents {
@@ -89,6 +90,8 @@ class HaLogbookRenderer extends LitElement {
       (!this.hasUpdated && this.virtualize) ||
       (changedProps.has("virtualize") && this.virtualize)
     ) {
+      this.hass.loadBackendTranslation("services");
+      this.hass.loadBackendTranslation("title");
       loadVirtualizer();
     }
   }
@@ -399,7 +402,16 @@ class HaLogbookRenderer extends LitElement {
       return html`${this.hass.localize(
         "ui.components.logbook.triggered_by_service"
       )}
-      ${item.context_domain}.${item.context_service}`;
+      ${item.context_domain && item.context_service
+        ? `${domainToName(this.hass.localize, item.context_domain)}:
+      ${
+        this.hass.localize(
+          `component.${item.context_domain}.services.${item.context_service}.name`
+        ) ||
+        this.hass.services[item.context_domain]?.[item.context_service]?.name ||
+        item.context_service
+      }`
+        : ""}`;
     }
     if (
       !item.context_message ||

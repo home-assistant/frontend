@@ -6,26 +6,24 @@ import {
   mdiWeatherWindy,
 } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateWeekdayDay } from "../../../common/datetime/format_date";
 import { formatTimeWeekday } from "../../../common/datetime/format_time";
-import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-svg-icon";
 import {
-  getDefaultForecastType,
-  getForecast,
-  getWeatherUnit,
-  getWind,
-  subscribeForecast,
   ForecastEvent,
   WeatherEntity,
+  getDefaultForecastType,
+  getForecast,
+  getWind,
+  subscribeForecast,
   weatherIcons,
 } from "../../../data/weather";
 import { HomeAssistant } from "../../../types";
@@ -122,6 +120,7 @@ class MoreInfoWeather extends LitElement {
     );
     const forecast = forecastData?.forecast;
     const hourly = forecastData?.type === "hourly";
+    const dayNight = forecastData?.type === "twice_daily";
 
     return html`
       ${this._showValue(this.stateObj.attributes.temperature)
@@ -132,11 +131,10 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.temperature")}
               </div>
               <div>
-                ${formatNumber(
-                  this.stateObj.attributes.temperature!,
-                  this.hass.locale
+                ${this.hass.formatEntityAttributeValue(
+                  this.stateObj,
+                  "temperature"
                 )}
-                ${getWeatherUnit(this.hass, this.stateObj, "temperature")}
               </div>
             </div>
           `
@@ -149,11 +147,10 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.air_pressure")}
               </div>
               <div>
-                ${formatNumber(
-                  this.stateObj.attributes.pressure!,
-                  this.hass.locale
+                ${this.hass.formatEntityAttributeValue(
+                  this.stateObj,
+                  "pressure"
                 )}
-                ${getWeatherUnit(this.hass, this.stateObj, "pressure")}
               </div>
             </div>
           `
@@ -166,11 +163,10 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.humidity")}
               </div>
               <div>
-                ${formatNumber(
-                  this.stateObj.attributes.humidity!,
-                  this.hass.locale
+                ${this.hass.formatEntityAttributeValue(
+                  this.stateObj,
+                  "humidity"
                 )}
-                %
               </div>
             </div>
           `
@@ -201,11 +197,10 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.visibility")}
               </div>
               <div>
-                ${formatNumber(
-                  this.stateObj.attributes.visibility!,
-                  this.hass.locale
+                ${this.hass.formatEntityAttributeValue(
+                  this.stateObj,
+                  "visibility"
                 )}
-                ${getWeatherUnit(this.hass, this.stateObj, "visibility")}
               </div>
             </div>
           `
@@ -225,48 +220,52 @@ class MoreInfoWeather extends LitElement {
                           ></ha-svg-icon>
                         `
                       : ""}
-                    ${hourly
-                      ? html`
-                          <div class="main">
-                            ${formatTimeWeekday(
-                              new Date(item.datetime),
-                              this.hass.locale,
-                              this.hass.config
-                            )}
-                          </div>
-                        `
-                      : html`
-                          <div class="main">
+                    <div class="main">
+                      ${dayNight
+                        ? html`
                             ${formatDateWeekdayDay(
                               new Date(item.datetime),
-                              this.hass.locale,
-                              this.hass.config
+                              this.hass!.locale,
+                              this.hass!.config
                             )}
-                            ${item.is_daytime !== false
+                            (${item.is_daytime !== false
                               ? this.hass!.localize("ui.card.weather.day")
-                              : this.hass!.localize("ui.card.weather.night")}
-                          </div>
-                        `}
+                              : this.hass!.localize("ui.card.weather.night")})
+                          `
+                        : hourly
+                        ? html`
+                            ${formatTimeWeekday(
+                              new Date(item.datetime),
+                              this.hass!.locale,
+                              this.hass!.config
+                            )}
+                          `
+                        : html`
+                            ${formatDateWeekdayDay(
+                              new Date(item.datetime),
+                              this.hass!.locale,
+                              this.hass!.config
+                            )}
+                          `}
+                    </div>
                     <div class="templow">
                       ${this._showValue(item.templow)
-                        ? `${formatNumber(item.templow!, this.hass.locale)}
-                          ${getWeatherUnit(
-                            this.hass,
+                        ? this.hass.formatEntityAttributeValue(
                             this.stateObj!,
-                            "temperature"
-                          )}`
+                            "templow",
+                            item.templow
+                          )
                         : hourly
                         ? ""
                         : "—"}
                     </div>
                     <div class="temp">
                       ${this._showValue(item.temperature)
-                        ? `${formatNumber(item.temperature!, this.hass.locale)}
-                        ${getWeatherUnit(
-                          this.hass,
-                          this.stateObj!,
-                          "temperature"
-                        )}`
+                        ? this.hass.formatEntityAttributeValue(
+                            this.stateObj!,
+                            "temperature",
+                            item.temperature
+                          )
                         : "—"}
                     </div>
                   </div>`
