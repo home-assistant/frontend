@@ -14,10 +14,17 @@ import { HaDurationData } from "../../../components/ha-duration-input";
 import { LovelaceTileFeatureConfig } from "../tile-features/types";
 import { ForecastType } from "../../../data/weather";
 
+export type AlarmPanelCardConfigState =
+  | "arm_away"
+  | "arm_home"
+  | "arm_night"
+  | "arm_vacation"
+  | "arm_custom_bypass";
+
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
-  states?: readonly (keyof TranslationDict["ui"]["card"]["alarm_control_panel"])[];
+  states?: AlarmPanelCardConfigState[];
   theme?: string;
 }
 

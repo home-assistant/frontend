@@ -10,8 +10,8 @@ import {
   mdiPencilOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { LitElement, PropertyValues, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -38,15 +38,17 @@ import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
 import {
-  computeShowHistoryComponent,
-  computeShowLogBookComponent,
   DOMAINS_WITH_MORE_INFO,
   EDITABLE_DOMAINS_WITH_ID,
   EDITABLE_DOMAINS_WITH_UNIQUE_ID,
+  computeShowHistoryComponent,
+  computeShowLogBookComponent,
 } from "./const";
 import "./controls/more-info-default";
 import "./ha-more-info-history-and-logbook";
+import type { MoreInfoHistoryAndLogbook } from "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
+import type { MoreInfoInfo } from "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
 
@@ -90,6 +92,9 @@ export class MoreInfoDialog extends LitElement {
   @state() private _entry?: ExtEntityRegistryEntry | null;
 
   @state() private _infoEditMode = false;
+
+  @query("ha-more-info-info, ha-more-info-history-and-logbook")
+  private _history?: MoreInfoInfo | MoreInfoHistoryAndLogbook;
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
@@ -263,6 +268,7 @@ export class MoreInfoDialog extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
+        @opened=${this._handleOpened}
         .heading=${title}
         hideActions
         flexContent
@@ -483,6 +489,10 @@ export class MoreInfoDialog extends LitElement {
 
   private _enlarge() {
     this.large = !this.large;
+  }
+
+  private _handleOpened() {
+    this._history?.resize({ aspectRatio: 2 });
   }
 
   static get styles() {

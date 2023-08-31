@@ -9,6 +9,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { UNIT_F } from "../../../../common/const";
 import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
@@ -44,7 +45,7 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
   private get _step() {
     return (
       this.stateObj.attributes.target_temp_step ||
-      (this.hass.config.unit_system.temperature.indexOf("F") === -1 ? 0.5 : 1)
+      (this.hass.config.unit_system.temperature === UNIT_F ? 1 : 0.5)
     );
   }
 

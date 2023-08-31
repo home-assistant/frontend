@@ -10,6 +10,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { UNIT_F } from "../../../../common/const";
 import { computeAttributeValueDisplay } from "../../../../common/entity/compute_attribute_display";
 import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
@@ -67,7 +68,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
   private get _step() {
     return (
       this.stateObj.attributes.target_temp_step ||
-      (this.hass.config.unit_system.temperature.indexOf("F") === -1 ? 0.5 : 1)
+      (this.hass.config.unit_system.temperature === UNIT_F ? 1 : 0.5)
     );
   }
 
@@ -279,15 +280,21 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       );
     }
 
-    const activeModes = this.stateObj.attributes.hvac_modes.filter(
-      (m) => m !== "off"
-    );
-
     if (
       supportsTargetTemperature &&
       this._targetTemperature.value != null &&
       this.stateObj.state !== UNAVAILABLE
     ) {
+      const heatCoolModes = this.stateObj.attributes.hvac_modes.filter((m) =>
+        ["heat", "cool", "heat_cool"].includes(m)
+      );
+      const sliderMode =
+        SLIDER_MODES[
+          heatCoolModes.length === 1 && ["off", "auto"].includes(mode)
+            ? heatCoolModes[0]
+            : mode
+        ];
+
       return html`
         <div
           class="container"
@@ -298,9 +305,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         >
           <ha-control-circular-slider
             .inactive=${!active}
-            .mode=${mode === "off" && activeModes.length === 1
-              ? SLIDER_MODES[activeModes[0]]
-              : SLIDER_MODES[mode]}
+            .mode=${sliderMode}
             .value=${this._targetTemperature.value}
             .min=${this._min}
             .max=${this._max}

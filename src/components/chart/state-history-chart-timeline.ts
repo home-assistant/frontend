@@ -1,6 +1,6 @@
 import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import millisecondsToDuration from "../../common/datetime/milliseconds_to_duration";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -8,7 +8,11 @@ import { numberFormatToLocale } from "../../common/number/format_number";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { TimelineEntity } from "../../data/history";
 import { HomeAssistant } from "../../types";
-import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
+import {
+  ChartResizeOptions,
+  HaChartBase,
+  MIN_TIME_BETWEEN_UPDATES,
+} from "./ha-chart-base";
 import type { TimeLineData } from "./timeline-chart/const";
 import { computeTimelineColor } from "./timeline-chart/timeline-color";
 
@@ -45,6 +49,12 @@ export class StateHistoryChartTimeline extends LitElement {
   @state() private _yWidth = 0;
 
   private _chartTime: Date = new Date();
+
+  @query("ha-chart-base") private _chart?: HaChartBase;
+
+  public resize = (options?: ChartResizeOptions): void => {
+    this._chart?.resize(options);
+  };
 
   protected render() {
     return html`

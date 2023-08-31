@@ -6,7 +6,13 @@ import {
   nothing,
   PropertyValues,
 } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  queryAll,
+  state,
+} from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import {
@@ -18,6 +24,9 @@ import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
+import type { StateHistoryChartLine } from "./state-history-chart-line";
+import type { StateHistoryChartTimeline } from "./state-history-chart-timeline";
+import { ChartResizeOptions } from "./ha-chart-base";
 
 const CANVAS_TIMELINE_ROWS_CHUNK = 10; // Split up the canvases to avoid hitting the render limit
 
@@ -74,6 +83,16 @@ export class StateHistoryCharts extends LitElement {
 
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
+
+  @queryAll("state-history-chart-line")
+  private _charts?: StateHistoryChartLine[];
+
+  public resize = (options?: ChartResizeOptions): void => {
+    this._charts?.forEach(
+      (chart: StateHistoryChartLine | StateHistoryChartTimeline) =>
+        chart.resize(options)
+    );
+  };
 
   protected render() {
     if (!isComponentLoaded(this.hass, "history")) {

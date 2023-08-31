@@ -100,6 +100,14 @@ class DialogAreaDetail extends LitElement {
               dialogInitialFocus
             ></ha-textfield>
 
+            <ha-picture-upload
+              .hass=${this.hass}
+              .value=${this._picture}
+              crop
+              .cropOptions=${cropOptions}
+              @change=${this._pictureChanged}
+            ></ha-picture-upload>
+
             <div class="label">
               ${this.hass.localize(
                 "ui.panel.config.areas.editor.aliases_section"
@@ -132,14 +140,6 @@ class DialogAreaDetail extends LitElement {
                 "ui.panel.config.areas.editor.aliases_description"
               )}
             </div>
-
-            <ha-picture-upload
-              .hass=${this.hass}
-              .value=${this._picture}
-              crop
-              .cropOptions=${cropOptions}
-              @change=${this._pictureChanged}
-            ></ha-picture-upload>
           </div>
         </div>
         ${entry
@@ -229,7 +229,8 @@ class DialogAreaDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-textfield {
+        ha-textfield,
+        ha-picture-upload {
           display: block;
           margin-bottom: 16px;
         }

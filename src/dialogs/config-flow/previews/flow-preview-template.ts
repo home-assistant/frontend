@@ -1,26 +1,33 @@
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { debounce } from "../../../common/util/debounce";
 import { FlowType } from "../../../data/data_entry_flow";
-import { subscribePreviewGroupBinarySensor } from "../../../data/group";
+import {
+  TemplatePreview,
+  subscribePreviewTemplate,
+} from "../../../data/ws-templates";
 import { HomeAssistant } from "../../../types";
 import "./entity-preview-row";
+import { fireEvent } from "../../../common/dom/fire_event";
 
-@customElement("flow-preview-group_binary_sensor")
-class FlowPreviewGroupBinarySensor extends LitElement {
+@customElement("flow-preview-template")
+class FlowPreviewTemplate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public flowType!: FlowType;
 
   public handler!: string;
 
-  public stepId!: string;
+  @property() public stepId!: string;
 
   @property() public flowId!: string;
 
   @property() public stepData!: Record<string, any>;
 
   @state() private _preview?: HassEntity;
+
+  @state() private _error?: string;
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
@@ -34,30 +41,40 @@ class FlowPreviewGroupBinarySensor extends LitElement {
 
   willUpdate(changedProps) {
     if (changedProps.has("stepData")) {
-      this._subscribePreview();
+      this._debouncedSubscribePreview();
     }
   }
 
   protected render() {
+    if (this._error) {
+      return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
+    }
     return html`<entity-preview-row
       .hass=${this.hass}
       .stateObj=${this._preview}
     ></entity-preview-row>`;
   }
 
-  private _setPreview = (preview: {
-    state: string;
-    attributes: Record<string, any>;
-  }) => {
+  private _setPreview = (preview: TemplatePreview) => {
+    if ("error" in preview) {
+      this._error = preview.error;
+      this._preview = undefined;
+      return;
+    }
+    this._error = undefined;
     const now = new Date().toISOString();
     this._preview = {
-      entity_id: "binary_sensor.flow_preview",
+      entity_id: `${this.stepId}.flow_preview`,
       last_changed: now,
       last_updated: now,
       context: { id: "", parent_id: null, user_id: null },
       ...preview,
     };
   };
+
+  private _debouncedSubscribePreview = debounce(() => {
+    this._subscribePreview();
+  }, 250);
 
   private async _subscribePreview() {
     if (this._unsub) {
@@ -68,14 +85,23 @@ class FlowPreviewGroupBinarySensor extends LitElement {
       return;
     }
     try {
-      this._unsub = subscribePreviewGroupBinarySensor(
+      this._unsub = subscribePreviewTemplate(
         this.hass,
         this.flowId,
         this.flowType,
         this.stepData,
         this._setPreview
       );
-    } catch (err) {
+      await this._unsub;
+      fireEvent(this, "set-flow-errors", { errors: {} });
+    } catch (err: any) {
+      if (typeof err.message === "string") {
+        this._error = err.message;
+      } else {
+        this._error = undefined;
+        fireEvent(this, "set-flow-errors", err.message);
+      }
+      this._unsub = undefined;
       this._preview = undefined;
     }
   }
@@ -83,6 +109,6 @@ class FlowPreviewGroupBinarySensor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "flow-preview-group_binary_sensor": FlowPreviewGroupBinarySensor;
+    "flow-preview-template": FlowPreviewTemplate;
   }
 }

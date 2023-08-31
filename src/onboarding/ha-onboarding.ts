@@ -1,3 +1,4 @@
+import "@material/mwc-linear-progress/mwc-linear-progress";
 import {
   Auth,
   createConnection,
@@ -5,35 +6,45 @@ import {
   getAuth,
   subscribeConfig,
 } from "home-assistant-js-websocket";
-import { html, PropertyValues, nothing } from "lit";
+import { PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  enableWrite,
+  loadTokens,
+  saveTokens,
+} from "../common/auth/token_storage";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
+import "../components/ha-card";
+import "../components/ha-language-picker";
 import { AuthUrlSearchParams, hassUrl } from "../data/auth";
 import {
-  fetchInstallationType,
-  fetchOnboardingOverview,
   OnboardingResponses,
   OnboardingStep,
+  fetchInstallationType,
+  fetchOnboardingOverview,
   onboardIntegrationStep,
 } from "../data/onboarding";
 import { subscribeUser } from "../data/ws-user";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { HassElement } from "../state/hass-element";
 import { HomeAssistant } from "../types";
+import { storeState } from "../util/ha-pref-storage";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./onboarding-analytics";
 import "./onboarding-create-user";
 import "./onboarding-loading";
-import {
-  enableWrite,
-  loadTokens,
-  saveTokens,
-} from "../common/auth/token_storage";
+import "./onboarding-welcome";
+import "./onboarding-welcome-links";
+import { makeDialogManager } from "../dialogs/make-dialog-manager";
 
 type OnboardingEvent =
+  | {
+      type: "init";
+      result: { restore: boolean };
+    }
   | {
       type: "user";
       result: OnboardingResponses["user"];
@@ -49,13 +60,21 @@ type OnboardingEvent =
       type: "analytics";
     };
 
+interface OnboardingProgressEvent {
+  increase?: number;
+  decrease?: number;
+  progress?: number;
+}
+
 declare global {
   interface HASSDomEvents {
     "onboarding-step": OnboardingEvent;
+    "onboarding-progress": OnboardingProgressEvent;
   }
 
   interface GlobalEventHandlersEventMap {
     "onboarding-step": HASSDomEvent<OnboardingEvent>;
+    "onboarding-progress": HASSDomEvent<OnboardingProgressEvent>;
   }
 }
 
@@ -65,7 +84,11 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   @property() public translationFragment = "page-onboarding";
 
+  @state() private _progress = 0;
+
   @state() private _loading = false;
+
+  @state() private _init = false;
 
   @state() private _restoring = false;
 
@@ -74,29 +97,58 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   @state() private _steps?: OnboardingStep[];
 
   protected render() {
+    return html`<mwc-linear-progress
+        .progress=${this._progress}
+      ></mwc-linear-progress>
+      <ha-card>
+        <div class="card-content">${this._renderStep()}</div>
+      </ha-card>
+      ${this._init
+        ? html`<onboarding-welcome-links
+            .localize=${this.localize}
+          ></onboarding-welcome-links>`
+        : nothing}
+      <div class="footer">
+        <ha-language-picker
+          .value=${this.language}
+          .label=${""}
+          nativeName
+          @value-changed=${this._languageChanged}
+        ></ha-language-picker>
+        <a
+          href="https://www.home-assistant.io/getting-started/onboarding/"
+          target="_blank"
+          rel="noreferrer noopener"
+          >${this.localize("ui.panel.page-onboarding.help")}</a
+        >
+      </div>`;
+  }
+
+  private _renderStep() {
+    if (this._init) {
+      return html`<onboarding-welcome
+        .localize=${this.localize}
+        .language=${this.language}
+        .supervisor=${this._supervisor}
+      ></onboarding-welcome>`;
+    }
+
+    if (this._restoring) {
+      return html`<onboarding-restore-backup .localize=${this.localize}>
+      </onboarding-restore-backup>`;
+    }
+
     const step = this._curStep()!;
 
     if (this._loading || !step) {
       return html`<onboarding-loading></onboarding-loading> `;
     }
     if (step.step === "user") {
-      return html`
-        ${!this._restoring
-          ? html`<onboarding-create-user
-              .localize=${this.localize}
-              .language=${this.language}
-            >
-            </onboarding-create-user>`
-          : ""}
-        ${this._supervisor
-          ? html`<onboarding-restore-backup
-              .localize=${this.localize}
-              .restoring=${this._restoring}
-              @restoring=${this._restoringBackup}
-            >
-            </onboarding-restore-backup>`
-          : ""}
-      `;
+      return html`<onboarding-create-user
+        .localize=${this.localize}
+        .language=${this.language}
+      >
+      </onboarding-create-user>`;
     }
     if (step.step === "core_config") {
       return html`
@@ -114,7 +166,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         ></onboarding-analytics>
       `;
     }
-
     if (step.step === "integration") {
       return html`
         <onboarding-integrations
@@ -133,9 +184,13 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     import("./onboarding-core-config");
     registerServiceWorker(this, false);
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
+    this.addEventListener("onboarding-progress", (ev) =>
+      this._handleProgress(ev)
+    );
     if (window.innerWidth > 450) {
       import("./particles");
     }
+    makeDialogManager(this, this.shadowRoot!);
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -168,10 +223,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   private _curStep() {
     return this._steps ? this._steps.find((stp) => !stp.done) : undefined;
-  }
-
-  private _restoringBackup() {
-    this._restoring = true;
   }
 
   private async _fetchInstallationType(): Promise<void> {
@@ -222,8 +273,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         });
         history.replaceState(null, "", location.pathname);
         await this._connectHass(auth);
+        const currentStep = steps.findIndex((stp) => !stp.done);
+        const singelStepProgress = 1 / steps.length;
+        this._progress = currentStep * singelStepProgress + singelStepProgress;
       } else {
-        // User creating screen needs to know the installation type.
+        this._init = true;
+        // Init screen needs to know the installation type.
         this._fetchInstallationType();
       }
 
@@ -233,15 +288,35 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     }
   }
 
+  private _handleProgress(ev: HASSDomEvent<OnboardingProgressEvent>) {
+    const stepSize = 1 / this._steps!.length;
+    if (ev.detail.increase) {
+      this._progress += ev.detail.increase * stepSize;
+    }
+    if (ev.detail.decrease) {
+      this._progress -= ev.detail.decrease * stepSize;
+    }
+    if (ev.detail.progress) {
+      this._progress = ev.detail.progress;
+    }
+  }
+
   private async _handleStepDone(ev: HASSDomEvent<OnboardingEvent>) {
     const stepResult = ev.detail;
     this._steps = this._steps!.map((step) =>
       step.step === stepResult.type ? { ...step, done: true } : step
     );
 
-    if (stepResult.type === "user") {
+    if (stepResult.type === "init") {
+      this._init = false;
+      this._restoring = stepResult.result.restore;
+      if (!this._restoring) {
+        this._progress = 0.25;
+      }
+    } else if (stepResult.type === "user") {
       const result = stepResult.result as OnboardingResponses["user"];
       this._loading = true;
+      this._progress = 0.5;
       enableWrite();
       try {
         const auth = await getAuth({
@@ -258,6 +333,10 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         this._loading = false;
       }
     } else if (stepResult.type === "core_config") {
+      this._progress = 0.75;
+      // We do nothing
+    } else if (stepResult.type === "analytics") {
+      this._progress = 1;
       // We do nothing
     } else if (stepResult.type === "integration") {
       this._loading = true;
@@ -331,6 +410,14 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       subscribeOne(conn, subscribeUser),
     ]);
     this.initializeHass(auth, conn);
+    if (this.language && this.language !== this.hass!.language) {
+      this._updateHass({
+        locale: { ...this.hass!.locale, language: this.language },
+        language: this.language,
+        selectedLanguage: this.language,
+      });
+      storeState(this.hass!);
+    }
     // Load config strings for integrations
     (this as any)._loadFragmentTranslations(this.hass!.language, "config");
     // Make sure hass is initialized + the config/user callbacks have called.
@@ -338,6 +425,60 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       setTimeout(resolve, 0);
     });
   }
+
+  private _languageChanged(ev: CustomEvent) {
+    const language = ev.detail.value;
+    this.language = language;
+    if (this.hass) {
+      this._updateHass({
+        locale: { ...this.hass!.locale, language },
+        language,
+        selectedLanguage: language,
+      });
+      storeState(this.hass!);
+    } else {
+      try {
+        localStorage.setItem("selectedLanguage", JSON.stringify(language));
+      } catch (err: any) {
+        // Ignore
+      }
+    }
+  }
+
+  static styles = css`
+    mwc-linear-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+    }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    ha-language-picker {
+      display: block;
+      width: 200px;
+      margin-top: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      --ha-select-height: 40px;
+      --mdc-select-fill-color: none;
+      --mdc-select-label-ink-color: var(--primary-text-color, #212121);
+      --mdc-select-ink-color: var(--primary-text-color, #212121);
+      --mdc-select-idle-line-color: transparent;
+      --mdc-select-hover-line-color: transparent;
+      --mdc-select-dropdown-icon-color: var(--primary-text-color, #212121);
+      --mdc-shape-small: 0;
+    }
+    a {
+      text-decoration: none;
+      color: var(--primary-text-color);
+      margin-right: 16px;
+    }
+  `;
 }
 
 declare global {
