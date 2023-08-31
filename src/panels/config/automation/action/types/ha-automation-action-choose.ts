@@ -48,23 +48,16 @@ export class HaChooseAction extends LitElement implements ActionElement {
     return { choose: [{ conditions: [], sequence: [] }] };
   }
 
-  private isExpanded(i: number) {
-    const nodes = this.shadowRoot!.querySelectorAll("ha-expansion-panel");
-    if (nodes[i]) {
-      return nodes[i].expanded;
-    }
-    return false;
-  }
-
-  private _expandedChanged() {
+  private _expandedChanged(ev) {
     this._expandedStates = this._expandedStates.concat();
+    this._expandedStates[ev.target!.index] = ev.detail.expanded;
   }
 
   private _getDescription(option, idx: number) {
     if (option.alias) {
       return option.alias;
     }
-    if (this.isExpanded(idx)) {
+    if (this._expandedStates[idx]) {
       return "";
     }
     if (!option.conditions || option.conditions.length === 0) {
@@ -103,6 +96,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
           (option, idx) =>
             html`<ha-card>
               <ha-expansion-panel
+                .index=${idx}
                 leftChevron
                 @expanded-changed=${this._expandedChanged}
               >
@@ -229,6 +223,12 @@ export class HaChooseAction extends LitElement implements ActionElement {
     `;
   }
 
+  protected firstUpdated() {
+    ensureArray(this.action.choose).forEach(() =>
+      this._expandedStates.push(false)
+    );
+  }
+
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
@@ -240,25 +240,11 @@ export class HaChooseAction extends LitElement implements ActionElement {
       }
     }
 
-    const nodes = this.shadowRoot!.querySelectorAll("ha-expansion-panel");
-    if (this._expandedStates.length !== nodes.length) {
-      this._expandedStates = [];
+    if (this._expandLast) {
+      const nodes = this.shadowRoot!.querySelectorAll("ha-expansion-panel");
+      nodes[nodes.length - 1].expanded = true;
+      this._expandLast = false;
     }
-    let update = false;
-    for (let i = 0; i < nodes.length; i++) {
-      if (this._expandLast && i === nodes.length - 1) {
-        nodes[i].expanded = true;
-        update = true;
-      }
-      if (this._expandedStates[i] !== nodes[i].expanded) {
-        this._expandedStates[i] = nodes[i].expanded;
-        update = true;
-      }
-    }
-    if (update) {
-      this._expandedStates = this._expandedStates.concat();
-    }
-    this._expandLast = false;
   }
 
   private _addDefault() {
@@ -300,6 +286,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
       value: { ...this.action, choose },
     });
     this._expandLast = true;
+    this._expandedStates[choose.length - 1] = true;
   }
 
   private _moveUp(ev) {
@@ -323,6 +310,10 @@ export class HaChooseAction extends LitElement implements ActionElement {
     const options = ensureArray(this.action.choose)!.concat();
     const item = options.splice(index, 1)[0];
     options.splice(newIndex, 0, item);
+
+    const expanded = this._expandedStates.splice(index, 1)[0];
+    this._expandedStates.splice(newIndex, 0, expanded);
+
     fireEvent(this, "value-changed", {
       value: { ...this.action, choose: options },
     });
@@ -334,6 +325,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
       ? [...ensureArray(this.action.choose)]
       : [];
     choose.splice(index, 1);
+    this._expandedStates.splice(index, 1);
     fireEvent(this, "value-changed", {
       value: { ...this.action, choose },
     });
