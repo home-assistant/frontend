@@ -13,11 +13,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-icon-button";
 import { Condition } from "../../../../../data/automation";
-import {
-  Action,
-  ChooseAction,
-  ChooseActionChoice,
-} from "../../../../../data/script";
+import { Action, ChooseAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
@@ -47,8 +43,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
   private _expandLast = false;
 
   private _sortable?: SortableInstance;
-
-  private _optionKeys = new WeakMap<ChooseActionChoice, string>();
 
   public static get defaultConfig() {
     return { choose: [{ conditions: [], sequence: [] }] };
@@ -105,7 +99,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
       <div class="options">
         ${repeat(
           action.choose ? ensureArray(action.choose) : [],
-          (option) => this._getKey(option),
+          (option) => option,
           (option, idx) =>
             html`<ha-card>
               <ha-expansion-panel
@@ -265,14 +259,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
       this._expandedStates = this._expandedStates.concat();
     }
     this._expandLast = false;
-  }
-
-  private _getKey(option: ChooseActionChoice) {
-    if (!this._optionKeys.has(option)) {
-      this._optionKeys.set(option, Math.random().toString());
-    }
-
-    return this._optionKeys.get(option)!;
   }
 
   private _addDefault() {
