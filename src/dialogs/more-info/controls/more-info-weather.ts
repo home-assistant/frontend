@@ -252,7 +252,8 @@ class MoreInfoWeather extends LitElement {
                       ${this._showValue(item.templow)
                         ? this.hass.formatEntityAttributeValue(
                             this.stateObj!,
-                            "templow"
+                            "templow",
+                            item.templow
                           )
                         : hourly
                         ? ""
@@ -262,7 +263,8 @@ class MoreInfoWeather extends LitElement {
                       ${this._showValue(item.temperature)
                         ? this.hass.formatEntityAttributeValue(
                             this.stateObj!,
-                            "temperature"
+                            "temperature",
+                            item.temperature
                           )
                         : "—"}
                     </div>
