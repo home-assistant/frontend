@@ -81,6 +81,7 @@ export class HaControlNumberButton extends LitElement {
   }
 
   _handleKeyDown(e: KeyboardEvent) {
+    if (this.disabled) return;
     if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
     switch (e.code) {
@@ -116,7 +117,7 @@ export class HaControlNumberButton extends LitElement {
     const displayedValue =
       this.value != null
         ? formatNumber(this.value, this.locale, this.formatOptions)
-        : "-";
+        : "";
 
     return html`
       <div class="container">
@@ -124,12 +125,12 @@ export class HaControlNumberButton extends LitElement {
           id="input"
           class="value"
           role="number-button"
-          tabindex="0"
+          .tabIndex=${this.disabled ? "-1" : "0"}
           aria-valuenow=${this.value}
           aria-valuemin=${this.min}
           aria-valuemax=${this.max}
           aria-label=${ifDefined(this.label)}
-          .disabled=${this.disabled}
+          ?disabled=${this.disabled}
           @keydown=${this._handleKeyDown}
         >
           ${displayedValue}
@@ -240,6 +241,7 @@ export class HaControlNumberButton extends LitElement {
       .button[disabled] {
         opacity: 0.4;
         pointer-events: none;
+        cursor: not-allowed;
       }
       .button.minus {
         left: 0;
