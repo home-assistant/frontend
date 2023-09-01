@@ -20,6 +20,7 @@ class EntityPreviewRow extends LitElement {
     return html`<state-badge
         .hass=${this.hass}
         .stateObj=${stateObj}
+        stateColor
       ></state-badge>
       <div class="name" .title=${computeStateName(stateObj)}>
         ${computeStateName(stateObj)}
