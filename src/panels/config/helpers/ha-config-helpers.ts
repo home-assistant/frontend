@@ -1,11 +1,10 @@
-import { mdiPencilOff, mdiPlus } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import { mdiPencilOff, mdiPlus } from "@mdi/js";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { LitElement, PropertyValues, TemplateResult, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { domainIcon } from "../../../common/entity/domain_icon";
 import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
@@ -15,6 +14,7 @@ import {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
+import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
@@ -82,12 +82,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           title: "",
           label: localize("ui.panel.config.helpers.picker.headers.icon"),
           type: "icon",
-          template: (icon, helper: any) =>
-            icon
-              ? html` <ha-icon .icon=${icon}></ha-icon> `
-              : html`<ha-svg-icon
-                  .path=${domainIcon(helper.type)}
-                ></ha-svg-icon>`,
+          template: (_, helper: any) =>
+            html`<ha-state-icon .state=${helper.entity}></ha-state-icon>`,
         },
         name: {
           title: localize("ui.panel.config.helpers.picker.headers.name"),
@@ -176,6 +172,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             ? configEntry.domain
             : computeStateDomain(entityState),
           configEntry,
+          entity: entityState,
         };
       })
   );
