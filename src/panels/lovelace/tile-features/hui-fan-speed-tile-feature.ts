@@ -3,7 +3,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select";
@@ -13,13 +12,13 @@ import { UNAVAILABLE } from "../../../data/entity";
 import {
   computeFanSpeedCount,
   computeFanSpeedIcon,
+  FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
+  FAN_SPEEDS,
   FanEntity,
   FanEntityFeature,
   fanPercentageToSpeed,
   FanSpeed,
   fanSpeedToPercentage,
-  FAN_SPEEDS,
-  FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
 } from "../../../data/fan";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
@@ -55,14 +54,7 @@ class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
 
   private _localizeSpeed(speed: FanSpeed) {
     if (speed === "on" || speed === "off") {
-      return computeStateDisplay(
-        this.hass!.localize,
-        this.stateObj!,
-        this.hass!.locale,
-        this.hass!.config,
-        this.hass!.entities,
-        speed
-      );
+      return this.hass!.formatEntityState(this.stateObj!, speed);
     }
     return (
       this.hass!.localize(`ui.dialogs.more_info_control.fan.speed.${speed}`) ||
