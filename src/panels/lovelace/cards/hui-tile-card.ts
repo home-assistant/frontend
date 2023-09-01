@@ -49,14 +49,8 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import "../components/hui-timestamp-display";
-import { createTileFeatureElement } from "../create-element/create-tile-feature-element";
-import type { LovelaceTileFeatureConfig } from "../tile-features/types";
-import type {
-  LovelaceCard,
-  LovelaceCardEditor,
-  LovelaceTileFeature,
-} from "../types";
-import type { HuiErrorCard } from "./hui-error-card";
+import "../tile-features/hui-tile-features";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import { computeTileBadge } from "./tile/badges/tile-badge";
 import type { ThermostatCardConfig, TileCardConfig } from "./types";
 
@@ -391,43 +385,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             ></ha-tile-info>
           </div>
         </div>
-        <div class="features">
-          ${this._config.features?.map((featureConf) =>
-            this.renderFeature(featureConf, stateObj)
-          )}
-        </div>
+        <hui-tile-features
+          .hass=${this.hass}
+          .stateObj=${stateObj}
+          .color=${this._config.color}
+          .features=${this._config.features}
+        ></hui-tile-features>
       </ha-card>
     `;
-  }
-
-  private _featuresElements = new WeakMap<
-    LovelaceTileFeatureConfig,
-    LovelaceTileFeature | HuiErrorCard
-  >();
-
-  private _getFeatureElement(feature: LovelaceTileFeatureConfig) {
-    if (!this._featuresElements.has(feature)) {
-      const element = createTileFeatureElement(feature);
-      this._featuresElements.set(feature, element);
-      return element;
-    }
-
-    return this._featuresElements.get(feature)!;
-  }
-
-  private renderFeature(
-    featureConf: LovelaceTileFeatureConfig,
-    stateObj: HassEntity
-  ): TemplateResult {
-    const element = this._getFeatureElement(featureConf);
-
-    if (this.hass) {
-      element.hass = this.hass;
-      (element as LovelaceTileFeature).stateObj = stateObj;
-      (element as LovelaceTileFeature).color = this._config!.color;
-    }
-
-    return html`${element}`;
   }
 
   static get styles(): CSSResultGroup {
