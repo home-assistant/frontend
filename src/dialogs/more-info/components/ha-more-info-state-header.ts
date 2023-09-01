@@ -1,7 +1,5 @@
-import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import "../../../components/ha-absolute-time";
 import "../../../components/ha-relative-time";
 import { isUnavailableState } from "../../../data/entity";
@@ -20,30 +18,22 @@ export class HaMoreInfoStateHeader extends LitElement {
 
   @state() private _absoluteTime = false;
 
-  private _computeStateDisplay(stateObj: HassEntity): TemplateResult | string {
+  private _localizeState(): TemplateResult | string {
     if (
-      stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP &&
-      !isUnavailableState(stateObj.state)
+      this.stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP &&
+      !isUnavailableState(this.stateObj.state)
     ) {
       return html`
         <hui-timestamp-display
           .hass=${this.hass}
-          .ts=${new Date(stateObj.state)}
+          .ts=${new Date(this.stateObj.state)}
           format="relative"
           capitalize
         ></hui-timestamp-display>
       `;
     }
 
-    const stateDisplay = computeStateDisplay(
-      this.hass!.localize,
-      stateObj,
-      this.hass!.locale,
-      this.hass!.config,
-      this.hass!.entities
-    );
-
-    return stateDisplay;
+    return this.hass.formatEntityState(this.stateObj);
   }
 
   private _toggleAbsolute() {
@@ -51,8 +41,7 @@ export class HaMoreInfoStateHeader extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const stateDisplay =
-      this.stateOverride ?? this._computeStateDisplay(this.stateObj);
+    const stateDisplay = this.stateOverride ?? this._localizeState();
 
     return html`
       <p class="state">${stateDisplay}</p>

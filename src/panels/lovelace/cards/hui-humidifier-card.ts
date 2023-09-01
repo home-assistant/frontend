@@ -11,12 +11,10 @@ import {
   svg,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { formatNumber } from "../../../common/number/format_number";
@@ -168,34 +166,13 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
           >
             ${
               stateObj.attributes.action
-                ? computeAttributeValueDisplay(
-                    this.hass.localize,
-                    stateObj,
-                    this.hass.locale,
-                    this.hass.config,
-                    this.hass.entities,
-                    "action"
-                  )
-                : computeStateDisplay(
-                    this.hass.localize,
-                    stateObj,
-                    this.hass.locale,
-                    this.hass.config,
-                    this.hass.entities
-                  )
+                ? this.hass.formatEntityAttributeValue(stateObj, "action")
+                : this.hass.formatEntityState(stateObj)
             }
             ${
               stateObj.state !== UNAVAILABLE && stateObj.attributes.mode
                 ? html`
-                    -
-                    ${computeAttributeValueDisplay(
-                      this.hass.localize,
-                      stateObj,
-                      this.hass.locale,
-                      this.hass.config,
-                      this.hass.entities,
-                      "mode"
-                    )}
+                    - ${this.hass.formatEntityAttributeValue(stateObj, "mode")}
                   `
                 : nothing
             }
