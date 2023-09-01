@@ -1,7 +1,6 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { formatNumber } from "../common/number/format_number";
 import LocalizeMixin from "../mixins/localize-mixin";
 
@@ -84,12 +83,7 @@ class HaWaterHeaterState extends LocalizeMixin(PolymerElement) {
   }
 
   _localizeState(stateObj) {
-    return computeStateDisplay(
-      this.hass.localize,
-      stateObj,
-      this.hass.locale,
-      this.hass.entities
-    );
+    return this.hass.formatEntityState(stateObj);
   }
 }
 customElements.define("ha-water_heater-state", HaWaterHeaterState);

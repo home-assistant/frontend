@@ -2,7 +2,6 @@ import { mdiMinus, mdiPlus } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { computeAttributeValueDisplay } from "../../../../common/entity/compute_attribute_display";
 import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { clamp } from "../../../../common/number/clamp";
@@ -92,14 +91,10 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
 
     const action = this.stateObj.attributes.action;
 
-    const actionLabel = computeAttributeValueDisplay(
-      this.hass.localize,
+    const actionLabel = this.hass.formatEntityAttributeValue(
       this.stateObj,
-      this.hass.locale,
-      this.hass.config,
-      this.hass.entities,
       "action"
-    ) as string;
+    );
 
     return html`
       <p class="label">

@@ -129,6 +129,33 @@ class HuiTargetTemperatureTileFeature
     });
   }
 
+  private _supportsTarget() {
+    const domain = computeStateDomain(this.stateObj!);
+    return (
+      (domain === "climate" &&
+        supportsFeature(
+          this.stateObj!,
+          ClimateEntityFeature.TARGET_TEMPERATURE
+        )) ||
+      (domain === "water_heater" &&
+        supportsFeature(
+          this.stateObj!,
+          WaterHeaterEntityFeature.TARGET_TEMPERATURE
+        ))
+    );
+  }
+
+  private _supportsTargetRange() {
+    const domain = computeStateDomain(this.stateObj!);
+    return (
+      domain === "climate" &&
+      supportsFeature(
+        this.stateObj!,
+        ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
+      )
+    );
+  }
+
   protected render() {
     if (
       !this._config ||
@@ -147,94 +174,104 @@ class HuiTargetTemperatureTileFeature
       minimumFractionDigits: digits,
     };
 
-    const domain = computeStateDomain(this.stateObj!);
-
     if (
-      (domain === "climate" &&
-        supportsFeature(
-          this.stateObj,
-          ClimateEntityFeature.TARGET_TEMPERATURE
-        )) ||
-      (domain === "water_heater" &&
-        supportsFeature(
-          this.stateObj,
-          WaterHeaterEntityFeature.TARGET_TEMPERATURE
-        ))
+      this._supportsTarget() &&
+      this._targetTemperature.value != null &&
+      this.stateObj.state !== UNAVAILABLE
     ) {
       return html`
-      <ha-control-button-group>
-        <ha-control-number-buttons
-          .formatOptions=${options}
-          .target="value"
-          .value=${this.stateObj.attributes.temperature}
-          .min=${this._min}
-          .max=${this._max}
-          .step=${this._step}
-          @value-changed=${this._valueChanged}
-          .label=${this.hass.formatEntityAttributeName(
-            this.stateObj,
-            "temperature"
-          )}
-          style=${styleMap({
-            "--control-number-buttons-focus-color": stateColor,
-          })}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-        >
-        </ha-control-number-buttons>
-      </ha-control-number-buttons>
-    `;
+        <ha-control-button-group>
+          <ha-control-number-buttons
+            .formatOptions=${options}
+            .target="value"
+            .value=${this.stateObj.attributes.temperature}
+            .min=${this._min}
+            .max=${this._max}
+            .step=${this._step}
+            @value-changed=${this._valueChanged}
+            .label=${this.hass.formatEntityAttributeName(
+              this.stateObj,
+              "temperature"
+            )}
+            style=${styleMap({
+              "--control-number-buttons-focus-color": stateColor,
+            })}
+            .disabled=${this.stateObj!.state === UNAVAILABLE}
+          >
+          </ha-control-number-buttons>
+        </ha-control-button-group>
+      `;
     }
 
     if (
-      domain === "climate" &&
-      supportsFeature(
-        this.stateObj,
-        ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
-      )
+      this._supportsTargetRange() &&
+      this._targetTemperature.low != null &&
+      this._targetTemperature.high != null &&
+      this.stateObj.state !== UNAVAILABLE
     ) {
       return html`
-      <ha-control-button-group>
-        <ha-control-number-buttons
-          .formatOptions=${options}
-          .target=${"low"}
-          .value=${(this.stateObj as ClimateEntity).attributes.target_temp_low}
-          .min=${this._min}
-          .max=${Math.min(this._max, this._targetTemperature.high ?? this._max)}
-          .step=${this._step}
-          @value-changed=${this._valueChanged}
-          .label=${this.hass.formatEntityAttributeName(
-            this.stateObj,
-            "temperature"
-          )}
-          style=${styleMap({
-            "--control-number-buttons-focus-color": stateColor,
-          })}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-        >
-        </ha-control-number-buttons>
-        <ha-control-number-buttons
-          .formatOptions=${options}
-          .target=${"high"}
-          .value=${(this.stateObj as ClimateEntity).attributes.target_temp_high}
-          .min=${Math.max(this._min, this._targetTemperature.low ?? this._min)}
-          .max=${this._max}
-          .step=${this._step}
-          @value-changed=${this._valueChanged}
-          .label=${this.hass.formatEntityAttributeName(
-            this.stateObj,
-            "temperature"
-          )}
-          style=${styleMap({
-            "--control-number-buttons-focus-color": stateColor,
-          })}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-        >
-        </ha-control-number-buttons>
-      </ha-control-number-buttons>
-    `;
+        <ha-control-button-group>
+          <ha-control-number-buttons
+            .formatOptions=${options}
+            .target=${"low"}
+            .value=${this._targetTemperature.low}
+            .min=${this._min}
+            .max=${Math.min(
+              this._max,
+              this._targetTemperature.high ?? this._max
+            )}
+            .step=${this._step}
+            @value-changed=${this._valueChanged}
+            .label=${this.hass.formatEntityAttributeName(
+              this.stateObj,
+              "target_temp_low"
+            )}
+            style=${styleMap({
+              "--control-number-buttons-focus-color": stateColor,
+            })}
+            .disabled=${this.stateObj!.state === UNAVAILABLE}
+          >
+          </ha-control-number-buttons>
+          <ha-control-number-buttons
+            .formatOptions=${options}
+            .target=${"high"}
+            .value=${this._targetTemperature.high}
+            .min=${Math.max(
+              this._min,
+              this._targetTemperature.low ?? this._min
+            )}
+            .max=${this._max}
+            .step=${this._step}
+            @value-changed=${this._valueChanged}
+            .label=${this.hass.formatEntityAttributeName(
+              this.stateObj,
+              "target_temp_high"
+            )}
+            style=${styleMap({
+              "--control-number-buttons-focus-color": stateColor,
+            })}
+            .disabled=${this.stateObj!.state === UNAVAILABLE}
+          >
+          </ha-control-number-buttons>
+        </ha-control-button-group>
+      `;
     }
 
-    return nothing;
+    return html`
+      <ha-control-button-group>
+        <ha-control-number-buttons
+          .disabled=${this.stateObj!.state === UNAVAILABLE}
+          .label=${this.hass.formatEntityAttributeName(
+            this.stateObj,
+            "temperature"
+          )}
+          style=${styleMap({
+            "--control-number-buttons-focus-color": stateColor,
+          })}
+        >
+        </ha-control-number-buttons>
+      </ha-control-button-group>
+    `;
   }
 
   static get styles() {
