@@ -1,5 +1,5 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { mdiPencilOff, mdiPlus } from "@mdi/js";
+import { mdiAlertCircle, mdiPencilOff, mdiPlus } from "@mdi/js";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, PropertyValues, TemplateResult, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -86,10 +86,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           template: (icon, helper: any) =>
             helper.entity
               ? html`<ha-state-icon .state=${helper.entity}></ha-state-icon>`
-              : html`<ha-icon
-                  .icon=${icon}
+              : html`<ha-svg-icon
+                  .path=${icon}
                   style="color: var(--error-color)"
-                ></ha-icon>`,
+                ></ha-svg-icon>`,
         },
         name: {
           title: localize("ui.panel.config.helpers.picker.headers.name"),
@@ -194,7 +194,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       const entries = Object.values(configEntriesCopy).map((configEntry) => ({
         id: configEntry.entry_id,
         entity_id: "",
-        icon: "mdi:alert-circle",
+        icon: mdiAlertCircle,
         name: configEntry.title || "",
         editable: true,
         type: configEntry.domain,
