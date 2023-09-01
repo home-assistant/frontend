@@ -1750,8 +1750,8 @@
             "delete_return": "Delete return",
             "add_return": "Add return",
             "grid_carbon_footprint": "Grid carbon footprint",
-            "remove_co2_signal": "Remove CO2 signal integration",
-            "add_co2_signal": "Add CO2 signal integration",
+            "remove_co2_signal": "Remove Electricity Maps integration",
+            "add_co2_signal": "Add Electricity Maps integration",
             "flow_dialog": {
               "from": {
                 "header": "Configure grid consumption",
