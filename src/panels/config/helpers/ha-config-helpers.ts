@@ -37,6 +37,7 @@ import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { HelperDomain, isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 
 // This groups items by a key but only returns last entry per key.
 const groupByOne = <T>(
@@ -82,8 +83,13 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           title: "",
           label: localize("ui.panel.config.helpers.picker.headers.icon"),
           type: "icon",
-          template: (_, helper: any) =>
-            html`<ha-state-icon .state=${helper.entity}></ha-state-icon>`,
+          template: (icon, helper: any) =>
+            helper.entity
+              ? html`<ha-state-icon .state=${helper.entity}></ha-state-icon>`
+              : html`<ha-icon
+                  .icon=${icon}
+                  style="color: var(--error-color)"
+                ></ha-icon>`,
         },
         name: {
           title: localize("ui.panel.config.helpers.picker.headers.name"),
@@ -95,7 +101,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           template: (name, item: any) => html`
             ${name}
             ${narrow
-              ? html` <div class="secondary">${item.entity_id}</div> `
+              ? html`<div class="secondary">${item.entity_id}</div> `
               : ""}
           `,
         },
@@ -153,17 +159,22 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       stateItems: HassEntity[],
       entityEntries: Record<string, EntityRegistryEntry>,
       configEntries: Record<string, ConfigEntry>
-    ) =>
-      stateItems.map((entityState) => {
+    ) => {
+      const configEntriesCopy = { ...configEntries };
+
+      const states = stateItems.map((entityState) => {
         const configEntry = getConfigEntry(
           entityEntries,
           configEntries,
           entityState.entity_id
         );
 
+        if (configEntry) {
+          delete configEntriesCopy[configEntry!.entry_id];
+        }
+
         return {
           id: entityState.entity_id,
-          icon: entityState.attributes.icon,
           name: entityState.attributes.friendly_name || "",
           entity_id: entityState.entity_id,
           editable:
@@ -174,7 +185,25 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           configEntry,
           entity: entityState,
         };
-      })
+      });
+
+      if (!Object.keys(configEntriesCopy).length) {
+        return states;
+      }
+
+      const entries = Object.values(configEntriesCopy).map((configEntry) => ({
+        id: configEntry.entry_id,
+        entity_id: "",
+        icon: "mdi:alert-circle",
+        name: configEntry.title || "",
+        editable: true,
+        type: configEntry.domain,
+        configEntry,
+        entity: undefined,
+      }));
+
+      return [...states, ...entries];
+    }
   );
 
   protected render(): TemplateResult {
@@ -353,8 +382,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   }
 
   private async _openEditDialog(ev: CustomEvent): Promise<void> {
-    const entityId = (ev.detail as RowClickedEvent).id;
-    showMoreInfoDialog(this, { entityId });
+    const id = (ev.detail as RowClickedEvent).id;
+    if (id.includes(".")) {
+      showMoreInfoDialog(this, { entityId: id });
+    } else {
+      showOptionsFlowDialog(this, this._configEntries![id]);
+    }
   }
 
   private _createHelpler() {
