@@ -1,6 +1,7 @@
 // To use comlink under ES5
-import "proxy-polyfill";
 import { expose } from "comlink";
+import "proxy-polyfill";
+import { stringCompare } from "../../common/string/compare";
 import type {
   ClonedDataTableColumnData,
   DataTableRowData,
@@ -39,7 +40,8 @@ const sortData = (
   data: DataTableRowData[],
   column: ClonedDataTableColumnData,
   direction: SortingDirection,
-  sortColumn: string
+  sortColumn: string,
+  language?: string
 ) =>
   data.sort((a, b) => {
     let sort = 1;
@@ -58,13 +60,6 @@ const sortData = (
     if (column.type === "numeric") {
       valA = isNaN(valA) ? undefined : Number(valA);
       valB = isNaN(valB) ? undefined : Number(valB);
-    } else {
-      if (typeof valA === "string") {
-        valA = valA.toUpperCase();
-      }
-      if (typeof valB === "string") {
-        valB = valB.toUpperCase();
-      }
     }
 
     // Ensure "undefined" and "null" are always sorted to the bottom
@@ -73,6 +68,10 @@ const sortData = (
     }
     if (valB == null && valA != null) {
       return -1;
+    }
+
+    if (column.type !== "numeric") {
+      return sort * stringCompare(valA, valB, language);
     }
 
     if (valA < valB) {
