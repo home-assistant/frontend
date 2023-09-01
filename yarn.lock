@@ -3842,7 +3842,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-node-resolve@npm:15.2.1":
+"@rollup/plugin-node-resolve@npm:15.2.1, @rollup/plugin-node-resolve@npm:^15.0.1":
   version: 15.2.1
   resolution: "@rollup/plugin-node-resolve@npm:15.2.1"
   dependencies:
@@ -5037,12 +5037,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/config-loader@npm:^0.1.3":
-  version: 0.1.3
-  resolution: "@web/config-loader@npm:0.1.3"
+"@web/config-loader@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "@web/config-loader@npm:0.2.1"
   dependencies:
     semver: ^7.3.4
-  checksum: 278554bd00b757eaf296ba904a224c61d4698df1a5d6c04931c40bc6bb308e81e767055cbf283b763cc530aae6b200bb950aa19eb41aa8979a3a2b29e5f0ac7a
+  checksum: 698feaf18b9c486a77bc752fb74bbf62d44548a1a63beb35c58f9ef8eae498c5aafff3996dbcfd4a32b33226fed5d2d5338add8a12ba9ffe258063c95b7b947e
   languageName: node
   linkType: hard
 
@@ -5072,6 +5072,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@web/dev-server-core@npm:^0.5.0, @web/dev-server-core@npm:^0.5.1":
+  version: 0.5.2
+  resolution: "@web/dev-server-core@npm:0.5.2"
+  dependencies:
+    "@types/koa": ^2.11.6
+    "@types/ws": ^7.4.0
+    "@web/parse5-utils": ^2.0.0
+    chokidar: ^3.4.3
+    clone: ^2.1.2
+    es-module-lexer: ^1.0.0
+    get-stream: ^6.0.0
+    is-stream: ^2.0.0
+    isbinaryfile: ^5.0.0
+    koa: ^2.13.0
+    koa-etag: ^4.0.0
+    koa-send: ^5.0.1
+    koa-static: ^5.0.0
+    lru-cache: ^8.0.4
+    mime-types: ^2.1.27
+    parse5: ^6.0.1
+    picomatch: ^2.2.2
+    ws: ^7.4.2
+  checksum: 1a42f71a3d7eafd41bdb33a8cf9d37bb7e205704f3bcde9e32bd0aa639759d7a6e4448efe448be127042c46816931dd7585575e0f30a15c1b22576d578ccaacc
+  languageName: node
+  linkType: hard
+
 "@web/dev-server-hmr@npm:^0.1.11":
   version: 0.1.12
   resolution: "@web/dev-server-hmr@npm:0.1.12"
@@ -5081,7 +5107,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server-rollup@npm:0.4.1, @web/dev-server-rollup@npm:^0.4.1":
+"@web/dev-server-rollup@npm:0.4.1":
   version: 0.4.1
   resolution: "@web/dev-server-rollup@npm:0.4.1"
   dependencies:
@@ -5095,15 +5121,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server@npm:0.1.38":
-  version: 0.1.38
-  resolution: "@web/dev-server@npm:0.1.38"
+"@web/dev-server-rollup@npm:^0.5.1":
+  version: 0.5.2
+  resolution: "@web/dev-server-rollup@npm:0.5.2"
+  dependencies:
+    "@rollup/plugin-node-resolve": ^15.0.1
+    "@web/dev-server-core": ^0.5.0
+    nanocolors: ^0.2.1
+    parse5: ^6.0.1
+    rollup: ^3.15.0
+    whatwg-url: ^11.0.0
+  checksum: 655a838e2a19ce6eaed99d5f6a30c42349e5bb50e9d01fb6541f81dd0c5ccb46618711f25ac66786376a2465d64f996209ce32a2e6554f8ef58886fb25afcd12
+  languageName: node
+  linkType: hard
+
+"@web/dev-server@npm:0.3.1":
+  version: 0.3.1
+  resolution: "@web/dev-server@npm:0.3.1"
   dependencies:
     "@babel/code-frame": ^7.12.11
     "@types/command-line-args": ^5.0.0
-    "@web/config-loader": ^0.1.3
-    "@web/dev-server-core": ^0.4.1
-    "@web/dev-server-rollup": ^0.4.1
+    "@web/config-loader": ^0.2.1
+    "@web/dev-server-core": ^0.5.1
+    "@web/dev-server-rollup": ^0.5.1
     camelcase: ^6.2.0
     command-line-args: ^5.1.1
     command-line-usage: ^7.0.1
@@ -5116,7 +5156,7 @@ __metadata:
   bin:
     wds: dist/bin.js
     web-dev-server: dist/bin.js
-  checksum: eeaf34f8744f58cfb9493155ad8548a87cae4e445a2fa894610b070f66cb303614d247bb609e378b9df342935ad980a259630317c444d19f9796abfcfb20bb13
+  checksum: 4f3f94506cfc9afd32cf825c72b3ae6af24f17298985c6eb3d10d8db08d657b8f976e22179946fdb842975d2097d3cf024cf8db2a83299293b5eb5ba93e50838
   languageName: node
   linkType: hard
 
@@ -5127,6 +5167,16 @@ __metadata:
     "@types/parse5": ^6.0.1
     parse5: ^6.0.1
   checksum: 3320b2c4ea1e6a2ff1e57086b0c697a71dac7a6e54da86b2fb8e6c1d5a673bf9b911a743a10daa8cd62a571719edf3e66c9b17e87d79cc982f234bf141e2e178
+  languageName: node
+  linkType: hard
+
+"@web/parse5-utils@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "@web/parse5-utils@npm:2.0.1"
+  dependencies:
+    "@types/parse5": ^6.0.1
+    parse5: ^6.0.1
+  checksum: d3993b0dee350e040bf5b13749283df88c97a48b063f8938fb21623422cd5f03b641393ca03bc724936e9f17d8bfd7939f501de6eb1c33ad82f6ac5112bf6cff
   languageName: node
   linkType: hard
 
@@ -9689,7 +9739,7 @@ __metadata:
     "@vibrant/core": 3.2.1-alpha.1
     "@vibrant/quantizer-mmcq": 3.2.1-alpha.1
     "@vue/web-component-wrapper": 1.3.0
-    "@web/dev-server": 0.1.38
+    "@web/dev-server": 0.3.1
     "@web/dev-server-rollup": 0.4.1
     "@webcomponents/scoped-custom-element-registry": 0.0.9
     "@webcomponents/webcomponentsjs": 2.8.0
@@ -11629,6 +11679,13 @@ __metadata:
   version: 7.18.3
   resolution: "lru-cache@npm:7.18.3"
   checksum: e550d772384709deea3f141af34b6d4fa392e2e418c1498c078de0ee63670f1f46f5eee746e8ef7e69e1c895af0d4224e62ee33e66a543a14763b0f2e74c1356
+  languageName: node
+  linkType: hard
+
+"lru-cache@npm:^8.0.4":
+  version: 8.0.5
+  resolution: "lru-cache@npm:8.0.5"
+  checksum: 87d72196d8f46e8299c4ab576ed2ec8a07e3cbef517dc9874399c0b2470bd9bf62aacec3b67f84ed6d74aaa1ef31636d048edf996f76248fd17db72bfb631609
   languageName: node
   linkType: hard
 
@@ -13956,6 +14013,20 @@ __metadata:
   bin:
     rollup: dist/bin/rollup
   checksum: 6a2bf167b3587d4df709b37d149ad0300692cc5deb510f89ac7bdc77c8738c9546ae3de9322b0968e1ed2b0e984571f5f55aae28fa7de4cfcb1bc5402a4e2be6
+  languageName: node
+  linkType: hard
+
+"rollup@npm:^3.15.0":
+  version: 3.28.1
+  resolution: "rollup@npm:3.28.1"
+  dependencies:
+    fsevents: ~2.3.2
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    rollup: dist/bin/rollup
+  checksum: 1fcab0929c16130218447c76c19b56ccc0e677110552462297e3679188fc70185a6ec418cef8ce138ec9fb78fd5188537a3f5d28762788e8c88b12a7fb8ba0fb
   languageName: node
   linkType: hard
 
