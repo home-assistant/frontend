@@ -60,6 +60,8 @@ const sortData = (
     if (column.type === "numeric") {
       valA = isNaN(valA) ? undefined : Number(valA);
       valB = isNaN(valB) ? undefined : Number(valB);
+    } else if (typeof valA === "string" && typeof valB === "string") {
+      return sort * stringCompare(valA, valB, language);
     }
 
     // Ensure "undefined" and "null" are always sorted to the bottom
@@ -68,10 +70,6 @@ const sortData = (
     }
     if (valB == null && valA != null) {
       return -1;
-    }
-
-    if (column.type !== "numeric") {
-      return sort * stringCompare(valA, valB, language);
     }
 
     if (valA < valB) {
