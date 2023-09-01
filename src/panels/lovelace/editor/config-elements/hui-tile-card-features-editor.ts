@@ -29,15 +29,16 @@ import { supportsAlarmModesTileFeature } from "../../tile-features/hui-alarm-mod
 import { supportsClimateHvacModesTileFeature } from "../../tile-features/hui-climate-hvac-modes-tile-feature";
 import { supportsCoverOpenCloseTileFeature } from "../../tile-features/hui-cover-open-close-tile-feature";
 import { supportsCoverPositionTileFeature } from "../../tile-features/hui-cover-position-tile-feature";
+import { supportsCoverTiltPositionTileFeature } from "../../tile-features/hui-cover-tilt-position-tile-feature";
 import { supportsCoverTiltTileFeature } from "../../tile-features/hui-cover-tilt-tile-feature";
 import { supportsFanSpeedTileFeature } from "../../tile-features/hui-fan-speed-tile-feature";
 import { supportsLawnMowerCommandTileFeature } from "../../tile-features/hui-lawn-mower-commands-tile-feature";
 import { supportsLightBrightnessTileFeature } from "../../tile-features/hui-light-brightness-tile-feature";
 import { supportsLightColorTempTileFeature } from "../../tile-features/hui-light-color-temp-tile-feature";
+import { supportsTargetTemperatureTileFeature } from "../../tile-features/hui-target-temperature-tile-feature";
 import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
 import { supportsWaterHeaterOperationModesTileFeature } from "../../tile-features/hui-water-heater-operation-modes-tile-feature";
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
-import { supportsTargetTemperatureTileFeature } from "../../tile-features/hui-target-temperature-tile-feature";
 
 type FeatureType = LovelaceTileFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
@@ -72,7 +73,7 @@ const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
     "climate-hvac-modes": supportsClimateHvacModesTileFeature,
     "cover-open-close": supportsCoverOpenCloseTileFeature,
     "cover-position": supportsCoverPositionTileFeature,
-    "cover-tilt-position": supportsCoverPositionTileFeature,
+    "cover-tilt-position": supportsCoverTiltPositionTileFeature,
     "cover-tilt": supportsCoverTiltTileFeature,
     "fan-speed": supportsFanSpeedTileFeature,
     "lawn-mower-commands": supportsLawnMowerCommandTileFeature,
