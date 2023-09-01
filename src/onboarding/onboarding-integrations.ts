@@ -29,6 +29,7 @@ const HIDDEN_DOMAINS = new Set([
   "radio_browser",
   "rpi_power",
   "sun",
+  "google_translate",
 ]);
 
 @customElement("onboarding-integrations")
