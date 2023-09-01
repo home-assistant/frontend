@@ -11,7 +11,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../../../common/const";
-import { computeAttributeValueDisplay } from "../../../../common/entity/compute_attribute_display";
 import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
@@ -162,14 +161,10 @@ export class HaMoreInfoClimateTemperature extends LitElement {
 
     const action = this.stateObj.attributes.hvac_action;
 
-    const actionLabel = computeAttributeValueDisplay(
-      this.hass.localize,
+    const actionLabel = this.hass.formatEntityAttributeValue(
       this.stateObj,
-      this.hass.locale,
-      this.hass.config,
-      this.hass.entities,
       "hvac_action"
-    ) as string;
+    );
 
     return html`
       <p class="label">

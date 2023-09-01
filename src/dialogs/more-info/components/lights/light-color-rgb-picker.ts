@@ -26,7 +26,6 @@ import "../../../../components/ha-hs-color-picker";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-labeled-slider";
-import "../../../../components/ha-temp-color-picker";
 import {
   getLightCurrentModeRgbColor,
   LightColor,

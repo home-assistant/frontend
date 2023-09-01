@@ -10,11 +10,6 @@ import {
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import {
-  computeAttributeNameDisplay,
-  computeAttributeValueDisplay,
-} from "../../../common/entity/compute_attribute_display";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
@@ -58,26 +53,21 @@ class MoreInfoHumidifier extends LitElement {
       HumidifierEntityFeature.MODES
     );
 
-    const currentHumidity = this.stateObj.attributes.current_humidity as number;
-
     return html`
       <div class="current">
-        ${currentHumidity != null
+        ${this.stateObj.attributes.current_humidity != null
           ? html`
               <div>
                 <p class="label">
-                  ${computeAttributeNameDisplay(
-                    this.hass.localize,
+                  ${this.hass.formatEntityAttributeName(
                     this.stateObj,
-                    this.hass.entities,
                     "current_humidity"
                   )}
                 </p>
                 <p class="value">
                   ${this.hass.formatEntityAttributeValue(
                     this.stateObj,
-                    "current_humidity",
-                    currentHumidity
+                    "current_humidity"
                   )}
                 </p>
               </div>
@@ -104,24 +94,10 @@ class MoreInfoHumidifier extends LitElement {
         >
           <ha-svg-icon slot="icon" .path=${mdiPower}></ha-svg-icon>
           <ha-list-item value="off">
-            ${computeStateDisplay(
-              this.hass.localize,
-              this.stateObj,
-              this.hass.locale,
-              this.hass.config,
-              this.hass.entities,
-              "off"
-            )}
+            ${this.hass.formatEntityState(this.stateObj, "off")}
           </ha-list-item>
           <ha-list-item value="on">
-            ${computeStateDisplay(
-              this.hass.localize,
-              this.stateObj,
-              this.hass.locale,
-              this.hass.config,
-              this.hass.entities,
-              "on"
-            )}
+            ${this.hass.formatEntityState(this.stateObj, "on")}
           </ha-list-item>
         </ha-control-select-menu>
 
@@ -144,12 +120,8 @@ class MoreInfoHumidifier extends LitElement {
                         slot="graphic"
                         .path=${computeHumidiferModeIcon(mode)}
                       ></ha-svg-icon>
-                      ${computeAttributeValueDisplay(
-                        hass.localize,
+                      ${this.hass.formatEntityAttributeValue(
                         stateObj!,
-                        hass.locale,
-                        hass.config,
-                        hass.entities,
                         "mode",
                         mode
                       )}
