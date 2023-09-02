@@ -378,7 +378,7 @@ export class HuiEnergyGasGraphCard
       // Process gas consumption data.
       if (source.stat_energy_from in statistics) {
         const stats = statistics[source.stat_energy_from];
-
+        let end;
         for (const point of stats) {
           if (point.change === null || point.change === undefined) {
             continue;
@@ -392,6 +392,13 @@ export class HuiEnergyGasGraphCard
             y: point.change,
           });
           prevStart = point.start;
+          end = point.end;
+        }
+        if (gasConsumptionData.length === 1) {
+          gasConsumptionData.push({
+            x: end,
+            y: 0,
+          });
         }
       }
 

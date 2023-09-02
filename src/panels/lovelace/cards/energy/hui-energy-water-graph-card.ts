@@ -376,6 +376,7 @@ export class HuiEnergyWaterGraphCard
       // Process water consumption data.
       if (source.stat_energy_from in statistics) {
         const stats = statistics[source.stat_energy_from];
+        let end;
 
         for (const point of stats) {
           if (point.change === null || point.change === undefined) {
@@ -390,6 +391,13 @@ export class HuiEnergyWaterGraphCard
             y: point.change,
           });
           prevStart = point.start;
+          end = point.end;
+        }
+        if (waterConsumptionData.length === 1) {
+          waterConsumptionData.push({
+            x: end,
+            y: 0,
+          });
         }
       }
 
