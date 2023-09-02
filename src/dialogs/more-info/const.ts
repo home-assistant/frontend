@@ -122,11 +122,10 @@ export const computeShowLogBookComponent = (
   return true;
 };
 
-export const computeCustomShowNewMoreInfo = (stateObj: HassEntity): boolean => {
-    return stateObj.attributes &&
-           "custom_ui_new_more_info" in stateObj.attributes &&
-           stateObj.attributes.custom_ui_new_more_info;
-}
+export const computeCustomShowNewMoreInfo = (stateObj: HassEntity): boolean =>
+  stateObj.attributes &&
+  "custom_ui_new_more_info" in stateObj.attributes &&
+  stateObj.attributes.custom_ui_new_more_info;
 
 export const computeShowNewMoreInfo = (stateObj: HassEntity): boolean => {
   const domain = computeDomain(stateObj.entity_id);

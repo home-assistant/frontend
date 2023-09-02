@@ -40,9 +40,10 @@ export class MoreInfoInfo extends LitElement {
     const stateObj = this.hass.states[entityId] as HassEntity | undefined;
     const entityRegObj = this.hass.entities[entityId];
     const domain = computeDomain(entityId);
-    const isCustomNewMoreInfo = stateObj && computeCustomShowNewMoreInfo(stateObj);
-    const isNewMoreInfo = stateObj &&
-      (computeShowNewMoreInfo(stateObj) || isCustomNewMoreInfo);
+    const isCustomNewMoreInfo =
+      stateObj && computeCustomShowNewMoreInfo(stateObj);
+    const isNewMoreInfo =
+      stateObj && (computeShowNewMoreInfo(stateObj) || isCustomNewMoreInfo);
 
     return html`
       <div class="container" data-domain=${domain}>

@@ -155,7 +155,8 @@ export class MoreInfoDialog extends LitElement {
     domain: string,
     stateObj: HassEntity | undefined
   ): boolean {
-    const isCustomNewMoreInfo = stateObj && computeCustomShowNewMoreInfo(stateObj);
+    const isCustomNewMoreInfo: boolean =
+      !!stateObj && computeCustomShowNewMoreInfo(stateObj);
     return (
       (DOMAINS_WITH_MORE_INFO.includes(domain) || isCustomNewMoreInfo) &&
       (computeShowHistoryComponent(this.hass, this._entityId!) ||
