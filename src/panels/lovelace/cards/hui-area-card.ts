@@ -254,8 +254,8 @@ export class HuiAreaCard
     ];
   }
 
-  public getCardSize(): number {
-    return 3;
+  public getCardSize(hScale?: number): number {
+    return 3 * (hScale || 1);
   }
 
   public setConfig(config: AreaCardConfig): void {

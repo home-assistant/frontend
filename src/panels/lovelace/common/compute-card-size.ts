@@ -2,11 +2,12 @@ import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { LovelaceCard, LovelaceHeaderFooter } from "../types";
 
 export const computeCardSize = (
-  card: LovelaceCard | LovelaceHeaderFooter
+  card: LovelaceCard | LovelaceHeaderFooter,
+  hScale: number = 1
 ): number | Promise<number> => {
   if (typeof card.getCardSize === "function") {
     try {
-      return promiseTimeout(500, card.getCardSize()).catch(
+      return promiseTimeout(500, card.getCardSize(hScale)).catch(
         () => 1
       ) as Promise<number>;
     } catch (_e: any) {
@@ -18,5 +19,5 @@ export const computeCardSize = (
   }
   return customElements
     .whenDefined(card.localName)
-    .then(() => computeCardSize(card));
+    .then(() => computeCardSize(card, hScale));
 };

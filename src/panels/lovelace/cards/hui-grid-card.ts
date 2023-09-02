@@ -17,13 +17,14 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
     return document.createElement("hui-grid-card-editor");
   }
 
-  public async getCardSize(): Promise<number> {
+  public async getCardSize(hScale?: number): Promise<number> {
     if (!this._cards || !this._config) {
       return 0;
     }
 
     if (this.square) {
-      const rowHeight = SQUARE_ROW_HEIGHTS_BY_COLUMNS[this.columns] || 1;
+      const rowHeight =
+        (SQUARE_ROW_HEIGHTS_BY_COLUMNS[this.columns] || 1) * (hScale || 1);
       return (
         (this._cards.length < this.columns
           ? rowHeight
@@ -35,7 +36,7 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
     const promises: Array<Promise<number> | number> = [];
 
     for (const element of this._cards) {
-      promises.push(computeCardSize(element));
+      promises.push(computeCardSize(element, (hScale || 1) / this.columns));
     }
 
     const cardSizes = await Promise.all(promises);

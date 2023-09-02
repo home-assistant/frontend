@@ -40,8 +40,8 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
   @property() protected _config?: PictureCardConfig;
 
-  public getCardSize(): number {
-    return 5;
+  public getCardSize(hScale?: number): number {
+    return 5 * (hScale || 1);
   }
 
   public setConfig(config: PictureCardConfig): void {

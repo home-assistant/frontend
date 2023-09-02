@@ -101,9 +101,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     ).map((entity) => entity.entity);
   }
 
-  public getCardSize(): number {
+  public getCardSize(hScale?: number): number {
     if (!this._config?.aspect_ratio) {
-      return 7;
+      return 7 * (hScale || 1);
     }
 
     const ratio = parseAspectRatio(this._config.aspect_ratio);
@@ -112,7 +112,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         ? `${((100 * ratio.h) / ratio.w).toFixed(2)}`
         : "100";
 
-    return 1 + Math.floor(Number(ar) / 25) || 3;
+    return (1 + Math.floor(Number(ar) / 25) || 3) * (hScale || 1);
   }
 
   public static async getConfigElement() {

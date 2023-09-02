@@ -89,9 +89,9 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     this._setFetchStatisticsTimer();
   }
 
-  public getCardSize(): number {
+  public getCardSize(hScale?: number): number {
     return (
-      5 +
+      5 * (hScale || 1) +
       (this._config?.title ? 2 : 0) +
       (!this._config?.hide_legend ? this._entities?.length || 0 : 0)
     );
