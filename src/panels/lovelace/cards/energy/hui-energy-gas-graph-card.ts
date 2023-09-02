@@ -379,6 +379,7 @@ export class HuiEnergyGasGraphCard
       if (source.stat_energy_from in statistics) {
         const stats = statistics[source.stat_energy_from];
         let end;
+
         for (const point of stats) {
           if (point.change === null || point.change === undefined) {
             continue;
