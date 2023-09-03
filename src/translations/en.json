@@ -5352,7 +5352,7 @@
           "current_token_tooltip": "Unable to delete current refresh token"
         },
         "long_lived_access_tokens": {
-          "header": "Long-Lived access tokens",
+          "header": "Long-lived access tokens",
           "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
           "learn_auth_requests": "Learn how to make authenticated requests.",
           "created": "Created {date}",
@@ -5419,7 +5419,7 @@
                 },
                 "mfa": {
                   "data": {
-                    "code": "Two-factor Authentication Code"
+                    "code": "Two-factor authentication code"
                   },
                   "description": "Open the **{mfa_module_name}** on your device to view your two-factor authentication code and verify your identity:"
                 }
