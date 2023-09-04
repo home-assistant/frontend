@@ -55,7 +55,7 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
+import type { Entries, HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "./blueprint-script-editor";
@@ -530,10 +530,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       action: this._config.sequence,
     });
     this._validationErrors = (
-      Object.entries(validation) as [
-        keyof typeof validation,
-        (typeof validation)[keyof typeof validation],
-      ][]
+      Object.entries(validation) as Entries<typeof validation>
     ).map(([key, value]) =>
       value.valid
         ? ""

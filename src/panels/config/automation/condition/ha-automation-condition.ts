@@ -28,12 +28,13 @@ import type {
   AutomationClipboard,
   Condition,
 } from "../../../../data/automation";
-import type { HomeAssistant } from "../../../../types";
+import type { Entries, HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
 // Uncommenting these and this element doesn't load
 // import "./types/ha-automation-condition-not";
 // import "./types/ha-automation-condition-or";
+import { storage } from "../../../../common/decorators/storage";
 import { stringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HaSelect } from "../../../../components/ha-select";
@@ -52,7 +53,6 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
-import { storage } from "../../../../common/decorators/storage";
 
 const PASTE_VALUE = "__paste__";
 
@@ -364,12 +364,7 @@ export default class HaAutomationCondition extends LitElement {
 
   private _processedTypes = memoizeOne(
     (localize: LocalizeFunc): [string, string, string][] =>
-      (
-        Object.entries(CONDITION_TYPES) as [
-          keyof typeof CONDITION_TYPES,
-          string,
-        ][]
-      )
+      (Object.entries(CONDITION_TYPES) as Entries<typeof CONDITION_TYPES>)
         .map(
           ([condition, icon]) =>
             [

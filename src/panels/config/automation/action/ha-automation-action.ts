@@ -36,7 +36,7 @@ import {
   SortableInstance,
   loadSortable,
 } from "../../../../resources/sortable.ondemand";
-import { HomeAssistant } from "../../../../types";
+import { Entries, HomeAssistant } from "../../../../types";
 import type HaAutomationActionRow from "./ha-automation-action-row";
 import { getType } from "./ha-automation-action-row";
 import "./types/ha-automation-action-activate_scene";
@@ -333,7 +333,7 @@ export default class HaAutomationAction extends LitElement {
 
   private _processedTypes = memoizeOne(
     (localize: LocalizeFunc): [string, string, string][] =>
-      (Object.entries(ACTION_TYPES) as [keyof typeof ACTION_TYPES, string][])
+      (Object.entries(ACTION_TYPES) as Entries<typeof ACTION_TYPES>)
         .map(
           ([action, icon]) =>
             [

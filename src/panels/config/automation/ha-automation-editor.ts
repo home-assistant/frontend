@@ -49,6 +49,8 @@ import {
   showAutomationEditor,
   triggerAutomationActions,
 } from "../../../data/automation";
+import { validateConfig } from "../../../data/config";
+import { UNAVAILABLE } from "../../../data/entity";
 import { fetchEntityRegistry } from "../../../data/entity_registry";
 import {
   showAlertDialog,
@@ -57,15 +59,13 @@ import {
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
-import { UNAVAILABLE } from "../../../data/entity";
-import { validateConfig } from "../../../data/config";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -490,10 +490,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       action: this._config.action,
     });
     this._validationErrors = (
-      Object.entries(validation) as [
-        keyof typeof validation,
-        (typeof validation)[keyof typeof validation],
-      ][]
+      Object.entries(validation) as Entries<typeof validation>
     ).map(([key, value]) =>
       value.valid
         ? ""
