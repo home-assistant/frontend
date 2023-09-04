@@ -2982,6 +2982,7 @@
             "duplicate_scene": "Duplicate scene",
             "duplicate": "[%key:ui::common::duplicate%]",
             "headers": {
+              "state": "State",
               "name": "Name",
               "last_activated": "Last activated"
             }
