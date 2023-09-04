@@ -84,6 +84,7 @@ class OnboardingWelcomeLink extends LitElement {
         text-align: center;
         font-weight: 500;
         padding: 32px 16px;
+        height: 100%;
       }
       ha-svg-icon {
         color: var(--text-primary-color);

@@ -1,18 +1,21 @@
 import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { showBackupUploadDialog } from "../../hassio/src/dialogs/backup/show-dialog-backup-upload";
 import { showHassioBackupDialog } from "../../hassio/src/dialogs/backup/show-dialog-hassio-backup";
+import "../../hassio/src/components/hassio-upload-backup";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-ansi-to-html";
 import "../components/ha-card";
 import { fetchInstallationType } from "../data/onboarding";
+import { HomeAssistant } from "../types";
 import "./onboarding-loading";
 import { onBoardingStyles } from "./styles";
 
 @customElement("onboarding-restore-backup")
 class OnboardingRestoreBackup extends LitElement {
-  @property() public localize!: LocalizeFunc;
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property() public language!: string;
 
@@ -26,17 +29,16 @@ class OnboardingRestoreBackup extends LitElement {
           <onboarding-loading></onboarding-loading>`
       : html`
           <h1>${this.localize("ui.panel.page-onboarding.restore.header")}</h1>
-          <ha-button unelevated @click=${this._uploadBackup}>
-            ${this.localize("ui.panel.page-onboarding.restore.upload_backup")}
-          </ha-button>
+          <hassio-upload-backup
+            @backup-uploaded=${this._backupUploaded}
+            .hass=${this.hass}
+          ></hassio-upload-backup>
         `;
   }
 
-  private _uploadBackup(): void {
-    showBackupUploadDialog(this, {
-      showBackup: (slug: string) => this._showBackupDialog(slug),
-      onboarding: true,
-    });
+  private _backupUploaded(ev) {
+    const backup = ev.detail.backup;
+    this._showBackupDialog(backup.slug);
   }
 
   protected firstUpdated(changedProps) {
@@ -75,6 +77,9 @@ class OnboardingRestoreBackup extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: center;
+        }
+        hassio-upload-backup {
+          width: 100%;
         }
       `,
     ];

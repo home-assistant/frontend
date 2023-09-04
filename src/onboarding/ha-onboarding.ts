@@ -15,7 +15,10 @@ import {
 } from "../common/auth/token_storage";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../common/dom/fire_event";
-import { extractSearchParamsObject } from "../common/url/search-params";
+import {
+  extractSearchParam,
+  extractSearchParamsObject,
+} from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
 import "../components/ha-card";
 import "../components/ha-language-picker";
@@ -39,6 +42,8 @@ import "./onboarding-loading";
 import "./onboarding-welcome";
 import "./onboarding-welcome-links";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
+import { navigate } from "../common/navigate";
+import { mainWindow } from "../common/dom/get_main_window";
 
 type OnboardingEvent =
   | {
@@ -96,6 +101,24 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   @state() private _steps?: OnboardingStep[];
 
+  @state() private _page = extractSearchParam("page");
+
+  connectedCallback() {
+    super.connectedCallback();
+    mainWindow.addEventListener("location-changed", this._updatePage);
+    mainWindow.addEventListener("popstate", this._updatePage);
+  }
+
+  disconnectedCallback() {
+    super.connectedCallback();
+    mainWindow.removeEventListener("location-changed", this._updatePage);
+    mainWindow.removeEventListener("popstate", this._updatePage);
+  }
+
+  private _updatePage = () => {
+    this._page = extractSearchParam("page");
+  };
+
   protected render() {
     return html`<mwc-linear-progress
         .progress=${this._progress}
@@ -125,17 +148,20 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   }
 
   private _renderStep() {
+    if (this._restoring) {
+      return html`<onboarding-restore-backup
+        .hass=${this.hass}
+        .localize=${this.localize}
+      >
+      </onboarding-restore-backup>`;
+    }
+
     if (this._init) {
       return html`<onboarding-welcome
         .localize=${this.localize}
         .language=${this.language}
         .supervisor=${this._supervisor}
       ></onboarding-welcome>`;
-    }
-
-    if (this._restoring) {
-      return html`<onboarding-restore-backup .localize=${this.localize}>
-      </onboarding-restore-backup>`;
     }
 
     const step = this._curStep()!;
@@ -195,6 +221,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+    if (changedProps.has("_page")) {
+      this._restoring = this._page === "restore_backup";
+      if (this._page === null) {
+        this._init = true;
+      }
+    }
     if (changedProps.has("language")) {
       document.querySelector("html")!.setAttribute("lang", this.language!);
     }
@@ -312,6 +344,8 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       this._restoring = stepResult.result.restore;
       if (!this._restoring) {
         this._progress = 0.25;
+      } else {
+        navigate("onboarding.html?page=restore_backup");
       }
     } else if (stepResult.type === "user") {
       const result = stepResult.result as OnboardingResponses["user"];
