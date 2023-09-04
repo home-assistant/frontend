@@ -16,6 +16,7 @@ import {
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import {
+  addSearchParam,
   extractSearchParam,
   extractSearchParamsObject,
 } from "../common/url/search-params";
@@ -103,6 +104,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   @state() private _page = extractSearchParam("page");
 
+  private _mobileApp =
+    extractSearchParam("redirect_uri") === "homeassistant://auth-callback";
+
   connectedCallback() {
     super.connectedCallback();
     mainWindow.addEventListener("location-changed", this._updatePage);
@@ -129,6 +133,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       ${this._init
         ? html`<onboarding-welcome-links
             .localize=${this.localize}
+            .mobileApp=${this._mobileApp}
           ></onboarding-welcome-links>`
         : nothing}
       <div class="footer">
@@ -264,6 +269,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         "Home Assistant OS",
         "Home Assistant Supervised",
       ].includes(response.installation_type);
+      this._supervisor = true;
       if (this._supervisor) {
         // Only load if we have supervisor
         import("./onboarding-restore-backup");
@@ -345,7 +351,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       if (!this._restoring) {
         this._progress = 0.25;
       } else {
-        navigate("onboarding.html?page=restore_backup");
+        navigate(
+          `${location.pathname}?${addSearchParam({ page: "restore_backup" })}`
+        );
       }
     } else if (stepResult.type === "user") {
       const result = stepResult.result as OnboardingResponses["user"];
