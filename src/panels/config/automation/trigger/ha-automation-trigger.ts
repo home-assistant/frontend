@@ -339,7 +339,7 @@ export default class HaAutomationTrigger extends LitElement {
 
   private _processedTypes = memoizeOne(
     (localize: LocalizeFunc): [string, string, string][] =>
-      Object.entries(TRIGGER_TYPES)
+      (Object.entries(TRIGGER_TYPES) as [keyof typeof TRIGGER_TYPES, string][])
         .map(
           ([action, icon]) =>
             [

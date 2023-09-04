@@ -53,11 +53,6 @@ export class HaZoneCondition extends LitElement {
         allow-custom-entity
         .includeDomains=${includeDomains}
       ></ha-entity-picker>
-      <label id="eventlabel">
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.type.zone.event"
-        )}
-      </label>
     `;
   }
 

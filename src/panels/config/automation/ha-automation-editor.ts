@@ -489,7 +489,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       condition: this._config.condition,
       action: this._config.action,
     });
-    this._validationErrors = Object.entries(validation).map(([key, value]) =>
+    this._validationErrors = (
+      Object.entries(validation) as [
+        keyof typeof validation,
+        (typeof validation)[keyof typeof validation],
+      ][]
+    ).map(([key, value]) =>
       value.valid
         ? ""
         : html`${this.hass.localize(

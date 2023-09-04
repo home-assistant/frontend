@@ -20,6 +20,8 @@ import {
 import { EntityRegistryEntry } from "./entity_registry";
 import { FrontendLocaleData } from "./translation";
 
+export type Weekday = "sun" | "mon" | "tue" | "wed" | "thu" | "fri" | "sat";
+
 const triggerTranslationBaseKey =
   "ui.panel.config.automation.editor.triggers.type";
 const conditionsTranslationBaseKey =
@@ -897,7 +899,7 @@ const tryDescribeCondition = (
         result += " and the ";
       }
       if (validWeekdays) {
-        const localizedDays = weekdaysArray.map((d) =>
+        const localizedDays = (weekdaysArray as Weekday[]).map((d) =>
           hass.localize(
             `ui.panel.config.automation.editor.conditions.type.time.weekdays.${d}`
           )

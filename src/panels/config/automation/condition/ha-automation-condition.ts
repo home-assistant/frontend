@@ -364,7 +364,12 @@ export default class HaAutomationCondition extends LitElement {
 
   private _processedTypes = memoizeOne(
     (localize: LocalizeFunc): [string, string, string][] =>
-      Object.entries(CONDITION_TYPES)
+      (
+        Object.entries(CONDITION_TYPES) as [
+          keyof typeof CONDITION_TYPES,
+          string,
+        ][]
+      )
         .map(
           ([condition, icon]) =>
             [

@@ -3,41 +3,42 @@ import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiArrowDown,
   mdiArrowUp,
+  mdiContentPaste,
   mdiDrag,
   mdiPlus,
-  mdiContentPaste,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import type { SortableEvent } from "sortablejs";
+import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-button-menu";
 import "../../../../components/ha-button";
+import "../../../../components/ha-button-menu";
 import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
 import { ACTION_TYPES } from "../../../../data/action";
-import { Action } from "../../../../data/script";
 import { AutomationClipboard } from "../../../../data/automation";
+import { Action } from "../../../../data/script";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import {
-  loadSortable,
   SortableInstance,
+  loadSortable,
 } from "../../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../../types";
-import { getType } from "./ha-automation-action-row";
 import type HaAutomationActionRow from "./ha-automation-action-row";
+import { getType } from "./ha-automation-action-row";
 import "./types/ha-automation-action-activate_scene";
 import "./types/ha-automation-action-choose";
 import "./types/ha-automation-action-condition";
@@ -52,7 +53,6 @@ import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-import { storage } from "../../../../common/decorators/storage";
 
 const PASTE_VALUE = "__paste__";
 
@@ -174,9 +174,9 @@ export default class HaAutomationAction extends LitElement {
                 "ui.panel.config.automation.editor.actions.paste"
               )}
               (${this.hass.localize(
-                `ui.panel.config.automation.editor.actions.type.${getType(
-                  this._clipboard.action
-                )}.label`
+                `ui.panel.config.automation.editor.actions.type.${
+                  getType(this._clipboard.action) || "unknown"
+                }.label`
               )})
               <ha-svg-icon slot="graphic" .path=${mdiContentPaste}></ha-svg-icon
             ></mwc-list-item>`
@@ -333,7 +333,7 @@ export default class HaAutomationAction extends LitElement {
 
   private _processedTypes = memoizeOne(
     (localize: LocalizeFunc): [string, string, string][] =>
-      Object.entries(ACTION_TYPES)
+      (Object.entries(ACTION_TYPES) as [keyof typeof ACTION_TYPES, string][])
         .map(
           ([action, icon]) =>
             [
