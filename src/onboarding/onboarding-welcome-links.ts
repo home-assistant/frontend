@@ -21,6 +21,7 @@ class OnboardingWelcomeLinks extends LitElement {
         href="https://www.home-assistant.io/blog/2016/01/19/perfect-home-automation/"
       >
         <onboarding-welcome-link
+          noninteractive
           .iconPath=${mdiFileDocument}
           .label=${this.localize("ui.panel.page-onboarding.welcome.vision")}
         >
