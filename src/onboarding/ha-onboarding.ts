@@ -223,7 +223,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     super.updated(changedProps);
     if (changedProps.has("_page")) {
       this._restoring = this._page === "restore_backup";
-      if (this._page === null) {
+      if (this._page === null && this._steps && !this._steps[0].done) {
         this._init = true;
       }
     }
