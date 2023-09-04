@@ -17,6 +17,8 @@ class OnboardingWelcomeLink extends LitElement {
 
   @property() public iconPath!: string;
 
+  @property({ attribute: true, type: Boolean }) public noninteractive?: boolean;
+
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
   @state() private _shouldRenderRipple = false;
@@ -24,6 +26,7 @@ class OnboardingWelcomeLink extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card
+        .tabIndex=${this.noninteractive ? "-1" : "0"}
         @focus=${this.handleRippleFocus}
         @blur=${this.handleRippleBlur}
         @mousedown=${this.handleRippleActivate}
@@ -33,12 +36,19 @@ class OnboardingWelcomeLink extends LitElement {
         @touchstart=${this.handleRippleActivate}
         @touchend=${this.handleRippleDeactivate}
         @touchcancel=${this.handleRippleDeactivate}
+        @keydown=${this._handleKeyDown}
       >
         <ha-svg-icon .path=${this.iconPath}></ha-svg-icon>
         ${this.label}
         ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : ""}
       </ha-card>
     `;
+  }
+
+  private _handleKeyDown(ev: KeyboardEvent): void {
+    if (ev.key === "Enter" || ev.key === " ") {
+      (ev.target as HTMLElement).click();
+    }
   }
 
   private _rippleHandlers: RippleHandlers = new RippleHandlers(() => {
