@@ -130,7 +130,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       <ha-card>
         <div class="card-content">${this._renderStep()}</div>
       </ha-card>
-      ${this._init
+      ${this._init && !this._restoring
         ? html`<onboarding-welcome-links
             .localize=${this.localize}
             .mobileApp=${this._mobileApp}

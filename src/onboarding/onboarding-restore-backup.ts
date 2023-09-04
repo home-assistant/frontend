@@ -10,6 +10,8 @@ import { fetchInstallationType } from "../data/onboarding";
 import { HomeAssistant } from "../types";
 import "./onboarding-loading";
 import { onBoardingStyles } from "./styles";
+import { removeSearchParam } from "../common/url/search-params";
+import { navigate } from "../common/navigate";
 
 @customElement("onboarding-restore-backup")
 class OnboardingRestoreBackup extends LitElement {
@@ -22,18 +24,27 @@ class OnboardingRestoreBackup extends LitElement {
   @state() public _restoring = false;
 
   protected render(): TemplateResult {
-    return this._restoring
-      ? html`<h1>
-            ${this.localize("ui.panel.page-onboarding.restore.in_progress")}
-          </h1>
-          <onboarding-loading></onboarding-loading>`
-      : html`
-          <h1>${this.localize("ui.panel.page-onboarding.restore.header")}</h1>
-          <hassio-upload-backup
-            @backup-uploaded=${this._backupUploaded}
-            .hass=${this.hass}
-          ></hassio-upload-backup>
-        `;
+    return html`${this._restoring
+        ? html`<h1>
+              ${this.localize("ui.panel.page-onboarding.restore.in_progress")}
+            </h1>
+            <onboarding-loading></onboarding-loading>`
+        : html` <h1>
+              ${this.localize("ui.panel.page-onboarding.restore.header")}
+            </h1>
+            <hassio-upload-backup
+              @backup-uploaded=${this._backupUploaded}
+              .hass=${this.hass}
+            ></hassio-upload-backup>`}
+      <div class="footer">
+        <mwc-button @click=${this._back} .disabled=${this._restoring}>
+          ${this.localize("ui.panel.page-onboarding.back")}
+        </mwc-button>
+      </div> `;
+  }
+
+  private _back(): void {
+    navigate(`${location.pathname}?${removeSearchParam("page")}`);
   }
 
   private _backupUploaded(ev) {
@@ -80,6 +91,10 @@ class OnboardingRestoreBackup extends LitElement {
         }
         hassio-upload-backup {
           width: 100%;
+        }
+        .footer {
+          width: 100%;
+          text-align: left;
         }
       `,
     ];
