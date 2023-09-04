@@ -23,8 +23,6 @@ export type LocalizeKeys =
   | `ui.dialogs.unsupported.reason.${string}`
   | `ui.panel.config.${string}.${"caption" | "description"}`
   | `ui.panel.config.dashboard.${string}`
-  | `ui.panel.config.energy.${string}`
-  | `ui.panel.config.lovelace.${string}`
   | `ui.panel.config.zha.${string}`
   | `ui.panel.config.zwave_js.${string}`
   | `ui.panel.lovelace.card.${string}`
