@@ -129,7 +129,7 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
         return this.hass.localize("ui.components.entity.entity-picker.entity");
       case "event":
         return this.hass.localize(
-          `ui.panel.config.automation.editor.triggers.type.calendar.${schema.name}`
+          "ui.panel.config.automation.editor.triggers.type.calendar.event"
         );
     }
     return "";
