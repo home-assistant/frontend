@@ -25,6 +25,9 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
     protected hassConnected() {
       super.hassConnected();
       window.addEventListener("error", async (ev) => {
+        if (!this.hass?.connected) {
+          return;
+        }
         if (
           !__DEV__ &&
           (ev.message.includes("ResizeObserver loop limit exceeded") ||
@@ -50,6 +53,9 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
         });
       });
       window.addEventListener("unhandledrejection", async (ev) => {
+        if (!this.hass?.connected) {
+          return;
+        }
         const { createLogMessage } = await import("../resources/log-message");
         this._writeLog({
           message: await createLogMessage(
