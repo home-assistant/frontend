@@ -214,7 +214,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
       #main {
         max-width: 1620px;
         flex-grow: 2;
-        max-height: calc(100vh);
+        max-height: calc(100vh - var(--header-height) - 4px);
         overflow-y: auto;
       }
 
