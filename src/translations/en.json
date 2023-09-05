@@ -261,6 +261,9 @@
         "forecast_daily": "Forecast daily",
         "forecast_hourly": "Forecast hourly",
         "forecast_twice_daily": "Forecast twice daily",
+        "daily": "Daily",
+        "hourly": "Hourly",
+        "twice_daily": "Twice daily",
         "high": "High",
         "low": "Low"
       }
@@ -2245,6 +2248,7 @@
             "duplicate": "[%key:ui::common::duplicate%]",
             "disabled": "Disabled",
             "filtered_by_blueprint": "blueprint: {name}",
+            "traces_not_available": "[%key:ui::panel::config::automation::editor::traces_not_available%]",
             "headers": {
               "toggle": "Enable/disable",
               "name": "Name",
@@ -2815,24 +2819,11 @@
                   "description": {
                     "full": "Test {condition}"
                   }
+                },
+                "unknown": {
+                  "label": "Unknown"
                 }
               }
-            }
-          },
-          "thingtalk": {
-            "create": "Create automation",
-            "task_selection": {
-              "header": "Create a new automation",
-              "introduction": "Type below what this automation should do, and we will try to convert it into a Home Assistant automation.",
-              "language_note": "Note: Only English is supported for now.",
-              "for_example": "For example:",
-              "error_empty": "Enter a command or tap skip.",
-              "error_unsupported": "We couldn't create an automation for that (yet?)."
-            },
-            "link_devices": {
-              "header": "Great! Now we need to link some devices",
-              "ambiguous_entities": "One or more devices have more than one matching entity, please pick the one you want to use.",
-              "unknown_placeholder": "Unknown placeholder"
             }
           },
           "trace": {
@@ -2994,6 +2985,7 @@
             "duplicate_scene": "Duplicate scene",
             "duplicate": "[%key:ui::common::duplicate%]",
             "headers": {
+              "state": "State",
               "name": "Name",
               "last_activated": "Last activated"
             }
@@ -5690,6 +5682,7 @@
       },
       "page-onboarding": {
         "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
+        "back": "Back",
         "next": "Next",
         "finish": "Finish",
         "help": "Help",

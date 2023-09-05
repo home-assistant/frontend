@@ -8,7 +8,7 @@ import "../../../../../components/ha-select";
 import type { HaSelect } from "../../../../../components/ha-select";
 import type { Condition } from "../../../../../data/automation";
 import { CONDITION_TYPES } from "../../../../../data/condition";
-import { HomeAssistant } from "../../../../../types";
+import { Entries, HomeAssistant } from "../../../../../types";
 import "../../condition/ha-automation-condition-editor";
 import type { ActionElement } from "../ha-automation-action-row";
 
@@ -55,7 +55,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
 
   private _processedTypes = memoizeOne(
     (localize: LocalizeFunc): [string, string, string][] =>
-      Object.entries(CONDITION_TYPES)
+      (Object.entries(CONDITION_TYPES) as Entries<typeof CONDITION_TYPES>)
         .map(
           ([condition, icon]) =>
             [

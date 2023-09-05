@@ -38,6 +38,15 @@ import { HomeAssistant, Route } from "../../../../types";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 
+type DataTableItem = Pick<
+  LovelaceDashboard,
+  "icon" | "title" | "show_in_sidebar" | "require_admin" | "mode" | "url_path"
+> & {
+  default: boolean;
+  filename: string;
+  iconColor?: string;
+};
+
 @customElement("ha-config-lovelace-dashboards")
 export class HaConfigLovelaceDashboards extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -52,14 +61,14 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private _columns = memoize(
     (narrow: boolean, _language, dashboards): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer = {
+      const columns: DataTableColumnContainer<DataTableItem> = {
         icon: {
           title: "",
           label: this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.icon"
           ),
           type: "icon",
-          template: (icon, dashboard) =>
+          template: (icon: DataTableItem["icon"], dashboard) =>
             icon
               ? html`
                   <ha-icon
@@ -82,7 +91,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           sortable: true,
           filterable: true,
           grows: true,
-          template: (title, dashboard: any) => {
+          template: (title: DataTableItem["title"], dashboard) => {
             const titleTemplate = html`
               ${title}
               ${dashboard.default
@@ -123,7 +132,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           sortable: true,
           filterable: true,
           width: "20%",
-          template: (mode) => html`
+          template: (mode: DataTableItem["mode"]) => html`
             ${this.hass.localize(
               `ui.panel.config.lovelace.dashboards.conf_mode.${mode}`
             ) || mode}
@@ -146,7 +155,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           sortable: true,
           type: "icon",
           width: "100px",
-          template: (requireAdmin: boolean) =>
+          template: (requireAdmin: DataTableItem["require_admin"]) =>
             requireAdmin
               ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
               : html`—`,
@@ -157,7 +166,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           ),
           type: "icon",
           width: "121px",
-          template: (sidebar) =>
+          template: (sidebar: DataTableItem["show_in_sidebar"]) =>
             sidebar
               ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
               : html`—`,
@@ -202,7 +211,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     ).mode;
     const defaultUrlPath = this.hass.defaultPanel;
     const isDefault = defaultUrlPath === "lovelace";
-    const result: Record<string, any>[] = [
+    const result: DataTableItem[] = [
       {
         icon: "hass:view-dashboard",
         title: this.hass.localize("panel.states"),
@@ -224,6 +233,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
         url_path: "energy",
         filename: "",
         iconColor: "var(--label-badge-yellow)",
+        default: false,
+        require_admin: false,
       });
     }
 

@@ -1,5 +1,12 @@
 import { mdiAccountGroup, mdiFileDocument, mdiTabletCellphone } from "@mdi/js";
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
@@ -13,6 +20,8 @@ class OnboardingWelcomeLinks extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public localize!: LocalizeFunc;
+
+  @property({ type: Boolean }) public mobileApp!: boolean;
 
   protected render(): TemplateResult {
     return html`<a
@@ -34,13 +43,17 @@ class OnboardingWelcomeLinks extends LitElement {
         .label=${this.localize("ui.panel.page-onboarding.welcome.community")}
       >
       </onboarding-welcome-link>
-      <onboarding-welcome-link
-        class="app"
-        @click=${this._openApp}
-        .iconPath=${mdiTabletCellphone}
-        .label=${this.localize("ui.panel.page-onboarding.welcome.download_app")}
-      >
-      </onboarding-welcome-link>`;
+      ${this.mobileApp
+        ? nothing
+        : html`<onboarding-welcome-link
+            class="app"
+            @click=${this._openApp}
+            .iconPath=${mdiTabletCellphone}
+            .label=${this.localize(
+              "ui.panel.page-onboarding.welcome.download_app"
+            )}
+          >
+          </onboarding-welcome-link>`}`;
   }
 
   private _openCommunity(): void {
