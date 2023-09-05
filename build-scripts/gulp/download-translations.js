@@ -1,12 +1,14 @@
 import fs from "fs/promises";
 import gulp from "gulp";
+import path from "path";
 import mapStream from "map-stream";
 import transform from "gulp-json-transform";
 import { LokaliseApi } from "@lokalise/node-api";
 import JSZip from "jszip";
 
-const inDirFrontend = "translations/frontend";
-const inDirBackend = "translations/backend";
+const inDir = "translations";
+const inDirFrontend = `${inDir}/frontend`;
+const inDirBackend = `${inDir}/backend`;
 const srcMeta = "src/translations/translationMetadata.json";
 const encoding = "utf8";
 
@@ -109,6 +111,12 @@ gulp.task("fetch-lokalise", async function () {
     );
   }
   const lokaliseApi = new LokaliseApi({ apiKey });
+
+  const mkdirPromise = Promise.all([
+    fs.mkdir(inDirFrontend, { recursive: true }),
+    fs.mkdir(inDirBackend, { recursive: true }),
+  ]);
+
   await Promise.all(
     Object.entries(lokaliseProjects).map(([project, projectId]) =>
       lokaliseApi
@@ -128,9 +136,10 @@ gulp.task("fetch-lokalise", async function () {
           throw new Error(response.statusText);
         })
         .then(JSZip.loadAsync)
-        .then((contents) =>
-          Promise.all(
-            Object.keys(contents.files).map((filename) => {
+        .then(async (contents) => {
+          await mkdirPromise;
+          return Promise.all(
+            Object.keys(contents.files).map(async (filename) => {
               const file = contents.file(filename);
               if (!file) {
                 // no file, probably a directory
@@ -140,17 +149,18 @@ gulp.task("fetch-lokalise", async function () {
                 .async("nodebuffer")
                 .then((content) =>
                   fs.writeFile(
-                    "translations/" +
-                      project +
-                      "/" +
-                      filename.split("/").splice(-1),
+                    path.join(
+                      inDir,
+                      project,
+                      filename.split("/").splice(-1)[0]
+                    ),
                     content,
                     { flag: "w", encoding }
                   )
                 );
             })
-          )
-        )
+          );
+        })
     )
   );
 });
