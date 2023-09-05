@@ -4689,7 +4689,6 @@
           },
           "action-editor": {
             "navigation_path": "Navigation path",
-            "navigation_replace": "Replace current location",
             "url_path": "URL path",
             "start_listening": "Start listening",
             "pipeline_id": "Assistant",

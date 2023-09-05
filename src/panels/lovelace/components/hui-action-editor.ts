@@ -36,12 +36,6 @@ const NAVIGATE_SCHEMA = [
       navigation: {},
     },
   },
-  {
-    name: "navigation_replace",
-    selector: {
-      boolean: {},
-    },
-  },
 ] as const satisfies readonly HaFormSchema[];
 
 const ASSIST_SCHEMA = [
