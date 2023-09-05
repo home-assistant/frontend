@@ -6,6 +6,10 @@ export interface RenderTemplateResult {
   listeners: TemplateListeners;
 }
 
+export interface RenderTemplateError {
+  error: string;
+}
+
 interface TemplateListeners {
   all: boolean;
   domains: string[];
@@ -26,19 +30,23 @@ interface TemplatePreviewError {
 
 export const subscribeRenderTemplate = (
   conn: Connection,
-  onChange: (result: RenderTemplateResult) => void,
+  onChange: (result: RenderTemplateResult | RenderTemplateError) => void,
   params: {
     template: string;
     entity_ids?: string | string[];
     variables?: Record<string, unknown>;
     timeout?: number;
+    strict?: boolean;
     report_errors?: boolean;
   }
 ): Promise<UnsubscribeFunc> =>
-  conn.subscribeMessage((msg: RenderTemplateResult) => onChange(msg), {
-    type: "render_template",
-    ...params,
-  });
+  conn.subscribeMessage(
+    (msg: RenderTemplateResult | RenderTemplateError) => onChange(msg),
+    {
+      type: "render_template",
+      ...params,
+    }
+  );
 
 export const subscribePreviewTemplate = (
   hass: HomeAssistant,
