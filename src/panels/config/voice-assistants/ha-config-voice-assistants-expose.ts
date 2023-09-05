@@ -134,7 +134,7 @@ export class VoiceAssistantsExpose extends LitElement {
         title: "",
         type: "icon",
         hidden: narrow,
-        template: (_, entry) => html`
+        template: (entry) => html`
           <ha-state-icon
             title=${ifDefined(entry.entity?.state)}
             .state=${entry.entity}
@@ -150,8 +150,8 @@ export class VoiceAssistantsExpose extends LitElement {
         filterable: true,
         direction: "asc",
         grows: true,
-        template: (name, entry) => html`
-          ${name}<br />
+        template: (entry) => html`
+          ${entry.name}<br />
           <div class="secondary">${entry.entity_id}</div>
         `,
       },
@@ -172,13 +172,13 @@ export class VoiceAssistantsExpose extends LitElement {
         filterable: true,
         width: "160px",
         type: "flex",
-        template: (assistants, entry) =>
+        template: (entry) =>
           html`${availableAssistants.map((key) => {
             const supported =
               !supportedEntities?.[key] ||
               supportedEntities[key].includes(entry.entity_id);
             const manual = entry.manAssistants?.includes(key);
-            return assistants.includes(key)
+            return entry.assistants.includes(key)
               ? html`
                   <voice-assistants-expose-assistant-icon
                     .assistant=${key}
@@ -199,14 +199,14 @@ export class VoiceAssistantsExpose extends LitElement {
         filterable: true,
         hidden: narrow,
         width: "15%",
-        template: (aliases) =>
-          aliases.length === 0
+        template: (entry) =>
+          entry.aliases.length === 0
             ? "-"
-            : aliases.length === 1
-            ? aliases[0]
+            : entry.aliases.length === 1
+            ? entry.aliases[0]
             : this.hass.localize(
                 "ui.panel.config.voice_assistants.expose.aliases",
-                { count: aliases.length }
+                { count: entry.aliases.length }
               ),
       },
       remove: {

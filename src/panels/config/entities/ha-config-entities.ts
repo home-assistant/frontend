@@ -183,7 +183,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           "ui.panel.config.entities.picker.headers.state_icon"
         ),
         type: "icon",
-        template: (_, entry: EntityRow) => html`
+        template: (entry) => html`
           <ha-state-icon
             title=${ifDefined(entry.entity?.state)}
             slot="item-icon"
@@ -201,12 +201,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         direction: "asc",
         grows: true,
         template: narrow
-          ? (name, entity: EntityRow) => html`
-              ${name}<br />
+          ? (entry) => html`
+              ${entry.name}<br />
               <div class="secondary">
-                ${entity.entity_id} |
-                ${this.hass.localize(`component.${entity.platform}.title`) ||
-                entity.platform}
+                ${entry.entity_id} |
+                ${this.hass.localize(`component.${entry.platform}.title`) ||
+                entry.platform}
               </div>
             `
           : undefined,
@@ -228,8 +228,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         width: "20%",
-        template: (platform) =>
-          this.hass.localize(`component.${platform}.title`) || platform,
+        template: (entry) =>
+          this.hass.localize(`component.${entry.platform}.title`) ||
+          entry.platform,
       },
       area: {
         title: this.hass.localize(
@@ -248,10 +249,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         hidden: narrow || !showDisabled,
         filterable: true,
         width: "15%",
-        template: (disabled_by: EntityRegistryEntry["disabled_by"]) =>
-          disabled_by === null
+        template: (entry) =>
+          entry.disabled_by === null
             ? "—"
-            : this.hass.localize(`config_entry.disabled_by.${disabled_by}`),
+            : this.hass.localize(
+                `config_entry.disabled_by.${entry.disabled_by}`
+              ),
       },
       status: {
         title: this.hass.localize(
@@ -261,11 +264,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         width: "68px",
-        template: (_status, entity: EntityRow) =>
-          entity.unavailable ||
-          entity.disabled_by ||
-          entity.hidden_by ||
-          entity.readonly
+        template: (entry) =>
+          entry.unavailable ||
+          entry.disabled_by ||
+          entry.hidden_by ||
+          entry.readonly
             ? html`
                 <div
                   tabindex="0"
@@ -273,32 +276,32 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 >
                   <ha-svg-icon
                     style=${styleMap({
-                      color: entity.unavailable ? "var(--error-color)" : "",
+                      color: entry.unavailable ? "var(--error-color)" : "",
                     })}
-                    .path=${entity.restored
+                    .path=${entry.restored
                       ? mdiRestoreAlert
-                      : entity.unavailable
+                      : entry.unavailable
                       ? mdiAlertCircle
-                      : entity.disabled_by
+                      : entry.disabled_by
                       ? mdiCancel
-                      : entity.hidden_by
+                      : entry.hidden_by
                       ? mdiEyeOff
                       : mdiPencilOff}
                   ></ha-svg-icon>
                   <simple-tooltip animation-delay="0" position="left">
-                    ${entity.restored
+                    ${entry.restored
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.restored"
                         )
-                      : entity.unavailable
+                      : entry.unavailable
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.unavailable"
                         )
-                      : entity.disabled_by
+                      : entry.disabled_by
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.disabled"
                         )
-                      : entity.hidden_by
+                      : entry.hidden_by
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.hidden"
                         )
