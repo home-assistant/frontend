@@ -443,9 +443,6 @@ export class HaSceneEditor extends SubscribeMixin(
                           )}
                         >
                           <div class="card-content">
-                            ${this.hass.localize(
-                              "ui.panel.config.scene.editor.entities.device_entities"
-                            )}
                             <ha-entity-picker
                               @value-changed=${this._entityPicked}
                               .excludeDomains=${SCENE_IGNORED_DOMAINS}

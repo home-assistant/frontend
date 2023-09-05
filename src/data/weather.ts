@@ -36,7 +36,9 @@ export const enum WeatherEntityFeature {
   FORECAST_TWICE_DAILY = 4,
 }
 
-export type ForecastType = "legacy" | "hourly" | "daily" | "twice_daily";
+export type ModernForecastType = "hourly" | "daily" | "twice_daily";
+
+export type ForecastType = ModernForecastType | "legacy";
 
 interface ForecastAttribute {
   temperature: number;
@@ -636,7 +638,7 @@ export const getForecast = (
 export const subscribeForecast = (
   hass: HomeAssistant,
   entity_id: string,
-  forecast_type: "daily" | "hourly" | "twice_daily",
+  forecast_type: ModernForecastType,
   callback: (forecastevent: ForecastEvent) => void
 ) =>
   hass.connection.subscribeMessage<ForecastEvent>(callback, {
@@ -644,6 +646,22 @@ export const subscribeForecast = (
     forecast_type,
     entity_id,
   });
+
+export const getSupportedForecastTypes = (
+  stateObj: HassEntityBase
+): ModernForecastType[] => {
+  const supported: ModernForecastType[] = [];
+  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_DAILY)) {
+    supported.push("daily");
+  }
+  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_TWICE_DAILY)) {
+    supported.push("twice_daily");
+  }
+  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_HOURLY)) {
+    supported.push("hourly");
+  }
+  return supported;
+};
 
 export const getDefaultForecastType = (stateObj: HassEntityBase) => {
   if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_DAILY)) {

@@ -3,39 +3,41 @@ import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiArrowDown,
   mdiArrowUp,
+  mdiContentPaste,
   mdiDrag,
   mdiPlus,
-  mdiContentPaste,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import type { SortableEvent } from "sortablejs";
+import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-button-menu";
 import "../../../../components/ha-button";
+import "../../../../components/ha-button-menu";
 import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
-import { Trigger, AutomationClipboard } from "../../../../data/automation";
+import { AutomationClipboard, Trigger } from "../../../../data/automation";
 import { TRIGGER_TYPES } from "../../../../data/trigger";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import { SortableInstance } from "../../../../resources/sortable";
 import { loadSortable } from "../../../../resources/sortable.ondemand";
-import { HomeAssistant } from "../../../../types";
+import { Entries, HomeAssistant } from "../../../../types";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
 import "./types/ha-automation-trigger-calendar";
+import "./types/ha-automation-trigger-conversation";
 import "./types/ha-automation-trigger-device";
 import "./types/ha-automation-trigger-event";
 import "./types/ha-automation-trigger-geo_location";
@@ -43,7 +45,6 @@ import "./types/ha-automation-trigger-homeassistant";
 import "./types/ha-automation-trigger-mqtt";
 import "./types/ha-automation-trigger-numeric_state";
 import "./types/ha-automation-trigger-persistent_notification";
-import "./types/ha-automation-trigger-conversation";
 import "./types/ha-automation-trigger-state";
 import "./types/ha-automation-trigger-sun";
 import "./types/ha-automation-trigger-tag";
@@ -52,7 +53,6 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
-import { storage } from "../../../../common/decorators/storage";
 
 const PASTE_VALUE = "__paste__";
 
@@ -339,7 +339,7 @@ export default class HaAutomationTrigger extends LitElement {
 
   private _processedTypes = memoizeOne(
     (localize: LocalizeFunc): [string, string, string][] =>
-      Object.entries(TRIGGER_TYPES)
+      (Object.entries(TRIGGER_TYPES) as Entries<typeof TRIGGER_TYPES>)
         .map(
           ([action, icon]) =>
             [
