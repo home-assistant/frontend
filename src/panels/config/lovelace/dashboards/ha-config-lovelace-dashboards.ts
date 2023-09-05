@@ -61,14 +61,14 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private _columns = memoize(
     (narrow: boolean, _language, dashboards): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer = {
+      const columns: DataTableColumnContainer<DataTableItem> = {
         icon: {
           title: "",
           label: this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.icon"
           ),
           type: "icon",
-          template: (icon: DataTableItem["icon"], dashboard: DataTableItem) =>
+          template: (icon: DataTableItem["icon"], dashboard) =>
             icon
               ? html`
                   <ha-icon
@@ -91,10 +91,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           sortable: true,
           filterable: true,
           grows: true,
-          template: (
-            title: DataTableItem["title"],
-            dashboard: DataTableItem
-          ) => {
+          template: (title: DataTableItem["title"], dashboard) => {
             const titleTemplate = html`
               ${title}
               ${dashboard.default
