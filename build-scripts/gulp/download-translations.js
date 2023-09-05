@@ -100,10 +100,12 @@ const lokaliseProjects = {
 gulp.task("fetch-lokalise", async function () {
   let apiKey;
   try {
-    apiKey = await fs.readFile(".lokalise_token");
+    apiKey =
+      process.env.LOKALISE_TOKEN ||
+      (await fs.readFile(".lokalise_token", { encoding }));
   } catch {
     throw new Error(
-      "Lokalise API token is required to download the latest set of Please create a translations. Please create an account by using the following link: https://lokalise.co/signup/3420425759f6d6d241f598.13594006/all/. Place your token in a new file `.lokalise_token` in the repo root directory."
+      "An Administrator Lokalise API token is required to download the latest set of translations. Place your token in a new file `.lokalise_token` in the repo root directory."
     );
   }
   const lokaliseApi = new LokaliseApi({ apiKey });
@@ -143,7 +145,7 @@ gulp.task("fetch-lokalise", async function () {
                       "/" +
                       filename.split("/").splice(-1),
                     content,
-                    { flag: "w" }
+                    { flag: "w", encoding }
                   )
                 );
             })
