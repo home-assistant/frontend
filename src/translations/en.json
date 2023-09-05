@@ -261,6 +261,9 @@
         "forecast_daily": "Forecast daily",
         "forecast_hourly": "Forecast hourly",
         "forecast_twice_daily": "Forecast twice daily",
+        "daily": "Daily",
+        "hourly": "Hourly",
+        "twice_daily": "Twice daily",
         "high": "High",
         "low": "Low"
       }
