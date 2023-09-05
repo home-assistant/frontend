@@ -62,6 +62,7 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
             ev.reason,
             "Unhandled promise rejection"
           ),
+          level: "debug",
         });
       });
     }
