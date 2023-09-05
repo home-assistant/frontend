@@ -35,20 +35,30 @@ export class HaPasswordManagerPolyfill extends LitElement {
     super.connectedCallback();
     this._styleElement = document.createElement("style");
     this._styleElement.textContent = css`
+      /* Polyfill form is sized and aligned with true form, then positioned offscreen
+      rather than hiding so it does not create a new stacking context */
       .password-manager-polyfill {
         position: absolute;
-        opacity: 0;
-        z-index: -1;
       }
-      .password-manager-polyfill input {
+      /* Move any children back on screen, including anything injected that might not already be positioned */
+      .password-manager-polyfill > * {
+        position: relative;
+        left: 10000px;
+      }
+      /* Size and underlay our polyfill fields */
+      .password-manager-polyfill > input.underlay {
         width: 100%;
         height: 62px;
         padding: 0;
         border: 0;
+        opacity: 0;
+        z-index: -1;
       }
-      .password-manager-polyfill input[type="submit"] {
-        width: 0;
-        height: 0;
+      /* Button position is not important, but size should not be zero */
+      .password-manager-polyfill > input.underlay[type="submit"] {
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
       }
     `.toString();
     document.head.append(this._styleElement);
@@ -77,16 +87,22 @@ export class HaPasswordManagerPolyfill extends LitElement {
           class="password-manager-polyfill"
           style=${styleMap({
             top: `${this.boundingRect?.y || 148}px`,
-            left: `calc(50% - ${(this.boundingRect?.width || 360) / 2}px)`,
+            left: `calc(50% - ${
+              (this.boundingRect?.width || 360) / 2
+            }px - 10000px)`,
             width: `${this.boundingRect?.width || 360}px`,
           })}
-          aria-hidden="true"
           @submit=${this._handleSubmit}
         >
           ${autocompleteLoginFields(this.step.data_schema).map((input) =>
             this.render_input(input)
           )}
-          <input type="submit" />
+          <input
+            type="submit"
+            value="Sign in"
+            class="underlay"
+            aria-hidden="true"
+          />
         </form>
       `;
     }
@@ -100,12 +116,13 @@ export class HaPasswordManagerPolyfill extends LitElement {
     }
     return html`
       <input
-        tabindex="-1"
         .id=${schema.name}
         .name=${schema.name}
         .type=${inputType}
         .value=${this.stepData[schema.name] || ""}
         .autocomplete=${schema.autocomplete}
+        class="underlay"
+        aria-hidden="true"
         @input=${this._valueChanged}
         @change=${this._valueChanged}
       />
