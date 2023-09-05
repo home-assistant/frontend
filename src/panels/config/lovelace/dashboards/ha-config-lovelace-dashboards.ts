@@ -59,147 +59,154 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   @state() private _dashboards: LovelaceDashboard[] = [];
 
-  private _columns = memoize((narrow: boolean, _language, dashboards) => {
-    const columns: DataTableColumnContainer<DataTableItem> = {
-      icon: {
-        title: "",
-        label: this.hass.localize(
-          "ui.panel.config.lovelace.dashboards.picker.headers.icon"
-        ),
-        type: "icon",
-        template: (icon, dashboard) =>
-          icon
-            ? html`
-                <ha-icon
-                  slot="item-icon"
-                  .icon=${icon}
-                  style=${ifDefined(
-                    dashboard.iconColor
-                      ? `color: ${dashboard.iconColor}`
-                      : undefined
-                  )}
-                ></ha-icon>
-              `
-            : nothing,
-      },
-      title: {
-        title: this.hass.localize(
-          "ui.panel.config.lovelace.dashboards.picker.headers.title"
-        ),
-        main: true,
-        sortable: true,
-        filterable: true,
-        grows: true,
-        template: (title, dashboard) => {
-          const titleTemplate = html`
-            ${title}
-            ${dashboard.default
-              ? html`
-                  <ha-svg-icon
-                    style="padding-left: 10px; padding-inline-start: 10px; direction: var(--direction);"
-                    .path=${mdiCheckCircleOutline}
-                  ></ha-svg-icon>
-                  <simple-tooltip animation-delay="0">
-                    ${this.hass.localize(
-                      `ui.panel.config.lovelace.dashboards.default_dashboard`
-                    )}
-                  </simple-tooltip>
-                `
-              : ""}
-          `;
-          return narrow
-            ? html`
-                ${titleTemplate}
-                <div class="secondary">
-                  ${this.hass.localize(
-                    `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
-                  )}${dashboard.filename ? html` – ${dashboard.filename} ` : ""}
-                </div>
-              `
-            : titleTemplate;
-        },
-      },
-    };
-
-    if (!narrow) {
-      columns.mode = {
-        title: this.hass.localize(
-          "ui.panel.config.lovelace.dashboards.picker.headers.conf_mode"
-        ),
-        sortable: true,
-        filterable: true,
-        width: "20%",
-        template: (mode) => html`
-          ${this.hass.localize(
-            `ui.panel.config.lovelace.dashboards.conf_mode.${mode}`
-          ) || mode}
-        `,
-      };
-      if (dashboards.some((dashboard) => dashboard.filename)) {
-        columns.filename = {
-          title: this.hass.localize(
-            "ui.panel.config.lovelace.dashboards.picker.headers.filename"
+  private _columns = memoize(
+    (narrow: boolean, _language, dashboards): DataTableColumnContainer => {
+      const columns: DataTableColumnContainer = {
+        icon: {
+          title: "",
+          label: this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.picker.headers.icon"
           ),
-          width: "15%",
+          type: "icon",
+          template: (icon: DataTableItem["icon"], dashboard: DataTableItem) =>
+            icon
+              ? html`
+                  <ha-icon
+                    slot="item-icon"
+                    .icon=${icon}
+                    style=${ifDefined(
+                      dashboard.iconColor
+                        ? `color: ${dashboard.iconColor}`
+                        : undefined
+                    )}
+                  ></ha-icon>
+                `
+              : nothing,
+        },
+        title: {
+          title: this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.picker.headers.title"
+          ),
+          main: true,
           sortable: true,
           filterable: true,
+          grows: true,
+          template: (
+            title: DataTableItem["title"],
+            dashboard: DataTableItem
+          ) => {
+            const titleTemplate = html`
+              ${title}
+              ${dashboard.default
+                ? html`
+                    <ha-svg-icon
+                      style="padding-left: 10px; padding-inline-start: 10px; direction: var(--direction);"
+                      .path=${mdiCheckCircleOutline}
+                    ></ha-svg-icon>
+                    <simple-tooltip animation-delay="0">
+                      ${this.hass.localize(
+                        `ui.panel.config.lovelace.dashboards.default_dashboard`
+                      )}
+                    </simple-tooltip>
+                  `
+                : ""}
+            `;
+            return narrow
+              ? html`
+                  ${titleTemplate}
+                  <div class="secondary">
+                    ${this.hass.localize(
+                      `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
+                    )}${dashboard.filename
+                      ? html` – ${dashboard.filename} `
+                      : ""}
+                  </div>
+                `
+              : titleTemplate;
+          },
+        },
+      };
+
+      if (!narrow) {
+        columns.mode = {
+          title: this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.picker.headers.conf_mode"
+          ),
+          sortable: true,
+          filterable: true,
+          width: "20%",
+          template: (mode: DataTableItem["mode"]) => html`
+            ${this.hass.localize(
+              `ui.panel.config.lovelace.dashboards.conf_mode.${mode}`
+            ) || mode}
+          `,
+        };
+        if (dashboards.some((dashboard) => dashboard.filename)) {
+          columns.filename = {
+            title: this.hass.localize(
+              "ui.panel.config.lovelace.dashboards.picker.headers.filename"
+            ),
+            width: "15%",
+            sortable: true,
+            filterable: true,
+          };
+        }
+        columns.require_admin = {
+          title: this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.picker.headers.require_admin"
+          ),
+          sortable: true,
+          type: "icon",
+          width: "100px",
+          template: (requireAdmin: DataTableItem["require_admin"]) =>
+            requireAdmin
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+              : html`—`,
+        };
+        columns.show_in_sidebar = {
+          title: this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
+          ),
+          type: "icon",
+          width: "121px",
+          template: (sidebar: DataTableItem["show_in_sidebar"]) =>
+            sidebar
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+              : html`—`,
         };
       }
-      columns.require_admin = {
-        title: this.hass.localize(
-          "ui.panel.config.lovelace.dashboards.picker.headers.require_admin"
+
+      columns.url_path = {
+        title: "",
+        label: this.hass.localize(
+          "ui.panel.config.lovelace.dashboards.picker.headers.url"
         ),
-        sortable: true,
-        type: "icon",
+        filterable: true,
         width: "100px",
-        template: (requireAdmin) =>
-          requireAdmin
-            ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
-            : html`—`,
+        template: (urlPath) =>
+          narrow
+            ? html`
+                <ha-icon-button
+                  .path=${mdiOpenInNew}
+                  .urlPath=${urlPath}
+                  @click=${this._navigate}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.lovelace.dashboards.picker.open"
+                  )}
+                ></ha-icon-button>
+              `
+            : html`
+                <mwc-button .urlPath=${urlPath} @click=${this._navigate}
+                  >${this.hass.localize(
+                    "ui.panel.config.lovelace.dashboards.picker.open"
+                  )}</mwc-button
+                >
+              `,
       };
-      columns.show_in_sidebar = {
-        title: this.hass.localize(
-          "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
-        ),
-        type: "icon",
-        width: "121px",
-        template: (sidebar) =>
-          sidebar
-            ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
-            : html`—`,
-      };
+
+      return columns;
     }
-
-    columns.url_path = {
-      title: "",
-      label: this.hass.localize(
-        "ui.panel.config.lovelace.dashboards.picker.headers.url"
-      ),
-      filterable: true,
-      width: "100px",
-      template: (urlPath) =>
-        narrow
-          ? html`
-              <ha-icon-button
-                .path=${mdiOpenInNew}
-                .urlPath=${urlPath}
-                @click=${this._navigate}
-                .label=${this.hass.localize(
-                  "ui.panel.config.lovelace.dashboards.picker.open"
-                )}
-              ></ha-icon-button>
-            `
-          : html`
-              <mwc-button .urlPath=${urlPath} @click=${this._navigate}
-                >${this.hass.localize(
-                  "ui.panel.config.lovelace.dashboards.picker.open"
-                )}</mwc-button
-              >
-            `,
-    };
-
-    return columns;
-  });
+  );
 
   private _getItems = memoize((dashboards: LovelaceDashboard[]) => {
     const defaultMode = (

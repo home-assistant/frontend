@@ -57,9 +57,9 @@ export interface SortingChangedEvent {
 
 export type SortingDirection = "desc" | "asc" | null;
 
-export type DataTableColumnContainer<T = any> = {
-  [K in keyof T]?: DataTableColumnData<T, T[K]>;
-};
+export interface DataTableColumnContainer<T = any> {
+  [key: string]: DataTableColumnData<T>;
+}
 
 export interface DataTableSortColumnData {
   sortable?: boolean;
@@ -69,13 +69,12 @@ export interface DataTableSortColumnData {
   direction?: SortingDirection;
 }
 
-export interface DataTableColumnData<T = any, D = any>
-  extends DataTableSortColumnData {
+export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
   main?: boolean;
   title: TemplateResult | string;
   label?: TemplateResult | string;
   type?: "numeric" | "icon" | "icon-button" | "overflow-menu" | "flex";
-  template?: (data: D, row: T) => TemplateResult | string | typeof nothing;
+  template?: (data: any, row: T) => TemplateResult | string | typeof nothing;
   width?: string;
   maxWidth?: string;
   grows?: boolean;
@@ -191,22 +190,24 @@ export class HaDataTable extends LitElement {
 
     if (properties.has("columns")) {
       this._filterable = Object.values(this.columns).some(
-        (column) => column?.filterable
+        (column) => column.filterable
       );
 
       for (const columnId in this.columns) {
-        if (this.columns[columnId]?.direction) {
-          this._sortDirection = this.columns[columnId]!.direction!;
+        if (this.columns[columnId].direction) {
+          this._sortDirection = this.columns[columnId].direction!;
           this._sortColumn = columnId;
           break;
         }
       }
 
-      const clonedColumns: SortableColumnContainer = deepClone(this.columns);
-      Object.values(clonedColumns).forEach((column) => {
-        delete column.title;
-        delete column.template;
-      });
+      const clonedColumns: DataTableColumnContainer = deepClone(this.columns);
+      Object.values(clonedColumns).forEach(
+        (column: ClonedDataTableColumnData) => {
+          delete column.title;
+          delete column.template;
+        }
+      );
 
       this._sortColumns = clonedColumns;
     }
@@ -281,7 +282,7 @@ export class HaDataTable extends LitElement {
                 `
               : ""}
             ${Object.entries(this.columns).map(([key, column]) => {
-              if (!column || column.hidden) {
+              if (column.hidden) {
                 return "";
               }
               const sorted = key === this._sortColumn;
@@ -406,7 +407,7 @@ export class HaDataTable extends LitElement {
             `
           : ""}
         ${Object.entries(this.columns).map(([key, column]) => {
-          if (!column || column.hidden) {
+          if (column.hidden) {
             return "";
           }
           return html`
@@ -503,7 +504,7 @@ export class HaDataTable extends LitElement {
 
   private _handleHeaderClick(ev: Event) {
     const columnId = (ev.currentTarget as any).columnId;
-    if (!this.columns[columnId]?.sortable) {
+    if (!this.columns[columnId].sortable) {
       return;
     }
     if (!this._sortDirection || this._sortColumn !== columnId) {
