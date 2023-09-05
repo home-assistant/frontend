@@ -123,10 +123,17 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.calendar.${schema.name}`
-    );
+  ): string => {
+    switch (schema.name) {
+      case "entity_id":
+        return this.hass.localize("ui.components.entity.entity-picker.entity");
+      case "event":
+        return this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.type.calendar.event"
+        );
+    }
+    return "";
+  };
 }
 
 declare global {
