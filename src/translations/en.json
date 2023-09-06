@@ -5340,10 +5340,6 @@
           "description": "Unlocks advanced features.",
           "link_promo": "Learn more"
         },
-        "safe_mode": {
-          "title": "Safe mode",
-          "description": "Disables loading of custom resources."
-        },
         "refresh_tokens": {
           "header": "Refresh tokens",
           "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. The following refresh tokens are currently active for your account.",
@@ -5530,6 +5526,13 @@
             "download_results": "Download results",
             "no_match": "No intent matched",
             "language": "[%key:ui::components::language-picker::language%]"
+          },
+          "debug": {
+            "title": "Debug Tools",
+            "disable_resources": {
+              "title": "Disable Custom Resources",
+              "description": "Disables loading of custom resources when set. Useful for diagnosing problems with the frontend."
+            }
           },
           "events": {
             "title": "Events",

@@ -271,7 +271,7 @@ export const provideHass = (
     },
     dockedSidebar: "auto",
     vibrate: true,
-    safemode: false,
+    debugDisableResources: false,
     suspendWhenHidden: false,
     moreInfoEntityId: null as any,
     // @ts-ignore

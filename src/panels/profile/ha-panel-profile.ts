@@ -31,7 +31,6 @@ import "./ha-pick-date-format-row";
 import "./ha-pick-time-zone-row";
 import "./ha-push-notifications-row";
 import "./ha-refresh-tokens-card";
-import "./ha-safe-mode-row";
 import "./ha-set-suspend-row";
 import "./ha-set-vibrate-row";
 
@@ -167,10 +166,6 @@ class HaPanelProfile extends LitElement {
                     .narrow=${this.narrow}
                     .coreUserData=${this._coreUserData}
                   ></ha-advanced-mode-row>
-                  <ha-safe-mode-row
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-safe-mode-row>
                 `
               : ""}
             <ha-set-suspend-row

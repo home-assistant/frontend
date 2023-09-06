@@ -228,7 +228,7 @@ export class LovelacePanel extends LitElement {
       confProm = llWindow.llConfProm;
       llWindow.llConfProm = undefined;
     }
-    if (!resourcesLoaded && !this.hass?.safemode) {
+    if (!resourcesLoaded && !this.hass?.debugDisableResources) {
       resourcesLoaded = true;
       (llWindow.llConfProm || fetchResources(this.hass!.connection)).then(
         (resources) =>

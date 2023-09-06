@@ -73,7 +73,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         translationMetadata,
         dockedSidebar: "docked",
         vibrate: true,
-        safemode: false,
+        debugDisableResources: false,
         suspendWhenHidden: true,
         enableShortcuts: true,
         moreInfoEntityId: null,
