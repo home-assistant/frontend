@@ -2,10 +2,11 @@ import { mdiMinus, mdiPlus } from "@mdi/js";
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { fireEvent } from "../common/dom/fire_event";
+import { formatValueAndUnit } from "../common/entity/format_value_and_unit";
 import { conditionalClamp } from "../common/number/clamp";
 import { formatNumber } from "../common/number/format_number";
 import { FrontendLocaleData } from "../data/translation";
-import { fireEvent } from "../common/dom/fire_event";
 
 const A11Y_KEY_CODES = new Set([
   "ArrowRight",
@@ -20,7 +21,7 @@ const A11Y_KEY_CODES = new Set([
 
 @customElement("ha-control-number-buttons")
 export class HaControlNumberButton extends LitElement {
-  @property({ attribute: false }) public locale?: FrontendLocaleData;
+  @property({ attribute: false }) public locale!: FrontendLocaleData;
 
   @property({ type: Boolean, reflect: true }) disabled = false;
 
@@ -33,6 +34,8 @@ export class HaControlNumberButton extends LitElement {
   @property({ type: Number }) public min?: number;
 
   @property({ type: Number }) public max?: number;
+
+  @property() public unit?: string;
 
   @property({ attribute: "false" })
   public formatOptions: Intl.NumberFormatOptions = {};
@@ -116,7 +119,11 @@ export class HaControlNumberButton extends LitElement {
   protected render(): TemplateResult {
     const displayedValue =
       this.value != null
-        ? formatNumber(this.value, this.locale, this.formatOptions)
+        ? formatValueAndUnit(
+            this.locale,
+            formatNumber(this.value, this.locale, this.formatOptions),
+            this.unit
+          )
         : "";
 
     return html`

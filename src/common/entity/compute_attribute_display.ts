@@ -18,6 +18,7 @@ import { blankBeforePercent } from "../translations/blank_before_percent";
 import { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
 import { computeStateDomain } from "./compute_state_domain";
+import { formatValueAndUnit } from "./format_value_and_unit";
 
 export const computeAttributeValueDisplay = (
   localize: LocalizeFunc,
@@ -55,23 +56,11 @@ export const computeAttributeValueDisplay = (
       unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
     }
 
-    if (unit === "%") {
-      return `${formattedValue}${blankBeforePercent(locale)}${unit}`;
-    }
-
-    if (unit === "°") {
-      return `${formattedValue}${unit}`;
-    }
-
-    if (unit) {
-      return `${formattedValue} ${unit}`;
-    }
-
     if (TEMPERATURE_ATTRIBUTES.has(attribute)) {
-      return `${formattedValue} ${config.unit_system.temperature}`;
+      unit = config.unit_system.temperature;
     }
 
-    return formattedValue;
+    return formatValueAndUnit(locale, formattedValue, unit);
   }
 
   // Special handling in case this is a string with an known format
