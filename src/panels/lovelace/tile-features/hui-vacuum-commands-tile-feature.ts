@@ -1,5 +1,5 @@
 import {
-  mdiHomeMapMarker,
+  mdiHomeImportOutline,
   mdiMapMarker,
   mdiPause,
   mdiPlay,
@@ -8,7 +8,7 @@ import {
   mdiTargetVariant,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -16,19 +16,19 @@ import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
+  VacuumEntity,
+  VacuumEntityFeature,
   canReturnHome,
   canStart,
   canStop,
   isCleaning,
-  VacuumEntity,
-  VacuumEntityFeature,
 } from "../../../data/vacuum";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature, LovelaceTileFeatureEditor } from "../types";
 import {
+  VACUUM_COMMANDS,
   VacuumCommand,
   VacuumCommandsTileFeatureConfig,
-  VACUUM_COMMANDS,
 } from "./types";
 
 interface VacuumButton {
@@ -110,7 +110,7 @@ export const VACUUM_COMMANDS_BUTTONS: Record<
   }),
   return_home: (stateObj) => ({
     translationKey: "return_home",
-    icon: mdiHomeMapMarker,
+    icon: mdiHomeImportOutline,
     serviceName: "return_to_base",
     disabled: !canReturnHome(stateObj),
   }),

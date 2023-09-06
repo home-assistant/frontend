@@ -3,6 +3,7 @@ import {
   Connection,
   HassConfig,
   HassEntities,
+  HassEntity,
   HassServices,
   HassServiceTarget,
   MessageBase,
@@ -257,6 +258,13 @@ export interface HomeAssistant {
     configFlow?: Parameters<typeof getHassTranslations>[4]
   ): Promise<LocalizeFunc>;
   loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
+  formatEntityState(stateObj: HassEntity, state?: string): string;
+  formatEntityAttributeValue(
+    stateObj: HassEntity,
+    attribute: string,
+    value?: any
+  ): string;
+  formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
 }
 
 export interface Route {
@@ -284,3 +292,5 @@ export type AsyncReturnType<T extends (...args: any) => any> = T extends (
   : T extends (...args: any) => infer U
   ? U
   : never;
+
+export type Entries<T> = [keyof T, T[keyof T]][];

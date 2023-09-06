@@ -27,10 +27,12 @@ export const filterData = (
   filter: FilterDataParamTypes[2]
 ): Promise<ReturnType<FilterDataType>> =>
   getWorker().filterData(data, columns, filter);
+
 export const sortData = (
   data: SortDataParamTypes[0],
   columns: SortDataParamTypes[1],
   direction: SortDataParamTypes[2],
-  sortColumn: SortDataParamTypes[3]
+  sortColumn: SortDataParamTypes[3],
+  language?: SortDataParamTypes[4]
 ): Promise<ReturnType<SortDataType>> =>
-  getWorker().sortData(data, columns, direction, sortColumn);
+  getWorker().sortData(data, columns, direction, sortColumn, language);

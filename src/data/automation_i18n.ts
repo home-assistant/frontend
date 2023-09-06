@@ -6,11 +6,7 @@ import {
   formatTimeWithSeconds,
 } from "../common/datetime/format_time";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
-import {
-  computeAttributeNameDisplay,
-  computeAttributeValueDisplay,
-} from "../common/entity/compute_attribute_display";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
+import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../resources/intl-polyfill";
 import type { HomeAssistant } from "../types";
@@ -26,6 +22,8 @@ import { FrontendLocaleData } from "./translation";
 
 const triggerTranslationBaseKey =
   "ui.panel.config.automation.editor.triggers.type";
+const conditionsTranslationBaseKey =
+  "ui.panel.config.automation.editor.conditions.type";
 
 const describeDuration = (forTime: number | string | ForDict) => {
   let duration: string | null;
@@ -233,23 +231,14 @@ const tryDescribeTrigger = (
         for (const state of trigger.from.values()) {
           from.push(
             trigger.attribute
-              ? computeAttributeValueDisplay(
-                  hass.localize,
-                  stateObj,
-                  hass.locale,
-                  hass.config,
-                  hass.entities,
-                  trigger.attribute,
-                  state
-                ).toString()
-              : computeStateDisplay(
-                  hass.localize,
-                  stateObj,
-                  hass.locale,
-                  hass.config,
-                  hass.entities,
-                  state
-                )
+              ? hass
+                  .formatEntityAttributeValue(
+                    stateObj,
+                    trigger.attribute,
+                    state
+                  )
+                  .toString()
+              : hass.formatEntityState(stateObj, state)
           );
         }
         if (from.length !== 0) {
@@ -259,23 +248,16 @@ const tryDescribeTrigger = (
       } else {
         base += ` from ${
           trigger.attribute
-            ? computeAttributeValueDisplay(
-                hass.localize,
-                stateObj,
-                hass.locale,
-                hass.config,
-                hass.entities,
-                trigger.attribute,
-                trigger.from
-              ).toString()
-            : computeStateDisplay(
-                hass.localize,
-                stateObj,
-                hass.locale,
-                hass.config,
-                hass.entities,
-                trigger.from.toString()
-              ).toString()
+            ? hass
+                .formatEntityAttributeValue(
+                  stateObj,
+                  trigger.attribute,
+                  trigger.from
+                )
+                .toString()
+            : hass
+                .formatEntityState(stateObj, trigger.from.toString())
+                .toString()
         }`;
       }
     }
@@ -290,23 +272,14 @@ const tryDescribeTrigger = (
         for (const state of trigger.to.values()) {
           to.push(
             trigger.attribute
-              ? computeAttributeValueDisplay(
-                  hass.localize,
-                  stateObj,
-                  hass.locale,
-                  hass.config,
-                  hass.entities,
-                  trigger.attribute,
-                  state
-                ).toString()
-              : computeStateDisplay(
-                  hass.localize,
-                  stateObj,
-                  hass.locale,
-                  hass.config,
-                  hass.entities,
-                  state
-                ).toString()
+              ? hass
+                  .formatEntityAttributeValue(
+                    stateObj,
+                    trigger.attribute,
+                    state
+                  )
+                  .toString()
+              : hass.formatEntityState(stateObj, state).toString()
           );
         }
         if (to.length !== 0) {
@@ -316,23 +289,14 @@ const tryDescribeTrigger = (
       } else {
         base += ` to ${
           trigger.attribute
-            ? computeAttributeValueDisplay(
-                hass.localize,
-                stateObj,
-                hass.locale,
-                hass.config,
-                hass.entities,
-                trigger.attribute,
-                trigger.to
-              ).toString()
-            : computeStateDisplay(
-                hass.localize,
-                stateObj,
-                hass.locale,
-                hass.config,
-                hass.entities,
-                trigger.to.toString()
-              )
+            ? hass
+                .formatEntityAttributeValue(
+                  stateObj,
+                  trigger.attribute,
+                  trigger.to
+                )
+                .toString()
+            : hass.formatEntityState(stateObj, trigger.to.toString())
         }`;
       }
     }
@@ -423,7 +387,7 @@ const tryDescribeTrigger = (
         return "Invalid Time Pattern Seconds";
       }
 
-      if (seconds_all) {
+      if (seconds_all || (seconds_interval && seconds === 1)) {
         result += "every second of ";
       } else if (seconds_interval) {
         result += `every ${seconds} seconds of `;
@@ -452,7 +416,7 @@ const tryDescribeTrigger = (
         return "Invalid Time Pattern Minutes";
       }
 
-      if (minutes_all) {
+      if (minutes_all || (minutes_interval && minutes === 1)) {
         result += "every minute of ";
       } else if (minutes_interval) {
         result += `every ${minutes} minutes of `;
@@ -489,7 +453,7 @@ const tryDescribeTrigger = (
         return "Invalid Time Pattern Hours";
       }
 
-      if (hours_all) {
+      if (hours_all || (hours_interval && hours === 1)) {
         result += "every hour";
       } else if (hours_interval) {
         result += `every ${hours} hours`;
@@ -714,34 +678,53 @@ const tryDescribeCondition = (
     const conditions = ensureArray(condition.conditions);
 
     if (!conditions || conditions.length === 0) {
-      return "Test if any condition matches";
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.or.description.no_conditions`
+      );
     }
     const count = conditions.length;
-    return `Test if any of ${count} condition${count === 1 ? "" : "s"} matches`;
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.or.description.full`,
+      {
+        count: count,
+      }
+    );
   }
 
   if (condition.condition === "and") {
     const conditions = ensureArray(condition.conditions);
 
     if (!conditions || conditions.length === 0) {
-      return "Test if multiple conditions match";
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.and.description.no_conditions`
+      );
     }
     const count = conditions.length;
-    return `Test if ${count} condition${count === 1 ? "" : "s"} match${
-      count === 1 ? "es" : ""
-    }`;
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.and.description.full`,
+      {
+        count: count,
+      }
+    );
   }
 
   if (condition.condition === "not") {
     const conditions = ensureArray(condition.conditions);
 
     if (!conditions || conditions.length === 0) {
-      return "Test if no condition matches";
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.not.description.no_conditions`
+      );
     }
     if (conditions.length === 1) {
-      return "Test if 1 condition does not match";
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.not.description.one_condition`
+      );
     }
-    return `Test if none of ${conditions.length} conditions match`;
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.not.description.full`,
+      { count: conditions.length }
+    );
   }
 
   // State Condition
@@ -801,45 +784,27 @@ const tryDescribeCondition = (
       for (const state of condition.state.values()) {
         states.push(
           condition.attribute
-            ? computeAttributeValueDisplay(
-                hass.localize,
-                stateObj,
-                hass.locale,
-                hass.config,
-                hass.entities,
-                condition.attribute,
-                state
-              ).toString()
-            : computeStateDisplay(
-                hass.localize,
-                stateObj,
-                hass.locale,
-                hass.config,
-                hass.entities,
-                state
-              )
+            ? hass
+                .formatEntityAttributeValue(
+                  stateObj,
+                  condition.attribute,
+                  state
+                )
+                .toString()
+            : hass.formatEntityState(stateObj, state)
         );
       }
     } else if (condition.state !== "") {
       states.push(
         condition.attribute
-          ? computeAttributeValueDisplay(
-              hass.localize,
-              stateObj,
-              hass.locale,
-              hass.config,
-              hass.entities,
-              condition.attribute,
-              condition.state
-            ).toString()
-          : computeStateDisplay(
-              hass.localize,
-              stateObj,
-              hass.locale,
-              hass.config,
-              hass.entities,
-              condition.state.toString()
-            )
+          ? hass
+              .formatEntityAttributeValue(
+                stateObj,
+                condition.attribute,
+                condition.state
+              )
+              .toString()
+          : hass.formatEntityState(stateObj, condition.state.toString())
       );
     }
 
@@ -1018,9 +983,15 @@ const tryDescribeCondition = (
 
     const entitiesString = disjunctionFormatter.format(entities);
     const zonesString = disjunctionFormatter.format(zones);
-    return `Confirm ${entitiesString} ${
-      entities.length > 1 ? "are" : "is"
-    } in ${zonesString} ${zones.length > 1 ? "zones" : "zone"}`;
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.zone.description.full`,
+      {
+        entity: entitiesString,
+        numberOfEntities: entities.length,
+        zone: zonesString,
+        numberOfZones: zones.length,
+      }
+    );
   }
 
   if (condition.condition === "device") {

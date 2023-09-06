@@ -10,7 +10,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { computeAttributeValueDisplay } from "../../../../common/entity/compute_attribute_display";
+import { UNIT_F } from "../../../../common/const";
 import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
@@ -18,17 +18,30 @@ import { clamp } from "../../../../common/number/clamp";
 import { formatNumber } from "../../../../common/number/format_number";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-control-circular-slider";
+import type { ControlCircularSliderMode } from "../../../../components/ha-control-circular-slider";
 import "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-svg-icon";
 import {
   CLIMATE_HVAC_ACTION_TO_MODE,
   ClimateEntity,
   ClimateEntityFeature,
+  HvacMode,
 } from "../../../../data/climate";
 import { UNAVAILABLE } from "../../../../data/entity";
 import { HomeAssistant } from "../../../../types";
+import { moreInfoControlCircularSliderStyle } from "../ha-more-info-control-circular-slider-style";
 
 type Target = "value" | "low" | "high";
+
+const SLIDER_MODES: Record<HvacMode, ControlCircularSliderMode> = {
+  auto: "full",
+  cool: "end",
+  dry: "full",
+  fan_only: "full",
+  heat: "start",
+  heat_cool: "full",
+  off: "full",
+};
 
 @customElement("ha-more-info-climate-temperature")
 export class HaMoreInfoClimateTemperature extends LitElement {
@@ -54,7 +67,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
   private get _step() {
     return (
       this.stateObj.attributes.target_temp_step ||
-      (this.hass.config.unit_system.temperature.indexOf("F") === -1 ? 0.5 : 1)
+      (this.hass.config.unit_system.temperature === UNIT_F ? 1 : 0.5)
     );
   }
 
@@ -137,20 +150,24 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     this._selectTargetTemperature = target;
   }
 
-  private _renderHvacAction() {
+  private _renderLabel() {
+    if (this.stateObj.state === UNAVAILABLE) {
+      return html`
+        <p class="label disabled">
+          ${this.hass.formatEntityState(this.stateObj, UNAVAILABLE)}
+        </p>
+      `;
+    }
+
     const action = this.stateObj.attributes.hvac_action;
 
-    const actionLabel = computeAttributeValueDisplay(
-      this.hass.localize,
+    const actionLabel = this.hass.formatEntityAttributeValue(
       this.stateObj,
-      this.hass.locale,
-      this.hass.config,
-      this.hass.entities,
       "hvac_action"
-    ) as string;
+    );
 
     return html`
-      <p class="action">
+      <p class="label">
         ${action && ["preheating", "heating", "cooling"].includes(action)
           ? this.hass.localize(
               "ui.dialogs.more_info_control.climate.target_label",
@@ -167,11 +184,12 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     const lowColor = stateColorCss(this.stateObj, "heat");
     const highColor = stateColorCss(this.stateObj, "cool");
 
-    const color = colored
-      ? target === "high"
-        ? highColor
-        : lowColor
-      : undefined;
+    const color =
+      colored && stateActive(this.stateObj)
+        ? target === "high"
+          ? highColor
+          : lowColor
+        : undefined;
 
     return html`
       <div class="buttons">
@@ -245,7 +263,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     const action = this.stateObj.attributes.hvac_action;
     const active = stateActive(this.stateObj);
 
-    const mainColor = stateColorCss(this.stateObj);
+    const stateColor = stateColorCss(this.stateObj);
     const lowColor = stateColorCss(this.stateObj, active ? "heat" : "off");
     const highColor = stateColorCss(this.stateObj, active ? "cool" : "off");
 
@@ -257,35 +275,43 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       );
     }
 
-    const hvacModes = this.stateObj.attributes.hvac_modes;
+    if (
+      supportsTargetTemperature &&
+      this._targetTemperature.value != null &&
+      this.stateObj.state !== UNAVAILABLE
+    ) {
+      const heatCoolModes = this.stateObj.attributes.hvac_modes.filter((m) =>
+        ["heat", "cool", "heat_cool"].includes(m)
+      );
+      const sliderMode =
+        SLIDER_MODES[
+          heatCoolModes.length === 1 && ["off", "auto"].includes(mode)
+            ? heatCoolModes[0]
+            : mode
+        ];
 
-    if (supportsTargetTemperature && this._targetTemperature.value != null) {
-      const hasOnlyCoolMode =
-        hvacModes.length === 2 &&
-        hvacModes.includes("cool") &&
-        hvacModes.includes("off");
       return html`
         <div
           class="container"
           style=${styleMap({
-            "--main-color": mainColor,
+            "--state-color": stateColor,
             "--action-color": actionColor,
           })}
         >
           <ha-control-circular-slider
-            .inverted=${mode === "cool" || hasOnlyCoolMode}
+            .inactive=${!active}
+            .mode=${sliderMode}
             .value=${this._targetTemperature.value}
             .min=${this._min}
             .max=${this._max}
             .step=${this._step}
             .current=${this.stateObj.attributes.current_temperature}
-            .disabled=${this.stateObj!.state === UNAVAILABLE}
             @value-changed=${this._valueChanged}
             @value-changing=${this._valueChanging}
           >
           </ha-control-circular-slider>
           <div class="info">
-            <div class="action-container">${this._renderHvacAction()}</div>
+            <div class="label-container">${this._renderLabel()}</div>
             <div class="temperature-container">
               ${this._renderTargetTemperature(this._targetTemperature.value)}
             </div>
@@ -298,7 +324,8 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     if (
       supportsTargetTemperatureRange &&
       this._targetTemperature.low != null &&
-      this._targetTemperature.high != null
+      this._targetTemperature.high != null &&
+      this.stateObj.state !== UNAVAILABLE
     ) {
       return html`
         <div
@@ -310,8 +337,8 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           })}
         >
           <ha-control-circular-slider
+            .inactive=${!active}
             dual
-            .disabled=${this.stateObj!.state === UNAVAILABLE}
             .low=${this._targetTemperature.low}
             .high=${this._targetTemperature.high}
             .min=${this._min}
@@ -325,7 +352,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            <div class="action-container">${this._renderHvacAction()}</div>
+            <div class="label-container">${this._renderLabel()}</div>
             <div class="temperature-container dual">
               <button
                 @click=${this._handleSelectTemp}
@@ -367,163 +394,88 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           disabled
         >
         </ha-control-circular-slider>
+        <div class="info">
+          <div class="label-container">${this._renderLabel()}</div>
+        </div>
       </div>
     `;
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      /* Layout */
-      .container {
-        position: relative;
-      }
-      .info {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        pointer-events: none;
-        font-size: 16px;
-        line-height: 24px;
-        letter-spacing: 0.1px;
-      }
-      .info * {
-        margin: 0;
-        pointer-events: auto;
-      }
-      /* Elements */
-      .temperature-container {
-        margin-bottom: 30px;
-      }
-      .temperature {
-        display: inline-flex;
-        font-size: 58px;
-        line-height: 64px;
-        letter-spacing: -0.25px;
-        margin: 0;
-      }
-      .temperature span {
-        display: inline-flex;
-      }
-      .temperature .unit {
-        font-size: 24px;
-        line-height: 40px;
-      }
-      .temperature .decimal {
-        font-size: 24px;
-        line-height: 40px;
-        align-self: flex-end;
-        margin-right: -18px;
-      }
-      .action-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 200px;
-        height: 48px;
-        margin-bottom: 6px;
-      }
-      .action {
-        font-weight: 500;
-        text-align: center;
-        color: var(--action-color, inherit);
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-      .dual {
-        display: flex;
-        flex-direction: row;
-        gap: 24px;
-        margin-bottom: 40px;
-      }
+    return [
+      moreInfoControlCircularSliderStyle,
+      css`
+        /* Elements */
+        .temperature-container {
+          margin-bottom: 30px;
+        }
+        .temperature {
+          display: inline-flex;
+          font-size: 58px;
+          line-height: 64px;
+          letter-spacing: -0.25px;
+          margin: 0;
+        }
+        .temperature span {
+          display: inline-flex;
+        }
+        .temperature .decimal {
+          font-size: 24px;
+          line-height: 32px;
+          align-self: flex-end;
+          width: 20px;
+          margin-bottom: 4px;
+        }
+        .temperature .unit {
+          font-size: 20px;
+          line-height: 24px;
+          align-self: flex-start;
+          width: 20px;
+          margin-top: 4px;
+        }
+        .decimal + .unit {
+          margin-left: -20px;
+        }
+        .dual {
+          display: flex;
+          flex-direction: row;
+          gap: 24px;
+          margin-bottom: 40px;
+        }
 
-      .dual button {
-        outline: none;
-        background: none;
-        color: inherit;
-        font-family: inherit;
-        -webkit-tap-highlight-color: transparent;
-        border: none;
-        opacity: 0.5;
-        padding: 0;
-        transition:
-          opacity 180ms ease-in-out,
-          transform 180ms ease-in-out;
-        cursor: pointer;
-      }
-      .dual button:focus-visible {
-        transform: scale(1.1);
-      }
-      .dual button.selected {
-        opacity: 1;
-      }
-      .buttons {
-        position: absolute;
-        bottom: 10px;
-        left: 0;
-        right: 0;
-        margin: 0 auto;
-        width: 120px;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .buttons ha-outlined-icon-button {
-        --md-outlined-icon-button-container-size: 48px;
-        --md-outlined-icon-button-icon-size: 24px;
-      }
-      /* Accessibility */
-      .visually-hidden {
-        position: absolute;
-        overflow: hidden;
-        clip: rect(0 0 0 0);
-        height: 1px;
-        width: 1px;
-        margin: -1px;
-        padding: 0;
-        border: 0;
-      }
-      /* Slider */
-      ha-control-circular-slider {
-        --control-circular-slider-color: var(
-          --main-color,
-          var(--disabled-color)
-        );
-        --control-circular-slider-low-color: var(
-          --low-color,
-          var(--disabled-color)
-        );
-        --control-circular-slider-high-color: var(
-          --high-color,
-          var(--disabled-color)
-        );
-      }
-      ha-control-circular-slider::after {
-        display: block;
-        content: "";
-        position: absolute;
-        top: -10%;
-        left: -10%;
-        right: -10%;
-        bottom: -10%;
-        background: radial-gradient(
-          50% 50% at 50% 50%,
-          var(--action-color, transparent) 0%,
-          transparent 100%
-        );
-        opacity: 0.15;
-        pointer-events: none;
-      }
-    `;
+        .dual button {
+          outline: none;
+          background: none;
+          color: inherit;
+          font-family: inherit;
+          -webkit-tap-highlight-color: transparent;
+          border: none;
+          opacity: 0.5;
+          padding: 0;
+          transition:
+            opacity 180ms ease-in-out,
+            transform 180ms ease-in-out;
+          cursor: pointer;
+        }
+        .dual button:focus-visible {
+          transform: scale(1.1);
+        }
+        .dual button.selected {
+          opacity: 1;
+        }
+        /* Slider */
+        ha-control-circular-slider {
+          --control-circular-slider-low-color: var(
+            --low-color,
+            var(--disabled-color)
+          );
+          --control-circular-slider-high-color: var(
+            --high-color,
+            var(--disabled-color)
+          );
+        }
+      `,
+    ];
   }
 }
 

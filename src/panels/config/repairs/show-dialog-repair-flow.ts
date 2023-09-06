@@ -27,6 +27,7 @@ export const showRepairsFlowDialog = (
       dialogClosedCallback,
     },
     {
+      flowType: "repair_flow",
       loadDevicesAndAreas: false,
       createFlow: async (hass, handler) => {
         const [step] = await Promise.all([

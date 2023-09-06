@@ -13,31 +13,30 @@ import {
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import { stateActive } from "../../../common/entity/state_active";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-slider";
 import { isUnavailableState } from "../../../data/entity";
 import {
-  computeMediaDescription,
   ControlButton,
   MediaPlayerEntity,
   MediaPlayerEntityFeature,
+  computeMediaDescription,
 } from "../../../data/media-player";
+import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { EntityConfig, LovelaceRow } from "./types";
@@ -68,6 +67,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     this._resizeObserver?.unobserve(this);
   }
 
@@ -190,13 +190,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         .hass=${this.hass}
         .config=${this._config}
         .secondaryText=${mediaDescription ||
-        computeStateDisplay(
-          this.hass.localize,
-          stateObj,
-          this.hass.locale,
-          this.hass.config,
-          this.hass.entities
-        )}
+        this.hass.formatEntityState(stateObj)}
       >
         <div class="controls">
           ${supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON) &&

@@ -1,8 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-tab";
-import "@material/mwc-tab-bar";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";

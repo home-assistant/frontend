@@ -3,7 +3,6 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { computeDomain } from "../common/entity/compute_domain";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeRTL } from "../common/util/compute_rtl";
 import "../components/entity/state-info";
 import { isUnavailableState } from "../data/entity";
@@ -48,13 +47,7 @@ export class StateCardDisplay extends LitElement {
                 format="datetime"
                 capitalize
               ></hui-timestamp-display>`
-            : computeStateDisplay(
-                this.hass!.localize,
-                this.stateObj,
-                this.hass.locale,
-                this.hass.config,
-                this.hass.entities
-              )}
+            : this.hass.formatEntityState(this.stateObj)}
         </div>
       </div>
     `;

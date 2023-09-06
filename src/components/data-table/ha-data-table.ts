@@ -458,7 +458,8 @@ export class HaDataTable extends LitElement {
           filteredData,
           this._sortColumns[this._sortColumn],
           this._sortDirection,
-          this._sortColumn
+          this._sortColumn,
+          this.hass.locale.language
         )
       : filteredData;
 

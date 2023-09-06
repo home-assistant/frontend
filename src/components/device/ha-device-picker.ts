@@ -324,6 +324,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         .renderer=${rowRenderer}
         .disabled=${this.disabled}
         .required=${this.required}
+        item-id-path="id"
         item-value-path="id"
         item-label-path="name"
         @opened-changed=${this._openedChanged}

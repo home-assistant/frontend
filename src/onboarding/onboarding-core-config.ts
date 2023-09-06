@@ -13,22 +13,12 @@ import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-country-picker";
-import "../components/ha-currency-picker";
-import "../components/ha-formfield";
-import "../components/ha-language-picker";
-import "../components/ha-radio";
-import type { HaRadio } from "../components/ha-radio";
-import "../components/ha-textfield";
-import type { HaTextField } from "../components/ha-textfield";
-import "../components/ha-timezone-picker";
-import "../components/map/ha-locations-editor";
 import { ConfigUpdateValues, saveCoreConfig } from "../data/core";
 import { countryCurrency } from "../data/currency";
 import { onboardCoreConfigStep } from "../data/onboarding";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
 import "./onboarding-location";
-import "./onboarding-name";
 
 @customElement("onboarding-core-config")
 class OnboardingCoreConfig extends LitElement {
@@ -38,32 +28,26 @@ class OnboardingCoreConfig extends LitElement {
 
   @state() private _working = false;
 
-  @state() private _name?: ConfigUpdateValues["location_name"];
-
   @state() private _location?: [number, number];
 
-  @state() private _elevation?: string;
+  private _elevation = "0";
 
-  @state() private _unitSystem?: ConfigUpdateValues["unit_system"];
+  private _timeZone: ConfigUpdateValues["time_zone"] =
+    Intl.DateTimeFormat?.().resolvedOptions?.().timeZone;
 
-  @state() private _currency?: ConfigUpdateValues["currency"];
-
-  @state() private _timeZone?: ConfigUpdateValues["time_zone"];
-
-  @state() private _language: ConfigUpdateValues["language"];
+  private _language: ConfigUpdateValues["language"] = getLocalLanguage();
 
   @state() private _country?: ConfigUpdateValues["country"];
 
+  private _unitSystem?: ConfigUpdateValues["unit_system"];
+
+  private _currency?: ConfigUpdateValues["currency"];
+
   @state() private _error?: string;
 
+  @state() private _skipCore = false;
+
   protected render(): TemplateResult {
-    if (!this._name) {
-      return html`<onboarding-name
-        .hass=${this.hass}
-        .onboardingLocalize=${this.onboardingLocalize}
-        @value-changed=${this._nameChanged}
-      ></onboarding-name>`;
-    }
     if (!this._location) {
       return html`<onboarding-location
         .hass=${this.hass}
@@ -71,156 +55,34 @@ class OnboardingCoreConfig extends LitElement {
         @value-changed=${this._locationChanged}
       ></onboarding-location>`;
     }
+    if (this._skipCore) {
+      return html`<div class="row center">
+        <ha-circular-progress active></ha-circular-progress>
+      </div>`;
+    }
     return html`
-      ${
-        this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing
-      }
+      ${this._error
+        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+        : nothing}
 
       <p>
-      ${this.onboardingLocalize(
-        "ui.panel.page-onboarding.core-config.intro_core_config"
-      )}
+        ${this.onboardingLocalize(
+          "ui.panel.page-onboarding.core-config.country_intro"
+        )}
       </p>
 
-      <div class="row">
-        <ha-country-picker
-          class="flex"
-          .language=${this.hass.locale.language}
-          .label=${
-            this.hass.localize(
-              "ui.panel.config.core.section.core.core_config.country"
-            ) || "Country"
-          }
-            name="country"
-            required
-            .disabled=${this._working}
-            .value=${this._countryValue}
-            @value-changed=${this._handleValueChanged}
-        >
-        </ha-country-picker>
-        <ha-language-picker
-          class="flex"
-          .hass=${this.hass}
-          nativeName
-          .label=${this.hass.localize(
-            "ui.panel.config.core.section.core.core_config.language"
-          )}
-          name="language"
-          required
-          .value=${this._languageValue}
-          .disabled=${this._working}
-          @value-changed=${this._handleValueChanged}
-        >
-        </ha-language-picker>
-      </div>
-
-      <div class="row">
-      <ha-timezone-picker
-      class="flex"
-
-                .label=${this.hass.localize(
-                  "ui.panel.config.core.section.core.core_config.time_zone"
-                )}
-                name="timeZone"
-                .disabled=${this._working}
-                .value=${this._timeZoneValue}
-                @value-changed=${this._handleValueChanged}
-              >
-              </ha-timezone-picker>
-
-        <ha-textfield
-          class="flex"
-          .label=${this.hass.localize(
-            "ui.panel.config.core.section.core.core_config.elevation"
-          )}
-          name="elevation"
-          type="number"
-          .disabled=${this._working}
-          .value=${this._elevationValue}
-          .suffix=${this.hass.localize(
-            "ui.panel.config.core.section.core.core_config.elevation_meters"
-          )}
-          @change=${this._handleChange}
-        >
-        </ha-textfield>
-      </div>
-
-      <div class="row">
-        <div class="flex">
-          ${this.hass.localize(
-            "ui.panel.config.core.section.core.core_config.unit_system"
-          )}
-        </div>
-        <div class="radio-group">
-          <ha-formfield
-            .label=${html`${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.unit_system_metric"
-              )}
-              <div class="secondary">
-                ${this.hass.localize(
-                  "ui.panel.config.core.section.core.core_config.metric_example"
-                )}
-              </div>`}
-          >
-            <ha-radio
-              name="unit_system"
-              value="metric"
-              .checked=${this._unitSystemValue === "metric"}
-              @change=${this._unitSystemChanged}
-              .disabled=${this._working}
-            ></ha-radio>
-          </ha-formfield>
-          <ha-formfield
-            .label=${html`${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.unit_system_us_customary"
-              )}
-              <div class="secondary">
-                ${this.hass.localize(
-                  "ui.panel.config.core.section.core.core_config.us_customary_example"
-                )}
-              </div>`}
-          >
-            <ha-radio
-              name="unit_system"
-              value="us_customary"
-              .checked=${this._unitSystemValue === "us_customary"}
-              @change=${this._unitSystemChanged}
-              .disabled=${this._working}
-            ></ha-radio>
-          </ha-formfield>
-        </div>
-      </div>
-
-      <div class="row">
-            <div class="flex">
-              ${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.currency"
-              )}<br />
-              <a
-                href="https://en.wikipedia.org/wiki/ISO_4217#Active_codes"
-                target="_blank"
-                rel="noopener noreferrer"
-                >${this.hass.localize(
-                  "ui.panel.config.core.section.core.core_config.find_currency_value"
-                )}</a
-              >
-            </div>
-            <ha-currency-picker
-            class="flex"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.core.section.core.core_config.currency"
-                  )}
-                  name="currency"
-                  .disabled=${this._working}
-                  .value=${this._currencyValue}
-                  @value-changed=${this._handleValueChanged}
-                >
-</ha-currency-picker
-                >
-          </div>
-        </div>
+      <ha-country-picker
+        class="flex"
+        .language=${this.hass.locale.language}
+        .label=${this.hass.localize(
+          "ui.panel.config.core.section.core.core_config.country"
+        ) || "Country"}
+        required
+        .disabled=${this._working}
+        .value=${this._countryValue}
+        @value-changed=${this._handleCountryChanged}
+      >
+      </ha-country-picker>
 
       <div class="footer">
         <mwc-button @click=${this._save} .disabled=${this._working}>
@@ -232,20 +94,6 @@ class OnboardingCoreConfig extends LitElement {
     `;
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
-    if (!changedProps.has("_country") || !this._country) {
-      return;
-    }
-    if (!this._currency) {
-      this._currency = countryCurrency[this._country];
-    }
-    if (!this._unitSystem) {
-      this._unitSystem = ["US", "MM", "LR"].includes(this._country)
-        ? "us_customary"
-        : "metric";
-    }
-  }
-
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this.addEventListener("keyup", (ev) => {
@@ -255,84 +103,69 @@ class OnboardingCoreConfig extends LitElement {
     });
   }
 
-  private get _elevationValue() {
-    return this._elevation !== undefined ? this._elevation : 0;
-  }
-
-  private get _timeZoneValue() {
-    return this._timeZone || "";
-  }
-
-  private get _languageValue() {
-    return this._language || "";
-  }
-
   private get _countryValue() {
     return this._country || "";
   }
 
-  private get _unitSystemValue() {
-    return this._unitSystem !== undefined ? this._unitSystem : "metric";
-  }
-
-  private get _currencyValue() {
-    return this._currency !== undefined ? this._currency : "";
-  }
-
-  private _handleValueChanged(ev: ValueChangedEvent<string>) {
-    const target = ev.currentTarget as HTMLElement;
-    this[`_${target.getAttribute("name")}`] = ev.detail.value;
-  }
-
-  private _handleChange(ev: Event) {
-    const target = ev.currentTarget as HaTextField;
-    this[`_${target.name}`] = target.value;
-  }
-
-  private _nameChanged(ev: CustomEvent) {
-    this._name = ev.detail.value;
+  private _handleCountryChanged(ev: ValueChangedEvent<string>) {
+    this._country = ev.detail.value;
   }
 
   private async _locationChanged(ev) {
     this._location = ev.detail.value.location;
-    this._country = ev.detail.value.country;
-    this._elevation = ev.detail.value.elevation;
-    this._currency = ev.detail.value.currency;
-    this._language = ev.detail.value.language || getLocalLanguage();
-    this._timeZone =
-      ev.detail.value.timezone ||
-      Intl.DateTimeFormat?.().resolvedOptions?.().timeZone;
-    this._unitSystem = ev.detail.value.unit_system;
+    if (ev.detail.value.country) {
+      this._country = ev.detail.value.country;
+    }
+    if (ev.detail.value.elevation) {
+      this._elevation = ev.detail.value.elevation;
+    }
+    if (ev.detail.value.currency) {
+      this._currency = ev.detail.value.currency;
+    }
+    if (ev.detail.value.language) {
+      this._language = ev.detail.value.language;
+    }
+    if (ev.detail.value.timezone) {
+      this._timeZone = ev.detail.value.timezone;
+    }
+    if (ev.detail.value.unit_system) {
+      this._unitSystem = ev.detail.value.unit_system;
+    }
+    if (this._country) {
+      this._skipCore = true;
+      this._save(ev);
+      return;
+    }
+    fireEvent(this, "onboarding-progress", { increase: 0.5 });
     await this.updateComplete;
     setTimeout(
-      () => this.renderRoot.querySelector("ha-textfield")!.focus(),
+      () => this.renderRoot.querySelector("ha-country-picker")!.focus(),
       100
     );
   }
 
-  private _unitSystemChanged(ev: CustomEvent) {
-    this._unitSystem = (ev.target as HaRadio).value as
-      | "metric"
-      | "us_customary";
-  }
-
   private async _save(ev) {
-    if (!this._location) {
+    if (!this._location || !this._country) {
       return;
     }
     ev.preventDefault();
     this._working = true;
     try {
       await saveCoreConfig(this.hass, {
-        location_name: this._name,
+        location_name: this.onboardingLocalize(
+          "ui.panel.page-onboarding.core-config.location_name_default"
+        ),
         latitude: this._location[0],
         longitude: this._location[1],
-        elevation: Number(this._elevationValue),
-        unit_system: this._unitSystemValue,
-        time_zone: this._timeZoneValue || "UTC",
-        currency: this._currencyValue || "EUR",
-        country: this._countryValue,
-        language: this._languageValue,
+        elevation: Number(this._elevation),
+        unit_system:
+          this._unitSystem || ["US", "MM", "LR"].includes(this._country)
+            ? "us_customary"
+            : "metric",
+        time_zone: this._timeZone || "UTC",
+        currency: this._currency || countryCurrency[this._country] || "EUR",
+        country: this._country,
+        language: this._language,
       });
       const result = await onboardCoreConfigStep(this.hass);
       fireEvent(this, "onboarding-step", {
@@ -340,6 +173,7 @@ class OnboardingCoreConfig extends LitElement {
         result,
       });
     } catch (err: any) {
+      this._skipCore = false;
       this._working = false;
       this._error = err.message;
     }
@@ -378,6 +212,10 @@ class OnboardingCoreConfig extends LitElement {
 
       .row {
         margin-top: 16px;
+      }
+
+      .center {
+        justify-content: center;
       }
 
       .row > * {

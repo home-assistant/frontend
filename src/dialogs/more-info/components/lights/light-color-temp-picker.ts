@@ -1,15 +1,25 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
+import { rgb2hex } from "../../../../common/color/convert-color";
+import {
+  DEFAULT_MAX_KELVIN,
+  DEFAULT_MIN_KELVIN,
+  temperature2rgb,
+} from "../../../../common/color/convert-light-color";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stateColorCss } from "../../../../common/entity/state_color";
 import { throttle } from "../../../../common/util/throttle";
-import "../../../../components/ha-temp-color-picker";
+import "../../../../components/ha-control-slider";
+import { UNAVAILABLE } from "../../../../data/entity";
 import {
   LightColor,
   LightColorMode,
@@ -24,6 +34,26 @@ declare global {
   }
 }
 
+export const generateColorTemperatureGradient = (min: number, max: number) => {
+  const count = 10;
+
+  const gradient: [number, string][] = [];
+
+  const step = (max - min) / count;
+  const percentageStep = 1 / count;
+
+  for (let i = 0; i < count + 1; i++) {
+    const value = min + step * i;
+
+    const hex = rgb2hex(temperature2rgb(value));
+    gradient.push([percentageStep * i, hex]);
+  }
+
+  return gradient
+    .map(([stop, color]) => `${color} ${(stop as number) * 100}%`)
+    .join(", ");
+};
+
 @customElement("light-color-temp-picker")
 class LightColorTempPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -37,17 +67,40 @@ class LightColorTempPicker extends LitElement {
       return nothing;
     }
 
+    const minKelvin =
+      this.stateObj.attributes.min_color_temp_kelvin ?? DEFAULT_MIN_KELVIN;
+    const maxKelvin =
+      this.stateObj.attributes.max_color_temp_kelvin ?? DEFAULT_MAX_KELVIN;
+
+    const gradient = this._generateTemperatureGradient(minKelvin!, maxKelvin);
+    const color = stateColorCss(this.stateObj);
+
     return html`
-      <ha-temp-color-picker
-        @value-changed=${this._ctColorChanged}
-        @cursor-moved=${this._ctColorCursorMoved}
-        .min=${this.stateObj.attributes.min_color_temp_kelvin!}
-        .max=${this.stateObj.attributes.max_color_temp_kelvin!}
+      <ha-control-slider
+        inverted
+        vertical
         .value=${this._ctPickerValue}
+        .min=${minKelvin}
+        .max=${maxKelvin}
+        mode="cursor"
+        @value-changed=${this._ctColorChanged}
+        @slider-moved=${this._ctColorCursorMoved}
+        .ariaLabel=${this.hass.localize(
+          "ui.dialogs.more_info_control.light.color_temp"
+        )}
+        style=${styleMap({
+          "--control-slider-color": color,
+          "--gradient": gradient,
+        })}
+        .disabled=${this.stateObj.state === UNAVAILABLE}
       >
-      </ha-temp-color-picker>
+      </ha-control-slider>
     `;
   }
+
+  private _generateTemperatureGradient = memoizeOne(
+    (min: number, max: number) => generateColorTemperatureGradient(min, max)
+  );
 
   public _updateSliderValues() {
     const stateObj = this.stateObj;
@@ -129,10 +182,18 @@ class LightColorTempPicker extends LitElement {
           flex-direction: column;
         }
 
-        ha-temp-color-picker {
+        ha-control-slider {
           height: 45vh;
           max-height: 320px;
           min-height: 200px;
+          --control-slider-thickness: 100px;
+          --control-slider-border-radius: 24px;
+          --control-slider-color: var(--primary-color);
+          --control-slider-background: -webkit-linear-gradient(
+            top,
+            var(--gradient)
+          );
+          --control-slider-background-opacity: 1;
         }
       `,
     ];

@@ -101,6 +101,7 @@ export class DialogEnergyGridFlowSettings
     this._source = undefined;
     this._pickedDisplayUnit = undefined;
     this._error = undefined;
+    this._excludeList = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 

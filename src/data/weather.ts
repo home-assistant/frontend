@@ -19,13 +19,14 @@ import {
   mdiWeatherWindyVariant,
 } from "@mdi/js";
 import {
+  HassConfig,
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { css, html, svg, SVGTemplateResult, TemplateResult } from "lit";
+import { SVGTemplateResult, TemplateResult, css, html, svg } from "lit";
 import { styleMap } from "lit/directives/style-map";
 import { supportsFeature } from "../common/entity/supports-feature";
-import { formatNumber } from "../common/number/format_number";
+import { round } from "../common/number/round";
 import "../components/ha-svg-icon";
 import type { HomeAssistant } from "../types";
 
@@ -35,7 +36,9 @@ export const enum WeatherEntityFeature {
   FORECAST_TWICE_DAILY = 4,
 }
 
-export type ForecastType = "legacy" | "hourly" | "daily" | "twice_daily";
+export type ModernForecastType = "hourly" | "daily" | "twice_daily";
+
+export type ForecastType = ModernForecastType | "legacy";
 
 interface ForecastAttribute {
   temperature: number;
@@ -187,11 +190,7 @@ export const getWind = (
 ): string => {
   const speedText =
     speed !== undefined && speed !== null
-      ? `${formatNumber(speed, hass.locale)} ${getWeatherUnit(
-          hass!,
-          stateObj,
-          "wind_speed"
-        )}`
+      ? hass.formatEntityAttributeValue(stateObj, "wind_speed", speed)
       : "-";
   if (bearing !== undefined && bearing !== null) {
     const cardinalDirection = getWindBearing(bearing);
@@ -205,11 +204,11 @@ export const getWind = (
 };
 
 export const getWeatherUnit = (
-  hass: HomeAssistant,
+  config: HassConfig,
   stateObj: WeatherEntity,
   measure: string
 ): string => {
-  const lengthUnit = hass.config.unit_system.length || "";
+  const lengthUnit = config.unit_system.length || "";
   switch (measure) {
     case "visibility":
       return stateObj.attributes.visibility_unit || lengthUnit;
@@ -224,9 +223,9 @@ export const getWeatherUnit = (
         (lengthUnit === "km" ? "hPa" : "inHg")
       );
     case "temperature":
+    case "templow":
       return (
-        stateObj.attributes.temperature_unit ||
-        hass.config.unit_system.temperature
+        stateObj.attributes.temperature_unit || config.unit_system.temperature
       );
     case "wind_speed":
       return stateObj.attributes.wind_speed_unit || `${lengthUnit}/h`;
@@ -234,7 +233,7 @@ export const getWeatherUnit = (
     case "precipitation_probability":
       return "%";
     default:
-      return hass.config.unit_system[measure] || "";
+      return config.unit_system[measure] || "";
   }
 };
 
@@ -268,14 +267,15 @@ export const getSecondaryWeatherAttribute = (
 
   const weatherAttrIcon = weatherAttrIcons[attribute];
 
+  const roundedValue = round(value, 1);
+
   return html`
     ${weatherAttrIcon
       ? html`
           <ha-svg-icon class="attr-icon" .path=${weatherAttrIcon}></ha-svg-icon>
         `
       : hass!.localize(`ui.card.weather.attributes.${attribute}`)}
-    ${formatNumber(value, hass.locale, { maximumFractionDigits: 1 })}
-    ${getWeatherUnit(hass!, stateObj, attribute)}
+    ${hass.formatEntityAttributeValue(stateObj, attribute, roundedValue)}
   `;
 };
 
@@ -311,12 +311,14 @@ const getWeatherExtrema = (
     return undefined;
   }
 
-  const unit = getWeatherUnit(hass!, stateObj, "temperature");
-
   return html`
-    ${tempHigh ? `${formatNumber(tempHigh, hass.locale)} ${unit}` : ""}
+    ${tempHigh
+      ? hass.formatEntityAttributeValue(stateObj, "temperature", tempHigh)
+      : ""}
     ${tempLow && tempHigh ? " / " : ""}
-    ${tempLow ? `${formatNumber(tempLow, hass.locale)} ${unit}` : ""}
+    ${tempLow
+      ? hass.formatEntityAttributeValue(stateObj, "temperature", tempLow)
+      : ""}
   `;
 };
 
@@ -636,7 +638,7 @@ export const getForecast = (
 export const subscribeForecast = (
   hass: HomeAssistant,
   entity_id: string,
-  forecast_type: "daily" | "hourly" | "twice_daily",
+  forecast_type: ModernForecastType,
   callback: (forecastevent: ForecastEvent) => void
 ) =>
   hass.connection.subscribeMessage<ForecastEvent>(callback, {
@@ -645,15 +647,31 @@ export const subscribeForecast = (
     entity_id,
   });
 
+export const getSupportedForecastTypes = (
+  stateObj: HassEntityBase
+): ModernForecastType[] => {
+  const supported: ModernForecastType[] = [];
+  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_DAILY)) {
+    supported.push("daily");
+  }
+  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_TWICE_DAILY)) {
+    supported.push("twice_daily");
+  }
+  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_HOURLY)) {
+    supported.push("hourly");
+  }
+  return supported;
+};
+
 export const getDefaultForecastType = (stateObj: HassEntityBase) => {
   if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_DAILY)) {
     return "daily";
   }
-  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_HOURLY)) {
-    return "hourly";
-  }
   if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_TWICE_DAILY)) {
     return "twice_daily";
+  }
+  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_HOURLY)) {
+    return "hourly";
   }
   return undefined;
 };

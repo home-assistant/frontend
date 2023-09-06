@@ -80,9 +80,7 @@ export class DialogAddApplicationCredential extends LitElement {
       name: domainToName(this.hass.localize, domain),
     }));
     await this.hass.loadBackendTranslation("application_credentials");
-    if (this._domain) {
-      this._updateDescription();
-    }
+    this._updateDescription();
   }
 
   protected render() {
@@ -191,7 +189,7 @@ export class DialogAddApplicationCredential extends LitElement {
             .value=${this._name}
             required
             @input=${this._handleValueChanged}
-            error-message=${this.hass.localize("ui.common.error_required")}
+            .validationMessage=${this.hass.localize("ui.common.error_required")}
             dialogInitialFocus
           ></ha-textfield>
           <ha-textfield
@@ -203,7 +201,7 @@ export class DialogAddApplicationCredential extends LitElement {
             .value=${this._clientId}
             required
             @input=${this._handleValueChanged}
-            error-message=${this.hass.localize("ui.common.error_required")}
+            .validationMessage=${this.hass.localize("ui.common.error_required")}
             dialogInitialFocus
             .helper=${this.hass.localize(
               "ui.panel.config.application_credentials.editor.client_id_helper"
@@ -219,7 +217,7 @@ export class DialogAddApplicationCredential extends LitElement {
             .value=${this._clientSecret}
             required
             @input=${this._handleValueChanged}
-            error-message=${this.hass.localize("ui.common.error_required")}
+            .validationMessage=${this.hass.localize("ui.common.error_required")}
             .helper=${this.hass.localize(
               "ui.panel.config.application_credentials.editor.client_secret_helper"
             )}
@@ -265,11 +263,15 @@ export class DialogAddApplicationCredential extends LitElement {
   }
 
   private async _updateDescription() {
+    if (!this._domain) {
+      return;
+    }
+
     await this.hass.loadBackendTranslation(
       "application_credentials",
       this._domain
     );
-    const info = this._config!.integrations[this._domain!];
+    const info = this._config!.integrations[this._domain];
     this._description = this.hass.localize(
       `component.${this._domain}.application_credentials.description`,
       info.description_placeholders

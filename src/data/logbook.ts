@@ -5,14 +5,12 @@ import {
   DOMAINS_WITH_DYNAMIC_PICTURE,
 } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { autoCaseNoun } from "../common/translations/auto_case_noun";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HaEntityPickerEntityFilterFunc } from "../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../types";
 import { UNAVAILABLE, UNKNOWN } from "./entity";
-import { computeAttributeValueDisplay } from "../common/entity/compute_attribute_display";
 
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
 export const CONTINUOUS_DOMAINS = ["counter", "proximity", "sensor", "zone"];
@@ -61,12 +59,6 @@ const triggerPhrases = {
   "Home Assistant stopping": "triggered_by_homeassistant_stopping", // stop event
   "Home Assistant starting": "triggered_by_homeassistant_starting", // start event
 };
-
-const DATA_CACHE: {
-  [cacheKey: string]: {
-    [entityId: string]: Promise<LogbookEntry[]> | undefined;
-  };
-} = {};
 
 export const getLogbookDataForContext = async (
   hass: HomeAssistant,
@@ -142,10 +134,6 @@ export const subscribeLogbook = (
     (message) => callbackFunction(message),
     params
   );
-};
-
-export const clearLogbookCache = (startDate: string, endDate: string) => {
-  DATA_CACHE[`${startDate}${endDate}`] = {};
 };
 
 export const createHistoricState = (
@@ -349,14 +337,9 @@ export const localizeStateMessage = (
 
       // TODO: This is not working yet, as we don't get historic attribute values
 
-      const event_type = computeAttributeValueDisplay(
-        hass!.localize,
-        stateObj,
-        hass.locale,
-        hass.config,
-        hass.entities,
-        "event_type"
-      )?.toString();
+      const event_type = hass
+        .formatEntityAttributeValue(stateObj, "event_type")
+        ?.toString();
 
       if (!event_type) {
         return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_unknown_event`);
@@ -402,16 +385,7 @@ export const localizeStateMessage = (
   return hass.localize(
     `${LOGBOOK_LOCALIZE_PATH}.changed_to_state`,
     "state",
-    stateObj
-      ? computeStateDisplay(
-          localize,
-          stateObj,
-          hass.locale,
-          hass.config,
-          hass.entities,
-          state
-        )
-      : state
+    stateObj ? hass.formatEntityState(stateObj, state) : state
   );
 };
 

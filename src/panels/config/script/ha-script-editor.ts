@@ -55,7 +55,7 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
+import type { Entries, HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "./blueprint-script-editor";
@@ -529,7 +529,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     const validation = await validateConfig(this.hass, {
       action: this._config.sequence,
     });
-    this._validationErrors = Object.entries(validation).map(([key, value]) =>
+    this._validationErrors = (
+      Object.entries(validation) as Entries<typeof validation>
+    ).map(([key, value]) =>
       value.valid
         ? ""
         : html`${this.hass.localize(
@@ -761,6 +763,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         })
       : await this.confirmUnsavedChanged();
     if (result) {
+      this._entityId = undefined;
       showScriptEditor({
         ...this._config,
         alias: this._readOnly

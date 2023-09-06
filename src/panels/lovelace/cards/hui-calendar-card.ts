@@ -113,6 +113,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }

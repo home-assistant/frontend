@@ -11,23 +11,18 @@ export type LocalizeKeys =
   | `ui.card.alarm_control_panel.${string}`
   | `ui.card.weather.attributes.${string}`
   | `ui.card.weather.cardinal_direction.${string}`
+  | `ui.card.lawn_mower.actions.${string}`
   | `ui.components.calendar.event.rrule.${string}`
   | `ui.components.logbook.${string}`
   | `ui.components.selectors.file.${string}`
   | `ui.dialogs.entity_registry.editor.${string}`
+  | `ui.dialogs.more_info_control.lawn_mower.${string}`
   | `ui.dialogs.more_info_control.vacuum.${string}`
   | `ui.dialogs.quick-bar.commands.${string}`
   | `ui.dialogs.unhealthy.reason.${string}`
   | `ui.dialogs.unsupported.reason.${string}`
   | `ui.panel.config.${string}.${"caption" | "description"}`
-  | `ui.panel.config.automation.${string}`
   | `ui.panel.config.dashboard.${string}`
-  | `ui.panel.config.devices.${string}`
-  | `ui.panel.config.energy.${string}`
-  | `ui.panel.config.info.${string}`
-  | `ui.panel.config.lovelace.${string}`
-  | `ui.panel.config.network.${string}`
-  | `ui.panel.config.scene.${string}`
   | `ui.panel.config.zha.${string}`
   | `ui.panel.config.zwave_js.${string}`
   | `ui.panel.lovelace.card.${string}`

@@ -158,6 +158,8 @@ documentContainer.innerHTML = `<custom-style>
       --state-device_tracker-home-color: var(--green-color);
       --state-fan-active-color: var(--cyan-color);
       --state-humidifier-on-color: var(--blue-color);
+      --state-lawn_mower-error-color: var(--red-color);
+      --state-lawn_mower-mowing-color: var(--teal-color);
       --state-light-active-color: var(--amber-color);
       --state-lock-jammed-color: var(--red-color);
       --state-lock-locked-color: var(--green-color);
@@ -176,6 +178,12 @@ documentContainer.innerHTML = `<custom-style>
       --state-sensor-battery-high-color: var(--green-color);
       --state-sensor-battery-low-color: var(--red-color);
       --state-sensor-battery-medium-color: var(--orange-color);
+      --state-water_heater-eco-color: var(--green-color);
+      --state-water_heater-electric-color: var(--orange-color);
+      --state-water_heater-gas-color: var(--orange-color);
+      --state-water_heater-heat_pump-color: var(--orange-color);
+      --state-water_heater-high_demand-color: var(--deep-orange-color);
+      --state-water_heater-performance-color: var(--deep-orange-color);
 
       /* history colors */
       --history-unavailable-color: transparent;

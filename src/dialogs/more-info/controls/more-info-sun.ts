@@ -2,7 +2,6 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatTime } from "../../../common/datetime/format_time";
-import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-relative-time";
 import { HomeAssistant } from "../../../types";
 
@@ -56,7 +55,7 @@ class MoreInfoSun extends LitElement {
           ${this.hass.localize("ui.dialogs.more_info_control.sun.elevation")}
         </div>
         <div class="value">
-          ${formatNumber(this.stateObj.attributes.elevation, this.hass.locale)}
+          ${this.hass.formatEntityAttributeValue(this.stateObj, "elevation")}
         </div>
       </div>
     `;

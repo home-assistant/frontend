@@ -1,5 +1,10 @@
 import "@material/mwc-button/mwc-button";
-import { mdiCrosshairsGps, mdiMapMarker, mdiMapSearchOutline } from "@mdi/js";
+import {
+  mdiCrosshairsGps,
+  mdiMagnify,
+  mdiMapMarker,
+  mdiMapSearchOutline,
+} from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -30,6 +35,7 @@ import {
   reverseGeocode,
   searchPlaces,
 } from "../data/openstreetmap";
+import { onBoardingStyles } from "./styles";
 
 const AMSTERDAM: [number, number] = [52.3731339, 4.8903147];
 const mql = matchMedia("(prefers-color-scheme: dark)");
@@ -43,7 +49,7 @@ class OnboardingLocation extends LitElement {
 
   @state() private _working = false;
 
-  @state() private _location?: [number, number];
+  @state() private _location: [number, number] = AMSTERDAM;
 
   @state() private _places?: OpenStreetMapPlace[] | null;
 
@@ -87,6 +93,11 @@ class OnboardingLocation extends LitElement {
     );
 
     return html`
+      <h1>
+        ${this.onboardingLocalize(
+          "ui.panel.page-onboarding.core-config.location_header"
+        )}
+      </h1>
       ${this._error
         ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
         : nothing}
@@ -97,78 +108,85 @@ class OnboardingLocation extends LitElement {
         )}
       </p>
 
-      <ha-textfield
-        label=${this.onboardingLocalize(
-          "ui.panel.page-onboarding.core-config.address_label"
-        )}
-        .disabled=${this._working}
-        iconTrailing
-        @keyup=${this._addressSearch}
-      >
-        ${this._working
+      <div class="location-search">
+        <ha-textfield
+          label=${this.onboardingLocalize(
+            "ui.panel.page-onboarding.core-config.address_label"
+          )}
+          .disabled=${this._working}
+          icon
+          iconTrailing
+          @keyup=${this._addressSearch}
+        >
+          <ha-svg-icon slot="leadingIcon" .path=${mdiMagnify}></ha-svg-icon>
+          ${this._working
+            ? html`
+                <ha-circular-progress
+                  slot="trailingIcon"
+                  active
+                  size="small"
+                ></ha-circular-progress>
+              `
+            : html`
+                <ha-icon-button
+                  @click=${this._handleButtonClick}
+                  slot="trailingIcon"
+                  .disabled=${this._working}
+                  .label=${this.onboardingLocalize(
+                    this._search
+                      ? "ui.common.search"
+                      : "ui.panel.page-onboarding.core-config.button_detect"
+                  )}
+                  .path=${this._search ? mdiMapSearchOutline : mdiCrosshairsGps}
+                ></ha-icon-button>
+              `}
+        </ha-textfield>
+        ${this._places !== undefined
           ? html`
-              <ha-circular-progress
-                slot="trailingIcon"
-                active
-                size="small"
-              ></ha-circular-progress>
+              <mwc-list activatable>
+                ${this._places?.length
+                  ? this._places.map((place) => {
+                      const primary = [
+                        place.name || place.address[place.category],
+                        place.address.house_number,
+                        place.address.road || place.address.waterway,
+                        place.address.village || place.address.town,
+                        place.address.suburb || place.address.subdivision,
+                        place.address.city || place.address.municipality,
+                      ]
+                        .filter(Boolean)
+                        .join(", ");
+                      const secondary = [
+                        place.address.county ||
+                          place.address.state_district ||
+                          place.address.region,
+                        place.address.state,
+                        place.address.country,
+                      ]
+                        .filter(Boolean)
+                        .join(", ");
+                      return html`<ha-list-item
+                        @click=${this._itemClicked}
+                        .placeId=${place.place_id}
+                        .selected=${this._highlightedMarker === place.place_id}
+                        .activated=${this._highlightedMarker === place.place_id}
+                        .twoline=${primary && secondary}
+                      >
+                        ${primary || secondary}
+                        <span slot="secondary"
+                          >${primary ? secondary : ""}</span
+                        >
+                      </ha-list-item>`;
+                    })
+                  : html`<ha-list-item noninteractive
+                      >${this._places === null
+                        ? ""
+                        : "No results"}</ha-list-item
+                    >`}
+              </mwc-list>
             `
-          : html`
-              <ha-icon-button
-                @click=${this._handleButtonClick}
-                slot="trailingIcon"
-                .disabled=${this._working}
-                .label=${this.onboardingLocalize(
-                  this._search
-                    ? "ui.common.search"
-                    : "ui.panel.page-onboarding.core-config.button_detect"
-                )}
-                .path=${this._search ? mdiMapSearchOutline : mdiCrosshairsGps}
-              ></ha-icon-button>
-            `}
-      </ha-textfield>
-      ${this._places !== undefined
-        ? html`
-            <mwc-list activatable>
-              ${this._places?.length
-                ? this._places.map((place) => {
-                    const primary = [
-                      place.name || place.address[place.category],
-                      place.address.house_number,
-                      place.address.road || place.address.waterway,
-                      place.address.village || place.address.town,
-                      place.address.suburb || place.address.subdivision,
-                      place.address.city || place.address.municipality,
-                    ]
-                      .filter(Boolean)
-                      .join(", ");
-                    const secondary = [
-                      place.address.county ||
-                        place.address.state_district ||
-                        place.address.region,
-                      place.address.state,
-                      place.address.country,
-                    ]
-                      .filter(Boolean)
-                      .join(", ");
-                    return html`<ha-list-item
-                      @click=${this._itemClicked}
-                      .placeId=${place.place_id}
-                      .selected=${this._highlightedMarker === place.place_id}
-                      .activated=${this._highlightedMarker === place.place_id}
-                      .twoline=${primary && secondary}
-                    >
-                      ${primary || secondary}
-                      <span slot="secondary">${primary ? secondary : ""}</span>
-                    </ha-list-item>`;
-                  })
-                : html`<ha-list-item noninteractive
-                    >${this._places === null ? "" : "No results"}</ha-list-item
-                  >`}
-            </mwc-list>
-          `
-        : nothing}
-      <p class="attribution">${addressAttribution}</p>
+          : nothing}
+      </div>
       <ha-locations-editor
         class="flex"
         .hass=${this.hass}
@@ -184,11 +202,10 @@ class OnboardingLocation extends LitElement {
         @marker-clicked=${this._markerClicked}
       ></ha-locations-editor>
 
+      <p class="attribution">${addressAttribution}</p>
+
       <div class="footer">
-        <mwc-button
-          @click=${this._save}
-          .disabled=${!this._location || this._working}
-        >
+        <mwc-button @click=${this._save} unelevated .disabled=${this._working}>
           ${this.onboardingLocalize(
             "ui.panel.page-onboarding.core-config.finish"
           )}
@@ -301,7 +318,6 @@ class OnboardingLocation extends LitElement {
 
   private async _searchAddress(address: string) {
     this._working = true;
-    this._location = undefined;
     this._highlightedMarker = undefined;
     this._error = undefined;
     this._places = null;
@@ -320,7 +336,7 @@ class OnboardingLocation extends LitElement {
     );
     try {
       this._places = await searchPlaces(address, this.hass, true, 3);
-      if (this._places?.length === 1) {
+      if (this._places?.length) {
         this._highlightedMarker = this._places[0].place_id;
         this._location = [
           Number(this._places[0].lat),
@@ -376,7 +392,7 @@ class OnboardingLocation extends LitElement {
           );
           this._location = [result.coords.latitude, result.coords.longitude];
           if (result.coords.altitude) {
-            this._elevation = String(result.coords.altitude);
+            this._elevation = String(Math.round(result.coords.altitude));
           }
           try {
             await this._reverseGeocode();
@@ -464,74 +480,76 @@ class OnboardingLocation extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      p {
-        font-size: 14px;
-        line-height: 20px;
-      }
-      ha-textfield {
-        display: block;
-      }
-      ha-textfield > ha-icon-button {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        --mdc-icon-button-size: 36px;
-        --mdc-icon-size: 20px;
-        color: var(--secondary-text-color);
-        inset-inline-start: initial;
-        inset-inline-end: 10px;
-        direction: var(--direction);
-      }
-      ha-textfield > ha-circular-progress {
-        position: relative;
-        left: 12px;
-      }
-      ha-locations-editor {
-        display: block;
-        height: 300px;
-        margin-top: 8px;
-        border-radius: var(--mdc-shape-small, 4px);
-        overflow: hidden;
-      }
-      mwc-list {
-        width: 100%;
-        border: 1px solid var(--divider-color);
-        box-sizing: border-box;
-        border-top-width: 0;
-        border-bottom-left-radius: var(--mdc-shape-small, 4px);
-        border-bottom-right-radius: var(--mdc-shape-small, 4px);
-        --mdc-list-vertical-padding: 0;
-      }
-      ha-list-item {
-        height: 72px;
-      }
-      .footer {
-        margin-top: 16px;
-        text-align: right;
-      }
-      .attribution {
-        /* textfield helper style */
-        margin: 0;
-        padding: 4px 16px 12px 16px;
-        color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
-        font-family: var(
-          --mdc-typography-caption-font-family,
-          var(--mdc-typography-font-family, Roboto, sans-serif)
-        );
-        font-size: var(--mdc-typography-caption-font-size, 0.75rem);
-        font-weight: var(--mdc-typography-caption-font-weight, 400);
-        letter-spacing: var(
-          --mdc-typography-caption-letter-spacing,
-          0.0333333333em
-        );
-        text-decoration: var(--mdc-typography-caption-text-decoration, inherit);
-        text-transform: var(--mdc-typography-caption-text-transform, inherit);
-      }
-      .attribution a {
-        color: inherit;
-      }
-    `;
+    return [
+      onBoardingStyles,
+      css`
+        .location-search {
+          margin-top: 32px;
+          margin-bottom: 32px;
+        }
+        ha-textfield {
+          display: block;
+        }
+        ha-textfield > ha-icon-button {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          --mdc-icon-button-size: 36px;
+          --mdc-icon-size: 20px;
+          color: var(--secondary-text-color);
+          inset-inline-start: initial;
+          inset-inline-end: 10px;
+          direction: var(--direction);
+        }
+        ha-textfield > ha-circular-progress {
+          position: relative;
+          left: 12px;
+        }
+        ha-locations-editor {
+          display: block;
+          height: 300px;
+          margin-top: 8px;
+          border-radius: var(--mdc-shape-large, 16px);
+          overflow: hidden;
+        }
+        mwc-list {
+          width: 100%;
+          border: 1px solid var(--divider-color);
+          box-sizing: border-box;
+          border-top-width: 0;
+          border-bottom-left-radius: var(--mdc-shape-small, 4px);
+          border-bottom-right-radius: var(--mdc-shape-small, 4px);
+          --mdc-list-vertical-padding: 0;
+        }
+        ha-list-item {
+          height: 72px;
+        }
+        .attribution {
+          /* textfield helper style */
+          margin: 0;
+          padding: 4px 16px 12px 16px;
+          color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
+          font-family: var(
+            --mdc-typography-caption-font-family,
+            var(--mdc-typography-font-family, Roboto, sans-serif)
+          );
+          font-size: var(--mdc-typography-caption-font-size, 0.75rem);
+          font-weight: var(--mdc-typography-caption-font-weight, 400);
+          letter-spacing: var(
+            --mdc-typography-caption-letter-spacing,
+            0.0333333333em
+          );
+          text-decoration: var(
+            --mdc-typography-caption-text-decoration,
+            inherit
+          );
+          text-transform: var(--mdc-typography-caption-text-transform, inherit);
+        }
+        .attribution a {
+          color: inherit;
+        }
+      `,
+    ];
   }
 }
 

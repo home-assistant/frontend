@@ -645,27 +645,19 @@ export class HAFullCalendar extends LitElement {
         :host([narrow])
           .fc-dayGridMonth-view
           .fc-daygrid-dot-event
-          .fc-event-title,
-        :host([narrow]) .fc-dayGridMonth-view .fc-daygrid-day-bottom {
+          .fc-event-title {
           display: none;
         }
 
-        :host([narrow])
-          .fc
-          .fc-dayGridMonth-view
-          .fc-daygrid-event-harness-abs {
-          visibility: visible !important;
-          position: static;
+        :host([narrow]) .fc-dayGridMonth-view .fc-daygrid-event-harness {
+          margin-top: 0 !important;
         }
 
         :host([narrow]) .fc-dayGridMonth-view .fc-daygrid-day-events {
           display: flex;
-          min-height: 2em !important;
+          align-items: center;
           justify-content: center;
           flex-wrap: wrap;
-          max-height: 2em;
-          height: 2em;
-          overflow: hidden;
         }
 
         :host([narrow]) .fc-dayGridMonth-view .fc-scrollgrid-sync-table {

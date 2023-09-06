@@ -1,7 +1,14 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiCancel, mdiFilterVariant, mdiPlus } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -11,7 +18,6 @@ import {
   PROTOCOL_INTEGRATIONS,
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import {
@@ -374,22 +380,22 @@ export class HaConfigDeviceDashboard extends LitElement {
             batteryEntityPair && batteryEntityPair[0]
               ? this.hass.states[batteryEntityPair[0]]
               : undefined;
+          const batteryDomain = battery
+            ? computeStateDomain(battery)
+            : undefined;
           const batteryCharging =
             batteryEntityPair && batteryEntityPair[1]
               ? this.hass.states[batteryEntityPair[1]]
               : undefined;
-          const batteryIsBinary =
-            battery && computeStateDomain(battery) === "binary_sensor";
 
-          return battery && (batteryIsBinary || !isNaN(battery.state as any))
+          return battery &&
+            (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
             ? html`
-                ${batteryIsBinary
-                  ? ""
-                  : Number(battery.state).toFixed() +
-                    blankBeforePercent(this.hass.locale) +
-                    "%"}
+                ${batteryDomain === "sensor"
+                  ? this.hass.formatEntityState(battery)
+                  : nothing}
                 <ha-battery-icon
-                  .hass=${this.hass!}
+                  .hass=${this.hass}
                   .batteryStateObj=${battery}
                   .batteryChargingStateObj=${batteryCharging}
                 ></ha-battery-icon>

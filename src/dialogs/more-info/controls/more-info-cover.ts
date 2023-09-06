@@ -1,22 +1,21 @@
 import { mdiMenu, mdiSwapVertical } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
 import {
-  computeCoverPositionStateDisplay,
   CoverEntity,
   CoverEntityFeature,
+  computeCoverPositionStateDisplay,
 } from "../../../data/cover";
 import type { HomeAssistant } from "../../../types";
 import "../components/cover/ha-more-info-cover-buttons";
@@ -83,18 +82,14 @@ class MoreInfoCover extends LitElement {
     const forcedState =
       liveValue != null ? (liveValue ? "open" : "closed") : undefined;
 
-    const stateDisplay = computeStateDisplay(
-      this.hass.localize,
+    const stateDisplay = this.hass.formatEntityState(
       this.stateObj!,
-      this.hass.locale,
-      this.hass.config,
-      this.hass.entities,
       forcedState
     );
 
     const positionStateDisplay = computeCoverPositionStateDisplay(
       this.stateObj!,
-      this.hass.locale,
+      this.hass,
       liveValue
     );
 

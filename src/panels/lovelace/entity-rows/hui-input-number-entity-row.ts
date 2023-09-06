@@ -1,22 +1,21 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-slider";
 import "../../../components/ha-textfield";
 import { isUnavailableState } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
+import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { EntityConfig, LovelaceRow } from "./types";
@@ -49,6 +48,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     this._resizeObserver?.disconnect();
   }
 
@@ -96,14 +96,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                   ignore-bar-touch
                 ></ha-slider>
                 <span class="state">
-                  ${computeStateDisplay(
-                    this.hass.localize,
-                    stateObj,
-                    this.hass.locale,
-                    this.hass.config,
-                    this.hass.entities,
-                    stateObj.state
-                  )}
+                  ${this.hass.formatEntityState(stateObj)}
                 </span>
               </div>
             `

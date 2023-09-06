@@ -61,7 +61,18 @@ export const createAuthForUser = async (
     password,
   });
 
-export const adminChangePassword = async (
+export const changePassword = (
+  hass: HomeAssistant,
+  current_password: string,
+  new_password: string
+) =>
+  hass.callWS({
+    type: "config/auth_provider/homeassistant/change_password",
+    current_password,
+    new_password,
+  });
+
+export const adminChangePassword = (
   hass: HomeAssistant,
   userId: string,
   password: string
@@ -70,4 +81,9 @@ export const adminChangePassword = async (
     type: "config/auth_provider/homeassistant/admin_change_password",
     user_id: userId,
     password,
+  });
+
+export const deleteAllRefreshTokens = (hass: HomeAssistant) =>
+  hass.callWS({
+    type: "auth/delete_all_refresh_tokens",
   });

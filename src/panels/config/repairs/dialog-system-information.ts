@@ -71,7 +71,9 @@ class DialogSystemInformation extends LitElement {
 
   @state() private _opened = false;
 
-  private _subscriptions?: Array<UnsubscribeFunc | Promise<UnsubscribeFunc>>;
+  private _systemHealthSubscription?: Promise<UnsubscribeFunc>;
+
+  private _hassIOSubscription?: UnsubscribeFunc;
 
   public showDialog(): void {
     this._opened = true;
@@ -86,48 +88,43 @@ class DialogSystemInformation extends LitElement {
   }
 
   private _subscribe(): void {
-    const subs: Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> = [];
     if (isComponentLoaded(this.hass, "system_health")) {
-      subs.push(
-        subscribeSystemHealthInfo(this.hass!, (info) => {
-          this._systemInfo = info;
-        })
+      this._systemHealthSubscription = subscribeSystemHealthInfo(
+        this.hass,
+        (info) => {
+          if (!info) {
+            this._systemHealthSubscription = undefined;
+          } else {
+            this._systemInfo = info;
+          }
+        }
       );
     }
 
     if (isComponentLoaded(this.hass, "hassio")) {
-      subs.push(
-        subscribePollingCollection(
-          this.hass,
-          async () => {
-            this._supervisorStats = await fetchHassioStats(
-              this.hass,
-              "supervisor"
-            );
-            this._coreStats = await fetchHassioStats(this.hass, "core");
-          },
-          10000
-        )
+      this._hassIOSubscription = subscribePollingCollection(
+        this.hass,
+        async () => {
+          this._supervisorStats = await fetchHassioStats(
+            this.hass,
+            "supervisor"
+          );
+          this._coreStats = await fetchHassioStats(this.hass, "core");
+        },
+        10000
       );
 
       fetchHassioResolution(this.hass).then((data) => {
         this._resolutionInfo = data;
       });
     }
-
-    this._subscriptions = subs;
   }
 
   private _unsubscribe() {
-    while (this._subscriptions?.length) {
-      const unsub = this._subscriptions.pop()!;
-      if (unsub instanceof Promise) {
-        unsub.then((unsubFunc) => unsubFunc());
-      } else {
-        unsub();
-      }
-    }
-    this._subscriptions = undefined;
+    this._systemHealthSubscription?.then((unsubFunc) => unsubFunc());
+    this._systemHealthSubscription = undefined;
+    this._hassIOSubscription?.();
+    this._hassIOSubscription = undefined;
 
     this._systemInfo = undefined;
     this._resolutionInfo = undefined;

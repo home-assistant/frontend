@@ -8,32 +8,25 @@ import {
   mdiPower,
 } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import {
-  computeAttributeNameDisplay,
-  computeAttributeValueDisplay,
-} from "../../../common/entity/compute_attribute_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-attributes";
-import "../../../components/ha-button-menu";
+import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
-import "../../../components/ha-outlined-button";
-import "../../../components/ha-select";
+import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity";
 import { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
 import {
-  formatTempColor,
   LightColorMode,
   LightEntity,
   LightEntityFeature,
@@ -43,6 +36,7 @@ import {
   lightSupportsFavoriteColors,
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
+import "../components/ha-more-info-control-select-container";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 import "../components/ha-more-info-toggle";
@@ -75,7 +69,7 @@ class MoreInfoLight extends LitElement {
   private _brightnessChanged(ev) {
     const value = (ev.detail as any).value;
     if (isNaN(value)) return;
-    this._selectedBrightness = value;
+    this._selectedBrightness = (value * 255) / 100;
   }
 
   private _tempColorHovered(ev: CustomEvent<HASSDomEvents["color-hovered"]>) {
@@ -88,9 +82,7 @@ class MoreInfoLight extends LitElement {
 
   protected updated(changedProps: PropertyValues<typeof this>): void {
     if (changedProps.has("stateObj")) {
-      this._selectedBrightness = this.stateObj?.attributes.brightness
-        ? Math.round((this.stateObj.attributes.brightness * 100) / 255)
-        : undefined;
+      this._selectedBrightness = this.stateObj?.attributes.brightness;
       this._effect = this.stateObj?.attributes.effect;
     }
   }
@@ -107,12 +99,18 @@ class MoreInfoLight extends LitElement {
 
   private get _stateOverride() {
     if (this._colorTempPreview) {
-      return formatTempColor(this._colorTempPreview);
+      return this.hass.formatEntityAttributeValue(
+        this.stateObj!,
+        "color_temp_kelvin",
+        this._colorTempPreview
+      );
     }
     if (this._selectedBrightness) {
-      return `${Math.round(this._selectedBrightness)}${blankBeforePercent(
-        this.hass!.locale
-      )}%`;
+      return this.hass.formatEntityAttributeValue(
+        this.stateObj!,
+        "brightness",
+        this._selectedBrightness
+      );
     }
     return undefined;
   }
@@ -287,64 +285,45 @@ class MoreInfoLight extends LitElement {
                 : nothing}
             `
           : nothing}
-        ${supportsEffects && this.stateObj.attributes.effect_list
-          ? html`
-              <ha-button-menu
-                @action=${this._handleEffectButton}
-                @closed=${stopPropagation}
-                fixed
-                .disabled=${this.stateObj.state === UNAVAILABLE}
-              >
-                <ha-outlined-button
-                  slot="trigger"
-                  .disabled=${this.stateObj.state === UNAVAILABLE}
-                >
-                  <ha-svg-icon slot="icon" path=${mdiCreation}></ha-svg-icon>
-                  ${this._effect
-                    ? computeAttributeValueDisplay(
-                        this.hass.localize,
-                        this.stateObj!,
-                        this.hass.locale,
-                        this.hass.config,
-                        this.hass.entities,
-                        "effect",
-                        this._effect
-                      )
-                    : computeAttributeNameDisplay(
-                        this.hass.localize,
-                        this.stateObj,
-                        this.hass.entities,
-                        "effect"
-                      )}
-                </ha-outlined-button>
-                ${this.stateObj.attributes.effect_list.map(
-                  (effect: string) => html`
-                    <ha-list-item
-                      .value=${effect}
-                      .activated=${this.stateObj!.attributes.effect === effect}
-                    >
-                      ${computeAttributeValueDisplay(
-                        this.hass.localize,
-                        this.stateObj!,
-                        this.hass.locale,
-                        this.hass.config,
-                        this.hass.entities,
-                        "effect",
-                        effect
-                      )}
-                    </ha-list-item>
-                  `
-                )}
-              </ha-button-menu>
-            `
-          : nothing}
       </div>
-
-      <ha-attributes
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-        extra-filters="brightness,color_temp,color_temp_kelvin,white_value,effect_list,effect,hs_color,rgb_color,rgbw_color,rgbww_color,xy_color,min_mireds,max_mireds,min_color_temp_kelvin,max_color_temp_kelvin,entity_id,supported_color_modes,color_mode"
-      ></ha-attributes>
+      <div>
+        <ha-more-info-control-select-container>
+          ${supportsEffects && this.stateObj.attributes.effect_list
+            ? html`
+                <ha-control-select-menu
+                  .label=${this.hass.formatEntityAttributeName(
+                    this.stateObj,
+                    "effect"
+                  )}
+                  .value=${this.stateObj.attributes.effect}
+                  .disabled=${this.stateObj.state === UNAVAILABLE}
+                  fixedMenuPosition
+                  naturalMenuWidth
+                  @selected=${this._handleEffect}
+                  @closed=${stopPropagation}
+                >
+                  <ha-svg-icon slot="icon" .path=${mdiCreation}></ha-svg-icon>
+                  ${this.stateObj.attributes.effect_list?.map(
+                    (mode) => html`
+                      <ha-list-item .value=${mode}>
+                        ${this.hass.formatEntityAttributeValue(
+                          this.stateObj!,
+                          "effect",
+                          mode
+                        )}
+                      </ha-list-item>
+                    `
+                  )}
+                </ha-control-select-menu>
+              `
+            : nothing}
+        </ha-more-info-control-select-container>
+        <ha-attributes
+          .hass=${this.hass}
+          .stateObj=${this.stateObj}
+          extra-filters="brightness,color_temp,color_temp_kelvin,white_value,effect_list,effect,hs_color,rgb_color,rgbw_color,rgbww_color,xy_color,min_mireds,max_mireds,min_color_temp_kelvin,max_color_temp_kelvin,entity_id,supported_color_modes,color_mode"
+        ></ha-attributes>
+      </div>
     `;
   }
 
@@ -363,12 +342,8 @@ class MoreInfoLight extends LitElement {
     });
   };
 
-  private _handleEffectButton(ev) {
-    ev.stopPropagation();
-    ev.preventDefault();
-
-    const index = ev.detail.index;
-    const newVal = this.stateObj!.attributes.effect_list![index];
+  private _handleEffect(ev) {
+    const newVal = ev.target.value;
     const oldVal = this._effect;
 
     if (!newVal || oldVal === newVal) return;

@@ -1,16 +1,15 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { HassEntity } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import { debounce } from "../common/util/debounce";
+import "../components/entity/state-info";
 import "../components/ha-slider";
 import "../components/ha-textfield";
-import "../components/entity/state-info";
 import { isUnavailableState } from "../data/entity";
 import { setValue } from "../data/input_text";
-import { HomeAssistant } from "../types";
 import { loadPolyfillIfNeeded } from "../resources/resize-observer.polyfill";
+import { HomeAssistant } from "../types";
 
 @customElement("state-card-input_number")
 class StateCardInputNumber extends LitElement {
@@ -35,6 +34,7 @@ class StateCardInputNumber extends LitElement {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     this._resizeObserver?.disconnect();
   }
 
@@ -68,14 +68,7 @@ class StateCardInputNumber extends LitElement {
                 ignore-bar-touch
               ></ha-slider>
               <span class="state">
-                ${computeStateDisplay(
-                  this.hass.localize,
-                  this.stateObj,
-                  this.hass.locale,
-                  this.hass.config,
-                  this.hass.entities,
-                  this.stateObj.state
-                )}
+                ${this.hass.formatEntityState(this.stateObj)}
               </span>
             </div>
           `
