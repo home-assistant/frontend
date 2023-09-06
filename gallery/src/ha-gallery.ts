@@ -7,6 +7,7 @@ import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
 import { HaExpansionPanel } from "../../src/components/ha-expansion-panel";
 import { haStyle } from "../../src/resources/styles";
+// eslint-disable-next-line import/extensions
 import { PAGES, SIDEBAR } from "../build/import-pages";
 import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
 import "./components/page-description";
