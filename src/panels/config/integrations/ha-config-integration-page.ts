@@ -1157,9 +1157,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   private async _removeIntegration(configEntry: ConfigEntry) {
     const entryId = configEntry.entry_id;
 
-    const applicationCredentialsId = await this._applicationCredentialForRemove(
-      entryId
-    );
+    const applicationCredentialsId =
+      await this._applicationCredentialForRemove(entryId);
 
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
