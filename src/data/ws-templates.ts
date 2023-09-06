@@ -11,7 +11,6 @@ export interface RenderTemplateError {
   level: "ERROR" | "WARNING";
 }
 
-interface TemplateListeners {
 export interface TemplateListeners {
   all: boolean;
   domains: string[];
