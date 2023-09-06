@@ -1,9 +1,10 @@
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { LitElement, html } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { debounce } from "../../../common/util/debounce";
 import { FlowType } from "../../../data/data_entry_flow";
 import {
+  TemplateListeners,
   TemplatePreview,
   subscribePreviewTemplate,
 } from "../../../data/ws-templates";
@@ -26,6 +27,8 @@ class FlowPreviewTemplate extends LitElement {
   @property() public stepData!: Record<string, any>;
 
   @state() private _preview?: HassEntity;
+
+  @state() private _listeners?: TemplateListeners;
 
   @state() private _error?: string;
 
@@ -50,9 +53,69 @@ class FlowPreviewTemplate extends LitElement {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
     return html`<entity-preview-row
-      .hass=${this.hass}
-      .stateObj=${this._preview}
-    ></entity-preview-row>`;
+        .hass=${this.hass}
+        .stateObj=${this._preview}
+      ></entity-preview-row>
+      ${this._listeners?.time
+        ? html`
+            <p>
+              ${this.hass.localize("ui.dialogs.helper_settings.template.time")}
+            </p>
+          `
+        : nothing}
+      ${!this._listeners
+        ? nothing
+        : this._listeners.all
+        ? html`
+            <p class="all_listeners">
+              ${this.hass.localize(
+                "ui.dialogs.helper_settings.template.all_listeners"
+              )}
+            </p>
+          `
+        : this._listeners.domains.length || this._listeners.entities.length
+        ? html`
+            <p>
+              ${this.hass.localize(
+                "ui.dialogs.helper_settings.template.listeners"
+              )}
+            </p>
+            <ul>
+              ${this._listeners.domains
+                .sort()
+                .map(
+                  (domain) => html`
+                    <li>
+                      <b
+                        >${this.hass.localize(
+                          "ui.dialogs.helper_settings.template.domain"
+                        )}</b
+                      >: ${domain}
+                    </li>
+                  `
+                )}
+              ${this._listeners.entities
+                .sort()
+                .map(
+                  (entity_id) => html`
+                    <li>
+                      <b
+                        >${this.hass.localize(
+                          "ui.dialogs.helper_settings.template.entity"
+                        )}</b
+                      >: ${entity_id}
+                    </li>
+                  `
+                )}
+            </ul>
+          `
+        : !this._listeners.time
+        ? html`<span class="all_listeners">
+            ${this.hass.localize(
+              "ui.dialogs.helper_settings.template.no_listeners"
+            )}
+          </span>`
+        : nothing} `;
   }
 
   private _setPreview = (preview: TemplatePreview) => {
@@ -62,13 +125,15 @@ class FlowPreviewTemplate extends LitElement {
       return;
     }
     this._error = undefined;
+    this._listeners = preview.listeners;
     const now = new Date().toISOString();
     this._preview = {
       entity_id: `${this.stepId}.flow_preview`,
       last_changed: now,
       last_updated: now,
       context: { id: "", parent_id: null, user_id: null },
-      ...preview,
+      attributes: preview.attributes,
+      state: preview.state,
     };
   };
 
