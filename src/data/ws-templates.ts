@@ -12,6 +12,7 @@ export interface RenderTemplateError {
 }
 
 interface TemplateListeners {
+export interface TemplateListeners {
   all: boolean;
   domains: string[];
   entities: string[];
@@ -23,6 +24,7 @@ export type TemplatePreview = TemplatePreviewState | TemplatePreviewError;
 interface TemplatePreviewState {
   state: string;
   attributes: Record<string, any>;
+  listeners: TemplateListeners;
 }
 
 interface TemplatePreviewError {
