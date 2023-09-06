@@ -45,6 +45,8 @@ class HaPanelDevTemplate extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _errorLevel?: "ERROR" | "WARNING";
+
   @state() private _rendering = false;
 
   @state() private _templateResult?: RenderTemplateResult;
@@ -159,7 +161,10 @@ class HaPanelDevTemplate extends LitElement {
               ></ha-circular-progress>`
             : ""}
           ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            ? html`<ha-alert
+                alert-type=${this._errorLevel?.toLowerCase() || "error"}
+                >${this._error}</ha-alert
+              >`
             : nothing}
           ${this._templateResult
             ? html`${this.hass.localize(
@@ -327,6 +332,7 @@ class HaPanelDevTemplate extends LitElement {
     this._template = ev.detail.value;
     if (this._error) {
       this._error = undefined;
+      this._errorLevel = undefined;
     }
     this._debounceRender();
   }
@@ -339,10 +345,15 @@ class HaPanelDevTemplate extends LitElement {
         this.hass.connection,
         (result) => {
           if ("error" in result) {
-            this._error = result.error;
+            // We show the latest error, or a warning if there are no errors
+            if (result.level === "ERROR" || this._errorLevel !== "ERROR") {
+              this._error = result.error;
+              this._errorLevel = result.level;
+            }
           } else {
             this._templateResult = result;
             this._error = undefined;
+            this._errorLevel = undefined;
           }
         },
         {
@@ -354,8 +365,10 @@ class HaPanelDevTemplate extends LitElement {
       await this._unsubRenderTemplate;
     } catch (err: any) {
       this._error = "Unknown error";
+      this._errorLevel = undefined;
       if (err.message) {
         this._error = err.message;
+        this._errorLevel = undefined;
         this._templateResult = undefined;
       }
       this._unsubRenderTemplate = undefined;

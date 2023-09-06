@@ -8,6 +8,7 @@ export interface RenderTemplateResult {
 
 export interface RenderTemplateError {
   error: string;
+  level: "ERROR" | "WARNING";
 }
 
 interface TemplateListeners {
