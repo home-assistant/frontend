@@ -180,9 +180,9 @@ class HaPanelDevTemplate extends LitElement {
                   )}
                 </p>
               `
-            : ""}
+            : nothing}
           ${!this._templateResult?.listeners
-            ? ""
+            ? nothing
             : this._templateResult.listeners.all
             ? html`
                 <p class="all_listeners">
@@ -229,7 +229,7 @@ class HaPanelDevTemplate extends LitElement {
                 </ul>
               `
             : !this._templateResult?.listeners.time
-            ? html` <span class="all_listeners">
+            ? html`<span class="all_listeners">
                 ${this.hass.localize(
                   "ui.panel.developer-tools.tabs.templates.no_listeners"
                 )}
