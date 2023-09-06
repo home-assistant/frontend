@@ -110,11 +110,11 @@ class FlowPreviewTemplate extends LitElement {
             </ul>
           `
         : !this._listeners.time
-        ? html`<span class="all_listeners">
+        ? html`<p class="all_listeners">
             ${this.hass.localize(
               "ui.dialogs.helper_settings.template.no_listeners"
             )}
-          </span>`
+          </p>`
         : nothing} `;
   }
 
@@ -128,7 +128,7 @@ class FlowPreviewTemplate extends LitElement {
     this._listeners = preview.listeners;
     const now = new Date().toISOString();
     this._preview = {
-      entity_id: `${this.stepId}.flow_preview`,
+      entity_id: `${this.stepId}.___flow_preview___`,
       last_changed: now,
       last_updated: now,
       context: { id: "", parent_id: null, user_id: null },
