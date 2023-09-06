@@ -11,6 +11,7 @@ import "../../../components/ha-service-control";
 import {
   ActionConfig,
   CallServiceActionConfig,
+  NavigateActionConfig,
   UrlActionConfig,
 } from "../../../data/lovelace";
 import { ServiceAction } from "../../../data/script";
@@ -72,6 +73,11 @@ export class HuiActionEditor extends LitElement {
   @property() public tooltipText?: string;
 
   @property() protected hass?: HomeAssistant;
+
+  get _navigation_path(): string {
+    const config = this.config as NavigateActionConfig | undefined;
+    return config?.navigation_path || "";
+  }
 
   get _url_path(): string {
     const config = this.config as UrlActionConfig | undefined;
@@ -204,6 +210,10 @@ export class HuiActionEditor extends LitElement {
       }
       case "call-service": {
         data = { service: this._service };
+        break;
+      }
+      case "navigate": {
+        data = { navigation_path: this._navigation_path };
         break;
       }
     }
