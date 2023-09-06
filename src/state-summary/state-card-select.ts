@@ -1,14 +1,13 @@
 import "@material/mwc-list/mwc-list-item";
-import "../components/ha-select";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
+import "../components/ha-select";
 import { UNAVAILABLE } from "../data/entity";
 import { SelectEntity, setSelectOption } from "../data/select";
 import type { HomeAssistant } from "../types";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
 
 @customElement("state-card-select")
 class StateCardSelect extends LitElement {
@@ -31,14 +30,7 @@ class StateCardSelect extends LitElement {
         ${this.stateObj.attributes.options.map(
           (option) => html`
             <mwc-list-item .value=${option}>
-              ${computeStateDisplay(
-                this.hass.localize,
-                this.stateObj,
-                this.hass.locale,
-                this.hass.config,
-                this.hass.entities,
-                option
-              )}
+              ${this.hass.formatEntityState(this.stateObj, option)}
             </mwc-list-item>
           `
         )}

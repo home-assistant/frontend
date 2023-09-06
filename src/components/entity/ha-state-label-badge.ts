@@ -12,7 +12,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { arrayLiteralIncludes } from "../../common/array/literal-includes";
 import secondsToDuration from "../../common/datetime/seconds_to_duration";
-import { computeStateDisplay } from "../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { FIXED_DOMAIN_STATES } from "../../common/entity/get_states";
@@ -192,13 +191,7 @@ export class HaStateLabelBadge extends LitElement {
               this.hass!.locale,
               getNumberFormatOptions(entityState, entry)
             )
-          : computeStateDisplay(
-              this.hass!.localize,
-              entityState,
-              this.hass!.locale,
-              this.hass!.config,
-              this.hass!.entities
-            );
+          : this.hass!.formatEntityState(entityState);
     }
   }
 

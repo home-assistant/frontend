@@ -86,7 +86,7 @@ class MoreInfoFan extends LitElement {
   }
 
   _handleOscillating(ev) {
-    const newVal = ev.target.value === "on";
+    const newVal = ev.target.value === "true";
 
     this.hass.callService("fan", "oscillate", {
       entity_id: this.stateObj!.entity_id,
@@ -269,7 +269,9 @@ class MoreInfoFan extends LitElement {
                   this.stateObj,
                   "oscillating"
                 )}
-                .value=${this.stateObj.attributes.oscillating ? "on" : "off"}
+                .value=${this.stateObj.attributes.oscillating
+                  ? "true"
+                  : "false"}
                 .disabled=${this.stateObj.state === UNAVAILABLE}
                 fixedMenuPosition
                 naturalMenuWidth
@@ -280,19 +282,27 @@ class MoreInfoFan extends LitElement {
                   slot="icon"
                   .path=${haOscillatingOff}
                 ></ha-svg-icon>
-                <ha-list-item value="on" graphic="icon">
+                <ha-list-item value="true" graphic="icon">
                   <ha-svg-icon
                     slot="graphic"
                     .path=${haOscillating}
                   ></ha-svg-icon>
-                  ${this.hass.localize("state.default.on")}
+                  ${this.hass.formatEntityAttributeValue(
+                    this.stateObj,
+                    "oscillating",
+                    true
+                  )}
                 </ha-list-item>
-                <ha-list-item value="off" graphic="icon">
+                <ha-list-item value="false" graphic="icon">
                   <ha-svg-icon
                     slot="graphic"
                     .path=${haOscillatingOff}
                   ></ha-svg-icon>
-                  ${this.hass.localize("state.default.off")}
+                  ${this.hass.formatEntityAttributeValue(
+                    this.stateObj,
+                    "oscillating",
+                    false
+                  )}
                 </ha-list-item>
               </ha-control-select-menu>
             `

@@ -6,11 +6,7 @@ import {
   formatTimeWithSeconds,
 } from "../common/datetime/format_time";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
-import {
-  computeAttributeNameDisplay,
-  computeAttributeValueDisplay,
-} from "../common/entity/compute_attribute_display";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
+import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../resources/intl-polyfill";
 import type { HomeAssistant } from "../types";
@@ -235,23 +231,14 @@ const tryDescribeTrigger = (
         for (const state of trigger.from.values()) {
           from.push(
             trigger.attribute
-              ? computeAttributeValueDisplay(
-                  hass.localize,
-                  stateObj,
-                  hass.locale,
-                  hass.config,
-                  hass.entities,
-                  trigger.attribute,
-                  state
-                ).toString()
-              : computeStateDisplay(
-                  hass.localize,
-                  stateObj,
-                  hass.locale,
-                  hass.config,
-                  hass.entities,
-                  state
-                )
+              ? hass
+                  .formatEntityAttributeValue(
+                    stateObj,
+                    trigger.attribute,
+                    state
+                  )
+                  .toString()
+              : hass.formatEntityState(stateObj, state)
           );
         }
         if (from.length !== 0) {
@@ -261,23 +248,16 @@ const tryDescribeTrigger = (
       } else {
         base += ` from ${
           trigger.attribute
-            ? computeAttributeValueDisplay(
-                hass.localize,
-                stateObj,
-                hass.locale,
-                hass.config,
-                hass.entities,
-                trigger.attribute,
-                trigger.from
-              ).toString()
-            : computeStateDisplay(
-                hass.localize,
-                stateObj,
-                hass.locale,
-                hass.config,
-                hass.entities,
-                trigger.from.toString()
-              ).toString()
+            ? hass
+                .formatEntityAttributeValue(
+                  stateObj,
+                  trigger.attribute,
+                  trigger.from
+                )
+                .toString()
+            : hass
+                .formatEntityState(stateObj, trigger.from.toString())
+                .toString()
         }`;
       }
     }
@@ -292,23 +272,14 @@ const tryDescribeTrigger = (
         for (const state of trigger.to.values()) {
           to.push(
             trigger.attribute
-              ? computeAttributeValueDisplay(
-                  hass.localize,
-                  stateObj,
-                  hass.locale,
-                  hass.config,
-                  hass.entities,
-                  trigger.attribute,
-                  state
-                ).toString()
-              : computeStateDisplay(
-                  hass.localize,
-                  stateObj,
-                  hass.locale,
-                  hass.config,
-                  hass.entities,
-                  state
-                ).toString()
+              ? hass
+                  .formatEntityAttributeValue(
+                    stateObj,
+                    trigger.attribute,
+                    state
+                  )
+                  .toString()
+              : hass.formatEntityState(stateObj, state).toString()
           );
         }
         if (to.length !== 0) {
@@ -318,23 +289,14 @@ const tryDescribeTrigger = (
       } else {
         base += ` to ${
           trigger.attribute
-            ? computeAttributeValueDisplay(
-                hass.localize,
-                stateObj,
-                hass.locale,
-                hass.config,
-                hass.entities,
-                trigger.attribute,
-                trigger.to
-              ).toString()
-            : computeStateDisplay(
-                hass.localize,
-                stateObj,
-                hass.locale,
-                hass.config,
-                hass.entities,
-                trigger.to.toString()
-              )
+            ? hass
+                .formatEntityAttributeValue(
+                  stateObj,
+                  trigger.attribute,
+                  trigger.to
+                )
+                .toString()
+            : hass.formatEntityState(stateObj, trigger.to.toString())
         }`;
       }
     }
@@ -822,45 +784,27 @@ const tryDescribeCondition = (
       for (const state of condition.state.values()) {
         states.push(
           condition.attribute
-            ? computeAttributeValueDisplay(
-                hass.localize,
-                stateObj,
-                hass.locale,
-                hass.config,
-                hass.entities,
-                condition.attribute,
-                state
-              ).toString()
-            : computeStateDisplay(
-                hass.localize,
-                stateObj,
-                hass.locale,
-                hass.config,
-                hass.entities,
-                state
-              )
+            ? hass
+                .formatEntityAttributeValue(
+                  stateObj,
+                  condition.attribute,
+                  state
+                )
+                .toString()
+            : hass.formatEntityState(stateObj, state)
         );
       }
     } else if (condition.state !== "") {
       states.push(
         condition.attribute
-          ? computeAttributeValueDisplay(
-              hass.localize,
-              stateObj,
-              hass.locale,
-              hass.config,
-              hass.entities,
-              condition.attribute,
-              condition.state
-            ).toString()
-          : computeStateDisplay(
-              hass.localize,
-              stateObj,
-              hass.locale,
-              hass.config,
-              hass.entities,
-              condition.state.toString()
-            )
+          ? hass
+              .formatEntityAttributeValue(
+                stateObj,
+                condition.attribute,
+                condition.state
+              )
+              .toString()
+          : hass.formatEntityState(stateObj, condition.state.toString())
       );
     }
 

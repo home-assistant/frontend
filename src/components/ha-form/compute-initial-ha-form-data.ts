@@ -27,7 +27,8 @@ export const computeInitialHaFormData = (
       data[field.name] = 0.0;
     } else if (field.type === "select") {
       if (field.options.length) {
-        data[field.name] = field.options[0][0];
+        const val = field.options[0];
+        data[field.name] = Array.isArray(val) ? val[0] : val;
       }
     } else if (field.type === "positive_time_period_dict") {
       data[field.name] = {
@@ -61,7 +62,7 @@ export const computeInitialHaFormData = (
       } else if ("select" in selector) {
         if (selector.select?.options.length) {
           const val = selector.select.options[0];
-          data[field.name] = Array.isArray(val) ? val[0] : val;
+          data[field.name] = typeof val === "string" ? val : val.value;
         }
       } else if ("duration" in selector) {
         data[field.name] = {

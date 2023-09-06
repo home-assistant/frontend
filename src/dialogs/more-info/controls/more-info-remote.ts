@@ -2,11 +2,10 @@ import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
-import { RemoteEntity, REMOTE_SUPPORT_ACTIVITY } from "../../../data/remote";
+import { REMOTE_SUPPORT_ACTIVITY, RemoteEntity } from "../../../data/remote";
 import { HomeAssistant } from "../../../types";
 
 const filterExtraAttributes = "activity_list,current_activity";
@@ -40,12 +39,8 @@ class MoreInfoRemote extends LitElement {
               ${stateObj.attributes.activity_list!.map(
                 (activity) => html`
                   <mwc-list-item .value=${activity}>
-                    ${computeAttributeValueDisplay(
-                      this.hass.localize,
+                    ${this.hass.formatEntityAttributeValue(
                       stateObj,
-                      this.hass.locale,
-                      this.hass.config,
-                      this.hass.entities,
                       "activity",
                       activity
                     )}
@@ -54,7 +49,7 @@ class MoreInfoRemote extends LitElement {
               )}
             </mwc-list>
           `
-        : ""}
+        : nothing}
 
       <ha-attributes
         .hass=${this.hass}

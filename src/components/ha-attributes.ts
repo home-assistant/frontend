@@ -1,12 +1,19 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 import { STATE_ATTRIBUTES } from "../data/entity_attributes";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
-import "./ha-expansion-panel";
 import "./ha-attribute-value";
+import "./ha-expansion-panel";
 
 @customElement("ha-attributes")
 class HaAttributes extends LitElement {
@@ -18,16 +25,30 @@ class HaAttributes extends LitElement {
 
   @state() private _expanded = false;
 
+  private get _filteredAttributes() {
+    return this.computeDisplayAttributes(
+      STATE_ATTRIBUTES.concat(
+        this.extraFilters ? this.extraFilters.split(",") : []
+      )
+    );
+  }
+
+  protected willUpdate(changedProperties: PropertyValues): void {
+    if (
+      changedProperties.has("extraFilters") ||
+      changedProperties.has("stateObj")
+    ) {
+      this.toggleAttribute("empty", this._filteredAttributes.length === 0);
+    }
+  }
+
   protected render() {
     if (!this.stateObj) {
       return nothing;
     }
 
-    const attributes = this.computeDisplayAttributes(
-      STATE_ATTRIBUTES.concat(
-        this.extraFilters ? this.extraFilters.split(",") : []
-      )
-    );
+    const attributes = this._filteredAttributes;
+
     if (attributes.length === 0) {
       return nothing;
     }

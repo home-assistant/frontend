@@ -73,10 +73,7 @@ class MoreInfoWaterHeater extends LitElement {
         ${supportOperationMode && stateObj.attributes.operation_list
           ? html`
               <ha-control-select-menu
-                .label=${this.hass.formatEntityAttributeName(
-                  stateObj,
-                  "operation"
-                )}
+                .label=${this.hass.localize("ui.card.water_heater.mode")}
                 .value=${stateObj.state}
                 .disabled=${stateObj.state === UNAVAILABLE}
                 fixedMenuPosition
@@ -122,11 +119,19 @@ class MoreInfoWaterHeater extends LitElement {
                     slot="graphic"
                     .path=${mdiAccountArrowRight}
                   ></ha-svg-icon>
-                  ${this.hass.localize("state.default.on")}
+                  ${this.hass.formatEntityAttributeValue(
+                    stateObj,
+                    "away_mode",
+                    "on"
+                  )}
                 </ha-list-item>
                 <ha-list-item value="off" graphic="icon">
                   <ha-svg-icon slot="graphic" .path=${mdiAccount}></ha-svg-icon>
-                  ${this.hass.localize("state.default.off")}
+                  ${this.hass.formatEntityAttributeValue(
+                    stateObj,
+                    "away_mode",
+                    "off"
+                  )}
                 </ha-list-item>
               </ha-control-select-menu>
             `

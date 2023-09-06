@@ -15,8 +15,6 @@
   },
   "state": {
     "default": {
-      "on": "On",
-      "off": "Off",
       "unknown": "Unknown",
       "unavailable": "Unavailable"
     }
@@ -107,8 +105,7 @@
         "cooling": "{name} cooling",
         "high": "high",
         "low": "low",
-        "operation": "Operation",
-        "away_mode": "Away mode"
+        "mode": "Mode"
       },
       "counter": {
         "actions": {
@@ -228,8 +225,8 @@
         "currently": "Currently",
         "on_off": "On / off",
         "target_temperature": "Target temperature",
-        "operation": "Operation",
-        "away_mode": "Away mode"
+        "away_mode": "Away mode",
+        "mode": "Mode"
       },
       "weather": {
         "attributes": {
@@ -264,6 +261,9 @@
         "forecast_daily": "Forecast daily",
         "forecast_hourly": "Forecast hourly",
         "forecast_twice_daily": "Forecast twice daily",
+        "daily": "Daily",
+        "hourly": "Hourly",
+        "twice_daily": "Twice daily",
         "high": "High",
         "low": "Low"
       }
@@ -1021,7 +1021,9 @@
         "climate": {
           "target_label": "{action} to target",
           "target": "Target",
-          "humidity_target": "Humidity target"
+          "humidity_target": "Humidity target",
+          "temperature": "Temperature",
+          "humidity": "Humidity"
         },
         "humidifier": {
           "target_label": "[%key:ui::dialogs::more_info_control::climate::target_label%]",
@@ -1278,6 +1280,14 @@
         "schedule": {
           "delete": "Delete item?",
           "confirm_delete": "Do you want to delete this item?"
+        },
+        "template": {
+          "time": "[%key:ui::panel::developer-tools::tabs::templates::time%]",
+          "all_listeners": "[%key:ui::panel::developer-tools::tabs::templates::all_listeners%]",
+          "no_listeners": "[%key:ui::panel::developer-tools::tabs::templates::no_listeners%]",
+          "listeners": "[%key:ui::panel::developer-tools::tabs::templates::listeners%]",
+          "entity": "[%key:ui::panel::developer-tools::tabs::templates::entity%]",
+          "domain": "[%key:ui::panel::developer-tools::tabs::templates::domain%]"
         }
       },
       "options_flow": {
@@ -1751,8 +1761,8 @@
             "delete_return": "Delete return",
             "add_return": "Add return",
             "grid_carbon_footprint": "Grid carbon footprint",
-            "remove_co2_signal": "Remove CO2 signal integration",
-            "add_co2_signal": "Add CO2 signal integration",
+            "remove_co2_signal": "Remove Electricity Maps integration",
+            "add_co2_signal": "Add Electricity Maps integration",
             "flow_dialog": {
               "from": {
                 "header": "Configure grid consumption",
@@ -2246,6 +2256,7 @@
             "duplicate": "[%key:ui::common::duplicate%]",
             "disabled": "Disabled",
             "filtered_by_blueprint": "blueprint: {name}",
+            "traces_not_available": "[%key:ui::panel::config::automation::editor::traces_not_available%]",
             "headers": {
               "toggle": "Enable/disable",
               "name": "Name",
@@ -2816,24 +2827,11 @@
                   "description": {
                     "full": "Test {condition}"
                   }
+                },
+                "unknown": {
+                  "label": "Unknown"
                 }
               }
-            }
-          },
-          "thingtalk": {
-            "create": "Create automation",
-            "task_selection": {
-              "header": "Create a new automation",
-              "introduction": "Type below what this automation should do, and we will try to convert it into a Home Assistant automation.",
-              "language_note": "Note: Only English is supported for now.",
-              "for_example": "For example:",
-              "error_empty": "Enter a command or tap skip.",
-              "error_unsupported": "We couldn't create an automation for that (yet?)."
-            },
-            "link_devices": {
-              "header": "Great! Now we need to link some devices",
-              "ambiguous_entities": "One or more devices have more than one matching entity, please pick the one you want to use.",
-              "unknown_placeholder": "Unknown placeholder"
             }
           },
           "trace": {
@@ -2995,6 +2993,7 @@
             "duplicate_scene": "Duplicate scene",
             "duplicate": "[%key:ui::common::duplicate%]",
             "headers": {
+              "state": "State",
               "name": "Name",
               "last_activated": "Last activated"
             }
@@ -5353,7 +5352,7 @@
           "current_token_tooltip": "Unable to delete current refresh token"
         },
         "long_lived_access_tokens": {
-          "header": "Long-Lived access tokens",
+          "header": "Long-lived access tokens",
           "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
           "learn_auth_requests": "Learn how to make authenticated requests.",
           "created": "Created {date}",
@@ -5420,7 +5419,7 @@
                 },
                 "mfa": {
                   "data": {
-                    "code": "Two-factor Authentication Code"
+                    "code": "Two-factor authentication code"
                   },
                   "description": "Open the **{mfa_module_name}** on your device to view your two-factor authentication code and verify your identity:"
                 }
@@ -5691,6 +5690,7 @@
       },
       "page-onboarding": {
         "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
+        "back": "Back",
         "next": "Next",
         "finish": "Finish",
         "help": "Help",

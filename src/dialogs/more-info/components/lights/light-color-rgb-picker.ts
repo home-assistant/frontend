@@ -1,6 +1,4 @@
 import "@material/mwc-button";
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
 import { mdiEyedropper } from "@mdi/js";
 import {
   css,
@@ -26,7 +24,6 @@ import "../../../../components/ha-hs-color-picker";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-labeled-slider";
-import "../../../../components/ha-temp-color-picker";
 import {
   getLightCurrentModeRgbColor,
   LightColor,

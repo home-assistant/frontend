@@ -2,7 +2,6 @@ import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeAttributeNameDisplay } from "../../../../common/entity/compute_attribute_display";
-import { computeStateDisplay } from "../../../../common/entity/compute_state_display";
 import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import "../../../../components/ha-control-select";
@@ -12,12 +11,12 @@ import { UNAVAILABLE } from "../../../../data/entity";
 import {
   computeFanSpeedCount,
   computeFanSpeedIcon,
+  FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
+  FAN_SPEEDS,
   FanEntity,
   fanPercentageToSpeed,
   FanSpeed,
   fanSpeedToPercentage,
-  FAN_SPEEDS,
-  FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
 } from "../../../../data/fan";
 import { HomeAssistant } from "../../../../types";
 
@@ -68,14 +67,7 @@ export class HaMoreInfoFanSpeed extends LitElement {
 
   private _localizeSpeed(speed: FanSpeed) {
     if (speed === "on" || speed === "off") {
-      return computeStateDisplay(
-        this.hass.localize,
-        this.stateObj,
-        this.hass.locale,
-        this.hass.config,
-        this.hass.entities,
-        speed
-      );
+      return this.hass.formatEntityState(this.stateObj, speed);
     }
     return (
       this.hass.localize(`ui.dialogs.more_info_control.fan.speed.${speed}`) ||

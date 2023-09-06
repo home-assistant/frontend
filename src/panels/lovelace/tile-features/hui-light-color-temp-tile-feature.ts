@@ -3,17 +3,16 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { rgb2hex } from "../../../common/color/convert-color";
 import {
   DEFAULT_MAX_KELVIN,
   DEFAULT_MIN_KELVIN,
-  temperature2rgb,
 } from "../../../common/color/convert-light-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import "../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../data/entity";
 import { LightColorMode, lightSupportsColorMode } from "../../../data/light";
+import { generateColorTemperatureGradient } from "../../../dialogs/more-info/components/lights/light-color-temp-picker";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
 import { LightColorTempTileFeatureConfig } from "./types";
@@ -70,7 +69,7 @@ class HuiLightColorTempTileFeature
     const maxKelvin =
       this.stateObj.attributes.max_color_temp_kelvin ?? DEFAULT_MAX_KELVIN;
 
-    const gradient = this.generateTemperatureGradient(minKelvin!, maxKelvin);
+    const gradient = this._generateTemperatureGradient(minKelvin!, maxKelvin);
 
     return html`
       <div class="container">
@@ -91,26 +90,8 @@ class HuiLightColorTempTileFeature
     `;
   }
 
-  private generateTemperatureGradient = memoizeOne(
-    (min: number, max: number) => {
-      const count = 10;
-
-      const gradient: [number, string][] = [];
-
-      const step = (max - min) / count;
-      const percentageStep = 1 / count;
-
-      for (let i = 0; i < count + 1; i++) {
-        const value = min + step * i;
-
-        const hex = rgb2hex(temperature2rgb(value));
-        gradient.push([percentageStep * i, hex]);
-      }
-
-      return gradient
-        .map(([stop, color]) => `${color} ${(stop as number) * 100}%`)
-        .join(", ");
-    }
+  private _generateTemperatureGradient = memoizeOne(
+    (min: number, max: number) => generateColorTemperatureGradient(min, max)
   );
 
   private _valueChanged(ev: CustomEvent) {
