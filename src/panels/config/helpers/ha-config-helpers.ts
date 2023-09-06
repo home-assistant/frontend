@@ -1,6 +1,6 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiAlertCircle, mdiPencilOff, mdiPlus } from "@mdi/js";
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, PropertyValues, TemplateResult, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -16,7 +16,10 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
-import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
+import {
+  ConfigEntry,
+  subscribeConfigEntries,
+} from "../../../data/config_entries";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import {
   EntityRegistryEntry,
@@ -75,6 +78,33 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   @state() private _entityEntries?: Record<string, EntityRegistryEntry>;
 
   @state() private _configEntries?: Record<string, ConfigEntry>;
+
+  public hassSubscribe() {
+    return [
+      subscribeConfigEntries(
+        this.hass,
+        async (messages) => {
+          const newEntries = this._configEntries
+            ? { ...this._configEntries }
+            : {};
+          messages.forEach((message) => {
+            if (message.type === null || message.type === "added") {
+              newEntries[message.entry.entry_id] = message.entry;
+            } else if (message.type === "removed") {
+              delete newEntries[message.entry.entry_id];
+            } else if (message.type === "updated") {
+              newEntries[message.entry.entry_id] = message.entry;
+            }
+          });
+          this._configEntries = newEntries;
+        },
+        { type: ["helper"] }
+      ),
+      subscribeEntityRegistry(this.hass.connection!, (entries) => {
+        this._entityEntries = groupByOne(entries, (entry) => entry.entity_id);
+      }),
+    ];
+  }
 
   private _columns = memoizeOne(
     (narrow: boolean, localize: LocalizeFunc): DataTableColumnContainer => {
@@ -256,7 +286,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this._getConfigEntries();
     if (this.route.path === "/add") {
       this._handleAdd();
     }
@@ -313,9 +342,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       return;
     }
     showConfigFlowDialog(this, {
-      dialogClosedCallback: () => {
-        this._getConfigEntries();
-      },
       startFlowHandler: domain,
       showAdvanced: this.hass.userData?.showAdvanced,
     });
@@ -366,21 +392,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     }
   }
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection!, (entries) => {
-        this._entityEntries = groupByOne(entries, (entry) => entry.entity_id);
-      }),
-    ];
-  }
-
-  private async _getConfigEntries() {
-    this._configEntries = groupByOne(
-      await getConfigEntries(this.hass, { type: ["helper"] }),
-      (entry) => entry.entry_id
-    );
-  }
-
   private async _openEditDialog(ev: CustomEvent): Promise<void> {
     const id = (ev.detail as RowClickedEvent).id;
     if (id.includes(".")) {
@@ -391,12 +402,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   }
 
   private _createHelpler() {
-    showHelperDetailDialog(this, {
-      dialogClosedCallback: (params) => {
-        if (params.flowFinished) {
-          this._getConfigEntries();
-        }
-      },
-    });
+    showHelperDetailDialog(this, {});
   }
 }
