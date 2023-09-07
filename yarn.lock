@@ -4100,10 +4100,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chromecast-caf-receiver@npm:6.0.9":
-  version: 6.0.9
-  resolution: "@types/chromecast-caf-receiver@npm:6.0.9"
-  checksum: c5431edf1c3e52db4ecf6f2a75000bf2eabc3791ee548ad027829cbae8977cd5b1de371bc68eeed22e2adbb72695f46c125bfa8a733fe0f3cf7baf26e0a74370
+"@types/chromecast-caf-receiver@npm:6.0.10":
+  version: 6.0.10
+  resolution: "@types/chromecast-caf-receiver@npm:6.0.10"
+  checksum: d0fa07d903c131cce452dc3f90ee0221f4ab5cb37d5d31dae0f6d13c2f66f2e35815be3f17dc210a8e5d298a296883bc90dd7597121f71a7a55d1cd456aba31c
   languageName: node
   linkType: hard
 
@@ -9762,7 +9762,7 @@ __metadata:
     "@rollup/plugin-replace": 5.0.2
     "@thomasloven/round-slider": 0.6.0
     "@types/babel__plugin-transform-runtime": 7.9.2
-    "@types/chromecast-caf-receiver": 6.0.9
+    "@types/chromecast-caf-receiver": 6.0.10
     "@types/chromecast-caf-sender": 1.0.5
     "@types/esprima": 4.0.3
     "@types/glob": 8.1.0
