@@ -340,6 +340,8 @@ class HaPanelDevTemplate extends LitElement {
   private async _subscribeTemplate() {
     this._rendering = true;
     await this._unsubscribeTemplate();
+    this._error = undefined;
+    this._errorLevel = undefined;
     try {
       this._unsubRenderTemplate = subscribeRenderTemplate(
         this.hass.connection,
@@ -352,8 +354,6 @@ class HaPanelDevTemplate extends LitElement {
             }
           } else {
             this._templateResult = result;
-            this._error = undefined;
-            this._errorLevel = undefined;
           }
         },
         {
