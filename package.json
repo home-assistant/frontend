@@ -25,7 +25,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "dependencies": {
-    "@babel/runtime": "7.22.11",
+    "@babel/runtime": "7.22.15",
     "@braintree/sanitize-url": "6.0.4",
     "@codemirror/autocomplete": "6.9.0",
     "@codemirror/commands": "6.2.5",
@@ -153,11 +153,11 @@
     "xss": "1.0.14"
   },
   "devDependencies": {
-    "@babel/core": "7.22.11",
-    "@babel/plugin-proposal-decorators": "7.22.10",
-    "@babel/plugin-transform-runtime": "7.22.10",
-    "@babel/preset-env": "7.22.14",
-    "@babel/preset-typescript": "7.22.11",
+    "@babel/core": "7.22.15",
+    "@babel/plugin-proposal-decorators": "7.22.15",
+    "@babel/plugin-transform-runtime": "7.22.15",
+    "@babel/preset-env": "7.22.15",
+    "@babel/preset-typescript": "7.22.15",
     "@koa/cors": "4.0.0",
     "@lokalise/node-api": "11.0.1",
     "@octokit/auth-oauth-device": "6.0.0",
