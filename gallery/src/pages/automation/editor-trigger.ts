@@ -120,6 +120,8 @@ const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
       {
         platform: "conversation",
         command: ["Turn on the lights", "Turn the lights on"],
+        response_success: "Lights are now on",
+        response_error: "Lights could not be turned on"
       },
     ],
   },
