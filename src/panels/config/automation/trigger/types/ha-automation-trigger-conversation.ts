@@ -9,8 +9,13 @@ import { ConversationTrigger } from "../../../../../data/automation";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../../../types";
 import { TriggerElement } from "../ha-automation-trigger-row";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 const PATTERN = "^[^.。,，?¿？؟!！;；:：]+$";
+const RESPONSE_SCHEMA = [
+  { name: "response_success", selector: { template: {} } },
+  { name: "response_error", selector: { text: {} } },
+] as const;
 
 @customElement("ha-automation-trigger-conversation")
 export class HaConversationTrigger
@@ -26,7 +31,7 @@ export class HaConversationTrigger
   @query("#option_input", true) private _optionInput?: HaTextField;
 
   public static get defaultConfig(): Omit<ConversationTrigger, "platform"> {
-    return { command: "" };
+    return { command: "", response_success: "", response_error: "" };
   }
 
   protected render() {
@@ -71,7 +76,13 @@ export class HaConversationTrigger
         pattern=${PATTERN}
         @keydown=${this._handleKeyAdd}
         @change=${this._addOption}
-      ></ha-textfield>`;
+      ></ha-textfield>
+      <ha-form
+        .hass=${this.hass}
+        .data=${this.trigger}
+        .schema=${RESPONSE_SCHEMA}
+        .computeLabel=${this._computeLabelCallback}
+      ></ha-form>`;
   }
 
   private _handleKeyAdd(ev: KeyboardEvent) {
@@ -142,6 +153,13 @@ export class HaConversationTrigger
       value: { ...this.trigger, command },
     });
   }
+
+  private _computeLabelCallback = (
+    schema: SchemaUnion<typeof RESPONSE_SCHEMA>
+  ): string =>
+    this.hass.localize(
+      `ui.panel.config.automation.editor.triggers.type.conversation.${schema.name}`
+    );
 
   static get styles(): CSSResultGroup {
     return css`

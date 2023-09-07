@@ -110,6 +110,8 @@ export interface NumericStateTrigger extends BaseTrigger {
 export interface ConversationTrigger extends BaseTrigger {
   platform: "conversation";
   command: string | string[];
+  response_success: string;
+  response_error: string;
 }
 
 export interface SunTrigger extends BaseTrigger {

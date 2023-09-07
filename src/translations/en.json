@@ -2462,6 +2462,8 @@
                   "no_punctuation": "You should not use punctuation in your sentence",
                   "add_sentence": "Add sentence",
                   "delete": "Delete sentence",
+                  "response_success": "Response when the automation runs successfully",
+                  "response_error": "Response when the automation run produces errors",
                   "confirm_delete": "Are you sure you want to delete this sentence?",
                   "description": {
                     "empty": "When a sentence is said",
