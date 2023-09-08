@@ -11,6 +11,7 @@ export interface CertificateInformation {
   common_name: string;
   expire_date: string;
   fingerprint: string;
+  alternative_names: string[];
 }
 
 export interface CloudPreferences {
