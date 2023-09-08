@@ -51,7 +51,7 @@ class HaPanelDevEvent extends LitElement {
               autofocus
               required
               .value=${this.eventType}
-              @change=${this.eventTypeChanged}
+              @change=${this._eventTypeChanged}
             ></ha-textfield>
             <p>
               ${this.hass.localize("ui.panel.developer-tools.tabs.events.data")}
@@ -61,15 +61,15 @@ class HaPanelDevEvent extends LitElement {
             <ha-code-editor
               mode="yaml"
               .value=${this.eventData}
-              .error=${!this.validJSON}
+              .error=${!this._validJSON}
               @value-changed=${this._yamlChanged}
               dir="ltr"
             ></ha-code-editor>
           </div>
           <mwc-button
-            @click=${this.fireEvent}
+            @click=${this._fireEvent}
             raised
-            .disabled=${!this.validJSON}
+            .disabled=${!this._validJSON}
             >${this.hass.localize(
               "ui.panel.developer-tools.tabs.events.fire_event"
             )}</mwc-button
@@ -84,7 +84,7 @@ class HaPanelDevEvent extends LitElement {
             )}
           </div>
           <events-list
-            @event-selected=${this.eventSelected}
+            @event-selected=${this._eventSelected}
             .hass=${this.hass}
           ></events-list>
         </div>
@@ -92,23 +92,23 @@ class HaPanelDevEvent extends LitElement {
     `;
   }
 
-  parsedJSON() {
+  private _parsedJSON() {
     return this._computeParsedEventData(this.eventData);
   }
 
-  validJSON() {
-    return this._computeValidJSON(this.parsedJSON());
+  private _validJSON() {
+    return this._computeValidJSON(this._parsedJSON());
   }
 
-  eventSelected(ev) {
+  private _eventSelected(ev) {
     this.eventType = ev.detail.eventType;
   }
 
-  eventTypeChanged(ev) {
+  private _eventTypeChanged(ev) {
     this.eventType = ev.target.value;
   }
 
-  _computeParsedEventData(eventData) {
+  private _computeParsedEventData(eventData) {
     try {
       return eventData.trim() ? load(eventData) : {};
     } catch (err) {
@@ -116,19 +116,19 @@ class HaPanelDevEvent extends LitElement {
     }
   }
 
-  _computeDocumentationUrl(hass) {
+  private _computeDocumentationUrl(hass) {
     return documentationUrl(hass, "/docs/configuration/events/");
   }
 
-  _computeValidJSON(parsedJSON) {
+  private _computeValidJSON(parsedJSON) {
     return parsedJSON !== ERROR_SENTINEL;
   }
 
-  _yamlChanged(ev) {
+  private _yamlChanged(ev) {
     this.eventData = ev.detail.value;
   }
 
-  fireEvent() {
+  private async _fireEvent() {
     if (!this.eventType) {
       showAlertDialog(this, {
         text: this.hass.localize(
@@ -137,17 +137,18 @@ class HaPanelDevEvent extends LitElement {
       });
       return;
     }
-    this.hass
-      .callApi("POST", "events/" + this.eventType, this.parsedJSON)
-      .then(() => {
-        fireEvent(this, "hass-notification", {
-          message: this.hass.localize(
-            "ui.panel.developer-tools.tabs.events.notification_event_fired",
-            "type",
-            this.eventType
-          ),
-        });
-      });
+    await this.hass.callApi(
+      "POST",
+      "events/" + this.eventType,
+      this._parsedJSON
+    );
+    fireEvent(this, "hass-notification", {
+      message: this.hass.localize(
+        "ui.panel.developer-tools.tabs.events.notification_event_fired",
+        "type",
+        this.eventType
+      ),
+    });
   }
 
   static get styles(): CSSResultGroup {

@@ -21,7 +21,7 @@ class EventsList extends LitElement {
         ${this.events.map(
           (event) => html`
             <li>
-              <a href="#" @click=${this.eventSelected} .event=${event}
+              <a href="#" @click=${this._eventSelected} .event=${event}
                 >${event.event}</a
               >
               <span>
@@ -39,16 +39,18 @@ class EventsList extends LitElement {
     `;
   }
 
-  connectedCallback() {
+  public async connectedCallback(): Promise<void> {
     super.connectedCallback();
-    this.hass.callApi<EventListenerCount[]>("GET", "events").then((events) => {
-      this.events = events.sort((e1, e2) =>
-        stringCompare(e1.event, e2.event, this.hass.locale.language)
-      );
-    });
+    const events = await this.hass.callApi<EventListenerCount[]>(
+      "GET",
+      "events"
+    );
+    this.events = events.sort((e1, e2) =>
+      stringCompare(e1.event, e2.event, this.hass.locale.language)
+    );
   }
 
-  eventSelected(ev: Event) {
+  private _eventSelected(ev: Event) {
     ev.preventDefault();
     const event: EventListenerCount = (ev.currentTarget! as any).event;
     fireEvent(this, "event-selected", { eventType: event.event });
