@@ -6,6 +6,8 @@ import {
   mdiRefresh,
 } from "@mdi/js";
 import { dump, load } from "js-yaml";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { escapeRegExp } from "../../../common/string/escape_regexp";
@@ -19,8 +21,6 @@ import "../../../components/ha-tip";
 import "../../../components/search-input";
 import "../../../components/ha-expansion-panel";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -54,10 +54,10 @@ class HaPanelDevState extends LitElement {
 
   @property({ reflect: true }) public narrow: boolean = true;
 
-  @property({ reflect: true }) public rtl = computeRTL(this.hass);
+  @property({ reflect: true }) public rtl = false;
 
   protected render() {
-    const entities = this.computeEntities();
+    const entities = this._computeEntities();
 
     return html`
       <h1>
@@ -71,7 +71,7 @@ class HaPanelDevState extends LitElement {
         )}
         outlined
         expanded=${this._expanded}
-        @expanded-changed=${this.expandedChanged}
+        @expanded-changed=${this._expandedChanged}
       >
         <p>
           ${this.hass.localize(
@@ -87,7 +87,7 @@ class HaPanelDevState extends LitElement {
               autofocus
               .hass=${this.hass}
               .value=${this._entityId}
-              @change=${this.entityIdChanged}
+              @change=${this._entityIdChanged}
               allow-custom-entity
               item-label-path="entity_id"
             ></ha-entity-picker>
@@ -104,7 +104,7 @@ class HaPanelDevState extends LitElement {
               autocorrect="off"
               input-spellcheck="false"
               .value=${this._state}
-              @change=${this.stateChanged}
+              @change=${this._stateChanged}
               class="state-input"
             ></ha-textfield>
             <p>
@@ -121,7 +121,7 @@ class HaPanelDevState extends LitElement {
             ></ha-code-editor>
             <div class="button-row">
               <mwc-button
-                @click=${this.handleSetState}
+                @click=${this._handleSetState}
                 .disabled=${!this._validJSON}
                 raised
                 >${this.hass.localize(
@@ -129,7 +129,7 @@ class HaPanelDevState extends LitElement {
                 )}</mwc-button
               >
               <ha-icon-button
-                @click=${this.entityIdChanged}
+                @click=${this._entityIdChanged}
                 label=${this.hass.localize("ui.common.refresh")}
                 path=${mdiRefresh}
               ></ha-icon-button>
@@ -143,8 +143,8 @@ class HaPanelDevState extends LitElement {
                         "ui.panel.developer-tools.tabs.states.last_changed"
                       )}:</b
                     ><br />
-                    <a href=${this.historyFromLastChanged(this._entity)}
-                      >${this.lastChangedString(this._entity)}</a
+                    <a href=${this._historyFromLastChanged(this._entity)}
+                      >${this._lastChangedString(this._entity)}</a
                     >
                   </p>
                   <p>
@@ -153,8 +153,8 @@ class HaPanelDevState extends LitElement {
                         "ui.panel.developer-tools.tabs.states.last_updated"
                       )}:</b
                     ><br />
-                    <a href=${this.historyFromLastUpdated(this._entity)}
-                      >${this.lastUpdatedString(this._entity)}</a
+                    <a href=${this._historyFromLastUpdated(this._entity)}
+                      >${this._lastUpdatedString(this._entity)}</a
                     >
                   </p>`
               : nothing}
@@ -181,7 +181,7 @@ class HaPanelDevState extends LitElement {
                   )}
                   <ha-checkbox
                     checked=${this._showAttributes}
-                    @change=${this.saveAttributeCheckboxState}
+                    @change=${this._saveAttributeCheckboxState}
                     reducedTouchTarget
                   ></ha-checkbox>
                 </th>`
@@ -190,6 +190,7 @@ class HaPanelDevState extends LitElement {
           <tr class="filters">
             <th>
               <search-input
+                .hass=${this.hass}
                 label=${this.hass.localize(
                   "ui.panel.developer-tools.tabs.states.filter_entities"
                 )}
@@ -199,6 +200,7 @@ class HaPanelDevState extends LitElement {
             </th>
             <th>
               <search-input
+                .hass=${this.hass}
                 label=${this.hass.localize(
                   "ui.panel.developer-tools.tabs.states.filter_states"
                 )}
@@ -207,9 +209,10 @@ class HaPanelDevState extends LitElement {
                 @value-changed=${this._stateFilterChanged}
               ></search-input>
             </th>
-            ${this.computeShowAttributes(this.narrow, this._showAttributes)
+            ${this._computeShowAttributes(this.narrow, this._showAttributes)
               ? html`<th>
                   <search-input
+                    .hass=${this.hass}
                     label=${this.hass.localize(
                       "ui.panel.developer-tools.tabs.states.filter_attributes"
                     )}
@@ -220,7 +223,7 @@ class HaPanelDevState extends LitElement {
                 </th>`
               : nothing}
           </tr>
-          ${this.computeShowEntitiesPlaceholder(entities)
+          ${this._computeShowEntitiesPlaceholder(entities)
             ? html`<tr>
                 <td colspan="3">
                   ${this.hass.localize(
@@ -231,38 +234,38 @@ class HaPanelDevState extends LitElement {
             : nothing}
           ${entities.map(
             (entity) =>
-              html` <tr>
+              html`<tr>
                 <td>
                   <div class="id-name-container">
                     <div class="id-name-row">
                       <ha-svg-icon
-                        @click=${this.copyEntity}
+                        @click=${this._copyEntity}
                         .entity=${entity}
-                        alt="${this.hass.localize(
+                        alt=${this.hass.localize(
                           "ui.panel.developer-tools.tabs.states.copy_id"
-                        )}"
-                        title="${this.hass.localize(
+                        )}
+                        title=${this.hass.localize(
                           "ui.panel.developer-tools.tabs.states.copy_id"
-                        )}"
+                        )}
                         path=${mdiClipboardTextMultipleOutline}
                       ></ha-svg-icon>
                       <a
                         href="#"
                         .entity=${entity}
-                        @click=${this.entitySelected}
+                        @click=${this._entitySelected}
                         >${entity.entity_id}</a
                       >
                     </div>
                     <div class="id-name-row">
                       <ha-svg-icon
-                        @click=${this.entityMoreInfo}
+                        @click=${this._entityMoreInfo}
                         .entity=${entity}
-                        alt="${this.hass.localize(
+                        alt=${this.hass.localize(
                           "ui.panel.developer-tools.tabs.states.more_info"
-                        )}"
-                        title="${this.hass.localize(
+                        )}
+                        title=${this.hass.localize(
                           "ui.panel.developer-tools.tabs.states.more_info"
-                        )}"
+                        )}
                         path=${mdiInformationOutline}
                       ></ha-svg-icon>
                       <span class="secondary">
@@ -272,8 +275,8 @@ class HaPanelDevState extends LitElement {
                   </div>
                 </td>
                 <td>${entity.state}</td>
-                ${this.computeShowAttributes(this.narrow, this._showAttributes)
-                  ? html`<td>${this.attributeString(entity)}</td>`
+                ${this._computeShowAttributes(this.narrow, this._showAttributes)
+                  ? html`<td>${this._attributeString(entity)}</td>`
                   : nothing}
               </tr>`
           )}
@@ -282,80 +285,85 @@ class HaPanelDevState extends LitElement {
     `;
   }
 
-  copyEntity(ev) {
+  connectedCallback() {
+    super.connectedCallback();
+    this.rtl = computeRTL(this.hass);
+  }
+
+  private _copyEntity(ev) {
     ev.preventDefault();
     const entity = (ev.currentTarget! as any).entity;
     copyToClipboard(entity.entity_id);
   }
 
-  entitySelected(ev) {
-    const state = (ev.currentTarget! as any).entity;
-    this._entityId = state.entity_id;
-    this._entity = state;
-    this._state = state.state;
-    this._stateAttributes = dump(state.attributes);
+  private _entitySelected(ev) {
+    const entityState = (ev.currentTarget! as any).entity;
+    this._entityId = entityState.entity_id;
+    this._entity = entityState;
+    this._state = entityState.state;
+    this._stateAttributes = dump(entityState.attributes);
     this._expanded = true;
     ev.preventDefault();
   }
 
-  entityIdChanged() {
+  private _entityIdChanged() {
     if (!this._entityId) {
       this._entity = undefined;
       this._state = "";
       this._stateAttributes = "";
       return;
     }
-    const state = this.hass.states[this._entityId];
-    if (!state) {
+    const entityState = this.hass.states[this._entityId];
+    if (!entityState) {
       return;
     }
-    this._entity = state;
-    this._state = state.state;
-    this._stateAttributes = dump(state.attributes);
+    this._entity = entityState;
+    this._state = entityState.state;
+    this._stateAttributes = dump(entityState.attributes);
     this._expanded = true;
   }
 
-  stateChanged(ev) {
+  private _stateChanged(ev) {
     this._state = ev.target.value;
   }
 
-  _entityFilterChanged(ev) {
+  private _entityFilterChanged(ev) {
     this._entityFilter = ev.detail.value;
   }
 
-  _stateFilterChanged(ev) {
+  private _stateFilterChanged(ev) {
     this._stateFilter = ev.detail.value;
   }
 
-  _attributeFilterChanged(ev) {
+  private _attributeFilterChanged(ev) {
     this._attributeFilter = ev.detail.value;
   }
 
-  _getHistoryURL(entityId, inputDate) {
+  private _getHistoryURL(entityId, inputDate) {
     const date = new Date(inputDate);
     const hourBefore = addHours(date, -1).toISOString();
     return `/history?entity_id=${entityId}&start_date=${hourBefore}`;
   }
 
-  historyFromLastChanged(entity) {
+  private _historyFromLastChanged(entity) {
     return this._getHistoryURL(entity.entity_id, entity.last_changed);
   }
 
-  historyFromLastUpdated(entity) {
+  private _historyFromLastUpdated(entity) {
     return this._getHistoryURL(entity.entity_id, entity.last_updated);
   }
 
-  expandedChanged(ev) {
+  private _expandedChanged(ev) {
     this._expanded = ev.detail.expanded;
   }
 
-  entityMoreInfo(ev) {
+  private _entityMoreInfo(ev) {
     ev.preventDefault();
     const entity = (ev.currentTarget! as any).entity;
     fireEvent(this, "hass-more-info", { entityId: entity.entity_id });
   }
 
-  handleSetState() {
+  private async _handleSetState() {
     if (!this._entityId) {
       showAlertDialog(this, {
         text: this.hass.localize(
@@ -367,13 +375,13 @@ class HaPanelDevState extends LitElement {
     const parsedJSON = this._computeParsedStateAttributes(
       this._stateAttributes
     );
-    this.hass.callApi("POST", "states/" + this._entityId, {
+    await this.hass.callApi("POST", "states/" + this._entityId, {
       state: this._state,
       attributes: parsedJSON,
     });
   }
 
-  computeEntities() {
+  private _computeEntities() {
     const entityFilterRegExp =
       this._entityFilter &&
       RegExp(escapeRegExp(this._entityFilter).replace(/\\\*/g, ".*"), "i");
@@ -458,28 +466,27 @@ class HaPanelDevState extends LitElement {
       });
   }
 
-  computeShowEntitiesPlaceholder(_entities) {
-    console.log(_entities);
+  private _computeShowEntitiesPlaceholder(_entities) {
     return _entities.length === 0;
   }
 
-  computeShowAttributes(narrow, _showAttributes) {
+  private _computeShowAttributes(narrow, _showAttributes) {
     return !narrow && _showAttributes;
   }
 
-  attributeString(entity) {
-    let output = "";
+  private _attributeString(entity) {
+    const output = "";
 
     if (entity && entity.attributes) {
-      Object.keys(entity.attributes).map((key) => {
-        output += `${key}: ${entity.attributes[key]}\n`;
-      });
+      return Object.keys(entity.attributes).map(
+        (key) => `${key}: ${entity.attributes[key]}\n`
+      );
     }
 
     return output;
   }
 
-  lastChangedString(entity) {
+  private _lastChangedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_changed),
       this.hass.locale,
@@ -487,7 +494,7 @@ class HaPanelDevState extends LitElement {
     );
   }
 
-  lastUpdatedString(entity) {
+  private _lastUpdatedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_updated),
       this.hass.locale,
@@ -495,17 +502,7 @@ class HaPanelDevState extends LitElement {
     );
   }
 
-  formatAttributeValue(value) {
-    if (
-      (Array.isArray(value) && value.some((val) => val instanceof Object)) ||
-      (!Array.isArray(value) && value instanceof Object)
-    ) {
-      return `\n${dump(value)}`;
-    }
-    return Array.isArray(value) ? value.join(", ") : value;
-  }
-
-  saveAttributeCheckboxState(ev) {
+  private _saveAttributeCheckboxState(ev) {
     this._showAttributes = ev.target.checked;
     try {
       localStorage.setItem("devToolsShowAttributes", ev.target.checked);
@@ -514,7 +511,7 @@ class HaPanelDevState extends LitElement {
     }
   }
 
-  _computeParsedStateAttributes(stateAttributes) {
+  private _computeParsedStateAttributes(stateAttributes) {
     try {
       return stateAttributes.trim() ? load(stateAttributes) : {};
     } catch (err) {
@@ -522,11 +519,11 @@ class HaPanelDevState extends LitElement {
     }
   }
 
-  _computeValidJSON(parsedJSON) {
+  private _computeValidJSON(parsedJSON) {
     return parsedJSON !== ERROR_SENTINEL;
   }
 
-  _yamlChanged(ev) {
+  private _yamlChanged(ev) {
     this._stateAttributes = ev.detail.value;
     this._validJSON = this._computeValidJSON(this._stateAttributes);
   }
