@@ -5,7 +5,6 @@ import { load } from "js-yaml";
 import "../../../components/ha-code-editor";
 import "../../../components/ha-textfield";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import "../../../styles/polymer-ha-style";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./event-subscribe-card";
 import "./events-list";
