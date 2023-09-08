@@ -83,7 +83,7 @@ class PanelCalendar extends LitElement {
         >
         </ha-calendar-app-bar>
         ${this.narrow
-          ? html` <ha-calendar-app-bar
+          ? html`<ha-calendar-app-bar
               .hass=${this.hass}
               .narrow=${this.narrow}
               .label=${this._dateLabel}
@@ -118,7 +118,6 @@ class PanelCalendar extends LitElement {
             )}
           </div>
           <ha-full-calendar
-            id="ha-full-calendar"
             .events=${this._events}
             .calendars=${this._calendars}
             .narrow=${this.narrow}

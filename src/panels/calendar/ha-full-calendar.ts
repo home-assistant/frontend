@@ -65,7 +65,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
 
 @customElement("ha-full-calendar")
 export class HAFullCalendar extends LitElement {
-  public hass!: HomeAssistant;
+  @property() public hass!: HomeAssistant;
 
   @property() public params: CalendarAppBarParams = {};
 
@@ -156,7 +156,7 @@ export class HAFullCalendar extends LitElement {
     this._loadCalendar();
   }
 
-  public connectedCallback(): void {
+  connectedCallback(): void {
     super.connectedCallback();
     this.params.next = () => {
       this.calendar!.next();
@@ -177,7 +177,7 @@ export class HAFullCalendar extends LitElement {
     };
   }
 
-  public disconnectedCallback(): void {
+  disconnectedCallback(): void {
     super.disconnectedCallback();
     this.params.next = undefined;
     this.params.prev = undefined;
