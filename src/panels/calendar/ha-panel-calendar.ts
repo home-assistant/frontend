@@ -25,6 +25,7 @@ import {
 } from "../../data/calendar";
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
+import "./ha-calendar-app-bar";
 import { CalendarAppBarParams } from "./ha-calendar-app-bar";
 import "../../components/ha-top-app-bar-fixed";
 
@@ -63,6 +64,7 @@ class PanelCalendar extends LitElement {
   }
 
   protected render(): TemplateResult {
+    console.log("panel calendar: " + this._dateLabel);
     return html`
       <ha-top-app-bar-fixed>
         <ha-menu-button
