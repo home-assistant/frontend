@@ -9,7 +9,7 @@ import {
   TemplateResult,
   nothing,
 } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { storage } from "../../common/decorators/storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
@@ -24,12 +24,7 @@ import {
   getCalendars,
 } from "../../data/calendar";
 import { haStyle } from "../../resources/styles";
-import type {
-  CalendarViewChanged,
-  HomeAssistant,
-  FullCalendarView,
-} from "../../types";
-import { HAFullCalendar } from "./ha-full-calendar";
+import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import { CalendarAppBarParams } from "./ha-calendar-app-bar";
 import "../../components/ha-top-app-bar-fixed";
 
@@ -59,10 +54,6 @@ class PanelCalendar extends LitElement {
   private _start?: Date;
 
   private _end?: Date;
-
-  @state() private _view: FullCalendarView = "dayGridMonth";
-
-  @query("#ha-full-calendar") private _fullCalendar!: HAFullCalendar;
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
@@ -128,7 +119,6 @@ class PanelCalendar extends LitElement {
           </div>
           <ha-full-calendar
             id="ha-full-calendar"
-            .initialView=${this._view}
             .events=${this._events}
             .calendars=${this._calendars}
             .narrow=${this.narrow}

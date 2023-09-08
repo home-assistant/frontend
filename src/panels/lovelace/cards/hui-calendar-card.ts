@@ -184,7 +184,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
-    this._dateLabel = ev.detail.dateLabel;
+    this._dateLabel = ev.detail.label;
     this._eventDisplay =
       ev.detail.view === "dayGridMonth" ? "list-item" : "auto";
     this._startDate = ev.detail.start;

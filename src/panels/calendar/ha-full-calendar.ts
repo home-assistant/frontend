@@ -156,7 +156,7 @@ export class HAFullCalendar extends LitElement {
     this._loadCalendar();
   }
 
-  protected connectedCallback(): void {
+  public connectedCallback(): void {
     super.connectedCallback();
     this.params.next = () => {
       this.calendar!.next();
@@ -177,7 +177,7 @@ export class HAFullCalendar extends LitElement {
     };
   }
 
-  protected disconnectedCallback(): void {
+  public disconnectedCallback(): void {
     super.disconnectedCallback();
     this.params.next = undefined;
     this.params.prev = undefined;
