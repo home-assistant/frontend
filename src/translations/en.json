@@ -4621,7 +4621,9 @@
             "subview": "Subview",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
             "edit_ui": "Edit in visual editor",
-            "edit_yaml": "Edit in YAML"
+            "edit_yaml": "Edit in YAML",
+            "saving_failed": "Saving failed",
+            "error_same_url": "You cannot save a view with the same URL as a different existing view."
           },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
