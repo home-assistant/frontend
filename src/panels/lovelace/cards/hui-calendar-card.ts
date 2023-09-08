@@ -23,7 +23,8 @@ import type {
   FullCalendarView,
   HomeAssistant,
 } from "../../../types";
-import { CalendarAppBarParams } from "../../calendar/ha-calendar-app-bar";
+import "../../calendar/ha-calendar-app-bar";
+import type { CalendarAppBarParams } from "../../calendar/ha-calendar-app-bar";
 import "../../calendar/ha-full-calendar";
 import type { HAFullCalendar } from "../../calendar/ha-full-calendar";
 import { findEntities } from "../common/find-entities";
