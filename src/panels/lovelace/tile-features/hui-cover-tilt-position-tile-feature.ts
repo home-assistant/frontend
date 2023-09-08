@@ -66,9 +66,15 @@ class HuiCoverTiltPositionTileFeature
 
     const forcedState = this.stateObj.state === "closed" ? "open" : undefined;
 
-    const color = this.color
+    let color = this.color
       ? computeCssColor(this.color)
       : stateColorCss(this.stateObj, forcedState);
+
+    // Since we are overwriting/forcing the closed color to be the open one for
+    // the default HA theme, we need to explicitly include the custom color var here.
+    if (this.stateObj.state === "closed") {
+      color = `var(--state-cover-closed-color, ${color})`;
+    }
 
     const style = {
       "--color": color,
