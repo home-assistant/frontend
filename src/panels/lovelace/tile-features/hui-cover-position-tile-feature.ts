@@ -70,8 +70,8 @@ class HuiCoverPositionTileFeature
       ? computeCssColor(this.color)
       : stateColorCss(this.stateObj, forcedState);
 
-    // Since we are overwriting/forcing the closed color to be the open one for
-    // the default HA theme, we need to explicitly include the custom color var here.
+    // Since we are overwriting/forcing the closed state color to be the open one (to prevent
+    // gray sliders in the default theme), we need to explicitly include the custom color var here.
     if (this.stateObj.state === "closed") {
       color = `var(--state-cover-closed-color, ${color})`;
     }
