@@ -1,6 +1,5 @@
 import "@material/mwc-checkbox";
 import "@material/mwc-formfield";
-import { mdiRefresh } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -8,8 +7,9 @@ import {
   LitElement,
   PropertyValues,
   TemplateResult,
+  nothing,
 } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, state, query } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { storage } from "../../common/decorators/storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
@@ -24,8 +24,13 @@ import {
   getCalendars,
 } from "../../data/calendar";
 import { haStyle } from "../../resources/styles";
-import type { CalendarViewChanged, HomeAssistant } from "../../types";
-import "./ha-full-calendar";
+import type {
+  CalendarViewChanged,
+  HomeAssistant,
+  FullCalendarView,
+} from "../../types";
+import { HAFullCalendar } from "./ha-full-calendar";
+import { CalendarAppBarParams } from "./ha-calendar-app-bar";
 import "../../components/ha-top-app-bar-fixed";
 
 @customElement("ha-panel-calendar")
@@ -47,9 +52,17 @@ class PanelCalendar extends LitElement {
   })
   private _deSelectedCalendars: string[] = [];
 
+  private _calendarAppBarParams: CalendarAppBarParams = {};
+
+  @state() private _dateLabel?: string;
+
   private _start?: Date;
 
   private _end?: Date;
+
+  @state() private _view: FullCalendarView = "dayGridMonth";
+
+  @query("#ha-full-calendar") private _fullCalendar!: HAFullCalendar;
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
@@ -67,12 +80,28 @@ class PanelCalendar extends LitElement {
           .narrow=${this.narrow}
         ></ha-menu-button>
         <div slot="title">${this.hass.localize("panel.calendar")}</div>
-        <ha-icon-button
+        <ha-calendar-app-bar
+          .hass=${this.hass}
+          .narrow=${this.narrow}
           slot="actionItems"
-          .path=${mdiRefresh}
-          .label=${this.hass.localize("ui.common.refresh")}
-          @click=${this._handleRefresh}
-        ></ha-icon-button>
+          .label=${this._dateLabel}
+          .controls=${true}
+          .navigation=${!this.narrow}
+          .params=${this._calendarAppBarParams}
+          @refresh=${this._handleRefresh}
+        >
+        </ha-calendar-app-bar>
+        ${this.narrow
+          ? html` <ha-calendar-app-bar
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+              .label=${this._dateLabel}
+              .controls=${false}
+              .navigation=${true}
+              .params=${this._calendarAppBarParams}
+            >
+            </ha-calendar-app-bar>`
+          : nothing}
         <div class="content">
           <div class="calendar-list">
             <div class="calendar-list-header">
@@ -98,11 +127,14 @@ class PanelCalendar extends LitElement {
             )}
           </div>
           <ha-full-calendar
+            id="ha-full-calendar"
+            .initialView=${this._view}
             .events=${this._events}
             .calendars=${this._calendars}
             .narrow=${this.narrow}
             .hass=${this.hass}
             .error=${this._error}
+            .params=${this._calendarAppBarParams}
             @view-changed=${this._handleViewChanged}
           ></ha-full-calendar>
         </div>
@@ -162,6 +194,7 @@ class PanelCalendar extends LitElement {
   private async _handleViewChanged(
     ev: HASSDomEvent<CalendarViewChanged>
   ): Promise<void> {
+    this._dateLabel = ev.detail.label;
     this._start = ev.detail.start;
     this._end = ev.detail.end;
     const result = await this._fetchEvents(
@@ -247,13 +280,20 @@ class PanelCalendar extends LitElement {
 
         :host([narrow]) .content {
           flex-direction: column-reverse;
-          padding: 8px 0 0 0;
+          padding: 0 0 0 0;
         }
 
         :host([narrow]) .calendar-list {
           margin-bottom: 24px;
           width: 100%;
           padding-right: 0;
+        }
+
+        .ha-calendar-app-bar {
+          display: flex;
+          width: 100%;
+          direction: var(--direction);
+          justify-content: flex-end;
         }
       `,
     ];

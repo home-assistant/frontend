@@ -23,6 +23,7 @@ import type {
   FullCalendarView,
   HomeAssistant,
 } from "../../../types";
+import { CalendarAppBarParams } from "../../calendar/ha-calendar-app-bar";
 import "../../calendar/ha-full-calendar";
 import type { HAFullCalendar } from "../../calendar/ha-full-calendar";
 import { findEntities } from "../common/find-entities";
@@ -75,6 +76,10 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   @state() private _error?: string = undefined;
 
   @query("ha-full-calendar", true) private _calendar?: HAFullCalendar;
+
+  private _calendarAppBarParams: CalendarAppBarParams = {};
+
+  @state() private _dateLabel: string = "";
 
   private _startDate?: Date;
 
@@ -131,6 +136,17 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         <div class="header">${this._config.title}</div>
+        <ha-calendar-app-bar
+          .hass=${this.hass}
+          .narrow=${this._narrow}
+          .label=${this._dateLabel}
+          .controls=${true}
+          .navigation=${true}
+          .refresh=${false}
+          .views=${views}
+          .params=${this._calendarAppBarParams}
+        >
+        </ha-calendar-app-bar>
         <ha-full-calendar
           .narrow=${this._narrow}
           .events=${this._events}
@@ -139,6 +155,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           .initialView=${this._config.initial_view!}
           .eventDisplay=${this._eventDisplay}
           .error=${this._error}
+          .params=${this._calendarAppBarParams}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
       </ha-card>
@@ -167,6 +184,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
+    this._dateLabel = ev.detail.dateLabel;
     this._eventDisplay =
       ev.detail.view === "dayGridMonth" ? "list-item" : "auto";
     this._startDate = ev.detail.start;
@@ -246,6 +264,13 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
         padding-left: 8px;
         padding-inline-start: 8px;
         direction: var(--direction);
+      }
+
+      .ha-calendar-app-bar {
+        display: flex;
+        width: 100%;
+        direction: var(--direction);
+        justify-content: flex-end;
       }
     `;
   }

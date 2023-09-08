@@ -5,13 +5,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import "@material/mwc-button";
-import {
-  mdiPlus,
-  mdiViewAgenda,
-  mdiViewDay,
-  mdiViewModule,
-  mdiViewWeek,
-} from "@mdi/js";
+import { mdiPlus } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -21,13 +15,10 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoize from "memoize-one";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
-import { LocalizeFunc } from "../../common/translations/localize";
-import { computeRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/ha-button-toggle-group";
 import "../../components/ha-fab";
 import "../../components/ha-icon-button-next";
@@ -42,11 +33,11 @@ import type {
   CalendarViewChanged,
   FullCalendarView,
   HomeAssistant,
-  ToggleButton,
 } from "../../types";
 import { showCalendarEventDetailDialog } from "./show-dialog-calendar-event-detail";
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
 import { TimeZone } from "../../data/translation";
+import type { CalendarAppBarParams } from "./ha-calendar-app-bar";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -76,6 +67,8 @@ const defaultFullCalendarConfig: CalendarOptions = {
 export class HAFullCalendar extends LitElement {
   public hass!: HomeAssistant;
 
+  @property() public params: CalendarAppBarParams = {};
+
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: false }) public events: CalendarEvent[] = [];
@@ -97,8 +90,6 @@ export class HAFullCalendar extends LitElement {
 
   private calendar?: Calendar;
 
-  private _viewButtons?: ToggleButton[];
-
   @state() private _activeView = this.initialView;
 
   public updateSize(): void {
@@ -106,94 +97,15 @@ export class HAFullCalendar extends LitElement {
   }
 
   protected render() {
-    const viewToggleButtons = this._viewToggleButtons(
-      this.views,
-      this.hass.localize
-    );
-
     return html`
-      ${this.calendar
-        ? html`
-            ${this.error
-              ? html`<ha-alert
-                  alert-type="error"
-                  dismissable
-                  @alert-dismissed-clicked=${this._clearError}
-                  >${this.error}</ha-alert
-                >`
-              : ""}
-            <div class="header">
-              ${!this.narrow
-                ? html`
-                    <div class="navigation">
-                      <mwc-button
-                        outlined
-                        class="today"
-                        @click=${this._handleToday}
-                        >${this.hass.localize(
-                          "ui.components.calendar.today"
-                        )}</mwc-button
-                      >
-                      <ha-icon-button-prev
-                        .label=${this.hass.localize("ui.common.previous")}
-                        class="prev"
-                        @click=${this._handlePrev}
-                      >
-                      </ha-icon-button-prev>
-                      <ha-icon-button-next
-                        .label=${this.hass.localize("ui.common.next")}
-                        class="next"
-                        @click=${this._handleNext}
-                      >
-                      </ha-icon-button-next>
-                    </div>
-                    <h1>${this.calendar.view.title}</h1>
-                    <ha-button-toggle-group
-                      .buttons=${viewToggleButtons}
-                      .active=${this._activeView}
-                      @value-changed=${this._handleView}
-                      .dir=${computeRTLDirection(this.hass)}
-                    ></ha-button-toggle-group>
-                  `
-                : html`
-                    <div class="controls">
-                      <h1>${this.calendar.view.title}</h1>
-                      <div>
-                        <ha-icon-button-prev
-                          .label=${this.hass.localize("ui.common.previous")}
-                          class="prev"
-                          @click=${this._handlePrev}
-                        >
-                        </ha-icon-button-prev>
-                        <ha-icon-button-next
-                          .label=${this.hass.localize("ui.common.next")}
-                          class="next"
-                          @click=${this._handleNext}
-                        >
-                        </ha-icon-button-next>
-                      </div>
-                    </div>
-                    <div class="controls">
-                      <mwc-button
-                        outlined
-                        class="today"
-                        @click=${this._handleToday}
-                        >${this.hass.localize(
-                          "ui.components.calendar.today"
-                        )}</mwc-button
-                      >
-                      <ha-button-toggle-group
-                        .buttons=${viewToggleButtons}
-                        .active=${this._activeView}
-                        @value-changed=${this._handleView}
-                        .dir=${computeRTLDirection(this.hass)}
-                      ></ha-button-toggle-group>
-                    </div>
-                  `}
-            </div>
-          `
+      ${this.error
+        ? html`<ha-alert
+            alert-type="error"
+            dismissable
+            @alert-dismissed-clicked=${this._clearError}
+            >${this.error}</ha-alert
+          >`
         : ""}
-
       <div id="calendar"></div>
       ${this._hasMutableCalendars
         ? html`<ha-fab
@@ -242,6 +154,35 @@ export class HAFullCalendar extends LitElement {
 
   protected firstUpdated(): void {
     this._loadCalendar();
+  }
+
+  protected connectedCallback(): void {
+    super.connectedCallback();
+    this.params.next = () => {
+      this.calendar!.next();
+      this._fireViewChanged();
+    };
+    this.params.prev = () => {
+      this.calendar!.prev();
+      this._fireViewChanged();
+    };
+    this.params.today = () => {
+      this.calendar!.today();
+      this._fireViewChanged();
+    };
+    this.params.selectView = (view: FullCalendarView) => {
+      this._activeView = view;
+      this.calendar!.changeView(view);
+      this._fireViewChanged();
+    };
+  }
+
+  protected disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.params.next = undefined;
+    this.params.prev = undefined;
+    this.params.today = undefined;
+    this.params.selectView = undefined;
   }
 
   private async _loadCalendar() {
@@ -342,73 +283,14 @@ export class HAFullCalendar extends LitElement {
     this._fireViewChanged();
   }
 
-  private _handleNext(): void {
-    this.calendar!.next();
-    this._fireViewChanged();
-  }
-
-  private _handlePrev(): void {
-    this.calendar!.prev();
-    this._fireViewChanged();
-  }
-
-  private _handleToday(): void {
-    this.calendar!.today();
-    this._fireViewChanged();
-  }
-
-  private _handleView(ev: CustomEvent): void {
-    this._activeView = ev.detail.value;
-    this.calendar!.changeView(this._activeView!);
-    this._fireViewChanged();
-  }
-
   private _fireViewChanged(): void {
     fireEvent(this, "view-changed", {
       start: this.calendar!.view.activeStart,
       end: this.calendar!.view.activeEnd,
       view: this.calendar!.view.type,
+      label: this.calendar!.view.title,
     });
   }
-
-  private _viewToggleButtons = memoize((views, localize: LocalizeFunc) => {
-    if (!this._viewButtons) {
-      this._viewButtons = [
-        {
-          label: localize(
-            "ui.panel.lovelace.editor.card.calendar.views.dayGridMonth"
-          ),
-          value: "dayGridMonth",
-          iconPath: mdiViewModule,
-        },
-        {
-          label: localize(
-            "ui.panel.lovelace.editor.card.calendar.views.dayGridWeek"
-          ),
-          value: "dayGridWeek",
-          iconPath: mdiViewWeek,
-        },
-        {
-          label: localize(
-            "ui.panel.lovelace.editor.card.calendar.views.dayGridDay"
-          ),
-          value: "dayGridDay",
-          iconPath: mdiViewDay,
-        },
-        {
-          label: localize(
-            "ui.panel.lovelace.editor.card.calendar.views.listWeek"
-          ),
-          value: "listWeek",
-          iconPath: mdiViewAgenda,
-        },
-      ];
-    }
-
-    return this._viewButtons.filter((button) =>
-      views.includes(button.value as FullCalendarView)
-    );
-  });
 
   private _clearError() {
     this.error = undefined;
