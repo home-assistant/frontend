@@ -24,7 +24,11 @@ import {
   getCalendars,
 } from "../../data/calendar";
 import { haStyle } from "../../resources/styles";
-import type { CalendarViewChanged, HomeAssistant } from "../../types";
+import type {
+  CalendarViewChanged,
+  HomeAssistant,
+  FullCalendarView,
+} from "../../types";
 import "./ha-calendar-app-bar";
 import "./ha-full-calendar";
 import type { HAFullCalendar } from "./ha-full-calendar";
@@ -55,7 +59,7 @@ class PanelCalendar extends LitElement {
 
   private _end?: Date;
 
-  @query("ha-full-calendar") private _calendar!: HAFullCalendar;
+  @query("ha-full-calendar") private _calendar?: HAFullCalendar;
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
@@ -186,19 +190,21 @@ class PanelCalendar extends LitElement {
     this._calendars = await Promise.all(results);
   }
 
-  private _handleAppBarClick(ev: HASSDomEvent) {
+  private _handleAppBarClick(ev: Event | HASSDomEvent<FullCalendarView>) {
     switch (ev.type) {
       case "prev":
-        this._calendar.prev();
+        this._calendar!.prev();
         break;
       case "next":
-        this._calendar.next();
+        this._calendar!.next();
         break;
       case "today":
-        this._calendar.today();
+        this._calendar!.today();
         break;
       case "calendar-view-selected":
-        this._calendar.changeView(ev.detail);
+        this._calendar!.changeView(
+          (ev as HASSDomEvent<FullCalendarView>).detail
+        );
         break;
     }
   }

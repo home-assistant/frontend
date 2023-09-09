@@ -124,7 +124,11 @@ export class CalendarAppBar extends LitElement {
 
   private _handleSelectView(ev: CustomEvent): void {
     ev.stopPropagation();
-    fireEvent(this, "calendar-view-selected", ev.detail.value);
+    fireEvent(
+      this,
+      "calendar-view-selected",
+      ev.detail.value as FullCalendarView
+    );
   }
 
   private _viewToggleButtons = memoize((views, localize: LocalizeFunc) => {

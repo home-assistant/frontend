@@ -75,7 +75,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @state() private _error?: string = undefined;
 
-  @query("ha-full-calendar", true) private _calendar: HAFullCalendar;
+  @query("ha-full-calendar", true) private _calendar?: HAFullCalendar;
 
   @state() private _dateLabel: string = "";
 
@@ -156,7 +156,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           .initialView=${this._config.initial_view!}
           .eventDisplay=${this._eventDisplay}
           .error=${this._error}
-          .params=${this._calendarAppBarParams}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
       </ha-card>
@@ -184,19 +183,21 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _handleAppBarClick(ev: HASSDomEvent) {
+  private _handleAppBarClick(ev: Event | HASSDomEvent<FullCalendarView>) {
     switch (ev.type) {
       case "prev":
-        this._calendar.prev();
+        this._calendar!.prev();
         break;
       case "next":
-        this._calendar.next();
+        this._calendar!.next();
         break;
       case "today":
-        this._calendar.today();
+        this._calendar!.today();
         break;
       case "calendar-view-selected":
-        this._calendar.changeView(ev.detail);
+        this._calendar!.changeView(
+          (ev as HASSDomEvent<FullCalendarView>).detail
+        );
         break;
     }
   }
@@ -247,7 +248,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     this._narrow = card.offsetWidth < 870;
     this._veryNarrow = card.offsetWidth < 350;
 
-    this._calendar?.updateSize();
+    this._calendar!.updateSize();
   }
 
   private async _attachObserver(): Promise<void> {
