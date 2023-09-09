@@ -37,7 +37,6 @@ import type {
 import { showCalendarEventDetailDialog } from "./show-dialog-calendar-event-detail";
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
 import { TimeZone } from "../../data/translation";
-import type { CalendarAppBarParams } from "./ha-calendar-app-bar";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -156,35 +155,6 @@ export class HAFullCalendar extends LitElement {
     this._loadCalendar();
   }
 
-  connectedCallback(): void {
-    super.connectedCallback();
-    this.params.next = () => {
-      this.calendar!.next();
-      this._fireViewChanged();
-    };
-    this.params.prev = () => {
-      this.calendar!.prev();
-      this._fireViewChanged();
-    };
-    this.params.today = () => {
-      this.calendar!.today();
-      this._fireViewChanged();
-    };
-    this.params.selectView = (view: FullCalendarView) => {
-      this._activeView = view;
-      this.calendar!.changeView(view);
-      this._fireViewChanged();
-    };
-  }
-
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this.params.next = undefined;
-    this.params.prev = undefined;
-    this.params.today = undefined;
-    this.params.selectView = undefined;
-  }
-
   private async _loadCalendar() {
     const luxonPlugin =
       this.hass.locale.time_zone === TimeZone.local
@@ -271,6 +241,27 @@ export class HAFullCalendar extends LitElement {
       canEdit: canEdit,
       canDelete: canDelete,
     });
+  }
+
+  public next(): void {
+    this.calendar!.next();
+    this._fireViewChanged();
+  }
+
+  public prev(): void {
+    this.calendar!.prev();
+    this._fireViewChanged();
+  }
+
+  public today(): void {
+    this.calendar!.today();
+    this._fireViewChanged();
+  }
+
+  public changeView(view: FullCalendarView): void {
+    this._activeView = view;
+    this.calendar!.changeView(this._activeView!);
+    this._fireViewChanged();
   }
 
   private _handleDateClick(info): void {

@@ -24,7 +24,6 @@ import type {
   HomeAssistant,
 } from "../../../types";
 import "../../calendar/ha-calendar-app-bar";
-import type { CalendarAppBarParams } from "../../calendar/ha-calendar-app-bar";
 import "../../calendar/ha-full-calendar";
 import type { HAFullCalendar } from "../../calendar/ha-full-calendar";
 import { findEntities } from "../common/find-entities";
@@ -77,8 +76,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   @state() private _error?: string = undefined;
 
   @query("ha-full-calendar", true) private _calendar?: HAFullCalendar;
-
-  private _calendarAppBarParams: CalendarAppBarParams = {};
 
   @state() private _dateLabel: string = "";
 
@@ -145,7 +142,10 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           .navigation=${true}
           .refresh=${false}
           .views=${views}
-          .params=${this._calendarAppBarParams}
+          @prev=${this._handleAppBarClick}
+          @next=${this._handleAppBarClick}
+          @today=${this._handleAppBarClick}
+          @calendar-view-selected=${this._handleAppBarClick}
         >
         </ha-calendar-app-bar>
         <ha-full-calendar
@@ -181,6 +181,23 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       (changedProps.has("_config") && oldConfig.theme !== this._config.theme)
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config!.theme);
+    }
+  }
+
+  private _handleAppBarClick(ev: HASSDomEvent) {
+    switch (ev.type) {
+      case "prev":
+        this._calendar.prev();
+        break;
+      case "next":
+        this._calendar.next();
+        break;
+      case "today":
+        this._calendar.today();
+        break;
+      case "calendar-view-selected":
+        this._calendar.changeView(ev.detail);
+        break;
     }
   }
 

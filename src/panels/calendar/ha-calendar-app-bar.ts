@@ -23,13 +23,6 @@ import type {
 import { haStyle } from "../../resources/styles";
 import { LocalizeFunc } from "../../common/translations/localize";
 
-export interface CalendarAppBarParams {
-  next?: () => void;
-  prev?: () => void;
-  today?: () => void;
-  selectView?: (FullCalendarView) => void;
-}
-
 @customElement("ha-calendar-app-bar")
 export class CalendarAppBar extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -116,21 +109,15 @@ export class CalendarAppBar extends LitElement {
   }
 
   private _handlePrev() {
-    if (this.params.prev) {
-      this.params.prev();
-    }
+    fireEvent(this, "prev");
   }
 
   private _handleNext() {
-    if (this.params.next) {
-      this.params.next();
-    }
+    fireEvent(this, "next");
   }
 
   private _handleToday() {
-    if (this.params.today) {
-      this.params.today();
-    }
+    fireEvent(this, "today");
   }
 
   private _handleRefresh() {
@@ -139,9 +126,7 @@ export class CalendarAppBar extends LitElement {
 
   private _handleSelectView(ev: CustomEvent): void {
     ev.stopPropagation();
-    if (this.params.selectView) {
-      this.params.selectView(ev.detail.value);
-    }
+    fireEvent(this, "calendar-view-selected", ev.detail.value);
   }
 
   private _viewToggleButtons = memoize((views, localize: LocalizeFunc) => {
@@ -257,10 +242,10 @@ declare global {
     "ha-calendar-app-bar": CalendarAppBar;
   }
   interface HASSDomEvents {
-    refresh: unknown;
     next: unknown;
     prev: unknown;
     today: unknown;
     "calendar-view-selected": FullCalendarView;
+    refresh: unknown;
   }
 }

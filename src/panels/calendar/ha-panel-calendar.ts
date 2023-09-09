@@ -9,7 +9,7 @@ import {
   TemplateResult,
   nothing,
 } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, state, query } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { storage } from "../../common/decorators/storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
@@ -26,7 +26,6 @@ import {
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import "./ha-calendar-app-bar";
-import type { CalendarAppBarParams } from "./ha-calendar-app-bar";
 import "../../components/ha-top-app-bar-fixed";
 
 @customElement("ha-panel-calendar")
@@ -48,13 +47,13 @@ class PanelCalendar extends LitElement {
   })
   private _deSelectedCalendars: string[] = [];
 
-  private _calendarAppBarParams: CalendarAppBarParams = {};
-
   @state() private _dateLabel?: string;
 
   private _start?: Date;
 
   private _end?: Date;
+
+  @query("ha-full-calendar") private _calendar!: HAFullCalendar;
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
@@ -79,7 +78,10 @@ class PanelCalendar extends LitElement {
           .label=${this._dateLabel}
           .controls=${true}
           .navigation=${!this.narrow}
-          .params=${this._calendarAppBarParams}
+          @prev=${this._handleAppBarClick}
+          @next=${this._handleAppBarClick}
+          @today=${this._handleAppBarClick}
+          @calendar-view-selected=${this._handleAppBarClick}
           @refresh=${this._handleRefresh}
         >
         </ha-calendar-app-bar>
@@ -90,7 +92,9 @@ class PanelCalendar extends LitElement {
               .label=${this._dateLabel}
               .controls=${false}
               .navigation=${true}
-              .params=${this._calendarAppBarParams}
+              @prev=${this._handleAppBarClick}
+              @next=${this._handleAppBarClick}
+              @today=${this._handleAppBarClick}
             >
             </ha-calendar-app-bar>`
           : nothing}
@@ -124,7 +128,6 @@ class PanelCalendar extends LitElement {
             .narrow=${this.narrow}
             .hass=${this.hass}
             .error=${this._error}
-            .params=${this._calendarAppBarParams}
             @view-changed=${this._handleViewChanged}
           ></ha-full-calendar>
         </div>
@@ -179,6 +182,23 @@ class PanelCalendar extends LitElement {
     });
 
     this._calendars = await Promise.all(results);
+  }
+
+  private _handleAppBarClick(ev: HASSDomEvent) {
+    switch (ev.type) {
+      case "prev":
+        this._calendar.prev();
+        break;
+      case "next":
+        this._calendar.next();
+        break;
+      case "today":
+        this._calendar.today();
+        break;
+      case "calendar-view-selected":
+        this._calendar.changeView(ev.detail);
+        break;
+    }
   }
 
   private async _handleViewChanged(
