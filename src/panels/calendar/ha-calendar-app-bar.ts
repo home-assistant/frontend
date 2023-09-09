@@ -31,8 +31,6 @@ export class CalendarAppBar extends LitElement {
 
   @property() public label: string = "";
 
-  @property() public params: CalendarAppBarParams = {};
-
   @property() public navigation?: boolean = true;
 
   @property() public controls?: boolean = true;

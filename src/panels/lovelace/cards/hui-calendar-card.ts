@@ -75,7 +75,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @state() private _error?: string = undefined;
 
-  @query("ha-full-calendar", true) private _calendar?: HAFullCalendar;
+  @query("ha-full-calendar", true) private _calendar: HAFullCalendar;
 
   @state() private _dateLabel: string = "";
 

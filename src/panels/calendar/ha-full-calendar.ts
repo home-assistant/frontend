@@ -66,8 +66,6 @@ const defaultFullCalendarConfig: CalendarOptions = {
 export class HAFullCalendar extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property() public params: CalendarAppBarParams = {};
-
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: false }) public events: CalendarEvent[] = [];

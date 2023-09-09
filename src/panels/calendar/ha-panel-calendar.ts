@@ -26,6 +26,8 @@ import {
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import "./ha-calendar-app-bar";
+import "./ha-full-calendar";
+import type { HAFullCalendar } from "./ha-full-calendar";
 import "../../components/ha-top-app-bar-fixed";
 
 @customElement("ha-panel-calendar")
