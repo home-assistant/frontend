@@ -237,7 +237,7 @@
     "sinon": "15.2.0",
     "source-map-url": "0.4.1",
     "systemjs": "6.14.2",
-    "tar": "6.1.15",
+    "tar": "6.2.0",
     "terser-webpack-plugin": "5.3.9",
     "ts-lit-plugin": "2.0.0-pre.1",
     "typescript": "5.2.2",
