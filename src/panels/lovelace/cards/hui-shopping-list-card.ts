@@ -13,7 +13,6 @@ import { classMap } from "lit/directives/class-map";
 import { guard } from "lit/directives/guard";
 import { repeat } from "lit/directives/repeat";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-card";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-svg-icon";
@@ -21,19 +20,17 @@ import "../../../components/ha-textfield";
 import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import type { HaTextField } from "../../../components/ha-textfield";
-import {
-  addItem,
-  clearItems,
-  removeItem,
-  reorderItems,
-  updateItem,
-} from "../../../data/shopping-list";
+
 import {
   getTodoLists,
   TodoList,
   TodoItem,
   fetchItems,
   TodoItemStatus,
+  deleteItems,
+  createItem,
+  updateItem,
+  moveItem,
 } from "../../../data/todo";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import {
@@ -65,6 +62,8 @@ class HuiShoppingListCard
   @state() private _todoLists: TodoList[] = [];
 
   @state() private _entityId?: string;
+
+  @state() private _items: Record<string, TodoItem> = {};
 
   @state() private _uncheckedItems?: TodoItem[];
 
@@ -155,7 +154,6 @@ class HuiShoppingListCard
                 )}
                 .value=${this._entityId}
                 @selected=${this._selectTodoList}
-                @closed=${stopPropagation}
                 fixedMenuPosition
                 naturalMenuWidth
               >
@@ -225,7 +223,7 @@ class HuiShoppingListCard
                   .title=${this.hass!.localize(
                     "ui.panel.lovelace.cards.shopping-list.clear_items"
                   )}
-                  @click=${this._clearItems}
+                  @click=${this._clearCompletedItems}
                 >
                 </ha-svg-icon>
               </div>
@@ -234,7 +232,6 @@ class HuiShoppingListCard
                 (item) => item.uid,
                 (item) => html`
                   <div class="editRow">
-                    ${item.summary}
                     <ha-checkbox
                       tabindex="0"
                       .checked=${item.status === TodoItemStatus.Completed}
@@ -300,43 +297,62 @@ class HuiShoppingListCard
     const checkedItems: TodoItem[] = [];
     const uncheckedItems: TodoItem[] = [];
     const items = await fetchItems(this.hass!, this._entityId!);
+    const records: Record<string, TodoItemList> = {};
     items.forEach((item) => {
+      records[item.uid] = item;
       if (item.status === TodoItemStatus.Completed) {
         checkedItems.push(item);
       } else {
         uncheckedItems.push(item);
       }
     });
+    this._items = records;
     this._checkedItems = checkedItems;
     this._uncheckedItems = uncheckedItems;
   }
 
-  // private _selectTodoList(ev): void {
-  //   //const todoList = this._todoLists[ev.detail.index];
-  // }
+  private _selectTodoList(ev): void {
+    const todoList = this._todoLists[ev.detail.index];
+    this._entityId = todoList.entity_id;
+    this._fetchData();
+  }
 
   private _completeItem(ev): void {
-    updateItem(this.hass!, ev.target.itemId, {
-      complete: ev.target.checked,
+    const item = this._items[ev.target.itemId];
+    updateItem(this.hass!, this._entityId!, {
+      ...item,
+      status: ev.target.checked
+        ? TodoItemStatus.Completed
+        : TodoItemStatus.NeedsAction,
     }).catch(() => this._fetchData());
   }
 
   private _saveEdit(ev): void {
     // If name is not empty, update the item otherwise remove it
     if (ev.target.value) {
-      updateItem(this.hass!, ev.target.itemId, {
-        name: ev.target.value,
+      const item = this._items[ev.target.itemId];
+      updateItem(this.hass!, this._entityId!, {
+        ...item,
+        summary: ev.target.value,
       }).catch(() => this._fetchData());
     } else {
-      removeItem(this.hass!, ev.target.itemId).catch(() => this._fetchData());
+      deleteItems(this.hass!, this._entityId!, [ev.target.itemId]).catch(() =>
+        this._fetchData()
+      );
     }
 
     ev.target.blur();
   }
 
-  private _clearItems(): void {
+  private _clearCompletedItems(): void {
     if (this.hass) {
-      clearItems(this.hass).catch(() => this._fetchData());
+      const uids: Array<string> = [];
+      this._checkedItems.forEach((item: TodoItem) => {
+        uids.push(item.uid);
+      });
+      deleteItems(this.hass, this._entityId!, uids).catch(() =>
+        this._fetchData()
+      );
     }
   }
 
@@ -348,7 +364,9 @@ class HuiShoppingListCard
     const newItem = this._newItem;
 
     if (newItem.value!.length > 0) {
-      addItem(this.hass!, newItem.value!).catch(() => this._fetchData());
+      createItem(this.hass!, this._entityId!, newItem.value!).catch(() =>
+        this._fetchData()
+      );
     }
 
     newItem.value = "";
@@ -389,7 +407,18 @@ class HuiShoppingListCard
         // Since this is `onEnd` event, it's possible that
         // an item wa dragged away and was put back to its original position.
         if (evt.oldIndex !== evt.newIndex) {
-          reorderItems(this.hass!, this._sortable!.toArray()).catch(() =>
+          const item = this._uncheckedItems![evt.oldIndex];
+          let previous = "";
+          if (evt.newIndex > 0) {
+            if (evt.newIndex < evt.oldIndex) {
+              const previousItem = this._uncheckedItems![evt.newIndex - 1];
+              previous = previousItem.uid!;
+            } else {
+              const previousItem = this._uncheckedItems![evt.newIndex];
+              previous = previousItem.uid!;
+            }
+          }
+          moveItem(this.hass!, this._entityId!, item.uid!, previous).catch(() =>
             this._fetchData()
           );
           // Move the shopping list item in memory.

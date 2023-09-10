@@ -2,6 +2,7 @@ import { HomeAssistant } from "../types";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isUnavailableState } from "./entity";
+import { string } from "superstruct";
 
 export enum TodoItemStatus {
   NeedsAction = "NEEDS-ACTION",
@@ -38,11 +39,6 @@ export const getTodoLists = (hass: HomeAssistant): TodoList[] =>
       name: computeStateName(hass.states[entityId]),
     }));
 
-// export const fetchTodoLists = (hass: HomeAssistant): Promise<TodoItem[]> =>
-//   hass.callWS({
-//       type: "todo/list",
-//   });
-
 export interface TodoItems {
   items: TodoItem[];
 }
@@ -69,33 +65,37 @@ export const updateItem = (
     item: item,
   });
 
-export const addItem = (
+export const createItem = (
   hass: HomeAssistant,
   entityId: string,
-  name: string
+  summary: string
 ): Promise<void> =>
   hass.callWS({
-    type: "todo/items/create",
+    type: "todo/item/create",
     entity_id: entityId,
-    item: { name: name },
+    item: { summary: summary },
   });
 
-export const removeItem = (
+export const deleteItems = (
   hass: HomeAssistant,
   entityId: string,
-  itemId: string
+  uids: Array<string>
 ): Promise<void> =>
   hass.callWS({
     type: "todo/item/delete",
     entity_id: entityId,
-    item_id: itemId,
+    uids: uids,
   });
 
-// export const reorderItems = (
-//   hass: HomeAssistant,
-//   itemIds: string[]
-// ): Promise<ShoppingListItem> =>
-//   hass.callWS({
-//     type: "shopping_list/items/reorder",
-//     item_ids: itemIds,
-//   });
+export const moveItem = (
+  hass: HomeAssistant,
+  entityId: string,
+  uid: string,
+  previous: string
+): Promise<void> =>
+  hass.callWS({
+    type: "todo/item/move",
+    entity_id: entityId,
+    uid: uid,
+    previous: previous,
+  });
