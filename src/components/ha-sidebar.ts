@@ -2,12 +2,12 @@ import "@material/mwc-button/mwc-button";
 import {
   mdiBell,
   mdiCalendar,
-  mdiCart,
   mdiCellphoneCog,
   mdiChartBox,
   mdiClose,
   mdiCog,
   mdiFormatListBulletedType,
+  mdiCartCheck,
   mdiHammer,
   mdiLightningBolt,
   mdiMenu,
@@ -81,7 +81,7 @@ const PANEL_ICONS = {
   lovelace: mdiViewDashboard,
   map: mdiTooltipAccount,
   "media-browser": mdiPlayBoxMultiple,
-  "shopping-list": mdiCart,
+  todo: mdiCartCheck,
 };
 
 const panelSorter = (

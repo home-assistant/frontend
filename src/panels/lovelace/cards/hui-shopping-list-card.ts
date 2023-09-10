@@ -13,20 +13,28 @@ import { classMap } from "lit/directives/class-map";
 import { guard } from "lit/directives/guard";
 import { repeat } from "lit/directives/repeat";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-card";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
+import "../../../components/ha-list-item";
+import "../../../components/ha-select";
 import type { HaTextField } from "../../../components/ha-textfield";
 import {
   addItem,
   clearItems,
-  fetchItems,
   removeItem,
   reorderItems,
-  ShoppingListItem,
   updateItem,
 } from "../../../data/shopping-list";
+import {
+  getTodoLists,
+  TodoList,
+  TodoItem,
+  fetchItems,
+  TodoItemStatus,
+} from "../../../data/todo";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import {
   loadSortable,
@@ -54,9 +62,13 @@ class HuiShoppingListCard
 
   @state() private _config?: ShoppingListCardConfig;
 
-  @state() private _uncheckedItems?: ShoppingListItem[];
+  @state() private _todoLists: TodoList[] = [];
 
-  @state() private _checkedItems?: ShoppingListItem[];
+  @state() private _entityId?: string;
+
+  @state() private _uncheckedItems?: TodoItem[];
+
+  @state() private _checkedItems?: TodoItem[];
 
   @state() private _reordering = false;
 
@@ -86,6 +98,23 @@ class HuiShoppingListCard
     ];
   }
 
+  public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (!this.hasUpdated) {
+      this._todoLists = getTodoLists(this.hass!).filter(
+        (todoList) =>
+          !this._config ||
+          !this._config!.entities ||
+          this._config!.entities.length === 0 ||
+          todoList.entity_id in this._config!.entities
+      );
+      this._todoLists.push({ entity_id: "fake", name: "Fake" });
+      if (!this._entityId && this._todoLists.length > 0) {
+        this._entityId = this._todoLists[0].entity_id;
+      }
+    }
+  }
+
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
     if (!this._config || !this.hass) {
@@ -106,7 +135,7 @@ class HuiShoppingListCard
   }
 
   protected render() {
-    if (!this._config || !this.hass) {
+    if (!this._config || !this.hass || !this._entityId) {
       return nothing;
     }
 
@@ -117,6 +146,29 @@ class HuiShoppingListCard
           "has-header": "title" in this._config,
         })}
       >
+        ${this._todoLists.length >= 0
+          ? html`
+              <ha-select
+                class="todoList"
+                label=${this.hass.localize(
+                  "ui.panel.lovelace.cards.todo.lists"
+                )}
+                .value=${this._entityId}
+                @selected=${this._selectTodoList}
+                @closed=${stopPropagation}
+                fixedMenuPosition
+                naturalMenuWidth
+              >
+                ${this._todoLists!.map(
+                  (item) => html`
+                    <ha-list-item .value=${item.entity_id} .item=${item}>
+                      ${item.name}
+                    </ha-list-item>
+                  `
+                )}
+              </ha-select>
+            `
+          : nothing}
         <div class="addRow">
           <ha-svg-icon
             class="addButton"
@@ -179,19 +231,20 @@ class HuiShoppingListCard
               </div>
               ${repeat(
                 this._checkedItems!,
-                (item) => item.id,
+                (item) => item.uid,
                 (item) => html`
                   <div class="editRow">
+                    ${item.summary}
                     <ha-checkbox
                       tabindex="0"
-                      .checked=${item.complete}
-                      .itemId=${item.id}
+                      .checked=${item.status === TodoItemStatus.Completed}
+                      .itemId=${item.uid}
                       @change=${this._completeItem}
                     ></ha-checkbox>
                     <ha-textfield
                       class="item"
-                      .value=${item.name}
-                      .itemId=${item.id}
+                      .value=${item.summary}
+                      .itemId=${item.uid}
                       @change=${this._saveEdit}
                     ></ha-textfield>
                   </div>
@@ -203,23 +256,23 @@ class HuiShoppingListCard
     `;
   }
 
-  private _renderItems(items: ShoppingListItem[]) {
+  private _renderItems(items: TodoItem[]) {
     return html`
       ${repeat(
         items,
-        (item) => item.id,
+        (item) => item.uid,
         (item) => html`
-          <div class="editRow" item-id=${item.id}>
+          <div class="editRow" item-id=${item.uid}>
             <ha-checkbox
               tabindex="0"
-              .checked=${item.complete}
-              .itemId=${item.id}
+              .checked=${item.status === TodoItemStatus.Completed}
+              .itemId=${item.uid}
               @change=${this._completeItem}
             ></ha-checkbox>
             <ha-textfield
               class="item"
-              .value=${item.name}
-              .itemId=${item.id}
+              .value=${item.summary}
+              .itemId=${item.uid}
               @change=${this._saveEdit}
             ></ha-textfield>
             ${this._reordering
@@ -241,22 +294,26 @@ class HuiShoppingListCard
   }
 
   private async _fetchData(): Promise<void> {
-    if (!this.hass) {
+    if (!this.hass || !this._entityId) {
       return;
     }
-    const checkedItems: ShoppingListItem[] = [];
-    const uncheckedItems: ShoppingListItem[] = [];
-    const items = await fetchItems(this.hass);
-    for (const key in items) {
-      if (items[key].complete) {
-        checkedItems.push(items[key]);
+    const checkedItems: TodoItem[] = [];
+    const uncheckedItems: TodoItem[] = [];
+    const items = await fetchItems(this.hass!, this._entityId!);
+    items.forEach((item) => {
+      if (item.status === TodoItemStatus.Completed) {
+        checkedItems.push(item);
       } else {
-        uncheckedItems.push(items[key]);
+        uncheckedItems.push(item);
       }
-    }
+    });
     this._checkedItems = checkedItems;
     this._uncheckedItems = uncheckedItems;
   }
+
+  // private _selectTodoList(ev): void {
+  //   //const todoList = this._todoLists[ev.detail.index];
+  // }
 
   private _completeItem(ev): void {
     updateItem(this.hass!, ev.target.itemId, {
@@ -418,6 +475,11 @@ class HuiShoppingListCard
 
       .clearall {
         cursor: pointer;
+      }
+
+      .todoList {
+        display: block;
+        padding: 8px;
       }
     `;
   }

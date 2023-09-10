@@ -8,7 +8,7 @@
     "logbook": "Logbook",
     "history": "History",
     "mailbox": "Mailbox",
-    "shopping_list": "Shopping list",
+    "todo": "To-do List",
     "developer_tools": "Developer tools",
     "media_browser": "Media",
     "profile": "Profile"
@@ -4421,6 +4421,7 @@
             "never_triggered": "Never triggered"
           },
           "shopping-list": {
+            "lists": "To-do Lists",
             "checked_items": "Checked items",
             "clear_items": "Clear checked items",
             "add_item": "Add item",

@@ -1,10 +1,11 @@
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, assign, object, optional, string } from "superstruct";
+import { array, assert, assign, object, optional, string } from "superstruct";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-textfield";
 import "../../../../components/ha-theme-picker";
+import "../../../../components/entity/ha-entities-picker";
 import { HomeAssistant } from "../../../../types";
 import { ShoppingListCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
@@ -16,6 +17,7 @@ const cardConfigStruct = assign(
   object({
     title: optional(string()),
     theme: optional(string()),
+    entities: optional(array(string())),
   })
 );
 
@@ -67,6 +69,13 @@ export class HuiShoppingListEditor
           .configValue=${"title"}
           @input=${this._valueChanged}
         ></ha-textfield>
+        <ha-entities-picker
+          .hass=${this.hass!}
+          .value=${this._config.entities}
+          .includeDomains=${["todo"]}
+          @value-changed=${this._entitiesChanged}
+        >
+        </ha-entities-picker>
         <ha-theme-picker
           .hass=${this.hass}
           .value=${this._theme}
@@ -103,6 +112,11 @@ export class HuiShoppingListEditor
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  private _entitiesChanged(ev): void {
+    const config = { ...this._config!, entities: ev.detail.value };
+    fireEvent(this, "config-changed", { config });
   }
 
   static get styles(): CSSResultGroup {

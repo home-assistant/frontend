@@ -55,7 +55,7 @@ class PanelShoppingList extends LitElement {
           .hass=${this.hass}
           .narrow=${this.narrow}
         ></ha-menu-button>
-        <div slot="title">${this.hass.localize("panel.shopping_list")}</div>
+        <div slot="title">${this.hass.localize("panel.todo")}</div>
         ${this._conversation(this.hass.config.components)
           ? html`
               <ha-icon-button
