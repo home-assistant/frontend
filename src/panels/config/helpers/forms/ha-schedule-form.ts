@@ -340,7 +340,7 @@ class HaScheduleForm extends LitElement {
     });
 
     if (!isSameDay(start, end)) {
-      this[`_${day}`] = this[`_${day}`].concat();
+      this.requestUpdate(`_${day}`);
       info.revert();
     }
   }
@@ -375,7 +375,7 @@ class HaScheduleForm extends LitElement {
     });
 
     if (!isSameDay(start, end)) {
-      this[`_${day}`] = this[`_${day}`].concat();
+      this.requestUpdate(`_${day}`);
       info.revert();
     }
   }
