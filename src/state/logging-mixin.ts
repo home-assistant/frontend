@@ -40,37 +40,45 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
           ev.stopPropagation();
           return;
         }
+        let message;
         try {
           const { createLogMessage } = await import("../resources/log-message");
+          message = await createLogMessage(
+            ev.error,
+            "Uncaught error",
+            ev.message,
+            `@${ev.filename}:${ev.lineno}:${ev.colno}`
+          );
           await this._writeLog({
             // The error object from browsers includes the message and a stack trace,
             // so use the data in the error event just as fallback
-            message: await createLogMessage(
-              ev.error,
-              "Uncaught error",
-              ev.message,
-              `@${ev.filename}:${ev.lineno}:${ev.colno}`
-            ),
+            message,
           });
         } catch (e) {
-          // ignore errors during logging so we don't get into a loop
+          // eslint-disable-next-line no-console
+          console.error("Error during logging error:", message, e);
+          // catch errors during logging so we don't get into a loop
         }
       });
       window.addEventListener("unhandledrejection", async (ev) => {
         if (!this.hass?.connected) {
           return;
         }
+        let message;
         try {
           const { createLogMessage } = await import("../resources/log-message");
+          message = await createLogMessage(
+            ev.reason,
+            "Unhandled promise rejection"
+          );
           await this._writeLog({
-            message: await createLogMessage(
-              ev.reason,
-              "Unhandled promise rejection"
-            ),
+            message,
             level: "debug",
           });
         } catch (e) {
-          // ignore errors during logging so we don't get into a loop
+          // eslint-disable-next-line no-console
+          console.error("Error during logging error:", message, e);
+          // catch errors during logging so we don't get into a loop
         }
       });
     }
