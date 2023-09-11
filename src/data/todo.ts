@@ -2,7 +2,6 @@ import { HomeAssistant } from "../types";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isUnavailableState } from "./entity";
-import { string } from "superstruct";
 
 export enum TodoItemStatus {
   NeedsAction = "NEEDS-ACTION",
