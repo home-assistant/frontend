@@ -64,14 +64,16 @@ class HuiCoverTiltPositionTileFeature
 
     const value = Math.max(Math.round(percentage), 0);
 
-    const forcedState = this.stateObj.state === "closed" ? "open" : undefined;
+    const openColor = stateColorCss(this.stateObj, "open");
 
     const color = this.color
       ? computeCssColor(this.color)
-      : stateColorCss(this.stateObj, forcedState);
+      : stateColorCss(this.stateObj);
 
     const style = {
       "--color": color,
+      // Use open color for inactive state to avoid grey slider that looks disabled
+      "--state-cover-inactive-color": openColor,
     };
 
     return html`
