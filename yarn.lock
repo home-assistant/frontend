@@ -7152,10 +7152,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:3.32.1":
-  version: 3.32.1
-  resolution: "core-js@npm:3.32.1"
-  checksum: e4af91d9c6be7b59235feb3f273d16705126ce09a0b4a787144d131d874f0cd10be3c24fc52e5eea7d7cb03ceabe4be7b255abcd9474b5eb1ff365d2c5611f9a
+"core-js@npm:3.32.2":
+  version: 3.32.2
+  resolution: "core-js@npm:3.32.2"
+  checksum: d6fac7e8eb054eefc211c76cd0a0ff07447a917122757d085f469f046ec888d122409c7db1a9601c3eb5fa767608ed380bcd219eace02bdf973da155680edeec
   languageName: node
   linkType: hard
 
@@ -9796,7 +9796,7 @@ __metadata:
     chai: 4.3.8
     chart.js: 4.3.3
     comlink: 4.4.1
-    core-js: 3.32.1
+    core-js: 3.32.2
     cropperjs: 1.6.0
     date-fns: 2.30.0
     date-fns-tz: 2.0.0
@@ -9841,7 +9841,7 @@ __metadata:
     lit: 2.8.0
     lit-analyzer: 2.0.0-pre.3
     lodash.template: 4.5.0
-    luxon: 3.4.2
+    luxon: 3.4.3
     magic-string: 0.30.3
     map-stream: 0.0.7
     marked: 7.0.5
@@ -9870,7 +9870,7 @@ __metadata:
     stacktrace-js: 2.0.2
     superstruct: 1.0.3
     systemjs: 6.14.2
-    tar: 6.1.15
+    tar: 6.2.0
     terser-webpack-plugin: 5.3.9
     tinykeys: 2.1.0
     ts-lit-plugin: 2.0.0-pre.1
@@ -11769,10 +11769,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:3.4.2":
-  version: 3.4.2
-  resolution: "luxon@npm:3.4.2"
-  checksum: efefdfaea90f4c8e502db8eb255385e6dac6733b6a9e1372eaf1a866cc1118363e235a3f6df505b837abc8bbcdfd8f0718a8de387b80cef9ee624d8791ca0844
+"luxon@npm:3.4.3":
+  version: 3.4.3
+  resolution: "luxon@npm:3.4.3"
+  checksum: 3eade81506224d038ed24035a0cd0dd4887848d7eba9361dce9ad8ef81380596a68153240be3988721f9690c624fb449fcf8fd8c3fc0681a6a8496faf48e92a3
   languageName: node
   linkType: hard
 
@@ -15193,9 +15193,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar@npm:6.1.15, tar@npm:^6.1.11, tar@npm:^6.1.2":
-  version: 6.1.15
-  resolution: "tar@npm:6.1.15"
+"tar@npm:6.2.0, tar@npm:^6.1.11, tar@npm:^6.1.2":
+  version: 6.2.0
+  resolution: "tar@npm:6.2.0"
   dependencies:
     chownr: ^2.0.0
     fs-minipass: ^2.0.0
@@ -15203,7 +15203,7 @@ __metadata:
     minizlib: ^2.1.1
     mkdirp: ^1.0.3
     yallist: ^4.0.0
-  checksum: f23832fceeba7578bf31907aac744ae21e74a66f4a17a9e94507acf460e48f6db598c7023882db33bab75b80e027c21f276d405e4a0322d58f51c7088d428268
+  checksum: db4d9fe74a2082c3a5016630092c54c8375ff3b280186938cfd104f2e089c4fd9bad58688ef6be9cf186a889671bf355c7cda38f09bbf60604b281715ca57f5c
   languageName: node
   linkType: hard
 
