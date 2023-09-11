@@ -24,6 +24,7 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 
 const ERROR_SENTINEL = {};
 
@@ -52,9 +53,9 @@ class HaPanelDevState extends LitElement {
   @state() private _showAttributes =
     localStorage.getItem("devToolsShowAttributes") || true;
 
-  @property({ reflect: true }) public narrow: boolean = true;
+  @property({ reflect: true }) public narrow: boolean = false;
 
-  @property({ reflect: true }) public rtl = false;
+  @property({ reflect: true }) public rtl: boolean = false;
 
   protected render() {
     const entities = this._computeEntities();
@@ -81,7 +82,7 @@ class HaPanelDevState extends LitElement {
             "ui.panel.developer-tools.tabs.states.description2"
           )}
         </p>
-        <div class="state-wrapper flex layout horizontal">
+        <div class="state-wrapper flex-horizontal">
           <div class="inputs">
             <ha-entity-picker
               autofocus
@@ -285,9 +286,19 @@ class HaPanelDevState extends LitElement {
     `;
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.rtl = computeRTL(this.hass);
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.locale !== this.hass.locale) {
+      toggleAttribute(this, "rtl", computeRTL(this.hass));
+    }
+    if (
+      (changedProps.has("narrow") &&
+        changedProps.get("narrow") !== undefined) ||
+      changedProps.get("narrow") != null
+    ) {
+      toggleAttribute(this, "narrow", changedProps.get("narrow"));
+    }
   }
 
   private _copyEntity(ev) {
@@ -667,6 +678,11 @@ class HaPanelDevState extends LitElement {
 
         :host([narrow]) .info {
           padding: 0;
+        }
+
+        .flex-horizontal {
+          display: flex;
+          flex-direction: row;
         }
       `,
     ];
