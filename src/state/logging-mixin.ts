@@ -40,30 +40,46 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
           ev.stopPropagation();
           return;
         }
-        const { createLogMessage } = await import("../resources/log-message");
-        this._writeLog({
-          // The error object from browsers includes the message and a stack trace,
-          // so use the data in the error event just as fallback
-          message: await createLogMessage(
+        let message;
+        try {
+          const { createLogMessage } = await import("../resources/log-message");
+          message = await createLogMessage(
             ev.error,
             "Uncaught error",
             ev.message,
             `@${ev.filename}:${ev.lineno}:${ev.colno}`
-          ),
-        });
+          );
+          await this._writeLog({
+            // The error object from browsers includes the message and a stack trace,
+            // so use the data in the error event just as fallback
+            message,
+          });
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.error("Error during logging error:", message, e);
+          // catch errors during logging so we don't get into a loop
+        }
       });
       window.addEventListener("unhandledrejection", async (ev) => {
         if (!this.hass?.connected) {
           return;
         }
-        const { createLogMessage } = await import("../resources/log-message");
-        this._writeLog({
-          message: await createLogMessage(
+        let message;
+        try {
+          const { createLogMessage } = await import("../resources/log-message");
+          message = await createLogMessage(
             ev.reason,
             "Unhandled promise rejection"
-          ),
-          level: "debug",
-        });
+          );
+          await this._writeLog({
+            message,
+            level: "debug",
+          });
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.error("Error during logging error:", message, e);
+          // catch errors during logging so we don't get into a loop
+        }
       });
     }
 
@@ -75,7 +91,7 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
     }
 
     private _writeLog(log: WriteLogParams) {
-      this.hass?.callService("system_log", "write", {
+      return this.hass?.callService("system_log", "write", {
         logger: `frontend.${
           __DEV__ ? "js_dev" : "js"
         }.${__BUILD__}.${__VERSION__.replace(".", "")}`,
