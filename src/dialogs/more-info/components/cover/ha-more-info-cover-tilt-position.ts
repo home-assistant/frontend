@@ -72,9 +72,8 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const forcedState = this.stateObj.state === "closed" ? "open" : undefined;
-
-    const color = stateColorCss(this.stateObj, forcedState);
+    const openColor = stateColorCss(this.stateObj, "open");
+    const color = stateColorCss(this.stateObj);
 
     return html`
       <ha-control-slider
@@ -91,6 +90,8 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
           "current_tilt_position"
         )}
         style=${styleMap({
+          // Use open color for inactive state to avoid grey slider that looks disabled
+          "--state-cover-inactive-color": openColor,
           "--control-slider-color": color,
           "--control-slider-background": color,
         })}
