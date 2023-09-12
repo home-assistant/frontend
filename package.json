@@ -208,6 +208,7 @@
     "fs-extra": "11.2.0",
     "glob": "11.0.0",
     "gulp": "5.0.0",
+    "gulp-brotli": "3.0.0",
     "gulp-json-transform": "0.5.0",
     "gulp-rename": "2.0.0",
     "gulp-zopfli-green": "6.0.2",
