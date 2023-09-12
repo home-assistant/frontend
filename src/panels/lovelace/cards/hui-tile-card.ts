@@ -331,8 +331,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             class="background"
             @action=${this._handleAction}
             .actionHandler=${actionHandler()}
-            role="button"
-            tabindex="0"
             @mousedown=${this.handleRippleActivate}
             @mouseup=${this.handleRippleDeactivate}
             @mouseenter=${this.handleRippleMouseEnter}
