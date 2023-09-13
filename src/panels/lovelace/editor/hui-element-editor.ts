@@ -16,8 +16,9 @@ import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../../components/ha-code-editor";
-import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceConfig } from "../../../data/lovelace/config/types";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
@@ -36,7 +37,8 @@ export interface ConfigChangedEvent {
     | LovelaceCardConfig
     | LovelaceRowConfig
     | LovelaceHeaderFooterConfig
-    | LovelaceTileFeatureConfig;
+    | LovelaceTileFeatureConfig
+    | LovelaceStrategyConfig;
   error?: string;
   guiModeAvailable?: boolean;
 }
