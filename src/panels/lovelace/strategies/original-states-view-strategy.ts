@@ -3,15 +3,18 @@ import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { getEnergyPreferences } from "../../../data/energy";
-import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { HomeAssistant } from "../../../types";
 import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
 
+export type OriginalStatesViewStrategyConfig = {
+  no_area_group?: boolean;
+};
+
 @customElement("original-states-view-strategy")
 export class OriginalStatesViewStrategy extends ReactiveElement {
   static async generate(
-    _config: LovelaceStrategyConfig,
+    config: OriginalStatesViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     if (hass.config.state === STATE_NOT_RUNNING) {
@@ -37,7 +40,7 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
     // User can override default view. If they didn't, we will add one
     // that contains all entities.
     const view = generateDefaultViewConfig(
-      hass.areas,
+      config.no_area_group ? {} : hass.areas,
       hass.devices,
       hass.entities,
       hass.states,

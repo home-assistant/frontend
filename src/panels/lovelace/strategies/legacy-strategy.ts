@@ -1,3 +1,4 @@
+import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import {
   LovelaceConfig,
   LovelaceRawConfig,
@@ -27,3 +28,16 @@ export interface LovelaceViewStrategy {
     hass: HomeAssistant;
   }): Promise<LovelaceViewConfig>;
 }
+
+export const cleanLegacyStrategyConfig = (config: LovelaceStrategyConfig) => {
+  if (!(Object.keys(config).length === 2 && "options" in config)) {
+    return config;
+  }
+  const cleanedConfig = {
+    ...config,
+    ...config.options,
+  };
+
+  delete cleanedConfig.options;
+  return cleanedConfig;
+};
