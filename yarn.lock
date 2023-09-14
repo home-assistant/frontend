@@ -2132,12 +2132,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lrnwebcomponents/simple-tooltip@npm:7.0.16":
-  version: 7.0.16
-  resolution: "@lrnwebcomponents/simple-tooltip@npm:7.0.16"
+"@lrnwebcomponents/simple-tooltip@npm:7.0.18":
+  version: 7.0.18
+  resolution: "@lrnwebcomponents/simple-tooltip@npm:7.0.18"
   dependencies:
-    lit: ^2.7.6
-  checksum: 0cb42c19c9f41945b4f9b28ee9e1a90b0ebc25a3fb84d5acd791af2de7243eb80eab830a9e2c6059381cdca27d05ce02e0c2ebb6c1b777fb2f657075cddc0999
+    lit: ^2.8.0
+  checksum: 6b35d7c517b9eeaaad0e4f6941d46e480bb4660d0326161a2dc6c57513a5ddc88a87b903986553844601f566dab485d9fc98a16045300b5848b4960c3a352fc4
   languageName: node
   linkType: hard
 
@@ -9712,7 +9712,7 @@ __metadata:
     "@lit-labs/motion": 1.0.4
     "@lit-labs/virtualizer": 2.0.7
     "@lokalise/node-api": 11.0.1
-    "@lrnwebcomponents/simple-tooltip": 7.0.16
+    "@lrnwebcomponents/simple-tooltip": 7.0.18
     "@material/chips": =14.0.0-canary.53b3cad2f.0
     "@material/data-table": =14.0.0-canary.53b3cad2f.0
     "@material/mwc-button": 0.27.0
@@ -11526,7 +11526,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:2.8.0, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.7.0, lit@npm:^2.7.4 || ^3.0.0, lit@npm:^2.7.6, lit@npm:^2.8.0":
+"lit@npm:2.8.0, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.7.0, lit@npm:^2.7.4 || ^3.0.0, lit@npm:^2.8.0":
   version: 2.8.0
   resolution: "lit@npm:2.8.0"
   dependencies:
