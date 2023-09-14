@@ -3,17 +3,18 @@ import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { getEnergyPreferences } from "../../../data/energy";
-import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
-import { LovelaceStrategyInfo } from "./types";
 import { LovelaceViewConfig } from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
+import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
+import { LovelaceStrategyConfig, LovelaceStrategyParams } from "./types";
 
 @customElement("original-states-view-strategy")
 export class OriginalStatesViewStrategy extends ReactiveElement {
   static async generate(
-    info: LovelaceStrategyInfo<LovelaceViewConfig>
+    _config: LovelaceStrategyConfig,
+    hass: HomeAssistant,
+    _params?: LovelaceStrategyParams
   ): Promise<LovelaceViewConfig> {
-    const hass = info.hass;
-
     if (hass.config.state === STATE_NOT_RUNNING) {
       return {
         cards: [{ type: "starting" }],

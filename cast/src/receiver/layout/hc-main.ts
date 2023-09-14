@@ -32,6 +32,8 @@ import { HassElement } from "../../../../src/state/hass-element";
 import { castContext } from "../cast_context";
 import "./hc-launch-screen";
 
+const DEFAULT_STRATEGY = "original-states";
+
 let resourcesLoaded = false;
 @customElement("hc-main")
 export class HcMain extends HassElement {
@@ -318,16 +320,13 @@ export class HcMain extends HassElement {
       "../../../../src/panels/lovelace/strategies/get-strategy"
     );
     this._handleNewLovelaceConfig(
-      await generateLovelaceDashboardStrategy({
-        hass: this.hass!,
-        narrow: false,
-        config: {
-          strategy: {
-            type: "original-states",
-          },
-          views: [],
+      await generateLovelaceDashboardStrategy(
+        {
+          type: DEFAULT_STRATEGY,
         },
-      })
+        this.hass!,
+        { narrow: false }
+      )
     );
   }
 

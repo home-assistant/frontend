@@ -3,14 +3,21 @@ import { HomeAssistant } from "../../../types";
 
 export type LovelaceStrategyConfigType = "dashboard" | "view";
 
-export type LovelaceStrategyInfo<T = any> = {
-  config: T;
-  hass: HomeAssistant;
-  narrow: boolean | undefined;
+export type LovelaceStrategyConfig<T = Record<string, any>> = {
+  type: string;
+  options?: T;
+};
+
+export type LovelaceStrategyParams = {
+  narrow?: boolean;
 };
 
 export type LovelaceStrategy<T = any> = {
-  generate(info: LovelaceStrategyInfo<T>): Promise<T>;
+  generate(
+    config: LovelaceStrategyConfig,
+    hass: HomeAssistant,
+    params?: LovelaceStrategyParams
+  ): Promise<T>;
 };
 
 export interface LovelaceDashboardStrategy
