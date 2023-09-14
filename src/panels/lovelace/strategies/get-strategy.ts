@@ -1,5 +1,6 @@
 import { LovelaceConfig, LovelaceViewConfig } from "../../../data/lovelace";
 import { AsyncReturnType, HomeAssistant } from "../../../types";
+import { isLegacyStrategy } from "./legacy-strategy";
 import {
   LovelaceDashboardStrategy,
   LovelaceStrategy,
@@ -45,12 +46,14 @@ const getLovelaceStrategy = async <T extends LovelaceStrategyConfigType>(
     throw new Error("Unknown strategy");
   }
 
+  const legacyTag = `ll-strategy-${strategyType.slice(CUSTOM_PREFIX.length)}`;
   const tag = `ll-strategy-${configType}-${strategyType.slice(
     CUSTOM_PREFIX.length
   )}`;
 
   if (
     (await Promise.race([
+      customElements.whenDefined(legacyTag),
       customElements.whenDefined(tag),
       new Promise((resolve) => {
         setTimeout(() => resolve(true), MAX_WAIT_STRATEGY_LOAD);
@@ -62,7 +65,8 @@ const getLovelaceStrategy = async <T extends LovelaceStrategyConfigType>(
     );
   }
 
-  return customElements.get(tag) as unknown as Strategies[T];
+  return (customElements.get(tag) ??
+    customElements.get(legacyTag)) as unknown as Strategies[T];
 };
 
 const generateStrategy = async <T extends LovelaceStrategyConfigType>(
@@ -80,7 +84,26 @@ const generateStrategy = async <T extends LovelaceStrategyConfigType>(
 
   try {
     const strategy = await getLovelaceStrategy<T>(configType, strategyType);
-    // eslint-disable-next-line @typescript-eslint/return-await
+
+    // Backward compatibility for custom strategies for loading old strategies format
+    if (isLegacyStrategy(strategy)) {
+      if (configType === "dashboard" && "generateDashboard" in strategy) {
+        return (await strategy.generateDashboard({
+          config: { strategy: strategyConfig, views: [] },
+          hass,
+          narrow: params.narrow,
+        })) as StrategyConfig<T>;
+      }
+      if (configType === "view" && "generateView" in strategy) {
+        return (await strategy.generateView({
+          config: { views: [] },
+          view: { strategy: strategyConfig },
+          hass,
+          narrow: params.narrow,
+        })) as StrategyConfig<T>;
+      }
+    }
+
     return await strategy.generate(strategyConfig, hass, params);
   } catch (err: any) {
     if (err.message !== "timeout") {
