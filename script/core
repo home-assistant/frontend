@@ -12,28 +12,22 @@ if [ -z "${DEVCONTAINER}" ]; then
 fi
 
 # Default to installing (or upgrading to) dev branch
-archiveURL="https://github.com/home-assistant/core/archive"
-installURL="${archiveURL}/refs/heads/dev.tar.gz"
+coreURL="https://github.com/home-assistant/core.git"
+ref="dev"
 
-while getopts "b:c:t:sh" opt; do
+while getopts "hr:s" opt; do
   case $opt in
-    b) # Branch
-      installURL="${archiveURL}/refs/heads/${OPTARG}.tar.gz"
-      ;;
-    c) # Commit SHA
-      installURL="${archiveURL}/${OPTARG}.tar.gz"
-      ;;
-    t) # Tag
-      installURL="${archiveURL}/refs/tags/${OPTARG}.tar.gz"
-      ;;
-    s) # Skip (use current install)
-      installURL=""
-      ;;
     h) # Help
-      echo "Usage: core [-b <branch>|-c <commit>|-t <tag>|-s|-h]"
-      echo -n "Install and run core at the given branch, tag, or commit. The dev branch is used if no option is specified."
+      echo "Usage: $0 [-h|-r <ref>|-s]"
+      echo -n "Install and run core at the given ref, i.e. branch, tag, or commit. The dev branch is used if no option is specified."
       echo "The -s flag skips the install/upgrade, using whatever version is currently installed."
       exit 0
+      ;;
+    r) # Git ref
+      ref="${OPTARG}"
+      ;;
+    s) # Skip (use current install)
+      ref=""
       ;;
     *)
       echo "Try $0 -h for help" >&2
@@ -42,9 +36,10 @@ while getopts "b:c:t:sh" opt; do
   esac
 done
 
-if [ -n "$installURL" ]; then
-  echo "Installing Home Asstant core from dev."
-  python3 -m pip install --upgrade colorlog "$installURL"
+if [ -n "$ref" ]; then
+  echo "Installing Home Assistant core at ${ref}..."
+  python3 -m pip install --user --upgrade --src "$HOME/src" \
+  --editable "git+${coreURL}@${ref}#egg=homeassistant"
 fi
 
 if [ ! -d "${WD}/config" ]; then
