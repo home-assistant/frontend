@@ -1,16 +1,17 @@
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
+import { ReactiveElement } from "lit";
+import { customElement } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { getEnergyPreferences } from "../../../data/energy";
 import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
-import {
-  LovelaceDashboardStrategy,
-  LovelaceViewStrategy,
-} from "./get-strategy";
+import { LovelaceStrategyInfo } from "./types";
+import { LovelaceViewConfig } from "../../../data/lovelace";
 
-export class OriginalStatesStrategy {
-  static async generateView(
-    info: Parameters<LovelaceViewStrategy["generateView"]>[0]
-  ): ReturnType<LovelaceViewStrategy["generateView"]> {
+@customElement("original-states-view-strategy")
+export class OriginalStatesViewStrategy extends ReactiveElement {
+  static async generate(
+    info: LovelaceStrategyInfo<LovelaceViewConfig>
+  ): Promise<LovelaceViewConfig> {
     const hass = info.hass;
 
     if (hass.config.state === STATE_NOT_RUNNING) {
@@ -62,18 +63,5 @@ export class OriginalStatesStrategy {
     }
 
     return view;
-  }
-
-  static async generateDashboard(
-    info: Parameters<LovelaceDashboardStrategy["generateDashboard"]>[0]
-  ): ReturnType<LovelaceDashboardStrategy["generateDashboard"]> {
-    return {
-      title: info.hass.config.location_name,
-      views: [
-        {
-          strategy: { type: "original-states" },
-        },
-      ],
-    };
   }
 }

@@ -318,13 +318,16 @@ export class HcMain extends HassElement {
       "../../../../src/panels/lovelace/strategies/get-strategy"
     );
     this._handleNewLovelaceConfig(
-      await generateLovelaceDashboardStrategy(
-        {
-          hass: this.hass!,
-          narrow: false,
+      await generateLovelaceDashboardStrategy({
+        hass: this.hass!,
+        narrow: false,
+        config: {
+          strategy: {
+            type: "original-states",
+          },
+          views: [],
         },
-        "original-states"
-      )
+      })
     );
   }
 

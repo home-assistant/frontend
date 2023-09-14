@@ -163,13 +163,16 @@ export class LovelacePanel extends LitElement {
   }
 
   private async _regenerateConfig() {
-    const conf = await generateLovelaceDashboardStrategy(
-      {
-        hass: this.hass!,
-        narrow: this.narrow,
+    const conf = await generateLovelaceDashboardStrategy({
+      hass: this.hass!,
+      narrow: this.narrow,
+      config: {
+        strategy: {
+          type: DEFAULT_STRATEGY,
+        },
+        views: [],
       },
-      DEFAULT_STRATEGY
-    );
+    });
     this._setLovelaceConfig(conf, undefined, "generated");
     this._panelState = "loaded";
   }
@@ -272,13 +275,16 @@ export class LovelacePanel extends LitElement {
         this._errorMsg = err.message;
         return;
       }
-      conf = await generateLovelaceDashboardStrategy(
-        {
-          hass: this.hass!,
-          narrow: this.narrow,
+      conf = await generateLovelaceDashboardStrategy({
+        hass: this.hass!,
+        narrow: this.narrow,
+        config: {
+          strategy: {
+            type: DEFAULT_STRATEGY,
+          },
+          views: [],
         },
-        DEFAULT_STRATEGY
-      );
+      });
       confMode = "generated";
     } finally {
       // Ignore updates for another 2 seconds.
@@ -400,13 +406,16 @@ export class LovelacePanel extends LitElement {
         } = this.lovelace!;
         try {
           // Optimistic update
-          const generatedConf = await generateLovelaceDashboardStrategy(
-            {
-              hass: this.hass!,
-              narrow: this.narrow,
+          const generatedConf = await generateLovelaceDashboardStrategy({
+            hass: this.hass!,
+            narrow: this.narrow,
+            config: {
+              strategy: {
+                type: DEFAULT_STRATEGY,
+              },
+              views: [],
             },
-            DEFAULT_STRATEGY
-          );
+          });
           this._updateLovelace({
             config: generatedConf,
             rawConfig: undefined,
