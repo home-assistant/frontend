@@ -42,6 +42,8 @@ const initRouting = () => {
       request.destination === "image",
     new StaleWhileRevalidate({
       cacheName: "brands",
+      // CORS must be forced to work for CSS images
+      fetchOptions: { mode: "cors", credentials: "omit" },
       plugins: [
         new ExpirationPlugin({
           maxAgeSeconds: 60 * 60 * 24 * 30,
