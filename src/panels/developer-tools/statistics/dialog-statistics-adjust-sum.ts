@@ -132,20 +132,20 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
     if (!this._stats5min || !this._statsHour) {
       stats = html`<ha-circular-progress active></ha-circular-progress>`;
-    } else if (this._statsHour.length < 2 && this._stats5min.length < 2) {
+    } else if (this._statsHour.length < 1 && this._stats5min.length < 1) {
       stats = html`<p>No statistics found for this period.</p>`;
     } else {
       const data =
-        this._stats5min.length >= 2 ? this._stats5min : this._statsHour;
+        this._stats5min.length >= 1 ? this._stats5min : this._statsHour;
       const unit = getDisplayUnit(
         this.hass,
         this._params!.statistic.statistic_id,
         this._params!.statistic
       );
       const rows: TemplateResult[] = [];
-      for (let i = 1; i < data.length; i++) {
+      for (let i = data.length < 6 ? 0 : 1; i < data.length; i++) {
         const stat = data[i];
-        const growth = Math.round((stat.sum! - data[i - 1].sum!) * 100) / 100;
+        const growth = Math.round(stat.change! * 100) / 100;
         rows.push(html`
           <mwc-list-item
             twoline
