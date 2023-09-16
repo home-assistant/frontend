@@ -37,6 +37,8 @@ export interface HaMapPaths {
 export interface HaMapEntity {
   entity_id: string;
   color: string;
+  label_mode?: "name" | "state";
+  name?: string;
 }
 
 @customElement("ha-map")
@@ -353,7 +355,8 @@ export class HaMap extends ReactiveElement {
       if (!stateObj) {
         continue;
       }
-      const title = computeStateName(stateObj);
+      const customTitle = typeof entity !== "string" ? entity.name : undefined;
+      const title = customTitle ?? computeStateName(stateObj);
       const {
         latitude,
         longitude,
@@ -413,11 +416,15 @@ export class HaMap extends ReactiveElement {
 
       // DRAW ENTITY
       // create icon
-      const entityName = title
-        .split(" ")
-        .map((part) => part[0])
-        .join("")
-        .substr(0, 3);
+      const entityName =
+        typeof entity !== "string" && entity.label_mode === "state"
+          ? this.hass.formatEntityState(stateObj)
+          : customTitle ??
+            title
+              .split(" ")
+              .map((part) => part[0])
+              .join("")
+              .substr(0, 3);
 
       // create marker with the icon
       this._mapItems.push(
@@ -440,7 +447,7 @@ export class HaMap extends ReactiveElement {
             iconSize: [48, 48],
             className: "",
           }),
-          title: computeStateName(stateObj),
+          title: title,
         })
       );
 
