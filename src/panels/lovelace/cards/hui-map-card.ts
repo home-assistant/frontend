@@ -50,6 +50,7 @@ export const DEFAULT_ZOOM = 14;
 
 interface MapEntityConfig extends EntityConfig {
   label_mode?: "state" | "name";
+  focus?: boolean;
 }
 
 @customElement("hui-map-card")
@@ -337,6 +338,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           entity_id: entityConf.entity,
           color: this._getColor(entityConf.entity),
           label_mode: entityConf.label_mode,
+          focus: entityConf.focus,
           name: entityConf.name,
         })),
         ...geoEntities.map((entity) => ({

@@ -39,6 +39,7 @@ export interface HaMapEntity {
   color: string;
   label_mode?: "name" | "state";
   name?: string;
+  focus?: boolean;
 }
 
 @customElement("ha-map")
@@ -72,6 +73,8 @@ export class HaMap extends ReactiveElement {
   private _resizeObserver?: ResizeObserver;
 
   private _mapItems: Array<Marker | Circle> = [];
+
+  private _mapFocusItems: Array<Marker | Circle> = [];
 
   private _mapZones: Array<Marker | Circle> = [];
 
@@ -170,7 +173,7 @@ export class HaMap extends ReactiveElement {
       return;
     }
 
-    if (!this._mapItems.length && !this.layers?.length) {
+    if (!this._mapFocusItems.length && !this.layers?.length) {
       this.leafletMap.setView(
         new this.Leaflet.LatLng(
           this.hass.config.latitude,
@@ -182,7 +185,9 @@ export class HaMap extends ReactiveElement {
     }
 
     let bounds = this.Leaflet.latLngBounds(
-      this._mapItems ? this._mapItems.map((item) => item.getLatLng()) : []
+      this._mapFocusItems
+        ? this._mapFocusItems.map((item) => item.getLatLng())
+        : []
     );
 
     if (this.fitZones) {
@@ -326,6 +331,7 @@ export class HaMap extends ReactiveElement {
     if (this._mapItems.length) {
       this._mapItems.forEach((marker) => marker.remove());
       this._mapItems = [];
+      this._mapFocusItems = [];
     }
 
     if (this._mapZones.length) {
@@ -427,10 +433,9 @@ export class HaMap extends ReactiveElement {
               .substr(0, 3);
 
       // create marker with the icon
-      this._mapItems.push(
-        Leaflet.marker([latitude, longitude], {
-          icon: Leaflet.divIcon({
-            html: `
+      const marker = Leaflet.marker([latitude, longitude], {
+        icon: Leaflet.divIcon({
+          html: `
               <ha-entity-marker
                 entity-id="${getEntityId(entity)}"
                 entity-name="${entityName}"
@@ -444,12 +449,15 @@ export class HaMap extends ReactiveElement {
                 }
               ></ha-entity-marker>
             `,
-            iconSize: [48, 48],
-            className: "",
-          }),
-          title: title,
-        })
-      );
+          iconSize: [48, 48],
+          className: "",
+        }),
+        title: title,
+      });
+      this._mapItems.push(marker);
+      if (typeof entity !== "string" && entity.focus !== false) {
+        this._mapFocusItems.push(marker);
+      }
 
       // create circle around if entity has accuracy
       if (gpsAccuracy) {
