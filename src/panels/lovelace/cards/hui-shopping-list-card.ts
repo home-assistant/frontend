@@ -107,7 +107,6 @@ class HuiShoppingListCard
           this._config!.entities.length === 0 ||
           todoList.entity_id in this._config!.entities
       );
-      this._todoLists.push({ entity_id: "fake", name: "Fake" });
       if (!this._entityId && this._todoLists.length > 0) {
         this._entityId = this._todoLists[0].entity_id;
       }
@@ -297,7 +296,7 @@ class HuiShoppingListCard
     const checkedItems: TodoItem[] = [];
     const uncheckedItems: TodoItem[] = [];
     const items = await fetchItems(this.hass!, this._entityId!);
-    const records: Record<string, TodoItemList> = {};
+    const records: Record<string, TodoItem> = {};
     items.forEach((item) => {
       records[item.uid] = item;
       if (item.status === TodoItemStatus.Completed) {
@@ -324,7 +323,7 @@ class HuiShoppingListCard
       status: ev.target.checked
         ? TodoItemStatus.Completed
         : TodoItemStatus.NeedsAction,
-    }).catch(() => this._fetchData());
+    }).finally(() => this._fetchData());
   }
 
   private _saveEdit(ev): void {
@@ -334,9 +333,9 @@ class HuiShoppingListCard
       updateItem(this.hass!, this._entityId!, {
         ...item,
         summary: ev.target.value,
-      }).catch(() => this._fetchData());
+      }).finally(() => this._fetchData());
     } else {
-      deleteItems(this.hass!, this._entityId!, [ev.target.itemId]).catch(() =>
+      deleteItems(this.hass!, this._entityId!, [ev.target.itemId]).finally(() =>
         this._fetchData()
       );
     }
@@ -350,7 +349,7 @@ class HuiShoppingListCard
       this._checkedItems.forEach((item: TodoItem) => {
         uids.push(item.uid);
       });
-      deleteItems(this.hass, this._entityId!, uids).catch(() =>
+      deleteItems(this.hass, this._entityId!, uids).finally(() =>
         this._fetchData()
       );
     }
@@ -362,9 +361,8 @@ class HuiShoppingListCard
 
   private _addItem(ev): void {
     const newItem = this._newItem;
-
     if (newItem.value!.length > 0) {
-      createItem(this.hass!, this._entityId!, newItem.value!).catch(() =>
+      createItem(this.hass!, this._entityId!, newItem.value!).finally(() =>
         this._fetchData()
       );
     }
