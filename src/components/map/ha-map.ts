@@ -455,7 +455,7 @@ export class HaMap extends ReactiveElement {
         title: title,
       });
       this._mapItems.push(marker);
-      if (typeof entity !== "string" && entity.focus !== false) {
+      if (typeof entity === "string" || entity.focus !== false) {
         this._mapFocusItems.push(marker);
       }
 
