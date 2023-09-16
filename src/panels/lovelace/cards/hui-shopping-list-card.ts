@@ -149,7 +149,7 @@ class HuiShoppingListCard
               <ha-select
                 class="todoList"
                 label=${this.hass.localize(
-                  "ui.panel.lovelace.cards.todo.lists"
+                  "ui.panel.lovelace.cards.shopping-list.lists"
                 )}
                 .value=${this._entityId}
                 @selected=${this._selectTodoList}
@@ -298,7 +298,7 @@ class HuiShoppingListCard
     const items = await fetchItems(this.hass!, this._entityId!);
     const records: Record<string, TodoItem> = {};
     items.forEach((item) => {
-      records[item.uid] = item;
+      records[item.uid!] = item;
       if (item.status === TodoItemStatus.Completed) {
         checkedItems.push(item);
       } else {
@@ -346,8 +346,8 @@ class HuiShoppingListCard
   private _clearCompletedItems(): void {
     if (this.hass) {
       const uids: Array<string> = [];
-      this._checkedItems.forEach((item: TodoItem) => {
-        uids.push(item.uid);
+      this._checkedItems!.forEach((item: TodoItem) => {
+        uids.push(item.uid!);
       });
       deleteItems(this.hass, this._entityId!, uids).finally(() =>
         this._fetchData()
