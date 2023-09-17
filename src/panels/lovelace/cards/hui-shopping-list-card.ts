@@ -156,39 +156,42 @@ class HuiShoppingListCard
         })}
       >
         ${this._todoLists.length >= 0
-          ? html` <ha-button-menu
-              class="todoList"
-              label=${this.hass.localize(
-                "ui.panel.lovelace.cards.shopping-list.lists"
-              )}
-              .value=${this._entityId}
-              @selected=${this._selectTodoList}
-              activatable
-              fixed
-            >
-              <ha-button slot="trigger">
-                ${this._entityName}
-                <ha-svg-icon
-                  slot="trailingIcon"
-                  .path=${mdiChevronDown}
-                ></ha-svg-icon>
-              </ha-button>
-              ${this._todoLists?.map(
-                (item) =>
-                  html` <ha-list-item
-                    ?selected=${item.entity_id === this._entityId}
-                    .value=${item.entity_id}
-                    .item=${item}
-                    @click=${this._selectTodoList}
-                  >
-                    ${item.name}
-                  </ha-list-item>`
-              )}
-            </ha-button-menu>`
+          ? html`
+              <ha-button-menu
+                class="todoList"
+                label=${this.hass.localize(
+                  "ui.panel.lovelace.cards.shopping-list.lists"
+                )}
+                .value=${this._entityId}
+                @selected=${this._selectTodoList}
+                activatable
+                fixed
+              >
+                <ha-button slot="trigger">
+                  ${this._entityName}
+                  <ha-svg-icon
+                    slot="trailingIcon"
+                    .path=${mdiChevronDown}
+                  ></ha-svg-icon>
+                </ha-button>
+                ${this._todoLists?.map(
+                  (item) =>
+                    html` <ha-list-item
+                      ?selected=${item.entity_id === this._entityId}
+                      .value=${item.entity_id}
+                      .item=${item}
+                      @click=${this._selectTodoList}
+                    >
+                      ${item.name}
+                    </ha-list-item>`
+                )}
+              </ha-button-menu>
+            `
           : nothing}
         <div class="addRow">
           ${this.todoListSupportsFeature(TodoListEntityFeature.CREATE_TODO_ITEM)
-            ? html` <ha-svg-icon
+            ? html`
+                <ha-svg-icon
                   class="addButton"
                   .path=${mdiPlus}
                   .title=${this.hass!.localize(
@@ -203,18 +206,21 @@ class HuiShoppingListCard
                     "ui.panel.lovelace.cards.shopping-list.add_item"
                   )}
                   @keydown=${this._addKeyPress}
-                ></ha-textfield>`
+                ></ha-textfield>
+              `
             : nothing}
           ${this.todoListSupportsFeature(TodoListEntityFeature.MOVE_TODO_ITEM)
-            ? html` <ha-svg-icon
-                class="reorderButton"
-                .path=${mdiSort}
-                .title=${this.hass!.localize(
-                  "ui.panel.lovelace.cards.shopping-list.reorder_items"
-                )}
-                @click=${this._toggleReorder}
-              >
-              </ha-svg-icon>`
+            ? html`
+                <ha-svg-icon
+                  class="reorderButton"
+                  .path=${mdiSort}
+                  .title=${this.hass!.localize(
+                    "ui.panel.lovelace.cards.shopping-list.reorder_items"
+                  )}
+                  @click=${this._toggleReorder}
+                >
+                </ha-svg-icon>
+              `
             : nothing}
         </div>
         ${this._reordering
