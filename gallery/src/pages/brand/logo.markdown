@@ -8,7 +8,7 @@ As a community, we are proud of our logo. Follow these guidelines to ensure it a
 
 [Download Logo](https://github.com/home-assistant/assets/tree/master/logo)
 
-![Logo](/images/logo.png)
+![Logo](/images/brand/logo.png)
 
 Please note that this logo is not released under the CC license. All rights reserved.
 
@@ -35,7 +35,7 @@ The default variation is the static colored wordmark in horizontal layout and da
 
 ## Layout variations
 
-![Logo layout variants](/images/logo-layout-variants.png)
+![Logo layout variants](/images/brand/logo-layout-variants.png)
 
 The default layout is the wordmark in horizontal layout. It provides the clearest context to the brand identity of Home Assistant.
 
@@ -69,7 +69,7 @@ Unlike the previous version of our logo, no outlined variants are available. Use
 
 The logo needs some personal space. Its exclusion zone is equal to a quarter the height of the icon.
 
-![Space clearance for the wordmark](/images/logo-exclusion-zone.png)
+![Space clearance for the wordmark](/images/brand/logo-exclusion-zone.png)
 
 ## Animation
 
