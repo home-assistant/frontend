@@ -1,10 +1,10 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -12,7 +12,6 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
@@ -36,6 +35,7 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { GlanceCardConfig, GlanceConfigEntity } from "./types";
+import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
@@ -122,28 +122,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_config")) {
-      return true;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-
-    if (
-      !this._configEntities ||
-      !oldHass ||
-      oldHass.themes !== this.hass!.themes ||
-      oldHass.locale !== this.hass!.locale
-    ) {
-      return true;
-    }
-
-    for (const entity of this._configEntities) {
-      if (oldHass.states[entity.entity] !== this.hass!.states[entity.entity]) {
-        return true;
-      }
-    }
-
-    return false;
+    return hasConfigOrEntitiesChanged(this, changedProps);
   }
 
   protected render() {
@@ -344,13 +323,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                         capitalize
                       ></ha-relative-time>
                     `
-                  : computeStateDisplay(
-                      this.hass!.localize,
-                      stateObj,
-                      this.hass!.locale,
-                      this.hass!.config,
-                      this.hass!.entities
-                    )}
+                  : this.hass!.formatEntityState(stateObj)}
               </div>
             `
           : ""}

@@ -404,8 +404,6 @@ export interface RequestedGrant {
   clientSideAuth: boolean;
 }
 
-export const nodeStatus = ["unknown", "asleep", "awake", "dead", "alive"];
-
 export const fetchZwaveNetworkStatus = (
   hass: HomeAssistant,
   device_or_entry_id: {

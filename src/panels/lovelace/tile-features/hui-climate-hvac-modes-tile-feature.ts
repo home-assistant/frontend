@@ -121,10 +121,7 @@ class HuiClimateHvacModeTileFeature
           .value=${this._currentHvacMode}
           @value-changed=${this._valueChanged}
           hide-label
-          .ariaLabel=${this.hass.formatEntityAttributeName(
-            this.stateObj,
-            "hvac_mode"
-          )}
+          .ariaLabel=${this.hass.localize("ui.card.climate.mode")}
           style=${styleMap({
             "--control-select-color": color,
           })}

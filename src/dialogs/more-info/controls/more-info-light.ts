@@ -36,6 +36,7 @@ import {
   lightSupportsFavoriteColors,
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
+import "../components/ha-more-info-control-select-container";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 import "../components/ha-more-info-toggle";
@@ -286,39 +287,37 @@ class MoreInfoLight extends LitElement {
           : nothing}
       </div>
       <div>
-        <div class="secondary-controls">
-          <div class="secondary-controls-scroll">
-            ${supportsEffects && this.stateObj.attributes.effect_list
-              ? html`
-                  <ha-control-select-menu
-                    .label=${this.hass.formatEntityAttributeName(
-                      this.stateObj,
-                      "effect"
-                    )}
-                    .value=${this.stateObj.attributes.effect}
-                    .disabled=${this.stateObj.state === UNAVAILABLE}
-                    fixedMenuPosition
-                    naturalMenuWidth
-                    @selected=${this._handleEffect}
-                    @closed=${stopPropagation}
-                  >
-                    <ha-svg-icon slot="icon" .path=${mdiCreation}></ha-svg-icon>
-                    ${this.stateObj.attributes.effect_list?.map(
-                      (mode) => html`
-                        <ha-list-item .value=${mode}>
-                          ${this.hass.formatEntityAttributeValue(
-                            this.stateObj!,
-                            "effect",
-                            mode
-                          )}
-                        </ha-list-item>
-                      `
-                    )}
-                  </ha-control-select-menu>
-                `
-              : nothing}
-          </div>
-        </div>
+        <ha-more-info-control-select-container>
+          ${supportsEffects && this.stateObj.attributes.effect_list
+            ? html`
+                <ha-control-select-menu
+                  .label=${this.hass.formatEntityAttributeName(
+                    this.stateObj,
+                    "effect"
+                  )}
+                  .value=${this.stateObj.attributes.effect}
+                  .disabled=${this.stateObj.state === UNAVAILABLE}
+                  fixedMenuPosition
+                  naturalMenuWidth
+                  @selected=${this._handleEffect}
+                  @closed=${stopPropagation}
+                >
+                  <ha-svg-icon slot="icon" .path=${mdiCreation}></ha-svg-icon>
+                  ${this.stateObj.attributes.effect_list?.map(
+                    (mode) => html`
+                      <ha-list-item .value=${mode}>
+                        ${this.hass.formatEntityAttributeValue(
+                          this.stateObj!,
+                          "effect",
+                          mode
+                        )}
+                      </ha-list-item>
+                    `
+                  )}
+                </ha-control-select-menu>
+              `
+            : nothing}
+        </ha-more-info-control-select-container>
         <ha-attributes
           .hass=${this.hass}
           .stateObj=${this.stateObj}

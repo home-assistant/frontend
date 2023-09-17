@@ -1,10 +1,14 @@
 import fs from "fs/promises";
 import gulp from "gulp";
+import path from "path";
 import mapStream from "map-stream";
 import transform from "gulp-json-transform";
+import { LokaliseApi } from "@lokalise/node-api";
+import JSZip from "jszip";
 
-const inDirFrontend = "translations/frontend";
-const inDirBackend = "translations/backend";
+const inDir = "translations";
+const inDirFrontend = `${inDir}/frontend`;
+const inDirBackend = `${inDir}/backend`;
 const srcMeta = "src/translations/translationMetadata.json";
 const encoding = "utf8";
 
@@ -68,8 +72,9 @@ gulp.task("convert-backend-translations", function () {
 });
 
 gulp.task("check-translations-html", function () {
-  // We exclude backend translations because they are not compliant with the HTML rule for now
-  return gulp.src([`${inDirFrontend}/*.json`]).pipe(checkHtml());
+  return gulp
+    .src([`${inDirFrontend}/*.json`, `${inDirBackend}/*.json`])
+    .pipe(checkHtml());
 });
 
 gulp.task("check-all-files-exist", async function () {
@@ -89,7 +94,83 @@ gulp.task("check-all-files-exist", async function () {
   await Promise.allSettled(writings);
 });
 
+const lokaliseProjects = {
+  backend: "130246255a974bd3b5e8a1.51616605",
+  frontend: "3420425759f6d6d241f598.13594006",
+};
+
+gulp.task("fetch-lokalise", async function () {
+  let apiKey;
+  try {
+    apiKey =
+      process.env.LOKALISE_TOKEN ||
+      (await fs.readFile(".lokalise_token", { encoding }));
+  } catch {
+    throw new Error(
+      "An Administrator Lokalise API token is required to download the latest set of translations. Place your token in a new file `.lokalise_token` in the repo root directory."
+    );
+  }
+  const lokaliseApi = new LokaliseApi({ apiKey });
+
+  const mkdirPromise = Promise.all([
+    fs.mkdir(inDirFrontend, { recursive: true }),
+    fs.mkdir(inDirBackend, { recursive: true }),
+  ]);
+
+  await Promise.all(
+    Object.entries(lokaliseProjects).map(([project, projectId]) =>
+      lokaliseApi
+        .files()
+        .download(projectId, {
+          format: "json",
+          original_filenames: false,
+          replace_breaks: false,
+          json_unescaped_slashes: true,
+          export_empty_as: "skip",
+        })
+        .then((download) => fetch(download.bundle_url))
+        .then((response) => {
+          if (response.status === 200 || response.status === 0) {
+            return response.arrayBuffer();
+          }
+          throw new Error(response.statusText);
+        })
+        .then(JSZip.loadAsync)
+        .then(async (contents) => {
+          await mkdirPromise;
+          return Promise.all(
+            Object.keys(contents.files).map(async (filename) => {
+              const file = contents.file(filename);
+              if (!file) {
+                // no file, probably a directory
+                return Promise.resolve();
+              }
+              return file
+                .async("nodebuffer")
+                .then((content) =>
+                  fs.writeFile(
+                    path.join(
+                      inDir,
+                      project,
+                      filename.split("/").splice(-1)[0]
+                    ),
+                    content,
+                    { flag: "w", encoding }
+                  )
+                );
+            })
+          );
+        })
+    )
+  );
+});
+
 gulp.task(
-  "check-downloaded-translations",
-  gulp.series("check-translations-html", "check-all-files-exist")
+  "download-translations",
+  gulp.series(
+    "fetch-lokalise",
+    "convert-backend-translations",
+    "check-translations-html",
+    "check-all-files-exist"
+  )
 );

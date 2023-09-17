@@ -238,11 +238,13 @@ export interface ZoneCondition extends BaseCondition {
   zone: string;
 }
 
+type Weekday = "sun" | "mon" | "tue" | "wed" | "thu" | "fri" | "sat";
+
 export interface TimeCondition extends BaseCondition {
   condition: "time";
   after?: string;
   before?: string;
-  weekday?: string | string[];
+  weekday?: Weekday | Weekday[];
 }
 
 export interface TemplateCondition extends BaseCondition {
