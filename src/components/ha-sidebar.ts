@@ -16,6 +16,8 @@ import {
   mdiPlus,
   mdiTooltipAccount,
   mdiViewDashboard,
+  mdiChevronDown,
+  mdiChevronUp,
 } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
@@ -58,6 +60,15 @@ import "./ha-icon-button";
 import "./ha-menu-button";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
+
+interface NestedMenuData {
+  entries: Array<{
+    icon: string;
+    items: Array<{ icon: string; title: string; url_path: string }>;
+    menu_name: string;
+    require_admin: boolean;
+  }>;
+}
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
@@ -206,6 +217,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   @state() private _renderEmptySortable = false;
 
+  @property({ type: Array }) public expandablePanels: Array<any> = [];
+
   private _mouseLeaveTimeout?: number;
 
   private _tooltipHideTimeout?: number;
@@ -271,7 +284,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       changedProps.has("editMode") ||
       changedProps.has("_renderEmptySortable") ||
       changedProps.has("_hiddenPanels") ||
-      (changedProps.has("_panelOrder") && !this.editMode)
+      (changedProps.has("_panelOrder") && !this.editMode) ||
+      changedProps.has("expandablePanels")
     ) {
       return true;
     }
@@ -299,6 +313,22 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     subscribeNotifications(this.hass.connection, (notifications) => {
       this._notifications = notifications;
     });
+    this.hass
+      .callWS({ type: "multilevel_sidebar_menu/config" })
+      .then((nestedMenuData) => {
+        const { entries } = nestedMenuData as NestedMenuData;
+        this.expandablePanels = entries.map((entry) => ({
+          isExpanded: false,
+          label: entry.menu_name,
+          icon: entry.icon,
+          subItems: entry.items.map((submenuEntry) => ({
+            title: submenuEntry.title,
+            icon: submenuEntry.icon,
+            urlPath: submenuEntry.url_path,
+          })),
+        }));
+      })
+      .catch(() => {});
   }
 
   protected updated(changedProps) {
@@ -407,10 +437,92 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         ${this.editMode
           ? this._renderPanelsEdit(beforeSpacer)
           : this._renderPanels(beforeSpacer)}
+        ${this._renderCustomExpandablePanels()}
         ${this._renderSpacer()}
         ${this._renderPanels(afterSpacer)}
         ${this._renderExternalConfiguration()}
       </paper-listbox>
+    `;
+  }
+
+  private _renderCustomExpandablePanels() {
+    // This internal function is needed to comply no-template-arrow & no-template-bind
+    const toggleExpandableGroupEntry = (index: number) => () => {
+      this.expandablePanels[index].isExpanded =
+        !this.expandablePanels[index].isExpanded;
+      this.expandablePanels = [...this.expandablePanels];
+    };
+
+    return html`
+      ${this.expandablePanels.map(
+        (expandablePanel, idx) => html`
+          <div
+            class="expandable-group-container"
+            ?expanded=${this.expandablePanels[idx].isExpanded}
+            @click=${toggleExpandableGroupEntry(idx)}
+          >
+            <div class="expandable-group-title">
+              <a
+                role="option"
+                @mouseenter=${this._itemMouseEnter}
+                @mouseleave=${this._itemMouseLeave}
+              >
+                <paper-icon-item>
+                  <ha-icon
+                    slot="item-icon"
+                    .icon=${expandablePanel.icon}
+                  ></ha-icon>
+                  <span class="item-text expandable"
+                    >${expandablePanel.label}</span
+                  >
+                  <div class="item-text-separator"></div>
+                  ${this.alwaysExpand
+                    ? html`
+                        <span class="item-text-icon">
+                          <ha-svg-icon
+                            slot="item-icon"
+                            .path=${expandablePanel.isExpanded
+                              ? mdiChevronUp
+                              : mdiChevronDown}
+                          >
+                          </ha-svg-icon>
+                        </span>
+                      `
+                    : nothing}
+                </paper-icon-item>
+              </a>
+            </div>
+            <div
+              class="subitems-container ${expandablePanel.isExpanded
+                ? "is-opened"
+                : "is-closed"}"
+            >
+              <div class="subitem-entry">
+                ${expandablePanel.subItems.map(
+                  (subItem) => html`
+                    <a
+                      role="option"
+                      href=${`/${subItem.urlPath}`}
+                      data-panel=${subItem.urlPath}
+                      tabindex="-1"
+                      @mouseenter=${this._itemMouseEnter}
+                      @mouseleave=${this._itemMouseLeave}
+                    >
+                      <paper-icon-item>
+                        <ha-icon
+                          slot="item-icon"
+                          .icon=${subItem.icon}
+                        ></ha-icon>
+                        <span class="item-text">${subItem.title}</span>
+                      </paper-icon-item>
+                    </a>
+                  `
+                )}
+              </div>
+            </div>
+          </div>
+        `
+      )}
     `;
   }
 
@@ -1012,8 +1124,37 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           display: none;
           max-width: calc(100% - 56px);
         }
+        paper-icon-item .item-text.expandable {
+          display: block;
+          max-width: calc(100% - 100px);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        paper-icon-item .item-text-separator {
+          display: flex;
+          flex-grow: 1;
+        }
+        paper-icon-item .item-text-icon {
+          margin-right: 8px;
+        }
         :host([expanded]) paper-icon-item .item-text {
           display: block;
+        }
+
+        .expandable-group-container {
+          color: var(--sidebar-text-color);
+          cursor: pointer;
+          display: block;
+          font-weight: 500;
+          font-size: 14px;
+          text-decoration: none;
+        }
+        .expandable-group-title {
+          align-items: center;
+          display: flex;
+          flex-direction: row;
+          min-height: 40px;
         }
 
         .divider {
@@ -1127,6 +1268,21 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         :host([rtl]) .menu ha-icon-button {
           -webkit-transform: scaleX(-1);
           transform: scaleX(-1);
+        }
+
+        .subitems-container {
+          display: flex;
+          transition: all 0.2s ease-in-out;
+          overflow: hidden;
+          max-height: 0;
+        }
+        .subitems-container > .subitem {
+          display: flex;
+          flex-direction: column;
+          margin-left: 16px;
+        }
+        .subitems-container.is-opened {
+          max-height: 10rem;
         }
       `,
     ];
