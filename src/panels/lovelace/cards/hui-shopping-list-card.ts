@@ -1,4 +1,10 @@
-import { mdiDrag, mdiNotificationClearAll, mdiPlus, mdiSort } from "@mdi/js";
+import {
+  mdiDrag,
+  mdiNotificationClearAll,
+  mdiPlus,
+  mdiSort,
+  mdiChevronDown,
+} from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -63,6 +69,8 @@ class HuiShoppingListCard
 
   @state() private _entityId?: string;
 
+  @state() private _entityName?: string;
+
   @state() private _items: Record<string, TodoItem> = {};
 
   @state() private _uncheckedItems?: TodoItem[];
@@ -109,6 +117,7 @@ class HuiShoppingListCard
       );
       if (!this._entityId && this._todoLists.length > 0) {
         this._entityId = this._todoLists[0].entity_id;
+        this._entityName = this._todoLists[0].name;
       }
     }
   }
@@ -146,22 +155,33 @@ class HuiShoppingListCard
       >
         ${this._todoLists.length >= 0
           ? html`
-              <ha-select
+              <ha-button-menu
                 class="todoList"
                 label=${this.hass.localize(
                   "ui.panel.lovelace.cards.shopping-list.lists"
                 )}
                 .value=${this._entityId}
                 @selected=${this._selectTodoList}
-                fixedMenuPosition
-                naturalMenuWidth
+                activatable
+                fixed
               >
-                ${this._todoLists!.map(
-                  (item) => html`
-                    <ha-list-item .value=${item.entity_id} .item=${item}>
+                <ha-button slot="trigger">
+                  ${this._entityName}
+                  <ha-svg-icon
+                    slot="trailingIcon"
+                    .path=${mdiChevronDown}
+                  ></ha-svg-icon>
+                </ha-button>
+                ${this._todoLists?.map(
+                  (item) =>
+                    html` <ha-list-item
+                      ?selected=${item.entity_id === this._entityId}
+                      .value=${item.entity_id}
+                      .item=${item}
+                      @click=${this._selectTodoList}
+                    >
                       ${item.name}
-                    </ha-list-item>
-                  `
+                    </ha-list-item>`
                 )}
               </ha-select>
             `
@@ -313,6 +333,7 @@ class HuiShoppingListCard
   private _selectTodoList(ev): void {
     const todoList = this._todoLists[ev.detail.index];
     this._entityId = todoList.entity_id;
+    this._entityName = todoList.name;
     this._fetchData();
   }
 
@@ -416,8 +437,8 @@ class HuiShoppingListCard
               previous = previousItem.uid!;
             }
           }
-          moveItem(this.hass!, this._entityId!, item.uid!, previous).catch(() =>
-            this._fetchData()
+          moveItem(this.hass!, this._entityId!, item.uid!, previous).finally(
+            () => this._fetchData()
           );
           // Move the shopping list item in memory.
           this._uncheckedItems!.splice(
