@@ -27,6 +27,7 @@ import { HomeAssistant } from "../../../../types";
 import { getTileFeatureElementClass } from "../../create-element/create-tile-feature-element";
 import { supportsAlarmModesTileFeature } from "../../tile-features/hui-alarm-modes-tile-feature";
 import { supportsClimateHvacModesTileFeature } from "../../tile-features/hui-climate-hvac-modes-tile-feature";
+import { supportsClimatePresetsTileFeature } from "../../tile-features/hui-climate-presets-tile-feature";
 import { supportsCoverOpenCloseTileFeature } from "../../tile-features/hui-cover-open-close-tile-feature";
 import { supportsCoverPositionTileFeature } from "../../tile-features/hui-cover-position-tile-feature";
 import { supportsCoverTiltPositionTileFeature } from "../../tile-features/hui-cover-tilt-position-tile-feature";
@@ -46,6 +47,7 @@ type SupportsFeature = (stateObj: HassEntity) => boolean;
 const FEATURE_TYPES: FeatureType[] = [
   "alarm-modes",
   "climate-hvac-modes",
+  "climate-presets",
   "target-temperature",
   "cover-open-close",
   "cover-position",
@@ -71,6 +73,7 @@ const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
   {
     "alarm-modes": supportsAlarmModesTileFeature,
     "climate-hvac-modes": supportsClimateHvacModesTileFeature,
+    "climate-presets": supportsClimatePresetsTileFeature,
     "cover-open-close": supportsCoverOpenCloseTileFeature,
     "cover-position": supportsCoverPositionTileFeature,
     "cover-tilt-position": supportsCoverTiltPositionTileFeature,

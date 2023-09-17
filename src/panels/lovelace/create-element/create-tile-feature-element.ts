@@ -1,5 +1,6 @@
 import "../tile-features/hui-alarm-modes-tile-feature";
 import "../tile-features/hui-climate-hvac-modes-tile-feature";
+import "../tile-features/hui-climate-presets-tile-feature";
 import "../tile-features/hui-target-temperature-tile-feature";
 import "../tile-features/hui-cover-open-close-tile-feature";
 import "../tile-features/hui-cover-position-tile-feature";
@@ -20,6 +21,7 @@ import {
 const TYPES: Set<LovelaceTileFeatureConfig["type"]> = new Set([
   "alarm-modes",
   "climate-hvac-modes",
+  "climate-presets",
   "cover-open-close",
   "cover-position",
   "cover-tilt-position",

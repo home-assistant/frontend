@@ -105,7 +105,8 @@
         "cooling": "{name} cooling",
         "high": "high",
         "low": "low",
-        "mode": "Mode"
+        "mode": "Mode",
+        "preset": "Preset"
       },
       "counter": {
         "actions": {
@@ -5036,6 +5037,9 @@
                   "climate-hvac-modes": {
                     "label": "Climate HVAC modes",
                     "hvac_modes": "HVAC modes"
+                  },
+                  "climate-presets": {
+                    "label": "Climate Presets"
                   },
                   "target-temperature": {
                     "label": "Target temperature"
