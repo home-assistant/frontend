@@ -28,7 +28,6 @@ Of all possible combinations of shapes, a home is best abstracted in the shape o
 
 Call it a tree, a set of nodes, a PCB, or an antenna. The antenna is the most recognizable and memorable part of the previous Home Assistant logo, and is an easily understandable symbol that conveys technologies that are smart, connected, and growing evergreen.
 
-
 # Usage
 
 The default variation is the static colored wordmark in horizontal layout and dark text on a light background.
@@ -55,7 +54,7 @@ In printed materials where color is unavailable, use the monochrome color variat
 
 On background that are dark or photographic, use the light monochrome color on dark background variation.
 
-On backgrounds that are light or photographic, use the colored version. Do not use the monochrome variations. 
+On backgrounds that are light or photographic, use the colored version. Do not use the monochrome variations.
 
 Do not enclose the logmark in a square or color or any confined backgrounds, except in specific situations enforced by another company's marketplace guidelines, for example, an iOS app icon.
 
@@ -86,4 +85,3 @@ Do not repeat the logo animation.
 Special variants are created for specific contexts.
 
 Use the tiny variants when the logomark is used in a very small space (16x16 dp), for example, the favicon of the Home Assistant website, a notification on Android, or the menubar of macOS.
-
