@@ -17,7 +17,7 @@ import "../../../components/ha-control-slider";
 
 export const supportsClimatePresetsTileFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
-  return domain == "climate";
+  return domain === "climate";
 };
 
 @customElement("hui-climate-presets-tile-feature")
@@ -48,7 +48,7 @@ class HuiClimatePresetsTileFeature
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
     if (changedProp.has("stateObj") && this.stateObj) {
-      this._currentPreset = this.stateObj.attributes.preset as string;
+      this._currentPreset = this.stateObj.attributes.preset_mode as string;
     }
   }
 
