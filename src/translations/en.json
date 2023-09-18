@@ -5528,6 +5528,13 @@
             "no_match": "No intent matched",
             "language": "[%key:ui::components::language-picker::language%]"
           },
+          "debug": {
+            "title": "Debug Tools",
+            "debug_connection": {
+              "title": "Debug Connection",
+              "description": "Observe requests to the server and responses from the server in browser console."
+            }
+          },
           "events": {
             "title": "Events",
             "description": "Fire an event on the event bus.",

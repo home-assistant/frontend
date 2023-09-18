@@ -73,13 +73,14 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         translationMetadata,
         dockedSidebar: "docked",
         vibrate: true,
+        debugConnection: false,
         suspendWhenHidden: true,
         enableShortcuts: true,
         moreInfoEntityId: null,
         hassUrl: (path = "") => new URL(path, auth.data.hassUrl).toString(),
         // eslint-disable-next-line @typescript-eslint/default-param-last
         callService: async (domain, service, serviceData = {}, target) => {
-          if (__DEV__) {
+          if (__DEV__ || this.hass?.debugConnection) {
             // eslint-disable-next-line no-console
             console.log(
               "Calling service",
@@ -104,7 +105,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             ) {
               return { context: { id: "" } };
             }
-            if (__DEV__) {
+            if (__DEV__ || this.hass?.debugConnection) {
               // eslint-disable-next-line no-console
               console.error(
                 "Error calling service",
@@ -140,7 +141,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         ) => fetchWithAuth(auth, `${auth.data.hassUrl}${path}`, init),
         // For messages that do not get a response
         sendWS: (msg) => {
-          if (__DEV__) {
+          if (__DEV__ || this.hass?.debugConnection) {
             // eslint-disable-next-line no-console
             console.log("Sending", msg);
           }
@@ -148,14 +149,14 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         },
         // For messages that expect a response
         callWS: <R>(msg) => {
-          if (__DEV__) {
+          if (__DEV__ || this.hass?.debugConnection) {
             // eslint-disable-next-line no-console
             console.log("Sending", msg);
           }
 
           const resp = conn.sendMessagePromise<R>(msg);
 
-          if (__DEV__) {
+          if (__DEV__ || this.hass?.debugConnection) {
             resp.then(
               // eslint-disable-next-line no-console
               (result) => console.log("Received", result),

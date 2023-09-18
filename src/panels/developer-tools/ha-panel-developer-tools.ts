@@ -66,6 +66,7 @@ class PanelDeveloperTools extends LitElement {
             )}
           </paper-tab>
           <paper-tab page-name="assist">Assist</paper-tab>
+          <paper-tab page-name="debug">Debug</paper-tab>
         </paper-tabs>
       </div>
       <developer-tools-router
