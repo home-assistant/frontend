@@ -50,7 +50,7 @@
     "@fullcalendar/luxon3": "6.1.8",
     "@fullcalendar/timegrid": "6.1.8",
     "@lezer/highlight": "1.1.6",
-    "@lit-labs/context": "0.4.0",
+    "@lit-labs/context": "0.4.1",
     "@lit-labs/motion": "1.0.4",
     "@lit-labs/virtualizer": "2.0.7",
     "@lrnwebcomponents/simple-tooltip": "7.0.16",
