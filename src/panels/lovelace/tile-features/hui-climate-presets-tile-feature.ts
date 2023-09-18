@@ -23,7 +23,8 @@ export const supportsClimatePresetsTileFeature = (stateObj: HassEntity) => {
 @customElement("hui-climate-presets-tile-feature")
 class HuiClimatePresetsTileFeature
   extends LitElement
-  implements LovelaceTileFeature {
+  implements LovelaceTileFeature
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: ClimateEntity;
@@ -54,7 +55,7 @@ class HuiClimatePresetsTileFeature
 
   private async _valueChanged(ev: CustomEvent) {
     const preset = (ev.detail as any).value as string;
-    const oldPreset = this.stateObj!.attributes.preset_mode
+    const oldPreset = this.stateObj!.attributes.preset_mode;
 
     if (preset === oldPreset) return;
     this._currentPreset = preset;
@@ -70,7 +71,7 @@ class HuiClimatePresetsTileFeature
     await this.hass!.callService("climate", "set_preset_mode", {
       entity_id: this.stateObj!.entity_id,
       preset_mode: preset,
-    })
+    });
   }
 
   protected render(): TemplateResult | null {
@@ -85,14 +86,13 @@ class HuiClimatePresetsTileFeature
 
     const color = stateColorCss(this.stateObj);
 
-    const presets = this.stateObj.attributes.preset_modes as string[] || [];
+    const presets = (this.stateObj.attributes.preset_modes as string[]) || [];
 
-    const options = presets
-      .map<ControlSelectOption>((preset) => ({
-        value: preset,
-        label: this.hass!.formatEntityAttributeName(this.stateObj!, preset),
-        path: computePresetModeIcon(preset),
-      }));
+    const options = presets.map<ControlSelectOption>((preset) => ({
+      value: preset,
+      label: this.hass!.formatEntityAttributeName(this.stateObj!, preset),
+      path: computePresetModeIcon(preset),
+    }));
 
     return html`
       <div class="container">
@@ -103,8 +103,8 @@ class HuiClimatePresetsTileFeature
           hide-label
           .ariaLabel=${this.hass.localize("ui.card.climate.preset")}
           style=${styleMap({
-      "--control-select-color": color,
-    })}
+            "--control-select-color": color,
+          })}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
         >
         </ha-control-select>
