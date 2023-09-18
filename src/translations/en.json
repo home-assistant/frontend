@@ -5531,7 +5531,7 @@
           "debug": {
             "title": "Debug Tools",
             "debug_connection": {
-              "title": "Debug Connection",
+              "title": "Debug connection",
               "description": "Observe requests to the server and responses from the server in browser console."
             }
           },
