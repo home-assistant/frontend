@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.0.0
       - name: Setup Node
         uses: actions/setup-node@v3.8.1
         with:
@@ -37,7 +37,7 @@ jobs:
       - name: Build resources
         run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data gather-gallery-pages
       - name: Setup lint cache
-        uses: actions/cache@v3.3.1
+        uses: actions/cache@v3.3.2
         with:
           path: |
             node_modules/.cache/prettier
@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.0.0
       - name: Setup Node
         uses: actions/setup-node@v3.8.1
         with:
@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.0.0
       - name: Setup Node
         uses: actions/setup-node@v3.8.1
         with:
@@ -91,7 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.0.0
       - name: Setup Node
         uses: actions/setup-node@v3.8.1
         with:

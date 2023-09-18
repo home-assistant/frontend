@@ -3183,6 +3183,7 @@
             }
           },
           "dialog_certificate": {
+            "alternative_names": "Alternative names:",
             "certificate_information": "Certificate information",
             "certificate_expiration_date": "Certificate expiration date:",
             "will_be_auto_renewed": "will be automatically renewed",

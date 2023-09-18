@@ -19,6 +19,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-tip";
+import "../../../components/ha-alert";
 import "../../../components/search-input";
 import "../../../components/ha-expansion-panel";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -185,6 +186,9 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           [[localize('ui.panel.developer-tools.tabs.states.description1')]]<br />
           [[localize('ui.panel.developer-tools.tabs.states.description2')]]
         </p>
+        <template is="dom-if" if="[[_error]]">
+          <ha-alert alert-type="error">[[_error]]</ha-alert>
+        </template>
         <div class="state-wrapper flex layout horizontal">
           <div class="inputs">
             <ha-entity-picker
@@ -355,6 +359,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         computed: "_computeValidJSON(parsedJSON)",
       },
 
+      _error: {
+        type: String,
+        value: "",
+      },
+
       _entityId: {
         type: String,
         value: "",
@@ -490,7 +499,8 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this.fire("hass-more-info", { entityId: ev.model.entity.entity_id });
   }
 
-  handleSetState() {
+  async handleSetState() {
+    this._error = "";
     if (!this._entityId) {
       showAlertDialog(this, {
         text: this.hass.localize(
@@ -499,10 +509,14 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
       });
       return;
     }
-    this.hass.callApi("POST", "states/" + this._entityId, {
-      state: this._state,
-      attributes: this.parsedJSON,
-    });
+    try {
+      await this.hass.callApi("POST", "states/" + this._entityId, {
+        state: this._state,
+        attributes: this.parsedJSON,
+      });
+    } catch (e) {
+      this._error = e.body?.message || "Unknown error";
+    }
   }
 
   informationOutlineIcon() {
