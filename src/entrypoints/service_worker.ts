@@ -28,10 +28,7 @@ const initRouting = () => {
   // Cache static content (including translations) on first access.
   registerRoute(
     /\/(static|frontend_latest|frontend_es5)\/.+/,
-    new CacheFirst({
-      cacheName: "static",
-      matchOptions: { ignoreSearch: true },
-    })
+    new CacheFirst({ matchOptions: { ignoreSearch: true } })
   );
 
   // Cache any brand images used for 30 days
@@ -75,7 +72,7 @@ const initRouting = () => {
   registerRoute(
     /\/.*/,
     new StaleWhileRevalidate({
-      cacheName: "other",
+      cacheName: "file-cache",
       plugins: [
         new ExpirationPlugin({
           maxAgeSeconds: 60 * 60 * 24,
