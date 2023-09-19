@@ -57,7 +57,7 @@ const maybeRenderError = (
   stage: string,
   lastRunStage: string
 ) => {
-  if (run.stage !== "error" || lastRunStage !== stage) {
+  if (!("error" in run) || lastRunStage !== stage) {
     return "";
   }
 
@@ -84,11 +84,10 @@ const renderProgress = (
     return "";
   }
 
-  if (pipelineRun.stage === "error") {
-    return html`❌`;
-  }
-
   if (!finishEvent) {
+    if ("error" in pipelineRun) {
+      return html`❌`;
+    }
     return html`
       <ha-circular-progress size="tiny" active></ha-circular-progress>
     `;
@@ -238,7 +237,7 @@ export class AssistPipelineDebug extends LitElement {
             </ha-card>
           `
         : ""}
-      ${maybeRenderError(this.pipelineRun, "stt", lastRunStage)}
+      ${maybeRenderError(this.pipelineRun, "wake_word", lastRunStage)}
       ${hasStage(this.pipelineRun, "stt")
         ? html`
             <ha-card>
