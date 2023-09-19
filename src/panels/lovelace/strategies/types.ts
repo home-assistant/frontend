@@ -1,12 +1,9 @@
-import { LovelaceConfig, LovelaceViewConfig } from "../../../data/lovelace";
+import {
+  LovelaceConfig,
+  LovelaceStrategyConfig,
+  LovelaceViewConfig,
+} from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
-
-export type LovelaceStrategyConfigType = "dashboard" | "view";
-
-export type LovelaceStrategyConfig<T = Record<string, any>> = {
-  type: string;
-  options?: T;
-};
 
 export type LovelaceStrategyParams = {
   narrow?: boolean;

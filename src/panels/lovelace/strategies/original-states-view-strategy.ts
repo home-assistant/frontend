@@ -3,10 +3,13 @@ import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { getEnergyPreferences } from "../../../data/energy";
-import { LovelaceViewConfig } from "../../../data/lovelace";
+import {
+  LovelaceStrategyConfig,
+  LovelaceViewConfig,
+} from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
-import { LovelaceStrategyConfig, LovelaceStrategyParams } from "./types";
+import { LovelaceStrategyParams } from "./types";
 
 @customElement("original-states-view-strategy")
 export class OriginalStatesViewStrategy extends ReactiveElement {

@@ -1,11 +1,13 @@
-import { LovelaceConfig, LovelaceViewConfig } from "../../../data/lovelace";
+import {
+  LovelaceConfig,
+  LovelaceStrategyConfig,
+  LovelaceViewConfig,
+} from "../../../data/lovelace";
 import { AsyncReturnType, HomeAssistant } from "../../../types";
 import { isLegacyStrategy } from "./legacy-strategy";
 import {
   LovelaceDashboardStrategy,
   LovelaceStrategy,
-  LovelaceStrategyConfig,
-  LovelaceStrategyConfigType,
   LovelaceStrategyParams,
   LovelaceViewStrategy,
 } from "./types";
@@ -22,6 +24,8 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
     energy: () => import("../../energy/strategies/energy-view-strategy"),
   },
 };
+
+export type LovelaceStrategyConfigType = "dashboard" | "view";
 
 type Strategies = {
   dashboard: LovelaceDashboardStrategy;

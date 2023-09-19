@@ -17,12 +17,14 @@ export interface LovelacePanelConfig {
   mode: "yaml" | "storage";
 }
 
+export type LovelaceStrategyConfig<T = Record<string, any>> = {
+  type: string;
+  options?: T;
+};
+
 export interface LovelaceConfig {
   title?: string;
-  strategy?: {
-    type: string;
-    options?: Record<string, unknown>;
-  };
+  strategy?: LovelaceStrategyConfig;
   views: LovelaceViewConfig[];
   background?: string;
 }
@@ -81,10 +83,7 @@ export interface LovelaceViewConfig {
   index?: number;
   title?: string;
   type?: string;
-  strategy?: {
-    type: string;
-    options?: Record<string, unknown>;
-  };
+  strategy?: LovelaceStrategyConfig;
   badges?: Array<string | LovelaceBadgeConfig>;
   cards?: LovelaceCardConfig[];
   path?: string;
