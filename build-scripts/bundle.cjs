@@ -100,6 +100,7 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
         useBuiltIns: latestBuild ? false : "entry",
         corejs: latestBuild ? false : { version: "3.32", proposals: true },
         bugfixes: true,
+        shippedProposals: true,
       },
     ],
     "@babel/preset-typescript",
