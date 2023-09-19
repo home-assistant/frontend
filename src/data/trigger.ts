@@ -5,7 +5,6 @@ import {
   mdiCodeBraces,
   mdiDevices,
   mdiGestureDoubleTap,
-  mdiHomeAssistant,
   mdiMapMarker,
   mdiMapMarkerRadius,
   mdiMessageAlert,
@@ -17,6 +16,8 @@ import {
   mdiWeatherSunny,
   mdiWebhook,
 } from "@mdi/js";
+
+import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
 
 export const TRIGGER_TYPES = {
   calendar: mdiCalendar,
