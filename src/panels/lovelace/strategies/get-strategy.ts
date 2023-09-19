@@ -108,7 +108,14 @@ const generateStrategy = async <T extends LovelaceStrategyConfigType>(
       }
     }
 
-    return await strategy.generate(strategyConfig, hass, params);
+    const config = {
+      ...strategyConfig,
+      ...strategyConfig.options,
+    };
+
+    delete config.options;
+
+    return await strategy.generate(config, hass, params);
   } catch (err: any) {
     if (err.message !== "timeout") {
       // eslint-disable-next-line

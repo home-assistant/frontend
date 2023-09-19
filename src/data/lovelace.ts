@@ -17,9 +17,9 @@ export interface LovelacePanelConfig {
   mode: "yaml" | "storage";
 }
 
-export type LovelaceStrategyConfig<T = Record<string, any>> = {
+export type LovelaceStrategyConfig = {
   type: string;
-  options?: T;
+  [key: string]: any;
 };
 
 export interface LovelaceConfig {
