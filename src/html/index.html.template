@@ -3,7 +3,7 @@
   <head>
     <title>Home Assistant</title>
     <%= renderTemplate("_header.html.template") %>
-    <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#5bbad5" />
+    <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#18bcf2" />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
@@ -15,7 +15,6 @@
     <meta name="apple-mobile-web-app-title" content="Home Assistant">
     <meta name="msapplication-config" content="/static/icons/browserconfig.xml" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Home Assistant">
     <meta name="application-name" content="Home Assistant">
     <meta name="referrer" content="same-origin" />
     <meta name="theme-color" content="{{ theme_color }}" />
