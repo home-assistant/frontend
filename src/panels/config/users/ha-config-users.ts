@@ -49,14 +49,14 @@ export class HaConfigUsers extends LitElement {
           width: "25%",
           direction: "asc",
           grows: true,
-          template: (name, user) =>
+          template: (user) =>
             narrow
-              ? html` ${name}<br />
+              ? html` ${user.name}<br />
                   <div class="secondary">
                     ${user.username ? `${user.username} |` : ""}
                     ${localize(`groups.${user.group_ids[0]}`)}
                   </div>`
-              : html` ${name ||
+              : html` ${user.name ||
                 this.hass!.localize(
                   "ui.panel.config.users.editor.unnamed_user"
                 )}`,
@@ -68,7 +68,7 @@ export class HaConfigUsers extends LitElement {
           width: "20%",
           direction: "asc",
           hidden: narrow,
-          template: (username) => html`${username || "—"}`,
+          template: (user) => html`${user.name || "—"}`,
         },
         group_ids: {
           title: localize("ui.panel.config.users.picker.headers.group"),
@@ -77,8 +77,8 @@ export class HaConfigUsers extends LitElement {
           width: "20%",
           direction: "asc",
           hidden: narrow,
-          template: (groupIds: User["group_ids"]) => html`
-            ${localize(`groups.${groupIds[0]}`)}
+          template: (user) => html`
+            ${localize(`groups.${user.group_ids[0]}`)}
           `,
         },
         is_active: {
@@ -90,8 +90,8 @@ export class HaConfigUsers extends LitElement {
           filterable: true,
           width: "80px",
           hidden: narrow,
-          template: (is_active) =>
-            is_active
+          template: (user) =>
+            user.is_active
               ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
               : "",
         },
@@ -104,8 +104,8 @@ export class HaConfigUsers extends LitElement {
           filterable: true,
           width: "80px",
           hidden: narrow,
-          template: (generated) =>
-            generated
+          template: (user) =>
+            user.system_generated
               ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
               : "",
         },
@@ -118,8 +118,10 @@ export class HaConfigUsers extends LitElement {
           filterable: true,
           width: "80px",
           hidden: narrow,
-          template: (local) =>
-            local ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>` : "",
+          template: (user) =>
+            user.local_only
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+              : "",
         },
         icons: {
           title: "",
@@ -131,7 +133,7 @@ export class HaConfigUsers extends LitElement {
           filterable: false,
           width: "104px",
           hidden: !narrow,
-          template: (_, user) => {
+          template: (user) => {
             const badges = computeUserBadges(this.hass, user, false);
             return html`${badges.map(
               ([icon, tooltip]) =>

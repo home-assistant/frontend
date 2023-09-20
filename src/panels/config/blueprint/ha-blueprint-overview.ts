@@ -10,14 +10,14 @@ import {
 } from "@mdi/js";
 import {
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  html,
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import { HASSDomEvent, fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
@@ -32,7 +32,6 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
 import { showAutomationEditor } from "../../../data/automation";
 import {
-  BlueprintDomain,
   BlueprintMetaData,
   Blueprints,
   deleteBlueprint,
@@ -50,10 +49,12 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
 
-interface BlueprintMetaDataPath extends BlueprintMetaData {
+type BlueprintMetaDataPath = BlueprintMetaData & {
   path: string;
   error: boolean;
-}
+  type: "automation" | "script";
+  fullpath: string;
+};
 
 const createNewFunctions = {
   automation: (blueprintMeta: BlueprintMetaDataPath) => {
@@ -86,7 +87,7 @@ class HaBlueprintOverview extends LitElement {
   >;
 
   private _processedBlueprints = memoizeOne(
-    (blueprints: Record<string, Blueprints>) => {
+    (blueprints: Record<string, Blueprints>): BlueprintMetaDataPath[] => {
       const result: any[] = [];
       Object.entries(blueprints).forEach(([type, typeBlueprints]) =>
         Object.entries(typeBlueprints).forEach(([path, blueprint]) => {
@@ -125,9 +126,9 @@ class HaBlueprintOverview extends LitElement {
         direction: "asc",
         grows: true,
         template: narrow
-          ? (name, entity: any) => html`
-              ${name}<br />
-              <div class="secondary">${entity.path}</div>
+          ? (blueprint) => html`
+              ${blueprint.name}<br />
+              <div class="secondary">${blueprint.path}</div>
             `
           : undefined,
       },
@@ -135,9 +136,9 @@ class HaBlueprintOverview extends LitElement {
         title: this.hass.localize(
           "ui.panel.config.blueprint.overview.headers.type"
         ),
-        template: (type: BlueprintDomain) =>
+        template: (blueprint) =>
           html`${this.hass.localize(
-            `ui.panel.config.blueprint.overview.types.${type}`
+            `ui.panel.config.blueprint.overview.types.${blueprint.type}`
           )}`,
         sortable: true,
         filterable: true,
@@ -163,7 +164,7 @@ class HaBlueprintOverview extends LitElement {
         title: "",
         width: this.narrow ? undefined : "10%",
         type: "overflow-menu",
-        template: (_: string, blueprint) =>
+        template: (blueprint) =>
           blueprint.error
             ? html`<ha-svg-icon
                 style="color: var(--error-color); display: block; margin-inline-end: 12px; margin-inline-start: auto;"
@@ -177,7 +178,7 @@ class HaBlueprintOverview extends LitElement {
                     {
                       path: mdiPlus,
                       label: this.hass.localize(
-                        `ui.panel.config.blueprint.overview.create_${blueprint.domain}`
+                        `ui.panel.config.blueprint.overview.create_${blueprint.type}`
                       ),
                       action: () => this._createNew(blueprint),
                     },
@@ -324,7 +325,7 @@ class HaBlueprintOverview extends LitElement {
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const blueprint = this._processedBlueprints(this.blueprints).find(
       (b) => b.fullpath === ev.detail.id
-    );
+    )!;
     if (blueprint.error) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.config.blueprint.overview.error", {
