@@ -1,47 +1,53 @@
+import { mdiTuneVariant } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select-menu";
 import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
+import {
+  ClimateEntity,
+  ClimateEntityFeature,
+  computePresetModeIcon,
+} from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
-import { InputSelectEntity } from "../../../data/input_select";
-import { SelectEntity } from "../../../data/select";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
-import { SelectOptionsTileFeatureConfig } from "./types";
+import { ClimatePresetModesTileFeatureConfig } from "./types";
 
-export const supportsSelectOptionTileFeature = (stateObj: HassEntity) => {
+export const supportsClimatePresetModesTileFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
-  return domain === "select" || domain === "input_select";
+  return (
+    domain === "climate" &&
+    supportsFeature(stateObj, ClimateEntityFeature.PRESET_MODE)
+  );
 };
 
-@customElement("hui-select-options-tile-feature")
-class HuiSelectOptionsTileFeature
+@customElement("hui-climate-preset-modes-tile-feature")
+class HuiClimatePresetModeTileFeature
   extends LitElement
   implements LovelaceTileFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?:
-    | SelectEntity
-    | InputSelectEntity;
+  @property({ attribute: false }) public stateObj?: ClimateEntity;
 
-  @state() private _config?: SelectOptionsTileFeatureConfig;
+  @state() private _config?: ClimatePresetModesTileFeatureConfig;
 
-  @state() _currentOption?: string;
+  @state() _currentPresetMode?: string;
 
   @query("ha-control-select-menu", true)
   private _haSelect!: HaControlSelectMenu;
 
-  static getStubConfig(): SelectOptionsTileFeatureConfig {
+  static getStubConfig(): ClimatePresetModesTileFeatureConfig {
     return {
-      type: "select-options",
+      type: "climate-preset-modes",
     };
   }
 
-  public setConfig(config: SelectOptionsTileFeatureConfig): void {
+  public setConfig(config: ClimatePresetModesTileFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -51,7 +57,7 @@ class HuiSelectOptionsTileFeature
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
     if (changedProp.has("stateObj") && this.stateObj) {
-      this._currentOption = this.stateObj.state;
+      this._currentPresetMode = this.stateObj.attributes.preset_mode;
     }
   }
 
@@ -70,37 +76,36 @@ class HuiSelectOptionsTileFeature
   }
 
   private async _valueChanged(ev: CustomEvent) {
-    const option = (ev.target as any).value as string;
+    const presetMode = (ev.target as any).value as string;
 
-    const oldOption = this.stateObj!.state;
+    const oldPresetMode = this.stateObj!.attributes.preset_mode;
 
-    if (option === oldOption) return;
+    if (presetMode === oldPresetMode) return;
 
-    this._currentOption = option;
+    this._currentPresetMode = presetMode;
 
     try {
-      await this._setOption(option);
+      await this._setMode(presetMode);
     } catch (err) {
-      this._currentOption = oldOption;
+      this._currentPresetMode = oldPresetMode;
     }
   }
 
-  private async _setOption(option: string) {
-    const domain = computeDomain(this.stateObj!.entity_id);
-    await this.hass!.callService(domain, "select_option", {
+  private async _setMode(mode: string) {
+    await this.hass!.callService("climate", "set_preset_mode", {
       entity_id: this.stateObj!.entity_id,
-      option: option,
+      preset_mode: mode,
     });
   }
 
-  protected render() {
+  protected render(): TemplateResult | null {
     if (
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsSelectOptionTileFeature(this.stateObj)
+      !supportsClimatePresetModesTileFeature(this.stateObj)
     ) {
-      return nothing;
+      return null;
     }
 
     const stateObj = this.stateObj;
@@ -110,18 +115,30 @@ class HuiSelectOptionsTileFeature
         <ha-control-select-menu
           show-arrow
           hide-label
-          .label=${"Option"}
-          .value=${stateObj.state}
+          .label=${this.hass!.formatEntityAttributeName(
+            stateObj,
+            "preset_mode"
+          )}
+          .value=${stateObj.attributes.preset_mode}
           .disabled=${this.stateObj.state === UNAVAILABLE}
           fixedMenuPosition
           naturalMenuWidth
           @selected=${this._valueChanged}
           @closed=${stopPropagation}
         >
-          ${stateObj.attributes.options!.map(
-            (option) => html`
-              <ha-list-item .value=${option}>
-                ${this.hass!.formatEntityState(stateObj, option)}
+          <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
+          ${stateObj.attributes.preset_modes?.map(
+            (mode) => html`
+              <ha-list-item .value=${mode} graphic="icon">
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${computePresetModeIcon(mode)}
+                ></ha-svg-icon>
+                ${this.hass!.formatEntityAttributeValue(
+                  stateObj,
+                  "preset_mode",
+                  mode
+                )}
               </ha-list-item>
             `
           )}
@@ -150,6 +167,6 @@ class HuiSelectOptionsTileFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-select-options-tile-feature": HuiSelectOptionsTileFeature;
+    "hui-climate-modes-preset-modes-feature": HuiClimatePresetModeTileFeature;
   }
 }

@@ -5038,8 +5038,8 @@
                     "label": "Climate HVAC modes",
                     "hvac_modes": "HVAC modes"
                   },
-                  "climate-presets": {
-                    "label": "Climate Presets"
+                  "climate-preset-modes": {
+                    "label": "Climate preset modes"
                   },
                   "target-temperature": {
                     "label": "Target temperature"

@@ -40,8 +40,8 @@ export interface ClimateHvacModesTileFeatureConfig {
   hvac_modes?: HvacMode[];
 }
 
-export interface ClimatePresetsTileFeatureConfig {
-  type: "climate-presets";
+export interface ClimatePresetModesTileFeatureConfig {
+  type: "climate-preset-modes";
 }
 
 export interface SelectOptionsTileFeatureConfig {
@@ -84,7 +84,7 @@ export interface LawnMowerCommandsTileFeatureConfig {
 export type LovelaceTileFeatureConfig =
   | AlarmModesTileFeatureConfig
   | ClimateHvacModesTileFeatureConfig
-  | ClimatePresetsTileFeatureConfig
+  | ClimatePresetModesTileFeatureConfig
   | CoverOpenCloseTileFeatureConfig
   | CoverPositionTileFeatureConfig
   | CoverTiltPositionTileFeatureConfig
