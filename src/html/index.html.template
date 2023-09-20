@@ -6,7 +6,6 @@
     <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#18bcf2" />
     <link
       rel="apple-touch-icon"
-      sizes="180x180"
       href="/static/icons/favicon-apple-180x180.png"
     />
     <meta name="apple-itunes-app" content="app-id=1099568401" />
