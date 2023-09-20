@@ -3405,18 +3405,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-wc/dev-server-hmr@npm:0.1.4":
-  version: 0.1.4
-  resolution: "@open-wc/dev-server-hmr@npm:0.1.4"
+"@open-wc/dev-server-hmr@npm:0.2.0":
+  version: 0.2.0
+  resolution: "@open-wc/dev-server-hmr@npm:0.2.0"
   dependencies:
     "@babel/core": ^7.12.3
     "@babel/plugin-syntax-class-properties": ^7.12.13
     "@babel/plugin-syntax-import-assertions": ^7.12.1
     "@babel/plugin-syntax-top-level-await": ^7.12.1
-    "@web/dev-server-core": ^0.4.0
-    "@web/dev-server-hmr": ^0.1.11
+    "@web/dev-server-core": ^0.5.1
+    "@web/dev-server-hmr": ^0.2.1
     picomatch: ^2.2.2
-  checksum: 4fc1e2fb465ec85f5e4dc0ef54886023e4c65dda16912d78f0fe96c14db7650e2b3986f0c2fbbfbf621c40dd597b721f44d9b707ff796a95498ed0c3d9edd2d1
+  checksum: b4c15e4f2f0a5257560075197da9770bd28f1ced12597ddd8dcb34ff02472839566a5f7f7063233e7cb7c24bf46d313e4e8cf706a073c9b5d35eb18e3a5eefdf
   languageName: node
   linkType: hard
 
@@ -5078,7 +5078,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server-core@npm:^0.4.0, @web/dev-server-core@npm:^0.4.1":
+"@web/dev-server-core@npm:^0.4.1":
   version: 0.4.1
   resolution: "@web/dev-server-core@npm:0.4.1"
   dependencies:
@@ -5104,12 +5104,38 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server-hmr@npm:^0.1.11":
-  version: 0.1.12
-  resolution: "@web/dev-server-hmr@npm:0.1.12"
+"@web/dev-server-core@npm:^0.5.1":
+  version: 0.5.2
+  resolution: "@web/dev-server-core@npm:0.5.2"
   dependencies:
-    "@web/dev-server-core": ^0.4.1
-  checksum: 67255fd4a7ee4d44f6feeeb798e67c4dbb9d2e351ef404a33424fcfce7d28bea2ed165d9ff28506b44a4ac2e6ca2e3bb812c70954d04fbfdb08b8df4d47efefa
+    "@types/koa": ^2.11.6
+    "@types/ws": ^7.4.0
+    "@web/parse5-utils": ^2.0.0
+    chokidar: ^3.4.3
+    clone: ^2.1.2
+    es-module-lexer: ^1.0.0
+    get-stream: ^6.0.0
+    is-stream: ^2.0.0
+    isbinaryfile: ^5.0.0
+    koa: ^2.13.0
+    koa-etag: ^4.0.0
+    koa-send: ^5.0.1
+    koa-static: ^5.0.0
+    lru-cache: ^8.0.4
+    mime-types: ^2.1.27
+    parse5: ^6.0.1
+    picomatch: ^2.2.2
+    ws: ^7.4.2
+  checksum: 1a42f71a3d7eafd41bdb33a8cf9d37bb7e205704f3bcde9e32bd0aa639759d7a6e4448efe448be127042c46816931dd7585575e0f30a15c1b22576d578ccaacc
+  languageName: node
+  linkType: hard
+
+"@web/dev-server-hmr@npm:^0.2.1":
+  version: 0.2.2
+  resolution: "@web/dev-server-hmr@npm:0.2.2"
+  dependencies:
+    "@web/dev-server-core": ^0.5.1
+  checksum: 5faad5a56bc85cd893f26a5c9c62475d93cb6b9c8fec63aea63bb1f3b09d28a7df703908bbc804b5177a4945af8c7712e0226397d9efedc7d8fbd60abbe15692
   languageName: node
   linkType: hard
 
@@ -5159,6 +5185,16 @@ __metadata:
     "@types/parse5": ^6.0.1
     parse5: ^6.0.1
   checksum: 3320b2c4ea1e6a2ff1e57086b0c697a71dac7a6e54da86b2fb8e6c1d5a673bf9b911a743a10daa8cd62a571719edf3e66c9b17e87d79cc982f234bf141e2e178
+  languageName: node
+  linkType: hard
+
+"@web/parse5-utils@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "@web/parse5-utils@npm:2.0.1"
+  dependencies:
+    "@types/parse5": ^6.0.1
+    parse5: ^6.0.1
+  checksum: d3993b0dee350e040bf5b13749283df88c97a48b063f8938fb21623422cd5f03b641393ca03bc724936e9f17d8bfd7939f501de6eb1c33ad82f6ac5112bf6cff
   languageName: node
   linkType: hard
 
@@ -9744,7 +9780,7 @@ __metadata:
     "@octokit/auth-oauth-device": 6.0.0
     "@octokit/plugin-retry": 6.0.0
     "@octokit/rest": 20.0.1
-    "@open-wc/dev-server-hmr": 0.1.4
+    "@open-wc/dev-server-hmr": 0.2.0
     "@polymer/iron-flex-layout": 3.0.1
     "@polymer/iron-input": 3.0.1
     "@polymer/iron-resizable-behavior": 3.0.1
@@ -11759,6 +11795,13 @@ __metadata:
   version: 7.18.3
   resolution: "lru-cache@npm:7.18.3"
   checksum: e550d772384709deea3f141af34b6d4fa392e2e418c1498c078de0ee63670f1f46f5eee746e8ef7e69e1c895af0d4224e62ee33e66a543a14763b0f2e74c1356
+  languageName: node
+  linkType: hard
+
+"lru-cache@npm:^8.0.4":
+  version: 8.0.5
+  resolution: "lru-cache@npm:8.0.5"
+  checksum: 87d72196d8f46e8299c4ab576ed2ec8a07e3cbef517dc9874399c0b2470bd9bf62aacec3b67f84ed6d74aaa1ef31636d048edf996f76248fd17db72bfb631609
   languageName: node
   linkType: hard
 

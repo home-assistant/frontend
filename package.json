@@ -163,7 +163,7 @@
     "@octokit/auth-oauth-device": "6.0.0",
     "@octokit/plugin-retry": "6.0.0",
     "@octokit/rest": "20.0.1",
-    "@open-wc/dev-server-hmr": "0.1.4",
+    "@open-wc/dev-server-hmr": "0.2.0",
     "@rollup/plugin-babel": "6.0.3",
     "@rollup/plugin-commonjs": "25.0.4",
     "@rollup/plugin-json": "6.0.0",
