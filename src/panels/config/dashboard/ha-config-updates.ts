@@ -86,7 +86,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
           return html`
             <ha-list-item
               twoline
-              graphic="avatar"
+              graphic="medium"
               class=${entity.attributes.skipped_version ? "skipped" : ""}
               .entity_id=${entity.entity_id}
               .hasMeta=${!this.narrow}
@@ -155,6 +155,9 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
         }
         .skipped {
           background: var(--secondary-background-color);
+        }
+        ha-list-item {
+          --mdc-list-item-graphic-size: 40px;
         }
         ha-icon-next {
           color: var(--secondary-text-color);
