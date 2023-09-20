@@ -7,9 +7,9 @@ export const removeLaunchScreen = () => {
   }
 };
 
-export const renderLaunchScreenInfoBox = (content: TemplateResult) => {
-  const infoBoxElement = document.getElementById("ha-launch-screen-info-box");
-  if (infoBoxElement) {
-    render(content, infoBoxElement);
+export const renderLaunchScreen = (content: TemplateResult) => {
+  const launchScreen = document.getElementById("ha-launch-screen");
+  if (launchScreen) {
+    render(content, launchScreen);
   }
 };

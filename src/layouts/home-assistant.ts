@@ -9,15 +9,11 @@ import { HassElement } from "../state/hass-element";
 import QuickBarMixin from "../state/quick-bar-mixin";
 import { HomeAssistant, Route } from "../types";
 import { storeState } from "../util/ha-pref-storage";
-import {
-  renderLaunchScreenInfoBox,
-  removeLaunchScreen,
-} from "../util/launch-screen";
+import { renderLaunchScreen, removeLaunchScreen } from "../util/launch-screen";
 import {
   registerServiceWorker,
   supportsServiceWorker,
 } from "../util/register-service-worker";
-import "./ha-init-page";
 import "./home-assistant-main";
 
 const useHash = __DEMO__;
@@ -39,7 +35,11 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   private _haVersion?: string;
 
+  private _error?: boolean;
+
   private _hiddenTimeout?: number;
+
+  private _renderInitTimeout?: number;
 
   private _visiblePromiseResolve?: () => void;
 
@@ -89,6 +89,10 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     ) {
       this.render = this.renderHass;
       this.update = super.update;
+      if (this._renderInitTimeout) {
+        clearTimeout(this._renderInitTimeout);
+        this._renderInitTimeout = undefined;
+      }
       removeLaunchScreen();
     }
     super.update(changedProps);
@@ -139,7 +143,9 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     // Render launch screen info box (loading data / error message)
     // if Home Assistant is not loaded yet.
     if (this.render !== this.renderHass) {
-      this._renderInitInfo(false);
+      this._renderInitTimeout = window.setTimeout(() => {
+        this._renderInitInfo();
+      }, 1000);
     }
   }
 
@@ -153,7 +159,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     }
     if (changedProps.has("_databaseMigration")) {
       if (this.render !== this.renderHass) {
-        this._renderInitInfo(false);
+        this._renderInitInfo();
       } else if (this._databaseMigration) {
         // we already removed the launch screen, so we refresh to add it again to show the migration screen
         location.reload();
@@ -233,7 +239,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       this._haVersion = conn.haVersion;
       this.initializeHass(auth, conn);
     } catch (err: any) {
-      this._renderInitInfo(true);
+      this._error = true;
+      this._renderInitInfo();
     }
   }
 
@@ -290,10 +297,15 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     }
   }
 
-  private _renderInitInfo(error: boolean) {
-    renderLaunchScreenInfoBox(
+  private async _renderInitInfo() {
+    if (this._renderInitTimeout) {
+      clearTimeout(this._renderInitTimeout);
+    }
+    this._renderInitTimeout = undefined;
+    await import("./ha-init-page");
+    renderLaunchScreen(
       html`<ha-init-page
-        .error=${error}
+        .error=${this._error}
         .migration=${this._databaseMigration}
       ></ha-init-page>`
     );
