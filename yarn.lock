@@ -7173,10 +7173,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cropperjs@npm:1.6.0":
-  version: 1.6.0
-  resolution: "cropperjs@npm:1.6.0"
-  checksum: 643d1e939335ea7426746f03b43ca05848867b095930ea6c84b141ffbe1962b7d5e20e5e5807f19879b95936255ca1fc8823553ffb115e84dca6578876da8b11
+"cropperjs@npm:1.6.1":
+  version: 1.6.1
+  resolution: "cropperjs@npm:1.6.1"
+  checksum: 951ec5e6786dabac70b02d7aa909d115c7f2652dfaab3e2bcc65c0bf8d329acec875b1f5ff5f3004abf9511686ccb2aa2765718c3176e74cc8e92ec78a42e7a7
   languageName: node
   linkType: hard
 
@@ -9797,7 +9797,7 @@ __metadata:
     chart.js: 4.3.3
     comlink: 4.4.1
     core-js: 3.32.2
-    cropperjs: 1.6.0
+    cropperjs: 1.6.1
     date-fns: 2.30.0
     date-fns-tz: 2.0.0
     deep-clone-simple: 1.1.1
