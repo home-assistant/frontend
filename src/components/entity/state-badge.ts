@@ -131,11 +131,15 @@ export class StateBadge extends LitElement {
         if (this.hass) {
           imageUrl = this.hass.hassUrl(imageUrl);
         }
-        if (computeDomain(stateObj.entity_id) === "camera") {
+        const domain = computeDomain(stateObj.entity_id);
+        if (domain === "camera") {
           imageUrl = cameraUrlWithWidthHeight(imageUrl, 80, 80);
         }
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
+        if (domain === "update") {
+          hostStyle.borderRadius = "0";
+        }
       } else if (this.color) {
         // Externally provided overriding color wins over state color
         iconStyle.color = this.color;
