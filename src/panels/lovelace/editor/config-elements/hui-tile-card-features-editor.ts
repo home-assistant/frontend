@@ -35,6 +35,7 @@ import { supportsFanSpeedTileFeature } from "../../tile-features/hui-fan-speed-t
 import { supportsLawnMowerCommandTileFeature } from "../../tile-features/hui-lawn-mower-commands-tile-feature";
 import { supportsLightBrightnessTileFeature } from "../../tile-features/hui-light-brightness-tile-feature";
 import { supportsLightColorTempTileFeature } from "../../tile-features/hui-light-color-temp-tile-feature";
+import { supportsSelectOptionTileFeature } from "../../tile-features/hui-select-options-tile-feature";
 import { supportsTargetTemperatureTileFeature } from "../../tile-features/hui-target-temperature-tile-feature";
 import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
 import { supportsWaterHeaterOperationModesTileFeature } from "../../tile-features/hui-water-heater-operation-modes-tile-feature";
@@ -46,7 +47,6 @@ type SupportsFeature = (stateObj: HassEntity) => boolean;
 const FEATURE_TYPES: FeatureType[] = [
   "alarm-modes",
   "climate-hvac-modes",
-  "target-temperature",
   "cover-open-close",
   "cover-position",
   "cover-tilt-position",
@@ -55,6 +55,8 @@ const FEATURE_TYPES: FeatureType[] = [
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
+  "select-options",
+  "target-temperature",
   "vacuum-commands",
   "water-heater-operation-modes",
 ];
@@ -83,6 +85,7 @@ const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
     "vacuum-commands": supportsVacuumCommandTileFeature,
     "water-heater-operation-modes":
       supportsWaterHeaterOperationModesTileFeature,
+    "select-options": supportsSelectOptionTileFeature,
   };
 
 const CUSTOM_FEATURE_ENTRIES: Record<
