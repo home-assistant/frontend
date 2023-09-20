@@ -72,6 +72,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "climate-hvac-modes",
   "water-heater-operation-modes",
   "lawn-mower-commands",
+  "climate-preset-modes",
 ]);
 
 const SUPPORTS_FEATURE_TYPES: Record<

@@ -5039,7 +5039,12 @@
                     "hvac_modes": "HVAC modes"
                   },
                   "climate-preset-modes": {
-                    "label": "Climate preset modes"
+                    "label": "Climate preset modes",
+                    "style": "Style",
+                    "style_list": {
+                      "dropdown": "Dropdown",
+                      "icons": "Icons"
+                    }
                   },
                   "target-temperature": {
                     "label": "Target temperature"
@@ -5142,7 +5147,8 @@
             "types": {
               "header": "Header editor",
               "footer": "Footer editor",
-              "row": "Entity row editor"
+              "row": "Entity row editor",
+              "tile-feature": "Tile feature editor"
             }
           }
         },

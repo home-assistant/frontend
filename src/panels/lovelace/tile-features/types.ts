@@ -42,6 +42,7 @@ export interface ClimateHvacModesTileFeatureConfig {
 
 export interface ClimatePresetModesTileFeatureConfig {
   type: "climate-preset-modes";
+  style?: "dropdown" | "icons";
 }
 
 export interface SelectOptionsTileFeatureConfig {
