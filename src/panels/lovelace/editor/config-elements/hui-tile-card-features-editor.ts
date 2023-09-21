@@ -27,7 +27,6 @@ import { HomeAssistant } from "../../../../types";
 import { getTileFeatureElementClass } from "../../create-element/create-tile-feature-element";
 import { supportsAlarmModesTileFeature } from "../../tile-features/hui-alarm-modes-tile-feature";
 import { supportsClimateHvacModesTileFeature } from "../../tile-features/hui-climate-hvac-modes-tile-feature";
-import { supportsClimatePresetsTileFeature } from "../../tile-features/hui-climate-presets-tile-feature";
 import { supportsCoverOpenCloseTileFeature } from "../../tile-features/hui-cover-open-close-tile-feature";
 import { supportsCoverPositionTileFeature } from "../../tile-features/hui-cover-position-tile-feature";
 import { supportsCoverTiltPositionTileFeature } from "../../tile-features/hui-cover-tilt-position-tile-feature";
@@ -41,14 +40,15 @@ import { supportsTargetTemperatureTileFeature } from "../../tile-features/hui-ta
 import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
 import { supportsWaterHeaterOperationModesTileFeature } from "../../tile-features/hui-water-heater-operation-modes-tile-feature";
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
+import { supportsClimatePresetModesTileFeature } from "../../tile-features/hui-climate-preset-modes-tile-feature";
 
 type FeatureType = LovelaceTileFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
 
-const FEATURE_TYPES: FeatureType[] = [
+const UI_FEATURE_TYPES = [
   "alarm-modes",
   "climate-hvac-modes",
-  "climate-presets",
+  "climate-preset-modes",
   "cover-open-close",
   "cover-position",
   "cover-tilt-position",
@@ -61,35 +61,39 @@ const FEATURE_TYPES: FeatureType[] = [
   "target-temperature",
   "vacuum-commands",
   "water-heater-operation-modes",
-];
+] as const satisfies readonly FeatureType[];
 
-const EDITABLES_FEATURE_TYPES = new Set<FeatureType>([
+type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
+
+const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "vacuum-commands",
   "alarm-modes",
   "climate-hvac-modes",
   "water-heater-operation-modes",
   "lawn-mower-commands",
+  "climate-preset-modes",
 ]);
 
-const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
-  {
-    "alarm-modes": supportsAlarmModesTileFeature,
-    "climate-hvac-modes": supportsClimateHvacModesTileFeature,
-    "climate-presets": supportsClimatePresetsTileFeature,
-    "cover-open-close": supportsCoverOpenCloseTileFeature,
-    "cover-position": supportsCoverPositionTileFeature,
-    "cover-tilt-position": supportsCoverTiltPositionTileFeature,
-    "cover-tilt": supportsCoverTiltTileFeature,
-    "fan-speed": supportsFanSpeedTileFeature,
-    "lawn-mower-commands": supportsLawnMowerCommandTileFeature,
-    "light-brightness": supportsLightBrightnessTileFeature,
-    "light-color-temp": supportsLightColorTempTileFeature,
-    "target-temperature": supportsTargetTemperatureTileFeature,
-    "vacuum-commands": supportsVacuumCommandTileFeature,
-    "water-heater-operation-modes":
-      supportsWaterHeaterOperationModesTileFeature,
-    "select-options": supportsSelectOptionTileFeature,
-  };
+const SUPPORTS_FEATURE_TYPES: Record<
+  UiFeatureTypes,
+  SupportsFeature | undefined
+> = {
+  "alarm-modes": supportsAlarmModesTileFeature,
+  "climate-hvac-modes": supportsClimateHvacModesTileFeature,
+  "climate-preset-modes": supportsClimatePresetModesTileFeature,
+  "cover-open-close": supportsCoverOpenCloseTileFeature,
+  "cover-position": supportsCoverPositionTileFeature,
+  "cover-tilt-position": supportsCoverTiltPositionTileFeature,
+  "cover-tilt": supportsCoverTiltTileFeature,
+  "fan-speed": supportsFanSpeedTileFeature,
+  "lawn-mower-commands": supportsLawnMowerCommandTileFeature,
+  "light-brightness": supportsLightBrightnessTileFeature,
+  "light-color-temp": supportsLightColorTempTileFeature,
+  "target-temperature": supportsTargetTemperatureTileFeature,
+  "vacuum-commands": supportsVacuumCommandTileFeature,
+  "water-heater-operation-modes": supportsWaterHeaterOperationModesTileFeature,
+  "select-options": supportsSelectOptionTileFeature,
+};
 
 const CUSTOM_FEATURE_ENTRIES: Record<
   string,
@@ -181,7 +185,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
   }
 
   private _getSupportedFeaturesType() {
-    const featuresTypes = FEATURE_TYPES as string[];
+    const featuresTypes = UI_FEATURE_TYPES as readonly string[];
     const customFeaturesTypes = customTileFeatures.map(
       (feature) => `${CUSTOM_TYPE_PREFIX}${feature.type}`
     );

@@ -72,9 +72,10 @@ class HuiSelectOptionsTileFeature
   private async _valueChanged(ev: CustomEvent) {
     const option = (ev.target as any).value as string;
 
-    if (option === this.stateObj!.state) return;
-
     const oldOption = this.stateObj!.state;
+
+    if (option === oldOption) return;
+
     this._currentOption = option;
 
     try {
