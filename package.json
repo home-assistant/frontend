@@ -145,6 +145,7 @@
     "vue": "2.7.14",
     "vue2-daterange-picker": "0.6.8",
     "weekstart": "2.0.0",
+    "workbox-cacheable-response": "7.0.0",
     "workbox-core": "7.0.0",
     "workbox-expiration": "7.0.0",
     "workbox-precaching": "7.0.0",

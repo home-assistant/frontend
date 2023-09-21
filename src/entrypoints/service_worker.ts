@@ -3,6 +3,7 @@
 /// <reference path="../types/service-worker.d.ts" />
 /* eslint-env serviceworker */
 import { cacheNames, RouteHandler } from "workbox-core";
+import { CacheableResponsePlugin } from "workbox-cacheable-response";
 import { ExpirationPlugin } from "workbox-expiration";
 import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
 import { registerRoute, setCatchHandler } from "workbox-routing";
@@ -42,6 +43,8 @@ const initRouting = () => {
       // CORS must be forced to work for CSS images
       fetchOptions: { mode: "cors", credentials: "omit" },
       plugins: [
+        // Add 404 so we quicly respond to domains with missing images
+        new CacheableResponsePlugin({ statuses: [0, 200, 404] }),
         new ExpirationPlugin({
           maxAgeSeconds: 60 * 60 * 24 * 30,
           purgeOnQuotaError: true,

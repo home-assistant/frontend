@@ -9855,6 +9855,7 @@ __metadata:
     webpackbar: 5.0.2
     weekstart: 2.0.0
     workbox-build: 7.0.0
+    workbox-cacheable-response: 7.0.0
     workbox-core: 7.0.0
     workbox-expiration: 7.0.0
     workbox-precaching: 7.0.0
