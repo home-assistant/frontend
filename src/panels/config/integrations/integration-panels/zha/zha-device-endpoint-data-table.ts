@@ -67,9 +67,9 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               filterable: true,
               direction: "asc",
               grows: true,
-              template: (name, device: any) => html`
+              template: (device) => html`
                 <a href=${`/config/devices/device/${device.dev_id}`}>
-                  ${name}
+                  ${device.name}
                 </a>
               `,
             },
@@ -86,9 +86,9 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               filterable: true,
               direction: "asc",
               grows: true,
-              template: (name, device: any) => html`
+              template: (device) => html`
                 <a href=${`/config/devices/device/${device.dev_id}`}>
-                  ${name}
+                  ${device.name}
                 </a>
               `,
             },
@@ -102,10 +102,10 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               sortable: false,
               filterable: false,
               width: "50%",
-              template: (entities) => html`
-                ${entities.length
-                  ? entities.length > 3
-                    ? html`${entities
+              template: (device) => html`
+                ${device.entities.length
+                  ? device.entities.length > 3
+                    ? html`${device.entities
                           .slice(0, 2)
                           .map(
                             (entity) =>
@@ -115,8 +115,8 @@ export class ZHADeviceEndpointDataTable extends LitElement {
                                 ${entity.name || entity.original_name}
                               </div>`
                           )}
-                        <div>And ${entities.length - 2} more...</div>`
-                    : entities.map(
+                        <div>And ${device.entities.length - 2} more...</div>`
+                    : device.entities.map(
                         (entity) =>
                           html`<div
                             style="overflow: hidden; text-overflow: ellipsis;"

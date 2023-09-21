@@ -44,6 +44,10 @@ export interface ClimatePresetsTileFeatureConfig {
   type: "climate-presets";
 }
 
+export interface SelectOptionsTileFeatureConfig {
+  type: "select-options";
+}
+
 export interface TargetTemperatureTileFeatureConfig {
   type: "target-temperature";
 }
@@ -91,7 +95,8 @@ export type LovelaceTileFeatureConfig =
   | LightColorTempTileFeatureConfig
   | VacuumCommandsTileFeatureConfig
   | TargetTemperatureTileFeatureConfig
-  | WaterHeaterOperationModesTileFeatureConfig;
+  | WaterHeaterOperationModesTileFeatureConfig
+  | SelectOptionsTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
   entity_id?: string;

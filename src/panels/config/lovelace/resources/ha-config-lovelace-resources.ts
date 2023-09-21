@@ -40,7 +40,7 @@ export class HaConfigLovelaceRescources extends LitElement {
   @state() private _resources: LovelaceResource[] = [];
 
   private _columns = memoize(
-    (_language): DataTableColumnContainer => ({
+    (_language): DataTableColumnContainer<LovelaceResource> => ({
       url: {
         title: this.hass.localize(
           "ui.panel.config.lovelace.resources.picker.headers.url"
@@ -58,10 +58,10 @@ export class HaConfigLovelaceRescources extends LitElement {
         sortable: true,
         filterable: true,
         width: "30%",
-        template: (type: LovelaceResource["type"]) => html`
+        template: (resource) => html`
           ${this.hass.localize(
-            `ui.panel.config.lovelace.resources.types.${type}`
-          ) || type}
+            `ui.panel.config.lovelace.resources.types.${resource.type}`
+          ) || resource.type}
         `,
       },
     })
