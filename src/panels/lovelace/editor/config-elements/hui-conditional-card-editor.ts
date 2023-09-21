@@ -1,10 +1,10 @@
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
+import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
 import { mdiCodeBraces, mdiContentCopy, mdiListBoxOutline } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import {
   any,
@@ -19,8 +19,7 @@ import {
   union,
 } from "superstruct";
 import { storage } from "../../../../common/decorators/storage";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-select";
 import "../../../../components/ha-textfield";
@@ -30,6 +29,7 @@ import type {
 } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import type { ConditionalCardConfig } from "../../cards/types";
+import "../../common/ha-card-condition-editor";
 import type { LovelaceCardEditor } from "../../types";
 import "../card-editor/hui-card-element-editor";
 import type { HuiCardElementEditor } from "../card-editor/hui-card-element-editor";
@@ -39,7 +39,6 @@ import type { ConfigChangedEvent } from "../hui-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { GUIModeChangedEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { StateCondition } from "../../common/validate-condition";
 
 const stateConditionStruct = object({
   condition: optional(literal("state")),
@@ -177,66 +176,25 @@ export class HuiConditionalCardEditor
               ${this.hass!.localize(
                 "ui.panel.lovelace.editor.card.conditional.condition_explanation"
               )}
-              ${this._config.conditions.map((cond, idx) => {
-                if (cond.condition && cond.condition !== "state")
-                  return nothing;
-                return html`
+              ${this._config.conditions.map(
+                (cond, idx) => html`
                   <div class="condition">
-                    <div class="entity">
-                      <ha-entity-picker
-                        .hass=${this.hass}
-                        .value=${cond.entity}
-                        .idx=${idx}
-                        .configValue=${"entity"}
-                        @change=${this._changeCondition}
-                        allow-custom-entity
-                      ></ha-entity-picker>
-                    </div>
-                    <div class="state">
-                      <ha-select
-                        .value=${cond.state_not !== undefined
-                          ? "true"
-                          : "false"}
-                        .idx=${idx}
-                        .configValue=${"invert"}
-                        @selected=${this._changeCondition}
-                        @closed=${stopPropagation}
-                        naturalMenuWidth
-                        fixedMenuPosition
-                      >
-                        <mwc-list-item value="false">
-                          ${this.hass!.localize(
-                            "ui.panel.lovelace.editor.card.conditional.state_equal"
-                          )}
-                        </mwc-list-item>
-                        <mwc-list-item value="true">
-                          ${this.hass!.localize(
-                            "ui.panel.lovelace.editor.card.conditional.state_not_equal"
-                          )}
-                        </mwc-list-item>
-                      </ha-select>
-                      <ha-textfield
-                        .label="${this.hass!.localize(
-                          "ui.panel.lovelace.editor.card.generic.state"
-                        )} (${this.hass!.localize(
-                          "ui.panel.lovelace.editor.card.conditional.current_state"
-                        )}: ${this.hass?.states[cond.entity].state})"
-                        .value=${cond.state_not !== undefined
-                          ? cond.state_not
-                          : cond.state}
-                        .idx=${idx}
-                        .configValue=${"state"}
-                        @input=${this._changeCondition}
-                      ></ha-textfield>
-                    </div>
+                    <ha-card-condition-editor
+                      .index=${idx}
+                      @value-changed=${this._conditionChanged}
+                      .hass=${this.hass}
+                      .condition=${cond}
+                    ></ha-card-condition-editor>
                   </div>
-                `;
-              })}
+                `
+              )}
               <div class="condition">
-                <ha-entity-picker
-                  .hass=${this.hass}
-                  @change=${this._addCondition}
-                ></ha-entity-picker>
+                <div class="content">
+                  <ha-entity-picker
+                    .hass=${this.hass}
+                    @change=${this._addCondition}
+                  ></ha-entity-picker>
+                </div>
               </div>
             </div>
           `}
@@ -321,39 +279,19 @@ export class HuiConditionalCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _changeCondition(ev: Event): void {
-    const target = ev.target as any;
-    if (!this._config || !target) {
-      return;
-    }
-    const conditions = [...this._config.conditions];
-    if (target.configValue === "entity" && target.value === "") {
-      conditions.splice(target.idx, 1);
+  private _conditionChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    const conditions = [...this._config!.conditions];
+    const newValue = ev.detail.value;
+    const index = (ev.target as any).index;
+
+    if (newValue === null) {
+      conditions.splice(index, 1);
     } else {
-      // Only state condition are supported by the editor
-      const condition = { ...conditions[target.idx] } as StateCondition;
-      if (target.configValue === "entity") {
-        condition.entity = target.value;
-      } else if (target.configValue === "state") {
-        if (condition.state_not !== undefined) {
-          condition.state_not = target.value;
-        } else {
-          condition.state = target.value;
-        }
-      } else if (target.configValue === "invert") {
-        if (target.value === "true") {
-          if (condition.state) {
-            condition.state_not = condition.state;
-            delete condition.state;
-          }
-        } else if (condition.state_not) {
-          condition.state = condition.state_not;
-          delete condition.state_not;
-        }
-      }
-      conditions[target.idx] = condition;
+      conditions[index] = newValue;
     }
-    this._config = { ...this._config, conditions };
+
+    this._config = { ...this._config!, conditions };
     fireEvent(this, "config-changed", { config: this._config });
   }
 
@@ -370,22 +308,10 @@ export class HuiConditionalCardEditor
         .condition {
           margin-top: 8px;
           border: 1px solid var(--divider-color);
+        }
+        .condition .content {
           padding: 12px;
         }
-        .condition .state {
-          display: flex;
-          align-items: flex-end;
-        }
-        .condition .state ha-select {
-          margin-right: 16px;
-          margin-inline-end: 16px;
-          margin-inline-start: initial;
-          direction: var(--direction);
-        }
-        .condition .state ha-textfield {
-          flex-grow: 1;
-        }
-
         .card {
           margin-top: 8px;
           border: 1px solid var(--divider-color);
