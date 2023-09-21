@@ -11,9 +11,12 @@ import {
   array,
   assert,
   assign,
+  literal,
+  number,
   object,
   optional,
   string,
+  union,
 } from "superstruct";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -36,17 +39,28 @@ import type { ConfigChangedEvent } from "../hui-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { GUIModeChangedEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { StateCondition } from "../../common/validate-condition";
 
-const conditionStruct = object({
+const stateConditionStruct = object({
+  condition: optional(literal("state")),
   entity: string(),
   state: optional(string()),
   state_not: optional(string()),
 });
+
+const responsiveConditionStruct = object({
+  condition: literal("responsive"),
+  max_width: optional(number()),
+  min_width: optional(number()),
+});
+
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     card: any(),
-    conditions: optional(array(conditionStruct)),
+    conditions: optional(
+      array(union([stateConditionStruct, responsiveConditionStruct]))
+    ),
   })
 );
 
@@ -163,8 +177,10 @@ export class HuiConditionalCardEditor
               ${this.hass!.localize(
                 "ui.panel.lovelace.editor.card.conditional.condition_explanation"
               )}
-              ${this._config.conditions.map(
-                (cond, idx) => html`
+              ${this._config.conditions.map((cond, idx) => {
+                if (cond.condition && cond.condition !== "state")
+                  return nothing;
+                return html`
                   <div class="condition">
                     <div class="entity">
                       <ha-entity-picker
@@ -214,8 +230,8 @@ export class HuiConditionalCardEditor
                       ></ha-textfield>
                     </div>
                   </div>
-                `
-              )}
+                `;
+              })}
               <div class="condition">
                 <ha-entity-picker
                   .hass=${this.hass}
@@ -296,6 +312,7 @@ export class HuiConditionalCardEditor
     }
     const conditions = [...this._config.conditions];
     conditions.push({
+      condition: "state",
       entity: target.value,
       state: "",
     });
@@ -313,7 +330,8 @@ export class HuiConditionalCardEditor
     if (target.configValue === "entity" && target.value === "") {
       conditions.splice(target.idx, 1);
     } else {
-      const condition = { ...conditions[target.idx] };
+      // Only state condition are supported by the editor
+      const condition = { ...conditions[target.idx] } as StateCondition;
       if (target.configValue === "entity") {
         condition.entity = target.value;
       } else if (target.configValue === "state") {
