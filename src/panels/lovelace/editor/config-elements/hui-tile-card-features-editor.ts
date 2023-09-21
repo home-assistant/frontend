@@ -49,7 +49,6 @@ const FEATURE_TYPES: FeatureType[] = [
   "alarm-modes",
   "climate-hvac-modes",
   "climate-presets",
-  "target-temperature",
   "cover-open-close",
   "cover-position",
   "cover-tilt-position",
