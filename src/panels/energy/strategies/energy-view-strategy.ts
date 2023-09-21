@@ -1,10 +1,16 @@
+import { ReactiveElement } from "lit";
+import { customElement } from "lit/decorators";
 import {
   EnergyPreferences,
   getEnergyPreferences,
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
-import { LovelaceViewConfig } from "../../../data/lovelace";
-import { LovelaceViewStrategy } from "../../lovelace/strategies/get-strategy";
+import {
+  LovelaceStrategyConfig,
+  LovelaceViewConfig,
+} from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
+import { LovelaceStrategyParams } from "../../lovelace/strategies/types";
 
 const setupWizard = async (): Promise<LovelaceViewConfig> => {
   await import("../cards/energy-setup-wizard-card");
@@ -18,12 +24,17 @@ const setupWizard = async (): Promise<LovelaceViewConfig> => {
   };
 };
 
-export class EnergyStrategy {
-  static async generateView(
-    info: Parameters<LovelaceViewStrategy["generateView"]>[0]
-  ): ReturnType<LovelaceViewStrategy["generateView"]> {
-    const hass = info.hass;
+export interface EnergeryViewStrategyConfig extends LovelaceStrategyConfig {
+  show_date_selection?: boolean;
+}
 
+@customElement("energy-view-strategy")
+export class EnergyViewStrategy extends ReactiveElement {
+  static async generate(
+    config: EnergeryViewStrategyConfig,
+    hass: HomeAssistant,
+    params: LovelaceStrategyParams
+  ): Promise<LovelaceViewConfig> {
     const view: LovelaceViewConfig = { cards: [] };
 
     let prefs: EnergyPreferences;
@@ -56,7 +67,7 @@ export class EnergyStrategy {
       (source) => source.type === "water"
     );
 
-    if (info.narrow || info.view.strategy?.options?.show_date_selection) {
+    if (params.narrow || config.show_date_selection) {
       view.cards!.push({
         type: "energy-date-selection",
         collection_key: "energy_dashboard",
