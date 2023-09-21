@@ -1,7 +1,9 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { FormatEntityAttributeValueFunc } from "../../../../common/translations/entity-state";
 import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -31,7 +33,11 @@ export class HuiClimatePresetModesTileFeatureEditor
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (
+      localize: LocalizeFunc,
+      formatEntityAttributeValue: FormatEntityAttributeValueFunc,
+      stateObj?: HassEntity
+    ) =>
       [
         {
           name: "style",
@@ -48,6 +54,24 @@ export class HuiClimatePresetModesTileFeatureEditor
             },
           },
         },
+        {
+          name: "preset_modes",
+          selector: {
+            select: {
+              multiple: true,
+              mode: "list",
+              options:
+                stateObj?.attributes.preset_modes?.map((mode) => ({
+                  value: mode,
+                  label: formatEntityAttributeValue(
+                    stateObj,
+                    "preset_mode",
+                    mode
+                  ),
+                })) || [],
+            },
+          },
+        },
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -56,12 +80,21 @@ export class HuiClimatePresetModesTileFeatureEditor
       return nothing;
     }
 
+    const stateObj = this.context?.entity_id
+      ? this.hass.states[this.context?.entity_id]
+      : undefined;
+
     const data: ClimatePresetModesTileFeatureConfig = {
       style: "dropdown",
+      preset_modes: [],
       ...this._config,
     };
 
-    const schema = this._schema(this.hass.localize);
+    const schema = this._schema(
+      this.hass.localize,
+      this.hass.formatEntityAttributeValue,
+      stateObj
+    );
 
     return html`
       <ha-form
@@ -83,13 +116,12 @@ export class HuiClimatePresetModesTileFeatureEditor
   ) => {
     switch (schema.name) {
       case "style":
+      case "preset_modes":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.features.types.climate-preset-modes.${schema.name}`
         );
       default:
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}`
-        );
+        return "";
     }
   };
 }

@@ -43,9 +43,14 @@ class HuiClimatePresetModeTileFeature
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
 
-  static getStubConfig(): ClimatePresetModesTileFeatureConfig {
+  static getStubConfig(
+    _,
+    stateObj?: HassEntity
+  ): ClimatePresetModesTileFeatureConfig {
     return {
       type: "climate-preset-modes",
+      style: "dropdown",
+      preset_modes: stateObj?.attributes.preset_modes || [],
     };
   }
 
@@ -124,15 +129,17 @@ class HuiClimatePresetModeTileFeature
 
     const modes = stateObj.attributes.preset_modes || [];
 
-    const options = modes.map<ControlSelectOption>((mode) => ({
-      value: mode,
-      label: this.hass!.formatEntityAttributeValue(
-        this.stateObj!,
-        "preset_mode",
-        mode
-      ),
-      path: computePresetModeIcon(mode),
-    }));
+    const options = modes
+      .filter((mode) => (this._config!.preset_modes || []).includes(mode))
+      .map<ControlSelectOption>((mode) => ({
+        value: mode,
+        label: this.hass!.formatEntityAttributeValue(
+          this.stateObj!,
+          "preset_mode",
+          mode
+        ),
+        path: computePresetModeIcon(mode),
+      }));
 
     if (this._config.style === "icons") {
       return html`

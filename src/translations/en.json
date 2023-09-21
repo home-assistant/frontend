@@ -5044,7 +5044,8 @@
                     "style_list": {
                       "dropdown": "Dropdown",
                       "icons": "Icons"
-                    }
+                    },
+                    "preset_modes": "Preset modes"
                   },
                   "target-temperature": {
                     "label": "Target temperature"
