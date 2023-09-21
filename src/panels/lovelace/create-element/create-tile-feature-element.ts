@@ -1,7 +1,6 @@
 import "../tile-features/hui-alarm-modes-tile-feature";
 import "../tile-features/hui-climate-hvac-modes-tile-feature";
 import "../tile-features/hui-climate-presets-tile-feature";
-import "../tile-features/hui-target-temperature-tile-feature";
 import "../tile-features/hui-cover-open-close-tile-feature";
 import "../tile-features/hui-cover-position-tile-feature";
 import "../tile-features/hui-cover-tilt-position-tile-feature";
