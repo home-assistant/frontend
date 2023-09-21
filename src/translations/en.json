@@ -194,6 +194,9 @@
       "service": {
         "run": "Run"
       },
+      "select": {
+        "option": "Option"
+      },
       "update": {
         "installing": "Installing",
         "installing_with_progress": "Installing ({progress}%)",
@@ -5046,6 +5049,9 @@
                       "icons": "Icons"
                     },
                     "preset_modes": "Preset modes"
+                  },
+                  "select-options": {
+                    "label": "Select options"
                   },
                   "target-temperature": {
                     "label": "Target temperature"

@@ -110,7 +110,7 @@ class HuiSelectOptionsTileFeature
         <ha-control-select-menu
           show-arrow
           hide-label
-          .label=${"Option"}
+          .label=${this.hass.localize("ui.card.select.option")}
           .value=${stateObj.state}
           .disabled=${this.stateObj.state === UNAVAILABLE}
           fixedMenuPosition
