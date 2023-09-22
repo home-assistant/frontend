@@ -54,6 +54,9 @@ class DialogLightColorFavorite extends LitElement {
     this._entry = dialogParams.entry;
     this._dialogParams = dialogParams;
     this._updateModes(dialogParams.defaultMode);
+    if (dialogParams.add) {
+      this._loadCurrentColor();
+    }
     await this.updateComplete;
   }
 
@@ -88,6 +91,31 @@ class DialogLightColorFavorite extends LitElement {
           ? LightColorMode.COLOR_TEMP
           : "color"
         : this._modes[0]);
+  }
+
+  private _loadCurrentColor() {
+    const attributes = this.stateObj!.attributes;
+    const color_mode = attributes.color_mode;
+
+    if (attributes.color_mode === LightColorMode.XY) {
+      // XY color not supported for favorites. Try to grab the hs or rgb instead.
+      if (attributes.hs_color) {
+        this._color = { hs_color: attributes.hs_color };
+      } else if (attributes.rgb_color) {
+        this._color = { rgb_color: attributes.rgb_color };
+      }
+    } else if (
+      color_mode === LightColorMode.COLOR_TEMP &&
+      attributes.color_temp_kelvin
+    ) {
+      this._color = {
+        color_temp_kelvin: attributes.color_temp_kelvin,
+      };
+    } else if (attributes[color_mode + "_color"]) {
+      this._color = {
+        [color_mode + "_color"]: attributes[color_mode + "_color"],
+      } as LightColor;
+    }
   }
 
   private _colorChanged(ev: CustomEvent) {
