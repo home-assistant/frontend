@@ -2123,12 +2123,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lokalise/node-api@npm:11.0.1":
-  version: 11.0.1
-  resolution: "@lokalise/node-api@npm:11.0.1"
+"@lokalise/node-api@npm:11.1.0":
+  version: 11.1.0
+  resolution: "@lokalise/node-api@npm:11.1.0"
   dependencies:
-    got: ^13.0.0
-  checksum: 22435a252810d26e1bd0ca685a650d19267069aad80807d27275b2662d7c2866d927116038baf526bfb690039ea5c1d3d15548e85f7813b5735b2c5cc8435605
+    got: ^12.6.1
+  checksum: e7a0868f8b5b1617216fac65b99e7bf2858fbbc47f113be57579977953ab0c8bbb3a8789c840ffbc9112abfe35b9e1b9132439840d85e9f7491835d6971657c6
   languageName: node
   linkType: hard
 
@@ -9399,9 +9399,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"got@npm:^13.0.0":
-  version: 13.0.0
-  resolution: "got@npm:13.0.0"
+"got@npm:^12.6.1":
+  version: 12.6.1
+  resolution: "got@npm:12.6.1"
   dependencies:
     "@sindresorhus/is": ^5.2.0
     "@szmarczak/http-timer": ^5.0.1
@@ -9414,7 +9414,7 @@ __metadata:
     lowercase-keys: ^3.0.0
     p-cancelable: ^3.0.0
     responselike: ^3.0.0
-  checksum: bcae6601efd710bc6c5b454c5e44bcb16fcfe57a1065e2d61ff918c1d69c3cf124984ebf509ca64ed10f0da2d2b5531b77da05aa786e75849d084fb8fbea711b
+  checksum: 3c37f5d858aca2859f9932e7609d35881d07e7f2d44c039d189396f0656896af6c77c22f2c51c563f8918be483f60ff41e219de742ab4642d4b106711baccbd5
   languageName: node
   linkType: hard
 
@@ -9711,7 +9711,7 @@ __metadata:
     "@lit-labs/context": 0.4.1
     "@lit-labs/motion": 1.0.4
     "@lit-labs/virtualizer": 2.0.7
-    "@lokalise/node-api": 11.0.1
+    "@lokalise/node-api": 11.1.0
     "@lrnwebcomponents/simple-tooltip": 7.0.18
     "@material/chips": =14.0.0-canary.53b3cad2f.0
     "@material/data-table": =14.0.0-canary.53b3cad2f.0
