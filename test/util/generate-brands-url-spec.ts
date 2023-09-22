@@ -20,14 +20,14 @@ describe("Generate brands Url", () => {
     assert.strictEqual(
       // @ts-ignore
       brandsUrl({ domain: "cloud", type: "logo", useFallback: true }),
-      "https://brands.home-assistant.io/_/cloud/logo.png"
+      "https://brands.home-assistant.io/cloud/logo.png?fallback=true"
     );
   });
   it("Generate icon brands url for cloud component with fallback", () => {
     assert.strictEqual(
       // @ts-ignore
       brandsUrl({ domain: "cloud", type: "icon", useFallback: true }),
-      "https://brands.home-assistant.io/_/cloud/icon.png"
+      "https://brands.home-assistant.io/cloud/icon.png?fallback=true"
     );
   });
 

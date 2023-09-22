@@ -15,6 +15,7 @@ import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import { ProvideHassElement } from "../../../../src/mixins/provide-hass-lit-mixin";
 import type { HomeAssistant } from "../../../../src/types";
+import { brandsUrl } from "../../../../src/util/brands-url";
 import "../../components/demo-black-white-row";
 
 const ENTITIES = [
@@ -424,7 +425,11 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
           can_play: true,
           can_expand: false,
           children_media_class: null,
-          thumbnail: "https://brands.home-assistant.io/_/image/logo.png",
+          thumbnail: brandsUrl({
+            domain: "image",
+            type: "icon",
+            useFallback: true,
+          }),
         },
         {
           title: "movie.mp4",
