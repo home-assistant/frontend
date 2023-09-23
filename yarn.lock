@@ -1625,14 +1625,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-datetimeformat@npm:6.10.2":
-  version: 6.10.2
-  resolution: "@formatjs/intl-datetimeformat@npm:6.10.2"
+"@formatjs/intl-datetimeformat@npm:6.10.3":
+  version: 6.10.3
+  resolution: "@formatjs/intl-datetimeformat@npm:6.10.3"
   dependencies:
     "@formatjs/ecma402-abstract": 1.17.2
     "@formatjs/intl-localematcher": 0.4.2
     tslib: ^2.4.0
-  checksum: f0aef855d9f53afcd1c39eb537339eb416bdc726c3379114eeac14692459210ad0e463fb8dffbe1aca6a53db9248efcb18a9e7d5b62616552b4040634c185449
+  checksum: 82d5c8ae4a8d760df06268e3a0ee8795adf3b7474bbda544d4a9a72fbde88733d5317be66c8abb3abf0ffb8238e71b246dd2ed2d48e54b09c469a69c8071921e
   languageName: node
   linkType: hard
 
@@ -9692,7 +9692,7 @@ __metadata:
     "@codemirror/state": 6.2.1
     "@codemirror/view": 6.19.0
     "@egjs/hammerjs": 2.0.17
-    "@formatjs/intl-datetimeformat": 6.10.2
+    "@formatjs/intl-datetimeformat": 6.10.3
     "@formatjs/intl-displaynames": 6.5.2
     "@formatjs/intl-getcanonicallocales": 2.2.1
     "@formatjs/intl-listformat": 7.4.2
@@ -9832,7 +9832,7 @@ __metadata:
     husky: 8.0.3
     idb-keyval: 6.2.1
     instant-mocha: 1.5.2
-    intl-messageformat: 10.5.2
+    intl-messageformat: 10.5.3
     js-yaml: 4.1.0
     jszip: 3.10.1
     leaflet: 1.9.4
@@ -10317,15 +10317,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"intl-messageformat@npm:10.5.2":
-  version: 10.5.2
-  resolution: "intl-messageformat@npm:10.5.2"
+"intl-messageformat@npm:10.5.3":
+  version: 10.5.3
+  resolution: "intl-messageformat@npm:10.5.3"
   dependencies:
     "@formatjs/ecma402-abstract": 1.17.2
     "@formatjs/fast-memoize": 2.2.0
     "@formatjs/icu-messageformat-parser": 2.6.2
     tslib: ^2.4.0
-  checksum: 5ddc83d4c6dbc4dbb453a7c1d609503265f6a5c8207e8cc6660c3d45000fa29551bfbcbfe50331529be8d2f090bc4d6167a4ef85d3b5de986227a4579d038029
+  checksum: cc71cfa9b93aacba3f9d8ddcef7fab2bf81125de3edb7ee73b58185d107e86c301d54bd0e7a87141e311f5104ee90182f1ca52d8ee94446a0dfccc5c7db8541f
   languageName: node
   linkType: hard
 
