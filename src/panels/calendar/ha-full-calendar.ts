@@ -58,6 +58,7 @@ declare global {
 }
 
 const defaultFullCalendarConfig: CalendarOptions = {
+  eventOrderStrict: true,
   headerToolbar: false,
   plugins: [dayGridPlugin, listPlugin, interactionPlugin],
   initialView: "dayGridMonth",
