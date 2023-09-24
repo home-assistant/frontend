@@ -80,7 +80,8 @@ const makeInput = (
       )}</button>`;
     }
     return `<div class="input-wrapper">${output}</div>`;
-  } else if (item.type === "select") {
+  }
+  if (item.type === "select") {
     const options = item.options.map(
       (o) => `<option value="${o[0]}">${o[1]}</option>`
     );
@@ -95,6 +96,7 @@ const makeInput = (
   return undefined;
 };
 
+// eslint-disable-next-line @typescript-eslint/dot-notation
 window["togglePassword"] = (
   e: MouseEvent & { currentTarget: HTMLButtonElement }
 ) => {
@@ -254,7 +256,6 @@ const intro = async () => {
           `ui.panel.page-authorize.form.providers.${authProvider.type}.step.${step.step_id}.data.${item.name}`
         );
         const result = makeInput(item, name, currentFormData);
-        console.log("adding", result);
         if (result) contents += result;
       }
       if (
