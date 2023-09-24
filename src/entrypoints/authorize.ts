@@ -1,4 +1,4 @@
-import { mdiAlertCircle, mdiLock, mdiCheck } from "@mdi/js";
+import { mdiAlertCircle, mdiLock, mdiCheck, mdiEye, mdiEyeOff } from "@mdi/js";
 import { toASCII } from "punycode";
 import { LocalizeFunc, computeLocalize } from "../common/translations/localize";
 import { extractSearchParamsObject } from "../common/url/search-params";
@@ -6,6 +6,7 @@ import type { AuthProvider } from "../data/auth";
 import type { DataEntryFlowStep } from "../data/data_entry_flow";
 import "../resources/roboto";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
+import type { HaFormSchema } from "../components/ha-form/types";
 
 let localize: LocalizeFunc = () => "";
 let localizeLoaded = false;
@@ -26,6 +27,7 @@ const loadLocalize = async () => {
 loadLocalize();
 
 const content = document.getElementById("content")!;
+
 const escape = (text: string) =>
   text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const icon = (path: string, clazz: string) =>
@@ -33,6 +35,78 @@ const icon = (path: string, clazz: string) =>
 const errorRow = (message: string) => `<div class="error">
   ${icon(mdiAlertCircle, "error")} ${message}
 </div>`;
+const makeInput = (
+  item: HaFormSchema,
+  name: string,
+  currentFormData: FormData | null
+) => {
+  if (item.type === "string") {
+    const attributes: Record<string, any> = {
+      placeholder: name,
+      name: item.name,
+      type:
+        item.name === "password"
+          ? "password"
+          : item.name === "code"
+          ? "number"
+          : "text",
+      autocomplete:
+        item.name === "username"
+          ? "username"
+          : item.name === "password"
+          ? "current-password"
+          : item.name === "code"
+          ? "one-time-code"
+          : undefined,
+      required: item.required,
+    };
+    if (item.name === "username" && currentFormData) {
+      attributes.value = currentFormData.get("username") || undefined;
+    }
+    if (item.name === "username" || item.name === "password") {
+      attributes.autocapitalize = "off";
+      attributes.autocorrect = "off";
+    }
+    const attributesStr = Object.entries(attributes)
+      .filter(([_key, value]) => value)
+      .map(([key, value]) => `${key}="${value}"`)
+      .join(" ");
+
+    let output = `<input ${attributesStr} /><div class="bar"></div>`;
+    if (item.name === "password") {
+      output += `<button type="button" onclick="togglePassword(event)">${icon(
+        mdiEye,
+        ""
+      )}</button>`;
+    }
+    return `<div class="input-wrapper">${output}</div>`;
+  } else if (item.type === "select") {
+    const options = item.options.map(
+      (o) => `<option value="${o[0]}">${o[1]}</option>`
+    );
+    return `<div class="input-wrapper">
+      <select name="${item.name}"${
+        item.required ? " required" : ""
+      }>${options.join("")}</select>
+      <div class="bar"></div>
+      <span class="name">${name}</span>
+    </div>`;
+  }
+  return undefined;
+};
+
+window["togglePassword"] = (
+  e: MouseEvent & { currentTarget: HTMLButtonElement }
+) => {
+  const input = e.currentTarget.parentElement!.firstChild as HTMLInputElement;
+  if (input.type === "password") {
+    input.type = "text";
+    e.currentTarget.innerHTML = icon(mdiEyeOff, "");
+  } else {
+    input.type = "password";
+    e.currentTarget.innerHTML = icon(mdiEye, "");
+  }
+};
 const showError = (error: string) => {
   content.innerHTML = `
     ${icon(mdiAlertCircle, "error")}
@@ -155,9 +229,6 @@ const intro = async () => {
   let storeToken = true;
 
   const updateContainer = () => {
-    const currentForm = document.querySelector("form");
-    const currentFormData = currentForm && new FormData(currentForm);
-
     let contents = "";
 
     if (mode.name === "app")
@@ -170,6 +241,8 @@ const intro = async () => {
       })}</p>`;
 
     if (step?.type === "form") {
+      const currentForm = document.querySelector("form");
+      const currentFormData = currentForm && new FormData(currentForm);
       if (step.errors?.base) {
         const error = localize(
           `ui.panel.page-authorize.form.providers.${authProvider.type}.error.${step.errors.base}`
@@ -180,49 +253,9 @@ const intro = async () => {
         const name = localize(
           `ui.panel.page-authorize.form.providers.${authProvider.type}.step.${step.step_id}.data.${item.name}`
         );
-        if (item.type === "string") {
-          const attributes: Record<string, any> = {
-            placeholder: name,
-            name: item.name,
-            type:
-              item.name === "password"
-                ? "password"
-                : item.name === "code"
-                ? "number"
-                : "text",
-            autocomplete:
-              item.name === "username"
-                ? "username"
-                : item.name === "password"
-                ? "current-password"
-                : item.name === "code"
-                ? "one-time-code"
-                : undefined,
-            required: item.required,
-          };
-          if (item.name === "username") {
-            if (currentFormData)
-              attributes.value = currentFormData.get("username") || undefined;
-            attributes.autocapitalize = "off";
-            attributes.autocorrect = "off";
-          }
-          const attributesStr = Object.entries(attributes)
-            .filter(([_key, value]) => value)
-            .map(([key, value]) => `${key}="${value}"`)
-            .join(" ");
-          contents += `<div class="input-wrapper"><input ${attributesStr} /><div class="bar"></div></div>`;
-        } else if (item.type === "select") {
-          const options = item.options.map(
-            (o) => `<option value="${o[0]}">${o[1]}</option>`
-          );
-          contents += `<div class="input-wrapper">
-            <select name="${item.name}"${
-              item.required ? " required" : ""
-            }>${options.join("")}</select>
-            <div class="bar"></div>
-            <span class="name">${name}</span>
-          </div>`;
-        }
+        const result = makeInput(item, name, currentFormData);
+        console.log("adding", result);
+        if (result) contents += result;
       }
       if (
         step.step_id !== "select_mfa_module" &&

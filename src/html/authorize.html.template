@@ -83,6 +83,7 @@
       }
       input::placeholder {
         color: inherit;
+        opacity: var(--text-opacity);
       }
       input::-webkit-outer-spin-button,
       input::-webkit-inner-spin-button {
@@ -90,6 +91,10 @@
       }
       input[type=number] {
         appearance: textfield;
+      }
+      input:focus-visible + .bar, select:focus-visible + .bar {
+        background-color: var(--primary-color);
+        height: 4px;
       }
       .bar {
         position: absolute;
@@ -100,12 +105,26 @@
         pointer-events: none;
         transition: all 200ms;
       }
+      .input-wrapper > button {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: var(--text-opacity);
+
+        width: 40px;
+        height: 40px;
+        top: 4px;
+        right: 4px;
+        padding: 0;
+        border-radius: 20px;
+        background-color: transparent;
+      }
+      .input-wrapper > button:hover {
+        background-color: inherit;
+      }
       input:is([type=text], [type=number], [type=password]):focus-visible, select:focus-visible {
         outline: none;
-      }
-      input:focus-visible + .bar, select:focus-visible + .bar {
-        background-color: var(--primary-color);
-        height: 4px;
       }
       label {
         display: flex;
@@ -129,6 +148,7 @@
         left: 16px;
         top: 6px;
         font-size: 12px;
+        opacity: var(--text-opacity);
         pointer-events: none;
       }
       @supports (moz-appearance: none) {
@@ -153,6 +173,8 @@
         border: none;
         cursor: pointer;
         white-space: nowrap;
+      }
+      .buttons > button {
         height: 40px;
         border-radius: 20px;
       }
@@ -199,9 +221,7 @@
       .input-wrapper {
         background-color: rgb(0, 0, 0, 0.08);
         --bar-color: rgb(0, 0, 0, 0.4);
-      }
-      input::placeholder, .name {
-        opacity: 0.8;
+        --text-opacity: 0.8;
       }
       @media (prefers-color-scheme: dark) {
         html {
@@ -219,9 +239,7 @@
         .input-wrapper {
           background-color: rgb(255, 255, 255, 0.05);
           --bar-color: rgb(255, 255, 255, 0.4);
-        }
-        input::placeholder, .name {
-          opacity: 0.6;
+          --text-opacity: 0.6;
         }
         .wordmark {
           fill: #F2F4F9;
