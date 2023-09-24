@@ -30,7 +30,7 @@ documentContainer.innerHTML = `<custom-style>
       /* main interface colors */
       --primary-color: ${DEFAULT_PRIMARY_COLOR};
       --dark-primary-color: #0288d1;
-      --light-primary-color: #b3e5fC;
+      --light-primary-color: #b3e5fc;
       --accent-color: ${DEFAULT_ACCENT_COLOR};
       --divider-color: rgba(0, 0, 0, .12);
 
