@@ -43,11 +43,6 @@ export const getSignedPath = (
   path: string
 ): Promise<SignedPath> => hass.callWS({ type: "auth/sign_path", path });
 
-export const fetchAuthProviders = () =>
-  fetch("/auth/providers", {
-    credentials: "same-origin",
-  });
-
 export const createAuthForUser = async (
   hass: HomeAssistant,
   userId: string,

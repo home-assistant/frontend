@@ -5406,20 +5406,19 @@
         "start_conversation": "Start conversation"
       },
       "page-authorize": {
-        "initializing": "Initializing",
-        "authorizing": "Login to your Home Assistant instance",
-        "authorizing_app": "You're about to give the Home Assistant Companion app for {app} access to your Home Assistant instance.",
-        "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
-        "logging_in_with": "Logging in with {authProviderName}.",
-        "pick_auth_provider": "Or log in with",
+        "heading_login": "Log in to Home Assistant",
+        "heading_app": "Connect to a companion app",
+        "heading_client": "Connect to a client",
+        "text_app": "You're about to give the {platform} Home Assistant Companion app access to your Home Assistant instance.",
+        "text_client": "You're about to give {clientId} access to your Home Assistant instance.",
         "abort_intro": "Login aborted",
         "store_token": "Keep me logged in",
+        "button_use_other_method": "Use {method}",
+        "button_start_over": "Start {method} over",
+        "button_login": "Log in",
+        "logging_in": "Logging in...",
         "form": {
-          "working": "Please wait",
-          "unknown_error": "Something went wrong",
-          "next": "Login",
-          "start_over": "Start over",
-          "error": "Error: {error}",
+          "next": "Log in",
           "providers": {
             "command_line": {
               "step": {
@@ -5432,8 +5431,7 @@
                 "mfa": {
                   "data": {
                     "code": "[%key:ui::panel::page-authorize::form::providers::homeassistant::step::mfa::data::code%]"
-                  },
-                  "description": "[%key:ui::panel::page-authorize::form::providers::homeassistant::step::mfa::description%]"
+                  }
                 }
               },
               "error": {
@@ -5452,11 +5450,15 @@
                     "password": "Password"
                   }
                 },
+                "select_mfa_module": {
+                  "data": {
+                    "multi_factor_auth_module": "MFA module"
+                  }
+                },
                 "mfa": {
                   "data": {
                     "code": "Two-factor authentication code"
-                  },
-                  "description": "Open the **{mfa_module_name}** on your device to view your two-factor authentication code and verify your identity:"
+                  }
                 }
               },
               "error": {
@@ -5472,14 +5474,7 @@
                 "init": {
                   "data": {
                     "password": "API password"
-                  },
-                  "description": "Please input the API password in your HTTP configuration:"
-                },
-                "mfa": {
-                  "data": {
-                    "code": "[%key:ui::panel::page-authorize::form::providers::homeassistant::step::mfa::data::code%]"
-                  },
-                  "description": "[%key:ui::panel::page-authorize::form::providers::homeassistant::step::mfa::description%]"
+                  }
                 }
               },
               "error": {
@@ -5496,8 +5491,7 @@
                 "init": {
                   "data": {
                     "user": "User"
-                  },
-                  "description": "Please select a user you want to login as:"
+                  }
                 }
               },
               "abort": {
