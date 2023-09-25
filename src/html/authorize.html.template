@@ -30,42 +30,6 @@
           fill: #F2F4F9;
         }
       }
-
-      ha-auth-flow .action {
-        margin: 24px 0 8px;
-        text-align: center;
-      }
-      ha-auth-flow .store-token {
-        margin-top: 10px;
-        margin-left: -16px;
-      }
-      
-      ha-auth-form .root > * {
-        display: block;
-      }
-      ha-auth-form .root > *:not([own-margin]):not(:last-child) {
-        margin-bottom: 24px;
-      }
-      ha-auth-form ha-alert[own-margin] {
-        margin-bottom: 4px;
-      }
-
-      ha-authorize ha-pick-auth-provider {
-        display: block;
-        margin-top: 48px;
-      }
-      ha-authorize ha-auth-flow {
-        display: block;
-        margin-top: 24px;
-      }
-      ha-authorize ha-alert {
-        display: block;
-        margin: 16px 0;
-      }
-      ha-authorize p {
-        font-size: 14px;
-        line-height: 20px;
-      }
     </style>
   </head>
   <body>

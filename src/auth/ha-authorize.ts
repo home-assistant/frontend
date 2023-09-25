@@ -1,3 +1,4 @@
+/* eslint-disable lit/prefer-static-styles */
 import { CSSResultGroup, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import punycode from "punycode";
@@ -54,13 +55,27 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
   protected render() {
     if (this._error) {
-      return html`<ha-alert alert-type="error"
-        >${this._error} ${this.redirectUri}</ha-alert
-      >`;
+      return html`
+        <style>
+          ha-authorize ha-alert {
+            display: block;
+            margin: 16px 0;
+          }
+        </style>
+        <ha-alert alert-type="error"
+          >${this._error} ${this.redirectUri}</ha-alert
+        >
+      `;
     }
 
     if (!this._authProviders) {
       return html`
+        <style>
+          ha-authorize p {
+            font-size: 14px;
+            line-height: 20px;
+          }
+        </style>
         <p>${this.localize("ui.panel.page-authorize.initializing")}</p>
       `;
     }
@@ -72,6 +87,25 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     const app = this.clientId && this.clientId in appNames;
 
     return html`
+      <style>
+        ha-authorize ha-pick-auth-provider {
+          display: block;
+          margin-top: 48px;
+        }
+        ha-authorize ha-auth-flow {
+          display: block;
+          margin-top: 24px;
+        }
+        ha-authorize ha-alert {
+          display: block;
+          margin: 16px 0;
+        }
+        ha-authorize p {
+          font-size: 14px;
+          line-height: 20px;
+        }
+      </style>
+
       ${!this._ownInstance
         ? html`<ha-alert .alertType=${app ? "info" : "warning"}>
             ${app
@@ -216,7 +250,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
   }
 
   static get styles(): CSSResultGroup {
-    // No shadow dom, styles should be in authorize.html.template
+    // No shadow dom, styles should be in <style> tag inside render
     return [];
   }
 }

@@ -1,4 +1,5 @@
-import { CSSResultGroup } from "lit";
+/* eslint-disable lit/prefer-static-styles */
+import { CSSResultGroup, html } from "lit";
 import { customElement } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { HaForm } from "../components/ha-form/ha-form";
@@ -33,8 +34,25 @@ export class HaAuthForm extends HaForm {
     return this;
   }
 
+  protected render() {
+    return html`
+      <style>
+        ha-auth-form .root > * {
+          display: block;
+        }
+        ha-auth-form .root > *:not([own-margin]):not(:last-child) {
+          margin-bottom: 24px;
+        }
+        ha-auth-form ha-alert[own-margin] {
+          margin-bottom: 4px;
+        }
+      </style>
+      ${super.render()}
+    `;
+  }
+
   static get styles(): CSSResultGroup {
-    // No shadow dom, styles should be in authorize.html.template
+    // No shadow dom, styles should be in <style> tag inside render
     return [];
   }
 }

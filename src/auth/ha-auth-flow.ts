@@ -1,3 +1,4 @@
+/* eslint-disable lit/prefer-static-styles */
 import "@material/mwc-button";
 import { genClientId } from "home-assistant-js-websocket";
 import { CSSResultGroup, html, LitElement, nothing, PropertyValues } from "lit";
@@ -74,7 +75,19 @@ export class HaAuthFlow extends LitElement {
   }
 
   protected render() {
-    return html` <form>${this._renderForm()}</form> `;
+    return html`
+      <style>
+        ha-auth-flow .action {
+          margin: 24px 0 8px;
+          text-align: center;
+        }
+        ha-auth-flow .store-token {
+          margin-top: 10px;
+          margin-left: -16px;
+        }
+      </style>
+      <form>${this._renderForm()}</form>
+    `;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -379,7 +392,7 @@ export class HaAuthFlow extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    // No shadow dom, styles should be in authorize.html.template
+    // No shadow dom, styles should be in <style> tag inside render
     return [];
   }
 }
