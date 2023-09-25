@@ -135,7 +135,7 @@ export class HaForm extends LitElement implements HaFormElement {
                   .required=${item.required || false}
                   .context=${this._generateContext(item)}
                 ></ha-selector>`
-              : dynamicElement(`ha-form-${item.type}`, {
+              : dynamicElement(this.fieldElementName(item.type), {
                   schema: item,
                   data: getValue(this.data, item),
                   label: this._computeLabel(item, this.data),
@@ -150,6 +150,10 @@ export class HaForm extends LitElement implements HaFormElement {
         })}
       </div>
     `;
+  }
+
+  protected fieldElementName(type: string) {
+    return `ha-form-${type}`;
   }
 
   private _generateContext(

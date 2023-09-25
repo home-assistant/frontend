@@ -1,13 +1,6 @@
-import punycode from "punycode";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import { CSSResultGroup, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import punycode from "punycode";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import "../components/ha-alert";
@@ -123,6 +116,10 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     `;
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
@@ -219,23 +216,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      ha-pick-auth-provider {
-        display: block;
-        margin-top: 48px;
-      }
-      ha-auth-flow {
-        display: block;
-        margin-top: 24px;
-      }
-      ha-alert {
-        display: block;
-        margin: 16px 0;
-      }
-      p {
-        font-size: 14px;
-        line-height: 20px;
-      }
-    `;
+    // No shadow dom, styles should be in authorize.html.template
+    return [];
   }
 }
