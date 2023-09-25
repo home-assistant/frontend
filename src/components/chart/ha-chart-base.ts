@@ -53,8 +53,8 @@ export class HaChartBase extends LitElement {
   @state() private _hiddenDatasets: Set<number> = new Set();
 
   public disconnectedCallback() {
-    this._releaseCanvas();
     super.disconnectedCallback();
+    this._releaseCanvas();
   }
 
   public connectedCallback() {
