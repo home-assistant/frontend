@@ -26,15 +26,13 @@ export class HaDeviceCard extends LitElement {
     return html`
       <ha-card
         outlined
-        .header=${this.hass.localize(
-          "ui.panel.config.devices.device_info",
-          "type",
-          this.hass.localize(
+        .header=${this.hass.localize("ui.panel.config.devices.device_info", {
+          type: this.hass.localize(
             `ui.panel.config.devices.type.${
               this.device.entry_type || "device"
             }_heading`
-          )
-        )}
+          ),
+        })}
       >
         <div class="card-content">
           ${this.device.model
@@ -45,8 +43,7 @@ export class HaDeviceCard extends LitElement {
                 <div class="manuf">
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.manuf",
-                    "manufacturer",
-                    this.device.manufacturer
+                    { manufacturer: this.device.manufacturer }
                   )}
                 </div>
               `
@@ -79,8 +76,7 @@ export class HaDeviceCard extends LitElement {
                         ? "version"
                         : "firmware"
                     }`,
-                    "version",
-                    this.device.sw_version
+                    { version: this.device.sw_version }
                   )}
                 </div>
               `
@@ -90,8 +86,7 @@ export class HaDeviceCard extends LitElement {
                 <div class="extra-info">
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.hardware",
-                    "version",
-                    this.device.hw_version
+                    { version: this.device.hw_version }
                   )}
                 </div>
               `

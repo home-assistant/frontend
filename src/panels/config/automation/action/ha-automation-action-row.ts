@@ -375,13 +375,9 @@ export default class HaAutomationActionRow extends LitElement {
             ${yamlMode
               ? html`
                   ${type === undefined
-                    ? html`
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.actions.unsupported_action",
-                          "action",
-                          type
-                        )}
-                      `
+                    ? this.hass.localize(
+                        "ui.panel.config.automation.editor.actions.unsupported_action"
+                      )
                     : ""}
                   <ha-yaml-editor
                     .hass=${this.hass}

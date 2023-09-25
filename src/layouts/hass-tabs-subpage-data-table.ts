@@ -147,11 +147,9 @@ export class HaTabsSubpageDataTable extends LitElement {
   protected render(): TemplateResult {
     const hiddenLabel = this.numHidden
       ? this.hiddenLabel ||
-        this.hass.localize(
-          "ui.components.data-table.hidden",
-          "number",
-          this.numHidden
-        ) ||
+        this.hass.localize("ui.components.data-table.hidden", {
+          number: this.numHidden,
+        }) ||
         this.numHidden
       : undefined;
 

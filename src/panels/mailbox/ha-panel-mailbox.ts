@@ -89,11 +89,9 @@ class HaPanelMailbox extends LitElement {
                   <div class="row">
                     <div>${message.caller}</div>
                     <div class="tip">
-                      ${this.hass.localize(
-                        "ui.duration.second",
-                        "count",
-                        message.duration
-                      )}
+                      ${this.hass.localize("ui.duration.second", {
+                        count: message.duration,
+                      })}
                     </div>
                   </div>
                   <div secondary>

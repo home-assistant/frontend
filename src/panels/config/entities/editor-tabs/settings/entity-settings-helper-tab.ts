@@ -82,8 +82,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
         ${!this._componentLoaded
           ? this.hass.localize(
               "ui.dialogs.helper_settings.platform_not_loaded",
-              "platform",
-              this.entry.platform
+              { platform: this.entry.platform }
             )
           : this._item === null
           ? this.hass.localize("ui.dialogs.helper_settings.yaml_not_editable")

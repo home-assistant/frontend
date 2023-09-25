@@ -465,8 +465,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 )
               : this.hass.localize(
                   "ui.panel.config.script.editor.load_error_unknown",
-                  "err_no",
-                  resp.status_code || resp.code
+                  { err_no: resp.status_code || resp.code }
                 )
           );
           history.back();
@@ -610,11 +609,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     ev.stopPropagation();
     await triggerScript(this.hass, this.scriptId!);
     showToast(this, {
-      message: this.hass.localize(
-        "ui.notification_toast.triggered",
-        "name",
-        this._config!.alias
-      ),
+      message: this.hass.localize("ui.notification_toast.triggered", {
+        name: this._config!.alias,
+      }),
     });
   }
 

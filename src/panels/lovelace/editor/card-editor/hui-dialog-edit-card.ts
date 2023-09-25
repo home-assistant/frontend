@@ -149,17 +149,17 @@ export class HuiDialogEditCard
     if (this._cardConfig && this._cardConfig.type) {
       heading = this.hass!.localize(
         "ui.panel.lovelace.editor.edit_card.typed_header",
-        "type",
-        this.hass!.localize(
-          `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
-        )
+        {
+          type: this.hass!.localize(
+            `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
+          ),
+        }
       );
     } else if (!this._cardConfig) {
       heading = this._viewConfig.title
         ? this.hass!.localize(
             "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
-            "name",
-            `"${this._viewConfig.title}"`
+            { name: `"${this._viewConfig.title}"` }
           )
         : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
     } else {

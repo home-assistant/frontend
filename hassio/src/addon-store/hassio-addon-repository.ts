@@ -49,11 +49,9 @@ export class HassioAddonRepositoryEl extends LitElement {
       return html`
         <div class="content">
           <p class="description">
-            ${this.supervisor.localize(
-              "store.no_results_found",
-              "repository",
-              repo.name
-            )}
+            ${this.supervisor.localize("store.no_results_found", {
+              repository: repo.name,
+            })}
           </p>
         </div>
       `;

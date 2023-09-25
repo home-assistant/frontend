@@ -543,8 +543,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               )
             : this.hass.localize(
                 "ui.panel.config.automation.editor.load_error_unknown",
-                "err_no",
-                err.status_code
+                { err_no: err.status_code }
               ),
       });
       history.back();

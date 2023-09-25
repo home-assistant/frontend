@@ -67,10 +67,10 @@ class DialogImportBlueprint extends LitElement {
           ${this._result
             ? html`${this.hass.localize(
                   "ui.panel.config.blueprint.add.import_header",
-                  "name",
-                  html`<b>${this._result.blueprint.metadata.name}</b>`,
-                  "domain",
-                  this._result.blueprint.metadata.domain
+                  {
+                    name: html`<b>${this._result.blueprint.metadata.name}</b>`,
+                    domain: this._result.blueprint.metadata.domain,
+                  }
                 )}
                 <br />
                 <ha-markdown

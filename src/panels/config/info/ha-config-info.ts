@@ -132,10 +132,7 @@ class HaConfigInfo extends LitElement {
                 <span>
                   ${this.hass.localize(
                     "ui.panel.config.info.frontend_version",
-                    "version",
-                    JS_VERSION,
-                    "type",
-                    JS_TYPE
+                    { version: JS_VERSION, type: JS_TYPE }
                   )}
                 </span>
               </div>

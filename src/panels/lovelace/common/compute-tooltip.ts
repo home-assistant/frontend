@@ -20,50 +20,33 @@ function computeActionTooltip(
     return "";
   }
 
-  let tooltip =
+  return (
     (isHold
       ? hass.localize("ui.panel.lovelace.cards.picture-elements.hold")
-      : hass.localize("ui.panel.lovelace.cards.picture-elements.tap")) + " ";
-
-  switch (config.action) {
-    case "navigate":
-      tooltip += `${hass.localize(
-        "ui.panel.lovelace.cards.picture-elements.navigate_to",
-        "location",
-        config.navigation_path
-      )}`;
-      break;
-    case "url":
-      tooltip += `${hass.localize(
-        "ui.panel.lovelace.cards.picture-elements.url",
-        "url_path",
-        config.url_path
-      )}`;
-      break;
-    case "toggle":
-      tooltip += `${hass.localize(
-        "ui.panel.lovelace.cards.picture-elements.toggle",
-        "name",
-        state
-      )}`;
-      break;
-    case "call-service":
-      tooltip += `${hass.localize(
-        "ui.panel.lovelace.cards.picture-elements.call_service",
-        "name",
-        config.service
-      )}`;
-      break;
-    case "more-info":
-      tooltip += `${hass.localize(
-        "ui.panel.lovelace.cards.picture-elements.more_info",
-        "name",
-        state
-      )}`;
-      break;
-  }
-
-  return tooltip;
+      : hass.localize("ui.panel.lovelace.cards.picture-elements.tap")) +
+    " " +
+    (config.action === "navigate"
+      ? hass.localize("ui.panel.lovelace.cards.picture-elements.navigate_to", {
+          location: config.navigation_path,
+        })
+      : config.action === "url"
+      ? hass.localize("ui.panel.lovelace.cards.picture-elements.url", {
+          url_path: config.url_path,
+        })
+      : config.action === "toggle"
+      ? hass.localize("ui.panel.lovelace.cards.picture-elements.toggle", {
+          name: state,
+        })
+      : config.action === "call-service"
+      ? hass.localize("ui.panel.lovelace.cards.picture-elements.call_service", {
+          name: config.service,
+        })
+      : config.action === "more-info"
+      ? hass.localize("ui.panel.lovelace.cards.picture-elements.more_info", {
+          name: state,
+        })
+      : "")
+  );
 }
 
 export const computeTooltip = (hass: HomeAssistant, config: Config): string => {

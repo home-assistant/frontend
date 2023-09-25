@@ -60,10 +60,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
         <hui-warning-element
           label=${this.hass.localize(
             "ui.panel.lovelace.warning.attribute_not_found",
-            "attribute",
-            this._config.attribute,
-            "entity",
-            this._config.entity
+            { attribute: this._config.attribute, entity: this._config.entity }
           )}
         ></hui-warning-element>
       `;

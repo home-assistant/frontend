@@ -532,8 +532,7 @@ export class VoiceAssistantsExpose extends LitElement {
         )}
         .hiddenLabel=${this.hass.localize(
           "ui.panel.config.entities.picker.filter.hidden_entities",
-          "number",
-          this._numHiddenEntities
+          { number: this._numHiddenEntities }
         )}
         .filter=${this._filter}
         selectable
@@ -557,8 +556,7 @@ export class VoiceAssistantsExpose extends LitElement {
                 <p class="selected-txt">
                   ${this.hass.localize(
                     "ui.panel.config.entities.picker.selected",
-                    "number",
-                    this._selectedEntities.length
+                    { number: this._selectedEntities.length }
                   )}
                 </p>
                 <div class="header-btns">

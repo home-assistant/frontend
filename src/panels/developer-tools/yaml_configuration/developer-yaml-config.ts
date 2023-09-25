@@ -159,8 +159,7 @@ export class DeveloperYamlConfig extends LitElement {
                   ) ||
                   this.hass.localize(
                     "ui.panel.developer-tools.tabs.yaml.section.reloading.reload",
-                    "domain",
-                    domainToName(this.hass.localize, domain)
+                    { domain: domainToName(this.hass.localize, domain) }
                   )}
                 </ha-call-service-button>
               </div>

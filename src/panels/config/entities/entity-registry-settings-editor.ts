@@ -776,21 +776,23 @@ export class EntityRegistrySettingsEditor extends LitElement {
               <span
                 >${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.configure_state",
-                  "integration",
-                  domainToName(
-                    this.hass.localize,
-                    this.helperConfigEntry.domain
-                  )
+                  {
+                    integration: domainToName(
+                      this.hass.localize,
+                      this.helperConfigEntry.domain
+                    ),
+                  }
                 )}</span
               >
               <span slot="secondary"
                 >${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.configure_state_secondary",
-                  "integration",
-                  domainToName(
-                    this.hass.localize,
-                    this.helperConfigEntry.domain
-                  )
+                  {
+                    integration: domainToName(
+                      this.hass.localize,
+                      this.helperConfigEntry.domain
+                    ),
+                  }
                 )}</span
               >
               <ha-icon-next slot="meta"></ha-icon-next>
@@ -828,10 +830,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
         ? html`<ha-alert alert-type="warning"
             >${this.hass.localize(
               "ui.dialogs.entity_registry.editor.enabled_cause",
-              "cause",
-              this.hass.localize(
-                `config_entry.disabled_by.${this._disabledBy!}`
-              )
+              {
+                cause: this.hass.localize(
+                  `config_entry.disabled_by.${this._disabledBy!}`
+                ),
+              }
             )}</ha-alert
           >`
         : ""}
@@ -862,8 +865,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
         ? html`<ha-alert alert-type="warning"
             >${this.hass.localize(
               "ui.dialogs.entity_registry.editor.hidden_cause",
-              "cause",
-              this.hass.localize(`config_entry.hidden_by.${this._hiddenBy!}`)
+              {
+                cause: this.hass.localize(
+                  `config_entry.hidden_by.${this._hiddenBy!}`
+                ),
+              }
             )}</ha-alert
           >`
         : ""}
@@ -1036,8 +1042,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.dialogs.entity_registry.editor.enabled_delay_confirm",
-          "delay",
-          result.reload_delay
+          { delay: result.reload_delay }
         ),
       });
     }

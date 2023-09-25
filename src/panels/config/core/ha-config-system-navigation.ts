@@ -50,57 +50,39 @@ class HaConfigSystemNavigation extends LitElement {
     const pages = configSections.general
       .filter((page) => canShowPage(this.hass, page))
       .map((page) => {
-        let description = "";
-
-        switch (page.translationKey) {
-          case "backup":
-            description = this._latestBackupDate
-              ? this.hass.localize(
-                  "ui.panel.config.backup.description",
-                  "relative_time",
-                  relativeTime(
+        const description =
+          page.translationKey === "backup"
+            ? this._latestBackupDate
+              ? this.hass.localize("ui.panel.config.backup.description", {
+                  relative_time: relativeTime(
                     new Date(this._latestBackupDate),
                     this.hass.locale
-                  )
-                )
+                  ),
+                })
               : this.hass.localize(
                   "ui.panel.config.backup.description_no_backup"
-                );
-            break;
-          case "network":
-            description = this.hass.localize(
-              "ui.panel.config.network.description",
-              "state",
-              this._externalAccess
-                ? this.hass.localize("ui.panel.config.network.enabled")
-                : this.hass.localize("ui.panel.config.network.disabled")
-            );
-            break;
-          case "storage":
-            description = this._storageInfo
-              ? this.hass.localize(
-                  "ui.panel.config.storage.description",
-                  "percent_used",
-                  `${Math.round(
+                )
+            : page.translationKey === "network"
+            ? this.hass.localize("ui.panel.config.network.description", {
+                state: this._externalAccess
+                  ? this.hass.localize("ui.panel.config.network.enabled")
+                  : this.hass.localize("ui.panel.config.network.disabled"),
+              })
+            : page.translationKey === "storage"
+            ? this._storageInfo
+              ? this.hass.localize("ui.panel.config.storage.description", {
+                  percent_used: `${Math.round(
                     (this._storageInfo.used / this._storageInfo.total) * 100
                   )}${blankBeforePercent(this.hass.locale)}%`,
-                  "free_space",
-                  `${this._storageInfo.free} GB`
-                )
-              : "";
-            break;
-          case "hardware":
-            description =
-              this._boardName ||
-              this.hass.localize("ui.panel.config.hardware.description");
-            break;
-
-          default:
-            description = this.hass.localize(
-              `ui.panel.config.${page.translationKey}.description`
-            );
-            break;
-        }
+                  free_space: `${this._storageInfo.free} GB`,
+                })
+              : ""
+            : page.translationKey === "hardware"
+            ? this._boardName ||
+              this.hass.localize("ui.panel.config.hardware.description")
+            : this.hass.localize(
+                `ui.panel.config.${page.translationKey}.description`
+              );
 
         return {
           ...page,

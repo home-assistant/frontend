@@ -537,13 +537,11 @@ export const generateDefaultViewConfig = (
           title:
             device.name_by_user ||
             device.name ||
-            localize(
-              "ui.panel.config.devices.unnamed_device",
-              "type",
-              localize(
+            localize("ui.panel.config.devices.unnamed_device", {
+              type: localize(
                 `ui.panel.config.devices.type.${device.entry_type || "device"}`
-              )
-            ),
+              ),
+            }),
         }
       )
     );

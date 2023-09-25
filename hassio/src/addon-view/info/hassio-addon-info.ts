@@ -401,13 +401,14 @@ class HassioAddonInfo extends LitElement {
 
           <div class="description light-color">
             ${this.addon.description}.<br />
-            ${this.supervisor.localize(
-              "addon.dashboard.visit_addon_page",
-              "name",
-              html`<a href=${this.addon.url!} target="_blank" rel="noreferrer"
+            ${this.supervisor.localize("addon.dashboard.visit_addon_page", {
+              name: html`<a
+                href=${this.addon.url!}
+                target="_blank"
+                rel="noreferrer"
                 >${this.addon.name}</a
-              >`
-            )}
+              >`,
+            })}
           </div>
           <div class="addon-container">
             <div>
@@ -574,10 +575,10 @@ class HassioAddonInfo extends LitElement {
                   <ha-alert alert-type="warning">
                     ${this.supervisor.localize(
                       "addon.dashboard.not_available_version",
-                      "core_version_installed",
-                      this.supervisor.core.version,
-                      "core_version_needed",
-                      addonStoreInfo!.homeassistant
+                      {
+                        core_version_installed: this.supervisor.core.version,
+                        core_version_needed: addonStoreInfo!.homeassistant,
+                      }
                     )}
                   </ha-alert>
                 `
@@ -750,12 +751,11 @@ class HassioAddonInfo extends LitElement {
         id === "stage"
           ? this.supervisor.localize(
               `addon.dashboard.capability.${id}.description`,
-              "icon_stable",
-              `<ha-svg-icon path="${STAGE_ICON.stable}"></ha-svg-icon>`,
-              "icon_experimental",
-              `<ha-svg-icon path="${STAGE_ICON.experimental}"></ha-svg-icon>`,
-              "icon_deprecated",
-              `<ha-svg-icon path="${STAGE_ICON.deprecated}"></ha-svg-icon>`
+              {
+                icon_stable: `<ha-svg-icon path="${STAGE_ICON.stable}"></ha-svg-icon>`,
+                icon_experimental: `<ha-svg-icon path="${STAGE_ICON.experimental}"></ha-svg-icon>`,
+                icon_deprecated: `<ha-svg-icon path="${STAGE_ICON.deprecated}"></ha-svg-icon>`,
+              }
             )
           : this.supervisor.localize(
               `addon.dashboard.capability.${id}.description`
@@ -817,11 +817,9 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err: any) {
-      this._error = this.supervisor.localize(
-        "addon.failed_to_save",
-        "error",
-        extractApiErrorMessage(err)
-      );
+      this._error = this.supervisor.localize("addon.failed_to_save", {
+        error: extractApiErrorMessage(err),
+      });
     }
   }
 
@@ -839,11 +837,9 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err: any) {
-      this._error = this.supervisor.localize(
-        "addon.failed_to_save",
-        "error",
-        extractApiErrorMessage(err)
-      );
+      this._error = this.supervisor.localize("addon.failed_to_save", {
+        error: extractApiErrorMessage(err),
+      });
     }
   }
 
@@ -861,11 +857,9 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err: any) {
-      this._error = this.supervisor.localize(
-        "addon.failed_to_save",
-        "error",
-        extractApiErrorMessage(err)
-      );
+      this._error = this.supervisor.localize("addon.failed_to_save", {
+        error: extractApiErrorMessage(err),
+      });
     }
   }
 
@@ -883,11 +877,9 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err: any) {
-      this._error = this.supervisor.localize(
-        "addon.failed_to_save",
-        "error",
-        extractApiErrorMessage(err)
-      );
+      this._error = this.supervisor.localize("addon.failed_to_save", {
+        error: extractApiErrorMessage(err),
+      });
     }
   }
 
@@ -905,11 +897,9 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err: any) {
-      this._error = this.supervisor.localize(
-        "addon.failed_to_save",
-        "error",
-        extractApiErrorMessage(err)
-      );
+      this._error = this.supervisor.localize("addon.failed_to_save", {
+        error: extractApiErrorMessage(err),
+      });
     }
   }
 

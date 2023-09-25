@@ -470,8 +470,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         )}
         .hiddenLabel=${this.hass.localize(
           "ui.panel.config.devices.picker.filter.hidden_devices",
-          "number",
-          this._numHiddenDevices
+          { number: this._numHiddenDevices }
         )}
         .columns=${this._columns(this.narrow, this._showDisabled)}
         .data=${devicesOutput}

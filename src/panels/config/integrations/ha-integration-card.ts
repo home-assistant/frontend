@@ -140,8 +140,7 @@ export class HaIntegrationCard extends LitElement {
                   `ui.panel.config.integrations.config_entry.${
                     services ? "services" : "devices"
                   }`,
-                  "count",
-                  devices.length
+                  { count: devices.length }
                 )}
               </ha-button>
             </a>`
@@ -152,8 +151,7 @@ export class HaIntegrationCard extends LitElement {
               <ha-button>
                 ${this.hass.localize(
                   `ui.panel.config.integrations.config_entry.entities`,
-                  "count",
-                  entities.length
+                  { count: entities.length }
                 )}
               </ha-button>
             </a>`
@@ -161,8 +159,7 @@ export class HaIntegrationCard extends LitElement {
               <ha-button>
                 ${this.hass.localize(
                   `ui.panel.config.integrations.config_entry.entries`,
-                  "count",
-                  this.items.length
+                  { count: this.items.length }
                 )}
               </ha-button>
             </a>`}

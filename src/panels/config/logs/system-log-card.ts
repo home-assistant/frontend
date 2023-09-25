@@ -46,17 +46,14 @@ export class SystemLogCard extends LitElement {
   }
 
   private _multipleMessages(item: LoggedError): string {
-    return this.hass.localize(
-      "ui.panel.config.logs.multiple_messages",
-      "time",
-      formatSystemLogTime(
+    return this.hass.localize("ui.panel.config.logs.multiple_messages", {
+      time: formatSystemLogTime(
         item.first_occurred,
         this.hass.locale,
         this.hass.config
       ),
-      "counter",
-      item.count
-    );
+      counter: item.count,
+    });
   }
 
   private _getFilteredItems = memoizeOne(
@@ -112,8 +109,7 @@ export class SystemLogCard extends LitElement {
                   ? html`<div class="card-content">
                       ${this.hass.localize(
                         "ui.panel.config.logs.no_issues_search",
-                        "term",
-                        this.filter
+                        { term: this.filter }
                       )}
                     </div>`
                   : filteredItems.map(

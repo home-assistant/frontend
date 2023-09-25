@@ -64,13 +64,11 @@ export const computeDeviceName = (
   device.name_by_user ||
   device.name ||
   (entities && fallbackDeviceName(hass, entities)) ||
-  hass.localize(
-    "ui.panel.config.devices.unnamed_device",
-    "type",
-    hass.localize(
+  hass.localize("ui.panel.config.devices.unnamed_device", {
+    type: hass.localize(
       `ui.panel.config.devices.type.${device.entry_type || "device"}`
-    )
-  );
+    ),
+  });
 
 export const devicesInArea = (devices: DeviceRegistryEntry[], areaId: string) =>
   devices.filter((device) => device.area_id === areaId);

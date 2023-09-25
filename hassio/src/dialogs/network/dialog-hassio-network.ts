@@ -145,8 +145,7 @@ export class DialogHassioNetwork
                   ? html`<p>
                       ${this.supervisor.localize(
                         "dialog.network.connected_to",
-                        "ssid",
-                        this._interface?.wifi?.ssid
+                        { ssid: this._interface?.wifi?.ssid }
                       )}
                     </p>`
                   : ""}

@@ -539,8 +539,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         )}
         .hiddenLabel=${this.hass.localize(
           "ui.panel.config.entities.picker.filter.hidden_entities",
-          "number",
-          this._numHiddenEntities
+          { number: this._numHiddenEntities }
         )}
         .filter=${this._filter}
         selectable
@@ -568,8 +567,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 <p class="selected-txt">
                   ${this.hass.localize(
                     "ui.panel.config.entities.picker.selected",
-                    "number",
-                    this._selectedEntities.length
+                    { number: this._selectedEntities.length }
                   )}
                 </p>
                 <div class="header-btns">
@@ -809,8 +807,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entities.picker.enable_selected.confirm_title",
-        "number",
-        this._selectedEntities.length
+        { number: this._selectedEntities.length }
       ),
       text: this.hass.localize(
         "ui.panel.config.entities.picker.enable_selected.confirm_text"
@@ -846,8 +843,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           showAlertDialog(this, {
             text: this.hass.localize(
               "ui.dialogs.entity_registry.editor.enabled_delay_confirm",
-              "delay",
-              reload_delay
+              { delay: reload_delay }
             ),
           });
         }
@@ -859,8 +855,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entities.picker.disable_selected.confirm_title",
-        "number",
-        this._selectedEntities.length
+        { number: this._selectedEntities.length }
       ),
       text: this.hass.localize(
         "ui.panel.config.entities.picker.disable_selected.confirm_text"
@@ -882,8 +877,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entities.picker.hide_selected.confirm_title",
-        "number",
-        this._selectedEntities.length
+        { number: this._selectedEntities.length }
       ),
       text: this.hass.localize(
         "ui.panel.config.entities.picker.hide_selected.confirm_text"
@@ -913,8 +907,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             ? "partly_"
             : ""
         }title`,
-        "number",
-        removeableEntities.length
+        { number: removeableEntities.length }
       ),
       text:
         removeableEntities.length === this._selectedEntities.length
@@ -923,10 +916,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             )
           : this.hass.localize(
               "ui.panel.config.entities.picker.remove_selected.confirm_partly_text",
-              "removable",
-              removeableEntities.length,
-              "selected",
-              this._selectedEntities.length
+              {
+                removable: removeableEntities.length,
+                selected: this._selectedEntities.length,
+              }
             ),
       confirmText: this.hass.localize("ui.common.remove"),
       dismissText: this.hass.localize("ui.common.cancel"),
