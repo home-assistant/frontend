@@ -53,10 +53,8 @@ class DialogLightColorFavorite extends LitElement {
   ): Promise<void> {
     this._entry = dialogParams.entry;
     this._dialogParams = dialogParams;
-    this._updateModes(dialogParams.defaultMode);
-    if (dialogParams.add) {
-      this._loadCurrentColor();
-    }
+    this._updateModes();
+    this._loadCurrentColorAndMode(dialogParams.add, dialogParams.defaultMode);
     await this.updateComplete;
   }
 
@@ -67,7 +65,7 @@ class DialogLightColorFavorite extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private _updateModes(defaultMode?: LightPickerMode) {
+  private _updateModes() {
     const supportsTemp = lightSupportsColorMode(
       this.stateObj!,
       LightColorMode.COLOR_TEMP
@@ -84,38 +82,44 @@ class DialogLightColorFavorite extends LitElement {
     }
 
     this._modes = modes;
-    this._mode =
-      defaultMode ??
-      (this.stateObj!.attributes.color_mode
-        ? this.stateObj!.attributes.color_mode === LightColorMode.COLOR_TEMP
-          ? LightColorMode.COLOR_TEMP
-          : "color"
-        : this._modes[0]);
   }
 
-  private _loadCurrentColor() {
+  private _loadCurrentColorAndMode(
+    add?: boolean,
+    defaultMode?: LightPickerMode
+  ) {
     const attributes = this.stateObj!.attributes;
     const color_mode = attributes.color_mode;
 
-    if (attributes.color_mode === LightColorMode.XY) {
+    let currentColor: LightColor | undefined;
+    let currentMode: LightPickerMode | undefined;
+    if (color_mode === LightColorMode.XY) {
+      currentMode = "color";
       // XY color not supported for favorites. Try to grab the hs or rgb instead.
       if (attributes.hs_color) {
-        this._color = { hs_color: attributes.hs_color };
+        currentColor = { hs_color: attributes.hs_color };
       } else if (attributes.rgb_color) {
-        this._color = { rgb_color: attributes.rgb_color };
+        currentColor = { rgb_color: attributes.rgb_color };
       }
     } else if (
       color_mode === LightColorMode.COLOR_TEMP &&
       attributes.color_temp_kelvin
     ) {
-      this._color = {
+      currentMode = LightColorMode.COLOR_TEMP;
+      currentColor = {
         color_temp_kelvin: attributes.color_temp_kelvin,
       };
     } else if (attributes[color_mode + "_color"]) {
-      this._color = {
+      currentMode = "color";
+      currentColor = {
         [color_mode + "_color"]: attributes[color_mode + "_color"],
       } as LightColor;
     }
+
+    if (add) {
+      this._color = currentColor;
+    }
+    this._mode = defaultMode ?? currentMode ?? this._modes[0];
   }
 
   private _colorChanged(ev: CustomEvent) {
