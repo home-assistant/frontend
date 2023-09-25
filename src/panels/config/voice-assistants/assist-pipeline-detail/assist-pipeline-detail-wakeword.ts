@@ -89,6 +89,8 @@ export class AssistPipelineDetailWakeWord extends LitElement {
   private async _fetchWakeWords() {
     if (!this.data?.wake_word_entity) {
       this._wakeWords = undefined;
+      // eslint-disable-next-line no-useless-return
+      return;
     }
     // to be implemented
     // this._wakeWords = await fetchWakeWords(this.hass, this.data.wake_word_entity);
