@@ -1,3 +1,4 @@
+/* eslint-disable lit/prefer-static-styles */
 import {
   css,
   CSSResultGroup,
@@ -62,6 +63,8 @@ export class HaForm extends LitElement implements HaFormElement {
   @property() public computeHelper?: (schema: any) => string | undefined;
 
   @property() public localizeValue?: (key: string) => string;
+
+  @property({ attribute: "light-dom", type: Boolean }) lightDom?: boolean;
 
   public async focus() {
     await this.updateComplete;
@@ -152,8 +155,8 @@ export class HaForm extends LitElement implements HaFormElement {
     `;
   }
 
-  protected fieldElementName(type: string) {
-    return `ha-form-${type}`;
+  protected fieldElementName(type: string): string {
+    return `ha-auth-form-${type}`;
   }
 
   private _generateContext(
@@ -171,11 +174,18 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   protected createRenderRoot() {
-    const root = super.createRenderRoot();
+    const root = this.lightDom ? this : super.createRenderRoot();
     // attach it as soon as possible to make sure we fetch all events.
-    root.addEventListener("value-changed", (ev) => {
+    this.addValueChangedListener(root);
+    return root;
+  }
+
+  protected addValueChangedListener(element: Element | ShadowRoot) {
+    element.addEventListener("value-changed", (ev) => {
       ev.stopPropagation();
       const schema = (ev.target as HaFormElement).schema as HaFormSchema;
+
+      if (ev.target === this) return;
 
       const newValue = !schema.name
         ? ev.detail.value
@@ -185,7 +195,6 @@ export class HaForm extends LitElement implements HaFormElement {
         value: { ...this.data, ...newValue },
       });
     });
-    return root;
   }
 
   private _computeLabel(schema: HaFormSchema, data: HaFormDataContainer) {

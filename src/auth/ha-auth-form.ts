@@ -1,59 +1,31 @@
 /* eslint-disable lit/prefer-static-styles */
-import { CSSResultGroup, html } from "lit";
+import { html } from "lit";
 import { customElement } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
 import { HaForm } from "../components/ha-form/ha-form";
-import { HaFormElement, HaFormSchema } from "../components/ha-form/types";
 import "./ha-auth-form-string";
 
 @customElement("ha-auth-form")
 export class HaAuthForm extends HaForm {
   protected fieldElementName(type: string): string {
     if (type === "string") {
-      return "ha-auth-form-string";
+      return `ha-auth-form-${type}`;
     }
     return super.fieldElementName(type);
   }
 
   protected createRenderRoot() {
     // attach it as soon as possible to make sure we fetch all events.
-    this.addEventListener("value-changed", (ev) => {
-      ev.stopPropagation();
-      const schema = (ev.target as HaFormElement).schema as HaFormSchema;
-
-      if (ev.target === this) return;
-
-      const newValue = !schema.name
-        ? ev.detail.value
-        : { [schema.name]: ev.detail.value };
-
-      fireEvent(this, "value-changed", {
-        value: { ...this.data, ...newValue },
-      });
-    });
+    this.addValueChangedListener(this);
     return this;
   }
 
   protected render() {
     return html`
       <style>
-        ha-auth-form .root > * {
-          display: block;
-        }
-        ha-auth-form .root > *:not([own-margin]):not(:last-child) {
-          margin-bottom: 24px;
-        }
-        ha-auth-form ha-alert[own-margin] {
-          margin-bottom: 4px;
-        }
+        ${HaForm.styles}
       </style>
       ${super.render()}
     `;
-  }
-
-  static get styles(): CSSResultGroup {
-    // No shadow dom, styles should be in <style> tag inside render
-    return [];
   }
 }
 

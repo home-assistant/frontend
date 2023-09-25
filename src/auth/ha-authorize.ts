@@ -1,5 +1,5 @@
 /* eslint-disable lit/prefer-static-styles */
-import { CSSResultGroup, html, LitElement, nothing, PropertyValues } from "lit";
+import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import punycode from "punycode";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
@@ -247,10 +247,5 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
   private async _handleAuthProviderPick(ev) {
     this._authProvider = ev.detail;
-  }
-
-  static get styles(): CSSResultGroup {
-    // No shadow dom, styles should be in <style> tag inside render
-    return [];
   }
 }
