@@ -42,7 +42,7 @@ export type FlattenObjectKeys<
 
 export type LocalizeFunc<Keys extends string = LocalizeKeys> = (
   key: Keys,
-  ...args: any[]
+  values?: Record<string, any>
 ) => string;
 
 interface FormatType {
@@ -54,29 +54,9 @@ export interface FormatsType {
   time: FormatType;
 }
 
-/**
- * Adapted from Polymer app-localize-behavior.
- *
- * Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
- * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
- * The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
- * The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
- * Code distributed by Google as part of the polymer project is also
- * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
- */
-
-/**
- * Optional dictionary of user defined formats, as explained here:
- * http://formatjs.io/guides/message-syntax/#custom-formats
- *
- * For example, a valid dictionary of formats would be:
- * this.formats = {
- *    number: { USD: { style: 'currency', currency: 'USD' } }
- * }
- */
+let localizationCache: Record<string, IntlMessageFormat> = {};
 
 export const computeLocalize = async <Keys extends string = LocalizeKeys>(
-  cache: any,
   language: string,
   resources: Resources,
   formats?: FormatsType
@@ -85,26 +65,23 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
     polyfillLocaleData(language)
   );
 
-  // Every time any of the parameters change, invalidate the strings cache.
-  cache._localizationCache = {};
+  // Don't keep around strings from the previous language
+  localizationCache = {};
 
-  return (key, ...args) => {
+  return (key, ..._args) => {
     if (!key || !resources || !language || !resources[language]) {
       return "";
     }
 
-    // Cache the key/value pairs for the same language, so that we don't
-    // do extra work if we're just reusing strings across an application.
     const translatedValue = resources[language][key];
 
     if (!translatedValue) {
       return "";
     }
 
-    const messageKey = key + translatedValue;
-    let translatedMessage = cache._localizationCache[messageKey] as
-      | IntlMessageFormat
-      | undefined;
+    // Cache the key/value pairs for the same language, so that we don't
+    // do extra work if we're just reusing strings across an application.
+    let translatedMessage = localizationCache[translatedValue];
 
     if (!translatedMessage) {
       try {
@@ -116,13 +93,17 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
       } catch (err: any) {
         return "Translation error: " + err.message;
       }
-      cache._localizationCache[messageKey] = translatedMessage;
+      localizationCache[translatedValue] = translatedMessage;
     }
 
     let argObject = {};
+    // TS says that we will always get the new format, but we might get the old format
+    const args = _args as any;
     if (args.length === 1 && typeof args[0] === "object") {
       argObject = args[0];
-    } else {
+    } else if (args.length >= 2) {
+      // eslint-disable-next-line no-console
+      console.warn("[FIXME] While localizing", key, "old format was passed");
       for (let i = 0; i < args.length; i += 2) {
         argObject[args[i]] = args[i + 1];
       }

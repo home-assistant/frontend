@@ -446,7 +446,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // Update resources immediately, so when a new update comes in we don't miss values
       this._updateHass({ resources });
 
-      const localize = await computeLocalize(this, language, resources);
+      const localize = await computeLocalize(language, resources);
 
       if (
         updateResourcesIteration !== i ||

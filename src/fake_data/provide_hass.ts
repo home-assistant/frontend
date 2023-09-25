@@ -99,7 +99,7 @@ export const provideHass = (
       resources,
     });
     hass().updateHass({
-      localize: await computeLocalize(elements[0], lang, hass().resources),
+      localize: await computeLocalize(lang, hass().resources),
     });
     fireEvent(window, "translations-updated");
   }

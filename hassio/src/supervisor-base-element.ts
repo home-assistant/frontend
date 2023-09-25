@@ -106,13 +106,9 @@ export class SupervisorBaseElement extends urlSyncMixin(
     const { language, data } = await getTranslation(null, this._language);
 
     this._updateSupervisor({
-      localize: await computeLocalize<SupervisorKeys>(
-        this.constructor.prototype,
-        language,
-        {
-          [language]: data,
-        }
-      ),
+      localize: await computeLocalize<SupervisorKeys>(language, {
+        [language]: data,
+      }),
     });
   }
 
