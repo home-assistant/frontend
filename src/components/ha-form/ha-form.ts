@@ -64,8 +64,6 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property() public localizeValue?: (key: string) => string;
 
-  @property({ attribute: "light-dom", type: Boolean }) lightDom?: boolean;
-
   public async focus() {
     await this.updateComplete;
     const root = this.renderRoot.querySelector(".root");
@@ -174,7 +172,7 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   protected createRenderRoot() {
-    const root = this.lightDom ? this : super.createRenderRoot();
+    const root = super.createRenderRoot();
     // attach it as soon as possible to make sure we fetch all events.
     this.addValueChangedListener(root);
     return root;
