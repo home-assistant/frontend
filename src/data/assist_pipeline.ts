@@ -14,6 +14,8 @@ export interface AssistPipeline {
   tts_engine: string | null;
   tts_language: string | null;
   tts_voice: string | null;
+  wake_word_entity: string | null;
+  wake_word_id: string | null;
 }
 
 export interface AssistPipelineMutableParams {
@@ -26,6 +28,8 @@ export interface AssistPipelineMutableParams {
   tts_engine: string | null;
   tts_language: string | null;
   tts_voice: string | null;
+  wake_word_entity: string | null;
+  wake_word_id: string | null;
 }
 
 export interface assistRunListing {
