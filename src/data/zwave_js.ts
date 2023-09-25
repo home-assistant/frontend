@@ -192,7 +192,7 @@ export interface ZWaveJSController {
   supported_function_types: number[];
   suc_node_id: number;
   supports_timers: boolean;
-  is_heal_network_active: boolean;
+  is_rebuilding_routes: boolean;
   inclusion_state: InclusionState;
   nodes: ZWaveJSNodeStatus[];
 }
@@ -278,9 +278,9 @@ export interface ZWaveJSRefreshNodeStatusMessage {
   stage?: string;
 }
 
-export interface ZWaveJSHealNetworkStatusMessage {
+export interface ZWaveJSRebuildRoutesStatusMessage {
   event: string;
-  heal_node_status: { [key: number]: string };
+  rebuild_routes_status: { [key: number]: string };
 }
 
 export interface ZWaveJSControllerStatisticsUpdatedMessage {
@@ -651,12 +651,12 @@ export const reinterviewZwaveNode = (
     }
   );
 
-export const healZwaveNode = (
+export const rebuildZwaveNodeRoutes = (
   hass: HomeAssistant,
   device_id: string
 ): Promise<boolean> =>
   hass.callWS({
-    type: "zwave_js/heal_node",
+    type: "zwave_js/rebuild_node_routes",
     device_id,
   });
 
@@ -673,33 +673,33 @@ export const removeFailedZwaveNode = (
     }
   );
 
-export const healZwaveNetwork = (
+export const rebuildZwaveNetworkRoutes = (
   hass: HomeAssistant,
   entry_id: string
 ): Promise<UnsubscribeFunc> =>
   hass.callWS({
-    type: "zwave_js/begin_healing_network",
+    type: "zwave_js/begin_rebuilding_routes",
     entry_id,
   });
 
-export const stopHealZwaveNetwork = (
+export const stopRebuildingZwaveNetworkRoutes = (
   hass: HomeAssistant,
   entry_id: string
 ): Promise<UnsubscribeFunc> =>
   hass.callWS({
-    type: "zwave_js/stop_healing_network",
+    type: "zwave_js/stop_rebuilding_routes",
     entry_id,
   });
 
-export const subscribeHealZwaveNetworkProgress = (
+export const subscribeRebuildZwaveNetworkRoutesProgress = (
   hass: HomeAssistant,
   entry_id: string,
-  callbackFunction: (message: ZWaveJSHealNetworkStatusMessage) => void
+  callbackFunction: (message: ZWaveJSRebuildRoutesStatusMessage) => void
 ): Promise<UnsubscribeFunc> =>
   hass.connection.subscribeMessage(
     (message: any) => callbackFunction(message),
     {
-      type: "zwave_js/subscribe_heal_network_progress",
+      type: "zwave_js/subscribe_rebuild_routes_progress",
       entry_id,
     }
   );
