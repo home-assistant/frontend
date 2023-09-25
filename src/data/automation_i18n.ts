@@ -138,41 +138,42 @@ const tryDescribeTrigger = (
 
   // Numeric State Trigger
   if (trigger.platform === "numeric_state" && trigger.entity_id) {
-    let base = "When";
     const stateObj = hass.states[trigger.entity_id];
     const entity = stateObj ? computeStateName(stateObj) : trigger.entity_id;
 
-    if (trigger.attribute) {
-      base += ` ${computeAttributeNameDisplay(
-        hass.localize,
-        stateObj,
-        hass.entities,
-        trigger.attribute
-      )} from`;
+    const attribute = trigger.attribute
+      ? computeAttributeNameDisplay(
+          hass.localize,
+          stateObj,
+          hass.entities,
+          trigger.attribute
+        )
+      : undefined;
+
+    const duration = trigger.for ? describeDuration(trigger.for) : undefined;
+
+    let hasAboveAndBelow = "other";
+    if (trigger.above && trigger.below) {
+      hasAboveAndBelow = "aboveAndBelow";
+    } else if (trigger.above) {
+      hasAboveAndBelow = "above";
+    } else if (trigger.below) {
+      hasAboveAndBelow = "below";
     }
 
-    base += ` ${entity} is`;
-
-    if (trigger.above !== undefined) {
-      base += ` above ${trigger.above}`;
-    }
-
-    if (trigger.below !== undefined && trigger.above !== undefined) {
-      base += " and";
-    }
-
-    if (trigger.below !== undefined) {
-      base += ` below ${trigger.below}`;
-    }
-
-    if (trigger.for) {
-      const duration = describeDuration(trigger.for);
-      if (duration) {
-        base += ` for ${duration}`;
+    return hass.localize(
+      `${triggerTranslationBaseKey}.numeric_state.description.full`,
+      {
+        hasAttribute: attribute !== undefined,
+        attribute: attribute,
+        entity: entity,
+        hasAboveAndBelow: hasAboveAndBelow,
+        above: trigger.above,
+        below: trigger.below,
+        hasDuration: duration !== undefined,
+        duration: duration,
       }
-    }
-
-    return base;
+    );
   }
 
   // State Trigger
@@ -825,29 +826,38 @@ const tryDescribeCondition = (
 
   // Numeric State Condition
   if (condition.condition === "numeric_state" && condition.entity_id) {
-    let base = "Confirm";
     const stateObj = hass.states[condition.entity_id];
     const entity = stateObj ? computeStateName(stateObj) : condition.entity_id;
 
-    if ("attribute" in condition) {
-      base += ` ${condition.attribute} from`;
+    const attribute = condition.attribute
+      ? computeAttributeNameDisplay(
+          hass.localize,
+          stateObj,
+          hass.entities,
+          condition.attribute
+        )
+      : undefined;
+
+    let hasAboveAndBelow = "other";
+    if (condition.above && condition.below) {
+      hasAboveAndBelow = "aboveAndBelow";
+    } else if (condition.above) {
+      hasAboveAndBelow = "above";
+    } else if (condition.below) {
+      hasAboveAndBelow = "below";
     }
 
-    base += ` ${entity} is`;
-
-    if ("above" in condition) {
-      base += ` above ${condition.above}`;
-    }
-
-    if ("below" in condition && "above" in condition) {
-      base += " and";
-    }
-
-    if ("below" in condition) {
-      base += ` below ${condition.below}`;
-    }
-
-    return base;
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.numeric_state.description.full`,
+      {
+        hasAttribute: attribute !== undefined,
+        attribute: attribute,
+        entity: entity,
+        hasAboveAndBelow: hasAboveAndBelow,
+        above: condition.above,
+        below: condition.below,
+      }
+    );
   }
 
   // Time condition

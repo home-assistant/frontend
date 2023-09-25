@@ -2440,7 +2440,10 @@
                   "mode_below": "Below mode",
                   "value_template": "Value template",
                   "type_value": "Fixed number",
-                  "type_input": "Numeric value of another entity"
+                  "type_input": "Numeric value of another entity",
+                  "description": {
+                    "full": "When {hasAttribute, select, \n true {{attribute} from } \n other {}\n }{entity} is {hasAboveAndBelow, select, \n above {above {above}} \n aboveAndBelow {above {above} and below {below}}\n below {below {below}}\n other {}\n }{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                  }
                 },
                 "persistent_notification": {
                   "label": "Persistent notification",
@@ -2589,7 +2592,10 @@
                   "below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::below%]",
                   "mode_above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_above%]",
                   "mode_below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_below%]",
-                  "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]"
+                  "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
+                  "description": {
+                    "full": "Confirm {hasAttribute, select, \n true {{attribute} from } \n other {}\n }{entity} is {hasAboveAndBelow, select, \n above {above {above}} \n aboveAndBelow {above {above} and below {below}}\n below {below {below}}\n other {}\n }"
+                  }
                 },
                 "or": {
                   "label": "Or",
