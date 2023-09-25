@@ -53,7 +53,7 @@
           <path d="M1824.98 272.606C1819.35 273.952 1813.59 274.696 1807.8 274.826C1797.84 274.826 1790.08 272.09 1784.51 266.616C1778.94 261.143 1776.16 253.006 1776.16 242.206V193.996H1761.02V173.996H1776.16V143.216H1799.59V173.976H1822.35V193.976H1799.59V237.976C1799.59 248.643 1803.73 253.976 1812 253.976C1815.42 253.833 1818.8 253.14 1822 251.926L1824.98 272.606Z" class="wordmark"/>
         </svg>
       </div>
-      <ha-authorize><p>Initializing</p></ha-authorize>
+      <ha-authorize></ha-authorize>
     </div>
     <%= renderTemplate("_js_base.html.template") %>
     <%= renderTemplate("_preload_roboto.html.template") %>
