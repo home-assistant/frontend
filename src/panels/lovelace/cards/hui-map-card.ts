@@ -48,6 +48,11 @@ import { MapCardConfig } from "./types";
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
 
+interface MapEntityConfig extends EntityConfig {
+  label_mode?: "state" | "name";
+  focus?: boolean;
+}
+
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -63,7 +68,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   @query("ha-map")
   private _map?: HaMap;
 
-  private _configEntities?: string[];
+  private _configEntities?: MapEntityConfig[];
 
   private _colorDict: Record<string, string> = {};
 
@@ -94,11 +99,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
-    this._configEntities = (
-      config.entities
-        ? processConfigEntities<EntityConfig>(config.entities)
-        : []
-    ).map((entity) => entity.entity);
+    this._configEntities = config.entities
+      ? processConfigEntities<MapEntityConfig>(config.entities)
+      : [];
   }
 
   public getCardSize(): number {
@@ -238,7 +241,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         this._stateHistory = combinedHistory;
       },
       this._config!.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW,
-      this._configEntities!,
+      (this._configEntities || []).map((entity) => entity.entity)!,
       false,
       false,
       false
@@ -309,16 +312,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     (
       states: HassEntities,
       config: MapCardConfig,
-      configEntities?: string[]
+      configEntities?: MapEntityConfig[]
     ) => {
       if (!states || !config) {
         return undefined;
       }
 
-      let entities = configEntities || [];
-
+      const geoEntities: string[] = [];
       if (config.geo_location_sources) {
-        const geoEntities: string[] = [];
         // Calculate visible geo location sources
         const includesAll = config.geo_location_sources.includes("all");
         for (const stateObj of Object.values(states)) {
@@ -330,14 +331,21 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             geoEntities.push(stateObj.entity_id);
           }
         }
-
-        entities = [...entities, ...geoEntities];
       }
 
-      return entities.map((entity) => ({
-        entity_id: entity,
-        color: this._getColor(entity),
-      }));
+      return [
+        ...(configEntities || []).map((entityConf) => ({
+          entity_id: entityConf.entity,
+          color: this._getColor(entityConf.entity),
+          label_mode: entityConf.label_mode,
+          focus: entityConf.focus,
+          name: entityConf.name,
+        })),
+        ...geoEntities.map((entity) => ({
+          entity_id: entity,
+          color: this._getColor(entity),
+        })),
+      ];
     }
   );
 

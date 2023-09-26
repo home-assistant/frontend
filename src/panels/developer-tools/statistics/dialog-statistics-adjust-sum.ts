@@ -132,20 +132,20 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
     if (!this._stats5min || !this._statsHour) {
       stats = html`<ha-circular-progress active></ha-circular-progress>`;
-    } else if (this._statsHour.length < 2 && this._stats5min.length < 2) {
+    } else if (this._statsHour.length < 1 && this._stats5min.length < 1) {
       stats = html`<p>No statistics found for this period.</p>`;
     } else {
       const data =
-        this._stats5min.length >= 2 ? this._stats5min : this._statsHour;
+        this._stats5min.length >= 1 ? this._stats5min : this._statsHour;
       const unit = getDisplayUnit(
         this.hass,
         this._params!.statistic.statistic_id,
         this._params!.statistic
       );
       const rows: TemplateResult[] = [];
-      for (let i = 1; i < data.length; i++) {
+      for (let i = 0; i < data.length; i++) {
         const stat = data[i];
-        const growth = Math.round((stat.sum! - data[i - 1].sum!) * 100) / 100;
+        const growth = Math.round(stat.change! * 100) / 100;
         rows.push(html`
           <mwc-list-item
             twoline
@@ -273,9 +273,9 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     // Here we convert it to an ISO string.
     const moment = new Date(this._moment!.replace(" ", "T"));
 
-    // Search 3 hours before and 3 hours after chosen time
+    // Search 2 hours before and 3 hours after chosen time
     const hourStatStart = new Date(moment.getTime());
-    hourStatStart.setTime(hourStatStart.getTime() - 3 * 3600 * 1000);
+    hourStatStart.setTime(hourStatStart.getTime() - 2 * 3600 * 1000);
     const hourStatEnd = new Date(moment.getTime());
     hourStatEnd.setTime(hourStatEnd.getTime() + 3 * 3600 * 1000);
 
@@ -287,7 +287,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       "hour"
     );
     this._statsHour =
-      statId in statsHourData ? statsHourData[statId].slice(0, 6) : [];
+      statId in statsHourData ? statsHourData[statId].slice(0, 5) : [];
 
     // Can't have 5 min data if no hourly data
     if (this._statsHour.length === 0) {
@@ -295,9 +295,9 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       return;
     }
 
-    // Search 15 minutes before and 15 minutes after chosen time
+    // Search 10 minutes before and 15 minutes after chosen time
     const minStatStart = new Date(moment.getTime());
-    minStatStart.setTime(minStatStart.getTime() - 15 * 60 * 1000);
+    minStatStart.setTime(minStatStart.getTime() - 10 * 60 * 1000);
     const minStatEnd = new Date(moment.getTime());
     minStatEnd.setTime(minStatEnd.getTime() + 15 * 60 * 1000);
 
@@ -310,7 +310,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     );
 
     this._stats5min =
-      statId in stats5MinData ? stats5MinData[statId].slice(0, 6) : [];
+      statId in stats5MinData ? stats5MinData[statId].slice(0, 5) : [];
   }
 
   private async _fixIssue(): Promise<void> {

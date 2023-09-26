@@ -342,6 +342,7 @@ class HaPanelDevTemplate extends LitElement {
     await this._unsubscribeTemplate();
     this._error = undefined;
     this._errorLevel = undefined;
+    this._templateResult = undefined;
     try {
       this._unsubRenderTemplate = subscribeRenderTemplate(
         this.hass.connection,

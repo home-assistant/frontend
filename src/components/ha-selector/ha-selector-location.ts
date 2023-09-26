@@ -26,6 +26,7 @@ export class HaLocationSelector extends LitElement {
 
   protected render() {
     return html`
+      <p>${this.label ? this.label : ""}</p>
       <ha-locations-editor
         class="flex"
         .hass=${this.hass}
@@ -78,9 +79,12 @@ export class HaLocationSelector extends LitElement {
   }
 
   static styles = css`
-    :host {
+    ha-locations-editor {
       display: block;
       height: 400px;
+    }
+    p {
+      margin-top: 0;
     }
   `;
 }

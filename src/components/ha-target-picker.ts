@@ -237,8 +237,6 @@ export class HaTargetPicker extends LitElement {
           : html`<span role="gridcell">
               <ha-icon-button
                 class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
-                tabindex="-1"
-                role="button"
                 .label=${this.hass.localize(
                   "ui.components.target-picker.expand"
                 )}
@@ -257,8 +255,6 @@ export class HaTargetPicker extends LitElement {
         <span role="gridcell">
           <ha-icon-button
             class="mdc-chip__icon mdc-chip__icon--trailing"
-            tabindex="-1"
-            role="button"
             .label=${this.hass.localize("ui.components.target-picker.remove")}
             .path=${mdiClose}
             hideTooltip

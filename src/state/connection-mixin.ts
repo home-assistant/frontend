@@ -77,8 +77,13 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         enableShortcuts: true,
         moreInfoEntityId: null,
         hassUrl: (path = "") => new URL(path, auth.data.hassUrl).toString(),
-        // eslint-disable-next-line @typescript-eslint/default-param-last
-        callService: async (domain, service, serviceData = {}, target) => {
+        callService: async (
+          domain,
+          service,
+          serviceData,
+          target,
+          notifyOnError = true
+        ) => {
           if (__DEV__) {
             // eslint-disable-next-line no-console
             console.log(
@@ -94,7 +99,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               conn,
               domain,
               service,
-              serviceData,
+              serviceData ?? {},
               target
             )) as ServiceCallResponse;
           } catch (err: any) {
@@ -111,24 +116,25 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
                 domain,
                 service,
                 serviceData,
-                target,
-                err
+                target
               );
             }
-            forwardHaptic("failure");
-            const message =
-              (this as any).hass.localize(
-                "ui.notification_toast.service_call_failed",
-                "service",
-                `${domain}/${service}`
-              ) +
-              ` ${
-                err.message ||
-                (err.error?.code === ERR_CONNECTION_LOST
-                  ? "connection lost"
-                  : "unknown error")
-              }`;
-            fireEvent(this as any, "hass-notification", { message });
+            if (notifyOnError) {
+              forwardHaptic("failure");
+              const message =
+                (this as any).hass.localize(
+                  "ui.notification_toast.service_call_failed",
+                  "service",
+                  `${domain}/${service}`
+                ) +
+                ` ${
+                  err.message ||
+                  (err.error?.code === ERR_CONNECTION_LOST
+                    ? "connection lost"
+                    : "unknown error")
+                }`;
+              fireEvent(this as any, "hass-notification", { message });
+            }
             throw err;
           }
         },
@@ -177,10 +183,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           // @ts-ignore
           this._loadFragmentTranslations(this.hass?.language, fragment),
         formatEntityState: (stateObj, state) =>
-          (state !== null ? state : stateObj.state) ?? "",
+          (state != null ? state : stateObj.state) ?? "",
         formatEntityAttributeName: (_stateObj, attribute) => attribute,
         formatEntityAttributeValue: (stateObj, attribute, value) =>
-          value !== null ? value : stateObj.attributes[attribute] ?? "",
+          value != null ? value : stateObj.attributes[attribute] ?? "",
         ...getState(),
         ...this._pendingHass,
       };

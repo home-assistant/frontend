@@ -7,16 +7,15 @@ import {
   mdiPlus,
   mdiTransitConnection,
 } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { differenceInDays } from "date-fns/esm";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
-import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import { HASSDomEvent, fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -29,13 +28,18 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
+import { fetchBlueprints } from "../../../data/blueprint";
+import { UNAVAILABLE } from "../../../data/entity";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
+  ScriptEntity,
   deleteScript,
   fetchScriptFileConfig,
   getScriptStateConfig,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
+import { findRelated } from "../../../data/search";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -45,18 +49,18 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
-import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "../automation/show-dialog-new-automation";
-import { EntityRegistryEntry } from "../../../data/entity_registry";
-import { findRelated } from "../../../data/search";
-import { fetchBlueprints } from "../../../data/blueprint";
-import { UNAVAILABLE } from "../../../data/entity";
+import { configSections } from "../ha-panel-config";
+
+type ScriptItem = ScriptEntity & {
+  name: string;
+};
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public scripts!: HassEntity[];
+  @property() public scripts!: ScriptEntity[];
 
   @property() public isWide!: boolean;
 
@@ -75,7 +79,10 @@ class HaScriptPicker extends LitElement {
   @state() private _filterValue?;
 
   private _scripts = memoizeOne(
-    (scripts: HassEntity[], filteredScripts?: string[] | null) => {
+    (
+      scripts: ScriptEntity[],
+      filteredScripts?: string[] | null
+    ): ScriptItem[] => {
       if (filteredScripts === null) {
         return [];
       }
@@ -93,126 +100,136 @@ class HaScriptPicker extends LitElement {
     }
   );
 
-  private _columns = memoizeOne((narrow, _locale): DataTableColumnContainer => {
-    const columns: DataTableColumnContainer = {
-      icon: {
-        title: "",
-        label: this.hass.localize(
-          "ui.panel.config.script.picker.headers.state"
-        ),
-        type: "icon",
-        template: (_icon, script) =>
-          html`<ha-state-icon
-            .state=${script}
-            style=${styleMap({
-              color:
-                script.state === UNAVAILABLE ? "var(--error-color)" : "unset",
-            })}
-          ></ha-state-icon>`,
-      },
-      name: {
-        title: this.hass.localize("ui.panel.config.script.picker.headers.name"),
-        main: true,
-        sortable: true,
-        filterable: true,
-        direction: "asc",
-        grows: true,
-        template: narrow
-          ? (name, script: any) => {
-              const date = new Date(script.attributes.last_triggered);
-              const now = new Date();
-              const dayDifference = differenceInDays(now, date);
-              return html`
-                ${name}
-                <div class="secondary">
-                  ${this.hass.localize("ui.card.automation.last_triggered")}:
-                  ${script.attributes.last_triggered
-                    ? dayDifference > 3
-                      ? formatShortDateTime(
-                          date,
-                          this.hass.locale,
-                          this.hass.config
-                        )
-                      : relativeTime(date, this.hass.locale)
-                    : this.hass.localize("ui.components.relative_time.never")}
-                </div>
-              `;
-            }
-          : undefined,
-      },
-    };
-    if (!narrow) {
-      columns.last_triggered = {
-        sortable: true,
-        width: "40%",
-        title: this.hass.localize("ui.card.automation.last_triggered"),
-        template: (last_triggered) => {
-          const date = new Date(last_triggered);
-          const now = new Date();
-          const dayDifference = differenceInDays(now, date);
-          return html`
-            ${last_triggered
-              ? dayDifference > 3
-                ? formatShortDateTime(date, this.hass.locale, this.hass.config)
-                : relativeTime(date, this.hass.locale)
-              : this.hass.localize("ui.components.relative_time.never")}
-          `;
+  private _columns = memoizeOne(
+    (narrow, _locale): DataTableColumnContainer<ScriptItem> => {
+      const columns: DataTableColumnContainer = {
+        icon: {
+          title: "",
+          label: this.hass.localize(
+            "ui.panel.config.script.picker.headers.state"
+          ),
+          type: "icon",
+          template: (script) =>
+            html`<ha-state-icon
+              .state=${script}
+              style=${styleMap({
+                color:
+                  script.state === UNAVAILABLE ? "var(--error-color)" : "unset",
+              })}
+            ></ha-state-icon>`,
+        },
+        name: {
+          title: this.hass.localize(
+            "ui.panel.config.script.picker.headers.name"
+          ),
+          main: true,
+          sortable: true,
+          filterable: true,
+          direction: "asc",
+          grows: true,
+          template: narrow
+            ? (script) => {
+                const date = new Date(script.last_triggered);
+                const now = new Date();
+                const dayDifference = differenceInDays(now, date);
+                return html`
+                  ${script.name}
+                  <div class="secondary">
+                    ${this.hass.localize("ui.card.automation.last_triggered")}:
+                    ${script.last_triggered
+                      ? dayDifference > 3
+                        ? formatShortDateTime(
+                            date,
+                            this.hass.locale,
+                            this.hass.config
+                          )
+                        : relativeTime(date, this.hass.locale)
+                      : this.hass.localize("ui.components.relative_time.never")}
+                  </div>
+                `;
+              }
+            : undefined,
         },
       };
+      if (!narrow) {
+        columns.last_triggered = {
+          sortable: true,
+          width: "40%",
+          title: this.hass.localize("ui.card.automation.last_triggered"),
+          template: (script) => {
+            const date = new Date(script.last_triggered);
+            const now = new Date();
+            const dayDifference = differenceInDays(now, date);
+            return html`
+              ${script.last_triggered
+                ? dayDifference > 3
+                  ? formatShortDateTime(
+                      date,
+                      this.hass.locale,
+                      this.hass.config
+                    )
+                  : relativeTime(date, this.hass.locale)
+                : this.hass.localize("ui.components.relative_time.never")}
+            `;
+          },
+        };
+      }
+
+      columns.actions = {
+        title: "",
+        width: this.narrow ? undefined : "10%",
+        type: "overflow-menu",
+        template: (script) => html`
+          <ha-icon-overflow-menu
+            .hass=${this.hass}
+            narrow
+            .items=${[
+              {
+                path: mdiInformationOutline,
+                label: this.hass.localize(
+                  "ui.panel.config.script.picker.show_info"
+                ),
+                action: () => this._showInfo(script),
+              },
+              {
+                path: mdiPlay,
+                label: this.hass.localize("ui.panel.config.script.picker.run"),
+                action: () => this._runScript(script),
+              },
+              {
+                path: mdiTransitConnection,
+                label: this.hass.localize(
+                  "ui.panel.config.script.picker.show_trace"
+                ),
+                action: () => this._showTrace(script),
+              },
+              {
+                divider: true,
+              },
+              {
+                path: mdiContentDuplicate,
+                label: this.hass.localize(
+                  "ui.panel.config.script.picker.duplicate"
+                ),
+                action: () => this._duplicate(script),
+              },
+              {
+                label: this.hass.localize(
+                  "ui.panel.config.script.picker.delete"
+                ),
+                path: mdiDelete,
+                action: () => this._deleteConfirm(script),
+                warning: true,
+              },
+            ]}
+          >
+          </ha-icon-overflow-menu>
+        `,
+      };
+
+      return columns;
     }
-
-    columns.actions = {
-      title: "",
-      width: this.narrow ? undefined : "10%",
-      type: "overflow-menu",
-      template: (_: string, script: any) => html`
-        <ha-icon-overflow-menu
-          .hass=${this.hass}
-          narrow
-          .items=${[
-            {
-              path: mdiInformationOutline,
-              label: this.hass.localize(
-                "ui.panel.config.script.picker.show_info"
-              ),
-              action: () => this._showInfo(script),
-            },
-            {
-              path: mdiPlay,
-              label: this.hass.localize("ui.panel.config.script.picker.run"),
-              action: () => this._runScript(script),
-            },
-            {
-              path: mdiTransitConnection,
-              label: this.hass.localize(
-                "ui.panel.config.script.picker.show_trace"
-              ),
-              action: () => this._showTrace(script),
-            },
-            {
-              divider: true,
-            },
-            {
-              path: mdiContentDuplicate,
-              label: this.hass.localize(
-                "ui.panel.config.script.picker.duplicate"
-              ),
-              action: () => this._duplicate(script),
-            },
-            {
-              label: this.hass.localize("ui.panel.config.script.picker.delete"),
-              path: mdiDelete,
-              action: () => this._deleteConfirm(script),
-              warning: true,
-            },
-          ]}
-        >
-        </ha-icon-overflow-menu>
-      `,
-    };
-
-    return columns;
-  });
+  );
 
   protected render(): TemplateResult {
     return html`

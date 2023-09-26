@@ -105,7 +105,8 @@
         "cooling": "{name} cooling",
         "high": "high",
         "low": "low",
-        "mode": "Mode"
+        "mode": "Mode",
+        "preset": "Preset"
       },
       "counter": {
         "actions": {
@@ -192,6 +193,9 @@
       },
       "service": {
         "run": "Run"
+      },
+      "select": {
+        "option": "Option"
       },
       "update": {
         "installing": "Installing",
@@ -2169,7 +2173,9 @@
                   "stt_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "tts_engine": "Text-to-speech",
                   "tts_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
-                  "tts_voice": "Voice"
+                  "tts_voice": "Voice",
+                  "wake_word_entity": "Wake word engine",
+                  "wake_word_id": "Wake word"
                 },
                 "steps": {
                   "config": {
@@ -2187,6 +2193,10 @@
                   "tts": {
                     "title": "Text-to-speech",
                     "description": "When you are controlling your assistant with voice, the text-to-speech engine turns the conversation text responses into audio."
+                  },
+                  "wakeword": {
+                    "title": "Wake word",
+                    "description": "If a device supports wake words, you can activate Assist by saying this word."
                   }
                 },
                 "no_cloud_message": "You should have an active cloud subscription to use cloud speech services.",
@@ -2397,7 +2407,10 @@
                   "zone": "Zone",
                   "event": "Event",
                   "enter": "Enter",
-                  "leave": "Leave"
+                  "leave": "Leave",
+                  "description": {
+                    "full": "When {source} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone}\n other {zones}\n}"
+                  }
                 },
                 "state": {
                   "label": "State",
@@ -2444,6 +2457,9 @@
                     "removed": "removed",
                     "current": "current",
                     "updated": "updated"
+                  },
+                  "description": {
+                    "full": "When a persistent notification is updated"
                   }
                 },
                 "sun": {
@@ -2515,7 +2531,10 @@
                   "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "enter": "Enter",
-                  "leave": "Leave"
+                  "leave": "Leave",
+                  "description": {
+                    "full": "When {entity} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
+                  }
                 }
               }
             },
@@ -3183,6 +3202,7 @@
             }
           },
           "dialog_certificate": {
+            "alternative_names": "Alternative names:",
             "certificate_information": "Certificate information",
             "certificate_expiration_date": "Certificate expiration date:",
             "will_be_auto_renewed": "will be automatically renewed",
@@ -5036,6 +5056,18 @@
                     "label": "Climate HVAC modes",
                     "hvac_modes": "HVAC modes"
                   },
+                  "climate-preset-modes": {
+                    "label": "Climate preset modes",
+                    "style": "Style",
+                    "style_list": {
+                      "dropdown": "Dropdown",
+                      "icons": "Icons"
+                    },
+                    "preset_modes": "Preset modes"
+                  },
+                  "select-options": {
+                    "label": "Select options"
+                  },
                   "target-temperature": {
                     "label": "Target temperature"
                   },
@@ -5137,7 +5169,8 @@
             "types": {
               "header": "Header editor",
               "footer": "Footer editor",
-              "row": "Entity row editor"
+              "row": "Entity row editor",
+              "tile-feature": "Tile feature editor"
             }
           }
         },
