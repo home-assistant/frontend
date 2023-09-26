@@ -35,6 +35,8 @@ export class StateHistoryChartLine extends LitElement {
 
   @property({ type: Boolean }) public showNames = true;
 
+  @property({ type: Boolean }) public clickForMoreInfo = true;
+
   @property({ attribute: false }) public startTime!: Date;
 
   @property({ attribute: false }) public endTime!: Date;
@@ -44,6 +46,8 @@ export class StateHistoryChartLine extends LitElement {
   @property({ type: Number }) public chartIndex?;
 
   @state() private _chartData?: ChartData<"line">;
+
+  @state() private _entityIds: string[] = [];
 
   @state() private _chartOptions?: ChartOptions;
 
@@ -171,6 +175,25 @@ export class StateHistoryChartLine extends LitElement {
         },
         // @ts-expect-error
         locale: numberFormatToLocale(this.hass.locale),
+        onClick: (e: any) => {
+          if (!this.clickForMoreInfo) {
+            return;
+          }
+
+          const points = e.chart.getElementsAtEventForMode(
+            e,
+            "nearest",
+            { intersect: true },
+            true
+          );
+
+          if (points.length) {
+            const firstPoint = points[0];
+            fireEvent(this, "hass-more-info", {
+              entityId: this._entityIds[firstPoint.datasetIndex],
+            });
+          }
+        },
       };
     }
     if (
@@ -191,6 +214,7 @@ export class StateHistoryChartLine extends LitElement {
     const computedStyles = getComputedStyle(this);
     const entityStates = this.data;
     const datasets: ChartDataset<"line">[] = [];
+    const entityIds: string[] = [];
     if (entityStates.length === 0) {
       return;
     }
@@ -242,6 +266,7 @@ export class StateHistoryChartLine extends LitElement {
           pointRadius: 0,
           data: [],
         });
+        entityIds.push(states.entity_id);
       };
 
       if (
@@ -493,6 +518,7 @@ export class StateHistoryChartLine extends LitElement {
     this._chartData = {
       datasets,
     };
+    this._entityIds = entityIds;
   }
 }
 customElements.define("state-history-chart-line", StateHistoryChartLine);
