@@ -7,6 +7,7 @@ export interface LightColorFavoriteDialogParams {
   entry: ExtEntityRegistryEntry;
   title: string;
   defaultMode?: LightPickerMode;
+  add?: boolean;
   submit?: (color?: LightColor) => void;
   cancel?: () => void;
 }

@@ -141,6 +141,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
   private _add = async () => {
     const color = await showLightColorFavoriteDialog(this, {
       entry: this.entry!,
+      add: true,
       title: this.hass.localize(
         "ui.dialogs.more_info_control.light.favorite_color.add_title"
       ),
