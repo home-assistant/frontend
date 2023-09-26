@@ -2173,7 +2173,9 @@
                   "stt_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "tts_engine": "Text-to-speech",
                   "tts_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
-                  "tts_voice": "Voice"
+                  "tts_voice": "Voice",
+                  "wake_word_entity": "Wake word engine",
+                  "wake_word_id": "Wake word"
                 },
                 "steps": {
                   "config": {
@@ -2191,6 +2193,10 @@
                   "tts": {
                     "title": "Text-to-speech",
                     "description": "When you are controlling your assistant with voice, the text-to-speech engine turns the conversation text responses into audio."
+                  },
+                  "wakeword": {
+                    "title": "Wake word",
+                    "description": "If a device supports wake words, you can activate Assist by saying this word."
                   }
                 },
                 "no_cloud_message": "You should have an active cloud subscription to use cloud speech services.",
