@@ -160,7 +160,7 @@
     "@babel/preset-env": "7.22.20",
     "@babel/preset-typescript": "7.23.0",
     "@koa/cors": "4.0.0",
-    "@lokalise/node-api": "11.1.0",
+    "@lokalise/node-api": "12.0.0",
     "@octokit/auth-oauth-device": "6.0.1",
     "@octokit/plugin-retry": "6.0.1",
     "@octokit/rest": "20.0.1",
