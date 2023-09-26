@@ -82,26 +82,23 @@ export class HaChooseAction extends LitElement implements ActionElement {
     if (this.isExpanded(idx)) {
       return "";
     }
-    if (!option.conditions || option.conditions.length === 0) {
+    const conditions = ensureArray(option.conditions);
+    if (!conditions || conditions.length === 0) {
       return this.hass.localize(
         "ui.panel.config.automation.editor.actions.type.choose.no_conditions"
       );
     }
     let str = "";
-    if (typeof option.conditions[0] === "string") {
-      str += option.conditions[0];
+    if (typeof conditions[0] === "string") {
+      str += conditions[0];
     } else {
-      str += describeCondition(
-        option.conditions[0],
-        this.hass,
-        this._entityReg
-      );
+      str += describeCondition(conditions[0], this.hass, this._entityReg);
     }
-    if (option.conditions.length > 1) {
+    if (conditions.length > 1) {
       str += this.hass.localize(
         "ui.panel.config.automation.editor.actions.type.choose.option_description_additional",
         "numberOfAdditionalConditions",
-        option.conditions.length - 1
+        conditions.length - 1
       );
     }
     return str;
