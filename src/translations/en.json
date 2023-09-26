@@ -294,6 +294,7 @@
       "undo": "Undo",
       "move": "Move",
       "save": "Save",
+      "add": "Add",
       "edit": "Edit",
       "submit": "Submit",
       "rename": "Rename",
@@ -1665,10 +1666,9 @@
             "create_area": "Create Area"
           },
           "editor": {
-            "default_name": "New area",
+            "create_area": "Create area",
+            "update_area": "Update area",
             "delete": "Delete",
-            "update": "Update",
-            "create": "Create",
             "name": "Name",
             "name_required": "Name is required",
             "area_id": "Area ID",
