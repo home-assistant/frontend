@@ -154,7 +154,7 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   protected fieldElementName(type: string): string {
-    return `ha-auth-form-${type}`;
+    return `ha-form-${type}`;
   }
 
   private _generateContext(
