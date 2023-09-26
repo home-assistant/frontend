@@ -265,7 +265,7 @@ const COUNTRIES = [
 export class HaCountryPicker extends LitElement {
   @property() public language = "en";
 
-  @property() public options?: string;
+  @property() public value?: string;
 
   @property() public label?: string;
 
@@ -300,7 +300,7 @@ export class HaCountryPicker extends LitElement {
     return html`
       <ha-select
         .label=${this.label}
-        .value=${this.options}
+        .value=${this.value}
         .required=${this.required}
         .helper=${this.helper}
         .disabled=${this.disabled}

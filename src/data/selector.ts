@@ -128,7 +128,7 @@ export interface ConstantSelector {
 export interface CountrySelector {
   country: {
     multiple?: boolean;
-    options: readonly string[] | readonly SelectOption[];
+    value: readonly string[] | readonly SelectOption[];
     label?: string;
   } | null;
 }
