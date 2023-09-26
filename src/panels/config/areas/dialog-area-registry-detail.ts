@@ -78,13 +78,14 @@ class DialogAreaDetail extends LitElement {
           <div class="form">
             ${entry
               ? html`
-                  <ha-textfield
-                    .value=${entry.area_id}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.areas.editor.area_id"
-                    )}
-                    disabled
-                  ></ha-textfield>
+                  <ha-settings-row>
+                    <span slot="heading">
+                      ${this.hass.localize(
+                        "ui.panel.config.areas.editor.area_id"
+                      )}
+                    </span>
+                    <span slot="description"> ${entry.area_id} </span>
+                  </ha-settings-row>
                 `
               : nothing}
 
