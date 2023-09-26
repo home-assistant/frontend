@@ -31,7 +31,6 @@ import {
   mdiGauge,
   mdiGoogleAssistant,
   mdiGoogleCirclesCommunities,
-  mdiHomeAssistant,
   mdiHomeAutomation,
   mdiImage,
   mdiImageFilterFrames,
@@ -69,6 +68,8 @@ import {
   mdiWeight,
   mdiWifi,
 } from "@mdi/js";
+
+import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
 
 // Constants should be alphabetically sorted by name.
 // Arrays with values should be alphabetically sorted if order doesn't matter.
