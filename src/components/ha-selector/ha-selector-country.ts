@@ -34,7 +34,7 @@ export class HaCountrySelector extends LitElement {
   }
 
   static styles = css`
-    ha-language-picker {
+    ha-country-picker {
       width: 100%;
     }
   `;
