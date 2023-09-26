@@ -1,4 +1,5 @@
 /* eslint-disable lit/prefer-static-styles */
+import { html } from "lit";
 import { customElement } from "lit/decorators";
 import { HaForm } from "../components/ha-form/ha-form";
 import "./ha-auth-form-string";
@@ -13,13 +14,26 @@ export class HaAuthForm extends HaForm {
   }
 
   protected createRenderRoot() {
-    // add parent style to light dom
-    const style = document.createElement("style");
-    style.textContent = HaForm.elementStyles as unknown as string;
-    this.append(style);
     // attach it as soon as possible to make sure we fetch all events.
     this.addValueChangedListener(this);
     return this;
+  }
+
+  protected render() {
+    return html`
+      <style>
+        ha-auth-form .root > * {
+          display: block;
+        }
+        ha-auth-form .root > *:not([own-margin]):not(:last-child) {
+          margin-bottom: 24px;
+        }
+        ha-auth-form ha-alert[own-margin] {
+          margin-bottom: 4px;
+        }
+      </style>
+      ${super.render()}
+    `;
   }
 }
 
