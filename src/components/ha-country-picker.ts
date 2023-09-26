@@ -328,11 +328,11 @@ export class HaCountryPicker extends LitElement {
 
   private _changed(ev): void {
     const target = ev.target as HaSelect;
-    if (target.value === "" || target.value === this.options) {
+    if (target.value === "" || target.value === this.value) {
       return;
     }
-    this.options = target.value;
-    fireEvent(this, "value-changed", { value: this.options });
+    this.value = target.value;
+    fireEvent(this, "value-changed", { value: this.value });
   }
 }
 

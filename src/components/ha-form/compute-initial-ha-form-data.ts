@@ -67,8 +67,8 @@ export const computeInitialHaFormData = (
           data[field.name] = selector.select.multiple ? [val] : val;
         }
       } else if ("country" in selector) {
-        if (selector.country?.options.length) {
-          const firstOption = selector.country.options[0];
+        if (selector.country?.value.length) {
+          const firstOption = selector.country.value[0];
           const val =
             typeof firstOption === "string" ? firstOption : firstOption.value;
           data[field.name] = selector.country.multiple ? [val] : val;
