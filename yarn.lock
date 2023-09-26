@@ -3226,15 +3226,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/auth-oauth-device@npm:6.0.0":
-  version: 6.0.0
-  resolution: "@octokit/auth-oauth-device@npm:6.0.0"
+"@octokit/auth-oauth-device@npm:6.0.1":
+  version: 6.0.1
+  resolution: "@octokit/auth-oauth-device@npm:6.0.1"
   dependencies:
     "@octokit/oauth-methods": ^4.0.0
     "@octokit/request": ^8.0.0
-    "@octokit/types": ^11.0.0
+    "@octokit/types": ^12.0.0
     universal-user-agent: ^6.0.0
-  checksum: ba6e46a42a68ca0e6d345b10de257b4e0764e6abeedfa3b7bd27bbe4336cbabf3dc081c97eb860939e4fbcb9827c62be5c4396023342db4717f254f06cdbba43
+  checksum: 2639b07430023c23fc117035ac775a74709a0b05abcad4a29f1f0fdb808775acac4fb410fa45fd18f89da1fb73b743ef7382a3cd39d29bbe059d2802aeaa3aa4
   languageName: node
   linkType: hard
 
@@ -9779,7 +9779,7 @@ __metadata:
     "@material/web": =1.0.0-pre.17
     "@mdi/js": 7.2.96
     "@mdi/svg": 7.2.96
-    "@octokit/auth-oauth-device": 6.0.0
+    "@octokit/auth-oauth-device": 6.0.1
     "@octokit/plugin-retry": 6.0.1
     "@octokit/rest": 20.0.1
     "@open-wc/dev-server-hmr": 0.1.4
