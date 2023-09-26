@@ -405,8 +405,13 @@ export class HuiDialogEditView extends LitElement {
     try {
       await lovelace.saveConfig(
         this._creatingView
-          ? addView(lovelace.config, viewConf)
-          : replaceView(lovelace.config, this._params.viewIndex!, viewConf)
+          ? addView(this.hass!, lovelace.config, viewConf)
+          : replaceView(
+              this.hass!,
+              lovelace.config,
+              this._params.viewIndex!,
+              viewConf
+            )
       );
       if (this._params.saveCallback) {
         this._params.saveCallback(
@@ -417,7 +422,9 @@ export class HuiDialogEditView extends LitElement {
       this.closeDialog();
     } catch (err: any) {
       showAlertDialog(this, {
-        text: `Saving failed: ${err.message}`,
+        text: `${this.hass!.localize(
+          "ui.panel.lovelace.editor.edit_view.saving_failed"
+        )}: ${err.message}`,
       });
     } finally {
       this._saving = false;
