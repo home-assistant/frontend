@@ -79,18 +79,29 @@ export class AssistPipelineRunDebug extends LitElement {
                     .value=${this._pipelineId}
                     @value-changed=${this._pipelinePicked}
                   ></ha-assist-pipeline-picker>
-                  <ha-button raised @click=${this._runTextPipeline}>
-                    Run Text Pipeline
-                  </ha-button>
-                  <ha-button
-                    raised
-                    @click=${this._runAudioPipeline}
-                    .disabled=${!window.isSecureContext ||
-                    // @ts-ignore-next-line
-                    !(window.AudioContext || window.webkitAudioContext)}
-                  >
-                    Run Audio Pipeline
-                  </ha-button>
+                  <div class="start-buttons">
+                    <ha-button raised @click=${this._runTextPipeline}>
+                      Run Text Pipeline
+                    </ha-button>
+                    <ha-button
+                      raised
+                      @click=${this._runAudioPipeline}
+                      .disabled=${!window.isSecureContext ||
+                      // @ts-ignore-next-line
+                      !(window.AudioContext || window.webkitAudioContext)}
+                    >
+                      Run Audio Pipeline
+                    </ha-button>
+                    <ha-button
+                      raised
+                      @click=${this._runAudioWakeWordPipeline}
+                      .disabled=${!window.isSecureContext ||
+                      // @ts-ignore-next-line
+                      !(window.AudioContext || window.webkitAudioContext)}
+                    >
+                      Run Audio Pipeline with Wake Word detection
+                    </ha-button>
+                  </div>
                 `
               : this._pipelineRuns[0].init_options!.start_stage === "intent"
               ? html`
@@ -175,6 +186,83 @@ export class AssistPipelineRunDebug extends LitElement {
         start_stage: "intent",
         end_stage: "intent",
         input: { text },
+      }
+    );
+  }
+
+  private async _runAudioWakeWordPipeline() {
+    const audioRecorder = new AudioRecorder((data) => {
+      if (this._audioBuffer) {
+        this._audioBuffer.push(data);
+      } else {
+        this._sendAudioChunk(data);
+      }
+    });
+
+    this._audioBuffer = [];
+    await audioRecorder.start();
+
+    let run: PipelineRun | undefined;
+
+    let stopRecording: (() => void) | undefined = () => {
+      stopRecording = undefined;
+      audioRecorder.close();
+      // We're currently STTing, so finish audio
+      if (run?.stage === "stt" && run.stt!.done === false) {
+        if (this._audioBuffer) {
+          for (const chunk of this._audioBuffer) {
+            this._sendAudioChunk(chunk);
+          }
+        }
+        // Send empty message to indicate we're done streaming.
+        this._sendAudioChunk(new Int16Array());
+      }
+      this._audioBuffer = undefined;
+    };
+
+    await this._doRunPipeline(
+      (updatedRun) => {
+        run = updatedRun;
+
+        // When we start wake work stage, the WS has a binary handler
+        if (updatedRun.stage === "wake_word" && this._audioBuffer) {
+          // Send the buffer over the WS to the Wake Word / STT engine.
+          for (const buffer of this._audioBuffer) {
+            this._sendAudioChunk(buffer);
+          }
+          this._audioBuffer = undefined;
+        }
+
+        // Stop recording if the server is done with STT stage
+        if (
+          !["ready", "wake_word", "stt"].includes(updatedRun.stage) &&
+          stopRecording
+        ) {
+          stopRecording();
+        }
+
+        // Play audio when we're done.
+        if (updatedRun.stage === "done") {
+          const url = updatedRun.tts!.tts_output!.url;
+          const audio = new Audio(url);
+          audio.addEventListener("ended", () => {
+            if (this._continueConversationCheckbox.checked) {
+              this._runAudioWakeWordPipeline();
+            } else {
+              this._finished = true;
+            }
+          });
+          audio.play();
+        } else if (updatedRun.stage === "error") {
+          this._finished = true;
+        }
+      },
+      {
+        start_stage: "wake_word",
+        end_stage: "tts",
+        input: {
+          sample_rate: audioRecorder.sampleRate!,
+        },
       }
     );
   }
@@ -326,6 +414,13 @@ export class AssistPipelineRunDebug extends LitElement {
         max-width: 600px;
         margin: 0 auto;
         direction: ltr;
+      }
+      .start-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
       }
       .start-row {
         display: flex;

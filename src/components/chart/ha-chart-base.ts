@@ -53,13 +53,14 @@ export class HaChartBase extends LitElement {
   @state() private _hiddenDatasets: Set<number> = new Set();
 
   public disconnectedCallback() {
-    this._releaseCanvas();
     super.disconnectedCallback();
+    this._releaseCanvas();
   }
 
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
+      this._releaseCanvas();
       this._setupChart();
     }
   }
@@ -110,7 +111,7 @@ export class HaChartBase extends LitElement {
       return;
     }
     if (changedProps.has("plugins") || changedProps.has("chartType")) {
-      this.chart.destroy();
+      this._releaseCanvas();
       this._setupChart();
       return;
     }
