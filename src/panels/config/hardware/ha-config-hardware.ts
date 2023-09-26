@@ -489,7 +489,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
         padding: 28px 20px 0;
         max-width: 1040px;
         margin: 0 auto;
-        --mdc-list-side-padding: 16px;
+        --mdc-list-side-padding: 24px;
         --mdc-list-vertical-padding: 0;
       }
       ha-card {
