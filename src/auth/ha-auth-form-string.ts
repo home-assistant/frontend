@@ -10,7 +10,7 @@ export class HaAuthFormString extends HaFormString {
   protected createRenderRoot() {
     // add parent style to light dom
     const style = document.createElement("style");
-    style.innerHTML = HaFormString.elementStyles as unknown as string;
+    style.textContent = HaFormString.elementStyles as unknown as string;
     this.append(style);
     return this;
   }

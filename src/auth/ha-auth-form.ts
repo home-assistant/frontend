@@ -15,7 +15,7 @@ export class HaAuthForm extends HaForm {
   protected createRenderRoot() {
     // add parent style to light dom
     const style = document.createElement("style");
-    style.innerHTML = HaForm.elementStyles as unknown as string;
+    style.textContent = HaForm.elementStyles as unknown as string;
     this.append(style);
     // attach it as soon as possible to make sure we fetch all events.
     this.addValueChangedListener(this);

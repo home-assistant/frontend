@@ -23,7 +23,6 @@ export class HaAuthTextField extends HaTextField {
         `;
   }
 
-  /** @soyTemplate */
   protected renderInput(shouldRenderHelperText: boolean): TemplateResult {
     const minOrUndef = this.minLength === -1 ? undefined : this.minLength;
     const maxOrUndef = this.maxLength === -1 ? undefined : this.maxLength;
@@ -242,7 +241,7 @@ export class HaAuthTextField extends HaTextField {
   protected createRenderRoot() {
     // add parent style to light dom
     const style = document.createElement("style");
-    style.innerHTML = HaTextField.elementStyles as unknown as string;
+    style.textContent = HaTextField.elementStyles as unknown as string;
     this.append(style);
     return this;
   }
