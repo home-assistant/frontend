@@ -523,6 +523,7 @@ export class HuiEnergyUsageGraphCard
       solar?: { [start: number]: number };
     } = {};
 
+    let pointEndTime;
     Object.entries(statIdsByCat).forEach(([key, statIds]) => {
       const sum = [
         "solar",
@@ -550,9 +551,11 @@ export class HuiEnergyUsageGraphCard
           if (sum) {
             totalStats[stat.start] =
               stat.start in totalStats ? totalStats[stat.start] + val : val;
+            pointEndTime = stat.end;
           }
           if (add && !(stat.start in set)) {
             set[stat.start] = val;
+            pointEndTime = stat.end;
           }
         });
         sets[id] = set;
@@ -668,6 +671,12 @@ export class HuiEnergyUsageGraphCard
               value && ["to_grid", "to_battery"].includes(type)
                 ? -1 * value
                 : value,
+          });
+        }
+        if (points.length === 1) {
+          points.push({
+            x: pointEndTime,
+            y: 0,
           });
         }
 

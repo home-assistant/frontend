@@ -1,10 +1,10 @@
-import { mdiHomeAssistant } from "@mdi/js";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-chip";
 import "../../../../src/components/ha-chip-set";
 import "../../../../src/components/ha-svg-icon";
+import { mdiHomeAssistant } from "../../../../src/resources/home-assistant-logo-svg";
 
 const chips: {
   icon?: string;

@@ -17,15 +17,15 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
       }
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
-      if (this.hass) {
-        if (
-          this.hass.localize !== oldHass?.localize ||
+      if (
+        this.hass &&
+        (!oldHass ||
+          this.hass.localize !== oldHass.localize ||
           this.hass.locale !== oldHass.locale ||
           this.hass.config !== oldHass.config ||
-          this.hass.entities !== oldHass.entities
-        ) {
-          this._updateStateDisplay();
-        }
+          this.hass.entities !== oldHass.entities)
+      ) {
+        this._updateStateDisplay();
       }
     }
 
