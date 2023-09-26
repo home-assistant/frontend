@@ -23,6 +23,7 @@ export type Selector =
   | ConversationAgentSelector
   | ConfigEntrySelector
   | ConstantSelector
+  | CountrySelector
   | DateSelector
   | DateTimeSelector
   | DeviceSelector
@@ -121,6 +122,14 @@ export interface ConstantSelector {
     value: string | number | boolean;
     label?: string;
     translation_key?: string;
+  } | null;
+}
+
+export interface CountrySelector {
+  country: {
+    multiple?: boolean;
+    options: readonly string[] | readonly SelectOption[];
+    label?: string;
   } | null;
 }
 

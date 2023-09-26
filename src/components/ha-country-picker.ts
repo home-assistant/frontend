@@ -265,9 +265,11 @@ const COUNTRIES = [
 export class HaCountryPicker extends LitElement {
   @property() public language = "en";
 
-  @property() public value?: string;
+  @property() public options?: string;
 
   @property() public label?: string;
+
+  @property() public helper?: string;
 
   @property({ type: Boolean }) public required = false;
 
@@ -298,8 +300,9 @@ export class HaCountryPicker extends LitElement {
     return html`
       <ha-select
         .label=${this.label}
-        .value=${this.value}
+        .value=${this.options}
         .required=${this.required}
+        .helper=${this.helper}
         .disabled=${this.disabled}
         @selected=${this._changed}
         @closed=${stopPropagation}
@@ -325,11 +328,11 @@ export class HaCountryPicker extends LitElement {
 
   private _changed(ev): void {
     const target = ev.target as HaSelect;
-    if (target.value === "" || target.value === this.value) {
+    if (target.value === "" || target.value === this.options) {
       return;
     }
-    this.value = target.value;
-    fireEvent(this, "value-changed", { value: this.value });
+    this.options = target.value;
+    fireEvent(this, "value-changed", { value: this.options });
   }
 }
 
