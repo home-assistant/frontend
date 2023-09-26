@@ -99,7 +99,7 @@ export class MoreInfoHistory extends LitElement {
                 .historyData=${this._stateHistory}
                 .isLoadingData=${!this._stateHistory}
                 .showNames=${false}
-                .inMoreInfo=${true}
+                inMoreInfo
               ></state-history-charts>`}`
       : ""}`;
   }
