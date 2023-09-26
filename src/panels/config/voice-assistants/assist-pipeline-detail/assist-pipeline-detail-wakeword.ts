@@ -5,6 +5,7 @@ import { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import { AssistPipeline } from "../../../../data/assist_pipeline";
 import { HomeAssistant } from "../../../../types";
+import { fetchWakeWordInfo, WakeWord } from "../../../../data/wake_word";
 
 @customElement("assist-pipeline-detail-wakeword")
 export class AssistPipelineDetailWakeWord extends LitElement {
@@ -12,10 +13,10 @@ export class AssistPipelineDetailWakeWord extends LitElement {
 
   @property() public data?: Partial<AssistPipeline>;
 
-  @state() private _wakeWords?: string[];
+  @state() private _wakeWords?: WakeWord[];
 
   private _schema = memoizeOne(
-    (wakeWords?: string[]) =>
+    (wakeWords?: WakeWord[]) =>
       [
         {
           name: "",
@@ -34,10 +35,15 @@ export class AssistPipelineDetailWakeWord extends LitElement {
                   name: "wake_word_id",
                   required: true,
                   selector: {
-                    select: {},
+                    select: {
+                      options: wakeWords.map((ww) => ({
+                        value: ww.id,
+                        label: ww.name,
+                      })),
+                    },
                   },
                 }
-              : { name: "wake_word_id", selector: { text: {} } },
+              : { name: "", type: "constant" },
           ] as const,
         },
       ] as const
@@ -89,11 +95,11 @@ export class AssistPipelineDetailWakeWord extends LitElement {
   private async _fetchWakeWords() {
     if (!this.data?.wake_word_entity) {
       this._wakeWords = undefined;
-      // eslint-disable-next-line no-useless-return
       return;
     }
-    // to be implemented
-    // this._wakeWords = await fetchWakeWords(this.hass, this.data.wake_word_entity);
+    this._wakeWords = (
+      await fetchWakeWordInfo(this.hass, this.data.wake_word_entity)
+    ).wake_words;
   }
 
   static get styles(): CSSResultGroup {

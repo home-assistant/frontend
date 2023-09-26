@@ -2174,7 +2174,7 @@
                   "tts_engine": "Text-to-speech",
                   "tts_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "tts_voice": "Voice",
-                  "wake_word_entity": "Wake word library",
+                  "wake_word_entity": "Wake word engine",
                   "wake_word_id": "Wake word"
                 },
                 "steps": {
