@@ -236,7 +236,7 @@ class DialogZoneDetail extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
-          --mdc-dialog-min-width: 600px;
+          --mdc-dialog-min-width: min(600px, 95vw);
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-dialog {

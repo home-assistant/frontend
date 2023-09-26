@@ -21,6 +21,7 @@ import { scanUSBDevices } from "../data/usb";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { HomeAssistant } from "../types";
 import "./integration-badge";
+import { onBoardingStyles } from "./styles";
 
 const HIDDEN_DOMAINS = new Set([
   "hassio",
@@ -28,6 +29,7 @@ const HIDDEN_DOMAINS = new Set([
   "radio_browser",
   "rpi_power",
   "sun",
+  "google_translate",
 ]);
 
 @customElement("onboarding-integrations")
@@ -43,13 +45,12 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
     return [
       subscribeConfigFlowInProgress(this.hass, (flows) => {
-        this._discovered = flows;
+        this._discovered = flows.filter(
+          (flow) => !HIDDEN_DOMAINS.has(flow.handler)
+        );
         const integrations: Set<string> = new Set();
-        for (const flow of flows) {
-          // To render title placeholders
-          if (flow.context.title_placeholders) {
-            integrations.add(flow.handler);
-          }
+        for (const flow of this._discovered) {
+          integrations.add(flow.handler);
         }
         this.hass.loadBackendTranslation("title", Array.from(integrations));
       }),
@@ -58,12 +59,14 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
         (messages) => {
           let fullUpdate = false;
           const newEntries: ConfigEntry[] = [];
+          const integrations: Set<string> = new Set();
           messages.forEach((message) => {
             if (message.type === null || message.type === "added") {
               if (HIDDEN_DOMAINS.has(message.entry.domain)) {
                 return;
               }
               newEntries.push(message.entry);
+              integrations.add(message.entry.domain);
               if (message.type === null) {
                 fullUpdate = true;
               }
@@ -84,6 +87,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
           if (!newEntries.length && !fullUpdate) {
             return;
           }
+          this.hass.loadBackendTranslation("title", Array.from(integrations));
           const existingEntries = fullUpdate ? [] : this._entries;
           this._entries = [...existingEntries!, ...newEntries];
         },
@@ -131,11 +135,11 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      <h2>
+      <h1>
         ${this.onboardingLocalize(
           "ui.panel.page-onboarding.integration.header"
         )}
-      </h2>
+      </h1>
       <p>
         ${this.onboardingLocalize("ui.panel.page-onboarding.integration.intro")}
       </p>
@@ -158,7 +162,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
           : nothing}
       </div>
       <div class="footer">
-        <mwc-button @click=${this._finish}>
+        <mwc-button unelevated @click=${this._finish}>
           ${this.onboardingLocalize(
             "ui.panel.page-onboarding.integration.finish"
           )}
@@ -187,30 +191,23 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      h2 {
-        text-align: center;
-      }
-      p {
-        font-size: 14px;
-        line-height: 20px;
-      }
-      .badges {
-        margin-top: 24px;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
-        row-gap: 24px;
-      }
-      .more {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-      }
-      .footer {
-        text-align: right;
-      }
-    `;
+    return [
+      onBoardingStyles,
+      css`
+        .badges {
+          margin-top: 24px;
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(106px, 1fr));
+          row-gap: 24px;
+        }
+        .more {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
+      `,
+    ];
   }
 }
 

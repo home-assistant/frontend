@@ -1,11 +1,9 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, nothing } from "lit";
+import { LitElement, PropertyValues, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeStateDisplay } from "../../common/entity/compute_state_display";
 import { getStates } from "../../common/entity/get_states";
-import { computeAttributeValueDisplay } from "../../common/entity/compute_attribute_display";
-import { ValueChangedEvent, HomeAssistant } from "../../types";
+import { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 
@@ -58,20 +56,9 @@ class HaEntityStatePicker extends LitElement {
           ? getStates(state, this.attribute).map((key) => ({
               value: key,
               label: !this.attribute
-                ? computeStateDisplay(
-                    this.hass.localize,
+                ? this.hass.formatEntityState(state, key)
+                : this.hass.formatEntityAttributeValue(
                     state,
-                    this.hass.locale,
-                    this.hass.config,
-                    this.hass.entities,
-                    key
-                  )
-                : computeAttributeValueDisplay(
-                    this.hass.localize,
-                    state,
-                    this.hass.locale,
-                    this.hass.config,
-                    this.hass.entities,
                     this.attribute,
                     key
                   ),

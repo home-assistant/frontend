@@ -15,8 +15,6 @@
   },
   "state": {
     "default": {
-      "on": "On",
-      "off": "Off",
       "unknown": "Unknown",
       "unavailable": "Unavailable"
     }
@@ -107,8 +105,8 @@
         "cooling": "{name} cooling",
         "high": "high",
         "low": "low",
-        "operation": "Operation",
-        "away_mode": "Away mode"
+        "mode": "Mode",
+        "preset": "Preset"
       },
       "counter": {
         "actions": {
@@ -196,6 +194,9 @@
       "service": {
         "run": "Run"
       },
+      "select": {
+        "option": "Option"
+      },
       "update": {
         "installing": "Installing",
         "installing_with_progress": "Installing ({progress}%)",
@@ -228,8 +229,8 @@
         "currently": "Currently",
         "on_off": "On / off",
         "target_temperature": "Target temperature",
-        "operation": "Operation",
-        "away_mode": "Away mode"
+        "away_mode": "Away mode",
+        "mode": "Mode"
       },
       "weather": {
         "attributes": {
@@ -264,6 +265,9 @@
         "forecast_daily": "Forecast daily",
         "forecast_hourly": "Forecast hourly",
         "forecast_twice_daily": "Forecast twice daily",
+        "daily": "Daily",
+        "hourly": "Hourly",
+        "twice_daily": "Twice daily",
         "high": "High",
         "low": "Low"
       }
@@ -319,6 +323,10 @@
           "manual": "Manually enter media ID",
           "media_content_id": "Media content ID",
           "media_content_type": "Media content type"
+        },
+        "file": {
+          "upload_failed": "Upload failed",
+          "unknown_file": "Unknown file"
         }
       },
       "logbook": {
@@ -499,8 +507,18 @@
         "filtered_by_device": "device: {device_name}",
         "filtered_by_area": "area: {area_name}"
       },
+      "file-upload": {
+        "uploading": "Uploading...",
+        "uploading_name": "Uploading {name}",
+        "label": "Add file",
+        "secondary": "Or drop your file here",
+        "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
+      },
       "picture-upload": {
-        "label": "Picture",
+        "label": "Add picture",
+        "change_picture": "Change picture",
+        "current_image_alt": "Current picture",
+        "supported_formats": "Supports JPEG, PNG, or GIF image.",
         "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
       },
       "date-range-picker": {
@@ -1008,7 +1026,9 @@
         "climate": {
           "target_label": "{action} to target",
           "target": "Target",
-          "humidity_target": "Humidity target"
+          "humidity_target": "Humidity target",
+          "temperature": "Temperature",
+          "humidity": "Humidity"
         },
         "humidifier": {
           "target_label": "[%key:ui::dialogs::more_info_control::climate::target_label%]",
@@ -1265,6 +1285,14 @@
         "schedule": {
           "delete": "Delete item?",
           "confirm_delete": "Do you want to delete this item?"
+        },
+        "template": {
+          "time": "[%key:ui::panel::developer-tools::tabs::templates::time%]",
+          "all_listeners": "[%key:ui::panel::developer-tools::tabs::templates::all_listeners%]",
+          "no_listeners": "[%key:ui::panel::developer-tools::tabs::templates::no_listeners%]",
+          "listeners": "[%key:ui::panel::developer-tools::tabs::templates::listeners%]",
+          "entity": "[%key:ui::panel::developer-tools::tabs::templates::entity%]",
+          "domain": "[%key:ui::panel::developer-tools::tabs::templates::domain%]"
         }
       },
       "options_flow": {
@@ -1737,8 +1765,8 @@
             "delete_return": "Delete return",
             "add_return": "Add return",
             "grid_carbon_footprint": "Grid carbon footprint",
-            "remove_co2_signal": "Remove CO2 signal integration",
-            "add_co2_signal": "Add CO2 signal integration",
+            "remove_co2_signal": "Remove Electricity Maps integration",
+            "add_co2_signal": "Add Electricity Maps integration",
             "flow_dialog": {
               "from": {
                 "header": "Configure grid consumption",
@@ -2232,6 +2260,7 @@
             "duplicate": "[%key:ui::common::duplicate%]",
             "disabled": "Disabled",
             "filtered_by_blueprint": "blueprint: {name}",
+            "traces_not_available": "[%key:ui::panel::config::automation::editor::traces_not_available%]",
             "headers": {
               "toggle": "Enable/disable",
               "name": "Name",
@@ -2372,7 +2401,10 @@
                   "zone": "Zone",
                   "event": "Event",
                   "enter": "Enter",
-                  "leave": "Leave"
+                  "leave": "Leave",
+                  "description": {
+                    "full": "When {source} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone}\n other {zones}\n}"
+                  }
                 },
                 "state": {
                   "label": "State",
@@ -2419,6 +2451,9 @@
                     "removed": "removed",
                     "current": "current",
                     "updated": "updated"
+                  },
+                  "description": {
+                    "full": "When a persistent notification is updated"
                   }
                 },
                 "sun": {
@@ -2490,7 +2525,10 @@
                   "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "enter": "Enter",
-                  "leave": "Leave"
+                  "leave": "Leave",
+                  "description": {
+                    "full": "When {entity} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
+                  }
                 }
               }
             },
@@ -2735,6 +2773,10 @@
                     "until": {
                       "label": "Until",
                       "conditions": "Until conditions"
+                    },
+                    "for_each": {
+                      "label": "For each",
+                      "items": "For each item in list"
                     }
                   },
                   "sequence": "Actions",
@@ -2798,24 +2840,11 @@
                   "description": {
                     "full": "Test {condition}"
                   }
+                },
+                "unknown": {
+                  "label": "Unknown"
                 }
               }
-            }
-          },
-          "thingtalk": {
-            "create": "Create automation",
-            "task_selection": {
-              "header": "Create a new automation",
-              "introduction": "Type below what this automation should do, and we will try to convert it into a Home Assistant automation.",
-              "language_note": "Note: Only English is supported for now.",
-              "for_example": "For example:",
-              "error_empty": "Enter a command or tap skip.",
-              "error_unsupported": "We couldn't create an automation for that (yet?)."
-            },
-            "link_devices": {
-              "header": "Great! Now we need to link some devices",
-              "ambiguous_entities": "One or more devices have more than one matching entity, please pick the one you want to use.",
-              "unknown_placeholder": "Unknown placeholder"
             }
           },
           "trace": {
@@ -2977,6 +3006,7 @@
             "duplicate_scene": "Duplicate scene",
             "duplicate": "[%key:ui::common::duplicate%]",
             "headers": {
+              "state": "State",
               "name": "Name",
               "last_activated": "Last activated"
             }
@@ -3166,6 +3196,7 @@
             }
           },
           "dialog_certificate": {
+            "alternative_names": "Alternative names:",
             "certificate_information": "Certificate information",
             "certificate_expiration_date": "Certificate expiration date:",
             "will_be_auto_renewed": "will be automatically renewed",
@@ -3942,7 +3973,6 @@
           "device_info": {
             "zwave_info": "Z-Wave info",
             "node_id": "ID",
-            "node_status": "Status",
             "node_ready": "Ready",
             "device_config": "Configure",
             "reinterview_device": "Re-interview",
@@ -4048,13 +4078,6 @@
             "set_param_error": "An error occurred.",
             "parameter": "Parameter",
             "bitmask": "Bitmask"
-          },
-          "node_status": {
-            "unknown": "Unknown",
-            "asleep": "Asleep",
-            "awake": "Awake",
-            "dead": "Dead",
-            "alive": "Alive"
           },
           "network_status": {
             "connected": "Connected",
@@ -5027,6 +5050,21 @@
                     "label": "Climate HVAC modes",
                     "hvac_modes": "HVAC modes"
                   },
+                  "climate-preset-modes": {
+                    "label": "Climate preset modes",
+                    "style": "Style",
+                    "style_list": {
+                      "dropdown": "Dropdown",
+                      "icons": "Icons"
+                    },
+                    "preset_modes": "Preset modes"
+                  },
+                  "select-options": {
+                    "label": "Select options"
+                  },
+                  "target-temperature": {
+                    "label": "Target temperature"
+                  },
                   "water-heater-operation-modes": {
                     "label": "Water heater operation modes",
                     "operation_modes": "Operation modes"
@@ -5125,7 +5163,8 @@
             "types": {
               "header": "Header editor",
               "footer": "Footer editor",
-              "row": "Entity row editor"
+              "row": "Entity row editor",
+              "tile-feature": "Tile feature editor"
             }
           }
         },
@@ -5305,7 +5344,10 @@
           "submit": "Submit",
           "error_new_mismatch": "Entered new password values do not match",
           "error_new_is_old": "New password must be different than current password",
-          "success": "Password changed successfully"
+          "success": "Password changed successfully",
+          "logout_all_sessions": "Do you want to log out from all devices?",
+          "logout_all_sessions_text": "This will require you to log in again on all devices with your new password, including this one.",
+          "delete_failed": "Not all devices could be logged out"
         },
         "mfa": {
           "header": "Multi-factor authentication modules",
@@ -5337,7 +5379,7 @@
           "current_token_tooltip": "Unable to delete current refresh token"
         },
         "long_lived_access_tokens": {
-          "header": "Long-Lived access tokens",
+          "header": "Long-lived access tokens",
           "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
           "learn_auth_requests": "Learn how to make authenticated requests.",
           "created": "Created {date}",
@@ -5404,7 +5446,7 @@
                 },
                 "mfa": {
                   "data": {
-                    "code": "Two-factor Authentication Code"
+                    "code": "Two-factor authentication code"
                   },
                   "description": "Open the **{mfa_module_name}** on your device to view your two-factor authentication code and verify your identity:"
                 }
@@ -5675,9 +5717,24 @@
       },
       "page-onboarding": {
         "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
+        "back": "Back",
         "next": "Next",
         "finish": "Finish",
+        "help": "Help",
+        "welcome": {
+          "header": "Welcome!",
+          "start": "Create my smart home",
+          "restore_backup": "Restore from backup",
+          "vision": "Read our vision",
+          "community": "Join our community",
+          "download_app": "Download our app",
+          "forums": "Home Assistant forums",
+          "open_home_newsletter": "Building the Open Home newsletter",
+          "discord": "Discord chat",
+          "twitter": "Twitter"
+        },
         "user": {
+          "header": "Create user",
           "intro": "Let's get started by creating a user account.",
           "required_field": "Required",
           "data": {
@@ -5686,20 +5743,22 @@
             "password": "Password",
             "password_confirm": "Confirm password"
           },
+          "helper": {
+            "password": "Choose a strong and unique password. Make sure to save it, so you don't forget it."
+          },
           "create_account": "Create account",
           "error": {
             "password_not_match": "Passwords don't match"
           }
         },
         "core-config": {
-          "intro": "Hello {name}, welcome to Home Assistant. How would you like to name your home?",
-          "intro_core": "We will set up the basics together. You can always change this later in the settings.",
-          "intro_location": "Let's set up the location of your home so that you can display information such as the local weather and use sun-based or presence-based automations. This data is never shared outside of your network.",
+          "location_header": "Home location",
+          "intro_location": "Let's set up the location of your home so that you can display information such as the local weather and use sun-based or presence-based automations.",
           "location_address": "Powered by {openstreetmap} ({osm_privacy_policy}).",
           "osm_privacy_policy": "Privacy policy",
           "title_location_detect": "Do you want us to detect your location?",
           "intro_location_detect": "We can detect your location by making a one-time request to an external service.",
-          "intro_core_config": "We filled out some details about your location. Please check if they are correct and continue.",
+          "country_intro": "We would like to know the country your home is in, so we can use the correct units for you.",
           "location_name": "Name of your Home Assistant installation",
           "location_name_default": "Home",
           "address_label": "Search address",
@@ -5707,12 +5766,13 @@
           "finish": "Next"
         },
         "integration": {
-          "header": "We already found compatible devices on your network!",
-          "intro": "We have set some of them up for you. Some might need more configuration.",
+          "header": "We found compatible devices!",
+          "intro": "These are found on your local network. Some are already added, others may need extra configuration.",
           "more_integrations": "+{count} more",
           "finish": "Finish"
         },
         "analytics": {
+          "header": "Help us help you",
           "finish": "Next",
           "preferences": {
             "base": {
@@ -5737,8 +5797,9 @@
           "intro": "[%key:ui::panel::config::analytics::intro%]"
         },
         "restore": {
-          "description": "Alternatively you can restore from a previous backup.",
+          "header": "Restore a backup",
           "in_progress": "Restore in progress",
+          "upload_backup": "[%key:supervisor::backup::upload_backup%]",
           "show_log": "Show full log",
           "hide_log": "Hide full log",
           "full_backup": "[%key:supervisor::backup::full_backup%]",
@@ -5750,8 +5811,7 @@
           "addons": "[%key:supervisor::backup::addons%]",
           "password_protection": "[%key:supervisor::backup::password_protection%]",
           "password": "[%key:supervisor::backup::password%]",
-          "confirm_password": "[%key:supervisor::backup::confirm_password%]",
-          "upload_backup": "[%key:supervisor::backup::upload_backup%]"
+          "confirm_password": "[%key:supervisor::backup::confirm_password%]"
         }
       },
       "custom": {
@@ -5844,7 +5904,7 @@
         "new_update_available": "{name} {version} is available",
         "not_available_arch": "This add-on is not compatible with the processor of your device or the operating system you have installed on your device.",
         "not_available_version": "You are running Home Assistant {core_version_installed}, to update to this version of the add-on you need at least version {core_version_needed} of Home Assistant",
-        "visit_addon_page": "Visit the {name} page for more details",
+        "visit_addon_page": "Visit the {name} page for more details.",
         "restart": "restart",
         "start": "start",
         "stop": "stop",

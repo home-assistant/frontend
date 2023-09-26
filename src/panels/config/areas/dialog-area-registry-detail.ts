@@ -186,7 +186,8 @@ class DialogAreaDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-textfield {
+        ha-textfield,
+        ha-picture-upload {
           display: block;
           margin-bottom: 16px;
         }

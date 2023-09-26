@@ -1024,7 +1024,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     showOptionsFlowDialog(
       this,
       ev.target.closest(".config_entry").configEntry,
-      this._manifest
+      { manifest: this._manifest }
     );
   }
 

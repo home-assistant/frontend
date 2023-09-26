@@ -27,12 +27,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
 
-const PAGES: Array<{
-  name: string;
-  path: string;
-  iconPath: string;
-  iconColor: string;
-}> = [
+const PAGES = [
   {
     name: "change_log",
     path: "/latest-release-notes/",
@@ -75,7 +70,12 @@ const PAGES: Array<{
     iconPath: mdiFileDocument,
     iconColor: "#518C43",
   },
-];
+] as const satisfies readonly {
+  name: string;
+  path: string;
+  iconPath: string;
+  iconColor: string;
+}[];
 
 class HaConfigInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;

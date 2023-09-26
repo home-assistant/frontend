@@ -127,7 +127,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       this._unsubRenderTemplate = subscribeRenderTemplate(
         this.hass.connection,
         (result) => {
-          this._templateResult = result;
+          this._templateResult = result as RenderTemplateResult;
         },
         {
           template: this._config.content,
@@ -139,6 +139,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
           strict: true,
         }
       );
+      await this._unsubRenderTemplate;
     } catch (_err) {
       this._templateResult = {
         result: this._config!.content,

@@ -1,5 +1,3 @@
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
 import Fuse from "fuse.js";
 import {
   css,

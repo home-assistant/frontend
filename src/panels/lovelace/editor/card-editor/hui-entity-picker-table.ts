@@ -54,7 +54,7 @@ export class HuiEntityPickerTable extends LitElement {
           "ui.panel.lovelace.unused_entities.state_icon"
         ),
         type: "icon",
-        template: (_icon, entity: any) => html`
+        template: (entity) => html`
           <state-badge
             @click=${this._handleEntityClicked}
             .hass=${this.hass!}
@@ -68,9 +68,9 @@ export class HuiEntityPickerTable extends LitElement {
         filterable: true,
         grows: true,
         direction: "asc",
-        template: (name, entity: any) => html`
+        template: (entity: any) => html`
           <div @click=${this._handleEntityClicked} style="cursor: pointer;">
-            ${name}
+            ${entity.name}
             ${narrow
               ? html` <div class="secondary">${entity.entity_id}</div> `
               : ""}
@@ -103,10 +103,10 @@ export class HuiEntityPickerTable extends LitElement {
       sortable: true,
       width: "15%",
       hidden: narrow,
-      template: (lastChanged: string) => html`
+      template: (entity) => html`
         <ha-relative-time
           .hass=${this.hass!}
-          .datetime=${lastChanged}
+          .datetime=${entity.last_changed}
           capitalize
         ></ha-relative-time>
       `,

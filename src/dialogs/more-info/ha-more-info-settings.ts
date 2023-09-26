@@ -1,5 +1,3 @@
-import "@material/mwc-tab";
-import "@material/mwc-tab-bar";
 import {
   css,
   CSSResultGroup,
