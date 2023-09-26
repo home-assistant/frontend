@@ -15,6 +15,7 @@ import {
   mdiCalendarClock,
   mdiCarCoolantLevel,
   mdiCash,
+  mdiChatSleep,
   mdiClock,
   mdiCloudUpload,
   mdiCog,
@@ -124,6 +125,7 @@ export const FIXED_DOMAIN_ICONS = {
   tts: mdiSpeakerMessage,
   updater: mdiCloudUpload,
   vacuum: mdiRobotVacuum,
+  wake_word: mdiChatSleep,
   zone: mdiMapMarkerRadius,
 };
 
