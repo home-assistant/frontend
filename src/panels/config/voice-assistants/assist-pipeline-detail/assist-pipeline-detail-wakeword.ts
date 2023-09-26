@@ -36,6 +36,8 @@ export class AssistPipelineDetailWakeWord extends LitElement {
                   required: true,
                   selector: {
                     select: {
+                      mode: "dropdown",
+                      sort: true,
                       options: wakeWords.map((ww) => ({
                         value: ww.id,
                         label: ww.name,
