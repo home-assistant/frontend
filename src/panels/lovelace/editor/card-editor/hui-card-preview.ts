@@ -87,6 +87,8 @@ export class HuiCardPreview extends ReactiveElement {
     this._cleanup();
     this._element = createCardElement(configValue);
 
+    this._element.editMode = true;
+
     if (this.hass) {
       this._element!.hass = this.hass;
     }

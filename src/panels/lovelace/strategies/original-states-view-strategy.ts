@@ -1,18 +1,23 @@
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
+import { ReactiveElement } from "lit";
+import { customElement } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { getEnergyPreferences } from "../../../data/energy";
-import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
 import {
-  LovelaceDashboardStrategy,
-  LovelaceViewStrategy,
-} from "./get-strategy";
+  LovelaceStrategyConfig,
+  LovelaceViewConfig,
+} from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
+import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
+import { LovelaceStrategyParams } from "./types";
 
-export class OriginalStatesStrategy {
-  static async generateView(
-    info: Parameters<LovelaceViewStrategy["generateView"]>[0]
-  ): ReturnType<LovelaceViewStrategy["generateView"]> {
-    const hass = info.hass;
-
+@customElement("original-states-view-strategy")
+export class OriginalStatesViewStrategy extends ReactiveElement {
+  static async generate(
+    _config: LovelaceStrategyConfig,
+    hass: HomeAssistant,
+    _params?: LovelaceStrategyParams
+  ): Promise<LovelaceViewConfig> {
     if (hass.config.state === STATE_NOT_RUNNING) {
       return {
         cards: [{ type: "starting" }],
@@ -62,18 +67,5 @@ export class OriginalStatesStrategy {
     }
 
     return view;
-  }
-
-  static async generateDashboard(
-    info: Parameters<LovelaceDashboardStrategy["generateDashboard"]>[0]
-  ): ReturnType<LovelaceDashboardStrategy["generateDashboard"]> {
-    return {
-      title: info.hass.config.location_name,
-      views: [
-        {
-          strategy: { type: "original-states" },
-        },
-      ],
-    };
   }
 }

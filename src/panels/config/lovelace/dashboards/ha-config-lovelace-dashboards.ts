@@ -68,12 +68,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
             "ui.panel.config.lovelace.dashboards.picker.headers.icon"
           ),
           type: "icon",
-          template: (icon: DataTableItem["icon"], dashboard) =>
-            icon
+          template: (dashboard) =>
+            dashboard.icon
               ? html`
                   <ha-icon
                     slot="item-icon"
-                    .icon=${icon}
+                    .icon=${dashboard.icon}
                     style=${ifDefined(
                       dashboard.iconColor
                         ? `color: ${dashboard.iconColor}`
@@ -91,9 +91,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
           sortable: true,
           filterable: true,
           grows: true,
-          template: (title: DataTableItem["title"], dashboard) => {
+          template: (dashboard) => {
             const titleTemplate = html`
-              ${title}
+              ${dashboard.title}
               ${dashboard.default
                 ? html`
                     <ha-svg-icon
@@ -132,10 +132,10 @@ export class HaConfigLovelaceDashboards extends LitElement {
           sortable: true,
           filterable: true,
           width: "20%",
-          template: (mode: DataTableItem["mode"]) => html`
+          template: (dashboard) => html`
             ${this.hass.localize(
-              `ui.panel.config.lovelace.dashboards.conf_mode.${mode}`
-            ) || mode}
+              `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
+            ) || dashboard.mode}
           `,
         };
         if (dashboards.some((dashboard) => dashboard.filename)) {
@@ -155,8 +155,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
           sortable: true,
           type: "icon",
           width: "100px",
-          template: (requireAdmin: DataTableItem["require_admin"]) =>
-            requireAdmin
+          template: (dashboard) =>
+            dashboard.require_admin
               ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
               : html`—`,
         };
@@ -166,8 +166,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
           ),
           type: "icon",
           width: "121px",
-          template: (sidebar: DataTableItem["show_in_sidebar"]) =>
-            sidebar
+          template: (dashboard) =>
+            dashboard.show_in_sidebar
               ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
               : html`—`,
         };
@@ -180,12 +180,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
         ),
         filterable: true,
         width: "100px",
-        template: (urlPath) =>
+        template: (dashboard) =>
           narrow
             ? html`
                 <ha-icon-button
                   .path=${mdiOpenInNew}
-                  .urlPath=${urlPath}
+                  .urlPath=${dashboard.url_path}
                   @click=${this._navigate}
                   .label=${this.hass.localize(
                     "ui.panel.config.lovelace.dashboards.picker.open"
@@ -193,7 +193,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
                 ></ha-icon-button>
               `
             : html`
-                <mwc-button .urlPath=${urlPath} @click=${this._navigate}
+                <mwc-button
+                  .urlPath=${dashboard.url_path}
+                  @click=${this._navigate}
                   >${this.hass.localize(
                     "ui.panel.config.lovelace.dashboards.picker.open"
                   )}</mwc-button

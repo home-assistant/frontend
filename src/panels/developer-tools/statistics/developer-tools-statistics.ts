@@ -80,7 +80,9 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
   );
 
   private _columns = memoizeOne(
-    (localize: LocalizeFunc): DataTableColumnContainer => ({
+    (
+      localize: LocalizeFunc
+    ): DataTableColumnContainer<DisplayedStatisticData> => ({
       displayName: {
         title: localize(
           "ui.panel.developer-tools.tabs.statistics.data_table.name"
@@ -123,8 +125,8 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         filterable: true,
         direction: "asc",
         width: "30%",
-        template: (issues_string) =>
-          html`${issues_string ??
+        template: (statistic) =>
+          html`${statistic.issues_string ??
           localize("ui.panel.developer-tools.tabs.statistics.no_issue")}`,
       },
       fix: {
@@ -132,9 +134,12 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         label: this.hass.localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
         ),
-        template: (_, data: any) =>
-          html`${data.issues
-            ? html`<mwc-button @click=${this._fixIssue} .data=${data.issues}>
+        template: (statistic) =>
+          html`${statistic.issues
+            ? html`<mwc-button
+                @click=${this._fixIssue}
+                .data=${statistic.issues}
+              >
                 ${localize(
                   "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
                 )}
@@ -146,7 +151,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         title: "",
         label: localize("ui.panel.developer-tools.tabs.statistics.adjust_sum"),
         type: "icon-button",
-        template: (_info, statistic: StatisticsMetaData) =>
+        template: (statistic) =>
           statistic.has_sum
             ? html`
                 <ha-icon-button
