@@ -1,11 +1,80 @@
+/* eslint-disable lit/value-after-constraints */
 /* eslint-disable lit/prefer-static-styles */
-import { html } from "lit";
+import { floatingLabel } from "@material/mwc-floating-label/mwc-floating-label-directive";
+import { TemplateResult, html } from "lit";
 import { customElement } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { live } from "lit/directives/live";
 import { HaTextField } from "../components/ha-textfield";
-import "@material/mwc-textfield/mwc-textfield.css";
 
 @customElement("ha-auth-textfield")
 export class HaAuthTextField extends HaTextField {
+  protected renderLabel(): TemplateResult | string {
+    return !this.label
+      ? ""
+      : html`
+          <span
+            .floatingLabelFoundation=${floatingLabel(
+              this.label
+            ) as unknown as any}
+            .id=${this.name}
+            >${this.label}</span
+          >
+        `;
+  }
+
+  /** @soyTemplate */
+  protected renderInput(shouldRenderHelperText: boolean): TemplateResult {
+    const minOrUndef = this.minLength === -1 ? undefined : this.minLength;
+    const maxOrUndef = this.maxLength === -1 ? undefined : this.maxLength;
+    const autocapitalizeOrUndef = this.autocapitalize
+      ? (this.autocapitalize as
+          | "off"
+          | "none"
+          | "on"
+          | "sentences"
+          | "words"
+          | "characters")
+      : undefined;
+    const showValidationMessage = this.validationMessage && !this.isUiValid;
+    const ariaLabelledbyOrUndef = this.label ? this.name : undefined;
+    const ariaControlsOrUndef = shouldRenderHelperText
+      ? "helper-text"
+      : undefined;
+    const ariaDescribedbyOrUndef =
+      this.focused || this.helperPersistent || showValidationMessage
+        ? "helper-text"
+        : undefined;
+    // TODO: live() directive needs casting for lit-analyzer
+    // https://github.com/runem/lit-analyzer/pull/91/files
+    // TODO: lit-analyzer labels min/max as (number|string) instead of string
+    return html` <input
+      aria-labelledby=${ifDefined(ariaLabelledbyOrUndef)}
+      aria-controls=${ifDefined(ariaControlsOrUndef)}
+      aria-describedby=${ifDefined(ariaDescribedbyOrUndef)}
+      class="mdc-text-field__input"
+      type=${this.type}
+      .value=${live(this.value) as unknown as string}
+      ?disabled=${this.disabled}
+      placeholder=${this.placeholder}
+      ?required=${this.required}
+      ?readonly=${this.readOnly}
+      minlength=${ifDefined(minOrUndef)}
+      maxlength=${ifDefined(maxOrUndef)}
+      pattern=${ifDefined(this.pattern ? this.pattern : undefined)}
+      min=${ifDefined(this.min === "" ? undefined : (this.min as number))}
+      max=${ifDefined(this.max === "" ? undefined : (this.max as number))}
+      step=${ifDefined(this.step === null ? undefined : (this.step as number))}
+      size=${ifDefined(this.size === null ? undefined : this.size)}
+      name=${ifDefined(this.name === "" ? undefined : this.name)}
+      inputmode=${ifDefined(this.inputMode)}
+      autocapitalize=${ifDefined(autocapitalizeOrUndef)}
+      @input=${this.handleInputChange}
+      @focus=${this.onInputFocus}
+      @blur=${this.onInputBlur}
+    />`;
+  }
+
   public render() {
     return html`
       <style>
