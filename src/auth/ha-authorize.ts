@@ -88,19 +88,19 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
     return html`
       <style>
-        ha-authorize ha-pick-auth-provider {
+        ha-pick-auth-provider {
           display: block;
           margin-top: 48px;
         }
-        ha-authorize ha-auth-flow {
+        ha-auth-flow {
           display: block;
           margin-top: 24px;
         }
-        ha-authorize ha-alert {
+        ha-alert {
           display: block;
           margin: 16px 0;
         }
-        ha-authorize p {
+        p {
           font-size: 14px;
           line-height: 20px;
         }

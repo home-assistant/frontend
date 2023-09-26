@@ -77,11 +77,11 @@ export class HaAuthFlow extends LitElement {
   protected render() {
     return html`
       <style>
-        ha-auth-flow .action {
+        .action {
           margin: 24px 0 8px;
           text-align: center;
         }
-        ha-auth-flow .store-token {
+        .store-token {
           margin-top: 10px;
           margin-left: -16px;
         }

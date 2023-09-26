@@ -8,6 +8,10 @@ import "./ha-auth-textfield";
 @customElement("ha-auth-form-string")
 export class HaAuthFormString extends HaFormString {
   protected createRenderRoot() {
+    // add parent style to light dom
+    const style = document.createElement("style");
+    style.innerHTML = HaFormString.elementStyles as unknown as string;
+    this.append(style);
     return this;
   }
 
@@ -24,7 +28,6 @@ export class HaAuthFormString extends HaFormString {
         ha-auth-textfield {
           display: block !important;
         }
-        ${HaFormString.styles}
       </style>
       <ha-auth-textfield
         .type=${
