@@ -1,4 +1,5 @@
 import IntlMessageFormat from "intl-messageformat";
+import type { HTMLTemplateResult } from "lit";
 import { polyfillLocaleData } from "../../resources/locale-data-polyfill";
 import { Resources, TranslationDict } from "../../types";
 
@@ -42,7 +43,7 @@ export type FlattenObjectKeys<
 
 export type LocalizeFunc<Keys extends string = LocalizeKeys> = (
   key: Keys,
-  values?: Record<string, any>
+  values?: Record<string, string | number | HTMLTemplateResult>
 ) => string;
 
 interface FormatType {
@@ -101,6 +102,10 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
     const args = _args as any;
     if (args.length === 1 && typeof args[0] === "object") {
       argObject = args[0];
+      if (Object.values(argObject).some((v) => v === undefined)) {
+        // eslint-disable-next-line no-console
+        console.warn("[FIXME] While localizing", key, "undefined was passed");
+      }
     } else if (args.length >= 2) {
       // eslint-disable-next-line no-console
       console.warn("[FIXME] While localizing", key, "old format was passed");

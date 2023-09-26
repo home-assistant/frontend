@@ -183,7 +183,7 @@ class HassioAddonDashboard extends LitElement {
     if (this.route.path === "") {
       const requestedAddon = extractSearchParam("addon");
       const requestedAddonRepository = extractSearchParam("repository_url");
-      if (requestedAddonRepository) {
+      if (requestedAddon && requestedAddonRepository) {
         const storeInfo = await fetchSupervisorStore(this.hass);
         if (
           !storeInfo.repositories.find(

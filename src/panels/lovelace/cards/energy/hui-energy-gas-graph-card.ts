@@ -254,7 +254,7 @@ export class HuiEnergyGasGraphCard
                 return [
                   this.hass.localize(
                     "ui.panel.lovelace.cards.energy.energy_gas_graph.total_consumed",
-                    { num: formatNumber(total, locale), unit }
+                    { num: formatNumber(total, locale), unit: unit! }
                   ),
                 ];
               },

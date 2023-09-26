@@ -92,7 +92,7 @@ class HaConfigRepairs extends LitElement {
                 ${issue.ignored
                   ? ` - ${this.hass.localize(
                       "ui.panel.config.repairs.dialog.ignored_in_version_short",
-                      { version: issue.dismissed_version }
+                      { version: issue.dismissed_version! }
                     )}`
                   : ""}
               </span>

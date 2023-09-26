@@ -55,7 +55,7 @@ export class MoreInfoInfo extends LitElement {
               ${this.hass.localize(
                 "ui.dialogs.more_info_control.restored.no_longer_provided",
                 {
-                  integration: entityRegObj.platform,
+                  integration: entityRegObj.platform!,
                 }
               )}
             </ha-alert>`

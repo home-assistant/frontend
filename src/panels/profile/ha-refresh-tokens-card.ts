@@ -70,7 +70,7 @@ class HaRefreshTokens extends LitElement {
                     )}
                   </div>
                   <div slot="description">
-                    ${token.last_used_at
+                    ${token.last_used_at && token.last_used_ip
                       ? this.hass.localize(
                           "ui.panel.profile.refresh_tokens.last_used",
                           {

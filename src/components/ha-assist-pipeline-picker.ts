@@ -46,6 +46,9 @@ export class HaAssistPipelinePicker extends LitElement {
       return nothing;
     }
     const value = this.value ?? this._default;
+    const preferredPipeline = this._pipelines.find(
+      (pipeline) => pipeline.id === this._preferredPipeline
+    );
     return html`
       <ha-select
         .label=${this.label ||
@@ -67,13 +70,13 @@ export class HaAssistPipelinePicker extends LitElement {
               </ha-list-item>
             `
           : null}
-        <ha-list-item .value=${PREFERRED}>
-          ${this.hass!.localize("ui.components.pipeline-picker.preferred", {
-            preferred: this._pipelines.find(
-              (pipeline) => pipeline.id === this._preferredPipeline
-            )?.name,
-          })}
-        </ha-list-item>
+        ${preferredPipeline
+          ? html`<ha-list-item .value=${PREFERRED}>
+              ${this.hass!.localize("ui.components.pipeline-picker.preferred", {
+                preferred: preferredPipeline.name,
+              })}
+            </ha-list-item>`
+          : null}
         ${this._pipelines.map(
           (pipeline) =>
             html`<ha-list-item .value=${pipeline.id}>

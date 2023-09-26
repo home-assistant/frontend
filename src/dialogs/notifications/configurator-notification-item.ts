@@ -26,7 +26,7 @@ export class HuiConfiguratorNotificationItem extends LitElement {
 
         <div>
           ${this.hass.localize("ui.notification_drawer.click_to_configure", {
-            entity: this.notification.attributes.friendly_name,
+            entity: this.notification.attributes.friendly_name!,
           })}
         </div>
 

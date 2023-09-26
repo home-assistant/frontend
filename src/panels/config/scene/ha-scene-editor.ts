@@ -768,7 +768,7 @@ export class HaSceneEditor extends SubscribeMixin(
       ),
       text: this.hass!.localize(
         "ui.panel.config.scene.picker.delete_confirm_text",
-        { name: this._config?.name }
+        { name: this._config!.name }
       ),
       confirmText: this.hass!.localize("ui.common.delete"),
       dismissText: this.hass!.localize("ui.common.cancel"),

@@ -577,7 +577,7 @@ class HassioAddonInfo extends LitElement {
                       "addon.dashboard.not_available_version",
                       {
                         core_version_installed: this.supervisor.core.version,
-                        core_version_needed: addonStoreInfo!.homeassistant,
+                        core_version_needed: addonStoreInfo!.homeassistant!,
                       }
                     )}
                   </ha-alert>

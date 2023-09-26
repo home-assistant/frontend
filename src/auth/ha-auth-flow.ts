@@ -160,7 +160,7 @@ export class HaAuthFlow extends LitElement {
         return html`
           <ha-alert alert-type="error">
             ${this.localize("ui.panel.page-authorize.form.error", {
-              error: this._errorMessage,
+              error: this._errorMessage!,
             })}
           </ha-alert>
           <div class="action">

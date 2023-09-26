@@ -364,7 +364,7 @@ export class HaAreaPicker extends LitElement {
           area_id: "add_new_suggestion",
           name: this.hass.localize(
             "ui.components.area-picker.add_new_sugestion",
-            { name: this._suggestion }
+            { name: this._suggestion! }
           ),
           picture: null,
         },

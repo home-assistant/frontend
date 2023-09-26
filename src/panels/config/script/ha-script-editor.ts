@@ -779,7 +779,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       ),
       text: this.hass.localize(
         "ui.panel.config.script.editor.delete_confirm_text",
-        { name: this._config?.alias }
+        { name: this._config!.alias }
       ),
       confirmText: this.hass!.localize("ui.common.delete"),
       dismissText: this.hass!.localize("ui.common.cancel"),

@@ -336,7 +336,7 @@ const tryDescribeTrigger = (
       trigger.event === "sunset"
         ? `${triggerTranslationBaseKey}.sun.description.sets`
         : `${triggerTranslationBaseKey}.sun.description.rises`,
-      { hasDuration: duration !== "", duration: duration }
+      { hasDuration: duration !== "" ? "true" : "", duration: duration }
     );
   }
 
@@ -561,7 +561,7 @@ const tryDescribeTrigger = (
 
     return hass.localize(
       `${triggerTranslationBaseKey}.template.description.full`,
-      { hasDuration: duration !== "", duration: duration }
+      { hasDuration: duration !== "" ? "true" : "", duration: duration }
     );
   }
 

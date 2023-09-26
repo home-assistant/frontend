@@ -672,7 +672,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       ),
       text: this.hass.localize(
         "ui.panel.config.automation.picker.delete_confirm_text",
-        { name: this._config?.alias }
+        { name: this._config!.alias! }
       ),
       confirmText: this.hass!.localize("ui.common.delete"),
       destructive: true,
