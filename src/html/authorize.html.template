@@ -14,7 +14,7 @@
         flex-direction: column;
         box-sizing: border-box;
       }
-      #content {
+      ha-authorize {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -27,179 +27,15 @@
         min-height: 10rem;
         flex-shrink: 0;
       }
-      form {
-        display: contents;
-      }
-      svg {
-        width: 24px;
-        height: 24px;
-        flex-shrink: 0;
-      }
-      svg.error {
-        color: var(--error-color);
-      }
-      svg.info {
-        color: var(--tinted-text-color);
-      }
-      h1 {
-        font-size: 24px;
-        line-height: 32px;
-        font-weight: 400;
-        margin: 0;
-      }
-      p {
-        opacity: 0.8;
-        margin: 0;
-      }
-      div.error {
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        align-items: center;
-        padding: 12px 14px;
-        border-radius: 16px;
-        background-color: rgb(var(--rgb-error-color), 0.2);
-        
-        align-self: stretch;
-        margin-bottom: 8px;
-      }
-      .input-wrapper {
-        display: flex;
-        position: relative;
-        overflow: hidden;
-        flex-direction: column;
-
-        align-self: stretch;
-        border-radius: 4px 4px 0 0;
-      }
-      input:is([type=text], [type=number], [type=password]), select {
-        background-color: transparent;
-        color: inherit;
-        border: none;
-        height: 48px;
-        padding: 0 16px;
-        font-family: inherit;
-        font-size: inherit;
-      }
-      input::placeholder {
-        color: inherit;
-        opacity: var(--text-opacity);
-      }
-      input::-webkit-outer-spin-button,
-      input::-webkit-inner-spin-button {
-        appearance: none;
-      }
-      input[type=number] {
-        appearance: textfield;
-      }
-      input:focus-visible + .bar, select:focus-visible + .bar {
-        background-color: var(--primary-color);
-        height: 4px;
-      }
-      .bar {
-        position: absolute;
-        background-color: var(--bar-color);
-        height: 2px;
-        width: 100%;
-        bottom: 0;
-        pointer-events: none;
-        transition: all 200ms;
-      }
-      .input-wrapper > button {
-        position: absolute;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: var(--text-opacity);
-
-        width: 40px;
-        height: 40px;
-        top: 4px;
-        right: 4px;
-        padding: 0;
-        border-radius: 20px;
-        background-color: transparent;
-      }
-      .input-wrapper > button:hover {
-        background-color: inherit;
-      }
-      input:is([type=text], [type=number], [type=password]):focus-visible, select:focus-visible {
-        outline: none;
-      }
-      label {
-        display: flex;
-        align-items: center;
-        height: 48px;
-        align-self: stretch;
-        cursor: pointer;
-      }
-      input[type=checkbox] {
-        width: 18px;
-        height: 18px;
-        margin: 0 16px 0 0;
-        cursor: pointer;
-      }
-
-      select {
-        padding: 20px 12px 6px 12px;
-      }
-      .name {
-        position: absolute;
-        left: 16px;
-        top: 6px;
-        font-size: 12px;
-        opacity: var(--text-opacity);
-        pointer-events: none;
-      }
-      @supports (moz-appearance: none) {
-        select {
-          padding-left: 16px;
-          padding-right: 16px;
-        }
-      }
-
-      .buttons {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 8px;
-      }
-      .input-wrapper + .buttons {
-        margin-top: 8px;
-      }
-      button {
-        font-family: inherit;
-        font-weight: 500;
-        border: none;
-        cursor: pointer;
-        white-space: nowrap;
-      }
-      .buttons > button {
-        height: 40px;
-        border-radius: 20px;
-      }
-      button.tonal {
-        background-color: rgb(var(--rgb-primary-color), 0.2);
-        color: var(--tinted-text-color);
-        padding: 0 20px;
-      }
-      button.main {
-        background-color: var(--primary-color);
-        color: var(--text-primary-color);
-        padding: 0 20px;
-      }
 
       @media (min-width: 32rem) {
         body {
           padding: 1rem;
         }
-        #content {
+        ha-authorize {
           margin: auto;
           max-width: 32rem;
           border-radius: 1rem;
-        }
-        .buttons {
-          flex-direction: row;
         }
       }
 
@@ -215,10 +51,10 @@
         --rgb-primary-color: 3, 169, 244;
         --text-primary-color: #ffffff;
       }
-      #content {
+      ha-authorize {
         background-color: #f2f4f9;
       }
-      .input-wrapper {
+      ha-authorize-field {
         background-color: rgb(0, 0, 0, 0.08);
         --bar-color: rgb(0, 0, 0, 0.4);
         --text-opacity: 0.8;
@@ -233,23 +69,19 @@
           accent-color: #03a9f4;
           --tinted-text-color: #b7c9d9;
         }
-        #content {
+        ha-authorize {
           background-color: #1c1c1c;
         }
-        .input-wrapper {
+        ha-authorize-field {
           background-color: rgb(255, 255, 255, 0.05);
           --bar-color: rgb(255, 255, 255, 0.4);
           --text-opacity: 0.6;
-        }
-        .wordmark {
-          fill: #F2F4F9;
         }
       }
     </style>
   </head>
   <body>
-    <div id="content">
-    </div>
+    <ha-authorize></ha-authorize>
     <%= renderTemplate("_js_base.html.template") %>
     <%= renderTemplate("_preload_roboto.html.template") %>
     <script crossorigin="use-credentials">
