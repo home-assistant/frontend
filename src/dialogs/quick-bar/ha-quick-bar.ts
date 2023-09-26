@@ -119,6 +119,8 @@ export class QuickBar extends LitElement {
     this._focusSet = false;
     this._filter = "";
     this._search = "";
+    this._entityItems = undefined;
+    this._commandItems = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
