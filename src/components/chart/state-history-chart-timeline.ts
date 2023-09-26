@@ -1,4 +1,5 @@
 import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
+import { getRelativePosition } from "chart.js/helpers";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
@@ -31,6 +32,8 @@ export class StateHistoryChartTimeline extends LitElement {
   @property() public identifier?: string;
 
   @property({ type: Boolean }) public showNames = true;
+
+  @property({ type: Boolean }) public clickForMoreInfo = true;
 
   @property({ type: Boolean }) public chunked = false;
 
@@ -220,6 +223,22 @@ export class StateHistoryChartTimeline extends LitElement {
       },
       // @ts-expect-error
       locale: numberFormatToLocale(this.hass.locale),
+      onClick: (e: any) => {
+        if (!this.clickForMoreInfo) {
+          return;
+        }
+
+        const chart = e.chart;
+        const canvasPosition = getRelativePosition(e, chart);
+
+        const index = Math.abs(
+          chart.scales.y.getValueForPixel(canvasPosition.y)
+        );
+        fireEvent(this, "hass-more-info", {
+          // @ts-ignore
+          entityId: this._chartData?.datasets[index]?.label,
+        });
+      },
     };
   }
 
