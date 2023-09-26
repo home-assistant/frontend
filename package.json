@@ -62,6 +62,7 @@
     "@material/mwc-dialog": "0.27.0",
     "@material/mwc-drawer": "0.27.0",
     "@material/mwc-fab": "0.27.0",
+    "@material/mwc-floating-label": "0.27.0",
     "@material/mwc-formfield": "0.27.0",
     "@material/mwc-icon-button": "0.27.0",
     "@material/mwc-linear-progress": "0.27.0",
