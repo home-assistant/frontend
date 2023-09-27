@@ -230,6 +230,7 @@ export interface HomeAssistant {
   suspendWhenHidden: boolean;
   enableShortcuts: boolean;
   vibrate: boolean;
+  debugConnection: boolean;
   dockedSidebar: "docked" | "always_hidden" | "auto";
   defaultPanel: string;
   moreInfoEntityId: string | null;
