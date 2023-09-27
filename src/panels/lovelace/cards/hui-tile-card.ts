@@ -333,6 +333,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .actionHandler=${actionHandler()}
             role="button"
             tabindex="0"
+            aria-labelledby="info"
             @mousedown=${this.handleRippleActivate}
             @mouseup=${this.handleRippleDeactivate}
             @mouseenter=${this.handleRippleMouseEnter}
@@ -379,6 +380,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                 : nothing}
             </div>
             <ha-tile-info
+              id="info"
               class="info"
               .primary=${name}
               .secondary=${localizedState}
@@ -410,7 +412,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       ha-card {
         --mdc-ripple-color: var(--tile-color);
         height: 100%;
-        z-index: 0;
         overflow: hidden;
         transition:
           box-shadow 180ms ease-in-out,

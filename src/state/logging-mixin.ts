@@ -40,34 +40,30 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
           ev.stopPropagation();
           return;
         }
-        let message;
         try {
           const { createLogMessage } = await import("../resources/log-message");
-          message = await createLogMessage(
+          const message = await createLogMessage(
             ev.error,
             "Uncaught error",
+            // The error object from browsers includes the message and a stack trace,
+            // so use the data in the error event just as fallback
             ev.message,
             `@${ev.filename}:${ev.lineno}:${ev.colno}`
           );
-          await this._writeLog({
-            // The error object from browsers includes the message and a stack trace,
-            // so use the data in the error event just as fallback
-            message,
-          });
+          await this._writeLog({ message });
         } catch (e) {
-          // eslint-disable-next-line no-console
-          console.error("Error during logging error:", message, e);
           // catch errors during logging so we don't get into a loop
+          // eslint-disable-next-line no-console
+          console.error("Failure writing uncaught error to system log:", e);
         }
       });
       window.addEventListener("unhandledrejection", async (ev) => {
         if (!this.hass?.connected) {
           return;
         }
-        let message;
         try {
           const { createLogMessage } = await import("../resources/log-message");
-          message = await createLogMessage(
+          const message = await createLogMessage(
             ev.reason,
             "Unhandled promise rejection"
           );
@@ -76,9 +72,12 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
             level: "debug",
           });
         } catch (e) {
-          // eslint-disable-next-line no-console
-          console.error("Error during logging error:", message, e);
           // catch errors during logging so we don't get into a loop
+          // eslint-disable-next-line no-console
+          console.error(
+            "Failure writing unhandled promise rejection to system log:",
+            e
+          );
         }
       });
     }
@@ -91,12 +90,18 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
     }
 
     private _writeLog(log: WriteLogParams) {
-      return this.hass?.callService("system_log", "write", {
-        logger: `frontend.${
-          __DEV__ ? "js_dev" : "js"
-        }.${__BUILD__}.${__VERSION__.replace(".", "")}`,
-        message: log.message,
-        level: log.level || "error",
-      });
+      return this.hass?.callService(
+        "system_log",
+        "write",
+        {
+          logger: `frontend.${
+            __DEV__ ? "js_dev" : "js"
+          }.${__BUILD__}.${__VERSION__.replace(".", "")}`,
+          message: log.message,
+          level: log.level || "error",
+        },
+        undefined,
+        false
+      );
     }
   };

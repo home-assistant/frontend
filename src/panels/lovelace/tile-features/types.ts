@@ -40,6 +40,16 @@ export interface ClimateHvacModesTileFeatureConfig {
   hvac_modes?: HvacMode[];
 }
 
+export interface ClimatePresetModesTileFeatureConfig {
+  type: "climate-preset-modes";
+  style?: "dropdown" | "icons";
+  preset_modes?: string[];
+}
+
+export interface SelectOptionsTileFeatureConfig {
+  type: "select-options";
+}
+
 export interface TargetTemperatureTileFeatureConfig {
   type: "target-temperature";
 }
@@ -76,6 +86,7 @@ export interface LawnMowerCommandsTileFeatureConfig {
 export type LovelaceTileFeatureConfig =
   | AlarmModesTileFeatureConfig
   | ClimateHvacModesTileFeatureConfig
+  | ClimatePresetModesTileFeatureConfig
   | CoverOpenCloseTileFeatureConfig
   | CoverPositionTileFeatureConfig
   | CoverTiltPositionTileFeatureConfig
@@ -86,7 +97,8 @@ export type LovelaceTileFeatureConfig =
   | LightColorTempTileFeatureConfig
   | VacuumCommandsTileFeatureConfig
   | TargetTemperatureTileFeatureConfig
-  | WaterHeaterOperationModesTileFeatureConfig;
+  | WaterHeaterOperationModesTileFeatureConfig
+  | SelectOptionsTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
   entity_id?: string;

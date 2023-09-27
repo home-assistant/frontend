@@ -62,17 +62,16 @@ export class HaConfigApplicationCredentials extends LitElement {
           ),
           direction: "asc",
           grows: true,
-          template: (_, entry: ApplicationCredential) => html`${entry.name}`,
+          template: (entry) => html`${entry.name}`,
         },
-        clientId: {
+        client_id: {
           title: localize(
             "ui.panel.config.application_credentials.picker.headers.client_id"
           ),
           width: "30%",
           direction: "asc",
           hidden: narrow,
-          template: (_, entry: ApplicationCredential) =>
-            html`${entry.client_id}`,
+          template: (entry) => html`${entry.client_id}`,
         },
         application: {
           title: localize(
@@ -81,7 +80,7 @@ export class HaConfigApplicationCredentials extends LitElement {
           sortable: true,
           width: "30%",
           direction: "asc",
-          template: (_, entry) => html`${domainToName(localize, entry.domain)}`,
+          template: (entry) => html`${domainToName(localize, entry.domain)}`,
         },
       };
 
