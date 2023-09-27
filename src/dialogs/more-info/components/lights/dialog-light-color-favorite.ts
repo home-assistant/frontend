@@ -82,10 +82,11 @@ class DialogLightColorFavorite extends LitElement {
 
     this._modes = modes;
 
-    this._mode =
-      this._color && "color_temp_kelvin" in this._color
-        ? "color_temp"
-        : "color";
+    if (this._color) {
+      this._mode = "color_temp_kelvin" in this._color ? "color_temp" : "color";
+    } else {
+      this._mode = this._modes[0];
+    }
   }
 
   private _computeCurrentColor() {
@@ -224,7 +225,10 @@ class DialogLightColorFavorite extends LitElement {
         <ha-button slot="secondaryAction" dialogAction="cancel">
           ${this.hass.localize("ui.common.cancel")}
         </ha-button>
-        <ha-button slot="primaryAction" @click=${this._save}
+        <ha-button
+          slot="primaryAction"
+          @click=${this._save}
+          .disabled=${!this._color}
           >${this.hass.localize("ui.common.save")}</ha-button
         >
       </ha-dialog>
