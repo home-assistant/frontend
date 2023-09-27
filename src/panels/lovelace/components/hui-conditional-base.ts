@@ -4,7 +4,6 @@ import { HomeAssistant } from "../../../types";
 import { ConditionalCardConfig } from "../cards/types";
 import {
   ResponsiveCondition,
-  buildMediaQuery,
   checkConditionsMet,
   validateConditionalConfig,
 } from "../common/validate-condition";
@@ -82,7 +81,9 @@ export class HuiConditionalBase extends ReactiveElement {
       (c) => c.condition === "responsive"
     ) as ResponsiveCondition[];
 
-    const mediaQueries = conditions.map((c) => buildMediaQuery(c));
+    const mediaQueries = conditions
+      .map((c) => c.media_query ?? "")
+      .filter((m) => m !== "");
 
     if (deepEqual(mediaQueries, this._mediaQueries)) return;
 
