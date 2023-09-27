@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
@@ -6,23 +5,10 @@ import { mdiCodeBraces, mdiContentCopy, mdiListBoxOutline } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import {
-  any,
-  array,
-  assert,
-  assign,
-  literal,
-  number,
-  object,
-  optional,
-  string,
-  union,
-} from "superstruct";
+import { any, array, assert, assign, object, optional } from "superstruct";
 import { storage } from "../../../../common/decorators/storage";
 import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
-import "../../../../components/ha-select";
-import "../../../../components/ha-textfield";
 import type {
   LovelaceCardConfig,
   LovelaceConfig,
@@ -40,26 +26,11 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { GUIModeChangedEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const stateConditionStruct = object({
-  condition: optional(literal("state")),
-  entity: string(),
-  state: optional(string()),
-  state_not: optional(string()),
-});
-
-const responsiveConditionStruct = object({
-  condition: literal("responsive"),
-  max_width: optional(number()),
-  min_width: optional(number()),
-});
-
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     card: any(),
-    conditions: optional(
-      array(union([stateConditionStruct, responsiveConditionStruct]))
-    ),
+    conditions: optional(array(any())),
   })
 );
 
