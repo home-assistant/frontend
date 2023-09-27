@@ -16,6 +16,7 @@ import "../components/ha-drawer";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import type { HomeAssistant, Route } from "../types";
 import "./partial-panel-resolver";
+import { NARROW_MEDIA_QUERY } from "../common/util/media_query";
 
 declare global {
   // for fire event
@@ -50,7 +51,7 @@ export class HomeAssistantMain extends LitElement {
 
   constructor() {
     super();
-    listenMediaQuery("(max-width: 870px)", (matches) => {
+    listenMediaQuery(NARROW_MEDIA_QUERY, (matches) => {
       this.narrow = matches;
     });
   }
