@@ -18,7 +18,7 @@ export type ResponsiveCondition = {
 
 function checkStateCondition(condition: StateCondition, hass: HomeAssistant) {
   const state = hass.states[condition.entity]
-    ? hass!.states[condition.entity].state
+    ? hass.states[condition.entity].state
     : UNAVAILABLE;
 
   return condition.state != null
