@@ -8,7 +8,6 @@ import "../../../components/ha-yaml-editor";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import "./types/ha-card-condition-state";
-import "./types/ha-card-condition-responsive";
 import { Condition } from "./validate-condition";
 
 @customElement("ha-card-condition-editor")

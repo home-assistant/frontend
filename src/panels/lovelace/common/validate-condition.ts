@@ -12,8 +12,7 @@ export type StateCondition = {
 
 export type ResponsiveCondition = {
   condition: "responsive";
-  min_width?: number;
-  max_width?: number;
+  media_query?: string;
 };
 
 function checkStateCondition(condition: StateCondition, hass: HomeAssistant) {
@@ -26,23 +25,11 @@ function checkStateCondition(condition: StateCondition, hass: HomeAssistant) {
     : state !== condition.state_not;
 }
 
-export function buildMediaQuery(condition: ResponsiveCondition) {
-  const queries: string[] = [];
-  if (condition.min_width != null) {
-    queries.push(`(min-width: ${condition.min_width}px)`);
-  }
-  if (condition.max_width != null) {
-    queries.push(`(max-width: ${condition.max_width}px)`);
-  }
-  return queries.join(" and ");
-}
-
 function checkResponsiveCondition(
   condition: ResponsiveCondition,
   _hass: HomeAssistant
 ) {
-  const query = buildMediaQuery(condition);
-  return matchMedia(query).matches;
+  return matchMedia(condition.media_query ?? "").matches;
 }
 
 export function checkConditionsMet(
@@ -59,14 +46,14 @@ export function checkConditionsMet(
 }
 
 function valideStateCondition(condition: StateCondition) {
-  return (condition.entity &&
-    (condition.state != null ||
-      condition.state_not != null)) as unknown as boolean;
+  return (
+    !!condition.entity &&
+    (condition.state != null || condition.state_not != null)
+  );
 }
 
 function valideResponsiveCondition(condition: ResponsiveCondition) {
-  return (condition.min_width != null ||
-    condition.max_width != null) as unknown as boolean;
+  return condition.media_query != null;
 }
 
 export function validateConditionalConfig(conditions: Condition[]): boolean {
