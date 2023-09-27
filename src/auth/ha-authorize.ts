@@ -339,7 +339,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 }
 
 const styleTag = document.createElement("style");
-styleTag.innerHTML = `
+styleTag.innerText = `
 h1 {
   font-size: 24px;
   line-height: 32px;

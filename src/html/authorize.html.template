@@ -86,11 +86,11 @@
     <%= renderTemplate("_preload_roboto.html.template") %>
     <script crossorigin="use-credentials">
       // Safari 12 and below does not have a compliant ES2015 implementation of template literals, so we ship ES5
-      window.latestJS = window.latestJS || !isS11_12;
-      if (window.latestJS) {
+      if (!isS11_12) {
         <% for (const entry of latestEntryJS) { %>
           import("<%= entry %>");
         <% } %>
+        window.latestJS = true;
         window.providersPromise = fetch("/auth/providers", {
           credentials: "same-origin",
         });
