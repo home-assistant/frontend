@@ -5529,7 +5529,7 @@
             "language": "[%key:ui::components::language-picker::language%]"
           },
           "debug": {
-            "title": "Debug Tools",
+            "title": "Debug tools",
             "debug_connection": {
               "title": "Debug connection",
               "description": "Observe requests to the server and responses from the server in browser console."
