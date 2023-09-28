@@ -307,9 +307,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        assist-pipeline-detail-config,
-        assist-pipeline-detail-conversation,
-        assist-pipeline-detail-stt {
+        .content > *:not(:last-child) {
           margin-bottom: 16px;
           display: block;
         }
