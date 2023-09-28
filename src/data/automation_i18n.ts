@@ -156,11 +156,11 @@ const tryDescribeTrigger = (
       return hass.localize(
         `${triggerTranslationBaseKey}.numeric_state.description.above-below`,
         {
-          attribute: attribute,
+          attribute: attribute === undefined ? "undefined" : attribute,
           entity: entity,
           above: trigger.above,
           below: trigger.below,
-          duration: duration,
+          duration: duration == null ? "undefined" : duration,
         }
       );
     }
@@ -168,10 +168,10 @@ const tryDescribeTrigger = (
       return hass.localize(
         `${triggerTranslationBaseKey}.numeric_state.description.above`,
         {
-          attribute: attribute,
+          attribute: attribute === undefined ? "undefined" : attribute,
           entity: entity,
           above: trigger.above,
-          duration: duration,
+          duration: duration == null ? "undefined" : duration,
         }
       );
     }
@@ -179,10 +179,10 @@ const tryDescribeTrigger = (
       return hass.localize(
         `${triggerTranslationBaseKey}.numeric_state.description.below`,
         {
-          attribute: attribute,
+          attribute: attribute === undefined ? "undefined" : attribute,
           entity: entity,
           below: trigger.below,
-          duration: duration,
+          duration: duration == null ? "undefined" : duration,
         }
       );
     }
@@ -854,7 +854,7 @@ const tryDescribeCondition = (
       return hass.localize(
         `${conditionsTranslationBaseKey}.numeric_state.description.above-below`,
         {
-          attribute: attribute,
+          attribute: attribute === undefined ? "undefined" : attribute,
           entity: entity,
           above: condition.above,
           below: condition.below,
@@ -865,7 +865,7 @@ const tryDescribeCondition = (
       return hass.localize(
         `${conditionsTranslationBaseKey}.numeric_state.description.above`,
         {
-          attribute: attribute,
+          attribute: attribute === undefined ? "undefined" : attribute,
           entity: entity,
           above: condition.above,
         }
@@ -875,7 +875,7 @@ const tryDescribeCondition = (
       return hass.localize(
         `${conditionsTranslationBaseKey}.numeric_state.description.below`,
         {
-          attribute: attribute,
+          attribute: attribute === undefined ? "undefined" : attribute,
           entity: entity,
           below: condition.below,
         }
