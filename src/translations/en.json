@@ -2196,7 +2196,9 @@
                   },
                   "wakeword": {
                     "title": "Wake word",
-                    "description": "If a device supports wake words, you can activate Assist by saying this word."
+                    "description": "If a device supports wake words, you can activate Assist by saying this word.",
+                    "no_wake_words": "It looks like you don't have a wake word engine setup yet.",
+                    "no_wake_words_link": "Find out more about wake words."
                   }
                 },
                 "no_cloud_message": "You should have an active cloud subscription to use cloud speech services.",
