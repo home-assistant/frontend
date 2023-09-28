@@ -44,6 +44,11 @@ export default class HaCardConditionEditor extends LitElement {
           )}
           .path=${yamlMode ? mdiListBoxOutline : mdiCodeBraces}
         ></ha-icon-button>
+        <span class="title">
+          ${this.hass.localize(
+            `ui.panel.lovelace.editor.card.conditional.condition.${condition.condition}.label`
+          ) || condition.condition}
+        </span>
         <ha-icon-button
           .label=${this.hass!.localize("ui.common.delete")}
           .path=${mdiDelete}
@@ -100,7 +105,12 @@ export default class HaCardConditionEditor extends LitElement {
       .header {
         display: flex;
         flex-direction: row;
+        align-items: center;
         justify-content: space-between;
+      }
+      .header span {
+        flex: 1;
+        font-size: 16px;
       }
       .content {
         padding: 12px;

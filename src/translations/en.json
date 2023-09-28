@@ -4769,7 +4769,7 @@
               "current_state": "current",
               "condition_explanation": "The card will be shown when ALL conditions below are fulfilled.",
               "change_type": "Change type",
-              "types": {
+              "condition": {
                 "responsive": {
                   "label": "Responsive",
                   "breakpoints": "Screen sizes",
