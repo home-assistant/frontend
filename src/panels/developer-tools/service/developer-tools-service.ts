@@ -74,8 +74,8 @@ class HaPanelDevService extends LitElement {
         data: {},
       };
       if (this._yamlMode) {
-        this.updateComplete.then(
-          () => this._yamlEditor?.setValue(this._serviceData)
+        this.updateComplete.then(() =>
+          this._yamlEditor?.setValue(this._serviceData)
         );
       }
     } else if (!this._serviceData?.service) {
@@ -87,8 +87,8 @@ class HaPanelDevService extends LitElement {
         data: {},
       };
       if (this._yamlMode) {
-        this.updateComplete.then(
-          () => this._yamlEditor?.setValue(this._serviceData)
+        this.updateComplete.then(() =>
+          this._yamlEditor?.setValue(this._serviceData)
         );
       }
     }
@@ -426,7 +426,7 @@ class HaPanelDevService extends LitElement {
       button.actionError();
       this._error =
         this.hass.localize("ui.notification_toast.service_call_failed", {
-          service: this._serviceData!.service!
+          service: this._serviceData!.service!,
         }) + ` ${err.message}`;
       return;
     }
