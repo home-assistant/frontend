@@ -4769,6 +4769,7 @@
               "current_state": "current",
               "condition_explanation": "The card will be shown when ALL conditions below are fulfilled.",
               "change_type": "Change type",
+              "add_condition": "Add condition",
               "condition": {
                 "responsive": {
                   "label": "Responsive",

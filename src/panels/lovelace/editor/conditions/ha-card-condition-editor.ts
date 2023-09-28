@@ -1,34 +1,36 @@
 import { mdiCodeBraces, mdiDelete, mdiListBoxOutline } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-yaml-editor";
-import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import "./types/ha-card-condition-responsive";
-import "./types/ha-card-condition-state";
-import { Condition } from "./validate-condition";
+import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-yaml-editor";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import { Condition, LegacyCondition } from "../../common/validate-condition";
+import type { LovelaceConditionEditorConstructor } from "./types";
 
 @customElement("ha-card-condition-editor")
 export default class HaCardConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) condition!: Condition;
+  @property({ attribute: false }) condition!: Condition | LegacyCondition;
 
   @state() public _yamlMode = false;
 
   protected render() {
-    const condition = this.condition;
+    const condition: Condition = {
+      condition: "state",
+      ...this.condition,
+    };
     const element = customElements.get(
       `ha-card-condition-${condition.condition}`
-    ) as any | undefined;
+    ) as LovelaceConditionEditorConstructor | undefined;
     const supported = element !== undefined;
 
     const valid =
       element &&
-      (!element.validateUIConfig || element.validateUIConfig(this.condition));
+      (!element.validateUIConfig || element.validateUIConfig(condition));
 
     const yamlMode = this._yamlMode || !supported || !valid;
 
