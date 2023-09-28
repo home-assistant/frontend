@@ -332,8 +332,7 @@ class HaPanelDevService extends LitElement {
       ) {
         return localize(
           `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.missing_required_field`,
-          "key",
-          field.key
+          { key: field.key }
         );
       }
     }
