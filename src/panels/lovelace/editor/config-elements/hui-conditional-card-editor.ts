@@ -111,7 +111,6 @@ export class HuiConditionalCardEditor
                         )}
                         .path=${isGuiMode ? mdiCodeBraces : mdiListBoxOutline}
                       ></ha-icon-button>
-
                       <ha-icon-button
                         .label=${this.hass!.localize(
                           "ui.panel.lovelace.editor.edit_card.copy"

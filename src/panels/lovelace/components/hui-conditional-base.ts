@@ -82,8 +82,8 @@ export class HuiConditionalBase extends ReactiveElement {
     ) as ResponsiveCondition[];
 
     const mediaQueries = conditions
-      .map((c) => c.media_query ?? "")
-      .filter((m) => m !== "");
+      .filter((c) => c.media_query)
+      .map((c) => c.media_query as string);
 
     if (deepEqual(mediaQueries, this._mediaQueries)) return;
 
@@ -92,7 +92,12 @@ export class HuiConditionalBase extends ReactiveElement {
       this._mediaQueriesListeners.pop()!();
     }
     mediaQueries.forEach((query) => {
-      const listener = listenMediaQuery(query, () => {
+      const listener = listenMediaQuery(query, (matches) => {
+        // For performance, if there is only one condition, set the visibility directly
+        if (this._config!.conditions.length === 1) {
+          this._setVisibility(matches);
+          return;
+        }
         this._updateVisibility();
       });
       this._mediaQueriesListeners.push(listener);
@@ -117,20 +122,29 @@ export class HuiConditionalBase extends ReactiveElement {
       return;
     }
 
-    this._element!.editMode = this.editMode;
+    this._element.editMode = this.editMode;
 
-    const visible =
-      this.editMode || checkConditionsMet(this._config!.conditions, this.hass!);
+    const conditionMet = checkConditionsMet(
+      this._config!.conditions,
+      this.hass!
+    );
+    this._setVisibility(conditionMet);
+  }
+
+  private _setVisibility(conditionMet: boolean) {
+    if (!this._element || !this.hass) {
+      return;
+    }
+    const visible = this.editMode || conditionMet;
     this.hidden = !visible;
-
     this.style.setProperty("display", visible ? "" : "none");
 
     if (visible) {
-      this._element!.hass = this.hass;
+      this._element.hass = this.hass;
       if (!this._element!.parentElement) {
         this.appendChild(this._element!);
       }
-    } else if (this._element!.parentElement) {
+    } else if (this._element.parentElement) {
       this.removeChild(this._element!);
     }
   }
