@@ -1,4 +1,11 @@
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { LocalizeKeys } from "../../../../common/translations/localize";
@@ -6,6 +13,7 @@ import "../../../../components/ha-form/ha-form";
 import { AssistPipeline } from "../../../../data/assist_pipeline";
 import { HomeAssistant } from "../../../../types";
 import { fetchWakeWordInfo, WakeWord } from "../../../../data/wake_word";
+import { documentationUrl } from "../../../../util/documentation-url";
 
 @customElement("assist-pipeline-detail-wakeword")
 export class AssistPipelineDetailWakeWord extends LitElement {
@@ -67,7 +75,12 @@ export class AssistPipelineDetailWakeWord extends LitElement {
     }
   }
 
+  private _hasWakeWorkEntities = memoizeOne((states: HomeAssistant["states"]) =>
+    Object.keys(states).some((entityId) => entityId.startsWith("wake_word."))
+  );
+
   protected render() {
+    const hasWakeWorkEntities = this._hasWakeWorkEntities(this.hass.states);
     return html`
       <div class="section">
         <div class="content">
@@ -83,11 +96,25 @@ export class AssistPipelineDetailWakeWord extends LitElement {
               )}
             </p>
           </div>
+          ${!hasWakeWorkEntities
+            ? html`${this.hass.localize(
+                  `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.wakeword.no_wake_words`
+                )}
+                <a
+                  href=${documentationUrl(this.hass, "/docs/assist/")}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  >${this.hass.localize(
+                    `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.wakeword.no_wake_words_link`
+                  )}</a
+                >`
+            : nothing}
           <ha-form
             .schema=${this._schema(this._wakeWords)}
             .data=${this.data}
             .hass=${this.hass}
             .computeLabel=${this._computeLabel}
+            .disabled=${!hasWakeWorkEntities}
           ></ha-form>
         </div>
       </div>
@@ -128,6 +155,9 @@ export class AssistPipelineDetailWakeWord extends LitElement {
         font-size: var(--mdc-typography-body2-font-size, 0.875rem);
         margin-top: 0;
         margin-bottom: 0;
+      }
+      a {
+        color: var(--primary-color);
       }
     `;
   }

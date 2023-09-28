@@ -2196,7 +2196,9 @@
                   },
                   "wakeword": {
                     "title": "Wake word",
-                    "description": "If a device supports wake words, you can activate Assist by saying this word."
+                    "description": "If a device supports wake words, you can activate Assist by saying this word.",
+                    "no_wake_words": "It looks like you don't have a wake word engine setup yet.",
+                    "no_wake_words_link": "Find out more about wake words."
                   }
                 },
                 "no_cloud_message": "You should have an active cloud subscription to use cloud speech services.",
@@ -2446,7 +2448,12 @@
                   "mode_below": "Below mode",
                   "value_template": "Value template",
                   "type_value": "Fixed number",
-                  "type_input": "Numeric value of another entity"
+                  "type_input": "Numeric value of another entity",
+                  "description": {
+                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
+                  }
                 },
                 "persistent_notification": {
                   "label": "Persistent notification",
@@ -2595,7 +2602,12 @@
                   "below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::below%]",
                   "mode_above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_above%]",
                   "mode_below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_below%]",
-                  "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]"
+                  "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
+                  "description": {
+                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above}",
+                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is below {below}",
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}"
+                  }
                 },
                 "or": {
                   "label": "Or",
@@ -3922,7 +3934,7 @@
             "add_node": "Add device",
             "remove_node": "Remove device",
             "reconfigure_server": "Re-configure server",
-            "heal_network": "Heal Network",
+            "rebuild_network_routes": "Rebuild network routes",
             "in_progress_inclusion_exclusion": "Z-Wave JS is searching for devices",
             "cancel_inclusion_exclusion": "Stop searching"
           },
@@ -3982,7 +3994,7 @@
             "node_ready": "Ready",
             "device_config": "Configure",
             "reinterview_device": "Re-interview",
-            "heal_node": "Heal",
+            "rebuild_routes": "Rebuild routes",
             "remove_failed": "Remove failed",
             "update_firmware": "Update",
             "highest_security": "Highest security",
@@ -4164,28 +4176,28 @@
             "interview_failed": "The device interview failed. Additional information may be available in the logs.",
             "interview_complete": "Device interview complete."
           },
-          "heal_network": {
-            "title": "Heal your Z-Wave network",
-            "introduction": "Start a network heal on your Z-Wave network. A network heal will cause all devices to re-calculate their routes back to the controller and is recommended if you have recently moved devices or your controller.",
-            "traffic_warning": "The healing process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the heal is in progress.",
-            "start_heal": "Start healing",
-            "in_progress": "Network healing is in progress. This will take some time.",
-            "run_in_background": "You can close this dialog and the network healing will continue in the background.",
-            "stop_heal": "Stop Healing",
-            "healing_complete": "Network healing is complete.",
-            "healing_failed": "Healing failed. Additional information may be available in the logs.",
-            "healing_cancelled": "Network healing has been cancelled."
+          "rebuild_network_routes": {
+            "title": "Rebuild routes for your Z-Wave network",
+            "introduction": "Start rebuilding routes on your Z-Wave network. Rebuilding routes will cause all devices to re-calculate their routes back to the controller and is recommended if you have recently moved devices or your controller.",
+            "traffic_warning": "The rebuilding process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the rebuild is in progress.",
+            "start_rebuilding_routes": "Start rebuilding routes",
+            "in_progress": "Rebuild of network routes is in progress. This will take some time.",
+            "run_in_background": "You can close this dialog and the rebuild of network routes will continue in the background.",
+            "stop_rebuilding_routes": "Stop rebuilding routes",
+            "rebuilding_routes_complete": "Routes have been rebuilt.",
+            "rebuilding_routes_failed": "Route rebuilding failed. Additional information may be available in the logs.",
+            "rebuilding_routes_cancelled": "Rebuilding network routes has been cancelled."
           },
-          "heal_node": {
-            "title": "Heal a Z-Wave device",
+          "rebuild_node_routes": {
+            "title": "Rebuild routes for a Z-Wave device",
             "introduction": "Tell {device} to update its routes back to the controller. This can help with communication issues if you have recently moved the device or your controller.",
-            "traffic_warning": "The healing process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the heal is in progress.",
-            "start_heal": "Heal Device",
-            "healing_failed": "{device} could not be healed.",
-            "healing_failed_check_logs": "Additional information may be available in the logs.",
-            "healing_complete": "{device} has been healed.",
-            "in_progress": "{device} healing is in progress.",
-            "network_heal_in_progress": "A Z-Wave network heal is already in progress. Please wait for it to finish before healing an individual device."
+            "traffic_warning": "The route rebuilding process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the rebuilding is in progress.",
+            "start_rebuilding_routes": "Rebuild Routes for Device",
+            "rebuilding_routes_failed": "{device} routes could not be rebuild.",
+            "rebuilding_routes_failed_check_logs": "Additional information may be available in the logs.",
+            "rebuilding_routes_complete": "{device} routes have been rebuilt.",
+            "in_progress": "{device} routes rebuild is in progress.",
+            "routes_rebuild_in_progress": "A Z-Wave routes rebuild is already in progress. Please wait for it to finish before rebuilding routes for an individual device."
           },
           "update_firmware": {
             "title": "Update device firmware",
@@ -5561,6 +5573,13 @@
             "download_results": "Download results",
             "no_match": "No intent matched",
             "language": "[%key:ui::components::language-picker::language%]"
+          },
+          "debug": {
+            "title": "Debug tools",
+            "debug_connection": {
+              "title": "Debug connection",
+              "description": "Observe requests to the server and responses from the server in browser console."
+            }
           },
           "events": {
             "title": "Events",

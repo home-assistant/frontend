@@ -8,18 +8,18 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import {
   fetchZwaveNetworkStatus,
-  healZwaveNetwork,
-  stopHealZwaveNetwork,
-  subscribeHealZwaveNetworkProgress,
-  ZWaveJSHealNetworkStatusMessage,
+  rebuildZwaveNetworkRoutes,
+  stopRebuildingZwaveNetworkRoutes,
+  subscribeRebuildZwaveNetworkRoutesProgress,
+  ZWaveJSRebuildRoutesStatusMessage,
   ZWaveJSNetwork,
 } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import { ZWaveJSHealNetworkDialogParams } from "./show-dialog-zwave_js-heal-network";
+import { ZWaveJSRebuildNetworkRoutesDialogParams } from "./show-dialog-zwave_js-rebuild-network-routes";
 
-@customElement("dialog-zwave_js-heal-network")
-class DialogZWaveJSHealNetwork extends LitElement {
+@customElement("dialog-zwave_js-rebuild-network-routes")
+class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private entry_id?: string;
@@ -34,7 +34,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
 
   private _subscribed?: Promise<UnsubscribeFunc>;
 
-  public showDialog(params: ZWaveJSHealNetworkDialogParams): void {
+  public showDialog(params: ZWaveJSRebuildNetworkRoutesDialogParams): void {
     this._progress_total = 0;
     this.entry_id = params.entry_id;
     this._fetchData();
@@ -61,7 +61,9 @@ class DialogZWaveJSHealNetwork extends LitElement {
         @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
-          this.hass.localize("ui.panel.config.zwave_js.heal_network.title")
+          this.hass.localize(
+            "ui.panel.config.zwave_js.rebuild_network_routes.title"
+          )
         )}
       >
         ${!this._status
@@ -74,7 +76,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
                 <div class="status">
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.heal_network.introduction"
+                      "ui.panel.config.zwave_js.rebuild_network_routes.introduction"
                     )}
                   </p>
                 </div>
@@ -82,13 +84,16 @@ class DialogZWaveJSHealNetwork extends LitElement {
               <p>
                 <em>
                   ${this.hass.localize(
-                    "ui.panel.config.zwave_js.heal_network.traffic_warning"
+                    "ui.panel.config.zwave_js.rebuild_network_routes.traffic_warning"
                   )}
                 </em>
               </p>
-              <mwc-button slot="primaryAction" @click=${this._startHeal}>
+              <mwc-button
+                slot="primaryAction"
+                @click=${this._startRebuildingRoutes}
+              >
                 ${this.hass.localize(
-                  "ui.panel.config.zwave_js.heal_network.start_heal"
+                  "ui.panel.config.zwave_js.rebuild_network_routes.start_rebuilding_routes"
                 )}
               </mwc-button>
             `
@@ -99,13 +104,13 @@ class DialogZWaveJSHealNetwork extends LitElement {
                 <p>
                   <b>
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.heal_network.in_progress"
+                      "ui.panel.config.zwave_js.rebuild_network_routes.in_progress"
                     )}
                   </b>
                 </p>
                 <p>
                   ${this.hass.localize(
-                    "ui.panel.config.zwave_js.heal_network.run_in_background"
+                    "ui.panel.config.zwave_js.rebuild_network_routes.run_in_background"
                   )}
                 </p>
               </div>
@@ -114,9 +119,12 @@ class DialogZWaveJSHealNetwork extends LitElement {
                     <mwc-linear-progress indeterminate> </mwc-linear-progress>
                   `
                 : ""}
-              <mwc-button slot="secondaryAction" @click=${this._stopHeal}>
+              <mwc-button
+                slot="secondaryAction"
+                @click=${this._stopRebuildingRoutes}
+              >
                 ${this.hass.localize(
-                  "ui.panel.config.zwave_js.heal_network.stop_heal"
+                  "ui.panel.config.zwave_js.rebuild_network_routes.stop_rebuilding_routes"
                 )}
               </mwc-button>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
@@ -134,7 +142,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
                 <div class="status">
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.heal_network.healing_failed"
+                      "ui.panel.config.zwave_js.rebuild_network_routes.rebuilding_routes_failed"
                     )}
                   </p>
                 </div>
@@ -154,7 +162,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
                 <div class="status">
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.heal_network.healing_complete"
+                      "ui.panel.config.zwave_js.rebuild_network_routes.rebuilding_routes_complete"
                     )}
                   </p>
                 </div>
@@ -174,7 +182,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
                 <div class="status">
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.heal_network.healing_cancelled"
+                      "ui.panel.config.zwave_js.rebuild_network_routes.rebuilding_routes_cancelled"
                     )}
                   </p>
                 </div>
@@ -205,9 +213,9 @@ class DialogZWaveJSHealNetwork extends LitElement {
     const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(this.hass!, {
       entry_id: this.entry_id!,
     });
-    if (network.controller.is_heal_network_active) {
+    if (network.controller.is_rebuilding_routes) {
       this._status = "started";
-      this._subscribed = subscribeHealZwaveNetworkProgress(
+      this._subscribed = subscribeRebuildZwaveNetworkRoutesProgress(
         this.hass,
         this.entry_id!,
         this._handleMessage.bind(this)
@@ -215,33 +223,33 @@ class DialogZWaveJSHealNetwork extends LitElement {
     }
   }
 
-  private _startHeal(): void {
+  private _startRebuildingRoutes(): void {
     if (!this.hass) {
       return;
     }
-    healZwaveNetwork(this.hass, this.entry_id!);
+    rebuildZwaveNetworkRoutes(this.hass, this.entry_id!);
     this._status = "started";
-    this._subscribed = subscribeHealZwaveNetworkProgress(
+    this._subscribed = subscribeRebuildZwaveNetworkRoutesProgress(
       this.hass,
       this.entry_id!,
       this._handleMessage.bind(this)
     );
   }
 
-  private _stopHeal(): void {
+  private _stopRebuildingRoutes(): void {
     if (!this.hass) {
       return;
     }
-    stopHealZwaveNetwork(this.hass, this.entry_id!);
+    stopRebuildingZwaveNetworkRoutes(this.hass, this.entry_id!);
     this._unsubscribe();
     this._status = "cancelled";
   }
 
-  private _handleMessage(message: ZWaveJSHealNetworkStatusMessage): void {
-    if (message.event === "heal network progress") {
+  private _handleMessage(message: ZWaveJSRebuildRoutesStatusMessage): void {
+    if (message.event === "rebuild routes progress") {
       let finished = 0;
       let in_progress = 0;
-      for (const status of Object.values(message.heal_node_status)) {
+      for (const status of Object.values(message.rebuild_routes_status)) {
         if (status === "pending") {
           in_progress++;
         }
@@ -249,11 +257,11 @@ class DialogZWaveJSHealNetwork extends LitElement {
           finished++;
         }
       }
-      this._progress_total = Object.keys(message.heal_node_status).length;
+      this._progress_total = Object.keys(message.rebuild_routes_status).length;
       this._progress_finished = finished / this._progress_total;
       this._progress_in_progress = in_progress / this._progress_total;
     }
-    if (message.event === "heal network done") {
+    if (message.event === "rebuild routes done") {
       this._unsubscribe();
       this._status = "finished";
     }
@@ -306,6 +314,6 @@ class DialogZWaveJSHealNetwork extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-zwave_js-heal-network": DialogZWaveJSHealNetwork;
+    "dialog-zwave_js-rebuild-network-routes": DialogZWaveJSRebuildNetworkRoutes;
   }
 }
