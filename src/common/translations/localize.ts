@@ -105,20 +105,16 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
     } else if (args.length >= 2) {
       // eslint-disable-next-line no-console
       console.warn(
-        "[FIXME] While localizing",
-        key,
-        "the old format for parameters was used. See https://developers.home-assistant.io/blog/2023/09/27/localize-handling for more info."
+        `hass.localize for the key "${key}" was invoked using the deprecated arguments format. For more info and guidelines on updating usage, please visit https://developers.home-assistant.io/blog/2023/09/27/localize-handling.`
       );
       for (let i = 0; i < args.length; i += 2) {
         argObject[args[i]] = args[i + 1];
       }
     }
-    if (Object.values(argObject).some((v) => v === undefined)) {
+    if (Object.values(argObject).some((v) => v == null)) {
       // eslint-disable-next-line no-console
-      console.warn(
-        "[FIXME] While localizing",
-        key,
-        "one of the parameters was undefined. See https://developers.home-assistant.io/blog/2023/09/27/localize-handling for more info."
+      console.error(
+        `hass.localize for the key "${key}" was invoked with an undefined parameter. For more info about what this means, please visit https://developers.home-assistant.io/blog/2023/09/27/localize-handling.`
       );
     }
 
