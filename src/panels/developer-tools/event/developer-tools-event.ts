@@ -1,7 +1,6 @@
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "@material/mwc-button";
-import { load } from "js-yaml";
 import "../../../components/ha-code-editor";
 import "../../../components/ha-textfield";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -12,8 +11,6 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 
-const ERROR_SENTINEL = {};
-
 @customElement("developer-tools-event")
 class HaPanelDevEvent extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -22,11 +19,11 @@ class HaPanelDevEvent extends LitElement {
 
   @state() private _eventType: string = "";
 
-  @state() private _eventData: string = "";
+  @state() private _eventData: object = {};
+
+  @state() private _isValid: boolean = true;
 
   protected render(): TemplateResult {
-    const validJSON = this._validJSON();
-
     return html`
       <div class=${this.narrow ? "content" : "content layout horizontal"}>
         <div class="flex">
@@ -59,15 +56,16 @@ class HaPanelDevEvent extends LitElement {
             </p>
           </div>
           <div class="code-editor">
-            <ha-code-editor
-              mode="yaml"
+            <ha-yaml-editor
               .value=${this._eventData}
-              .error=${!validJSON}
+              .error=${!this._isValid}
               @value-changed=${this._yamlChanged}
-              dir="ltr"
-            ></ha-code-editor>
+            ></ha-yaml-editor>
           </div>
-          <mwc-button @click=${this._fireEvent} raised .disabled=${!validJSON}
+          <mwc-button
+            @click=${this._fireEvent}
+            raised
+            .disabled=${!this._isValid}
             >${this.hass.localize(
               "ui.panel.developer-tools.tabs.events.fire_event"
             )}</mwc-button
@@ -90,18 +88,6 @@ class HaPanelDevEvent extends LitElement {
     `;
   }
 
-  private _parsedJSON() {
-    try {
-      return this._eventData.trim() ? (load(this._eventData) as any) : {};
-    } catch (err) {
-      return ERROR_SENTINEL;
-    }
-  }
-
-  private _validJSON() {
-    return this._parsedJSON() !== ERROR_SENTINEL;
-  }
-
   private _eventSelected(ev) {
     this._eventType = ev.detail.eventType;
   }
@@ -112,6 +98,7 @@ class HaPanelDevEvent extends LitElement {
 
   private _yamlChanged(ev) {
     this._eventData = ev.detail.value;
+    this._isValid = ev.detail.isValid;
   }
 
   private async _fireEvent() {
@@ -125,8 +112,8 @@ class HaPanelDevEvent extends LitElement {
     }
     await this.hass.callApi(
       "POST",
-      "events/" + this._eventType,
-      this._parsedJSON()
+      `events/${this._eventType}`,
+      this._eventData
     );
     fireEvent(this, "hass-notification", {
       message: this.hass.localize(
@@ -168,13 +155,6 @@ class HaPanelDevEvent extends LitElement {
 
         ha-textfield {
           display: block;
-        }
-
-        .code-editor {
-          margin-right: 16px;
-          margin-inline-start: initial;
-          margin-inline-end: 16px;
-          direction: var(--direction);
         }
 
         .header {
