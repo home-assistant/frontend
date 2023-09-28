@@ -152,28 +152,40 @@ const tryDescribeTrigger = (
 
     const duration = trigger.for ? describeDuration(trigger.for) : undefined;
 
-    let hasAboveAndBelow = "other";
     if (trigger.above && trigger.below) {
-      hasAboveAndBelow = "aboveAndBelow";
-    } else if (trigger.above) {
-      hasAboveAndBelow = "above";
-    } else if (trigger.below) {
-      hasAboveAndBelow = "below";
+      return hass.localize(
+        `${triggerTranslationBaseKey}.numeric_state.description.above-below`,
+        {
+          attribute: attribute,
+          entity: entity,
+          above: trigger.above,
+          below: trigger.below,
+          duration: duration,
+        }
+      );
     }
-
-    return hass.localize(
-      `${triggerTranslationBaseKey}.numeric_state.description.full`,
-      {
-        hasAttribute: attribute !== undefined,
-        attribute: attribute,
-        entity: entity,
-        hasAboveAndBelow: hasAboveAndBelow,
-        above: trigger.above,
-        below: trigger.below,
-        hasDuration: duration !== undefined,
-        duration: duration,
-      }
-    );
+    if (trigger.above) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.numeric_state.description.above`,
+        {
+          attribute: attribute,
+          entity: entity,
+          above: trigger.above,
+          duration: duration,
+        }
+      );
+    }
+    if (trigger.below) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.numeric_state.description.below`,
+        {
+          attribute: attribute,
+          entity: entity,
+          below: trigger.below,
+          duration: duration,
+        }
+      );
+    }
   }
 
   // State Trigger
@@ -838,26 +850,37 @@ const tryDescribeCondition = (
         )
       : undefined;
 
-    let hasAboveAndBelow = "other";
     if (condition.above && condition.below) {
-      hasAboveAndBelow = "aboveAndBelow";
-    } else if (condition.above) {
-      hasAboveAndBelow = "above";
-    } else if (condition.below) {
-      hasAboveAndBelow = "below";
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.numeric_state.description.above-below`,
+        {
+          attribute: attribute,
+          entity: entity,
+          above: condition.above,
+          below: condition.below,
+        }
+      );
     }
-
-    return hass.localize(
-      `${conditionsTranslationBaseKey}.numeric_state.description.full`,
-      {
-        hasAttribute: attribute !== undefined,
-        attribute: attribute,
-        entity: entity,
-        hasAboveAndBelow: hasAboveAndBelow,
-        above: condition.above,
-        below: condition.below,
-      }
-    );
+    if (condition.above) {
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.numeric_state.description.above`,
+        {
+          attribute: attribute,
+          entity: entity,
+          above: condition.above,
+        }
+      );
+    }
+    if (condition.below) {
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.numeric_state.description.below`,
+        {
+          attribute: attribute,
+          entity: entity,
+          below: condition.below,
+        }
+      );
+    }
   }
 
   // Time condition
