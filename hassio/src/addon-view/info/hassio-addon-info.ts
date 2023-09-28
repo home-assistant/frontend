@@ -7,7 +7,6 @@ import {
   mdiDocker,
   mdiExclamationThick,
   mdiFlask,
-  mdiHomeAssistant,
   mdiKey,
   mdiLinkLock,
   mdiNetwork,
@@ -22,7 +21,7 @@ import {
   mdiPound,
   mdiShield,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -40,11 +39,11 @@ import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
 import {
   AddonCapability,
-  fetchHassioAddonChangelog,
-  fetchHassioAddonInfo,
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   HassioAddonSetSecurityParams,
+  fetchHassioAddonChangelog,
+  fetchHassioAddonInfo,
   installHassioAddon,
   rebuildLocalAddon,
   restartHassioAddon,
@@ -56,9 +55,9 @@ import {
   validateHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
 import {
+  HassioStats,
   extractApiErrorMessage,
   fetchHassioStats,
-  HassioStats,
 } from "../../../../src/data/hassio/common";
 import {
   StoreAddon,
@@ -69,6 +68,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../src/dialogs/generic/show-dialog-box";
+import { mdiHomeAssistant } from "../../../../src/resources/home-assistant-logo-svg";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../../src/types";
 import { bytesToString } from "../../../../src/util/bytes-to-string";

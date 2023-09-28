@@ -45,13 +45,12 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
     return [
       subscribeConfigFlowInProgress(this.hass, (flows) => {
-        this._discovered = flows;
+        this._discovered = flows.filter(
+          (flow) => !HIDDEN_DOMAINS.has(flow.handler)
+        );
         const integrations: Set<string> = new Set();
-        for (const flow of flows) {
-          // To render title placeholders
-          if (flow.context.title_placeholders) {
-            integrations.add(flow.handler);
-          }
+        for (const flow of this._discovered) {
+          integrations.add(flow.handler);
         }
         this.hass.loadBackendTranslation("title", Array.from(integrations));
       }),
@@ -60,12 +59,14 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
         (messages) => {
           let fullUpdate = false;
           const newEntries: ConfigEntry[] = [];
+          const integrations: Set<string> = new Set();
           messages.forEach((message) => {
             if (message.type === null || message.type === "added") {
               if (HIDDEN_DOMAINS.has(message.entry.domain)) {
                 return;
               }
               newEntries.push(message.entry);
+              integrations.add(message.entry.domain);
               if (message.type === null) {
                 fullUpdate = true;
               }
@@ -86,6 +87,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
           if (!newEntries.length && !fullUpdate) {
             return;
           }
+          this.hass.loadBackendTranslation("title", Array.from(integrations));
           const existingEntries = fullUpdate ? [] : this._entries;
           this._entries = [...existingEntries!, ...newEntries];
         },

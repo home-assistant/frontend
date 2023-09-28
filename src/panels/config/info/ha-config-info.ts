@@ -4,22 +4,22 @@ import {
   mdiFileDocument,
   mdiHandsPray,
   mdiHelp,
-  mdiHomeAssistant,
   mdiNewspaperVariant,
   mdiTshirtCrew,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
 import "../../../components/ha-clickable-list-item";
 import "../../../components/ha-logo-svg";
 import {
-  fetchHassioHassOsInfo,
   HassioHassOSInfo,
+  fetchHassioHassOsInfo,
 } from "../../../data/hassio/host";
-import { fetchHassioInfo, HassioInfo } from "../../../data/hassio/supervisor";
+import { HassioInfo, fetchHassioInfo } from "../../../data/hassio/supervisor";
 import "../../../layouts/hass-subpage";
+import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";

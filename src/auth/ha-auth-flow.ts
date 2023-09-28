@@ -1,19 +1,12 @@
+/* eslint-disable lit/prefer-static-styles */
 import "@material/mwc-button";
 import { genClientId } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-checkbox";
 import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
-import "../components/ha-form/ha-form";
 import "../components/ha-formfield";
 import "../components/ha-markdown";
 import { AuthProvider, autocompleteLoginFields } from "../data/auth";
@@ -21,7 +14,7 @@ import {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
 } from "../data/data_entry_flow";
-import "./ha-password-manager-polyfill";
+import "./ha-auth-form";
 
 type State = "loading" | "error" | "step";
 
@@ -48,6 +41,10 @@ export class HaAuthFlow extends LitElement {
   @state() private _submitting = false;
 
   @state() private _storeToken = false;
+
+  createRenderRoot() {
+    return this;
+  }
 
   willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
@@ -79,13 +76,17 @@ export class HaAuthFlow extends LitElement {
 
   protected render() {
     return html`
+      <style>
+        ha-auth-flow .action {
+          margin: 24px 0 8px;
+          text-align: center;
+        }
+        ha-auth-flow .store-token {
+          margin-top: 10px;
+          margin-left: -16px;
+        }
+      </style>
       <form>${this._renderForm()}</form>
-      <ha-password-manager-polyfill
-        .step=${this._step}
-        .stepData=${this._stepData}
-        @form-submitted=${this._handleSubmit}
-        @value-changed=${this._stepDataChanged}
-      ></ha-password-manager-polyfill>
     `;
   }
 
@@ -128,12 +129,6 @@ export class HaAuthFlow extends LitElement {
         (form as any).focus();
       }
     }, 100);
-
-    setTimeout(() => {
-      this.renderRoot.querySelector(
-        "ha-password-manager-polyfill"
-      )!.boundingRect = this.getBoundingClientRect();
-    }, 500);
   }
 
   private _renderForm() {
@@ -203,7 +198,7 @@ export class HaAuthFlow extends LitElement {
                 ></ha-markdown>
               `
             : nothing}
-          <ha-form
+          <ha-auth-form
             .data=${this._stepData}
             .schema=${autocompleteLoginFields(step.data_schema)}
             .error=${step.errors}
@@ -211,7 +206,7 @@ export class HaAuthFlow extends LitElement {
             .computeLabel=${this._computeLabelCallback(step)}
             .computeError=${this._computeErrorCallback(step)}
             @value-changed=${this._stepDataChanged}
-          ></ha-form>
+          ></ha-auth-form>
           ${this.clientId === genClientId() &&
           !["select_mfa_module", "mfa"].includes(step.step_id)
             ? html`
@@ -387,20 +382,6 @@ export class HaAuthFlow extends LitElement {
     } finally {
       this._submitting = false;
     }
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      .action {
-        margin: 24px 0 8px;
-        text-align: center;
-      }
-      /* Align with the rest of the form. */
-      .store-token {
-        margin-top: 10px;
-        margin-left: -16px;
-      }
-    `;
   }
 }
 

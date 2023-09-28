@@ -69,6 +69,8 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean }) public showNames = true;
 
+  @property({ type: Boolean }) public clickForMoreInfo = true;
+
   @property({ type: Boolean }) public isLoadingData = false;
 
   @state() private _computedStartTime!: Date;
@@ -181,6 +183,7 @@ export class StateHistoryCharts extends LitElement {
           .paddingYAxis=${this._maxYWidth}
           .names=${this.names}
           .chartIndex=${index}
+          .clickForMoreInfo=${this.clickForMoreInfo}
           @y-width-changed=${this._yWidthChanged}
         ></state-history-chart-line>
       </div> `;
@@ -197,6 +200,7 @@ export class StateHistoryCharts extends LitElement {
         .chunked=${this.virtualize}
         .paddingYAxis=${this._maxYWidth}
         .chartIndex=${index}
+        .clickForMoreInfo=${this.clickForMoreInfo}
         @y-width-changed=${this._yWidthChanged}
       ></state-history-chart-timeline>
     </div> `;

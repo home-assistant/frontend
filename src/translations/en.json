@@ -294,6 +294,7 @@
       "undo": "Undo",
       "move": "Move",
       "save": "Save",
+      "add": "Add",
       "edit": "Edit",
       "submit": "Submit",
       "rename": "Rename",
@@ -1665,10 +1666,9 @@
             "create_area": "Create Area"
           },
           "editor": {
-            "default_name": "New area",
+            "create_area": "Create area",
+            "update_area": "Update area",
             "delete": "Delete",
-            "update": "Update",
-            "create": "Create",
             "name": "Name",
             "name_required": "Name is required",
             "area_id": "Area ID",
@@ -2173,7 +2173,9 @@
                   "stt_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "tts_engine": "Text-to-speech",
                   "tts_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
-                  "tts_voice": "Voice"
+                  "tts_voice": "Voice",
+                  "wake_word_entity": "Wake word engine",
+                  "wake_word_id": "Wake word"
                 },
                 "steps": {
                   "config": {
@@ -2191,6 +2193,10 @@
                   "tts": {
                     "title": "Text-to-speech",
                     "description": "When you are controlling your assistant with voice, the text-to-speech engine turns the conversation text responses into audio."
+                  },
+                  "wakeword": {
+                    "title": "Wake word",
+                    "description": "If a device supports wake words, you can activate Assist by saying this word."
                   }
                 },
                 "no_cloud_message": "You should have an active cloud subscription to use cloud speech services.",
@@ -2401,7 +2407,10 @@
                   "zone": "Zone",
                   "event": "Event",
                   "enter": "Enter",
-                  "leave": "Leave"
+                  "leave": "Leave",
+                  "description": {
+                    "full": "When {source} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone}\n other {zones}\n}"
+                  }
                 },
                 "state": {
                   "label": "State",
@@ -2448,6 +2457,9 @@
                     "removed": "removed",
                     "current": "current",
                     "updated": "updated"
+                  },
+                  "description": {
+                    "full": "When a persistent notification is updated"
                   }
                 },
                 "sun": {
@@ -2519,7 +2531,10 @@
                   "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "enter": "Enter",
-                  "leave": "Leave"
+                  "leave": "Leave",
+                  "description": {
+                    "full": "When {entity} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
+                  }
                 }
               }
             },
@@ -4626,7 +4641,9 @@
             "subview": "Subview",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
             "edit_ui": "Edit in visual editor",
-            "edit_yaml": "Edit in YAML"
+            "edit_yaml": "Edit in YAML",
+            "saving_failed": "Saving failed",
+            "error_same_url": "You cannot save a view with the same URL as a different existing view."
           },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
@@ -5545,6 +5562,13 @@
             "no_match": "No intent matched",
             "language": "[%key:ui::components::language-picker::language%]"
           },
+          "debug": {
+            "title": "Debug tools",
+            "debug_connection": {
+              "title": "Debug connection",
+              "description": "Observe requests to the server and responses from the server in browser console."
+            }
+          },
           "events": {
             "title": "Events",
             "description": "Fire an event on the event bus.",
@@ -5577,7 +5601,22 @@
             "yaml_parameters": "Parameters only available in YAML mode",
             "all_parameters": "All available parameters",
             "accepts_target": "This service accepts a target, for example: `entity_id: light.bed_light`",
-            "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor."
+            "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor.",
+            "errors": {
+              "ui": {
+                "no_service": "No service selected, please select a service",
+                "invalid_service": "Selected service is invalid, please select a valid service",
+                "no_target": "This service requires a target, please select a target from the picker",
+                "missing_required_field": "This service requires field {key}, please enter a valid value for {key}"
+              },
+              "yaml": {
+                "invalid_yaml": "Service YAML contains syntax errors, please fix the syntax",
+                "no_service": "No service defined, please define a service: key",
+                "invalid_service": "Defined service is invalid, please provide a service in the format domain.service",
+                "no_target": "This service requires a target, please define a target entity_id, device_id, or area_id under target: or data:",
+                "missing_required_field": "This service requires field {key}, which must be provided under data:"
+              }
+            }
           },
           "states": {
             "title": "States",
