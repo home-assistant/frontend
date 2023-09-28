@@ -182,7 +182,7 @@
     "@types/luxon": "3.3.2",
     "@types/mocha": "10.0.1",
     "@types/qrcode": "1.5.2",
-    "@types/serve-handler": "6.1.1",
+    "@types/serve-handler": "6.1.2",
     "@types/sortablejs": "1.15.2",
     "@types/tar": "6.1.6",
     "@types/ua-parser-js": "0.7.37",
