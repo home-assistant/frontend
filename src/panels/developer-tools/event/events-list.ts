@@ -21,7 +21,7 @@ class EventsList extends LitElement {
         ${this.events.map(
           (event) => html`
             <li>
-              <a href="#" @click=${this._eventSelected} .event=${event}
+              <a href="#" @click=${this._eventSelected} .event=${event.event}
                 >${event.event}</a
               >
               <span>
@@ -39,8 +39,7 @@ class EventsList extends LitElement {
     `;
   }
 
-  public async connectedCallback(): Promise<void> {
-    super.connectedCallback();
+  protected async firstUpdated() {
     const events = await this.hass.callApi<EventListenerCount[]>(
       "GET",
       "events"
@@ -52,8 +51,8 @@ class EventsList extends LitElement {
 
   private _eventSelected(ev: Event) {
     ev.preventDefault();
-    const event: EventListenerCount = (ev.currentTarget! as any).event;
-    fireEvent(this, "event-selected", { eventType: event.event });
+    const event: string = (ev.currentTarget! as any).event;
+    fireEvent(this, "event-selected", { eventType: event });
   }
 
   static get styles(): CSSResultGroup {

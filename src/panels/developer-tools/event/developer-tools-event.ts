@@ -1,5 +1,5 @@
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "@material/mwc-button";
 import { load } from "js-yaml";
 import "../../../components/ha-code-editor";
@@ -20,11 +20,13 @@ class HaPanelDevEvent extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() public eventType?: string = "";
+  @state() private _eventType: string = "";
 
-  @property() public eventData?: string = "";
+  @state() private _eventData: string = "";
 
   protected render(): TemplateResult {
+    const validJSON = this._validJSON();
+
     return html`
       <div class=${this.narrow ? "content" : "content layout horizontal"}>
         <div class="flex">
@@ -33,7 +35,7 @@ class HaPanelDevEvent extends LitElement {
               "ui.panel.developer-tools.tabs.events.description"
             )}
             <a
-              href=${this._computeDocumentationUrl(this.hass)}
+              href=${documentationUrl(this.hass, "/docs/configuration/events/")}
               target="_blank"
               rel="noreferrer"
             >
@@ -44,12 +46,12 @@ class HaPanelDevEvent extends LitElement {
           </p>
           <div class="inputs">
             <ha-textfield
-              label=${this.hass.localize(
+              .label=${this.hass.localize(
                 "ui.panel.developer-tools.tabs.events.type"
               )}
               autofocus
               required
-              .value=${this.eventType}
+              .value=${this._eventType}
               @change=${this._eventTypeChanged}
             ></ha-textfield>
             <p>
@@ -59,16 +61,13 @@ class HaPanelDevEvent extends LitElement {
           <div class="code-editor">
             <ha-code-editor
               mode="yaml"
-              .value=${this.eventData}
-              .error=${!this._validJSON}
+              .value=${this._eventData}
+              .error=${!validJSON}
               @value-changed=${this._yamlChanged}
               dir="ltr"
             ></ha-code-editor>
           </div>
-          <mwc-button
-            @click=${this._fireEvent}
-            raised
-            .disabled=${!this._validJSON}
+          <mwc-button @click=${this._fireEvent} raised .disabled=${!validJSON}
             >${this.hass.localize(
               "ui.panel.developer-tools.tabs.events.fire_event"
             )}</mwc-button
@@ -92,43 +91,31 @@ class HaPanelDevEvent extends LitElement {
   }
 
   private _parsedJSON() {
-    return this._computeParsedEventData(this.eventData);
-  }
-
-  private _validJSON() {
-    return this._computeValidJSON(this._parsedJSON());
-  }
-
-  private _eventSelected(ev) {
-    this.eventType = ev.detail.eventType;
-  }
-
-  private _eventTypeChanged(ev) {
-    this.eventType = ev.target.value;
-  }
-
-  private _computeParsedEventData(eventData) {
     try {
-      return eventData.trim() ? load(eventData) : {};
+      return this._eventData.trim() ? (load(this._eventData) as any) : {};
     } catch (err) {
       return ERROR_SENTINEL;
     }
   }
 
-  private _computeDocumentationUrl(hass) {
-    return documentationUrl(hass, "/docs/configuration/events/");
+  private _validJSON() {
+    return this._parsedJSON() !== ERROR_SENTINEL;
   }
 
-  private _computeValidJSON(parsedJSON) {
-    return parsedJSON !== ERROR_SENTINEL;
+  private _eventSelected(ev) {
+    this._eventType = ev.detail.eventType;
+  }
+
+  private _eventTypeChanged(ev) {
+    this._eventType = ev.target.value;
   }
 
   private _yamlChanged(ev) {
-    this.eventData = ev.detail.value;
+    this._eventData = ev.detail.value;
   }
 
   private async _fireEvent() {
-    if (!this.eventType) {
+    if (!this._eventType) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.developer-tools.tabs.events.alert_event_type"
@@ -138,14 +125,13 @@ class HaPanelDevEvent extends LitElement {
     }
     await this.hass.callApi(
       "POST",
-      "events/" + this.eventType,
-      this._parsedJSON
+      "events/" + this._eventType,
+      this._parsedJSON()
     );
     fireEvent(this, "hass-notification", {
       message: this.hass.localize(
         "ui.panel.developer-tools.tabs.events.notification_event_fired",
-        "type",
-        this.eventType
+        { type: this._eventType }
       ),
     });
   }
