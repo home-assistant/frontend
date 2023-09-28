@@ -3,6 +3,12 @@ import { HomeAssistant } from "../../../types";
 
 export type Condition = StateCondition | ResponsiveCondition;
 
+export type LegacyCondition = {
+  entity?: string;
+  state?: string;
+  state_not?: string;
+};
+
 export type StateCondition = {
   condition: "state";
   entity?: string;
@@ -50,7 +56,7 @@ export function checkConditionsMet(
 
 function valideStateCondition(condition: StateCondition) {
   return (
-    !!condition.entity &&
+    condition.entity != null &&
     (condition.state != null || condition.state_not != null)
   );
 }

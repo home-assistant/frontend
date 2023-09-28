@@ -2,13 +2,13 @@ import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert, literal, object, optional, string } from "superstruct";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import { HaFormSchema } from "../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../types";
-import { StateCondition } from "../validate-condition";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { LocalizeFunc } from "../../../../../common/translations/localize";
+import "../../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import { HaFormSchema } from "../../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../../types";
+import { StateCondition } from "../../../common/validate-condition";
 
 const stateConditionStruct = object({
   condition: literal("state"),
@@ -33,7 +33,7 @@ export class HaCardConditionState extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   public static get defaultConfig(): StateCondition {
-    return { condition: "state", entity: "" };
+    return { condition: "state", entity: "", state: "" };
   }
 
   protected willUpdate(changedProperties: PropertyValues): void {
