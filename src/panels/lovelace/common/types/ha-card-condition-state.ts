@@ -96,6 +96,7 @@ export class HaCardConditionState extends LitElement {
 
     const data: StateConditionData = {
       ...content,
+      entity: this.condition.entity ?? "",
       invert: this.condition.state_not ? "true" : "false",
       state: this.condition.state_not ?? this.condition.state ?? "",
     };

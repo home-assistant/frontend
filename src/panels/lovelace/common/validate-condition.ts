@@ -5,7 +5,7 @@ export type Condition = StateCondition | ResponsiveCondition;
 
 export type StateCondition = {
   condition: "state";
-  entity: string;
+  entity?: string;
   state?: string;
   state_not?: string;
 };
@@ -16,9 +16,10 @@ export type ResponsiveCondition = {
 };
 
 function checkStateCondition(condition: StateCondition, hass: HomeAssistant) {
-  const state = hass.states[condition.entity]
-    ? hass.states[condition.entity].state
-    : UNAVAILABLE;
+  const state =
+    condition.entity && hass.states[condition.entity]
+      ? hass.states[condition.entity].state
+      : UNAVAILABLE;
 
   return condition.state != null
     ? state === condition.state
@@ -29,7 +30,9 @@ function checkResponsiveCondition(
   condition: ResponsiveCondition,
   _hass: HomeAssistant
 ) {
-  return matchMedia(condition.media_query ?? "").matches;
+  return condition.media_query
+    ? matchMedia(condition.media_query).matches
+    : false;
 }
 
 export function checkConditionsMet(
