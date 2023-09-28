@@ -4767,10 +4767,24 @@
               "state_equal": "State is equal to",
               "state_not_equal": "State is not equal to",
               "current_state": "current",
-              "min_width": "Min width",
-              "max_width": "Max width",
               "condition_explanation": "The card will be shown when ALL conditions below are fulfilled.",
-              "change_type": "Change type"
+              "change_type": "Change type",
+              "types": {
+                "responsive": {
+                  "label": "Responsive",
+                  "breakpoints": "Screen sizes",
+                  "breakpoints_list": {
+                    "mobile": "Mobile",
+                    "tablet": "Tablet",
+                    "desktop": "Desktop",
+                    "wide": "Wide"
+                  },
+                  "min": "min: {size}px"
+                },
+                "state": {
+                  "label": "Entity state"
+                }
+              }
             },
             "config": {
               "required": "required",

@@ -1,5 +1,5 @@
 import { mdiCodeBraces, mdiDelete, mdiListBoxOutline } from "@mdi/js";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -7,6 +7,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-yaml-editor";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import "./types/ha-card-condition-responsive";
 import "./types/ha-card-condition-state";
 import { Condition } from "./validate-condition";
 
@@ -20,16 +21,22 @@ export default class HaCardConditionEditor extends LitElement {
 
   protected render() {
     const condition = this.condition;
-    const supported =
-      customElements.get(`ha-card-condition-${condition.condition}`) !==
-      undefined;
-    const yamlMode = this._yamlMode || !supported;
+    const element = customElements.get(
+      `ha-card-condition-${condition.condition}`
+    ) as any | undefined;
+    const supported = element !== undefined;
+
+    const valid =
+      element &&
+      (!element.validateUIConfig || element.validateUIConfig(this.condition));
+
+    const yamlMode = this._yamlMode || !supported || !valid;
 
     return html`
       <div class="header">
         <ha-icon-button
           @click=${this._toggleMode}
-          .disabled=${!supported}
+          .disabled=${!supported || !valid}
           .label=${this.hass!.localize(
             yamlMode
               ? "ui.panel.lovelace.editor.edit_card.show_visual_editor"
@@ -44,6 +51,13 @@ export default class HaCardConditionEditor extends LitElement {
         >
         </ha-icon-button>
       </div>
+      ${!valid
+        ? html`
+            <ha-alert alert-type="warning">
+              ${this.hass.localize("ui.errors.config.editor_not_supported")}
+            </ha-alert>
+          `
+        : nothing}
       <div class="content">
         ${yamlMode
           ? html`
