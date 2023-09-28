@@ -2446,7 +2446,12 @@
                   "mode_below": "Below mode",
                   "value_template": "Value template",
                   "type_value": "Fixed number",
-                  "type_input": "Numeric value of another entity"
+                  "type_input": "Numeric value of another entity",
+                  "description": {
+                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
+                  }
                 },
                 "persistent_notification": {
                   "label": "Persistent notification",
@@ -2595,7 +2600,12 @@
                   "below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::below%]",
                   "mode_above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_above%]",
                   "mode_below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_below%]",
-                  "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]"
+                  "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
+                  "description": {
+                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above}",
+                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is below {below}",
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}"
+                  }
                 },
                 "or": {
                   "label": "Or",
