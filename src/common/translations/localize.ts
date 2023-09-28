@@ -102,24 +102,24 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
     const args = _args as any;
     if (args.length === 1 && typeof args[0] === "object") {
       argObject = args[0];
-      if (Object.values(argObject).some((v) => v === undefined)) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          "[FIXME] While localizing",
-          key,
-          "undefined was passed. See https://developers.home-assistant.io/blog/2023/09/27/localize-handling for more info."
-        );
-      }
     } else if (args.length >= 2) {
       // eslint-disable-next-line no-console
       console.warn(
         "[FIXME] While localizing",
         key,
-        "old format was passed. See https://developers.home-assistant.io/blog/2023/09/27/localize-handling for more info."
+        "the old format for parameters was used. See https://developers.home-assistant.io/blog/2023/09/27/localize-handling for more info."
       );
       for (let i = 0; i < args.length; i += 2) {
         argObject[args[i]] = args[i + 1];
       }
+    }
+    if (Object.values(argObject).some((v) => v === undefined)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        "[FIXME] While localizing",
+        key,
+        "one of the parameters was undefined. See https://developers.home-assistant.io/blog/2023/09/27/localize-handling for more info."
+      );
     }
 
     try {

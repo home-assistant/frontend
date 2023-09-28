@@ -74,8 +74,8 @@ class HaPanelDevService extends LitElement {
         data: {},
       };
       if (this._yamlMode) {
-        this.updateComplete.then(() =>
-          this._yamlEditor?.setValue(this._serviceData)
+        this.updateComplete.then(
+          () => this._yamlEditor?.setValue(this._serviceData)
         );
       }
     } else if (!this._serviceData?.service) {
@@ -87,8 +87,8 @@ class HaPanelDevService extends LitElement {
         data: {},
       };
       if (this._yamlMode) {
-        this.updateComplete.then(() =>
-          this._yamlEditor?.setValue(this._serviceData)
+        this.updateComplete.then(
+          () => this._yamlEditor?.setValue(this._serviceData)
         );
       }
     }
