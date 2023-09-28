@@ -1,7 +1,7 @@
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "@material/mwc-button";
-import "../../../components/ha-code-editor";
+import "../../../components/ha-yaml-editor";
 import "../../../components/ha-textfield";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { documentationUrl } from "../../../util/documentation-url";
