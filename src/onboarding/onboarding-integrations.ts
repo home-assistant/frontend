@@ -24,12 +24,13 @@ import "./integration-badge";
 import { onBoardingStyles } from "./styles";
 
 const HIDDEN_DOMAINS = new Set([
+  "google_translate",
   "hassio",
   "met",
   "radio_browser",
   "rpi_power",
+  "shopping_list",
   "sun",
-  "google_translate",
 ]);
 
 @customElement("onboarding-integrations")
