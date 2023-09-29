@@ -4,9 +4,10 @@ import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
 import {
   mdiCodeBraces,
   mdiContentCopy,
-  mdiContentDuplicate,
   mdiListBoxOutline,
   mdiPlus,
+  mdiResponsive,
+  mdiStateMachine,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
@@ -32,16 +33,21 @@ import "../card-editor/hui-card-element-editor";
 import type { HuiCardElementEditor } from "../card-editor/hui-card-element-editor";
 import "../card-editor/hui-card-picker";
 import "../conditions/ha-card-condition-editor";
+import { LovelaceConditionEditorConstructor } from "../conditions/types";
 import "../conditions/types/ha-card-condition-responsive";
 import "../conditions/types/ha-card-condition-state";
-import { LovelaceConditionEditorConstructor } from "../conditions/types";
 import "../hui-element-editor";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { GUIModeChangedEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const UI_CONDITION: Condition["condition"][] = ["state", "responsive"];
+const UI_CONDITION = [
+  "state",
+  "responsive",
+] as const satisfies readonly Condition["condition"][];
+
+type UiCondition = (typeof UI_CONDITION)[number];
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -51,6 +57,10 @@ const cardConfigStruct = assign(
   })
 );
 
+const ICONS: Record<UiCondition, string> = {
+  state: mdiStateMachine,
+  responsive: mdiResponsive,
+};
 @customElement("hui-conditional-card-editor")
 export class HuiConditionalCardEditor
   extends LitElement
@@ -198,7 +208,7 @@ export class HuiConditionalCardEditor
                         ) || condition}
                         <ha-svg-icon
                           slot="graphic"
-                          .path=${mdiContentDuplicate}
+                          .path=${ICONS[condition]}
                         ></ha-svg-icon>
                       </ha-list-item>
                     `
