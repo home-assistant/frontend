@@ -29,14 +29,17 @@ const triggerTranslationBaseKey =
 const conditionsTranslationBaseKey =
   "ui.panel.config.automation.editor.conditions.type";
 
-const describeDuration = (forTime: number | string | ForDict) => {
+const describeDuration = (
+  hass: HomeAssistant,
+  forTime: number | string | ForDict
+) => {
   let duration: string | null;
   if (typeof forTime === "number") {
     duration = secondsToDuration(forTime);
   } else if (typeof forTime === "string") {
     duration = forTime;
   } else {
-    duration = formatDuration(forTime);
+    duration = formatDuration(hass, forTime);
   }
   return duration;
 };
@@ -150,7 +153,9 @@ const tryDescribeTrigger = (
         )
       : undefined;
 
-    const duration = trigger.for ? describeDuration(trigger.for) : undefined;
+    const duration = trigger.for
+      ? describeDuration(hass, trigger.for)
+      : undefined;
 
     if (trigger.above && trigger.below) {
       return hass.localize(
@@ -322,7 +327,7 @@ const tryDescribeTrigger = (
     }
 
     if (trigger.for) {
-      const duration = describeDuration(trigger.for);
+      const duration = describeDuration(hass, trigger.for);
       if (duration) {
         base += ` for ${duration}`;
       }
@@ -573,7 +578,7 @@ const tryDescribeTrigger = (
   if (trigger.platform === "template") {
     let duration = "";
     if (trigger.for) {
-      duration = describeDuration(trigger.for) ?? "";
+      duration = describeDuration(hass, trigger.for) ?? "";
     }
 
     return hass.localize(
@@ -827,7 +832,7 @@ const tryDescribeCondition = (
     base += ` ${statesString}`;
 
     if (condition.for) {
-      const duration = describeDuration(condition.for);
+      const duration = describeDuration(hass, condition.for);
       if (duration) {
         base += ` for ${duration}`;
       }

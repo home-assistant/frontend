@@ -1,8 +1,12 @@
 import { HaDurationData } from "../../components/ha-duration-input";
+import { HomeAssistant } from "../../types";
 
 const leftPad = (num: number) => (num < 10 ? `0${num}` : num);
 
-export const formatDuration = (duration: HaDurationData) => {
+export const formatDuration = (
+  hass: HomeAssistant,
+  duration: HaDurationData
+) => {
   const d = duration.days || 0;
   const h = duration.hours || 0;
   const m = duration.minutes || 0;
@@ -10,7 +14,10 @@ export const formatDuration = (duration: HaDurationData) => {
   const ms = duration.milliseconds || 0;
 
   if (d > 0) {
-    return `${d} day${d === 1 ? "" : "s"} ${h}:${leftPad(m)}:${leftPad(s)}`;
+    return `
+      ${hass.localize("ui.duration.day", { count: d })}
+      ${h}:${leftPad(m)}:${leftPad(s)}
+    `;
   }
   if (h > 0) {
     return `${h}:${leftPad(m)}:${leftPad(s)}`;
@@ -19,10 +26,10 @@ export const formatDuration = (duration: HaDurationData) => {
     return `${m}:${leftPad(s)}`;
   }
   if (s > 0) {
-    return `${s} second${s === 1 ? "" : "s"}`;
+    return `${hass.localize("ui.duration.second", { count: s })}`;
   }
   if (ms > 0) {
-    return `${ms} millisecond${ms === 1 ? "" : "s"}`;
+    return `${hass.localize("ui.duration.millisecond", { count: ms })}`;
   }
   return null;
 };

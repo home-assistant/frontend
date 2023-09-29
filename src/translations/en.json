@@ -1458,6 +1458,7 @@
       }
     },
     "duration": {
+      "millisecond": "{count} {count, plural,\n  one {millisecond}\n  other {milliseconds}\n}",
       "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
       "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
       "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
