@@ -209,7 +209,7 @@
     "esprima": "4.0.1",
     "fancy-log": "2.0.0",
     "fs-extra": "11.1.1",
-    "glob": "10.3.7",
+    "glob": "10.3.9",
     "gulp": "4.0.2",
     "gulp-flatmap": "1.0.2",
     "gulp-json-transform": "0.4.8",
