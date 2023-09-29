@@ -29,7 +29,11 @@ export class HaNumericStateTrigger extends LitElement {
       inputBelowIsEntity?: boolean
     ) =>
       [
-        { name: "entity_id", required: true, selector: { entity: {} } },
+        {
+          name: "entity_id",
+          required: true,
+          selector: { entity: { multiple: true } },
+        },
         {
           name: "attribute",
           selector: {
