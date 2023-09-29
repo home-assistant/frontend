@@ -209,10 +209,10 @@ export class HaSelectSelector extends LitElement {
           `
         )}
       </ha-select>
-      ${!this.required && this.value
+      ${!this.required && !this.disabled && this.value
         ? html`<ha-icon-button
             toggles
-            .label=${`clear`}
+            .label=${this.hass.localize("ui.common.clear")}
             @click=${this._clearValue}
             .path=${mdiClose}
           ></ha-icon-button>`
