@@ -191,6 +191,6 @@ export class HaCardConditionResponsive extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-card-condition-responsove": HaCardConditionResponsive;
+    "ha-card-condition-responsive": HaCardConditionResponsive;
   }
 }
