@@ -143,7 +143,9 @@ export class HaCardConditionState extends LitElement {
         if (entity) {
           return `${this.hass.localize(
             "ui.components.entity.entity-state-picker.state"
-          )} (${this.hass.formatEntityState(entity)})`;
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.conditional.current_state"
+          )}: ${this.hass.formatEntityState(entity)})`;
         }
         return `${this.hass.localize(
           "ui.components.entity.entity-state-picker.state"
