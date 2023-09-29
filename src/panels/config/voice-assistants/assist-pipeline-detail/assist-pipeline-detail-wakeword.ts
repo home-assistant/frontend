@@ -128,8 +128,8 @@ export class AssistPipelineDetailWakeWord extends LitElement {
   }
 
   private async _fetchWakeWords() {
+    this._wakeWords = undefined;
     if (!this.data?.wake_word_entity) {
-      this._wakeWords = undefined;
       return;
     }
     const wakeWordEntity = this.data.wake_word_entity;
