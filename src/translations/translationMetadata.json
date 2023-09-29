@@ -173,10 +173,10 @@
   "uk": {
     "nativeName": "Українська"
   },
-  "ur": { 
-   "nativeName": "اُردُو",
-   "isRTL": true
- }, 
+  "ur": {
+    "nativeName": "اُردُو",
+    "isRTL": true
+  },
   "vi": {
     "nativeName": "Tiếng Việt"
   },
