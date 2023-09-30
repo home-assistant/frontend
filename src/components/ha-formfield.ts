@@ -7,12 +7,12 @@ import { fireEvent } from "../common/dom/fire_event";
 @customElement("ha-formfield")
 export class HaFormfield extends FormfieldBase {
   protected _labelClick() {
-    const input = this.input;
+    const input = this.input as HTMLInputElement | undefined;
     if (!input) return;
 
     input.focus();
     if (input.disabled) {
-      break;
+      return;
     }
     switch (input.tagName) {
       case "HA-CHECKBOX":
