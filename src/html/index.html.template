@@ -23,6 +23,7 @@
       html {
         background-color: var(--primary-background-color, #fafafa);
         color: var(--primary-text-color, #212121);
+        height: 100vh;
       }
       @media (prefers-color-scheme: dark) {
         html {
