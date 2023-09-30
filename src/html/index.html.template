@@ -30,15 +30,6 @@
           color: var(--primary-text-color, #e1e1e1);
         }
       }
-      body {
-        font-family: Roboto, Noto, sans-serif;
-        -moz-osx-font-smoothing: grayscale;
-        -webkit-font-smoothing: antialiased;
-        font-weight: 400;
-        height: 100vh;
-        margin: 0;
-        padding: 0;
-      }
       #ha-launch-screen {
         height: 100%;
         display: flex;
