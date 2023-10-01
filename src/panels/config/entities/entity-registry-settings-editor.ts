@@ -558,7 +558,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
       // Allow customizing the precision for a sensor with numerical device class,
       // a unit of measurement or state class
       ((this._deviceClass &&
-        !["date", "enum", "timestamp"].includes(this._deviceClass)) ||
+        (!["date", "enum", "timestamp"].includes(this._deviceClass) ||
+          ["aqi", "ph", "power_factor"].includes(this._deviceClass))) ||
         stateObj?.attributes.unit_of_measurement ||
         stateObj?.attributes.state_class)
         ? html`
