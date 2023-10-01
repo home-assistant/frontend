@@ -67,8 +67,8 @@ export const computeInitialHaFormData = (
           data[field.name] = selector.select.multiple ? [val] : val;
         }
       } else if ("country" in selector) {
-        if (selector.country?.value?.length) {
-          const val = selector.country.value[0];
+        if (selector.country?.countries?.length) {
+          const val = selector.country.countries[0];
           data[field.name] = selector.country.multiple ? [val] : val;
         }
       } else if ("duration" in selector) {

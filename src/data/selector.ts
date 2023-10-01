@@ -128,8 +128,7 @@ export interface ConstantSelector {
 export interface CountrySelector {
   country: {
     multiple?: boolean;
-    value: readonly string[];
-    label?: string;
+    countries: string[];
   } | null;
 }
 
