@@ -200,6 +200,30 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       }
       return undefined;
     }
+    // on rgbw/rgbww, if only white color(s) are turned off, set rgb to white, otherwise return rgb part
+    if (stateObj.attributes.rgbww_color) {
+      if (
+        stateObj.attributes.rgbww_color[0] === 0 &&
+        stateObj.attributes.rgbww_color[1] === 0 &&
+        stateObj.attributes.rgbww_color[2] === 0 &&
+        (stateObj.attributes.rgbww_color[3] > 0 ||
+          stateObj.attributes.rgbww_color[4] > 0)
+      ) {
+        return `rgb(255, 255, 255)`;
+      }
+      return `rgb(${stateObj.attributes.rgbww_color.slice(0, 3).join(",")})`;
+    }
+    if (stateObj.attributes.rgbw_color) {
+      if (
+        stateObj.attributes.rgbw_color[0] === 0 &&
+        stateObj.attributes.rgbw_color[1] === 0 &&
+        stateObj.attributes.rgbw_color[2] === 0 &&
+        stateObj.attributes.rgbw_color[3] > 0
+      ) {
+        return `rgb(255, 255, 255)`;
+      }
+      return `rgb(${stateObj.attributes.rgbw_color.slice(0, 3).join(",")})`;
+    }
     if (stateObj.attributes.rgb_color) {
       return `rgb(${stateObj.attributes.rgb_color.join(",")})`;
     }
