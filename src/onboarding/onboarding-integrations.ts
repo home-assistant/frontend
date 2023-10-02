@@ -15,7 +15,6 @@ import { stringCompare } from "../common/string/compare";
 import { LocalizeFunc } from "../common/translations/localize";
 import { ConfigEntry, subscribeConfigEntries } from "../data/config_entries";
 import { subscribeConfigFlowInProgress } from "../data/config_flow";
-import { DataEntryFlowProgress } from "../data/data_entry_flow";
 import { domainToName } from "../data/integration";
 import { scanUSBDevices } from "../data/usb";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
@@ -41,19 +40,20 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
 
   @state() private _entries: ConfigEntry[] = [];
 
-  @state() private _discovered?: DataEntryFlowProgress[];
+  @state() private _discoveredDomains?: Set<string>;
 
   public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
     return [
       subscribeConfigFlowInProgress(this.hass, (flows) => {
-        this._discovered = flows.filter(
-          (flow) => !HIDDEN_DOMAINS.has(flow.handler)
+        this._discoveredDomains = new Set(
+          flows
+            .filter((flow) => !HIDDEN_DOMAINS.has(flow.handler))
+            .map((flow) => flow.handler)
         );
-        const integrations: Set<string> = new Set();
-        for (const flow of this._discovered) {
-          integrations.add(flow.handler);
-        }
-        this.hass.loadBackendTranslation("title", Array.from(integrations));
+        this.hass.loadBackendTranslation(
+          "title",
+          Array.from(this._discoveredDomains)
+        );
       }),
       subscribeConfigEntries(
         this.hass,
@@ -98,41 +98,27 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
-    if (!this._discovered) {
+    if (!this._discoveredDomains) {
       return nothing;
     }
     // Render discovered and existing entries together sorted by localized title.
-    const entries: Array<[string, string]> = this._entries.map((entry) => [
-      entry.domain,
-      domainToName(this.hass.localize, entry.domain),
-    ]);
-    const discovered: Array<[string, string]> = this._discovered.map((flow) => [
-      flow.handler,
-      domainToName(this.hass.localize, flow.handler),
-    ]);
-    let domains = [...entries, ...discovered].sort((a, b) =>
+    let uniqueDomains: Set<string> = new Set();
+    this._entries.forEach((entry) => {
+      uniqueDomains.add(entry.domain);
+    });
+    uniqueDomains = new Set([...uniqueDomains, ...this._discoveredDomains]);
+    let domains: Array<[string, string]> = [];
+    for (const domain of uniqueDomains.values()) {
+      domains.push([domain, domainToName(this.hass.localize, domain)]);
+    }
+    domains = domains.sort((a, b) =>
       stringCompare(a[0], b[0], this.hass.locale.language)
     );
 
-    const foundDevices = domains.length;
+    const foundIntegrations = domains.length;
 
     if (domains.length > 12) {
-      const uniqueDomains: Set<string> = new Set();
-      domains.forEach(([domain]) => {
-        uniqueDomains.add(domain);
-      });
-      if (uniqueDomains.size < domains.length) {
-        domains = domains.filter(([domain]) => {
-          if (uniqueDomains.has(domain)) {
-            uniqueDomains.delete(domain);
-            return true;
-          }
-          return false;
-        });
-      }
-      if (domains.length > 12) {
-        domains = domains.slice(0, 11);
-      }
+      domains = domains.slice(0, 11);
     }
 
     return html`
@@ -153,11 +139,11 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
               .darkOptimizedIcon=${this.hass.themes?.darkMode}
             ></integration-badge>`
         )}
-        ${foundDevices > domains.length
+        ${foundIntegrations > domains.length
           ? html`<div class="more">
               ${this.onboardingLocalize(
                 "ui.panel.page-onboarding.integration.more_integrations",
-                { count: foundDevices - domains.length }
+                { count: foundIntegrations - domains.length }
               )}
             </div>`
           : nothing}
