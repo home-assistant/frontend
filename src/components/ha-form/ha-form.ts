@@ -189,8 +189,13 @@ export class HaForm extends LitElement implements HaFormElement {
         ? ev.detail.value
         : { [schema.name]: ev.detail.value };
 
+      this.data = {
+        ...this.data,
+        ...newValue,
+      };
+
       fireEvent(this, "value-changed", {
-        value: { ...this.data, ...newValue },
+        value: this.data,
       });
     });
   }

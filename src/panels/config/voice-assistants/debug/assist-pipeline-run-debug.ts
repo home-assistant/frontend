@@ -246,7 +246,10 @@ export class AssistPipelineRunDebug extends LitElement {
           const url = updatedRun.tts!.tts_output!.url;
           const audio = new Audio(url);
           audio.addEventListener("ended", () => {
-            if (this._continueConversationCheckbox.checked) {
+            if (
+              this.isConnected &&
+              this._continueConversationCheckbox.checked
+            ) {
               this._runAudioWakeWordPipeline();
             } else {
               this._finished = true;
@@ -320,7 +323,10 @@ export class AssistPipelineRunDebug extends LitElement {
           const url = updatedRun.tts!.tts_output!.url;
           const audio = new Audio(url);
           audio.addEventListener("ended", () => {
-            if (this._continueConversationCheckbox.checked) {
+            if (
+              this.isConnected &&
+              this._continueConversationCheckbox.checked
+            ) {
               this._runAudioPipeline();
             } else {
               this._finished = true;
