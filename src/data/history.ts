@@ -395,16 +395,28 @@ const processLineChartEntities = (
   };
 };
 
-const stateUsesUnits = (state: HassEntity) =>
-  attributesHaveUnits(state.attributes);
+const NUMERICAL_DOMAINS = ["counter", "input_number", "number"];
 
-const attributesHaveUnits = (attributes: { [key: string]: any }) =>
+const isNumericFromDomain = (domain: string) =>
+  NUMERICAL_DOMAINS.includes(domain);
+
+const isNumericFromAttributes = (attributes: { [key: string]: any }) =>
   "unit_of_measurement" in attributes || "state_class" in attributes;
+
+const isNumericSensorEntity = (
+  stateObj: HassEntity,
+  sensorNumericalDeviceClasses: string[]
+) =>
+  stateObj.attributes.device_class != null &&
+  sensorNumericalDeviceClasses.includes(stateObj.attributes.device_class);
+
+const BLANK_UNIT = " ";
 
 export const computeHistory = (
   hass: HomeAssistant,
   stateHistory: HistoryStates,
-  localize: LocalizeFunc
+  localize: LocalizeFunc,
+  sensorNumericalDeviceClasses: string[]
 ): HistoryResult => {
   const lineChartDevices: { [unit: string]: HistoryStates } = {};
   const timelineDevices: TimelineEntity[] = [];
@@ -417,28 +429,35 @@ export const computeHistory = (
       return;
     }
 
+    const domain = computeDomain(entityId);
+
     const currentState =
       entityId in hass.states ? hass.states[entityId] : undefined;
-    const stateWithUnitorStateClass =
+    const numericStateFromHistory =
       !currentState &&
-      stateInfo.find((state) => state.a && attributesHaveUnits(state.a));
+      stateInfo.find((state) => state.a && isNumericFromAttributes(state.a));
 
     let unit: string | undefined;
 
-    if (currentState && stateUsesUnits(currentState)) {
-      unit = currentState.attributes.unit_of_measurement || " ";
-    } else if (stateWithUnitorStateClass) {
-      unit = stateWithUnitorStateClass.a.unit_of_measurement || " ";
+    const isNumeric =
+      isNumericFromDomain(domain) ||
+      (currentState != null &&
+        isNumericFromAttributes(currentState.attributes)) ||
+      (currentState != null &&
+        domain === "sensor" &&
+        isNumericSensorEntity(currentState, sensorNumericalDeviceClasses));
+
+    if (isNumeric) {
+      unit = currentState?.attributes.unit_of_measurement || BLANK_UNIT;
+    } else if (numericStateFromHistory) {
+      unit = numericStateFromHistory.a.unit_of_measurement || BLANK_UNIT;
     } else {
       unit = {
         zone: localize("ui.dialogs.more_info_control.zone.graph_unit"),
         climate: hass.config.unit_system.temperature,
-        counter: "#",
         humidifier: "%",
-        input_number: "#",
-        number: "#",
         water_heater: hass.config.unit_system.temperature,
-      }[computeDomain(entityId)];
+      }[domain];
     }
 
     if (!unit) {
