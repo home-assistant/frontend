@@ -141,7 +141,7 @@ export class StateBadge extends LitElement {
           hostStyle.borderRadius = "0";
         }
         if (domain === "media_player") {
-          hostStyle.borderRadius = "10%";
+          hostStyle.borderRadius = "8%";
         }
       } else if (this.color) {
         // Externally provided overriding color wins over state color
