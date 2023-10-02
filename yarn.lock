@@ -9793,7 +9793,7 @@ __metadata:
     lit-analyzer: 2.0.0-pre.3
     lodash.template: 4.5.0
     luxon: 3.4.3
-    magic-string: 0.30.3
+    magic-string: 0.30.4
     map-stream: 0.0.7
     marked: 9.0.3
     memoize-one: 6.0.0
@@ -11710,12 +11710,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:0.30.3":
-  version: 0.30.3
-  resolution: "magic-string@npm:0.30.3"
+"magic-string@npm:0.30.4":
+  version: 0.30.4
+  resolution: "magic-string@npm:0.30.4"
   dependencies:
     "@jridgewell/sourcemap-codec": ^1.4.15
-  checksum: a5a9ddf9bd3bf49a2de1048bf358464f1bda7b3cc1311550f4a0ba8f81a4070e25445d53a5ee28850161336f1bff3cf28aa3320c6b4aeff45ce3e689f300b2f3
+  checksum: bef57c926d14e9926c142307c1494cc4bdea28a56601a7624f1a5bcd34a63800e2d8a363e826436ce86104460a63ee76c7c185a6ab1f8f7ee5af2de475b98947
   languageName: node
   linkType: hard
 
