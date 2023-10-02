@@ -139,9 +139,14 @@ export class AssistPipelineDetailWakeWord extends LitElement {
       return;
     }
     this._wakeWords = wakewordInfo.wake_words;
-    fireEvent(this, "value-changed", {
-      value: { ...this.data, wake_word_id: this._wakeWords[0]?.id },
-    });
+    if (
+      !this.data?.wake_word_id ||
+      !this._wakeWords.some((ww) => ww.id === this.data!.wake_word_id)
+    ) {
+      fireEvent(this, "value-changed", {
+        value: { ...this.data, wake_word_id: this._wakeWords[0]?.id },
+      });
+    }
   }
 
   static get styles(): CSSResultGroup {
