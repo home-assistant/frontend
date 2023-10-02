@@ -14,10 +14,10 @@ export const formatDuration = (
   const ms = duration.milliseconds || 0;
 
   if (d > 0) {
-    return `
-      ${hass.localize("ui.duration.day", { count: d })}
-      ${h}:${leftPad(m)}:${leftPad(s)}
-    `;
+    return (
+      hass.localize("ui.duration.day", { count: d }) +
+      ` ${h}:${leftPad(m)}:${leftPad(s)}`
+    );
   }
   if (h > 0) {
     return `${h}:${leftPad(m)}:${leftPad(s)}`;
@@ -26,10 +26,10 @@ export const formatDuration = (
     return `${m}:${leftPad(s)}`;
   }
   if (s > 0) {
-    return `${hass.localize("ui.duration.second", { count: s })}`;
+    return hass.localize("ui.duration.second", { count: s });
   }
   if (ms > 0) {
-    return `${hass.localize("ui.duration.millisecond", { count: ms })}`;
+    return hass.localize("ui.duration.millisecond", { count: ms });
   }
   return null;
 };
