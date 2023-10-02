@@ -1,5 +1,6 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list-item";
 import {
   mdiContentDuplicate,
   mdiContentSave,
