@@ -14,6 +14,7 @@ import { AssistPipeline } from "../../../../data/assist_pipeline";
 import { HomeAssistant } from "../../../../types";
 import { fetchWakeWordInfo, WakeWord } from "../../../../data/wake_word";
 import { documentationUrl } from "../../../../util/documentation-url";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("assist-pipeline-detail-wakeword")
 export class AssistPipelineDetailWakeWord extends LitElement {
@@ -71,6 +72,11 @@ export class AssistPipelineDetailWakeWord extends LitElement {
       changedProps.has("data") &&
       changedProps.get("data")?.wake_word_entity !== this.data?.wake_word_entity
     ) {
+      if (this.data?.wake_word_id) {
+        fireEvent(this, "value-changed", {
+          value: { ...this.data, wake_word_id: undefined },
+        });
+      }
       this._fetchWakeWords();
     }
   }
@@ -122,13 +128,25 @@ export class AssistPipelineDetailWakeWord extends LitElement {
   }
 
   private async _fetchWakeWords() {
+    this._wakeWords = undefined;
     if (!this.data?.wake_word_entity) {
-      this._wakeWords = undefined;
       return;
     }
-    this._wakeWords = (
-      await fetchWakeWordInfo(this.hass, this.data.wake_word_entity)
-    ).wake_words;
+    const wakeWordEntity = this.data.wake_word_entity;
+    const wakewordInfo = await fetchWakeWordInfo(this.hass, wakeWordEntity);
+    if (this.data.wake_word_entity !== wakeWordEntity) {
+      // wake word entity changed while we were fetching
+      return;
+    }
+    this._wakeWords = wakewordInfo.wake_words;
+    if (
+      !this.data?.wake_word_id ||
+      !this._wakeWords.some((ww) => ww.id === this.data!.wake_word_id)
+    ) {
+      fireEvent(this, "value-changed", {
+        value: { ...this.data, wake_word_id: this._wakeWords[0]?.id },
+      });
+    }
   }
 
   static get styles(): CSSResultGroup {
