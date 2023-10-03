@@ -33,7 +33,7 @@ class HaSidebarPanel extends LitElement {
   protected render() {
     return html`<a
       href="/${this.path}"
-      aria-selected=${this.selected}
+      aria-current=${this.selected ? "page" : "false"}
       aria-label=${this.name}
       class="item ${this.expanded ? "expanded" : ""}"
       @keydown=${keydown((e) => (e.currentTarget as HTMLElement).click())}

@@ -68,7 +68,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           @panel-hover=${this._panelHover}
           @panel-leave=${this._mouseLeave}
           class="ha-scrollbar"
-          role="listbox"
         ></ha-sidebar-panels>
         <hr />
         <ha-sidebar-panel-notifications

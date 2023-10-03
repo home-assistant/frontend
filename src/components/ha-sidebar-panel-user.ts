@@ -31,7 +31,7 @@ class HaSidebarPanelUser extends LitElement {
   protected render() {
     return html`<a
       href="/profile"
-      aria-selected=${this.selected}
+      aria-current=${this.selected ? "page" : "false"}
       class="item ${this.expanded ? "expanded" : ""}"
       @keydown=${keydown((e) => (e.currentTarget as HTMLElement).click())}
       @keyup=${keyup((e) => (e.currentTarget as HTMLElement).click())}
