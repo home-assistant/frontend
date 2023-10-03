@@ -1,14 +1,21 @@
-import { mdiCodeBraces, mdiDelete, mdiListBoxOutline } from "@mdi/js";
+import { preventDefault } from "@fullcalendar/core/internal";
+import { ActionDetail } from "@material/mwc-list";
+import { mdiCheck, mdiDelete, mdiDotsVertical } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import "../../../../components/ha-button-menu";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-list-item";
+import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-yaml-editor";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { Condition, LegacyCondition } from "../../common/validate-condition";
 import type { LovelaceConditionEditorConstructor } from "./types";
+import { ICON_CONDITION } from "../../common/icon-condition";
 
 @customElement("ha-card-condition-editor")
 export default class HaCardConditionEditor extends LitElement {
@@ -36,27 +43,70 @@ export default class HaCardConditionEditor extends LitElement {
 
     return html`
       <div class="header">
-        <ha-icon-button
-          @click=${this._toggleMode}
-          .disabled=${!supported || !valid}
-          .label=${this.hass!.localize(
-            yamlMode
-              ? "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-              : "ui.panel.lovelace.editor.edit_card.show_code_editor"
-          )}
-          .path=${yamlMode ? mdiListBoxOutline : mdiCodeBraces}
-        ></ha-icon-button>
+        <ha-svg-icon
+          class="icon"
+          .path=${ICON_CONDITION[condition.condition]}
+        ></ha-svg-icon>
         <span class="title">
           ${this.hass.localize(
             `ui.panel.lovelace.editor.card.conditional.condition.${condition.condition}.label`
           ) || condition.condition}
         </span>
-        <ha-icon-button
-          .label=${this.hass!.localize("ui.common.delete")}
-          .path=${mdiDelete}
-          @click=${this._delete}
+        <ha-button-menu
+          slot="icons"
+          @action=${this._handleAction}
+          @click=${preventDefault}
+          @closed=${stopPropagation}
+          fixed
+          .corner=${"BOTTOM_END"}
+          .menuCorner=${"END"}
         >
-        </ha-icon-button>
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          >
+          </ha-icon-button>
+
+          <ha-list-item graphic="icon" .disabled=${!supported || !valid}>
+            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.edit_ui")}
+            ${!yamlMode
+              ? html`
+                  <ha-svg-icon
+                    class="selected_menu_item"
+                    slot="graphic"
+                    .path=${mdiCheck}
+                  ></ha-svg-icon>
+                `
+              : ``}
+          </ha-list-item>
+
+          <ha-list-item graphic="icon">
+            ${this.hass.localize(
+              "ui.panel.lovelace.editor.edit_card.edit_yaml"
+            )}
+            ${yamlMode
+              ? html`
+                  <ha-svg-icon
+                    class="selected_menu_item"
+                    slot="graphic"
+                    .path=${mdiCheck}
+                  ></ha-svg-icon>
+                `
+              : ``}
+          </ha-list-item>
+
+          <li divider role="separator"></li>
+
+          <ha-list-item class="warning" graphic="icon">
+            ${this.hass!.localize("ui.common.delete")}
+            <ha-svg-icon
+              class="warning"
+              slot="graphic"
+              .path=${mdiDelete}
+            ></ha-svg-icon>
+          </ha-list-item>
+        </ha-button-menu>
       </div>
       ${!valid
         ? html`
@@ -82,6 +132,20 @@ export default class HaCardConditionEditor extends LitElement {
             `}
       </div>
     `;
+  }
+
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._yamlMode = false;
+        break;
+      case 1:
+        this._yamlMode = true;
+        break;
+      case 2:
+        this._delete();
+        break;
+    }
   }
 
   private _toggleMode() {
@@ -116,6 +180,15 @@ export default class HaCardConditionEditor extends LitElement {
       }
       .content {
         padding: 12px;
+      }
+      .header .icon {
+        padding: 12px;
+      }
+      .selected_menu_item {
+        color: var(--primary-color);
+      }
+      li[role="separator"] {
+        border-bottom-color: var(--divider-color);
       }
     `,
   ];

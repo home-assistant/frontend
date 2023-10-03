@@ -6,8 +6,6 @@ import {
   mdiContentCopy,
   mdiListBoxOutline,
   mdiPlus,
-  mdiResponsive,
-  mdiStateMachine,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
@@ -27,6 +25,7 @@ import type {
 } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import type { ConditionalCardConfig } from "../../cards/types";
+import { ICON_CONDITION } from "../../common/icon-condition";
 import { Condition } from "../../common/validate-condition";
 import type { LovelaceCardEditor } from "../../types";
 import "../card-editor/hui-card-element-editor";
@@ -47,8 +46,6 @@ const UI_CONDITION = [
   "screen",
 ] as const satisfies readonly Condition["condition"][];
 
-type UiCondition = (typeof UI_CONDITION)[number];
-
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
@@ -57,10 +54,6 @@ const cardConfigStruct = assign(
   })
 );
 
-const ICONS: Record<UiCondition, string> = {
-  state: mdiStateMachine,
-  screen: mdiResponsive,
-};
 @customElement("hui-conditional-card-editor")
 export class HuiConditionalCardEditor
   extends LitElement
@@ -208,7 +201,7 @@ export class HuiConditionalCardEditor
                         ) || condition}
                         <ha-svg-icon
                           slot="graphic"
-                          .path=${ICONS[condition]}
+                          .path=${ICON_CONDITION[condition]}
                         ></ha-svg-icon>
                       </ha-list-item>
                     `

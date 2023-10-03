@@ -4670,6 +4670,8 @@
             "confirm_cancel": "Are you sure you want to cancel?",
             "show_visual_editor": "Show visual editor",
             "show_code_editor": "Show code editor",
+            "edit_ui": "[%key:ui::panel::config::automation::editor::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::config::automation::editor::edit_yaml%]",
             "add": "Add card",
             "edit": "Edit",
             "clear": "Clear",
