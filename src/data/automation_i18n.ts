@@ -19,6 +19,10 @@ import {
 } from "./device_automation";
 import { EntityRegistryEntry } from "./entity_registry";
 import { FrontendLocaleData } from "./translation";
+import {
+  formatListWithAnds,
+  formatListWithOrs,
+} from "../common/string/format-list";
 
 const triggerTranslationBaseKey =
   "ui.panel.config.automation.editor.triggers.type";
@@ -104,11 +108,6 @@ const tryDescribeTrigger = (
     return trigger.alias;
   }
 
-  const disjunctionFormatter = new Intl.ListFormat("en", {
-    style: "long",
-    type: "disjunction",
-  });
-
   // Event Trigger
   if (trigger.platform === "event" && trigger.event_type) {
     const eventTypes: string[] = [];
@@ -121,7 +120,7 @@ const tryDescribeTrigger = (
       eventTypes.push(trigger.event_type);
     }
 
-    const eventTypesString = disjunctionFormatter.format(eventTypes);
+    const eventTypesString = formatListWithOrs(hass.locale, eventTypes);
     return hass.localize(
       `${triggerTranslationBaseKey}.event.description.full`,
       { eventTypes: eventTypesString }
@@ -139,41 +138,54 @@ const tryDescribeTrigger = (
 
   // Numeric State Trigger
   if (trigger.platform === "numeric_state" && trigger.entity_id) {
-    let base = "When";
     const stateObj = hass.states[trigger.entity_id];
     const entity = stateObj ? computeStateName(stateObj) : trigger.entity_id;
 
-    if (trigger.attribute) {
-      base += ` ${computeAttributeNameDisplay(
-        hass.localize,
-        stateObj,
-        hass.entities,
-        trigger.attribute
-      )} from`;
+    const attribute = trigger.attribute
+      ? computeAttributeNameDisplay(
+          hass.localize,
+          stateObj,
+          hass.entities,
+          trigger.attribute
+        )
+      : undefined;
+
+    const duration = trigger.for ? describeDuration(trigger.for) : undefined;
+
+    if (trigger.above && trigger.below) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.numeric_state.description.above-below`,
+        {
+          attribute: attribute,
+          entity: entity,
+          above: trigger.above,
+          below: trigger.below,
+          duration: duration,
+        }
+      );
     }
-
-    base += ` ${entity} is`;
-
-    if (trigger.above !== undefined) {
-      base += ` above ${trigger.above}`;
+    if (trigger.above) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.numeric_state.description.above`,
+        {
+          attribute: attribute,
+          entity: entity,
+          above: trigger.above,
+          duration: duration,
+        }
+      );
     }
-
-    if (trigger.below !== undefined && trigger.above !== undefined) {
-      base += " and";
+    if (trigger.below) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.numeric_state.description.below`,
+        {
+          attribute: attribute,
+          entity: entity,
+          below: trigger.below,
+          duration: duration,
+        }
+      );
     }
-
-    if (trigger.below !== undefined) {
-      base += ` below ${trigger.below}`;
-    }
-
-    if (trigger.for) {
-      const duration = describeDuration(trigger.for);
-      if (duration) {
-        base += ` for ${duration}`;
-      }
-    }
-
-    return base;
   }
 
   // State Trigger
@@ -242,7 +254,7 @@ const tryDescribeTrigger = (
           );
         }
         if (from.length !== 0) {
-          const fromString = disjunctionFormatter.format(from);
+          const fromString = formatListWithOrs(hass.locale, from);
           base += ` from ${fromString}`;
         }
       } else {
@@ -283,7 +295,7 @@ const tryDescribeTrigger = (
           );
         }
         if (to.length !== 0) {
-          const toString = disjunctionFormatter.format(to);
+          const toString = formatListWithOrs(hass.locale, to);
           base += ` to ${toString}`;
         }
       } else {
@@ -356,7 +368,7 @@ const tryDescribeTrigger = (
     );
 
     return hass.localize(`${triggerTranslationBaseKey}.time.description.full`, {
-      time: disjunctionFormatter.format(result),
+      time: formatListWithOrs(hass.locale, result),
     });
   }
 
@@ -505,11 +517,12 @@ const tryDescribeTrigger = (
       );
     }
 
-    const entitiesString = disjunctionFormatter.format(entities);
-    const zonesString = disjunctionFormatter.format(zones);
-    return `When ${entitiesString} ${trigger.event}s ${zonesString} ${
-      zones.length > 1 ? "zones" : "zone"
-    }`;
+    return hass.localize(`${triggerTranslationBaseKey}.zone.description.full`, {
+      entity: formatListWithOrs(hass.locale, entities),
+      event: trigger.event.toString(),
+      zone: formatListWithOrs(hass.locale, zones),
+      numberOfZones: zones.length,
+    });
   }
 
   // Geo Location Trigger
@@ -540,11 +553,15 @@ const tryDescribeTrigger = (
       );
     }
 
-    const sourcesString = disjunctionFormatter.format(sources);
-    const zonesString = disjunctionFormatter.format(zones);
-    return `When ${sourcesString} ${trigger.event}s ${zonesString} ${
-      zones.length > 1 ? "zones" : "zone"
-    }`;
+    return hass.localize(
+      `${triggerTranslationBaseKey}.geo_location.description.full`,
+      {
+        source: formatListWithOrs(hass.locale, sources),
+        event: trigger.event.toString(),
+        zone: formatListWithOrs(hass.locale, zones),
+        numberOfZones: zones.length,
+      }
+    );
   }
 
   // MQTT Trigger
@@ -583,7 +600,8 @@ const tryDescribeTrigger = (
     return hass.localize(
       `${triggerTranslationBaseKey}.conversation.description.full`,
       {
-        sentence: disjunctionFormatter.format(
+        sentence: formatListWithOrs(
+          hass.locale,
           ensureArray(trigger.command).map((cmd) => `'${cmd}'`)
         ),
       }
@@ -592,7 +610,9 @@ const tryDescribeTrigger = (
 
   // Persistent Notification Trigger
   if (trigger.platform === "persistent_notification") {
-    return "When a persistent notification is updated";
+    return hass.localize(
+      `${triggerTranslationBaseKey}.persistent_notification.description.full`
+    );
   }
 
   // Device Trigger
@@ -649,15 +669,6 @@ const tryDescribeCondition = (
   if (condition.alias && !ignoreAlias) {
     return condition.alias;
   }
-
-  const conjunctionFormatter = new Intl.ListFormat("en", {
-    style: "long",
-    type: "conjunction",
-  });
-  const disjunctionFormatter = new Intl.ListFormat("en", {
-    style: "long",
-    type: "disjunction",
-  });
 
   if (!condition.condition) {
     const shorthands: Array<"and" | "or" | "not"> = ["and", "or", "not"];
@@ -756,8 +767,8 @@ const tryDescribeCondition = (
       if (entities.length !== 0) {
         const entitiesString =
           condition.match === "any"
-            ? disjunctionFormatter.format(entities)
-            : conjunctionFormatter.format(entities);
+            ? formatListWithOrs(hass.locale, entities)
+            : formatListWithAnds(hass.locale, entities);
         base += ` ${entitiesString} ${
           condition.entity_id.length > 1 ? "are" : "is"
         }`;
@@ -812,7 +823,7 @@ const tryDescribeCondition = (
       states.push("a state");
     }
 
-    const statesString = disjunctionFormatter.format(states);
+    const statesString = formatListWithOrs(hass.locale, states);
     base += ` ${statesString}`;
 
     if (condition.for) {
@@ -827,29 +838,49 @@ const tryDescribeCondition = (
 
   // Numeric State Condition
   if (condition.condition === "numeric_state" && condition.entity_id) {
-    let base = "Confirm";
     const stateObj = hass.states[condition.entity_id];
     const entity = stateObj ? computeStateName(stateObj) : condition.entity_id;
 
-    if ("attribute" in condition) {
-      base += ` ${condition.attribute} from`;
+    const attribute = condition.attribute
+      ? computeAttributeNameDisplay(
+          hass.localize,
+          stateObj,
+          hass.entities,
+          condition.attribute
+        )
+      : undefined;
+
+    if (condition.above && condition.below) {
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.numeric_state.description.above-below`,
+        {
+          attribute: attribute,
+          entity: entity,
+          above: condition.above,
+          below: condition.below,
+        }
+      );
     }
-
-    base += ` ${entity} is`;
-
-    if ("above" in condition) {
-      base += ` above ${condition.above}`;
+    if (condition.above) {
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.numeric_state.description.above`,
+        {
+          attribute: attribute,
+          entity: entity,
+          above: condition.above,
+        }
+      );
     }
-
-    if ("below" in condition && "above" in condition) {
-      base += " and";
+    if (condition.below) {
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.numeric_state.description.below`,
+        {
+          attribute: attribute,
+          entity: entity,
+          below: condition.below,
+        }
+      );
     }
-
-    if ("below" in condition) {
-      base += ` below ${condition.below}`;
-    }
-
-    return base;
   }
 
   // Time condition
@@ -902,7 +933,7 @@ const tryDescribeCondition = (
             `ui.panel.config.automation.editor.conditions.type.time.weekdays.${d}`
           )
         );
-        result += " day is " + disjunctionFormatter.format(localizedDays);
+        result += " day is " + formatListWithOrs(hass.locale, localizedDays);
       }
 
       return result;
@@ -981,8 +1012,8 @@ const tryDescribeCondition = (
       );
     }
 
-    const entitiesString = disjunctionFormatter.format(entities);
-    const zonesString = disjunctionFormatter.format(zones);
+    const entitiesString = formatListWithOrs(hass.locale, entities);
+    const zonesString = formatListWithOrs(hass.locale, zones);
     return hass.localize(
       `${conditionsTranslationBaseKey}.zone.description.full`,
       {

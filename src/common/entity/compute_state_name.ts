@@ -7,7 +7,7 @@ export const computeStateNameFromEntityAttributes = (
 ): string =>
   attributes.friendly_name === undefined
     ? computeObjectId(entityId).replace(/_/g, " ")
-    : attributes.friendly_name || "";
+    : (attributes.friendly_name ?? "").toString();
 
 export const computeStateName = (stateObj: HassEntity): string =>
   computeStateNameFromEntityAttributes(stateObj.entity_id, stateObj.attributes);

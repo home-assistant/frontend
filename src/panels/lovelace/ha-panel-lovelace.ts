@@ -165,10 +165,10 @@ export class LovelacePanel extends LitElement {
   private async _regenerateConfig() {
     const conf = await generateLovelaceDashboardStrategy(
       {
-        hass: this.hass!,
-        narrow: this.narrow,
+        type: DEFAULT_STRATEGY,
       },
-      DEFAULT_STRATEGY
+      this.hass!,
+      { narrow: this.narrow }
     );
     this._setLovelaceConfig(conf, undefined, "generated");
     this._panelState = "loaded";
@@ -256,11 +256,11 @@ export class LovelacePanel extends LitElement {
 
       // If strategy defined, apply it here.
       if (rawConf.strategy) {
-        conf = await generateLovelaceDashboardStrategy({
-          config: rawConf,
-          hass: this.hass!,
-          narrow: this.narrow,
-        });
+        conf = await generateLovelaceDashboardStrategy(
+          rawConf.strategy,
+          this.hass!,
+          { narrow: this.narrow }
+        );
       } else {
         conf = rawConf;
       }
@@ -274,10 +274,10 @@ export class LovelacePanel extends LitElement {
       }
       conf = await generateLovelaceDashboardStrategy(
         {
-          hass: this.hass!,
-          narrow: this.narrow,
+          type: DEFAULT_STRATEGY,
         },
-        DEFAULT_STRATEGY
+        this.hass!,
+        { narrow: this.narrow }
       );
       confMode = "generated";
     } finally {
@@ -363,11 +363,11 @@ export class LovelacePanel extends LitElement {
         let conf: LovelaceConfig;
         // If strategy defined, apply it here.
         if (newConfig.strategy) {
-          conf = await generateLovelaceDashboardStrategy({
-            config: newConfig,
-            hass: this.hass!,
-            narrow: this.narrow,
-          });
+          conf = await generateLovelaceDashboardStrategy(
+            newConfig.strategy,
+            this.hass!,
+            { narrow: this.narrow }
+          );
         } else {
           conf = newConfig;
         }
@@ -402,10 +402,10 @@ export class LovelacePanel extends LitElement {
           // Optimistic update
           const generatedConf = await generateLovelaceDashboardStrategy(
             {
-              hass: this.hass!,
-              narrow: this.narrow,
+              type: DEFAULT_STRATEGY,
             },
-            DEFAULT_STRATEGY
+            this.hass!,
+            { narrow: this.narrow }
           );
           this._updateLovelace({
             config: generatedConf,

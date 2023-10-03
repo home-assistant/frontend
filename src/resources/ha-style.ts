@@ -1,5 +1,5 @@
 import "@polymer/polymer/lib/elements/custom-style";
-import { derivedStyles } from "./styles";
+import { derivedStyles } from "./styles-data";
 
 export const DEFAULT_PRIMARY_COLOR = "#03a9f4";
 export const DEFAULT_ACCENT_COLOR = "#ff9800";

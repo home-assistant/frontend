@@ -1,12 +1,12 @@
 import { mdiCheck, mdiMinus, mdiPlus } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -19,18 +19,17 @@ import {
   updateEntityRegistryEntry,
 } from "../../../../data/entity_registry";
 import {
-  computeDefaultFavoriteColors,
   LightColor,
   LightEntity,
+  computeDefaultFavoriteColors,
 } from "../../../../data/light";
 import { actionHandler } from "../../../../panels/lovelace/common/directives/action-handler-directive";
 import {
-  loadSortable,
   SortableInstance,
+  loadSortable,
 } from "../../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../../types";
 import { showConfirmationDialog } from "../../../generic/show-dialog-box";
-import type { LightPickerMode } from "./dialog-light-color-favorite";
 import "./ha-favorite-color-button";
 import { showLightColorFavoriteDialog } from "./show-dialog-light-color-favorite";
 
@@ -155,13 +154,9 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
     // Make sure the current favorite color is set
     fireEvent(this, "favorite-color-edit-started");
     await this._apply(index);
-    const defaultMode: LightPickerMode =
-      "color_temp_kelvin" in this._favoriteColors[index]
-        ? "color_temp"
-        : "color";
     const color = await showLightColorFavoriteDialog(this, {
       entry: this.entry!,
-      defaultMode,
+      initialColor: this._favoriteColors[index],
       title: this.hass.localize(
         "ui.dialogs.more_info_control.light.favorite_color.edit_title"
       ),

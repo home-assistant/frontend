@@ -11,15 +11,15 @@ import {
 } from "../../../../../data/device_registry";
 import {
   fetchZwaveNetworkStatus,
-  healZwaveNode,
+  rebuildZwaveNodeRoutes,
   ZWaveJSNetwork,
 } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import { ZWaveJSHealNodeDialogParams } from "./show-dialog-zwave_js-heal-node";
+import { ZWaveJSRebuildNodeRoutesDialogParams } from "./show-dialog-zwave_js-rebuild-node-routes";
 
-@customElement("dialog-zwave_js-heal-node")
-class DialogZWaveJSHealNode extends LitElement {
+@customElement("dialog-zwave_js-rebuild-node-routes")
+class DialogZWaveJSRebuildNodeRoutes extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private device?: DeviceRegistryEntry;
@@ -28,7 +28,7 @@ class DialogZWaveJSHealNode extends LitElement {
 
   @state() private _error?: string;
 
-  public showDialog(params: ZWaveJSHealNodeDialogParams): void {
+  public showDialog(params: ZWaveJSRebuildNodeRoutesDialogParams): void {
     this.device = params.device;
     this._fetchData();
   }
@@ -52,7 +52,9 @@ class DialogZWaveJSHealNode extends LitElement {
         @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
-          this.hass.localize("ui.panel.config.zwave_js.heal_node.title")
+          this.hass.localize(
+            "ui.panel.config.zwave_js.rebuild_node_routes.title"
+          )
         )}
       >
         ${!this._status
@@ -65,7 +67,7 @@ class DialogZWaveJSHealNode extends LitElement {
                 <div class="status">
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.heal_node.introduction",
+                      "ui.panel.config.zwave_js.rebuild_node_routes.introduction",
                       {
                         device: html`<em
                           >${computeDeviceName(this.device, this.hass!)}</em
@@ -78,13 +80,16 @@ class DialogZWaveJSHealNode extends LitElement {
               <p>
                 <em>
                   ${this.hass.localize(
-                    "ui.panel.config.zwave_js.heal_node.traffic_warning"
+                    "ui.panel.config.zwave_js.rebuild_node_routes.traffic_warning"
                   )}
                 </em>
               </p>
-              <mwc-button slot="primaryAction" @click=${this._startHeal}>
+              <mwc-button
+                slot="primaryAction"
+                @click=${this._startRebuildingRoutes}
+              >
                 ${this.hass.localize(
-                  "ui.panel.config.zwave_js.heal_node.start_heal"
+                  "ui.panel.config.zwave_js.rebuild_node_routes.start_rebuilding_routes"
                 )}
               </mwc-button>
             `
@@ -96,7 +101,7 @@ class DialogZWaveJSHealNode extends LitElement {
                 <div class="status">
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.heal_node.in_progress",
+                      "ui.panel.config.zwave_js.rebuild_node_routes.in_progress",
                       {
                         device: html`<em
                           >${computeDeviceName(this.device, this.hass!)}</em
@@ -121,7 +126,7 @@ class DialogZWaveJSHealNode extends LitElement {
                 <div class="status">
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.heal_node.healing_failed",
+                      "ui.panel.config.zwave_js.rebuild_node_routes.rebuilding_routes_failed",
                       {
                         device: html`<em
                           >${computeDeviceName(this.device, this.hass!)}</em
@@ -134,7 +139,7 @@ class DialogZWaveJSHealNode extends LitElement {
                       ? html` <em>${this._error}</em> `
                       : `
                   ${this.hass.localize(
-                    "ui.panel.config.zwave_js.heal_node.healing_failed_check_logs"
+                    "ui.panel.config.zwave_js.rebuild_node_routes.rebuilding_routes_failed_check_logs"
                   )}
                   `}
                   </p>
@@ -155,7 +160,7 @@ class DialogZWaveJSHealNode extends LitElement {
                 <div class="status">
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.heal_node.healing_complete",
+                      "ui.panel.config.zwave_js.rebuild_node_routes.rebuilding_routes_complete",
                       {
                         device: html`<em
                           >${computeDeviceName(this.device, this.hass!)}</em
@@ -170,7 +175,7 @@ class DialogZWaveJSHealNode extends LitElement {
               </mwc-button>
             `
           : ``}
-        ${this._status === "network-healing"
+        ${this._status === "rebuilding-routes"
           ? html`
               <div class="flex-container">
                 <ha-svg-icon
@@ -180,7 +185,7 @@ class DialogZWaveJSHealNode extends LitElement {
                 <div class="status">
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.heal_node.network_heal_in_progress"
+                      "ui.panel.config.zwave_js.rebuild_node_routes.routes_rebuild_in_progress"
                     )}
                   </p>
                 </div>
@@ -201,18 +206,18 @@ class DialogZWaveJSHealNode extends LitElement {
     const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(this.hass!, {
       device_id: this.device!.id,
     });
-    if (network.controller.is_heal_network_active) {
-      this._status = "network-healing";
+    if (network.controller.is_rebuilding_routes) {
+      this._status = "rebuilding-routes";
     }
   }
 
-  private async _startHeal(): Promise<void> {
+  private async _startRebuildingRoutes(): Promise<void> {
     if (!this.hass) {
       return;
     }
     this._status = "started";
     try {
-      this._status = (await healZwaveNode(this.hass, this.device!.id))
+      this._status = (await rebuildZwaveNodeRoutes(this.hass, this.device!.id))
         ? "finished"
         : "failed";
     } catch (err: any) {
@@ -258,6 +263,6 @@ class DialogZWaveJSHealNode extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-zwave_js-heal-node": DialogZWaveJSHealNode;
+    "dialog-zwave_js-rebuild-node-routes": DialogZWaveJSRebuildNodeRoutes;
   }
 }

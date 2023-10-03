@@ -1,3 +1,4 @@
+/* eslint-disable lit/prefer-static-styles */
 import {
   css,
   CSSResultGroup,
@@ -135,7 +136,7 @@ export class HaForm extends LitElement implements HaFormElement {
                   .required=${item.required || false}
                   .context=${this._generateContext(item)}
                 ></ha-selector>`
-              : dynamicElement(`ha-form-${item.type}`, {
+              : dynamicElement(this.fieldElementName(item.type), {
                   schema: item,
                   data: getValue(this.data, item),
                   label: this._computeLabel(item, this.data),
@@ -150,6 +151,10 @@ export class HaForm extends LitElement implements HaFormElement {
         })}
       </div>
     `;
+  }
+
+  protected fieldElementName(type: string): string {
+    return `ha-form-${type}`;
   }
 
   private _generateContext(
@@ -169,19 +174,30 @@ export class HaForm extends LitElement implements HaFormElement {
   protected createRenderRoot() {
     const root = super.createRenderRoot();
     // attach it as soon as possible to make sure we fetch all events.
-    root.addEventListener("value-changed", (ev) => {
+    this.addValueChangedListener(root);
+    return root;
+  }
+
+  protected addValueChangedListener(element: Element | ShadowRoot) {
+    element.addEventListener("value-changed", (ev) => {
       ev.stopPropagation();
       const schema = (ev.target as HaFormElement).schema as HaFormSchema;
+
+      if (ev.target === this) return;
 
       const newValue = !schema.name
         ? ev.detail.value
         : { [schema.name]: ev.detail.value };
 
+      this.data = {
+        ...this.data,
+        ...newValue,
+      };
+
       fireEvent(this, "value-changed", {
-        value: { ...this.data, ...newValue },
+        value: this.data,
       });
     });
-    return root;
   }
 
   private _computeLabel(schema: HaFormSchema, data: HaFormDataContainer) {

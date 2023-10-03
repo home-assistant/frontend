@@ -38,7 +38,7 @@ export class ZHAClustersDataTable extends LitElement {
   });
 
   private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer =>
+    (narrow: boolean): DataTableColumnContainer<ClusterRowData> =>
       narrow
         ? {
             name: {
@@ -57,7 +57,7 @@ export class ZHAClustersDataTable extends LitElement {
             },
             id: {
               title: "ID",
-              template: (id: number) => html` ${formatAsPaddedHex(id)} `,
+              template: (cluster) => html` ${formatAsPaddedHex(cluster.id)} `,
               sortable: true,
               width: "25%",
             },

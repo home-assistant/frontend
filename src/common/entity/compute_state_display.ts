@@ -193,6 +193,7 @@ export const computeStateDisplayFromEntityAttributes = (
       "scene",
       "stt",
       "tts",
+      "wake_word",
     ].includes(domain) ||
     (domain === "sensor" && attributes.device_class === "timestamp")
   ) {

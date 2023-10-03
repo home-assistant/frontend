@@ -401,6 +401,7 @@ export class HuiEnergySolarGraphCard
       // Process solar production data.
       if (source.stat_energy_from in statistics) {
         const stats = statistics[source.stat_energy_from];
+        let end;
 
         for (const point of stats) {
           if (point.change === null || point.change === undefined) {
@@ -415,6 +416,13 @@ export class HuiEnergySolarGraphCard
             y: point.change,
           });
           prevStart = point.start;
+          end = point.end;
+        }
+        if (solarProductionData.length === 1) {
+          solarProductionData.push({
+            x: end,
+            y: 0,
+          });
         }
       }
 

@@ -25,6 +25,7 @@ const cardConfigStruct = assign(
     show_name: optional(boolean()),
     show_state: optional(boolean()),
     theme: optional(string()),
+    fit_mode: optional(string()),
   })
 );
 

@@ -105,7 +105,8 @@
         "cooling": "{name} cooling",
         "high": "high",
         "low": "low",
-        "mode": "Mode"
+        "mode": "Mode",
+        "preset": "Preset"
       },
       "counter": {
         "actions": {
@@ -192,6 +193,9 @@
       },
       "service": {
         "run": "Run"
+      },
+      "select": {
+        "option": "Option"
       },
       "update": {
         "installing": "Installing",
@@ -290,6 +294,7 @@
       "undo": "Undo",
       "move": "Move",
       "save": "Save",
+      "add": "Add",
       "edit": "Edit",
       "submit": "Submit",
       "rename": "Rename",
@@ -1661,10 +1666,9 @@
             "create_area": "Create Area"
           },
           "editor": {
-            "default_name": "New area",
+            "create_area": "Create area",
+            "update_area": "Update area",
             "delete": "Delete",
-            "update": "Update",
-            "create": "Create",
             "name": "Name",
             "name_required": "Name is required",
             "area_id": "Area ID",
@@ -2169,7 +2173,9 @@
                   "stt_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "tts_engine": "Text-to-speech",
                   "tts_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
-                  "tts_voice": "Voice"
+                  "tts_voice": "Voice",
+                  "wake_word_entity": "Wake word engine",
+                  "wake_word_id": "Wake word"
                 },
                 "steps": {
                   "config": {
@@ -2187,6 +2193,12 @@
                   "tts": {
                     "title": "Text-to-speech",
                     "description": "When you are controlling your assistant with voice, the text-to-speech engine turns the conversation text responses into audio."
+                  },
+                  "wakeword": {
+                    "title": "Wake word",
+                    "description": "If a device supports wake words, you can activate Assist by saying this word.",
+                    "no_wake_words": "It looks like you don't have a wake word engine setup yet.",
+                    "no_wake_words_link": "Find out more about wake words."
                   }
                 },
                 "no_cloud_message": "You should have an active cloud subscription to use cloud speech services.",
@@ -2397,7 +2409,10 @@
                   "zone": "Zone",
                   "event": "Event",
                   "enter": "Enter",
-                  "leave": "Leave"
+                  "leave": "Leave",
+                  "description": {
+                    "full": "When {source} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone}\n other {zones}\n}"
+                  }
                 },
                 "state": {
                   "label": "State",
@@ -2433,7 +2448,12 @@
                   "mode_below": "Below mode",
                   "value_template": "Value template",
                   "type_value": "Fixed number",
-                  "type_input": "Numeric value of another entity"
+                  "type_input": "Numeric value of another entity",
+                  "description": {
+                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
+                  }
                 },
                 "persistent_notification": {
                   "label": "Persistent notification",
@@ -2444,6 +2464,9 @@
                     "removed": "removed",
                     "current": "current",
                     "updated": "updated"
+                  },
+                  "description": {
+                    "full": "When a persistent notification is updated"
                   }
                 },
                 "sun": {
@@ -2515,7 +2538,10 @@
                   "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "enter": "Enter",
-                  "leave": "Leave"
+                  "leave": "Leave",
+                  "description": {
+                    "full": "When {entity} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
+                  }
                 }
               }
             },
@@ -2576,7 +2602,12 @@
                   "below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::below%]",
                   "mode_above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_above%]",
                   "mode_below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_below%]",
-                  "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]"
+                  "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
+                  "description": {
+                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above}",
+                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is below {below}",
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}"
+                  }
                 },
                 "or": {
                   "label": "Or",
@@ -3903,7 +3934,7 @@
             "add_node": "Add device",
             "remove_node": "Remove device",
             "reconfigure_server": "Re-configure server",
-            "heal_network": "Heal Network",
+            "rebuild_network_routes": "Rebuild network routes",
             "in_progress_inclusion_exclusion": "Z-Wave JS is searching for devices",
             "cancel_inclusion_exclusion": "Stop searching"
           },
@@ -3963,7 +3994,7 @@
             "node_ready": "Ready",
             "device_config": "Configure",
             "reinterview_device": "Re-interview",
-            "heal_node": "Heal",
+            "rebuild_routes": "Rebuild routes",
             "remove_failed": "Remove failed",
             "update_firmware": "Update",
             "highest_security": "Highest security",
@@ -4145,28 +4176,28 @@
             "interview_failed": "The device interview failed. Additional information may be available in the logs.",
             "interview_complete": "Device interview complete."
           },
-          "heal_network": {
-            "title": "Heal your Z-Wave network",
-            "introduction": "Start a network heal on your Z-Wave network. A network heal will cause all devices to re-calculate their routes back to the controller and is recommended if you have recently moved devices or your controller.",
-            "traffic_warning": "The healing process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the heal is in progress.",
-            "start_heal": "Start healing",
-            "in_progress": "Network healing is in progress. This will take some time.",
-            "run_in_background": "You can close this dialog and the network healing will continue in the background.",
-            "stop_heal": "Stop Healing",
-            "healing_complete": "Network healing is complete.",
-            "healing_failed": "Healing failed. Additional information may be available in the logs.",
-            "healing_cancelled": "Network healing has been cancelled."
+          "rebuild_network_routes": {
+            "title": "Rebuild routes for your Z-Wave network",
+            "introduction": "Start rebuilding routes on your Z-Wave network. Rebuilding routes will cause all devices to re-calculate their routes back to the controller and is recommended if you have recently moved devices or your controller.",
+            "traffic_warning": "The rebuilding process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the rebuild is in progress.",
+            "start_rebuilding_routes": "Start rebuilding routes",
+            "in_progress": "Rebuild of network routes is in progress. This will take some time.",
+            "run_in_background": "You can close this dialog and the rebuild of network routes will continue in the background.",
+            "stop_rebuilding_routes": "Stop rebuilding routes",
+            "rebuilding_routes_complete": "Routes have been rebuilt.",
+            "rebuilding_routes_failed": "Route rebuilding failed. Additional information may be available in the logs.",
+            "rebuilding_routes_cancelled": "Rebuilding network routes has been cancelled."
           },
-          "heal_node": {
-            "title": "Heal a Z-Wave device",
+          "rebuild_node_routes": {
+            "title": "Rebuild routes for a Z-Wave device",
             "introduction": "Tell {device} to update its routes back to the controller. This can help with communication issues if you have recently moved the device or your controller.",
-            "traffic_warning": "The healing process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the heal is in progress.",
-            "start_heal": "Heal Device",
-            "healing_failed": "{device} could not be healed.",
-            "healing_failed_check_logs": "Additional information may be available in the logs.",
-            "healing_complete": "{device} has been healed.",
-            "in_progress": "{device} healing is in progress.",
-            "network_heal_in_progress": "A Z-Wave network heal is already in progress. Please wait for it to finish before healing an individual device."
+            "traffic_warning": "The route rebuilding process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the rebuilding is in progress.",
+            "start_rebuilding_routes": "Rebuild Routes for Device",
+            "rebuilding_routes_failed": "{device} routes could not be rebuild.",
+            "rebuilding_routes_failed_check_logs": "Additional information may be available in the logs.",
+            "rebuilding_routes_complete": "{device} routes have been rebuilt.",
+            "in_progress": "{device} routes rebuild is in progress.",
+            "routes_rebuild_in_progress": "A Z-Wave routes rebuild is already in progress. Please wait for it to finish before rebuilding routes for an individual device."
           },
           "update_firmware": {
             "title": "Update device firmware",
@@ -4622,7 +4653,9 @@
             "subview": "Subview",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
             "edit_ui": "Edit in visual editor",
-            "edit_yaml": "Edit in YAML"
+            "edit_yaml": "Edit in YAML",
+            "saving_failed": "Saving failed",
+            "error_same_url": "You cannot save a view with the same URL as a different existing view."
           },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
@@ -5037,6 +5070,18 @@
                     "label": "Climate HVAC modes",
                     "hvac_modes": "HVAC modes"
                   },
+                  "climate-preset-modes": {
+                    "label": "Climate preset modes",
+                    "style": "Style",
+                    "style_list": {
+                      "dropdown": "Dropdown",
+                      "icons": "Icons"
+                    },
+                    "preset_modes": "Preset modes"
+                  },
+                  "select-options": {
+                    "label": "Select options"
+                  },
                   "target-temperature": {
                     "label": "Target temperature"
                   },
@@ -5138,7 +5183,8 @@
             "types": {
               "header": "Header editor",
               "footer": "Footer editor",
-              "row": "Entity row editor"
+              "row": "Entity row editor",
+              "tile-feature": "Tile feature editor"
             }
           }
         },
@@ -5528,6 +5574,13 @@
             "no_match": "No intent matched",
             "language": "[%key:ui::components::language-picker::language%]"
           },
+          "debug": {
+            "title": "Debug tools",
+            "debug_connection": {
+              "title": "Debug connection",
+              "description": "Observe requests to the server and responses from the server in browser console."
+            }
+          },
           "events": {
             "title": "Events",
             "description": "Fire an event on the event bus.",
@@ -5560,7 +5613,22 @@
             "yaml_parameters": "Parameters only available in YAML mode",
             "all_parameters": "All available parameters",
             "accepts_target": "This service accepts a target, for example: `entity_id: light.bed_light`",
-            "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor."
+            "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor.",
+            "errors": {
+              "ui": {
+                "no_service": "No service selected, please select a service",
+                "invalid_service": "Selected service is invalid, please select a valid service",
+                "no_target": "This service requires a target, please select a target from the picker",
+                "missing_required_field": "This service requires field {key}, please enter a valid value for {key}"
+              },
+              "yaml": {
+                "invalid_yaml": "Service YAML contains syntax errors, please fix the syntax",
+                "no_service": "No service defined, please define a service: key",
+                "invalid_service": "Defined service is invalid, please provide a service in the format domain.service",
+                "no_target": "This service requires a target, please define a target entity_id, device_id, or area_id under target: or data:",
+                "missing_required_field": "This service requires field {key}, which must be provided under data:"
+              }
+            }
           },
           "states": {
             "title": "States",
