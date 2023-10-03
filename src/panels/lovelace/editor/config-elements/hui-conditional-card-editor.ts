@@ -34,7 +34,7 @@ import type { HuiCardElementEditor } from "../card-editor/hui-card-element-edito
 import "../card-editor/hui-card-picker";
 import "../conditions/ha-card-condition-editor";
 import { LovelaceConditionEditorConstructor } from "../conditions/types";
-import "../conditions/types/ha-card-condition-responsive";
+import "../conditions/types/ha-card-condition-screen";
 import "../conditions/types/ha-card-condition-state";
 import "../hui-element-editor";
 import type { ConfigChangedEvent } from "../hui-element-editor";
@@ -44,7 +44,7 @@ import { configElementStyle } from "./config-elements-style";
 
 const UI_CONDITION = [
   "state",
-  "responsive",
+  "screen",
 ] as const satisfies readonly Condition["condition"][];
 
 type UiCondition = (typeof UI_CONDITION)[number];
@@ -59,7 +59,7 @@ const cardConfigStruct = assign(
 
 const ICONS: Record<UiCondition, string> = {
   state: mdiStateMachine,
-  responsive: mdiResponsive,
+  screen: mdiResponsive,
 };
 @customElement("hui-conditional-card-editor")
 export class HuiConditionalCardEditor

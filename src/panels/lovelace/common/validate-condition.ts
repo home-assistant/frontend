@@ -1,7 +1,7 @@
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 
-export type Condition = StateCondition | ResponsiveCondition;
+export type Condition = StateCondition | ScreenCondition;
 
 export type LegacyCondition = {
   entity?: string;
@@ -16,8 +16,8 @@ export type StateCondition = {
   state_not?: string;
 };
 
-export type ResponsiveCondition = {
-  condition: "responsive";
+export type ScreenCondition = {
+  condition: "screen";
   media_query?: string;
 };
 
@@ -32,8 +32,8 @@ function checkStateCondition(condition: StateCondition, hass: HomeAssistant) {
     : state !== condition.state_not;
 }
 
-function checkResponsiveCondition(
-  condition: ResponsiveCondition,
+function checkScreenCondition(
+  condition: ScreenCondition,
   _hass: HomeAssistant
 ) {
   return condition.media_query
@@ -46,8 +46,8 @@ export function checkConditionsMet(
   hass: HomeAssistant
 ): boolean {
   return conditions.every((c) => {
-    if (c.condition === "responsive") {
-      return checkResponsiveCondition(c, hass);
+    if (c.condition === "screen") {
+      return checkScreenCondition(c, hass);
     }
 
     return checkStateCondition(c, hass);
@@ -61,14 +61,14 @@ function valideStateCondition(condition: StateCondition) {
   );
 }
 
-function valideResponsiveCondition(condition: ResponsiveCondition) {
+function validateScreenCondition(condition: ScreenCondition) {
   return condition.media_query != null;
 }
 
 export function validateConditionalConfig(conditions: Condition[]): boolean {
   return conditions.every((c) => {
-    if (c.condition === "responsive") {
-      return valideResponsiveCondition(c);
+    if (c.condition === "screen") {
+      return validateScreenCondition(c);
     }
     return valideStateCondition(c);
   });

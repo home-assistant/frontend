@@ -4771,8 +4771,8 @@
               "change_type": "Change type",
               "add_condition": "Add condition",
               "condition": {
-                "responsive": {
-                  "label": "Responsive",
+                "screen": {
+                  "label": "Screen",
                   "breakpoints": "Screen sizes",
                   "breakpoints_list": {
                     "mobile": "Mobile",

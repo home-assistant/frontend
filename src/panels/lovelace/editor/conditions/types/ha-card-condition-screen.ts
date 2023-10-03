@@ -8,7 +8,7 @@ import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
-import { ResponsiveCondition } from "../../../common/validate-condition";
+import { ScreenCondition } from "../../../common/validate-condition";
 
 const BREAKPOINT_VALUES = [0, 768, 1024, 1280, Infinity];
 const BREAKPOINTS = ["mobile", "tablet", "desktop", "wide"] as const;
@@ -87,23 +87,23 @@ const mediaQueryMap = new Map(
 );
 const mediaQueryReverseMap = new Map(queries.map(([b, m]) => [m, b]));
 
-type ResponsiveConditionData = {
+type ScreenConditionData = {
   breakpoints: Breakpoint[];
 };
 
-@customElement("ha-card-condition-responsive")
-export class HaCardConditionResponsive extends LitElement {
+@customElement("ha-card-condition-screen")
+export class HaCardConditionScreen extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public condition!: ResponsiveCondition;
+  @property({ attribute: false }) public condition!: ScreenCondition;
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig(): ResponsiveCondition {
-    return { condition: "responsive", media_query: "" };
+  public static get defaultConfig(): ScreenCondition {
+    return { condition: "screen", media_query: "" };
   }
 
-  protected static validateUIConfig(condition: ResponsiveCondition) {
+  protected static validateUIConfig(condition: ScreenCondition) {
     return (
       !condition.media_query || mediaQueryReverseMap.get(condition.media_query)
     );
@@ -122,11 +122,11 @@ export class HaCardConditionResponsive extends LitElement {
                 return {
                   value: b,
                   label: `${localize(
-                    `ui.panel.lovelace.editor.card.conditional.condition.responsive.breakpoints_list.${b}`
+                    `ui.panel.lovelace.editor.card.conditional.condition.screen.breakpoints_list.${b}`
                   )}${
                     value
                       ? ` (${localize(
-                          `ui.panel.lovelace.editor.card.conditional.condition.responsive.min`,
+                          `ui.panel.lovelace.editor.card.conditional.condition.screen.min`,
                           { size: value }
                         )})`
                       : ""
@@ -145,7 +145,7 @@ export class HaCardConditionResponsive extends LitElement {
       ? mediaQueryReverseMap.get(this.condition.media_query)
       : undefined;
 
-    const data: ResponsiveConditionData = {
+    const data: ScreenConditionData = {
       breakpoints: breakpoints ?? [],
     };
 
@@ -163,12 +163,12 @@ export class HaCardConditionResponsive extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const data = ev.detail.value as ResponsiveConditionData;
+    const data = ev.detail.value as ScreenConditionData;
 
     const { breakpoints } = data;
 
-    const condition: ResponsiveCondition = {
-      condition: "responsive",
+    const condition: ScreenCondition = {
+      condition: "screen",
       media_query: mediaQueryMap.get(computeBreakpointsKey(breakpoints)) ?? "",
     };
 
@@ -181,7 +181,7 @@ export class HaCardConditionResponsive extends LitElement {
     switch (schema.name) {
       case "breakpoints":
         return this.hass.localize(
-          `ui.panel.lovelace.editor.card.conditional.condition.responsive.${schema.name}`
+          `ui.panel.lovelace.editor.card.conditional.condition.screen.${schema.name}`
         );
       default:
         return "";
@@ -191,6 +191,6 @@ export class HaCardConditionResponsive extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-card-condition-responsive": HaCardConditionResponsive;
+    "ha-card-condition-screen": HaCardConditionScreen;
   }
 }

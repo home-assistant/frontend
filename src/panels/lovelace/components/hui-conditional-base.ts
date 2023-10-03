@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 import { ConditionalCardConfig } from "../cards/types";
 import {
-  ResponsiveCondition,
+  ScreenCondition,
   checkConditionsMet,
   validateConditionalConfig,
 } from "../common/validate-condition";
@@ -78,8 +78,8 @@ export class HuiConditionalBase extends ReactiveElement {
     }
 
     const conditions = this._config.conditions.filter(
-      (c) => c.condition === "responsive"
-    ) as ResponsiveCondition[];
+      (c) => c.condition === "screen"
+    ) as ScreenCondition[];
 
     const mediaQueries = conditions
       .filter((c) => c.media_query)
