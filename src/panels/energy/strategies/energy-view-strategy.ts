@@ -79,7 +79,7 @@ export class EnergyViewStrategy extends ReactiveElement {
         type: "conditional",
         conditions: [
           {
-            condition: "responsive",
+            condition: "screen",
             media_query: NARROW_MEDIA_QUERY,
           },
         ],
