@@ -6295,7 +6295,7 @@
       "passwords_not_matching": "The passwords does not match",
       "backup_already_running": "A backup or restore is already running. Creating a new backup is currently not possible, try again later.",
       "confirm_restore_partial_backup_title": "Restore partial backup",
-      "confirm_restore_partial_backup_text": "The backup will be restored. Depending of the size of the backup, this can take up to 45 min.",
+      "confirm_restore_partial_backup_text": "The backup will be restored. Depending on the size of the backup, this can take up to 45 min.",
       "confirm_restore_full_backup_title": "Restore full backup",
       "confirm_restore_full_backup_text": "Your entire system will be wiped and the backup will be restored. Depending of the size of the backup, this can take up to 45 min.",
       "confirm_delete_title": "Delete backup",
