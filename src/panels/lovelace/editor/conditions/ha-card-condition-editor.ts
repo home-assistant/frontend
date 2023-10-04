@@ -148,10 +148,6 @@ export default class HaCardConditionEditor extends LitElement {
     }
   }
 
-  private _toggleMode() {
-    this._yamlMode = !this._yamlMode;
-  }
-
   private _delete() {
     fireEvent(this, "value-changed", { value: null });
   }
