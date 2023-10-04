@@ -52,6 +52,8 @@ export const darkStyles = {
 };
 
 export const derivedStyles = {
+  "outline-color": "var(--secondary-text-color)",
+
   "state-icon-error-color": "var(--error-state-color, var(--error-color))",
   "state-unavailable-color":
     "var(--state-icon-unavailable-color, var(--disabled-text-color))",
@@ -104,13 +106,13 @@ export const derivedStyles = {
   "mdc-theme-error": "var(--error-color)",
   "app-header-text-color": "var(--text-primary-color)",
   "app-header-background-color": "var(--primary-color)",
-  "mdc-checkbox-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
+  "mdc-checkbox-unchecked-color": "var(--outline-color)",
   "mdc-checkbox-disabled-color": "var(--disabled-text-color)",
-  "mdc-radio-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
+  "mdc-radio-unchecked-color": "var(--outline-color)",
   "mdc-radio-disabled-color": "var(--disabled-text-color)",
   "mdc-tab-text-label-color-default": "var(--primary-text-color)",
   "mdc-button-disabled-ink-color": "var(--disabled-text-color)",
-  "mdc-button-outline-color": "var(--divider-color)",
+  "mdc-button-outline-color": "var(--outline-color)",
   "mdc-dialog-scroll-divider-color": "var(--divider-color)",
   "mdc-dialog-heading-ink-color": "var(--primary-text-color)",
   "mdc-dialog-content-ink-color": "var(--primary-text-color)",

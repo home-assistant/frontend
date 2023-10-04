@@ -165,7 +165,7 @@ export class HaExpansionPanel extends LitElement {
         border-style: solid;
         border-color: var(
           --ha-card-border-color,
-          var(--divider-color, #e0e0e0)
+          var(--outline-color)
         );
         border-radius: var(--ha-card-border-radius, 12px);
       }
