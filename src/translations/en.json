@@ -5853,7 +5853,14 @@
           "addons": "[%key:supervisor::backup::addons%]",
           "password_protection": "[%key:supervisor::backup::password_protection%]",
           "password": "[%key:supervisor::backup::password%]",
-          "confirm_password": "[%key:supervisor::backup::confirm_password%]"
+          "confirm_password": "[%key:supervisor::backup::confirm_password%]",
+          "confirm_restore_partial_backup_title": "[%key:supervisor::backup::confirm_restore_partial_backup_title%]",
+          "confirm_restore_partial_backup_text": "[%key:supervisor::backup::confirm_restore_partial_backup_text%]",
+          "confirm_restore_full_backup_title": "[%key:supervisor::backup::confirm_restore_full_backup_title%]",
+          "confirm_restore_full_backup_text": "[%key:supervisor::backup::confirm_restore_full_backup_text%]",
+          "restore": "[%key:supervisor::backup::restore%]",
+          "close": "[%key:ui::common::close%]",
+          "cancel": "[%key:ui::common::cancel%]"
         }
       },
       "custom": {
@@ -6256,7 +6263,8 @@
     "backup": {
       "search": "[%key:ui::panel::config::backup::picker::search%]",
       "no_backups": "You don't have any backups yet.",
-      "create_blocked_not_running": "Creating a backup is not possible right now because the system is in {state} state.",
+      "create_blocked_not_running": "Creating a backup is not possible right now because the system is in \"{state}\" state.",
+      "restore_blocked_not_running": "Restoring a backup is not possible right now because the system is in \"{state}\" state.",
       "delete_selected": "Delete selected backups",
       "delete_backup_title": "Delete backup",
       "delete_backup_text": "Do you want to delete {number} {number, plural,\n  one {backup}\n  other {backups}\n}?",
@@ -6264,6 +6272,7 @@
       "selected": "{number} selected",
       "failed_to_delete": "Failed to delete",
       "could_not_create": "Could not create backup",
+      "could_not_restore": "Could not restore backup",
       "upload_backup": "Upload backup",
       "download_backup": "Download backup",
       "create_backup": "Create backup",
@@ -6284,7 +6293,21 @@
       "password_protection": "Password protection",
       "enter_password": "Please enter a password.",
       "passwords_not_matching": "The passwords does not match",
-      "backup_already_running": "A backup or restore is already running, creating a new backup is currently not possible, try again later."
+      "backup_already_running": "A backup or restore is already running, creating a new backup is currently not possible, try again later.",
+      "confirm_restore_partial_backup_title": "Restore partial backup",
+      "confirm_restore_partial_backup_text": "The backup will be restored. Depending of the size of the backup, this can take up to 45 min.",
+      "confirm_restore_full_backup_title": "Restore full backup",
+      "confirm_restore_full_backup_text": "Your entire system will be wiped and the backup will be restored. Depending of the size of the backup, this can take up to 45 min.",
+      "confirm_delete_title": "Delete backup",
+      "confirm_delete_text": "This backup will be permanently deleted and cannot be restored later.",
+      "restore": "Restore",
+      "close": "[%key:ui::common::close%]",
+      "cancel": "[%key:ui::common::cancel%]",
+      "delete": "[%key:ui::common::delete%]",
+      "download": "Download",
+      "more_actions": "More actions",
+      "remote_download_title": "Potential slow download",
+      "remote_download_text": "Downloading backups over the Nabu Casa URL will take some time, it is recomended to use your local URL instead, do you want to continue?"
     },
     "dialog": {
       "network": {

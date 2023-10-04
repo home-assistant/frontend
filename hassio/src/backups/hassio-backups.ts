@@ -360,11 +360,9 @@ export class HassioBackups extends LitElement {
     if (this.supervisor!.info.state !== "running") {
       showAlertDialog(this, {
         title: this.supervisor!.localize("backup.could_not_create"),
-        text: this.supervisor!.localize(
-          "backup.create_blocked_not_running",
-          "state",
-          this.supervisor!.info.state
-        ),
+        text: this.supervisor!.localize("backup.create_blocked_not_running", {
+          state: this.supervisor!.info.state,
+        }),
       });
       return;
     }
