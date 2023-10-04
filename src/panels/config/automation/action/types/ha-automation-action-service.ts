@@ -163,10 +163,18 @@ export class HaServiceAction extends LitElement implements ActionElement {
   }
 
   private _actionChanged(ev) {
-    if (ev.detail.value === this._action) {
-      ev.stopPropagation();
-    }
-    const value = { ...this.action, ...ev.detail.value };
+    ev.stopPropagation();
+    const serviceChanged = this._action?.service !== ev.detail.value?.service;
+
+    // Clean old fields except alias if service changed
+    const oldAction = serviceChanged
+      ? {
+          alias: this._action?.alias,
+        }
+      : this.action;
+
+    const value = { ...oldAction, ...ev.detail.value };
+
     if ("response_variable" in this.action) {
       const [domain, service] = this._action!.service
         ? this._action!.service.split(".", 2)
