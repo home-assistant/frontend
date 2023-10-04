@@ -6307,7 +6307,7 @@
       "download": "Download",
       "more_actions": "More actions",
       "remote_download_title": "Potentially slow download",
-      "remote_download_text": "Downloading backups over the Nabu Casa URL will take some time, it is recomended to use your local URL instead, do you want to continue?"
+      "remote_download_text": "You are accessing Home Assistant via remote access. Downloading backups over the Nabu Casa URL will take some time. If you are at home, cancel this dialog and enter your local URL, such as 'http://homeassistant.local:8123'"
     },
     "dialog": {
       "network": {
