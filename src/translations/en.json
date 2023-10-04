@@ -6306,7 +6306,7 @@
       "delete": "[%key:ui::common::delete%]",
       "download": "Download",
       "more_actions": "More actions",
-      "remote_download_title": "Potential slow download",
+      "remote_download_title": "Potentially slow download",
       "remote_download_text": "Downloading backups over the Nabu Casa URL will take some time, it is recomended to use your local URL instead, do you want to continue?"
     },
     "dialog": {
