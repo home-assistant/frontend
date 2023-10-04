@@ -22,7 +22,7 @@ export class HaOutlinedIconButton extends IconButton {
         --md-sys-color-on-surface: var(--secondary-text-color);
         --md-sys-color-on-surface-variant: var(--secondary-text-color);
         --md-sys-color-on-surface-rgb: var(--rgb-secondary-text-color);
-        --md-sys-color-outline: var(--outline-color);
+        --md-sys-color-outline: var(--secondary-text-color);
       }
       :host([no-ripple]) .outlined {
         --md-ripple-focus-opacity: 0;
