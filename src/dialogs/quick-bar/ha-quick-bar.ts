@@ -8,7 +8,7 @@ import {
   mdiReload,
   mdiServerNetwork,
 } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -23,8 +23,8 @@ import { domainIcon } from "../../common/entity/domain_icon";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import {
-  fuzzyFilterSort,
   ScorableTextItem,
+  fuzzyFilterSort,
 } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-chip";
@@ -40,10 +40,7 @@ import { configSections } from "../../panels/config/ha-panel-config";
 import { haStyleDialog, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import { HomeAssistant } from "../../types";
-import {
-  ConfirmationDialogParams,
-  showConfirmationDialog,
-} from "../generic/show-dialog-box";
+import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { QuickBarParams } from "./show-dialog-quick-bar";
 
 interface QuickBarItem extends ScorableTextItem {
@@ -602,16 +599,30 @@ export class QuickBar extends LitElement {
           `ui.dialogs.quick-bar.commands.types.${categoryKey}`
         ),
         categoryKey,
-        action: () => this.hass.callService("homeassistant", action),
+        action: async () => {
+          const confirmed = await showConfirmationDialog(this, {
+            title: this.hass.localize(
+              `ui.dialogs.restart.${action}.confirm_title`
+            ),
+            text: this.hass.localize(
+              `ui.dialogs.restart.${action}.confirm_description`
+            ),
+            confirmText: this.hass.localize(
+              `ui.dialogs.restart.${action}.confirm_action`
+            ),
+            destructive: true,
+          });
+          if (!confirmed) {
+            return;
+          }
+          this.hass.callService("homeassistant", action);
+        },
       };
 
-      return this._generateConfirmationCommand(
-        {
-          ...item,
-          strings: [`${item.categoryText} ${item.primaryText}`],
-        },
-        this.hass.localize("ui.dialogs.generic.ok")
-      );
+      return {
+        ...item,
+        strings: [`${item.categoryText} ${item.primaryText}`],
+      };
     });
   }
 
@@ -715,20 +726,6 @@ export class QuickBar extends LitElement {
     }
 
     return undefined;
-  }
-
-  private _generateConfirmationCommand(
-    item: CommandItem,
-    confirmText: ConfirmationDialogParams["confirmText"]
-  ): CommandItem {
-    return {
-      ...item,
-      action: () =>
-        showConfirmationDialog(this, {
-          confirmText,
-          confirm: item.action,
-        }),
-    };
   }
 
   private _finalizeNavigationCommands(
