@@ -350,7 +350,10 @@ export default class HaAutomationTriggerRow extends LitElement {
                         </ha-textfield>
                       `
                     : ""}
-                  <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
+                  <div
+                    @ui-mode-not-available=${this._handleUiModeNotAvailable}
+                    @value-changed=${this._onUiChanged}
+                  >
                     ${dynamicElement(
                       `ha-automation-trigger-${this.trigger.platform}`,
                       {
@@ -560,6 +563,15 @@ export default class HaAutomationTriggerRow extends LitElement {
     }
     this._warnings = undefined;
     fireEvent(this, "value-changed", { value: ev.detail.value });
+  }
+
+  private _onUiChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    const value = {
+      ...(this.trigger.alias ? { alias: this.trigger.alias } : {}),
+      ...ev.detail.value,
+    };
+    fireEvent(this, "value-changed", { value });
   }
 
   private _switchUiMode() {
