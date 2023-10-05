@@ -50,7 +50,7 @@ class HaPanelDevState extends LitElement {
   @state() private _showAttributes =
     localStorage.getItem("devToolsShowAttributes") || true;
 
-  @property({ reflect: true }) public narrow: boolean = false;
+  @property() public narrow: boolean = false;
 
   @property({ reflect: true }) public rtl: boolean = false;
 
@@ -288,13 +288,6 @@ class HaPanelDevState extends LitElement {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (!oldHass || oldHass.locale !== this.hass.locale) {
       toggleAttribute(this, "rtl", computeRTL(this.hass));
-    }
-    if (
-      (changedProps.has("narrow") &&
-        changedProps.get("narrow") !== undefined) ||
-      changedProps.get("narrow") != null
-    ) {
-      toggleAttribute(this, "narrow", changedProps.get("narrow"));
     }
   }
 
