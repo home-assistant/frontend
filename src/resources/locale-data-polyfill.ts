@@ -21,7 +21,7 @@ const addData = async (
       `${__STATIC_PATH__}locale-data/intl-${obj.toLowerCase()}/${language}.json`
     );
     // Ignore if polyfill data does not exist for language
-    if (result.status !== 404) {
+    if (result.ok) {
       (Intl[obj] as any).__addLocaleData(await result.json());
     }
   }
