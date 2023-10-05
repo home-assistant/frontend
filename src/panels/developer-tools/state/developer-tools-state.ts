@@ -5,7 +5,6 @@ import {
   mdiInformationOutline,
   mdiRefresh,
 } from "@mdi/js";
-import { dump, load } from "js-yaml";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
@@ -13,7 +12,7 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import { escapeRegExp } from "../../../common/string/escape_regexp";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/entity/ha-entity-picker";
-import "../../../components/ha-code-editor";
+import "../../../components/ha-yaml-editor";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-checkbox";
@@ -25,8 +24,6 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
-
-const ERROR_SENTINEL = {};
 
 @customElement("developer-tools-state")
 class HaPanelDevState extends LitElement {
@@ -44,7 +41,7 @@ class HaPanelDevState extends LitElement {
 
   @state() private _state: string = "";
 
-  @state() private _stateAttributes: string = "";
+  @state() private _stateAttributes: object = {};
 
   @state() private _expanded: boolean = false;
 
@@ -113,13 +110,13 @@ class HaPanelDevState extends LitElement {
                 "ui.panel.developer-tools.tabs.states.state_attributes"
               )}
             </p>
-            <ha-code-editor
-              mode="yaml"
+            <ha-yaml-editor
+              autoUpdate
               .value=${this._stateAttributes}
               .error=${!this._validJSON}
               @value-changed=${this._yamlChanged}
               dir="ltr"
-            ></ha-code-editor>
+            ></ha-yaml-editor>
             <div class="button-row">
               <mwc-button
                 @click=${this._handleSetState}
@@ -312,7 +309,7 @@ class HaPanelDevState extends LitElement {
     this._entityId = entityState.entity_id;
     this._entity = entityState;
     this._state = entityState.state;
-    this._stateAttributes = dump(entityState.attributes);
+    this._stateAttributes = entityState.attributes;
     this._expanded = true;
     ev.preventDefault();
   }
@@ -321,7 +318,7 @@ class HaPanelDevState extends LitElement {
     if (!this._entityId) {
       this._entity = undefined;
       this._state = "";
-      this._stateAttributes = "";
+      this._stateAttributes = {};
       return;
     }
     const entityState = this.hass.states[this._entityId];
@@ -330,7 +327,7 @@ class HaPanelDevState extends LitElement {
     }
     this._entity = entityState;
     this._state = entityState.state;
-    this._stateAttributes = dump(entityState.attributes);
+    this._stateAttributes = entityState.attributes;
     this._expanded = true;
   }
 
@@ -383,12 +380,9 @@ class HaPanelDevState extends LitElement {
       });
       return;
     }
-    const parsedJSON = this._computeParsedStateAttributes(
-      this._stateAttributes
-    );
     await this.hass.callApi("POST", "states/" + this._entityId, {
       state: this._state,
-      attributes: parsedJSON,
+      attributes: this._stateAttributes,
     });
   }
 
@@ -522,21 +516,9 @@ class HaPanelDevState extends LitElement {
     }
   }
 
-  private _computeParsedStateAttributes(stateAttributes) {
-    try {
-      return stateAttributes.trim() ? load(stateAttributes) : {};
-    } catch (err) {
-      return ERROR_SENTINEL;
-    }
-  }
-
-  private _computeValidJSON(parsedJSON) {
-    return parsedJSON !== ERROR_SENTINEL;
-  }
-
   private _yamlChanged(ev) {
     this._stateAttributes = ev.detail.value;
-    this._validJSON = this._computeValidJSON(this._stateAttributes);
+    this._validJSON = ev.detail.isValid;
   }
 
   static get styles(): CSSResultGroup {
