@@ -1507,14 +1507,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:6.21.0, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0":
-  version: 6.21.0
-  resolution: "@codemirror/view@npm:6.21.0"
+"@codemirror/view@npm:6.21.1, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0":
+  version: 6.21.1
+  resolution: "@codemirror/view@npm:6.21.1"
   dependencies:
     "@codemirror/state": ^6.1.4
     style-mod: ^4.1.0
     w3c-keyname: ^2.2.4
-  checksum: da49d5541b137a812e1837709130b9a4502fac71b87c45d45384116a7a2b1dab556c283abb673946ba9d044a640ab9058727b85de9b7b576c44848dfbf0ed7bb
+  checksum: c2271a03559c5ef469dc941bd345e5355b4f704a582ca49ff69db915dcf10f175d2fc2ad6d8f4c10b371abb20e0c0f2e625c9348b681566e52a4dfdb5adfe648
   languageName: node
   linkType: hard
 
@@ -9640,7 +9640,7 @@ __metadata:
     "@codemirror/legacy-modes": 6.3.3
     "@codemirror/search": 6.5.4
     "@codemirror/state": 6.2.1
-    "@codemirror/view": 6.21.0
+    "@codemirror/view": 6.21.1
     "@egjs/hammerjs": 2.0.17
     "@formatjs/intl-datetimeformat": 6.10.3
     "@formatjs/intl-displaynames": 6.5.2
