@@ -164,6 +164,7 @@ export class HuiEnergyDevicesGraphCard
           // @ts-ignore
           entityId: this._chartData?.datasets[0]?.data[index]?.y,
         });
+        chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
       },
     })
   );

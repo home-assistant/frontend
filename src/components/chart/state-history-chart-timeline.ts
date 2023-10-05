@@ -238,6 +238,7 @@ export class StateHistoryChartTimeline extends LitElement {
           // @ts-ignore
           entityId: this._chartData?.datasets[index]?.label,
         });
+        chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
       },
     };
   }
