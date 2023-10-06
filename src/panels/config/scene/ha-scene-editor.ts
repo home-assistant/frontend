@@ -1,6 +1,5 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import {
   mdiContentDuplicate,
   mdiContentSave,
@@ -237,7 +236,7 @@ export class HaSceneEditor extends SubscribeMixin(
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <mwc-list-item .disabled=${!this.sceneId} graphic="icon">
+          <ha-list-item .disabled=${!this.sceneId} graphic="icon">
             ${this.hass.localize(
               "ui.panel.config.scene.picker.duplicate_scene"
             )}
@@ -245,9 +244,9 @@ export class HaSceneEditor extends SubscribeMixin(
               slot="graphic"
               .path=${mdiContentDuplicate}
             ></ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
 
-          <mwc-list-item
+          <ha-list-item
             .disabled=${!this.sceneId}
             class=${classMap({ warning: Boolean(this.sceneId) })}
             graphic="icon"
@@ -259,7 +258,7 @@ export class HaSceneEditor extends SubscribeMixin(
               .path=${mdiDelete}
             >
             </ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
         </ha-button-menu>
         ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
         <div
