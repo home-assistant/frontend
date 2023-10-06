@@ -90,7 +90,7 @@ class HaPanelMailbox extends LitElement {
                   <div class="row">
                     <div>${message.caller}</div>
                     <div class="tip">
-                      ${Intl.NumberFormat("en", {
+                      ${Intl.NumberFormat(this.hass.locale.language, {
                         style: "unit",
                         unit: "second",
                         unitDisplay: "long",
