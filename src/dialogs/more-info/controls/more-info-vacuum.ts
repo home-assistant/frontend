@@ -13,8 +13,6 @@ import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/entity/ha-battery-icon";
@@ -127,21 +125,8 @@ class MoreInfoVacuum extends LitElement {
                 <strong>
                   ${supportsFeature(stateObj, VacuumEntityFeature.STATUS) &&
                   stateObj.attributes.status
-                    ? computeAttributeValueDisplay(
-                        this.hass.localize,
-                        stateObj,
-                        this.hass.locale,
-                        this.hass.config,
-                        this.hass.entities,
-                        "status"
-                      )
-                    : computeStateDisplay(
-                        this.hass.localize,
-                        stateObj,
-                        this.hass.locale,
-                        this.hass.config,
-                        this.hass.entities
-                      )}
+                    ? this.hass.formatEntityAttributeValue(stateObj, "status")
+                    : this.hass.formatEntityState(stateObj)}
                 </strong>
               </span>
             </div>
@@ -197,12 +182,8 @@ class MoreInfoVacuum extends LitElement {
                   ${stateObj.attributes.fan_speed_list!.map(
                     (mode) => html`
                       <mwc-list-item .value=${mode}>
-                        ${computeAttributeValueDisplay(
-                          this.hass.localize,
+                        ${this.hass.formatEntityAttributeValue(
                           stateObj,
-                          this.hass.locale,
-                          this.hass.config,
-                          this.hass.entities,
                           "fan_speed",
                           mode
                         )}
@@ -215,12 +196,8 @@ class MoreInfoVacuum extends LitElement {
                 >
                   <span>
                     <ha-svg-icon .path=${mdiFan}></ha-svg-icon>
-                    ${computeAttributeValueDisplay(
-                      this.hass.localize,
+                    ${this.hass.formatEntityAttributeValue(
                       stateObj,
-                      this.hass.locale,
-                      this.hass.config,
-                      this.hass.entities,
                       "fan_speed"
                     )}
                   </span>
@@ -262,12 +239,13 @@ class MoreInfoVacuum extends LitElement {
     const battery = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
-
-    const batteryIsBinary =
-      battery && computeStateDomain(battery) === "binary_sensor";
+    const batteryDomain = battery ? computeStateDomain(battery) : undefined;
 
     // Use device battery entity
-    if (battery && (batteryIsBinary || !isNaN(battery.state as any))) {
+    if (
+      battery &&
+      (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
+    ) {
       const batteryChargingEntity = findBatteryChargingEntity(
         this.hass,
         entities
@@ -279,7 +257,9 @@ class MoreInfoVacuum extends LitElement {
       return html`
         <div>
           <span>
-            ${batteryIsBinary ? "" : this.hass.formatEntityState(battery)}
+            ${batteryDomain === "sensor"
+              ? this.hass.formatEntityState(battery)
+              : nothing}
             <ha-battery-icon
               .hass=${this.hass}
               .batteryStateObj=${battery}

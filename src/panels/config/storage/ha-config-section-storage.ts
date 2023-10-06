@@ -110,16 +110,14 @@ class HaConfigSectionStorage extends LitElement {
                     ></ha-metric>
                     ${this._hostInfo.disk_life_time !== "" &&
                     this._hostInfo.disk_life_time >= 10
-                      ? html`
+                      ? // prettier-ignore
+                        html`
                           <ha-metric
                             .heading=${this.hass.localize(
                               "ui.panel.config.storage.emmc_lifetime_used"
                             )}
                             .value=${this._hostInfo.disk_life_time}
-                            .tooltip=${`${
-                              this._hostInfo.disk_life_time - 10
-                            } % -
-                          ${this._hostInfo.disk_life_time} %`}
+                            .tooltip=${`${this._hostInfo.disk_life_time - 10}% - ${this._hostInfo.disk_life_time}%`}
                             class="emmc"
                           ></ha-metric>
                         `

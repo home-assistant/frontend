@@ -1,13 +1,13 @@
-import { mdiFolder, mdiHomeAssistant, mdiPuzzle } from "@mdi/js";
+import { mdiFolder, mdiPuzzle } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
@@ -24,6 +24,7 @@ import {
   HassioPartialBackupCreateParams,
 } from "../../../src/data/hassio/backup";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import { mdiHomeAssistant } from "../../../src/resources/home-assistant-logo-svg";
 import {
   HomeAssistant,
   TranslationDict,

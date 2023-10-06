@@ -126,6 +126,7 @@ class DialogPersonDetail extends LitElement {
               )}
               required
             ></ha-textfield>
+
             <ha-picture-upload
               .hass=${this.hass}
               .value=${this._picture}
@@ -422,7 +423,8 @@ class DialogPersonDetail extends LitElement {
           display: block;
         }
         ha-picture-upload {
-          margin-top: 16px;
+          margin-bottom: 16px;
+          --file-upload-image-border-radius: 50%;
         }
         ha-formfield {
           display: block;

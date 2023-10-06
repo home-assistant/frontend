@@ -22,6 +22,11 @@ export function hasConfigChanged(
     oldHass.themes !== element.hass!.themes ||
     oldHass.locale !== element.hass!.locale ||
     oldHass.localize !== element.hass.localize ||
+    oldHass.formatEntityState !== element.hass.formatEntityState ||
+    oldHass.formatEntityAttributeName !==
+      element.hass.formatEntityAttributeName ||
+    oldHass.formatEntityAttributeValue !==
+      element.hass.formatEntityAttributeValue ||
     oldHass.config.state !== element.hass.config.state
   ) {
     return true;

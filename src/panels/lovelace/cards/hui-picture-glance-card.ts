@@ -13,7 +13,6 @@ import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -273,13 +272,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           class=${classMap({
             "state-on": !STATES_OFF.has(stateObj.state),
           })}
-          title=${`${computeStateName(stateObj)} : ${computeStateDisplay(
-            this.hass!.localize,
-            stateObj,
-            this.hass!.locale,
-            this.hass!.config,
-            this.hass!.entities
-          )}`}
+          title=${`${computeStateName(
+            stateObj
+          )} : ${this.hass.formatEntityState(stateObj)}`}
         >
           <ha-state-icon
             .icon=${entityConf.icon}
@@ -297,13 +292,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
                         entityConf.attribute
                       ]}${entityConf.suffix}
                     `
-                  : computeStateDisplay(
-                      this.hass!.localize,
-                      stateObj,
-                      this.hass!.locale,
-                      this.hass!.config,
-                      this.hass!.entities
-                    )}
+                  : this.hass.formatEntityState(stateObj)}
               </div>
             `}
       </div>

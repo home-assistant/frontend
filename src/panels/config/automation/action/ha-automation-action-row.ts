@@ -1,3 +1,4 @@
+import { consume } from "@lit-labs/context";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
@@ -25,7 +26,6 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { consume } from "@lit-labs/context";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -40,6 +40,7 @@ import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_TYPES, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
 import { AutomationClipboard } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
+import { fullEntitiesContext } from "../../../../data/context";
 import { EntityRegistryEntry } from "../../../../data/entity_registry";
 import {
   Action,
@@ -70,19 +71,20 @@ import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-import { fullEntitiesContext } from "../../../../data/context";
 
 export const getType = (action: Action | undefined) => {
   if (!action) {
     return undefined;
   }
   if ("service" in action || "scene" in action) {
-    return getActionType(action);
+    return getActionType(action) as "activate_scene" | "service" | "play_media";
   }
   if (["and", "or", "not"].some((key) => key in action)) {
-    return "condition";
+    return "condition" as const;
   }
-  return Object.keys(ACTION_TYPES).find((option) => option in action);
+  return Object.keys(ACTION_TYPES).find(
+    (option) => option in action
+  ) as keyof typeof ACTION_TYPES;
 };
 
 export interface ActionElement extends LitElement {

@@ -47,6 +47,10 @@ import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { isUnavailableState } from "../../../data/entity";
 
+type SceneItem = SceneEntity & {
+  name: string;
+};
+
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -66,7 +70,7 @@ class HaSceneDashboard extends LitElement {
   @state() private _filterValue?;
 
   private _scenes = memoizeOne(
-    (scenes: SceneEntity[], filteredScenes?: string[] | null) => {
+    (scenes: SceneEntity[], filteredScenes?: string[] | null): SceneItem[] => {
       if (filteredScenes === null) {
         return [];
       }
@@ -83,14 +87,14 @@ class HaSceneDashboard extends LitElement {
 
   private _columns = memoizeOne(
     (_language, narrow): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer = {
+      const columns: DataTableColumnContainer<SceneItem> = {
         icon: {
           title: "",
           label: this.hass.localize(
             "ui.panel.config.scene.picker.headers.state"
           ),
           type: "icon",
-          template: (_, scene) => html`
+          template: (scene) => html`
             <ha-state-icon .state=${scene}></ha-state-icon>
           `,
         },
@@ -112,20 +116,18 @@ class HaSceneDashboard extends LitElement {
           ),
           sortable: true,
           width: "30%",
-          template: (last_activated) => {
-            const date = new Date(last_activated);
+          template: (scene) => {
+            const lastActivated = scene.state;
+            if (!lastActivated || isUnavailableState(lastActivated)) {
+              return this.hass.localize("ui.components.relative_time.never");
+            }
+            const date = new Date(scene.state);
             const now = new Date();
             const dayDifference = differenceInDays(now, date);
             return html`
-              ${last_activated && !isUnavailableState(last_activated)
-                ? dayDifference > 3
-                  ? formatShortDateTime(
-                      date,
-                      this.hass.locale,
-                      this.hass.config
-                    )
-                  : relativeTime(date, this.hass.locale)
-                : this.hass.localize("ui.components.relative_time.never")}
+              ${dayDifference > 3
+                ? formatShortDateTime(date, this.hass.locale, this.hass.config)
+                : relativeTime(date, this.hass.locale)}
             `;
           },
         };
@@ -133,7 +135,7 @@ class HaSceneDashboard extends LitElement {
       columns.only_editable = {
         title: "",
         width: "56px",
-        template: (_info, scene: any) =>
+        template: (scene) =>
           !scene.attributes.id
             ? html`
                 <simple-tooltip animation-delay="0" position="left">
@@ -152,7 +154,7 @@ class HaSceneDashboard extends LitElement {
         title: "",
         width: "72px",
         type: "overflow-menu",
-        template: (_: string, scene: any) => html`
+        template: (scene) => html`
           <ha-icon-overflow-menu
             .hass=${this.hass}
             narrow

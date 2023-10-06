@@ -53,8 +53,8 @@ class DialogLightColorFavorite extends LitElement {
   ): Promise<void> {
     this._entry = dialogParams.entry;
     this._dialogParams = dialogParams;
-    this._updateModes(dialogParams.defaultMode);
-    await this.updateComplete;
+    this._color = dialogParams.initialColor ?? this._computeCurrentColor();
+    this._updateModes();
   }
 
   public closeDialog(): void {
@@ -64,7 +64,7 @@ class DialogLightColorFavorite extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private _updateModes(defaultMode?: LightPickerMode) {
+  private _updateModes() {
     const supportsTemp = lightSupportsColorMode(
       this.stateObj!,
       LightColorMode.COLOR_TEMP
@@ -81,13 +81,40 @@ class DialogLightColorFavorite extends LitElement {
     }
 
     this._modes = modes;
-    this._mode =
-      defaultMode ??
-      (this.stateObj!.attributes.color_mode
-        ? this.stateObj!.attributes.color_mode === LightColorMode.COLOR_TEMP
-          ? LightColorMode.COLOR_TEMP
-          : "color"
-        : this._modes[0]);
+
+    if (this._color) {
+      this._mode = "color_temp_kelvin" in this._color ? "color_temp" : "color";
+    } else {
+      this._mode = this._modes[0];
+    }
+  }
+
+  private _computeCurrentColor() {
+    const attributes = this.stateObj!.attributes;
+    const color_mode = attributes.color_mode;
+
+    let currentColor: LightColor | undefined;
+    if (color_mode === LightColorMode.XY) {
+      // XY color not supported for favorites. Try to grab the hs or rgb instead.
+      if (attributes.hs_color) {
+        currentColor = { hs_color: attributes.hs_color };
+      } else if (attributes.rgb_color) {
+        currentColor = { rgb_color: attributes.rgb_color };
+      }
+    } else if (
+      color_mode === LightColorMode.COLOR_TEMP &&
+      attributes.color_temp_kelvin
+    ) {
+      currentColor = {
+        color_temp_kelvin: attributes.color_temp_kelvin,
+      };
+    } else if (attributes[color_mode + "_color"]) {
+      currentColor = {
+        [color_mode + "_color"]: attributes[color_mode + "_color"],
+      } as LightColor;
+    }
+
+    return currentColor;
   }
 
   private _colorChanged(ev: CustomEvent) {
@@ -198,7 +225,10 @@ class DialogLightColorFavorite extends LitElement {
         <ha-button slot="secondaryAction" dialogAction="cancel">
           ${this.hass.localize("ui.common.cancel")}
         </ha-button>
-        <ha-button slot="primaryAction" @click=${this._save}
+        <ha-button
+          slot="primaryAction"
+          @click=${this._save}
+          .disabled=${!this._color}
           >${this.hass.localize("ui.common.save")}</ha-button
         >
       </ha-dialog>

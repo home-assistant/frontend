@@ -12,19 +12,8 @@ export class HaIconButtonArrowNext extends LitElement {
 
   @property() public label?: string;
 
-  @state() private _icon = mdiArrowRight;
-
-  public connectedCallback() {
-    super.connectedCallback();
-
-    // wait to check for direction since otherwise direction is wrong even though top level is RTL
-    setTimeout(() => {
-      this._icon =
-        window.getComputedStyle(this).direction === "ltr"
-          ? mdiArrowRight
-          : mdiArrowLeft;
-    }, 100);
-  }
+  @state() private _icon =
+    document.dir === "ltr" ? mdiArrowRight : mdiArrowLeft;
 
   protected render(): TemplateResult {
     return html`

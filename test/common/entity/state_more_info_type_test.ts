@@ -18,9 +18,9 @@ describe("stateMoreInfoType", () => {
     assert.strictEqual(stateMoreInfoType(stateObj), "hidden");
   });
 
-  it("Returns default for switch states", () => {
+  it("Returns default for tts states", () => {
     const stateObj: any = {
-      entity_id: "switch.bla",
+      entity_id: "tts.bla",
       attributes: {},
     };
     assert.strictEqual(stateMoreInfoType(stateObj), "default");

@@ -1,11 +1,13 @@
+/* eslint-disable lit/prefer-static-styles */
 import { mdiEye, mdiEyeOff } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -32,7 +34,7 @@ export class HaFormString extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @state() private _unmaskedPassword = false;
+  @state() protected unmaskedPassword = false;
 
   @query("ha-textfield") private _input?: HaTextField;
 
@@ -43,14 +45,11 @@ export class HaFormString extends LitElement implements HaFormElement {
   }
 
   protected render(): TemplateResult {
-    const isPassword = MASKED_FIELDS.some((field) =>
-      this.schema.name.includes(field)
-    );
     return html`
       <ha-textfield
-        .type=${!isPassword
-          ? this._stringType
-          : this._unmaskedPassword
+        .type=${!this.isPassword
+          ? this.stringType
+          : this.unmaskedPassword
           ? "text"
           : "password"}
         .label=${this.label}
@@ -62,21 +61,27 @@ export class HaFormString extends LitElement implements HaFormElement {
         .autoValidate=${this.schema.required}
         .name=${this.schema.name}
         .autocomplete=${this.schema.autocomplete}
-        .suffix=${isPassword
+        .suffix=${this.isPassword
           ? // reserve some space for the icon.
             html`<div style="width: 24px"></div>`
           : this.schema.description?.suffix}
         .validationMessage=${this.schema.required ? "Required" : undefined}
         @input=${this._valueChanged}
+        @change=${this._valueChanged}
       ></ha-textfield>
-      ${isPassword
-        ? html`<ha-icon-button
-            toggles
-            .label=${`${this._unmaskedPassword ? "Hide" : "Show"} password`}
-            @click=${this._toggleUnmaskedPassword}
-            .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
-          ></ha-icon-button>`
-        : ""}
+      ${this.renderIcon()}
+    `;
+  }
+
+  protected renderIcon() {
+    if (!this.isPassword) return nothing;
+    return html`
+      <ha-icon-button
+        toggles
+        .label=${`${this.unmaskedPassword ? "Hide" : "Show"} password`}
+        @click=${this.toggleUnmaskedPassword}
+        .path=${this.unmaskedPassword ? mdiEyeOff : mdiEye}
+      ></ha-icon-button>
     `;
   }
 
@@ -86,11 +91,11 @@ export class HaFormString extends LitElement implements HaFormElement {
     }
   }
 
-  private _toggleUnmaskedPassword(): void {
-    this._unmaskedPassword = !this._unmaskedPassword;
+  protected toggleUnmaskedPassword(): void {
+    this.unmaskedPassword = !this.unmaskedPassword;
   }
 
-  private _valueChanged(ev: Event): void {
+  protected _valueChanged(ev: Event): void {
     let value: string | undefined = (ev.target as HaTextField).value;
     if (this.data === value) {
       return;
@@ -103,7 +108,7 @@ export class HaFormString extends LitElement implements HaFormElement {
     });
   }
 
-  private get _stringType(): string {
+  protected get stringType(): string {
     if (this.schema.format) {
       if (["email", "url"].includes(this.schema.format)) {
         return this.schema.format;
@@ -113,6 +118,10 @@ export class HaFormString extends LitElement implements HaFormElement {
       }
     }
     return "text";
+  }
+
+  protected get isPassword(): boolean {
+    return MASKED_FIELDS.some((field) => this.schema.name.includes(field));
   }
 
   static get styles(): CSSResultGroup {

@@ -35,6 +35,7 @@ export class HaMoreInfoCoverPosition extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const openColor = stateColorCss(this.stateObj, "open");
     const color = stateColorCss(this.stateObj);
 
     return html`
@@ -53,6 +54,8 @@ export class HaMoreInfoCoverPosition extends LitElement {
           "current_position"
         )}
         style=${styleMap({
+          // Use open color for inactive state to avoid grey slider that looks disabled
+          "--state-cover-inactive-color": openColor,
           "--control-slider-color": color,
           "--control-slider-background": color,
         })}
@@ -68,8 +71,6 @@ export class HaMoreInfoCoverPosition extends LitElement {
         height: 45vh;
         max-height: 320px;
         min-height: 200px;
-        /* Force inactive state to be colored for the slider */
-        --state-cover-inactive-color: var(--state-cover-active-color);
         --control-slider-thickness: 100px;
         --control-slider-border-radius: 24px;
         --control-slider-color: var(--primary-color);

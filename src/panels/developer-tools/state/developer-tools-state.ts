@@ -17,6 +17,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-tip";
+import "../../../components/ha-alert";
 import "../../../components/search-input";
 import "../../../components/ha-expansion-panel";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -28,6 +29,8 @@ import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 @customElement("developer-tools-state")
 class HaPanelDevState extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state() private _error: string = "";
 
   @state() private _entityId: string = "";
 
@@ -79,6 +82,9 @@ class HaPanelDevState extends LitElement {
             "ui.panel.developer-tools.tabs.states.description2"
           )}
         </p>
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}}</ha-alert>`
+          : nothing}
         <div class="state-wrapper flex-horizontal">
           <div class="inputs">
             <ha-entity-picker
@@ -365,6 +371,7 @@ class HaPanelDevState extends LitElement {
   }
 
   private async _handleSetState() {
+    this._error = "";
     if (!this._entityId) {
       showAlertDialog(this, {
         text: this.hass.localize(
@@ -373,10 +380,14 @@ class HaPanelDevState extends LitElement {
       });
       return;
     }
-    await this.hass.callApi("POST", "states/" + this._entityId, {
-      state: this._state,
-      attributes: this._stateAttributes,
-    });
+    try {
+      await this.hass.callApi("POST", "states/" + this._entityId, {
+        state: this._state,
+        attributes: this._stateAttributes,
+      });
+    } catch (e: any) {
+      this._error = e.body?.message || "Unknown error";
+    }
   }
 
   private _computeEntities() {

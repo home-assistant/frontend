@@ -1,5 +1,6 @@
 import { tsParticles } from "tsparticles-engine";
 import { loadLinksPreset } from "tsparticles-preset-links";
+import { DEFAULT_PRIMARY_COLOR } from "../resources/ha-style";
 
 loadLinksPreset(tsParticles).then(() => {
   tsParticles.load("particles", {
@@ -22,16 +23,16 @@ loadLinksPreset(tsParticles).then(() => {
     },
     particles: {
       color: {
-        value: "#fff",
-        animation: {
-          enable: true,
-          speed: 50,
-          sync: false,
-        },
+        value: DEFAULT_PRIMARY_COLOR,
+      },
+      animation: {
+        enable: true,
+        speed: 50,
+        sync: false,
       },
       links: {
         color: {
-          value: "random",
+          value: DEFAULT_PRIMARY_COLOR,
         },
         distance: 100,
         enable: true,

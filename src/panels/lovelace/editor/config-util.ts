@@ -3,6 +3,7 @@ import {
   LovelaceConfig,
   LovelaceViewConfig,
 } from "../../../data/lovelace";
+import type { HomeAssistant } from "../../../types";
 
 export const addCard = (
   config: LovelaceConfig,
@@ -253,23 +254,44 @@ export const moveCard = (
 };
 
 export const addView = (
+  hass: HomeAssistant,
   config: LovelaceConfig,
   viewConfig: LovelaceViewConfig
-): LovelaceConfig => ({
-  ...config,
-  views: config.views.concat(viewConfig),
-});
+): LovelaceConfig => {
+  if (viewConfig.path && config.views.some((v) => v.path === viewConfig.path)) {
+    throw new Error(
+      hass.localize("ui.panel.lovelace.editor.edit_view.error_same_url")
+    );
+  }
+  return {
+    ...config,
+    views: config.views.concat(viewConfig),
+  };
+};
 
 export const replaceView = (
+  hass: HomeAssistant,
   config: LovelaceConfig,
   viewIndex: number,
   viewConfig: LovelaceViewConfig
-): LovelaceConfig => ({
-  ...config,
-  views: config.views.map((origView, index) =>
-    index === viewIndex ? viewConfig : origView
-  ),
-});
+): LovelaceConfig => {
+  if (
+    viewConfig.path &&
+    config.views.some(
+      (v, idx) => v.path === viewConfig.path && idx !== viewIndex
+    )
+  ) {
+    throw new Error(
+      hass.localize("ui.panel.lovelace.editor.edit_view.error_same_url")
+    );
+  }
+  return {
+    ...config,
+    views: config.views.map((origView, index) =>
+      index === viewIndex ? viewConfig : origView
+    ),
+  };
+};
 
 export const swapView = (
   config: LovelaceConfig,

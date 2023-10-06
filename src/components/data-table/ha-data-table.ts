@@ -74,7 +74,7 @@ export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
   title: TemplateResult | string;
   label?: TemplateResult | string;
   type?: "numeric" | "icon" | "icon-button" | "overflow-menu" | "flex";
-  template?: (data: any, row: T) => TemplateResult | string | typeof nothing;
+  template?: (row: T) => TemplateResult | string | typeof nothing;
   width?: string;
   maxWidth?: string;
   grows?: boolean;
@@ -431,7 +431,7 @@ export class HaDataTable extends LitElement {
                   })
                 : ""}
             >
-              ${column.template ? column.template(row[key], row) : row[key]}
+              ${column.template ? column.template(row) : row[key]}
             </div>
           `;
         })}
@@ -458,7 +458,8 @@ export class HaDataTable extends LitElement {
           filteredData,
           this._sortColumns[this._sortColumn],
           this._sortDirection,
-          this._sortColumn
+          this._sortColumn,
+          this.hass.locale.language
         )
       : filteredData;
 
