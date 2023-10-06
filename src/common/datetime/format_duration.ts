@@ -1,12 +1,9 @@
 import { HaDurationData } from "../../components/ha-duration-input";
-import { HomeAssistant } from "../../types";
+import "../../resources/intl-polyfill";
 
 const leftPad = (num: number) => (num < 10 ? `0${num}` : num);
 
-export const formatDuration = (
-  hass: HomeAssistant,
-  duration: HaDurationData
-) => {
+export const formatDuration = (duration: HaDurationData) => {
   const d = duration.days || 0;
   const h = duration.hours || 0;
   const m = duration.minutes || 0;
@@ -14,10 +11,11 @@ export const formatDuration = (
   const ms = duration.milliseconds || 0;
 
   if (d > 0) {
-    return (
-      hass.localize("ui.duration.day", { count: d }) +
-      ` ${h}:${leftPad(m)}:${leftPad(s)}`
-    );
+    return `${Intl.NumberFormat("en", {
+      style: "unit",
+      unit: "day",
+      unitDisplay: "long",
+    }).format(d)} ${h}:${leftPad(m)}:${leftPad(s)}`;
   }
   if (h > 0) {
     return `${h}:${leftPad(m)}:${leftPad(s)}`;
@@ -26,10 +24,18 @@ export const formatDuration = (
     return `${m}:${leftPad(s)}`;
   }
   if (s > 0) {
-    return hass.localize("ui.duration.second", { count: s });
+    return Intl.NumberFormat("en", {
+      style: "unit",
+      unit: "second",
+      unitDisplay: "long",
+    }).format(s);
   }
   if (ms > 0) {
-    return hass.localize("ui.duration.millisecond", { count: ms });
+    return Intl.NumberFormat("en", {
+      style: "unit",
+      unit: "millisecond",
+      unitDisplay: "long",
+    }).format(ms);
   }
   return null;
 };

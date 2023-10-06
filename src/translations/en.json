@@ -1457,14 +1457,6 @@
         "nameservers": "Name Servers: {nameservers}"
       }
     },
-    "duration": {
-      "millisecond": "{count} {count, plural,\n  one {millisecond}\n  other {milliseconds}\n}",
-      "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
-      "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
-      "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
-      "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
-      "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
-    },
     "weekdays": {
       "monday": "Monday",
       "tuesday": "Tuesday",
