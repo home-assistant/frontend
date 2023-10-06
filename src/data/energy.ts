@@ -739,3 +739,6 @@ export const getEnergyGasUnit = (
 
 export const getEnergyWaterUnit = (hass: HomeAssistant): string | undefined =>
   hass.config.unit_system.length === "km" ? "L" : "gal";
+
+export const energyStatisticHelpUrl =
+  "/docs/energy/faq/#troubleshooting-missing-entities";
