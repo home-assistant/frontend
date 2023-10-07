@@ -27,6 +27,8 @@ export class HaCountrySelector extends LitElement {
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}
+        .countries=${this.selector.country?.countries}
+        .noSort=${this.selector.country?.no_sort}
         .disabled=${this.disabled}
         .required=${this.required}
       ></ha-country-picker>
