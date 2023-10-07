@@ -177,18 +177,20 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       return nothing;
     }
 
+    const simpleRange = this._simpleRange();
+
     return html`
       <div class="row">
         <div class="label">
-          ${this._simpleRange() === "day"
+          ${simpleRange === "day"
             ? formatDate(this._startDate, this.hass.locale, this.hass.config)
-            : this._simpleRange() === "month"
+            : simpleRange === "month"
             ? formatDateMonthYear(
                 this._startDate,
                 this.hass.locale,
                 this.hass.config
               )
-            : this._simpleRange() === "year"
+            : simpleRange === "year"
             ? formatDateYear(
                 this._startDate,
                 this.hass.locale,
@@ -361,6 +363,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     return css`
       .row {
         display: flex;
+        align-items: center;
       }
       :host .time-handle {
         display: flex;
