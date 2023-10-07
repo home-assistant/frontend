@@ -28,11 +28,13 @@ export class HuiEnergyDateSelectionCard
     }
 
     return html`
-      <ha-card class="padded">
-        <hui-energy-period-selector
-          .hass=${this.hass}
-          .collectionKey=${this._config.collection_key}
-        ></hui-energy-period-selector>
+      <ha-card>
+        <div class="card-content">
+          <hui-energy-period-selector
+            .hass=${this.hass}
+            .collectionKey=${this._config.collection_key}
+          ></hui-energy-period-selector>
+        </div>
       </ha-card>
     `;
   }
