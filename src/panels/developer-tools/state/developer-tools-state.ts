@@ -53,9 +53,9 @@ class HaPanelDevState extends LitElement {
   @state() private _showAttributes =
     localStorage.getItem("devToolsShowAttributes") || true;
 
-  @property() public narrow: boolean = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ reflect: true }) public rtl: boolean = false;
+  @property({ type: Boolean, reflect: true }) public rtl = false;
 
   protected render() {
     const entities = this._computeEntities();
