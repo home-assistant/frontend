@@ -371,7 +371,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         align-items: center;
       }
       :host([narrow]) .time-handle {
-        --mdc-icon-button-size: 24px;
         margin-left: auto;
       }
       .label {
