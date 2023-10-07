@@ -5,6 +5,7 @@ import {
   LitElement,
   PropertyValues,
   TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
@@ -62,15 +63,16 @@ class PanelEnergy extends LitElement {
     return html`
       <div class="header">
         <div class="toolbar">
+          <ha-menu-button
+            slot="navigationIcon"
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></ha-menu-button>
           ${!this.narrow
             ? html`<div class="main-title">
                 ${this.hass.localize("panel.energy")}
               </div>`
-            : html`<ha-menu-button
-                slot="navigationIcon"
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-              ></ha-menu-button>`}
+            : nothing}
 
           <hui-energy-period-selector
             .hass=${this.hass}
