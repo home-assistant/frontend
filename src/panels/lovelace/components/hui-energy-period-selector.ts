@@ -213,6 +213,12 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             )}
             @click=${this._pickPrevious}
           ></ha-icon-button-prev>
+          <ha-icon-button-next
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.components.energy_period_selector.next"
+            )}
+            @click=${this._pickNext}
+          ></ha-icon-button-next>
           <ha-date-range-picker
             .hass=${this.hass}
             .startDate=${this._startDate}
@@ -222,12 +228,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             .timePicker=${false}
             minimal
           ></ha-date-range-picker>
-          <ha-icon-button-next
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.components.energy_period_selector.next"
-            )}
-            @click=${this._pickNext}
-          ></ha-icon-button-next>
         </div>
 
         <ha-button-menu>
@@ -369,16 +369,20 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         display: flex;
         justify-content: flex-end;
         align-items: center;
-        margin-left: auto;
       }
       :host([narrow]) .time-handle {
         --mdc-icon-button-size: 24px;
+        margin-left: auto;
       }
       .label {
         display: flex;
         align-items: center;
         justify-content: flex-end;
         font-size: 20px;
+        margin-left: auto;
+      }
+      :host([narrow]) .label {
+        margin-left: unset;
       }
       mwc-button {
         margin-left: 8px;
