@@ -1,51 +1,54 @@
 import { deleteSync } from "del";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import gulp from "gulp";
-import path from "path";
+import { join, resolve } from "node:path";
 import paths from "../paths.cjs";
 
-const outDir = path.join(paths.build_dir, "locale-data");
+const formatjsDir = join(paths.polymer_dir, "node_modules", "@formatjs");
+const outDir = join(paths.build_dir, "locale-data");
 
-const INTL_PACKAGES = {
-  "intl-relativetimeformat": "RelativeTimeFormat",
+const INTL_POLYFILLS = {
   "intl-datetimeformat": "DateTimeFormat",
-  "intl-numberformat": "NumberFormat",
   "intl-displaynames": "DisplayNames",
   "intl-listformat": "ListFormat",
+  "intl-numberformat": "NumberFormat",
+  "intl-relativetimeformat": "RelativeTimeFormat",
 };
 
-const convertToJSON = async (pkg, lang) => {
+const convertToJSON = async (
+  pkg,
+  lang,
+  subDir = "locale-data",
+  addFunc = "__addLocaleData",
+  skipMissing = true
+) => {
   let localeData;
   try {
     localeData = await readFile(
-      path.resolve(
-        paths.polymer_dir,
-        `node_modules/@formatjs/${pkg}/locale-data/${lang}.js`
-      ),
+      join(formatjsDir, pkg, subDir, `${lang}.js`),
       "utf-8"
     );
   } catch (e) {
     // Ignore if language is missing (i.e. not supported by @formatjs)
-    if (e.code === "ENOENT") {
+    if (e.code === "ENOENT" && skipMissing) {
+      console.warn(`Skipped missing data for language ${lang} from ${pkg}`);
       return;
-    } else {
-      throw e;
     }
+    throw e;
   }
   // Convert to JSON
-  const className = INTL_PACKAGES[pkg];
-  localeData = localeData
-    .replace(
-      new RegExp(
-        `\\/\\*\\s*@generated\\s*\\*\\/\\s*\\/\\/\\s*prettier-ignore\\s*if\\s*\\(Intl\\.${className}\\s*&&\\s*typeof\\s*Intl\\.${className}\\.__addLocaleData\\s*===\\s*'function'\\)\\s*{\\s*Intl\\.${className}\\.__addLocaleData\\(`,
-        "im"
-      ),
-      ""
-    )
-    .replace(/\)\s*}/im, "");
+  const obj = INTL_POLYFILLS[pkg];
+  const dataRegex = new RegExp(
+    `Intl\\.${obj}\\.${addFunc}\\((?<data>.*)\\)`,
+    "s"
+  );
+  localeData = localeData.match(dataRegex)?.groups?.data;
+  if (!localeData) {
+    throw Error(`Failed to extract data for language ${lang} from ${pkg}`);
+  }
   // Parse to validate JSON, then stringify to minify
   localeData = JSON.stringify(JSON.parse(localeData));
-  await writeFile(path.join(outDir, `${pkg}/${lang}.json`), localeData);
+  await writeFile(join(outDir, `${pkg}/${lang}.json`), localeData);
 };
 
 gulp.task("clean-locale-data", async () => deleteSync([outDir]));
@@ -53,17 +56,27 @@ gulp.task("clean-locale-data", async () => deleteSync([outDir]));
 gulp.task("create-locale-data", async () => {
   const translationMeta = JSON.parse(
     await readFile(
-      path.resolve(paths.translations_src, "translationMetadata.json"),
+      resolve(paths.translations_src, "translationMetadata.json"),
       "utf-8"
     )
   );
   const conversions = [];
-  for (const pkg of Object.keys(INTL_PACKAGES)) {
-    await mkdir(path.join(outDir, pkg), { recursive: true });
+  for (const pkg of Object.keys(INTL_POLYFILLS)) {
+    // eslint-disable-next-line no-await-in-loop
+    await mkdir(join(outDir, pkg), { recursive: true });
     for (const lang of Object.keys(translationMeta)) {
       conversions.push(convertToJSON(pkg, lang));
     }
   }
+  conversions.push(
+    convertToJSON(
+      "intl-datetimeformat",
+      "add-all-tz",
+      ".",
+      "__addTZData",
+      false
+    )
+  );
   await Promise.all(conversions);
 });
 
