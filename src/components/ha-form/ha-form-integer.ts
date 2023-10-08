@@ -57,8 +57,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
                 `
               : ""}
             <ha-slider
-              pin
-              ignore-bar-touch
+              labeled
               .value=${this._value}
               .min=${this.schema.valueMin}
               .max=${this.schema.valueMax}

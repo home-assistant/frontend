@@ -252,11 +252,10 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                 supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
                   ? html`
                       <ha-slider
+                        labeled
                         .dir=${computeRTLDirection(this.hass!)}
                         .value=${Number(stateObj.attributes.volume_level) * 100}
-                        pin
                         @change=${this._selectedValueChanged}
-                        ignore-bar-touch
                         id="input"
                       ></ha-slider>
                     `

@@ -42,16 +42,15 @@ class StateCardNumber extends mixinBehaviors(
       <div class="horizontal justified layout" id="number_card">
         ${this.stateInfoTemplate}
         <ha-slider
+          labeled
           min="[[min]]"
           max="[[max]]"
           value="{{value}}"
           step="[[step]]"
           hidden="[[hiddenslider]]"
-          pin
           on-change="selectedValueChanged"
           on-click="stopPropagation"
           id="slider"
-          ignore-bar-touch=""
         >
         </ha-slider>
         <ha-textfield

@@ -293,6 +293,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                   .path=${mdiVolumeHigh}
                 ></ha-icon-button>
                 <ha-slider
+                  labeled
                   min="0"
                   max="100"
                   step="1"

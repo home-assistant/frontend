@@ -128,9 +128,8 @@ class MoreInfoMediaPlayer extends LitElement {
               ${supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
                 ? html`
                     <ha-slider
+                      labeled
                       id="input"
-                      pin
-                      ignore-bar-touch
                       .dir=${computeRTLDirection(this.hass!)}
                       .value=${Number(stateObj.attributes.volume_level) * 100}
                       @change=${this._selectedValueChanged}

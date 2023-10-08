@@ -24,7 +24,7 @@ export class HaColorTempSelector extends LitElement {
   protected render() {
     return html`
       <ha-labeled-slider
-        pin
+        labeled
         icon="hass:thermometer"
         .caption=${this.label || ""}
         .min=${this.selector.color_temp?.min_mireds ?? 153}
@@ -33,7 +33,7 @@ export class HaColorTempSelector extends LitElement {
         .disabled=${this.disabled}
         .helper=${this.helper}
         .required=${this.required}
-        @change=${this._valueChanged}
+        @value-changed=${this._valueChanged}
       ></ha-labeled-slider>
     `;
   }
