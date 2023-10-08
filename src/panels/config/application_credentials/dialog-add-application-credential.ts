@@ -80,9 +80,7 @@ export class DialogAddApplicationCredential extends LitElement {
       name: domainToName(this.hass.localize, domain),
     }));
     await this.hass.loadBackendTranslation("application_credentials");
-    if (this._domain) {
-      this._updateDescription();
-    }
+    this._updateDescription();
   }
 
   protected render() {
@@ -265,11 +263,15 @@ export class DialogAddApplicationCredential extends LitElement {
   }
 
   private async _updateDescription() {
+    if (!this._domain) {
+      return;
+    }
+
     await this.hass.loadBackendTranslation(
       "application_credentials",
       this._domain
     );
-    const info = this._config!.integrations[this._domain!];
+    const info = this._config!.integrations[this._domain];
     this._description = this.hass.localize(
       `component.${this._domain}.application_credentials.description`,
       info.description_placeholders

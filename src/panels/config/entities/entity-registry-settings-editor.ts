@@ -1336,7 +1336,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private async _showOptionsFlow() {
-    showOptionsFlowDialog(this, this.helperConfigEntry!, null);
+    showOptionsFlowDialog(this, this.helperConfigEntry!);
   }
 
   private _switchAsDomainsSorted = memoizeOne(

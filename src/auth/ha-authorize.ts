@@ -1,13 +1,7 @@
-import punycode from "punycode";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+/* eslint-disable lit/prefer-static-styles */
+import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import punycode from "punycode";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import "../components/ha-alert";
@@ -35,6 +29,8 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
   @property() public oauth2State?: string;
 
+  @property() public translationFragment = "page-authorize";
+
   @state() private _authProvider?: AuthProvider;
 
   @state() private _authProviders?: AuthProvider[];
@@ -45,7 +41,6 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
   constructor() {
     super();
-    this.translationFragment = "page-authorize";
     const query = extractSearchParamsObject() as AuthUrlSearchParams;
     if (query.client_id) {
       this.clientId = query.client_id;
@@ -60,13 +55,27 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
   protected render() {
     if (this._error) {
-      return html`<ha-alert alert-type="error"
-        >${this._error} ${this.redirectUri}</ha-alert
-      >`;
+      return html`
+        <style>
+          ha-authorize ha-alert {
+            display: block;
+            margin: 16px 0;
+          }
+        </style>
+        <ha-alert alert-type="error"
+          >${this._error} ${this.redirectUri}</ha-alert
+        >
+      `;
     }
 
     if (!this._authProviders) {
       return html`
+        <style>
+          ha-authorize p {
+            font-size: 14px;
+            line-height: 20px;
+          }
+        </style>
         <p>${this.localize("ui.panel.page-authorize.initializing")}</p>
       `;
     }
@@ -78,6 +87,25 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     const app = this.clientId && this.clientId in appNames;
 
     return html`
+      <style>
+        ha-pick-auth-provider {
+          display: block;
+          margin-top: 48px;
+        }
+        ha-auth-flow {
+          display: block;
+          margin-top: 24px;
+        }
+        ha-alert {
+          display: block;
+          margin: 16px 0;
+        }
+        p {
+          font-size: 14px;
+          line-height: 20px;
+        }
+      </style>
+
       ${!this._ownInstance
         ? html`<ha-alert .alertType=${app ? "info" : "warning"}>
             ${app
@@ -102,7 +130,6 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         : nothing}
 
       <ha-auth-flow
-        .resources=${this.resources}
         .clientId=${this.clientId}
         .redirectUri=${this.redirectUri}
         .oauth2State=${this.oauth2State}
@@ -121,6 +148,10 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           `
         : ""}
     `;
+  }
+
+  createRenderRoot() {
+    return this;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -216,26 +247,5 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
   private async _handleAuthProviderPick(ev) {
     this._authProvider = ev.detail;
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-pick-auth-provider {
-        display: block;
-        margin-top: 48px;
-      }
-      ha-auth-flow {
-        display: block;
-        margin-top: 24px;
-      }
-      ha-alert {
-        display: block;
-        margin: 16px 0;
-      }
-      p {
-        font-size: 14px;
-        line-height: 20px;
-      }
-    `;
   }
 }

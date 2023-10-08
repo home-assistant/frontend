@@ -4,11 +4,8 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-control-button";
-import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
-import "../../../components/ha-control-slider";
 import {
   ClimateEntity,
   compareClimateHvacModes,
@@ -121,10 +118,7 @@ class HuiClimateHvacModeTileFeature
           .value=${this._currentHvacMode}
           @value-changed=${this._valueChanged}
           hide-label
-          .ariaLabel=${this.hass.formatEntityAttributeName(
-            this.stateObj,
-            "hvac_mode"
-          )}
+          .ariaLabel=${this.hass.localize("ui.card.climate.mode")}
           style=${styleMap({
             "--control-select-color": color,
           })}
@@ -143,10 +137,6 @@ class HuiClimateHvacModeTileFeature
         --control-select-thickness: 40px;
         --control-select-border-radius: 10px;
         --control-select-button-border-radius: 10px;
-      }
-      ha-control-button-group {
-        margin: 0 12px 12px 12px;
-        --control-button-group-spacing: 12px;
       }
       .container {
         padding: 0 12px 12px 12px;

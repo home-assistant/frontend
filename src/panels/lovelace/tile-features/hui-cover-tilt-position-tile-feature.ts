@@ -1,8 +1,11 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { CoverEntity, CoverEntityFeature } from "../../../data/cover";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -29,6 +32,8 @@ class HuiCoverTiltPositionTileFeature
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: CoverEntity;
+
+  @property({ attribute: false }) public color?: string;
 
   @state() private _config?: CoverTiltPositionTileFeatureConfig;
 
@@ -59,8 +64,20 @@ class HuiCoverTiltPositionTileFeature
 
     const value = Math.max(Math.round(percentage), 0);
 
+    const openColor = stateColorCss(this.stateObj, "open");
+
+    const color = this.color
+      ? computeCssColor(this.color)
+      : stateColorCss(this.stateObj);
+
+    const style = {
+      "--color": color,
+      // Use open color for inactive state to avoid grey slider that looks disabled
+      "--state-cover-inactive-color": openColor,
+    };
+
     return html`
-      <div class="container">
+      <div class="container" style=${styleMap(style)}>
         <ha-control-slider
           .value=${value}
           min="0"
@@ -96,8 +113,8 @@ class HuiCoverTiltPositionTileFeature
     return css`
       ha-control-slider {
         /* Force inactive state to be colored for the slider */
-        --control-slider-color: var(--tile-color);
-        --control-slider-background: var(--tile-color);
+        --control-slider-color: var(--color);
+        --control-slider-background: var(--color);
         --control-slider-background-opacity: 0.2;
         --control-slider-thickness: 40px;
         --control-slider-border-radius: 10px;

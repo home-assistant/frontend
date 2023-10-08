@@ -1,9 +1,14 @@
+import { mdiDotsVertical } from "@mdi/js";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import type { ActionDetail } from "@material/mwc-list";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
+import "../../components/ha-button-menu";
+import "../../components/ha-icon-button";
+import "../../components/ha-list-item";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant, Route } from "../../types";
 import "./developer-tools-router";
@@ -34,6 +39,16 @@ class PanelDeveloperTools extends LitElement {
           <div class="main-title">
             ${this.hass.localize("panel.developer_tools")}
           </div>
+          <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
+            ></ha-icon-button>
+            <ha-list-item>
+              ${this.hass.localize("ui.panel.developer-tools.tabs.debug.title")}
+            </ha-list-item>
+          </ha-button-menu>
         </div>
         <paper-tabs
           scrollable
@@ -82,6 +97,14 @@ class PanelDeveloperTools extends LitElement {
       navigate(`/developer-tools/${newPage}`);
     } else {
       scrollTo({ behavior: "smooth", top: 0 });
+    }
+  }
+
+  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        navigate(`/developer-tools/debug`);
+        break;
     }
   }
 

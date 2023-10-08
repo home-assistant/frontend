@@ -10,11 +10,6 @@ import {
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import {
-  computeAttributeNameDisplay,
-  computeAttributeValueDisplay,
-} from "../../../common/entity/compute_attribute_display";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
@@ -25,6 +20,7 @@ import {
   computeHumidiferModeIcon,
 } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
+import "../components/ha-more-info-control-select-container";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/humidifier/ha-more-info-humidifier-humidity";
 
@@ -57,26 +53,21 @@ class MoreInfoHumidifier extends LitElement {
       HumidifierEntityFeature.MODES
     );
 
-    const currentHumidity = this.stateObj.attributes.current_humidity as number;
-
     return html`
       <div class="current">
-        ${currentHumidity != null
+        ${this.stateObj.attributes.current_humidity != null
           ? html`
               <div>
                 <p class="label">
-                  ${computeAttributeNameDisplay(
-                    this.hass.localize,
+                  ${this.hass.formatEntityAttributeName(
                     this.stateObj,
-                    this.hass.entities,
                     "current_humidity"
                   )}
                 </p>
                 <p class="value">
                   ${this.hass.formatEntityAttributeValue(
                     this.stateObj,
-                    "current_humidity",
-                    currentHumidity
+                    "current_humidity"
                   )}
                 </p>
               </div>
@@ -91,79 +82,56 @@ class MoreInfoHumidifier extends LitElement {
         ></ha-more-info-humidifier-humidity>
       </div>
 
-      <div class="secondary-controls">
-        <div class="secondary-controls-scroll">
-          <ha-control-select-menu
-            .label=${this.hass.localize("ui.card.humidifier.state")}
-            .value=${this.stateObj.state}
-            .disabled=${this.stateObj.state === UNAVAILABLE}
-            fixedMenuPosition
-            naturalMenuWidth
-            @selected=${this._handleStateChanged}
-            @closed=${stopPropagation}
-          >
-            <ha-svg-icon slot="icon" .path=${mdiPower}></ha-svg-icon>
-            <ha-list-item value="off">
-              ${computeStateDisplay(
-                this.hass.localize,
-                this.stateObj,
-                this.hass.locale,
-                this.hass.config,
-                this.hass.entities,
-                "off"
-              )}
-            </ha-list-item>
-            <ha-list-item value="on">
-              ${computeStateDisplay(
-                this.hass.localize,
-                this.stateObj,
-                this.hass.locale,
-                this.hass.config,
-                this.hass.entities,
-                "on"
-              )}
-            </ha-list-item>
-          </ha-control-select-menu>
+      <ha-more-info-control-select-container>
+        <ha-control-select-menu
+          .label=${this.hass.localize("ui.card.humidifier.state")}
+          .value=${this.stateObj.state}
+          .disabled=${this.stateObj.state === UNAVAILABLE}
+          fixedMenuPosition
+          naturalMenuWidth
+          @selected=${this._handleStateChanged}
+          @closed=${stopPropagation}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPower}></ha-svg-icon>
+          <ha-list-item value="off">
+            ${this.hass.formatEntityState(this.stateObj, "off")}
+          </ha-list-item>
+          <ha-list-item value="on">
+            ${this.hass.formatEntityState(this.stateObj, "on")}
+          </ha-list-item>
+        </ha-control-select-menu>
 
-          ${supportModes
-            ? html`
-                <ha-control-select-menu
-                  .label=${hass.localize("ui.card.humidifier.mode")}
-                  .value=${stateObj.attributes.mode}
-                  .disabled=${this.stateObj.state === UNAVAILABLE}
-                  fixedMenuPosition
-                  naturalMenuWidth
-                  @selected=${this._handleModeChanged}
-                  @closed=${stopPropagation}
-                >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiTuneVariant}
-                  ></ha-svg-icon>
-                  ${stateObj.attributes.available_modes!.map(
-                    (mode) => html`
-                      <ha-list-item .value=${mode} graphic="icon">
-                        <ha-svg-icon
-                          slot="graphic"
-                          .path=${computeHumidiferModeIcon(mode)}
-                        ></ha-svg-icon>
-                        ${computeAttributeValueDisplay(
-                          hass.localize,
-                          stateObj!,
-                          hass.locale,
-                          hass.config,
-                          hass.entities,
-                          "mode",
-                          mode
-                        )}
-                      </ha-list-item>
-                    `
-                  )}
-                </ha-control-select-menu>
-              `
-            : nothing}
-        </div>
-      </div>
+        ${supportModes
+          ? html`
+              <ha-control-select-menu
+                .label=${hass.localize("ui.card.humidifier.mode")}
+                .value=${stateObj.attributes.mode}
+                .disabled=${this.stateObj.state === UNAVAILABLE}
+                fixedMenuPosition
+                naturalMenuWidth
+                @selected=${this._handleModeChanged}
+                @closed=${stopPropagation}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
+                ${stateObj.attributes.available_modes!.map(
+                  (mode) => html`
+                    <ha-list-item .value=${mode} graphic="icon">
+                      <ha-svg-icon
+                        slot="graphic"
+                        .path=${computeHumidiferModeIcon(mode)}
+                      ></ha-svg-icon>
+                      ${this.hass.formatEntityAttributeValue(
+                        stateObj!,
+                        "mode",
+                        mode
+                      )}
+                    </ha-list-item>
+                  `
+                )}
+              </ha-control-select-menu>
+            `
+          : nothing}
+      </ha-more-info-control-select-container>
     `;
   }
 

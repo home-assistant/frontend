@@ -12,6 +12,7 @@ import { classMap } from "lit/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
+import "../../../components/ha-alert";
 import {
   RenderTemplateResult,
   subscribeRenderTemplate,
@@ -37,11 +38,17 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ type: Boolean }) public editMode?: boolean;
+
   @state() private _config?: MarkdownCardConfig;
+
+  @state() private _error?: string;
+
+  @state() private _errorLevel?: "ERROR" | "WARNING";
 
   @state() private _templateResult?: RenderTemplateResult;
 
-  @state() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
+  private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
   public getCardSize(): number {
     return this._config === undefined
@@ -79,6 +86,12 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     }
 
     return html`
+      ${this._error
+        ? html`<ha-alert
+            alert-type=${this._errorLevel?.toLowerCase() || "error"}
+            >${this._error}</ha-alert
+          >`
+        : nothing}
       <ha-card .header=${this._config.title}>
         <ha-markdown
           breaks
@@ -97,7 +110,9 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    this._tryConnect();
+    if (changedProps.has("_config")) {
+      this._tryConnect();
+    }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
@@ -123,10 +138,21 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       return;
     }
 
+    this._error = undefined;
+    this._errorLevel = undefined;
+
     try {
       this._unsubRenderTemplate = subscribeRenderTemplate(
         this.hass.connection,
         (result) => {
+          if ("error" in result) {
+            // We show the latest error, or a warning if there are no errors
+            if (result.level === "ERROR" || this._errorLevel !== "ERROR") {
+              this._error = result.error;
+              this._errorLevel = result.level;
+            }
+            return;
+          }
           this._templateResult = result;
         },
         {
@@ -137,9 +163,15 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
             user: this.hass.user!.name,
           },
           strict: true,
+          report_errors: this.editMode,
         }
       );
-    } catch (_err) {
+      await this._unsubRenderTemplate;
+    } catch (e: any) {
+      if (this.editMode) {
+        this._error = e.message;
+        this._errorLevel = undefined;
+      }
       this._templateResult = {
         result: this._config!.content,
         listeners: { all: false, domains: [], entities: [], time: false },
@@ -153,23 +185,19 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    try {
-      const unsub = await this._unsubRenderTemplate;
-      unsub();
-      this._unsubRenderTemplate = undefined;
-    } catch (err: any) {
-      if (err.code === "not_found") {
-        // If we get here, the connection was probably already closed. Ignore.
-      } else {
-        throw err;
-      }
-    }
+    this._unsubRenderTemplate.then((unsub) => unsub()).catch(() => {});
+    this._unsubRenderTemplate = undefined;
+    this._error = undefined;
+    this._errorLevel = undefined;
   }
 
   static get styles(): CSSResultGroup {
     return css`
       ha-card {
         height: 100%;
+      }
+      ha-alert {
+        margin-bottom: 8px;
       }
       ha-markdown {
         padding: 0 16px 16px;

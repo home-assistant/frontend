@@ -1,11 +1,12 @@
 import { startOfYesterday, subHours } from "date-fns/esm";
 import { css, html, LitElement, PropertyValues, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, state, query } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { createSearchParam } from "../../common/url/search-params";
 import "../../components/chart/state-history-charts";
+import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
 import "../../components/chart/statistics-chart";
 import {
   computeHistory,
@@ -20,6 +21,8 @@ import {
   StatisticsTypes,
 } from "../../data/recorder";
 import { HomeAssistant } from "../../types";
+import type { StatisticsChart } from "../../components/chart/statistics-chart";
+import { ChartResizeOptions } from "../../components/chart/ha-chart-base";
 
 declare global {
   interface HASSDomEvents {
@@ -51,12 +54,22 @@ export class MoreInfoHistory extends LitElement {
 
   private _metadata?: Record<string, StatisticsMetaData>;
 
+  @query("statistics-chart, state-history-charts") private _chart?:
+    | StateHistoryCharts
+    | StatisticsChart;
+
+  public resize = (options?: ChartResizeOptions): void => {
+    if (this._chart) {
+      this._chart.resize(options);
+    }
+  };
+
   protected render() {
     if (!this.entityId) {
       return nothing;
     }
 
-    return html` ${isComponentLoaded(this.hass, "history")
+    return html`${isComponentLoaded(this.hass, "history")
       ? html`<div class="header">
             <div class="title">
               ${this.hass.localize("ui.dialogs.more_info_control.history")}
@@ -86,6 +99,7 @@ export class MoreInfoHistory extends LitElement {
                 .historyData=${this._stateHistory}
                 .isLoadingData=${!this._stateHistory}
                 .showNames=${false}
+                .clickForMoreInfo=${false}
               ></state-history-charts>`}`
       : ""}`;
   }

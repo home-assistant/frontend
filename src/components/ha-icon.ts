@@ -124,6 +124,17 @@ export class HaIcon extends LitElement {
       return;
     }
 
+    if (iconName === "home-assistant") {
+      const icon = (await import("../resources/home-assistant-logo-svg"))
+        .mdiHomeAssistant;
+
+      if (this.icon === requestedIcon) {
+        this._path = icon;
+      }
+      cachedIcons[iconName] = icon;
+      return;
+    }
+
     let databaseIcon: string | undefined;
     try {
       databaseIcon = await getIcon(iconName);

@@ -244,7 +244,6 @@ export class HaComboBox extends LitElement {
       );
 
       if (overlay) {
-        overlay.setAttribute("required-vertical-space", "0");
         this._removeInert(overlay);
       }
       this._observeBody();
@@ -331,7 +330,7 @@ export class HaComboBox extends LitElement {
       }
       vaadin-combo-box-light {
         position: relative;
-        --vaadin-combo-box-overlay-max-height: calc(45vh);
+        --vaadin-combo-box-overlay-max-height: calc(45vh - 56px);
       }
       ha-textfield {
         width: 100%;

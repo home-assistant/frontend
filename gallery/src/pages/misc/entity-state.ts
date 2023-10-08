@@ -343,7 +343,7 @@ export class DemoEntityState extends LitElement {
       const columns: DataTableColumnContainer<EntityRowData> = {
         icon: {
           title: "Icon",
-          template: (_, entry) => html`
+          template: (entry) => html`
             <state-badge
               .stateObj=${entry.stateObj}
               .stateColor=${true}
@@ -360,7 +360,7 @@ export class DemoEntityState extends LitElement {
           title: "State",
           width: "20%",
           sortable: true,
-          template: (_, entry) =>
+          template: (entry) =>
             html`${computeStateDisplay(
               hass.localize,
               entry.stateObj,
@@ -371,14 +371,14 @@ export class DemoEntityState extends LitElement {
         },
         device_class: {
           title: "Device class",
-          template: (dc) => html`${dc ?? "-"}`,
+          template: (entry) => html`${entry.device_class ?? "-"}`,
           width: "20%",
           filterable: true,
           sortable: true,
         },
         domain: {
           title: "Domain",
-          template: (_, entry) => html`${computeDomain(entry.entity_id)}`,
+          template: (entry) => html`${computeDomain(entry.entity_id)}`,
           width: "20%",
           filterable: true,
           sortable: true,

@@ -1,20 +1,19 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
-import { computeImageUrl, ImageEntity } from "../../../data/image";
+import { ImageEntity, computeImageUrl } from "../../../data/image";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -120,13 +119,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
 
     const name = this._config.name || computeStateName(stateObj);
-    const entityState = computeStateDisplay(
-      this.hass!.localize,
-      stateObj,
-      this.hass.locale,
-      this.hass.config,
-      this.hass.entities
-    );
+    const entityState = this.hass.formatEntityState(stateObj);
 
     let footer: TemplateResult | string = "";
     if (this._config.show_name && this._config.show_state) {
@@ -159,6 +152,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
           .cameraView=${this._config.camera_view}
           .entity=${this._config.entity}
           .aspectRatio=${this._config.aspect_ratio}
+          .fitMode=${this._config.fit_mode}
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
             hasHold: hasAction(this._config!.hold_action),

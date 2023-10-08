@@ -6,57 +6,40 @@
     <%= renderTemplate("_style_base.html.template") %>
     <style>
       html {
+        background-color: var(--primary-background-color, #fafafa);
         color: var(--primary-text-color, #212121);
-        background-color: #0277bd !important;
+      }
+      @media (prefers-color-scheme: dark) {
+        html {
+          background-color: var(--primary-background-color, #111111);
+          color: var(--primary-text-color, #e1e1e1);
+        }
       }
       body {
         height: auto;
-        padding: 64px 0;
+        padding: 32px 0;
       }
       .content {
-        box-sizing: border-box;
-        padding: 20px 16px;
-        border-radius: var(--ha-card-border-radius, 12px);
-        max-width: 432px;
+        max-width: 560px;
         margin: 0 auto;
-        box-shadow: var(
-          --ha-card-box-shadow,
-          rgba(0, 0, 0, 0.25) 0px 54px 55px,
-          rgba(0, 0, 0, 0.12) 0px -12px 30px,
-          rgba(0, 0, 0, 0.12) 0px 4px 6px,
-          rgba(0, 0, 0, 0.17) 0px 12px 13px,
-          rgba(0, 0, 0, 0.09) 0px -3px 5px
-        );
-        background: var(
-          --ha-card-background,
-          var(--card-background-color, white)
-        );
-        color: var(--primary-text-color, #212121);
+        box-sizing: border-box;
       }
 
       .header {
-        text-align: center;
-        font-size: 1.96em;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 300;
+        margin-bottom: 32px;
       }
 
       .header img {
-        margin-right: 16px;
+        height: 56px;
+        width: 56px;
       }
 
-      @media (prefers-color-scheme: dark) {
-        html {
-          color: #e1e1e1;
-        }
-      }
-
-      @media (max-width: 450px) {
+      @media (max-width: 592px) {
         .content {
-          min-height: 100%;
-          margin: 0;
+          margin: 0 16px;
         }
       }
     </style>
@@ -64,8 +47,7 @@
   <body id="particles">
     <div class="content">
       <div class="header">
-        <img src="/static/icons/favicon-192x192.png" height="52" width="52" alt="" />
-        Home Assistant
+        <img src="/static/icons/favicon-192x192.png" alt="Home Assistant" />
       </div>
       <ha-onboarding></ha-onboarding>
     </div>

@@ -3,10 +3,8 @@ import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
-import { HomeAssistant } from "../types";
-import { computeAttributeValueDisplay } from "../common/entity/compute_attribute_display";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { haStyle } from "../resources/styles";
+import { HomeAssistant } from "../types";
 
 @customElement("state-card-event")
 export class StateCardEvent extends LitElement {
@@ -26,23 +24,10 @@ export class StateCardEvent extends LitElement {
         ></state-info>
         <div class="container">
           <div class="event_type">
-            ${computeStateDisplay(
-              this.hass!.localize,
-              this.stateObj,
-              this.hass.locale,
-              this.hass.config,
-              this.hass.entities
-            )}
+            ${this.hass.formatEntityState(this.stateObj)}
           </div>
           <div class="event_data">
-            ${computeAttributeValueDisplay(
-              this.hass!.localize,
-              this.stateObj,
-              this.hass.locale,
-              this.hass.config,
-              this.hass.entities,
-              "event_type"
-            )}
+            ${this.hass.formatEntityAttributeValue(this.stateObj, "event_type")}
           </div>
         </div>
       </div>

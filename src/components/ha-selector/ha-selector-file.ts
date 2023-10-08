@@ -37,9 +37,12 @@ export class HaFileSelector extends LitElement {
         .label=${this.label}
         .required=${this.required}
         .disabled=${this.disabled}
-        .helper=${this.helper}
+        .supports=${this.helper}
         .uploading=${this._busy}
-        .value=${this.value ? this._filename?.name || "Unknown file" : ""}
+        .value=${this.value
+          ? this._filename?.name ||
+            this.hass.localize("ui.components.selectors.file.unknown_file")
+          : undefined}
         @file-picked=${this._uploadFile}
         @change=${this._removeFile}
       ></ha-file-upload>

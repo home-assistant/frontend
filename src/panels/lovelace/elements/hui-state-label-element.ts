@@ -1,14 +1,13 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { computeTooltip } from "../common/compute-tooltip";
@@ -83,13 +82,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
         )}
       >
         ${this._config.prefix}${!this._config.attribute
-          ? computeStateDisplay(
-              this.hass.localize,
-              stateObj,
-              this.hass.locale,
-              this.hass.config,
-              this.hass.entities
-            )
+          ? this.hass.formatEntityState(stateObj)
           : stateObj.attributes[this._config.attribute]}${this._config.suffix}
       </div>
     `;

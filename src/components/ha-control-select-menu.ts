@@ -1,10 +1,12 @@
 import { Ripple } from "@material/mwc-ripple";
 import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
 import { SelectBase } from "@material/mwc-select/mwc-select-base";
+import { mdiMenuDown } from "@mdi/js";
 import { css, html, nothing } from "lit";
 import {
   customElement,
   eventOptions,
+  property,
   query,
   queryAsync,
   state,
@@ -24,6 +26,12 @@ export class HaControlSelectMenu extends SelectBase {
 
   @query(".select-anchor") protected anchorElement!: HTMLDivElement | null;
 
+  @property({ type: Boolean, attribute: "show-arrow" })
+  public showArrow?: boolean;
+
+  @property({ type: Boolean, attribute: "hide-label" })
+  public hideLabel?: boolean;
+
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
   @state() private _shouldRenderRipple = false;
@@ -36,7 +44,9 @@ export class HaControlSelectMenu extends SelectBase {
       "select-no-value": !this.selectedText,
     };
 
-    const labelledby = this.label ? "label" : undefined;
+    const labelledby = this.label && !this.hideLabel ? "label" : undefined;
+    const labelAttribute =
+      this.label && this.hideLabel ? this.label : undefined;
 
     return html`
       <div class="select ${classMap(classes)}">
@@ -57,6 +67,7 @@ export class HaControlSelectMenu extends SelectBase {
           aria-invalid=${!this.isUiValid}
           aria-haspopup="listbox"
           aria-labelledby=${ifDefined(labelledby)}
+          aria-label=${ifDefined(labelAttribute)}
           aria-required=${this.required}
           @click=${this.onClick}
           @focus=${this.onFocus}
@@ -72,11 +83,14 @@ export class HaControlSelectMenu extends SelectBase {
         >
           ${this.renderIcon()}
           <div class="content">
-            <p id="label" class="label">${this.label}</p>
+            ${this.hideLabel
+              ? nothing
+              : html`<p id="label" class="label">${this.label}</p>`}
             ${this.selectedText
               ? html`<p class="value">${this.selectedText}</p>`
               : nothing}
           </div>
+          ${this.renderArrow()}
           ${this._shouldRenderRipple && !this.disabled
             ? html` <mwc-ripple></mwc-ripple> `
             : nothing}
@@ -86,13 +100,29 @@ export class HaControlSelectMenu extends SelectBase {
     `;
   }
 
+  private renderArrow() {
+    if (!this.showArrow) return nothing;
+
+    return html`
+      <div class="icon">
+        <ha-svg-icon .path=${mdiMenuDown}></ha-svg-icon>
+      </div>
+    `;
+  }
+
   private renderIcon() {
     const index = this.mdcFoundation?.getSelectedIndex();
     const items = this.menuElement?.items ?? [];
     const item = index != null ? items[index] : undefined;
-    const icon =
-      item?.querySelector("[slot='graphic']") ??
-      (null as HaSvgIcon | HaIcon | null);
+    const defaultIcon = this.querySelector("[slot='icon']");
+    const icon = (item?.querySelector("[slot='graphic']") ?? null) as
+      | HaSvgIcon
+      | HaIcon
+      | null;
+
+    if (!defaultIcon && !icon) {
+      return null;
+    }
 
     return html`
       <div class="icon">
@@ -171,17 +201,18 @@ export class HaControlSelectMenu extends SelectBase {
         --control-select-menu-background-color: var(--disabled-color);
         --control-select-menu-background-opacity: 0.2;
         --control-select-menu-border-radius: 14px;
-        --control-select-menu-min-width: 120px;
-        --control-select-menu-max-width: 200px;
-        --control-select-menu-width: 100%;
+        --control-select-menu-height: 48px;
+        --control-select-menu-padding: 6px 10px;
         --mdc-icon-size: 20px;
+        font-size: 14px;
+        line-height: 1.4;
+        width: auto;
         color: var(--primary-text-color);
         -webkit-tap-highlight-color: transparent;
       }
       .select-anchor {
-        color: var(--control-select-menu-text-color);
-        height: 48px;
-        padding: 6px 10px;
+        height: var(--control-select-menu-height);
+        padding: var(--control-select-menu-padding);
         overflow: hidden;
         position: relative;
         cursor: pointer;
@@ -196,18 +227,12 @@ export class HaControlSelectMenu extends SelectBase {
         --mdc-ripple-color: var(--control-select-menu-background-color);
         /* For safari border-radius overflow */
         z-index: 0;
-        font-size: inherit;
         transition: color 180ms ease-in-out;
-        color: var(--control-text-icon-color);
         gap: 10px;
-        min-width: var(--control-select-menu-min-width);
-        max-width: var(--control-select-menu-max-width);
-        width: var(--control-select-menu-width);
+        width: 100%;
         user-select: none;
-        font-size: 14px;
         font-style: normal;
         font-weight: 400;
-        line-height: 20px;
         letter-spacing: 0.25px;
       }
       .content {
@@ -229,8 +254,7 @@ export class HaControlSelectMenu extends SelectBase {
       }
 
       .label {
-        font-size: 12px;
-        line-height: 16px;
+        font-size: 0.85em;
         letter-spacing: 0.4px;
       }
 

@@ -27,6 +27,7 @@ import { haOscillating } from "../../../data/icons/haOscillating";
 import { haOscillatingOff } from "../../../data/icons/haOscillatingOff";
 import type { HomeAssistant } from "../../../types";
 import "../components/fan/ha-more-info-fan-speed";
+import "../components/ha-more-info-control-select-container";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 import "../components/ha-more-info-toggle";
@@ -85,7 +86,7 @@ class MoreInfoFan extends LitElement {
   }
 
   _handleOscillating(ev) {
-    const newVal = ev.target.value === "on";
+    const newVal = ev.target.value === "true";
 
     this.hass.callService("fan", "oscillate", {
       entity_id: this.stateObj!.entity_id,
@@ -191,117 +192,122 @@ class MoreInfoFan extends LitElement {
             `
           : nothing}
       </div>
-      <div class="secondary-controls">
-        <div class="secondary-controls-scroll">
-          ${supportsPresetMode && this.stateObj.attributes.preset_modes
-            ? html`
-                <ha-control-select-menu
-                  .label=${this.hass.formatEntityAttributeName(
-                    this.stateObj,
-                    "preset_mode"
-                  )}
-                  .value=${this.stateObj.attributes.preset_mode}
-                  .disabled=${this.stateObj.state === UNAVAILABLE}
-                  fixedMenuPosition
-                  naturalMenuWidth
-                  @selected=${this._handlePresetMode}
-                  @closed=${stopPropagation}
-                >
+      <ha-more-info-control-select-container>
+        ${supportsPresetMode && this.stateObj.attributes.preset_modes
+          ? html`
+              <ha-control-select-menu
+                .label=${this.hass.formatEntityAttributeName(
+                  this.stateObj,
+                  "preset_mode"
+                )}
+                .value=${this.stateObj.attributes.preset_mode}
+                .disabled=${this.stateObj.state === UNAVAILABLE}
+                fixedMenuPosition
+                naturalMenuWidth
+                @selected=${this._handlePresetMode}
+                @closed=${stopPropagation}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
+                ${this.stateObj.attributes.preset_modes?.map(
+                  (mode) => html`
+                    <ha-list-item .value=${mode}>
+                      ${this.hass.formatEntityAttributeValue(
+                        this.stateObj!,
+                        "preset_mode",
+                        mode
+                      )}
+                    </ha-list-item>
+                  `
+                )}
+              </ha-control-select-menu>
+            `
+          : nothing}
+        ${supportsDirection
+          ? html`
+              <ha-control-select-menu
+                .label=${this.hass.formatEntityAttributeName(
+                  this.stateObj,
+                  "direction"
+                )}
+                .value=${this.stateObj.attributes.direction}
+                .disabled=${this.stateObj.state === UNAVAILABLE}
+                fixedMenuPosition
+                naturalMenuWidth
+                @selected=${this._handleDirection}
+                @closed=${stopPropagation}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiRotateLeft}></ha-svg-icon>
+                <ha-list-item value="forward" graphic="icon">
                   <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiTuneVariant}
+                    slot="graphic"
+                    .path=${mdiRotateRight}
                   ></ha-svg-icon>
-                  ${this.stateObj.attributes.preset_modes?.map(
-                    (mode) => html`
-                      <ha-list-item .value=${mode}>
-                        ${this.hass.formatEntityAttributeValue(
-                          this.stateObj!,
-                          "preset_mode",
-                          mode
-                        )}
-                      </ha-list-item>
-                    `
-                  )}
-                </ha-control-select-menu>
-              `
-            : nothing}
-          ${supportsDirection
-            ? html`
-                <ha-control-select-menu
-                  .label=${this.hass.formatEntityAttributeName(
+                  ${this.hass.formatEntityAttributeValue(
                     this.stateObj,
-                    "direction"
+                    "direction",
+                    "forward"
                   )}
-                  .value=${this.stateObj.attributes.direction}
-                  .disabled=${this.stateObj.state === UNAVAILABLE}
-                  fixedMenuPosition
-                  naturalMenuWidth
-                  @selected=${this._handleDirection}
-                  @closed=${stopPropagation}
-                >
-                  <ha-svg-icon slot="icon" .path=${mdiRotateLeft}></ha-svg-icon>
-                  <ha-list-item value="forward" graphic="icon">
-                    <ha-svg-icon
-                      slot="graphic"
-                      .path=${mdiRotateRight}
-                    ></ha-svg-icon>
-                    ${this.hass.formatEntityAttributeValue(
-                      this.stateObj,
-                      "direction",
-                      "forward"
-                    )}
-                  </ha-list-item>
-                  <ha-list-item value="reverse" graphic="icon">
-                    <ha-svg-icon
-                      slot="graphic"
-                      .path=${mdiRotateLeft}
-                    ></ha-svg-icon>
-                    ${this.hass.formatEntityAttributeValue(
-                      this.stateObj,
-                      "direction",
-                      "reverse"
-                    )}
-                  </ha-list-item>
-                </ha-control-select-menu>
-              `
-            : nothing}
-          ${supportsOscillate
-            ? html`
-                <ha-control-select-menu
-                  .label=${this.hass.formatEntityAttributeName(
-                    this.stateObj,
-                    "oscillating"
-                  )}
-                  .value=${this.stateObj.attributes.oscillating ? "on" : "off"}
-                  .disabled=${this.stateObj.state === UNAVAILABLE}
-                  fixedMenuPosition
-                  naturalMenuWidth
-                  @selected=${this._handleOscillating}
-                  @closed=${stopPropagation}
-                >
+                </ha-list-item>
+                <ha-list-item value="reverse" graphic="icon">
                   <ha-svg-icon
-                    slot="icon"
+                    slot="graphic"
+                    .path=${mdiRotateLeft}
+                  ></ha-svg-icon>
+                  ${this.hass.formatEntityAttributeValue(
+                    this.stateObj,
+                    "direction",
+                    "reverse"
+                  )}
+                </ha-list-item>
+              </ha-control-select-menu>
+            `
+          : nothing}
+        ${supportsOscillate
+          ? html`
+              <ha-control-select-menu
+                .label=${this.hass.formatEntityAttributeName(
+                  this.stateObj,
+                  "oscillating"
+                )}
+                .value=${this.stateObj.attributes.oscillating
+                  ? "true"
+                  : "false"}
+                .disabled=${this.stateObj.state === UNAVAILABLE}
+                fixedMenuPosition
+                naturalMenuWidth
+                @selected=${this._handleOscillating}
+                @closed=${stopPropagation}
+              >
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${haOscillatingOff}
+                ></ha-svg-icon>
+                <ha-list-item value="true" graphic="icon">
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${haOscillating}
+                  ></ha-svg-icon>
+                  ${this.hass.formatEntityAttributeValue(
+                    this.stateObj,
+                    "oscillating",
+                    true
+                  )}
+                </ha-list-item>
+                <ha-list-item value="false" graphic="icon">
+                  <ha-svg-icon
+                    slot="graphic"
                     .path=${haOscillatingOff}
                   ></ha-svg-icon>
-                  <ha-list-item value="on" graphic="icon">
-                    <ha-svg-icon
-                      slot="graphic"
-                      .path=${haOscillating}
-                    ></ha-svg-icon>
-                    ${this.hass.localize("state.default.on")}
-                  </ha-list-item>
-                  <ha-list-item value="off" graphic="icon">
-                    <ha-svg-icon
-                      slot="graphic"
-                      .path=${haOscillatingOff}
-                    ></ha-svg-icon>
-                    ${this.hass.localize("state.default.off")}
-                  </ha-list-item>
-                </ha-control-select-menu>
-              `
-            : nothing}
-        </div>
-      </div>
+                  ${this.hass.formatEntityAttributeValue(
+                    this.stateObj,
+                    "oscillating",
+                    false
+                  )}
+                </ha-list-item>
+              </ha-control-select-menu>
+            `
+          : nothing}
+      </ha-more-info-control-select-container>
     `;
   }
 

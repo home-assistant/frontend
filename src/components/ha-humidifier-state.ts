@@ -1,7 +1,5 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { computeAttributeValueDisplay } from "../common/entity/compute_attribute_display";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { isUnavailableState, OFF } from "../data/entity";
 import { HumidifierEntity } from "../data/humidifier";
 import type { HomeAssistant } from "../types";
@@ -21,12 +19,8 @@ class HaHumidifierState extends LitElement {
                 ${this._localizeState()}
                 ${this.stateObj.attributes.mode
                   ? html`-
-                    ${computeAttributeValueDisplay(
-                      this.hass.localize,
+                    ${this.hass.formatEntityAttributeValue(
                       this.stateObj,
-                      this.hass.locale,
-                      this.hass.config,
-                      this.hass.entities,
                       "mode"
                     )}`
                   : ""}
@@ -78,24 +72,17 @@ class HaHumidifierState extends LitElement {
       return this.hass.localize(`state.default.${this.stateObj.state}`);
     }
 
-    const stateString = computeStateDisplay(
-      this.hass.localize,
-      this.stateObj,
-      this.hass.locale,
-      this.hass.config,
-      this.hass.entities
-    );
+    const stateString = this.hass.formatEntityState(this.stateObj);
 
-    return this.stateObj.attributes.action && this.stateObj.state !== OFF
-      ? `${computeAttributeValueDisplay(
-          this.hass.localize,
-          this.stateObj,
-          this.hass.locale,
-          this.hass.config,
-          this.hass.entities,
-          "action"
-        )} (${stateString})`
-      : stateString;
+    if (this.stateObj.attributes.action && this.stateObj.state !== OFF) {
+      const actionString = this.hass.formatEntityAttributeValue(
+        this.stateObj,
+        "action"
+      );
+      return `${actionString} (${stateString})`;
+    }
+
+    return stateString;
   }
 
   static get styles(): CSSResultGroup {

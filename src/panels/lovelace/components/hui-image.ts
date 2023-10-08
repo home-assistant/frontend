@@ -60,6 +60,8 @@ export class HuiImage extends LitElement {
 
   @property() public darkModeFilter?: string;
 
+  @property() public fitMode?: "cover" | "contain" | "fill";
+
   @state() private _imageVisible? = false;
 
   @state() private _loadState?: LoadState;
@@ -211,6 +213,8 @@ export class HuiImage extends LitElement {
         })}
         class="container ${classMap({
           ratio: useRatio || this._lastImageHeight === undefined,
+          contain: this.fitMode === "contain",
+          fill: this.fitMode === "fill",
         })}"
       >
         ${this.cameraImage && this.cameraView === "live"
@@ -416,6 +420,13 @@ export class HuiImage extends LitElement {
         height: 0;
         background-position: center;
         background-size: cover;
+      }
+      .ratio.fill {
+        background-size: 100% 100%;
+      }
+      .ratio.contain {
+        background-size: contain;
+        background-repeat: no-repeat;
       }
 
       .ratio img,
