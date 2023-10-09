@@ -313,7 +313,8 @@ export class HuiEnergyGasGraphCard
         energyData.stats,
         energyData.statsMetadata,
         gasSources,
-        gasColor
+        gasColor,
+        computedStyles
       )
     );
 
@@ -335,6 +336,7 @@ export class HuiEnergyGasGraphCard
           energyData.statsMetadata,
           gasSources,
           gasColor,
+          computedStyles,
           true
         )
       );
@@ -356,20 +358,26 @@ export class HuiEnergyGasGraphCard
     statisticsMetaData: Record<string, StatisticsMetaData>,
     gasSources: GasSourceTypeEnergyPreference[],
     gasColor: string,
+    computedStyles: CSSStyleDeclaration,
     compare = false
   ) {
     const data: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
 
     gasSources.forEach((source, idx) => {
-      const modifiedColor =
-        idx > 0
-          ? this.hass.themes.darkMode
-            ? labBrighten(rgb2lab(hex2rgb(gasColor)), idx)
-            : labDarken(rgb2lab(hex2rgb(gasColor)), idx)
-          : undefined;
-      const borderColor = modifiedColor
-        ? rgb2hex(lab2rgb(modifiedColor))
-        : gasColor;
+      let borderColor = computedStyles
+        .getPropertyValue("--energy-gas-color-" + idx)
+        .trim();
+      if (borderColor.length === 0) {
+        const modifiedColor =
+          idx > 0
+            ? this.hass.themes.darkMode
+              ? labBrighten(rgb2lab(hex2rgb(gasColor)), idx)
+              : labDarken(rgb2lab(hex2rgb(gasColor)), idx)
+            : undefined;
+        borderColor = modifiedColor
+          ? rgb2hex(lab2rgb(modifiedColor))
+          : gasColor;
+      }
 
       let prevStart: number | null = null;
 
@@ -378,6 +386,7 @@ export class HuiEnergyGasGraphCard
       // Process gas consumption data.
       if (source.stat_energy_from in statistics) {
         const stats = statistics[source.stat_energy_from];
+        let end;
 
         for (const point of stats) {
           if (point.change === null || point.change === undefined) {
@@ -392,6 +401,13 @@ export class HuiEnergyGasGraphCard
             y: point.change,
           });
           prevStart = point.start;
+          end = point.end;
+        }
+        if (gasConsumptionData.length === 1) {
+          gasConsumptionData.push({
+            x: end,
+            y: 0,
+          });
         }
       }
 

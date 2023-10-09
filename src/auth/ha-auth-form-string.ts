@@ -8,10 +8,6 @@ import "./ha-auth-textfield";
 @customElement("ha-auth-form-string")
 export class HaAuthFormString extends HaFormString {
   protected createRenderRoot() {
-    // add parent style to light dom
-    const style = document.createElement("style");
-    style.innerHTML = HaFormString.elementStyles as unknown as string;
-    this.append(style);
     return this;
   }
 
@@ -25,8 +21,20 @@ export class HaAuthFormString extends HaFormString {
         ha-auth-form-string[own-margin] {
           margin-bottom: 5px;
         }
-        ha-auth-textfield {
+        ha-auth-form-string ha-auth-textfield {
           display: block !important;
+        }
+        ha-auth-form-string ha-icon-button {
+          position: absolute;
+          top: 1em;
+          right: 12px;
+          --mdc-icon-button-size: 24px;
+          color: var(--secondary-text-color);
+        }
+        ha-auth-form-string ha-icon-button {
+          inset-inline-start: initial;
+          inset-inline-end: 12px;
+          direction: var(--direction);
         }
       </style>
       <ha-auth-textfield

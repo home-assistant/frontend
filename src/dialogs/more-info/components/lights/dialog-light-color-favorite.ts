@@ -53,9 +53,8 @@ class DialogLightColorFavorite extends LitElement {
   ): Promise<void> {
     this._entry = dialogParams.entry;
     this._dialogParams = dialogParams;
+    this._color = dialogParams.initialColor ?? this._computeCurrentColor();
     this._updateModes();
-    this._loadCurrentColorAndMode(dialogParams.add, dialogParams.defaultMode);
-    await this.updateComplete;
   }
 
   public closeDialog(): void {
@@ -82,19 +81,20 @@ class DialogLightColorFavorite extends LitElement {
     }
 
     this._modes = modes;
+
+    if (this._color) {
+      this._mode = "color_temp_kelvin" in this._color ? "color_temp" : "color";
+    } else {
+      this._mode = this._modes[0];
+    }
   }
 
-  private _loadCurrentColorAndMode(
-    add?: boolean,
-    defaultMode?: LightPickerMode
-  ) {
+  private _computeCurrentColor() {
     const attributes = this.stateObj!.attributes;
     const color_mode = attributes.color_mode;
 
     let currentColor: LightColor | undefined;
-    let currentMode: LightPickerMode | undefined;
     if (color_mode === LightColorMode.XY) {
-      currentMode = "color";
       // XY color not supported for favorites. Try to grab the hs or rgb instead.
       if (attributes.hs_color) {
         currentColor = { hs_color: attributes.hs_color };
@@ -105,21 +105,16 @@ class DialogLightColorFavorite extends LitElement {
       color_mode === LightColorMode.COLOR_TEMP &&
       attributes.color_temp_kelvin
     ) {
-      currentMode = LightColorMode.COLOR_TEMP;
       currentColor = {
         color_temp_kelvin: attributes.color_temp_kelvin,
       };
     } else if (attributes[color_mode + "_color"]) {
-      currentMode = "color";
       currentColor = {
         [color_mode + "_color"]: attributes[color_mode + "_color"],
       } as LightColor;
     }
 
-    if (add) {
-      this._color = currentColor;
-    }
-    this._mode = defaultMode ?? currentMode ?? this._modes[0];
+    return currentColor;
   }
 
   private _colorChanged(ev: CustomEvent) {
@@ -230,7 +225,10 @@ class DialogLightColorFavorite extends LitElement {
         <ha-button slot="secondaryAction" dialogAction="cancel">
           ${this.hass.localize("ui.common.cancel")}
         </ha-button>
-        <ha-button slot="primaryAction" @click=${this._save}
+        <ha-button
+          slot="primaryAction"
+          @click=${this._save}
+          .disabled=${!this._color}
           >${this.hass.localize("ui.common.save")}</ha-button
         >
       </ha-dialog>

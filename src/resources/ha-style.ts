@@ -1,5 +1,5 @@
 import "@polymer/polymer/lib/elements/custom-style";
-import { derivedStyles } from "./styles";
+import { derivedStyles } from "./styles-data";
 
 export const DEFAULT_PRIMARY_COLOR = "#03a9f4";
 export const DEFAULT_ACCENT_COLOR = "#ff9800";
@@ -33,6 +33,7 @@ documentContainer.innerHTML = `<custom-style>
       --light-primary-color: #b3e5fC;
       --accent-color: ${DEFAULT_ACCENT_COLOR};
       --divider-color: rgba(0, 0, 0, .12);
+      --outline-color: rgba(0, 0, 0, .12);
 
       --scrollbar-thumb-color: rgb(194, 194, 194);
 

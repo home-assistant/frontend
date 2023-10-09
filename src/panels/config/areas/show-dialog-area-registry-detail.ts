@@ -10,7 +10,6 @@ export interface AreaRegistryDetailDialogParams {
   updateEntry?: (
     updates: Partial<AreaRegistryEntryMutableParams>
   ) => Promise<unknown>;
-  removeEntry?: () => Promise<boolean>;
 }
 
 export const loadAreaRegistryDetailDialog = () =>

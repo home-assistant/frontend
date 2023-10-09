@@ -13,6 +13,7 @@ import "../../../../components/ha-textfield";
 import {
   emptyGasEnergyPreference,
   GasSourceTypeEnergyPreference,
+  energyStatisticHelpUrl,
 } from "../../../../data/energy";
 import {
   getDisplayUnit,
@@ -138,6 +139,7 @@ export class DialogEnergyGasSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
+          .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${this._params.allowedGasUnitClass ||
           gasUnitClasses}
           .includeDeviceClass=${gasDeviceClasses}

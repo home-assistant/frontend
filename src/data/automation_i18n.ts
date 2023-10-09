@@ -29,14 +29,17 @@ const triggerTranslationBaseKey =
 const conditionsTranslationBaseKey =
   "ui.panel.config.automation.editor.conditions.type";
 
-const describeDuration = (forTime: number | string | ForDict) => {
+const describeDuration = (
+  locale: FrontendLocaleData,
+  forTime: number | string | ForDict
+) => {
   let duration: string | null;
   if (typeof forTime === "number") {
     duration = secondsToDuration(forTime);
   } else if (typeof forTime === "string") {
     duration = forTime;
   } else {
-    duration = formatDuration(forTime);
+    duration = formatDuration(locale, forTime);
   }
   return duration;
 };
@@ -138,7 +141,6 @@ const tryDescribeTrigger = (
 
   // Numeric State Trigger
   if (trigger.platform === "numeric_state" && trigger.entity_id) {
-    let base = "When";
     const entities: string[] = [];
     const states = hass.states;
 
@@ -160,40 +162,53 @@ const tryDescribeTrigger = (
       );
     }
 
-    if (trigger.attribute) {
-      base += ` ${computeAttributeNameDisplay(
-        hass.localize,
-        stateObj,
-        hass.entities,
-        trigger.attribute
-      )} from`;
+    const attribute = trigger.attribute
+      ? computeAttributeNameDisplay(
+          hass.localize,
+          stateObj,
+          hass.entities,
+          trigger.attribute
+        )
+      : undefined;
+
+    const duration = trigger.for
+      ? describeDuration(hass.locale, trigger.for)
+      : undefined;
+
+    if (trigger.above && trigger.below) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.numeric_state.description.above-below`,
+        {
+          attribute: attribute,
+          entity: formatListWithAnds(hass.locale, entities),
+          above: trigger.above,
+          below: trigger.below,
+          duration: duration,
+        }
+      );
     }
-
-    base +=
-      entities.length === 1
-        ? ` ${entities} is`
-        : ` ${formatListWithAnds(hass.locale, entities)} are`;
-
-    if (trigger.above !== undefined) {
-      base += ` above ${trigger.above}`;
+    if (trigger.above) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.numeric_state.description.above`,
+        {
+          attribute: attribute,
+          entity: formatListWithAnds(hass.locale, entities),
+          above: trigger.above,
+          duration: duration,
+        }
+      );
     }
-
-    if (trigger.below !== undefined && trigger.above !== undefined) {
-      base += " and";
+    if (trigger.below) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.numeric_state.description.below`,
+        {
+          attribute: attribute,
+          entity: formatListWithAnds(hass.locale, entities),
+          below: trigger.below,
+          duration: duration,
+        }
+      );
     }
-
-    if (trigger.below !== undefined) {
-      base += ` below ${trigger.below}`;
-    }
-
-    if (trigger.for) {
-      const duration = describeDuration(trigger.for);
-      if (duration) {
-        base += ` for ${duration}`;
-      }
-    }
-
-    return base;
   }
 
   // State Trigger
@@ -330,7 +345,7 @@ const tryDescribeTrigger = (
     }
 
     if (trigger.for) {
-      const duration = describeDuration(trigger.for);
+      const duration = describeDuration(hass.locale, trigger.for);
       if (duration) {
         base += ` for ${duration}`;
       }
@@ -581,7 +596,7 @@ const tryDescribeTrigger = (
   if (trigger.platform === "template") {
     let duration = "";
     if (trigger.for) {
-      duration = describeDuration(trigger.for) ?? "";
+      duration = describeDuration(hass.locale, trigger.for) ?? "";
     }
 
     return hass.localize(
@@ -835,7 +850,7 @@ const tryDescribeCondition = (
     base += ` ${statesString}`;
 
     if (condition.for) {
-      const duration = describeDuration(condition.for);
+      const duration = describeDuration(hass.locale, condition.for);
       if (duration) {
         base += ` for ${duration}`;
       }
@@ -846,29 +861,49 @@ const tryDescribeCondition = (
 
   // Numeric State Condition
   if (condition.condition === "numeric_state" && condition.entity_id) {
-    let base = "Confirm";
     const stateObj = hass.states[condition.entity_id];
     const entity = stateObj ? computeStateName(stateObj) : condition.entity_id;
 
-    if ("attribute" in condition) {
-      base += ` ${condition.attribute} from`;
+    const attribute = condition.attribute
+      ? computeAttributeNameDisplay(
+          hass.localize,
+          stateObj,
+          hass.entities,
+          condition.attribute
+        )
+      : undefined;
+
+    if (condition.above && condition.below) {
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.numeric_state.description.above-below`,
+        {
+          attribute: attribute,
+          entity: entity,
+          above: condition.above,
+          below: condition.below,
+        }
+      );
     }
-
-    base += ` ${entity} is`;
-
-    if ("above" in condition) {
-      base += ` above ${condition.above}`;
+    if (condition.above) {
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.numeric_state.description.above`,
+        {
+          attribute: attribute,
+          entity: entity,
+          above: condition.above,
+        }
+      );
     }
-
-    if ("below" in condition && "above" in condition) {
-      base += " and";
+    if (condition.below) {
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.numeric_state.description.below`,
+        {
+          attribute: attribute,
+          entity: entity,
+          below: condition.below,
+        }
+      );
     }
-
-    if ("below" in condition) {
-      base += ` below ${condition.below}`;
-    }
-
-    return base;
   }
 
   // Time condition
@@ -943,23 +978,43 @@ const tryDescribeCondition = (
     base += " sun";
 
     if (condition.after) {
-      let duration = "";
+      let after_duration = "";
 
       if (condition.after_offset) {
         if (typeof condition.after_offset === "number") {
-          duration = ` offset by ${secondsToDuration(condition.after_offset)!}`;
+          after_duration = ` offset by ${secondsToDuration(
+            condition.after_offset
+          )!}`;
         } else if (typeof condition.after_offset === "string") {
-          duration = ` offset by ${condition.after_offset}`;
+          after_duration = ` offset by ${condition.after_offset}`;
         } else {
-          duration = ` offset by ${JSON.stringify(condition.after_offset)}`;
+          after_duration = ` offset by ${JSON.stringify(
+            condition.after_offset
+          )}`;
         }
       }
 
-      base += ` after ${condition.after}${duration}`;
+      base += ` after ${condition.after}${after_duration}`;
     }
 
     if (condition.before) {
-      base += ` before ${condition.before}`;
+      let before_duration = "";
+
+      if (condition.before_offset) {
+        if (typeof condition.before_offset === "number") {
+          before_duration = ` offset by ${secondsToDuration(
+            condition.before_offset
+          )!}`;
+        } else if (typeof condition.before_offset === "string") {
+          before_duration = ` offset by ${condition.before_offset}`;
+        } else {
+          before_duration = ` offset by ${JSON.stringify(
+            condition.before_offset
+          )}`;
+        }
+      }
+
+      base += ` before ${condition.before}${before_duration}`;
     }
 
     return base;

@@ -196,7 +196,7 @@ export class HuiStatisticCardEditor
   }
 
   private async _valueChanged(ev: CustomEvent) {
-    const config = ev.detail.value as StatisticCardConfig;
+    const config = { ...ev.detail.value } as StatisticCardConfig;
     Object.keys(config).forEach((k) => config[k] === "" && delete config[k]);
 
     if (typeof config.period === "string") {

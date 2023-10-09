@@ -62,7 +62,7 @@ export default class HaAutomationConditionEditor extends LitElement {
             ></ha-yaml-editor>
           `
         : html`
-            <div>
+            <div @value-changed=${this._onUiChanged}>
               ${dynamicElement(
                 `ha-automation-condition-${condition.condition}`,
                 {
@@ -84,6 +84,15 @@ export default class HaAutomationConditionEditor extends LitElement {
     }
     // @ts-ignore
     fireEvent(this, "value-changed", { value: ev.detail.value, yaml: true });
+  }
+
+  private _onUiChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    const value = {
+      ...(this.condition.alias ? { alias: this.condition.alias } : {}),
+      ...ev.detail.value,
+    };
+    fireEvent(this, "value-changed", { value });
   }
 
   static styles = haStyle;

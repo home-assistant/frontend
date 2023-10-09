@@ -311,7 +311,8 @@ export class HuiEnergyWaterGraphCard
         energyData.stats,
         energyData.statsMetadata,
         waterSources,
-        waterColor
+        waterColor,
+        computedStyles
       )
     );
 
@@ -333,6 +334,7 @@ export class HuiEnergyWaterGraphCard
           energyData.statsMetadata,
           waterSources,
           waterColor,
+          computedStyles,
           true
         )
       );
@@ -354,20 +356,26 @@ export class HuiEnergyWaterGraphCard
     statisticsMetaData: Record<string, StatisticsMetaData>,
     waterSources: WaterSourceTypeEnergyPreference[],
     waterColor: string,
+    computedStyles: CSSStyleDeclaration,
     compare = false
   ) {
     const data: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
 
     waterSources.forEach((source, idx) => {
-      const modifiedColor =
-        idx > 0
-          ? this.hass.themes.darkMode
-            ? labBrighten(rgb2lab(hex2rgb(waterColor)), idx)
-            : labDarken(rgb2lab(hex2rgb(waterColor)), idx)
-          : undefined;
-      const borderColor = modifiedColor
-        ? rgb2hex(lab2rgb(modifiedColor))
-        : waterColor;
+      let borderColor = computedStyles
+        .getPropertyValue("--energy-water-color-" + idx)
+        .trim();
+      if (borderColor.length === 0) {
+        const modifiedColor =
+          idx > 0
+            ? this.hass.themes.darkMode
+              ? labBrighten(rgb2lab(hex2rgb(waterColor)), idx)
+              : labDarken(rgb2lab(hex2rgb(waterColor)), idx)
+            : undefined;
+        borderColor = modifiedColor
+          ? rgb2hex(lab2rgb(modifiedColor))
+          : waterColor;
+      }
 
       let prevStart: number | null = null;
 
@@ -376,6 +384,7 @@ export class HuiEnergyWaterGraphCard
       // Process water consumption data.
       if (source.stat_energy_from in statistics) {
         const stats = statistics[source.stat_energy_from];
+        let end;
 
         for (const point of stats) {
           if (point.change === null || point.change === undefined) {
@@ -390,6 +399,13 @@ export class HuiEnergyWaterGraphCard
             y: point.change,
           });
           prevStart = point.start;
+          end = point.end;
+        }
+        if (waterConsumptionData.length === 1) {
+          waterConsumptionData.push({
+            x: end,
+            y: 0,
+          });
         }
       }
 

@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "@material/mwc-list";
-import { mdiImagePlus, mdiPencil } from "@mdi/js";
+import { mdiDelete, mdiDotsVertical, mdiImagePlus, mdiPencil } from "@mdi/js";
 import {
   HassEntity,
   UnsubscribeFunc,
@@ -246,13 +246,32 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .header=${area.name}
       >
-        <ha-icon-button
-          .path=${mdiPencil}
-          .entry=${area}
-          @click=${this._showSettings}
-          slot="toolbar-icon"
-          .label=${this.hass.localize("ui.panel.config.areas.edit_settings")}
-        ></ha-icon-button>
+        <ha-button-menu slot="toolbar-icon">
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <mwc-list-item
+            graphic="icon"
+            .entry=${area}
+            @click=${this._showSettings}
+          >
+            ${this.hass.localize("ui.panel.config.areas.edit_settings")}
+            <ha-svg-icon slot="graphic" .path=${mdiPencil}> </ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            class="warning"
+            graphic="icon"
+            @click=${this._deleteConfirm}
+          >
+            ${this.hass.localize("ui.panel.config.areas.editor.delete")}
+            <ha-svg-icon class="warning" slot="graphic" .path=${mdiDelete}>
+            </ha-svg-icon>
+          </mwc-list-item>
+        </ha-button-menu>
 
         <div class="container">
           <div class="column">
@@ -634,31 +653,25 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
       entry,
       updateEntry: async (values) =>
         updateAreaRegistryEntry(this.hass!, entry!.area_id, values),
-      removeEntry: async () => {
-        if (
-          !(await showConfirmationDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.config.areas.delete.confirmation_title",
-              { name: entry!.name }
-            ),
-            text: this.hass.localize(
-              "ui.panel.config.areas.delete.confirmation_text"
-            ),
-            dismissText: this.hass.localize("ui.common.cancel"),
-            confirmText: this.hass.localize("ui.common.delete"),
-            destructive: true,
-          }))
-        ) {
-          return false;
-        }
+    });
+  }
 
-        try {
-          await deleteAreaRegistryEntry(this.hass!, entry!.area_id);
-          afterNextRender(() => history.back());
-          return true;
-        } catch (err: any) {
-          return false;
-        }
+  private async _deleteConfirm() {
+    const area = this._area(this.areaId, this._areas);
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.areas.delete.confirmation_title",
+        { name: area!.name }
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.areas.delete.confirmation_text"
+      ),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirmText: this.hass.localize("ui.common.delete"),
+      destructive: true,
+      confirm: async () => {
+        await deleteAreaRegistryEntry(this.hass!, area!.area_id);
+        afterNextRender(() => history.back());
       },
     });
   }
