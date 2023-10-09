@@ -9833,7 +9833,7 @@ __metadata:
     vinyl-buffer: 1.0.1
     vinyl-source-stream: 2.0.0
     vis-data: 7.1.7
-    vis-network: 9.1.6
+    vis-network: 9.1.7
     vue: 2.7.14
     vue2-daterange-picker: 0.6.8
     webpack: 5.88.2
@@ -16062,18 +16062,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vis-network@npm:9.1.6":
-  version: 9.1.6
-  resolution: "vis-network@npm:9.1.6"
+"vis-network@npm:9.1.7":
+  version: 9.1.7
+  resolution: "vis-network@npm:9.1.7"
   peerDependencies:
     "@egjs/hammerjs": ^2.0.0
     component-emitter: ^1.3.0
     keycharm: ^0.2.0 || ^0.3.0 || ^0.4.0
-    timsort: ^0.3.0
     uuid: ^3.4.0 || ^7.0.0 || ^8.0.0 || ^9.0.0
     vis-data: ^6.3.0 || ^7.0.0
     vis-util: ^5.0.1
-  checksum: a3e5de0c21a2045708a989d4b07749e207ee135a0f4c0a9fc2c23e19e662391d1532c17c9402eb84e3e6a1d3fe85fefa220973e79c845032cbcf228931096e84
+  checksum: 922d8800d62f124511720268e6df0e9876f2784e38d215ad78785cded3d28f951371425a0780d6c969a3b8629ff6fd24b28025567e20ae4333f1228f01a9bfd8
   languageName: node
   linkType: hard
 
