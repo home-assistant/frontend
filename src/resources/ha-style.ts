@@ -33,7 +33,7 @@ documentContainer.innerHTML = `<custom-style>
       --light-primary-color: #b3e5fC;
       --accent-color: ${DEFAULT_ACCENT_COLOR};
       --divider-color: rgba(0, 0, 0, .12);
-      --outline-color: rgba(0, 0, 0, .24);
+      --outline-color: rgba(0, 0, 0, .12);
 
       --scrollbar-thumb-color: rgb(194, 194, 194);
 

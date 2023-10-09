@@ -11,7 +11,7 @@ export const darkStyles = {
   "switch-unchecked-button-color": "#999999",
   "switch-unchecked-track-color": "#9b9b9b",
   "divider-color": "rgba(225, 225, 225, .12)",
-  "outline-color": "rgba(225, 225, 225, .24)",
+  "outline-color": "rgba(225, 225, 225, .12)",
   "mdc-ripple-color": "#AAAAAA",
   "mdc-linear-progress-buffer-color": "rgba(255, 255, 255, 0.1)",
 
