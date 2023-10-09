@@ -139,8 +139,26 @@ const tryDescribeTrigger = (
   // Numeric State Trigger
   if (trigger.platform === "numeric_state" && trigger.entity_id) {
     let base = "When";
-    const stateObj = hass.states[trigger.entity_id];
-    const entity = stateObj ? computeStateName(stateObj) : trigger.entity_id;
+    const entities: string[] = [];
+    const states = hass.states;
+
+    const stateObj = Array.isArray(trigger.entity_id)
+      ? hass.states[trigger.entity_id[0]]
+      : hass.states[trigger.entity_id];
+
+    if (Array.isArray(trigger.entity_id)) {
+      for (const entity of trigger.entity_id.values()) {
+        if (states[entity]) {
+          entities.push(computeStateName(states[entity]) || entity);
+        }
+      }
+    } else if (trigger.entity_id) {
+      entities.push(
+        states[trigger.entity_id]
+          ? computeStateName(states[trigger.entity_id])
+          : trigger.entity_id
+      );
+    }
 
     if (trigger.attribute) {
       base += ` ${computeAttributeNameDisplay(
@@ -151,7 +169,10 @@ const tryDescribeTrigger = (
       )} from`;
     }
 
-    base += ` ${entity} is`;
+    base +=
+      entities.length === 1
+        ? ` ${entities} is`
+        : ` ${formatListWithAnds(hass.locale, entities)} are`;
 
     if (trigger.above !== undefined) {
       base += ` above ${trigger.above}`;
