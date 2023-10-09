@@ -2227,6 +2227,13 @@
               "sign_in": "Sign in"
             }
           },
+          "debug": {
+            "header": "Debug Assistant",
+            "no_runs_found": "No runs found",
+            "older_run": "Older run",
+            "newer_run": "Newer run",
+            "start_debug_run": "Start debug run"
+          },
           "expose": {
             "caption": "Expose",
             "headers": {
