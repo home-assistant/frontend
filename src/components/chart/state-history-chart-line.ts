@@ -180,7 +180,9 @@ export class StateHistoryChartLine extends LitElement {
             return;
           }
 
-          const points = e.chart.getElementsAtEventForMode(
+          const chart = e.chart;
+
+          const points = chart.getElementsAtEventForMode(
             e,
             "nearest",
             { intersect: true },
@@ -192,6 +194,7 @@ export class StateHistoryChartLine extends LitElement {
             fireEvent(this, "hass-more-info", {
               entityId: this._entityIds[firstPoint.datasetIndex],
             });
+            chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
           }
         },
       };

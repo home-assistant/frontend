@@ -1,10 +1,11 @@
 import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { HaSvgIcon } from "./ha-svg-icon";
 
 @customElement("ha-icon-next")
 export class HaIconNext extends HaSvgIcon {
-  path = document.dir === "ltr" ? mdiChevronRight : mdiChevronLeft;
+  @property() public override path =
+    document.dir === "ltr" ? mdiChevronRight : mdiChevronLeft;
 }
 
 declare global {

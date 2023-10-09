@@ -89,8 +89,7 @@ class HassioCreateBackupDialog extends LitElement {
         ),
         text: this._dialogParams!.supervisor.localize(
           "backup.create_blocked_not_running",
-          "state",
-          this._dialogParams!.supervisor.info.state
+          { state: this._dialogParams!.supervisor.info.state }
         ),
       });
       return;
