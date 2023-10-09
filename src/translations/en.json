@@ -4324,7 +4324,7 @@
             }
           },
           "network_adapter": "Network adapter",
-          "network_adapter_info": "Configure which network adapters integrations will use. Currently this setting only affects multicast traffic. A restart is required for these settings to apply.",
+          "network_adapter_info": "Configure which network adapters integrations will use. This is used for multicast and broadcast purposes. A restart is required for these settings to apply.",
           "ip_information": "IP Information"
         },
         "storage": {
