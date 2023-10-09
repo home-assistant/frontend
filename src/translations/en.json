@@ -4682,6 +4682,8 @@
             "confirm_cancel": "Are you sure you want to cancel?",
             "show_visual_editor": "Show visual editor",
             "show_code_editor": "Show code editor",
+            "edit_ui": "[%key:ui::panel::config::automation::editor::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::config::automation::editor::edit_yaml%]",
             "add": "Add card",
             "edit": "Edit",
             "clear": "Clear",
@@ -4780,7 +4782,24 @@
               "state_not_equal": "State is not equal to",
               "current_state": "current",
               "condition_explanation": "The card will be shown when ALL conditions below are fulfilled.",
-              "change_type": "Change type"
+              "change_type": "Change type",
+              "add_condition": "Add condition",
+              "condition": {
+                "screen": {
+                  "label": "Screen",
+                  "breakpoints": "Screen sizes",
+                  "breakpoints_list": {
+                    "mobile": "Mobile",
+                    "tablet": "Tablet",
+                    "desktop": "Desktop",
+                    "wide": "Wide"
+                  },
+                  "min": "min: {size}px"
+                },
+                "state": {
+                  "label": "Entity state"
+                }
+              }
             },
             "config": {
               "required": "required",
