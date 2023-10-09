@@ -11,6 +11,7 @@ export const darkStyles = {
   "switch-unchecked-button-color": "#999999",
   "switch-unchecked-track-color": "#9b9b9b",
   "divider-color": "rgba(225, 225, 225, .12)",
+  "outline-color": "rgba(225, 225, 225, .12)",
   "mdc-ripple-color": "#AAAAAA",
   "mdc-linear-progress-buffer-color": "rgba(255, 255, 255, 0.1)",
 
@@ -110,7 +111,7 @@ export const derivedStyles = {
   "mdc-radio-disabled-color": "var(--disabled-text-color)",
   "mdc-tab-text-label-color-default": "var(--primary-text-color)",
   "mdc-button-disabled-ink-color": "var(--disabled-text-color)",
-  "mdc-button-outline-color": "var(--divider-color)",
+  "mdc-button-outline-color": "var(--outline-color)",
   "mdc-dialog-scroll-divider-color": "var(--divider-color)",
   "mdc-dialog-heading-ink-color": "var(--primary-text-color)",
   "mdc-dialog-content-ink-color": "var(--primary-text-color)",
