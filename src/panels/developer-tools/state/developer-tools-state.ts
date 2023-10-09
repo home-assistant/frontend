@@ -7,6 +7,10 @@ import {
 } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  HassEntity,
+  HassEntityAttributeBase,
+} from "home-assistant-js-websocket";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { escapeRegExp } from "../../../common/string/escape_regexp";
@@ -40,13 +44,15 @@ class HaPanelDevState extends LitElement {
 
   @state() private _attributeFilter: string = "";
 
-  @state() private _entity?: object;
+  @state() private _entity?: HassEntity;
 
   @state() private _state: string = "";
 
-  @state() private _stateAttributes: object = {};
+  @state() private _stateAttributes: HassEntityAttributeBase & {
+    [key: string]: any;
+  } = {};
 
-  @state() private _expanded: boolean = false;
+  @state() private _expanded = false;
 
   @state() private _validJSON: boolean = true;
 
@@ -304,7 +310,7 @@ class HaPanelDevState extends LitElement {
   }
 
   private _entitySelected(ev) {
-    const entityState = (ev.currentTarget! as any).entity;
+    const entityState: HassEntity = (ev.currentTarget! as any).entity;
     this._entityId = entityState.entity_id;
     this._entity = entityState;
     this._state = entityState.state;
