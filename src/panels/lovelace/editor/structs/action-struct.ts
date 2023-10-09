@@ -48,6 +48,7 @@ const actionConfigStructService = object({
 const actionConfigStructNavigate = object({
   action: literal("navigate"),
   navigation_path: string(),
+  navigation_replace: optional(boolean()),
   confirmation: optional(actionConfigStructConfirmation),
 });
 
