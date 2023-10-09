@@ -46,14 +46,12 @@ export class HaColorTempSelector extends LitElement {
 
   static styles = css`
     ha-labeled-slider {
-      --ha-slider-background: -webkit-linear-gradient(
-        var(--float-end),
+      --ha-slider-background: linear-gradient(
+        to right,
         rgb(255, 160, 0) 0%,
         white 50%,
         rgb(166, 209, 255) 100%
       );
-      /* The color temp minimum value shouldn't be rendered differently. It's not "off". */
-      --paper-slider-knob-start-border-color: var(--primary-color);
     }
   `;
 }
