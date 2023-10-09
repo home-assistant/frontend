@@ -41,7 +41,7 @@ export class AssistPipelineDebug extends LitElement {
     return html`<hass-subpage
       .narrow=${this.narrow}
       .hass=${this.hass}
-      header=${this.hass.localize(
+      .header=${this.hass.localize(
         "ui.panel.config.voice_assistants.debug.header"
       )}
     >
@@ -61,7 +61,7 @@ export class AssistPipelineDebug extends LitElement {
               <ha-icon-button
                 .disabled=${this._runs[this._runs.length - 1]
                   .pipeline_run_id === this._runId}
-                label=${this.hass.localize(
+                .label=${this.hass.localize(
                   "ui.panel.config.voice_assistants.debug.older_run"
                 )}
                 @click=${this._pickOlderRun}
@@ -83,7 +83,7 @@ export class AssistPipelineDebug extends LitElement {
               </select>
               <ha-icon-button
                 .disabled=${this._runs[0].pipeline_run_id === this._runId}
-                label=${this.hass.localize(
+                .label=${this.hass.localize(
                   "ui.panel.config.voice_assistants.debug.newer_run"
                 )}
                 @click=${this._pickNewerRun}
