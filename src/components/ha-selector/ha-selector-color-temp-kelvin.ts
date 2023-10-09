@@ -1,15 +1,15 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { OldColorTempSelector } from "../../data/selector";
+import type { ColorTempKelvinSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-labeled-slider";
 
-@customElement("ha-selector-color_temp")
-export class HaColorTempSelector extends LitElement {
+@customElement("ha-selector-color_temp_kelvin")
+export class HaColorTempSelectorKelvin extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property() public selector!: OldColorTempSelector;
+  @property() public selector!: ColorTempKelvinSelector;
 
   @property() public value?: string;
 
@@ -27,8 +27,8 @@ export class HaColorTempSelector extends LitElement {
         pin
         icon="hass:thermometer"
         .caption=${this.label || ""}
-        .min=${this.selector.color_temp?.min_mireds ?? 153}
-        .max=${this.selector.color_temp?.max_mireds ?? 500}
+        .min=${this.selector.color_temp_kelvin?.min ?? 2700}
+        .max=${this.selector.color_temp_kelvin?.max ?? 6000}
         .value=${this.value}
         .disabled=${this.disabled}
         .helper=${this.helper}
@@ -59,7 +59,7 @@ export class HaColorTempSelector extends LitElement {
 }
 
 declare global {
-interface HTMLElementTagNameMap {
-"ha-selector-color_temp": HaColorTempSelector;
-}
+  interface HTMLElementTagNameMap {
+    "ha-selector-color_temp_kelvin": HaColorTempSelectorKelvin;
+  }
 }

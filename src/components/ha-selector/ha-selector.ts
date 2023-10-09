@@ -48,6 +48,7 @@ const LOAD_ELEMENTS = {
   tts_voice: () => import("./ha-selector-tts-voice"),
   location: () => import("./ha-selector-location"),
   color_temp: () => import("./ha-selector-color-temp"),
+  color_temp_kelvin: () => import("./ha-selector-color-temp-kelvin"),
   ui_action: () => import("./ha-selector-ui-action"),
   ui_color: () => import("./ha-selector-ui-color"),
 };

@@ -263,8 +263,12 @@ const SCHEMAS: {
         name: "Location with radius",
         selector: { location: { radius: true, icon: "mdi:home" } },
       },
-      color_temp: {
-        name: "Color Temperature",
+      color_temp_mired: {
+        name: "Color Temperature Mired",
+        selector: { color_temp: {} },
+      },
+      color_temp_kelvin: {
+        name: "Color Temperature Kelvin",
         selector: { color_temp: {} },
       },
       color_rgb: { name: "Color", selector: { color_rgb: {} } },

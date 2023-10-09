@@ -18,7 +18,9 @@ export type Selector =
   | AttributeSelector
   | BooleanSelector
   | ColorRGBSelector
-  | ColorTempSelector
+  | OldColorTempSelector
+  | ColorTempMiredSelector
+  | ColorTempKelvinSelector
   | ConditionSelector
   | ConversationAgentSelector
   | ConfigEntrySelector
@@ -93,10 +95,31 @@ export interface ColorRGBSelector {
   color_rgb: {} | null;
 }
 
-export interface ColorTempSelector {
+export interface OldColorTempSelector {
   color_temp: {
     min_mireds?: number;
     max_mireds?: number;
+  } | null;
+}
+export interface ColorTempMiredSelector {
+  color_temp_mired: {
+    min?: number;
+    max?: number;
+  } | null;
+}
+
+// export interface ColorTempSelector {
+//   color_temp: {
+//     unit: LightColorTemperatureUnit
+//     min?: number;
+//     max?: number;
+//   } | null;
+// }
+
+export interface ColorTempKelvinSelector {
+  color_temp_kelvin: {
+    min?: number;
+    max?: number;
   } | null;
 }
 
