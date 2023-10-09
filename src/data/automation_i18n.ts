@@ -955,23 +955,43 @@ const tryDescribeCondition = (
     base += " sun";
 
     if (condition.after) {
-      let duration = "";
+      let after_duration = "";
 
       if (condition.after_offset) {
         if (typeof condition.after_offset === "number") {
-          duration = ` offset by ${secondsToDuration(condition.after_offset)!}`;
+          after_duration = ` offset by ${secondsToDuration(
+            condition.after_offset
+          )!}`;
         } else if (typeof condition.after_offset === "string") {
-          duration = ` offset by ${condition.after_offset}`;
+          after_duration = ` offset by ${condition.after_offset}`;
         } else {
-          duration = ` offset by ${JSON.stringify(condition.after_offset)}`;
+          after_duration = ` offset by ${JSON.stringify(
+            condition.after_offset
+          )}`;
         }
       }
 
-      base += ` after ${condition.after}${duration}`;
+      base += ` after ${condition.after}${after_duration}`;
     }
 
     if (condition.before) {
-      base += ` before ${condition.before}`;
+      let before_duration = "";
+
+      if (condition.before_offset) {
+        if (typeof condition.before_offset === "number") {
+          before_duration = ` offset by ${secondsToDuration(
+            condition.before_offset
+          )!}`;
+        } else if (typeof condition.before_offset === "string") {
+          before_duration = ` offset by ${condition.before_offset}`;
+        } else {
+          before_duration = ` offset by ${JSON.stringify(
+            condition.before_offset
+          )}`;
+        }
+      }
+
+      base += ` before ${condition.before}${before_duration}`;
     }
 
     return base;

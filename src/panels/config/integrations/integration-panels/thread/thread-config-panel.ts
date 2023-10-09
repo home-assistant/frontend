@@ -635,6 +635,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         cursor: default;
         overflow: visible;
       }
+      ha-list-item img {
+        border-radius: 0;
+      }
       ha-svg-icon[slot="meta"] {
         width: 24px;
       }

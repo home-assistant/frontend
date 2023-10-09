@@ -139,6 +139,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
     fireEvent(this, "value-changed", {
       value: {
+        ...this.action,
         repeat: { ...newVal },
       },
     });
