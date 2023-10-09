@@ -9,6 +9,7 @@ import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { NumericStateTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
+import { ensureArray } from "../../../../../common/array/ensure-array";
 
 @customElement("ha-automation-trigger-numeric_state")
 export class HaNumericStateTrigger extends LitElement {
@@ -239,7 +240,7 @@ export class HaNumericStateTrigger extends LitElement {
 
   public static get defaultConfig() {
     return {
-      entity_id: "",
+      entity_id: [],
     };
   }
 
@@ -269,6 +270,7 @@ export class HaNumericStateTrigger extends LitElement {
       mode_above: inputAboveIsEntity ? "input" : "value",
       mode_below: inputBelowIsEntity ? "input" : "value",
       ...this.trigger,
+      entity_id: ensureArray(this.trigger.entity_id),
       for: trgFor,
     };
 
