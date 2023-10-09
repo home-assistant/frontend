@@ -1437,9 +1437,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/autocomplete@npm:6.9.1":
-  version: 6.9.1
-  resolution: "@codemirror/autocomplete@npm:6.9.1"
+"@codemirror/autocomplete@npm:6.9.2":
+  version: 6.9.2
+  resolution: "@codemirror/autocomplete@npm:6.9.2"
   dependencies:
     "@codemirror/language": ^6.0.0
     "@codemirror/state": ^6.0.0
@@ -1450,7 +1450,7 @@ __metadata:
     "@codemirror/state": ^6.0.0
     "@codemirror/view": ^6.0.0
     "@lezer/common": ^1.0.0
-  checksum: 96dad7a12429bf61e6f1bf75da731bf0dcbfeb56c33400b60a0de22049226e0926a53a174e84701812a235f8f144595ce53f0928054481bdf9cdc2ed3b8be20f
+  checksum: 8bdf06c2b4eb1cd6c8a6e1df2eb5c92011fda0bc8970f9d68cc8dad8e4f9d3c243aaa3e42505252af542be8bbaf0a3ed7e23a6b7f603171077cc36845e188190
   languageName: node
   linkType: hard
 
@@ -1507,14 +1507,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:6.21.2, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0":
-  version: 6.21.2
-  resolution: "@codemirror/view@npm:6.21.2"
+"@codemirror/view@npm:6.21.3, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0":
+  version: 6.21.3
+  resolution: "@codemirror/view@npm:6.21.3"
   dependencies:
     "@codemirror/state": ^6.1.4
     style-mod: ^4.1.0
     w3c-keyname: ^2.2.4
-  checksum: d972a32f26882a1811ffab833f8705339cd4c1bfe56765ed6ecbc1d84466b71a728adb8f4b4fc566ca3bccee5aacd2585e79cb96a851dcd48777e2320dab1892
+  checksum: 7fda5a60e04fe1ac3d22ee478d4a90fc307953b8c900752ef5ca33af06c4e7851356e460f14b05034230b3a1677f36379ea01d85a3ea3b3a3e85e871ed62346a
   languageName: node
   linkType: hard
 
@@ -9634,13 +9634,13 @@ __metadata:
     "@babel/preset-typescript": 7.23.0
     "@babel/runtime": 7.23.1
     "@braintree/sanitize-url": 6.0.4
-    "@codemirror/autocomplete": 6.9.1
+    "@codemirror/autocomplete": 6.9.2
     "@codemirror/commands": 6.3.0
     "@codemirror/language": 6.9.1
     "@codemirror/legacy-modes": 6.3.3
     "@codemirror/search": 6.5.4
     "@codemirror/state": 6.2.1
-    "@codemirror/view": 6.21.2
+    "@codemirror/view": 6.21.3
     "@egjs/hammerjs": 2.0.17
     "@formatjs/intl-datetimeformat": 6.10.3
     "@formatjs/intl-displaynames": 6.5.2
