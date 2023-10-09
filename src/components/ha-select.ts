@@ -68,6 +68,9 @@ export class HaSelect extends SelectBase {
       .mdc-select__anchor .mdc-floating-label--float-above {
         transform-origin: var(--float-start);
       }
+      .mdc-select__selected-text-container {
+        padding-inline-end: var(--select-selected-text-padding-end, 0px);
+      }
     `,
   ];
 }
