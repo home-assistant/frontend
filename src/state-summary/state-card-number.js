@@ -18,6 +18,7 @@ class StateCardNumber extends mixinBehaviors(
       <style>
         ha-slider {
           margin-left: auto;
+          flex-grow: 1;
         }
         .state {
           @apply --paper-font-body1;
@@ -182,12 +183,12 @@ class StateCardNumber extends mixinBehaviors(
     this.value = ev.target.value;
   }
 
-  selectedValueChanged() {
-    if (this.value === Number(this.stateObj.state)) {
+  selectedValueChanged(ev) {
+    if (ev.target.value === Number(this.stateObj.state)) {
       return;
     }
     this.hass.callService("number", "set_value", {
-      value: this.value,
+      value: ev.target.value,
       entity_id: this.stateObj.entity_id,
     });
   }
