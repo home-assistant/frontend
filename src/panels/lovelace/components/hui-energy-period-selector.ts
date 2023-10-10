@@ -262,10 +262,17 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     }
     if (
       isFirstDayOfMonth(this._startDate!) &&
-      isLastDayOfMonth(this._endDate!) &&
-      differenceInMonths(this._endDate!, this._startDate!) === 0
+      isLastDayOfMonth(this._endDate!)
     ) {
-      return "month";
+      if (differenceInMonths(this._endDate!, this._startDate!) === 0) {
+        return "month";
+      }
+      if (
+        differenceInMonths(this._endDate!, this._startDate!) === 2 &&
+        this._startDate!.getMonth() % 3 === 0
+      ) {
+        return "quarter";
+      }
     }
     if (
       isFirstDayOfMonth(this._startDate!) &&
@@ -324,6 +331,19 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       this._endDate = calcDate(
         today,
         endOfMonth,
+        this.hass.locale,
+        this.hass.config
+      );
+    } else if (range === "quarter") {
+      this._startDate = calcDate(
+        today,
+        startOfQuarter,
+        this.hass.locale,
+        this.hass.config
+      );
+      this._endDate = calcDate(
+        today,
+        endOfQuarter,
         this.hass.locale,
         this.hass.config
       );
