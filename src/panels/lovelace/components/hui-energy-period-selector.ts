@@ -231,11 +231,14 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
           ></ha-date-range-picker>
         </div>
 
-        <mwc-button dense outlined @click=${this._pickToday}>
-          ${this.hass.localize(
-            "ui.panel.lovelace.components.energy_period_selector.today"
-          )}
-        </mwc-button>
+        ${!this.narrow
+          ? html`<mwc-button dense outlined @click=${this._pickToday}>
+              ${this.hass.localize(
+                "ui.panel.lovelace.components.energy_period_selector.today"
+              )}
+            </mwc-button>`
+          : nothing}
+
         <ha-button-menu>
           <ha-icon-button
             slot="trigger"
