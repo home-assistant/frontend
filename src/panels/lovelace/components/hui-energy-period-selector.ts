@@ -2,6 +2,7 @@ import "@material/mwc-button/mwc-button";
 import { mdiDotsVertical } from "@mdi/js";
 import {
   addDays,
+  subDays,
   addMonths,
   differenceInDays,
   endOfDay,
@@ -230,6 +231,11 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
           ></ha-date-range-picker>
         </div>
 
+        <mwc-button dense outlined @click=${this._pickToday}>
+          ${this.hass.localize(
+            "ui.panel.lovelace.components.energy_period_selector.today"
+          )}
+        </mwc-button>
         <ha-button-menu>
           <ha-icon-button
             slot="trigger"
@@ -299,6 +305,109 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         weekStartsOn,
       }
     );
+
+    this._updateCollectionPeriod();
+  }
+
+  private _pickToday() {
+    if (!this._startDate) return;
+
+    const range = this._simpleRange();
+    const today = new Date();
+    if (range === "month") {
+      this._startDate = calcDate(
+        today,
+        startOfMonth,
+        this.hass.locale,
+        this.hass.config
+      );
+      this._endDate = calcDate(
+        today,
+        endOfMonth,
+        this.hass.locale,
+        this.hass.config
+      );
+    } else if (range === "year") {
+      this._startDate = calcDate(
+        today,
+        startOfYear,
+        this.hass.locale,
+        this.hass.config
+      );
+      this._endDate = calcDate(
+        today,
+        endOfYear,
+        this.hass.locale,
+        this.hass.config
+      );
+    } else {
+      const weekStartsOn = firstWeekdayIndex(this.hass.locale);
+      const weekStart = calcDate(
+        this._endDate!,
+        startOfWeek,
+        this.hass.locale,
+        this.hass.config,
+        {
+          weekStartsOn,
+        }
+      );
+      const weekEnd = calcDate(
+        this._endDate!,
+        endOfWeek,
+        this.hass.locale,
+        this.hass.config,
+        {
+          weekStartsOn,
+        }
+      );
+
+      // Check if a single week is selected
+      if (
+        this._startDate.getTime() === weekStart.getTime() &&
+        this._endDate!.getTime() === weekEnd.getTime()
+      ) {
+        // Pick current week
+        this._startDate = calcDate(
+          today,
+          startOfWeek,
+          this.hass.locale,
+          this.hass.config,
+          {
+            weekStartsOn,
+          }
+        );
+        this._endDate = calcDate(
+          today,
+          endOfWeek,
+          this.hass.locale,
+          this.hass.config,
+          {
+            weekStartsOn,
+          }
+        );
+      } else {
+        // Custom date range
+        const difference = differenceInDays(this._endDate!, this._startDate);
+        this._startDate = calcDate(
+          subDays(today, difference),
+          startOfDay,
+          this.hass.locale,
+          this.hass.config,
+          {
+            weekStartsOn,
+          }
+        );
+        this._endDate = calcDate(
+          today,
+          endOfDay,
+          this.hass.locale,
+          this.hass.config,
+          {
+            weekStartsOn,
+          }
+        );
+      }
+    }
 
     this._updateCollectionPeriod();
   }

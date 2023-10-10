@@ -5232,6 +5232,11 @@
             "invalid_format": "Invalid display format"
           },
           "energy_period_selector": {
+            "today": "Today",
+            "day": "Day",
+            "week": "Week",
+            "month": "Month",
+            "year": "Year",
             "previous": "Previous",
             "next": "Next",
             "compare": "Compare data"
