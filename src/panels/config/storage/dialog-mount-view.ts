@@ -5,6 +5,7 @@ import { mdiHelpCircle } from "@mdi/js";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon-button";
+import "../../../components/buttons/ha-progress-button";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   createSupervisorMount,
@@ -269,8 +270,8 @@ class ViewMountDialog extends LitElement {
             : nothing}
         </div>
 
-        <mwc-button
-          .disabled=${this._waiting}
+        <ha-progress-button
+          .progress=${this._waiting}
           slot="primaryAction"
           @click=${this._connectMount}
         >
@@ -281,7 +282,7 @@ class ViewMountDialog extends LitElement {
             : this.hass.localize(
                 "ui.panel.config.storage.network_mounts.connect"
               )}
-        </mwc-button>
+        </ha-progress-button>
       </ha-dialog>
     `;
   }
