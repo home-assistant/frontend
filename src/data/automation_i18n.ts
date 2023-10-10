@@ -175,35 +175,38 @@ const tryDescribeTrigger = (
       ? describeDuration(hass.locale, trigger.for)
       : undefined;
 
-    if (trigger.above && trigger.below) {
+    if (trigger.above !== undefined && trigger.below !== undefined) {
       return hass.localize(
         `${triggerTranslationBaseKey}.numeric_state.description.above-below`,
         {
           attribute: attribute,
           entity: formatListWithAnds(hass.locale, entities),
+          numberOfEntities: entities.length,
           above: trigger.above,
           below: trigger.below,
           duration: duration,
         }
       );
     }
-    if (trigger.above) {
+    if (trigger.above !== undefined) {
       return hass.localize(
         `${triggerTranslationBaseKey}.numeric_state.description.above`,
         {
           attribute: attribute,
           entity: formatListWithAnds(hass.locale, entities),
+          numberOfEntities: entities.length,
           above: trigger.above,
           duration: duration,
         }
       );
     }
-    if (trigger.below) {
+    if (trigger.below !== undefined) {
       return hass.localize(
         `${triggerTranslationBaseKey}.numeric_state.description.below`,
         {
           attribute: attribute,
           entity: formatListWithAnds(hass.locale, entities),
+          numberOfEntities: entities.length,
           below: trigger.below,
           duration: duration,
         }
