@@ -5642,14 +5642,12 @@
               "ui": {
                 "no_service": "No service selected, please select a service",
                 "invalid_service": "Selected service is invalid, please select a valid service",
-                "no_target": "This service requires a target, please select a target from the picker",
                 "missing_required_field": "This service requires field {key}, please enter a valid value for {key}"
               },
               "yaml": {
                 "invalid_yaml": "Service YAML contains syntax errors, please fix the syntax",
                 "no_service": "No service defined, please define a service: key",
                 "invalid_service": "Defined service is invalid, please provide a service in the format domain.service",
-                "no_target": "This service requires a target, please define a target entity_id, device_id, or area_id under target: or data:",
                 "missing_required_field": "This service requires field {key}, which must be provided under data:"
               }
             }

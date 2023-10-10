@@ -297,7 +297,6 @@ class HaPanelDevService extends LitElement {
   private _validateServiceData = (
     serviceData,
     fields,
-    target,
     yamlMode: boolean,
     localize: LocalizeFunc
   ): string | undefined => {
@@ -312,17 +311,6 @@ class HaPanelDevService extends LitElement {
     if (!domain || !service) {
       return localize(
         `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.invalid_service`
-      );
-    }
-    if (
-      target &&
-      !serviceData.target &&
-      !serviceData.data?.entity_id &&
-      !serviceData.data?.device_id &&
-      !serviceData.data?.area_id
-    ) {
-      return localize(
-        `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.no_target`
       );
     }
     for (const field of fields) {
@@ -382,7 +370,7 @@ class HaPanelDevService extends LitElement {
       return;
     }
 
-    const { target, fields } = this._fields(
+    const { fields } = this._fields(
       this.hass.services,
       this._serviceData?.service
     );
@@ -390,7 +378,6 @@ class HaPanelDevService extends LitElement {
     this._error = this._validateServiceData(
       this._serviceData,
       fields,
-      target,
       this._yamlMode,
       this.hass.localize
     );
