@@ -38,7 +38,7 @@ class HaLabeledSlider extends LitElement {
           .min=${this.min}
           .max=${this.max}
           .step=${this.step}
-          .labeled=${this.labeled}
+          labeled=${this.labeled}
           .disabled=${this.disabled}
           .value=${this.value}
           @change=${this._inputChanged}

@@ -12,7 +12,8 @@ export class HaSlider extends MdSlider {
         --md-sys-color-outline: var(--divider-color);
 
         min-width: 100px;
-        max-width: 200px;
+        min-inline-size: 100px;
+        width: 200px;
       }
     `,
   ];
