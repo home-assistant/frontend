@@ -1,12 +1,16 @@
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose } from "@mdi/js";
-import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import { SortableEvent } from "sortablejs";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { SelectOption, SelectSelector } from "../../data/selector";
+import { sortableStyles } from "../../resources/ha-sortable-style";
+import { SortableInstance } from "../../resources/sortable";
+import { loadSortable } from "../../resources/sortable.ondemand";
 import type { HomeAssistant } from "../../types";
 import "../ha-checkbox";
 import "../ha-chip";
@@ -37,6 +41,64 @@ export class HaSelectSelector extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   @query("ha-combo-box", true) private comboBox!: HaComboBox;
+
+  private _sortable?: SortableInstance;
+
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("value")) {
+      if (this.value?.length && !this._sortable) {
+        this._createSortable();
+      } else if (!this.value?.length && this._sortable) {
+        this._destroySortable();
+      }
+    }
+  }
+
+  private async _createSortable() {
+    const Sortable = await loadSortable();
+    this._sortable = new Sortable(
+      this.shadowRoot!.querySelector("ha-chip-set")!,
+      {
+        animation: 150,
+        fallbackClass: "sortable-fallback",
+        draggable: "ha-chip",
+        onChoose: (evt: SortableEvent) => {
+          (evt.item as any).placeholder =
+            document.createComment("sort-placeholder");
+          evt.item.after((evt.item as any).placeholder);
+        },
+        onEnd: (evt: SortableEvent) => {
+          // put back in original location
+          if ((evt.item as any).placeholder) {
+            (evt.item as any).placeholder.replaceWith(evt.item);
+            delete (evt.item as any).placeholder;
+          }
+          this._dragged(evt);
+        },
+      }
+    );
+  }
+
+  private _dragged(ev: SortableEvent): void {
+    if (ev.oldIndex === ev.newIndex) return;
+    this._move(ev.oldIndex!, ev.newIndex!);
+  }
+
+  private _move(index: number, newIndex: number) {
+    const value = this.value as string[];
+    const newValue = value.concat();
+    const element = newValue.splice(index, 1)[0];
+    newValue.splice(newIndex, 0, element);
+    this.value = newValue;
+    fireEvent(this, "value-changed", {
+      value: newValue,
+    });
+  }
+
+  private _destroySortable() {
+    this._sortable?.destroy();
+    this._sortable = undefined;
+  }
 
   private _filter = "";
 
@@ -124,23 +186,25 @@ export class HaSelectSelector extends LitElement {
 
       return html`
         ${value?.length
-          ? html`<ha-chip-set>
-              ${value.map(
-                (item, idx) => html`
-                  <ha-chip hasTrailingIcon>
-                    ${options.find((option) => option.value === item)?.label ||
-                    item}
-                    <ha-svg-icon
-                      slot="trailing-icon"
-                      .path=${mdiClose}
-                      .idx=${idx}
-                      @click=${this._removeItem}
-                    ></ha-svg-icon>
-                  </ha-chip>
-                `
-              )}
-            </ha-chip-set>`
-          : ""}
+          ? html`
+              <ha-chip-set>
+                ${value.map(
+                  (item, idx) => html`
+                    <ha-chip hasTrailingIcon>
+                      ${options.find((option) => option.value === item)
+                        ?.label || item}
+                      <ha-svg-icon
+                        slot="trailing-icon"
+                        .path=${mdiClose}
+                        .idx=${idx}
+                        @click=${this._removeItem}
+                      ></ha-svg-icon>
+                    </ha-chip>
+                  `
+                )}
+              </ha-chip-set>
+            `
+          : nothing}
 
         <ha-combo-box
           item-value-path="value"
@@ -331,19 +395,22 @@ export class HaSelectSelector extends LitElement {
     this.comboBox.filteredItems = filteredItems;
   }
 
-  static styles = css`
-    :host {
-      position: relative;
-    }
-    ha-select,
-    mwc-formfield,
-    ha-formfield {
-      display: block;
-    }
-    mwc-list-item[disabled] {
-      --mdc-theme-text-primary-on-background: var(--disabled-text-color);
-    }
-  `;
+  static styles = [
+    sortableStyles,
+    css`
+      :host {
+        position: relative;
+      }
+      ha-select,
+      mwc-formfield,
+      ha-formfield {
+        display: block;
+      }
+      mwc-list-item[disabled] {
+        --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+      }
+    `,
+  ];
 }
 
 declare global {

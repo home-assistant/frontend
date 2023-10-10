@@ -54,6 +54,7 @@ import "../tile-features/hui-tile-features";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import { computeTileBadge } from "./tile/badges/tile-badge";
 import type { ThermostatCardConfig, TileCardConfig } from "./types";
+import { ensureArray } from "../../../common/array/ensure-array";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
@@ -180,6 +181,46 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       return stateColorCss(entity);
     }
   );
+
+  private _computeStateContent(
+    stateObj: HassEntity,
+    stateContent: string | string[]
+  ) {
+    const contents = ensureArray(stateContent);
+
+    if (contents.length === 1 && contents[0] === "none") {
+      return nothing;
+    }
+
+    const values = contents
+      .filter((content) => content !== "none")
+      .map((content) => {
+        if (content === "state") {
+          return this.hass!.formatEntityState(stateObj);
+        }
+        if (content === "last-changed") {
+          return html`
+            <ha-relative-time
+              .hass=${this.hass}
+              .datetime=${stateObj.last_changed}
+            ></ha-relative-time>
+          `;
+        }
+        return this.hass!.formatEntityAttributeValue(stateObj, content);
+      })
+      .filter(Boolean);
+
+    if (!values.length) {
+      return nothing;
+    }
+
+    return html`
+      ${values.map(
+        (value, index, array) =>
+          html`${value}${index < array.length - 1 ? " ⸱ " : nothing}`
+      )}
+    `;
+  }
 
   private _formatState(stateObj: HassEntity): TemplateResult | string {
     const domain = computeDomain(stateObj.entity_id);
@@ -323,7 +364,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const name = this._config.name || stateObj.attributes.friendly_name;
 
-    const localizedState = this._formatState(stateObj);
+    const localizedState = this._config.state_content
+      ? this._computeStateContent(stateObj, this._config.state_content)
+      : this._formatState(stateObj);
 
     const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);

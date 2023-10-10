@@ -519,6 +519,7 @@ export interface EnergyFlowCardConfig extends LovelaceCardConfig {
 export interface TileCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
+  state_content?: string | string[];
   icon?: string;
   color?: string;
   show_entity_picture?: string;

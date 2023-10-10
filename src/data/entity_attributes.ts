@@ -70,4 +70,7 @@ export const DOMAIN_ATTRIBUTES_UNITS: Record<string, Record<string, string>> = {
   vacuum: {
     battery_level: "%",
   },
+  sensor: {
+    battery_level: "%",
+  },
 };
