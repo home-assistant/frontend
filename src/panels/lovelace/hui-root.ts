@@ -845,7 +845,7 @@ class HUIRoot extends LitElement {
     const newIndex = (this._curView as number) - 1;
     this._curView = newIndex;
     if (!this.config.views[oldIndex].path) {
-      this._navigateToView(newIndex);
+      this._navigateToView(newIndex, true);
     }
     lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
   }
@@ -860,7 +860,7 @@ class HUIRoot extends LitElement {
     const newIndex = (this._curView as number) + 1;
     this._curView = newIndex;
     if (!this.config.views[oldIndex].path) {
-      this._navigateToView(newIndex);
+      this._navigateToView(newIndex, true);
     }
     lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
   }
