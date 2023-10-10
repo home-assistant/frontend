@@ -5443,7 +5443,7 @@
       },
       "page-authorize": {
         "initializing": "Initializing",
-        "authorizing": "Login to your Home Assistant instance",
+        "authorizing": "Log in to your Home Assistant instance",
         "authorizing_app": "You're about to give the Home Assistant Companion app for {app} access to your Home Assistant instance.",
         "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
         "logging_in_with": "Logging in with {authProviderName}.",
@@ -5453,7 +5453,7 @@
         "form": {
           "working": "Please wait",
           "unknown_error": "Something went wrong",
-          "next": "Login",
+          "next": "Log in",
           "start_over": "Start over",
           "error": "Error: {error}",
           "providers": {
@@ -5500,7 +5500,7 @@
                 "invalid_code": "Invalid authentication code"
               },
               "abort": {
-                "login_expired": "Session expired, please login again."
+                "login_expired": "Session expired, please log in again."
               }
             },
             "legacy_api_password": {
@@ -5533,7 +5533,7 @@
                   "data": {
                     "user": "User"
                   },
-                  "description": "Please select a user you want to login as:"
+                  "description": "Please select a user you want to log in as:"
                 }
               },
               "abort": {
