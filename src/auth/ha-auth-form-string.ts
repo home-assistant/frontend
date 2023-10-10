@@ -26,14 +26,10 @@ export class HaAuthFormString extends HaFormString {
         }
         ha-auth-form-string ha-icon-button {
           position: absolute;
-          top: 1em;
-          right: 12px;
-          --mdc-icon-button-size: 24px;
+          top: 8px;
+          inset-inline-end: 8px;
+          --mdc-icon-button-size: 40px;
           color: var(--secondary-text-color);
-        }
-        ha-auth-form-string ha-icon-button {
-          inset-inline-start: initial;
-          inset-inline-end: 12px;
           direction: var(--direction);
         }
       </style>
@@ -63,7 +59,7 @@ export class HaAuthFormString extends HaFormString {
         .validationMessage=${this.schema.required ? "Required" : undefined}
         @input=${this._valueChanged}
         @change=${this._valueChanged}
-        ></ha-auth-textfield> 
+        ></ha-auth-textfield>
         ${this.renderIcon()}
       </ha-auth-textfield>
     `;
