@@ -35,8 +35,9 @@ import { calcDate } from "../../../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import {
   formatDate,
-  formatDateMonthYear,
   formatDateShort,
+  formatDateVeryShort,
+  formatDateMonthYear,
   formatDateYear,
 } from "../../../common/datetime/format_date";
 import "../../../components/ha-icon-button-next";
@@ -184,7 +185,13 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       <div class="row">
         <div class="label">
           ${simpleRange === "day"
-            ? formatDate(this._startDate, this.hass.locale, this.hass.config)
+            ? this.narrow
+              ? formatDateShort(
+                  this._startDate,
+                  this.hass.locale,
+                  this.hass.config
+                )
+              : formatDate(this._startDate, this.hass.locale, this.hass.config)
             : simpleRange === "month"
             ? formatDateMonthYear(
                 this._startDate,
@@ -197,11 +204,11 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 this.hass.locale,
                 this.hass.config
               )
-            : `${formatDateShort(
+            : `${formatDateVeryShort(
                 this._startDate,
                 this.hass.locale,
                 this.hass.config
-              )} – ${formatDateShort(
+              )} – ${formatDateVeryShort(
                 this._endDate || new Date(),
                 this.hass.locale,
                 this.hass.config
