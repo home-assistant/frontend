@@ -149,7 +149,7 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
   sourceMaps: !isTestBuild,
 });
 
-const nameSuffix = (latestBuild) => (latestBuild ? "-latest" : "-es5");
+const nameSuffix = (latestBuild) => (latestBuild ? "-modern" : "-legacy");
 
 const outputPath = (outputRoot, latestBuild) =>
   path.resolve(outputRoot, latestBuild ? "frontend_latest" : "frontend_es5");
