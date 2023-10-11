@@ -31,7 +31,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { calcDate } from "../../../common/datetime/calc_date";
+import { calcDate, calcDateProperty } from "../../../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import {
   formatDate,
@@ -128,7 +128,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       [this.hass.localize("ui.components.date-range-picker.ranges.yesterday")]:
         [
           calcDate(
-            addDays(today, -1),
+            calcDate(today, subDays, this.hass.locale, this.hass.config, 1),
             startOfDay,
             this.hass.locale,
             this.hass.config,
@@ -137,7 +137,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             }
           ),
           calcDate(
-            addDays(today, -1),
+            calcDate(today, subDays, this.hass.locale, this.hass.config, 1),
             endOfDay,
             this.hass.locale,
             this.hass.config,
@@ -271,23 +271,63 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       return "day";
     }
     if (
-      isFirstDayOfMonth(this._startDate!) &&
-      isLastDayOfMonth(this._endDate!)
+      (calcDateProperty(
+        this._startDate!,
+        isFirstDayOfMonth,
+        this.hass.locale,
+        this.hass.config
+      ) as boolean) &&
+      (calcDateProperty(
+        this._endDate!,
+        isLastDayOfMonth,
+        this.hass.locale,
+        this.hass.config
+      ) as boolean)
     ) {
-      if (differenceInMonths(this._endDate!, this._startDate!) === 0) {
+      if (
+        (calcDateProperty(
+          this._endDate!,
+          differenceInMonths,
+          this.hass.locale,
+          this.hass.config,
+          this._startDate!
+        ) as number) === 0
+      ) {
         return "month";
       }
       if (
-        differenceInMonths(this._endDate!, this._startDate!) === 2 &&
+        (calcDateProperty(
+          this._endDate!,
+          differenceInMonths,
+          this.hass.locale,
+          this.hass.config,
+          this._startDate!
+        ) as number) === 2 &&
         this._startDate!.getMonth() % 3 === 0
       ) {
         return "quarter";
       }
     }
     if (
-      isFirstDayOfMonth(this._startDate!) &&
-      isLastDayOfMonth(this._endDate!) &&
-      differenceInMonths(this._endDate!, this._startDate!) === 11
+      calcDateProperty(
+        this._startDate!,
+        isFirstDayOfMonth,
+        this.hass.locale,
+        this.hass.config
+      ) &&
+      calcDateProperty(
+        this._endDate!,
+        isLastDayOfMonth,
+        this.hass.locale,
+        this.hass.config
+      ) &&
+      calcDateProperty(
+        this._endDate!,
+        differenceInMonths,
+        this.hass.locale,
+        this.hass.config,
+        this._startDate!
+      ) === 11
     ) {
       return "year";
     }
@@ -417,9 +457,21 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         );
       } else {
         // Custom date range
-        const difference = differenceInDays(this._endDate!, this._startDate);
+        const difference = calcDateProperty(
+          this._endDate!,
+          differenceInDays,
+          this.hass.locale,
+          this.hass.config,
+          this._startDate
+        ) as number;
         this._startDate = calcDate(
-          subDays(today, difference),
+          calcDate(
+            today,
+            subDays,
+            this.hass.locale,
+            this.hass.config,
+            difference
+          ),
           startOfDay,
           this.hass.locale,
           this.hass.config,
@@ -456,22 +508,75 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     let start: Date;
     let end: Date;
     if (
-      isFirstDayOfMonth(this._startDate) &&
-      isLastDayOfMonth(this._endDate!)
+      (calcDateProperty(
+        this._startDate,
+        isFirstDayOfMonth,
+        this.hass.locale,
+        this.hass.config
+      ) as boolean) &&
+      (calcDateProperty(
+        this._endDate!,
+        isLastDayOfMonth,
+        this.hass.locale,
+        this.hass.config
+      ) as boolean)
     ) {
       // Shift date range with respect to month/year selection
       const difference =
-        (differenceInMonths(this._endDate!, this._startDate) + 1) *
+        ((calcDateProperty(
+          this._endDate!,
+          differenceInMonths,
+          this.hass.locale,
+          this.hass.config,
+          this._startDate
+        ) as number) +
+          1) *
         (forward ? 1 : -1);
-      start = addMonths(this._startDate, difference);
-      end = endOfMonth(addMonths(this._endDate!, difference));
+      start = calcDate(
+        this._startDate,
+        addMonths,
+        this.hass.locale,
+        this.hass.config,
+        difference
+      );
+      end = calcDate(
+        calcDate(
+          this._endDate!,
+          addMonths,
+          this.hass.locale,
+          this.hass.config,
+          difference
+        ),
+        endOfMonth,
+        this.hass.locale,
+        this.hass.config
+      );
     } else {
       // Shift date range by period length
       const difference =
-        (differenceInDays(this._endDate!, this._startDate) + 1) *
+        ((calcDateProperty(
+          this._endDate!,
+          differenceInDays,
+          this.hass.locale,
+          this.hass.config,
+          this._startDate
+        ) as number) +
+          1) *
         (forward ? 1 : -1);
-      start = addDays(this._startDate, difference);
-      end = addDays(this._endDate!, difference);
+      start = calcDate(
+        this._startDate,
+        addDays,
+        this.hass.locale,
+        this.hass.config,
+        difference
+      );
+      end = calcDate(
+        this._endDate!,
+        addDays,
+        this.hass.locale,
+        this.hass.config,
+        difference
+      );
     }
 
     this._startDate = start;
