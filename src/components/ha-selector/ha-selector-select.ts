@@ -1,7 +1,8 @@
 import "@material/mwc-list/mwc-list-item";
-import { mdiClose } from "@mdi/js";
+import { mdiClose, mdiDrag } from "@mdi/js";
 import { customElement, property, query } from "lit/decorators";
 import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import { repeat } from "lit/directives/repeat";
 import { SortableEvent } from "sortablejs";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -45,8 +46,12 @@ export class HaSelectSelector extends LitElement {
   private _sortable?: SortableInstance;
 
   protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("value")) {
-      if (this.value?.length && !this._sortable) {
+    if (changedProps.has("value") || changedProps.has("selector")) {
+      if (
+        this.value?.length &&
+        !this._sortable &&
+        this.selector.select?.reorder
+      ) {
         this._createSortable();
       } else if (!this.value?.length && this._sortable) {
         this._destroySortable();
@@ -133,7 +138,11 @@ export class HaSelectSelector extends LitElement {
       );
     }
 
-    if (!this.selector.select?.custom_value && this._mode === "list") {
+    if (
+      !this.selector.select?.custom_value &&
+      !this.selector.select?.reorder &&
+      this._mode === "list"
+    ) {
       if (!this.selector.select?.multiple) {
         return html`
           <div>
@@ -188,9 +197,23 @@ export class HaSelectSelector extends LitElement {
         ${value?.length
           ? html`
               <ha-chip-set>
-                ${value.map(
+                ${repeat(
+                  value,
+                  (item) => item,
                   (item, idx) => html`
-                    <ha-chip hasTrailingIcon>
+                    <ha-chip
+                      hasTrailingIcon
+                      .hasIcon=${this.selector.select?.reorder}
+                    >
+                      ${this.selector.select?.reorder
+                        ? html`
+                            <ha-svg-icon
+                              slot="icon"
+                              .path=${mdiDrag}
+                              data-handle
+                            ></ha-svg-icon>
+                          `
+                        : nothing}
                       ${options.find((option) => option.value === item)
                         ?.label || item}
                       <ha-svg-icon

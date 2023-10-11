@@ -170,8 +170,10 @@ export class HuiTileCardEditor
               name: "state_content",
               selector: {
                 select: {
-                  multiple: true,
+                  mode: "dropdown",
+                  reorder: true,
                   custom_value: true,
+                  multiple: true,
                   options: [
                     {
                       label: "State",
