@@ -1,9 +1,9 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,15 +11,15 @@ import { fireEvent } from "../common/dom/fire_event";
 import { debounce } from "../common/util/debounce";
 import { CustomIcon, customIcons } from "../data/custom_icons";
 import {
-  checkCacheVersion,
   Chunks,
-  findIconChunk,
-  getIcon,
   Icons,
   MDI_PREFIXES,
+  checkCacheVersion,
+  findIconChunk,
+  getIcon,
   writeCache,
 } from "../data/iconsets";
-import "./ha-svg-icon";
+import { SvgPath } from "./ha-svg-icon";
 
 interface DeprecatedIcon {
   [key: string]: {
@@ -39,22 +39,40 @@ if (!__SUPERVISOR__) {
 
 const debouncedWriteCache = debounce(() => writeCache(chunks), 2000);
 
-const cachedIcons: Record<string, string> = {};
+const cachedIcons: Record<string, SvgPath[] | undefined> = {};
 
 @customElement("ha-icon")
 export class HaIcon extends LitElement {
   @property() public icon?: string;
 
-  @state() private _path?: string;
+  @state() private _paths?: SvgPath[];
 
   @state() private _viewBox?: string;
 
   @state() private _legacy = false;
 
+  // For backward compatibility with unique path icons
+  public set _path(path: string | undefined) {
+    if (path !== undefined) {
+      this._paths = [
+        {
+          value: path,
+        } as SvgPath,
+      ];
+    } else {
+      this._paths = undefined;
+    }
+  }
+
+  // For backward compatibility with unique path icons
+  public get _path(): string | undefined {
+    return this._paths?.map((path) => path.value).join(" ");
+  }
+
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (changedProps.has("icon")) {
-      this._path = undefined;
+      this._paths = undefined;
       this._viewBox = undefined;
       this._loadIcon();
     }
@@ -69,7 +87,7 @@ export class HaIcon extends LitElement {
         <iron-icon .icon=${this.icon}></iron-icon>`;
     }
     return html`<ha-svg-icon
-      .path=${this._path}
+      .paths=${this._paths}
       .viewBox=${this._viewBox}
     ></ha-svg-icon>`;
   }
@@ -120,7 +138,7 @@ export class HaIcon extends LitElement {
     }
 
     if (iconName in cachedIcons) {
-      this._path = cachedIcons[iconName];
+      this._paths = cachedIcons[iconName];
       return;
     }
 
@@ -131,7 +149,7 @@ export class HaIcon extends LitElement {
       if (this.icon === requestedIcon) {
         this._path = icon;
       }
-      cachedIcons[iconName] = icon;
+      cachedIcons[iconName] = this._paths;
       return;
     }
 
@@ -148,7 +166,7 @@ export class HaIcon extends LitElement {
       if (this.icon === requestedIcon) {
         this._path = databaseIcon;
       }
-      cachedIcons[iconName] = databaseIcon;
+      cachedIcons[iconName] = this._paths!;
       return;
     }
     const chunk = findIconChunk(iconName);
@@ -174,7 +192,11 @@ export class HaIcon extends LitElement {
     if (this.icon !== requestedIcon) {
       return;
     }
-    this._path = icon.path;
+    if (icon.paths !== undefined) {
+      this._paths = icon.paths;
+    } else {
+      this._path = icon.path;
+    }
     this._viewBox = icon.viewBox;
   }
 
@@ -187,7 +209,7 @@ export class HaIcon extends LitElement {
     if (this.icon === requestedIcon) {
       this._path = iconPack[iconName];
     }
-    cachedIcons[iconName] = iconPack[iconName];
+    cachedIcons[iconName] = this._paths;
   }
 
   static get styles(): CSSResultGroup {
