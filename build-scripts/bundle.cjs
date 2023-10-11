@@ -183,7 +183,7 @@ const publicPath = (latestBuild, root = "") =>
 module.exports.config = {
   app({ isProdBuild, latestBuild, isStatsBuild, isTestBuild, isWDS }) {
     return {
-      name: "app" + nameSuffix(latestBuild),
+      name: "frontend" + nameSuffix(latestBuild),
       entry: {
         service_worker: "./src/entrypoints/service_worker.ts",
         app: "./src/entrypoints/app.ts",
