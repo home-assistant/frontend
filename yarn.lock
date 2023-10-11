@@ -3181,10 +3181,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdi/svg@npm:7.2.96":
-  version: 7.2.96
-  resolution: "@mdi/svg@npm:7.2.96"
-  checksum: 44d9f26a0dbce344b71af910287aee789f4cde0bfe3a969f73731d19bea39821c3ffce522cea8674b18a6fae2f66e5d8e35c55ccb182df7164f1360286796788
+"@mdi/svg@npm:7.3.67":
+  version: 7.3.67
+  resolution: "@mdi/svg@npm:7.3.67"
+  checksum: 0a692f2e12ce55adf43eec9a496b4fbf859b795f4de0f51f740497087d0ae75ef054eb232f187c09eff2733bca26a08307553d079d3355ec8ffe5bc9b966c38f
   languageName: node
   linkType: hard
 
@@ -9691,7 +9691,7 @@ __metadata:
     "@material/top-app-bar": =14.0.0-canary.53b3cad2f.0
     "@material/web": =1.0.0
     "@mdi/js": 7.2.96
-    "@mdi/svg": 7.2.96
+    "@mdi/svg": 7.3.67
     "@octokit/auth-oauth-device": 6.0.1
     "@octokit/plugin-retry": 6.0.1
     "@octokit/rest": 20.0.2
