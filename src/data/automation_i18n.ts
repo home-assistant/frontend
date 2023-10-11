@@ -180,7 +180,7 @@ const tryDescribeTrigger = (
         `${triggerTranslationBaseKey}.numeric_state.description.above-below`,
         {
           attribute: attribute,
-          entity: formatListWithAnds(hass.locale, entities),
+          entity: formatListWithOrs(hass.locale, entities),
           numberOfEntities: entities.length,
           above: trigger.above,
           below: trigger.below,
@@ -193,7 +193,7 @@ const tryDescribeTrigger = (
         `${triggerTranslationBaseKey}.numeric_state.description.above`,
         {
           attribute: attribute,
-          entity: formatListWithAnds(hass.locale, entities),
+          entity: formatListWithOrs(hass.locale, entities),
           numberOfEntities: entities.length,
           above: trigger.above,
           duration: duration,
@@ -205,7 +205,7 @@ const tryDescribeTrigger = (
         `${triggerTranslationBaseKey}.numeric_state.description.below`,
         {
           attribute: attribute,
-          entity: formatListWithAnds(hass.locale, entities),
+          entity: formatListWithOrs(hass.locale, entities),
           numberOfEntities: entities.length,
           below: trigger.below,
           duration: duration,
