@@ -4,8 +4,11 @@ import {
   addMilliseconds,
   addMonths,
   differenceInDays,
+  differenceInMonths,
   endOfDay,
   startOfDay,
+  isFirstDayOfMonth,
+  isLastDayOfMonth,
 } from "date-fns/esm";
 import { Collection, getCollection } from "home-assistant-js-websocket";
 import { calcDate } from "../common/datetime/calc_date";
@@ -416,9 +419,12 @@ const getEnergyData = async (
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
 
   if (compare) {
-    if (dayDifference > 27 && dayDifference < 32) {
-      // When comparing a month, we want to start at the begining of the month
-      startCompare = addMonths(start, -1);
+    if (isFirstDayOfMonth(start) && isLastDayOfMonth(end || new Date())) {
+      // When comparing a month (or multiple), we want to start at the begining of the month
+      startCompare = addMonths(
+        start,
+        -differenceInMonths(end || new Date(), start) - 1
+      );
     } else {
       startCompare = addDays(start, (dayDifference + 1) * -1);
     }
