@@ -25,4 +25,4 @@ jobs:
           token: ${{ github.token }}
           slug: ${{ format('{0}-{1}', matrix.bundle, matrix.build) }}
           artifactName: ${{ format('{0}-bundle-stats', matrix.bundle) }}
-          artifactWebpackStatsFile: ${{ format('{0}-{1}.json', matrix.bundle, matrix.build) }}
+          webpackStatsFile: ${{ format('{0}-{1}.json', matrix.bundle, matrix.build) }}
