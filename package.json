@@ -220,6 +220,7 @@
     "husky": "8.0.3",
     "instant-mocha": "1.5.2",
     "jszip": "3.10.1",
+    "lightningcss": "1.22.0",
     "lint-staged": "14.0.1",
     "lit-analyzer": "2.0.0-pre.3",
     "lodash.template": "4.5.0",

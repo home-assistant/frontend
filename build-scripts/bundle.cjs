@@ -1,6 +1,7 @@
 const path = require("path");
 const env = require("./env.cjs");
 const paths = require("./paths.cjs");
+const lightningcss = require("./lightningcss.cjs");
 
 // GitHub base URL to use for production source maps
 // Nightly builds use the commit SHA, otherwise assumes there is a tag that matches the version
@@ -69,9 +70,6 @@ module.exports.htmlMinifierOptions = {
   decodeEntities: true,
   removeComments: true,
   removeRedundantAttributes: true,
-  minifyCSS: {
-    compatibility: "*,-properties.zeroUnits",
-  },
 };
 
 module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
@@ -116,8 +114,7 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
         ignoreModuleNotFound: true,
       },
     ],
-    // Minify template literals for production
-    isProdBuild && [
+    [
       "template-html-minifier",
       {
         modules: {
@@ -129,7 +126,10 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
           "@polymer/polymer/lib/utils/html-tag": ["html"],
         },
         strictCSS: true,
-        htmlMinifier: module.exports.htmlMinifierOptions,
+        htmlMinifier: {
+          ...module.exports.htmlMinifierOptions,
+          minifyCSS: lightningcss.getMinifyCSS({ latestBuild, isProdBuild }),
+        },
         failOnError: true, // we can turn this off in case of false positives
       },
     ],

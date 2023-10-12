@@ -8,6 +8,7 @@ import path from "path";
 import { htmlMinifierOptions, terserOptions } from "../bundle.cjs";
 import env from "../env.cjs";
 import paths from "../paths.cjs";
+import { getMinifyCSS } from "../lightningcss.cjs";
 
 const renderTemplate = (templateFile, data = {}) => {
   const compiled = template(
@@ -35,6 +36,7 @@ const minifyHtml = (content, ext) => {
   return minify(begTag + content + endTag, {
     ...htmlMinifierOptions,
     conservativeCollapse: false,
+    minifyCSS: getMinifyCSS({ latestBuild: false, isProdBuild: true }), // Transpile and minify
     minifyJS: terserOptions({
       latestBuild: false, // Shared scripts should be ES5
       isTestBuild: true, // Don't need source maps
