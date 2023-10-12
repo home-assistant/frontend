@@ -5,6 +5,7 @@ import {
   LitElement,
   PropertyValues,
   TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
@@ -60,31 +61,33 @@ class PanelEnergy extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-top-app-bar-fixed>
-        <ha-menu-button
-          slot="navigationIcon"
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-        ></ha-menu-button>
-        <div slot="title">${this.hass.localize("panel.energy")}</div>
-        ${this.narrow
-          ? ""
-          : html`
-              <hui-energy-period-selector
-                slot="actionItems"
-                .hass=${this.hass}
-                collectionKey="energy_dashboard"
-                .narrow=${false}
-              ></hui-energy-period-selector>
-            `}
-        <hui-view
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-          .lovelace=${this._lovelace}
-          .index=${this._viewIndex}
-          @reload-energy-panel=${this._reloadView}
-        ></hui-view>
-      </ha-top-app-bar-fixed>
+      <div class="header">
+        <div class="toolbar">
+          <ha-menu-button
+            slot="navigationIcon"
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></ha-menu-button>
+          ${!this.narrow
+            ? html`<div class="main-title">
+                ${this.hass.localize("panel.energy")}
+              </div>`
+            : nothing}
+
+          <hui-energy-period-selector
+            .hass=${this.hass}
+            collectionKey="energy_dashboard"
+          ></hui-energy-period-selector>
+        </div>
+      </div>
+      <hui-view
+        id="view"
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .lovelace=${this._lovelace}
+        .index=${this._viewIndex}
+        @reload-energy-panel=${this._reloadView}
+      ></hui-view>
     `;
   }
 
@@ -116,12 +119,82 @@ class PanelEnergy extends LitElement {
     return [
       haStyle,
       css`
-        hui-energy-period-selector {
+        :host hui-energy-period-selector {
           width: 100%;
-          padding-left: 16px;
-          padding-inline-start: 16px;
+          padding-left: 32px;
+          padding-inline-start: 32px;
           --disabled-text-color: rgba(var(--rgb-text-primary-color), 0.5);
           direction: var(--direction);
+        }
+        :host([narrow]) hui-energy-period-selector {
+          padding-left: 0px;
+          padding-inline-start: 0px;
+        }
+        :host {
+          -ms-user-select: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+        }
+        .header {
+          background-color: var(--app-header-background-color);
+          color: var(--app-header-text-color, white);
+          border-bottom: var(--app-header-border-bottom, none);
+          position: fixed;
+          top: 0;
+          width: var(--mdc-top-app-bar-width, 100%);
+          padding-top: env(safe-area-inset-top);
+          z-index: 4;
+          transition: box-shadow 200ms linear;
+          display: flex;
+          flex-direction: row;
+        }
+        :host([scrolled]) .header {
+          box-shadow: var(
+            --mdc-top-app-bar-fixed-box-shadow,
+            0px 2px 4px -1px rgba(0, 0, 0, 0.2),
+            0px 4px 5px 0px rgba(0, 0, 0, 0.14),
+            0px 1px 10px 0px rgba(0, 0, 0, 0.12)
+          );
+        }
+        .toolbar {
+          height: var(--header-height);
+          display: flex;
+          flex: 1;
+          align-items: center;
+          font-size: 20px;
+          padding: 0px 12px;
+          font-weight: 400;
+          box-sizing: border-box;
+        }
+        @media (max-width: 599px) {
+          .toolbar {
+            padding: 0 4px;
+          }
+        }
+        .main-title {
+          margin: 0 0 0 24px;
+          line-height: 20px;
+          flex-grow: 1;
+        }
+        #view {
+          position: relative;
+          display: flex;
+          padding-top: calc(var(--header-height) + env(safe-area-inset-top));
+          min-height: 100vh;
+          box-sizing: border-box;
+          padding-left: env(safe-area-inset-left);
+          padding-right: env(safe-area-inset-right);
+          padding-bottom: env(safe-area-inset-bottom);
+        }
+        hui-view {
+          background: var(
+            --lovelace-background,
+            var(--primary-background-color)
+          );
+        }
+        #view > * {
+          flex: 1 1 100%;
+          max-width: 100%;
         }
       `,
     ];
