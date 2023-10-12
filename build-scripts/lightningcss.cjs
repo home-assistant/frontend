@@ -28,16 +28,20 @@ module.exports.getMinifyCSS = ({ latestBuild, isProdBuild }) => {
   return (text, type) => {
     if (!text) return text;
     const input = wrapCSS(text, type);
-    const { styles: ccss, errors, warnings: w1 } = cleanCSS.minify(input);
-    if (errors.length > 0) {
-      console.error("[CCSS] Errors while transforming CSS:", ...errors);
-    }
-    if (w1.length > 0) {
-      console.warn("[CCSS] Warnings while transforming CSS:", ...w1);
-    }
     if (text.includes("babel-plugin-template-html-minifier")) {
-      const output = unwrapCSS(ccss, type);
-      return output;
+      const { styles: ccss, errors, warnings: w1 } = cleanCSS.minify(input);
+      if (errors.length > 0) {
+        console.error("[CCSS] Errors while transforming CSS:", ...errors);
+      }
+      if (w1.length > 0) {
+        console.warn("[CCSS] Warnings while transforming CSS:", ...w1);
+      }
+      try {
+        return unwrapCSS(ccss, type);
+      } catch (e) {
+        console.error("[CCSS] Invalid output", { text, type, output: ccss });
+        return text;
+      }
     }
     const { code, warnings: w2 } = lightningcss.transform({
       filename: "style.css",
@@ -49,7 +53,11 @@ module.exports.getMinifyCSS = ({ latestBuild, isProdBuild }) => {
       console.warn("[LCSS] Warnings while transforming CSS:", ...w2);
     }
     const lcss = decoder.decode(code);
-    const output = unwrapCSS(lcss, type);
-    return output;
+    try {
+      return unwrapCSS(lcss, type);
+    } catch (e) {
+      console.error("[LCSS] Invalid output", { text, type, output: lcss });
+      return text;
+    }
   };
 };
