@@ -1,6 +1,8 @@
 const { existsSync } = require("fs");
 const path = require("path");
 const webpack = require("webpack");
+const { StatsWriterPlugin } = require("webpack-stats-plugin");
+const filterStats = require("@bundle-stats/plugin-webpack-filter").default;
 const TerserPlugin = require("terser-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const log = require("fancy-log");
@@ -152,6 +154,15 @@ const createWebpackConfig = ({
           )
         ),
       !isProdBuild && new LogStartCompilePlugin(),
+      isProdBuild &&
+        new StatsWriterPlugin({
+          filename: path.relative(
+            outputPath,
+            path.join(paths.build_dir, "stats", `${name}.json`)
+          ),
+          stats: { assets: true, chunks: true, modules: true },
+          transform: (stats) => JSON.stringify(filterStats(stats)),
+        }),
     ].filter(Boolean),
     resolve: {
       extensions: [".ts", ".js", ".json"],
