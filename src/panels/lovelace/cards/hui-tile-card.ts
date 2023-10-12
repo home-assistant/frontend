@@ -41,6 +41,7 @@ import {
 import { isUnavailableState } from "../../../data/entity";
 import { FanEntity, computeFanSpeedStateDisplay } from "../../../data/fan";
 import type { HumidifierEntity } from "../../../data/humidifier";
+import type { ClimateEntity } from "../../../data/climate";
 import type { LightEntity } from "../../../data/light";
 import type { ActionHandlerEvent } from "../../../data/lovelace";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
@@ -236,6 +237,20 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
           Math.round(humidity)
         );
         return `${stateDisplay} ⸱ ${formattedHumidity}`;
+      }
+    }
+
+    if (domain === "climate") {
+      const current_temperature = (stateObj as ClimateEntity).attributes
+        .current_temperature;
+      if (current_temperature) {
+        const formattedCurrentTemperature =
+          this.hass!.formatEntityAttributeValue(
+            stateObj,
+            "current_temperature",
+            current_temperature
+          );
+        return `${stateDisplay} ⸱ ${formattedCurrentTemperature}`;
       }
     }
 

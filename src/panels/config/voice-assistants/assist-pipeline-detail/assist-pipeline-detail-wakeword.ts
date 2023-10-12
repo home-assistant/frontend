@@ -72,7 +72,10 @@ export class AssistPipelineDetailWakeWord extends LitElement {
       changedProps.has("data") &&
       changedProps.get("data")?.wake_word_entity !== this.data?.wake_word_entity
     ) {
-      if (this.data?.wake_word_id) {
+      if (
+        changedProps.get("data")?.wake_word_entity &&
+        this.data?.wake_word_id
+      ) {
         fireEvent(this, "value-changed", {
           value: { ...this.data, wake_word_id: undefined },
         });
@@ -140,8 +143,9 @@ export class AssistPipelineDetailWakeWord extends LitElement {
     }
     this._wakeWords = wakewordInfo.wake_words;
     if (
-      !this.data?.wake_word_id ||
-      !this._wakeWords.some((ww) => ww.id === this.data!.wake_word_id)
+      this.data &&
+      (!this.data?.wake_word_id ||
+        !this._wakeWords.some((ww) => ww.id === this.data!.wake_word_id))
     ) {
       fireEvent(this, "value-changed", {
         value: { ...this.data, wake_word_id: this._wakeWords[0]?.id },

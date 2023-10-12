@@ -269,37 +269,61 @@ export class HaCountryPicker extends LitElement {
 
   @property() public label?: string;
 
+  @property() public countries?: string[];
+
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public required = false;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  private _getOptions = memoizeOne((language?: string) => {
-    const countryDisplayNames =
-      Intl && "DisplayNames" in Intl
-        ? new Intl.DisplayNames(language, {
-            type: "region",
-            fallback: "code",
-          })
-        : undefined;
+  @property({ type: Boolean }) public noSort = false;
 
-    const options = COUNTRIES.map((country) => ({
-      value: country,
-      label: countryDisplayNames ? countryDisplayNames.of(country)! : country,
-    }));
-    options.sort((a, b) =>
-      caseInsensitiveStringCompare(a.label, b.label, language)
-    );
-    return options;
-  });
+  private _getOptions = memoizeOne(
+    (language?: string, countries?: string[]) => {
+      let options: { label: string; value: string }[] = [];
+      const countryDisplayNames =
+        Intl && "DisplayNames" in Intl
+          ? new Intl.DisplayNames(language, {
+              type: "region",
+              fallback: "code",
+            })
+          : undefined;
+
+      if (countries) {
+        options = countries.map((country) => ({
+          value: country,
+          label: countryDisplayNames
+            ? countryDisplayNames.of(country)!
+            : country,
+        }));
+      } else {
+        options = COUNTRIES.map((country) => ({
+          value: country,
+          label: countryDisplayNames
+            ? countryDisplayNames.of(country)!
+            : country,
+        }));
+      }
+
+      if (!this.noSort) {
+        options.sort((a, b) =>
+          caseInsensitiveStringCompare(a.label, b.label, language)
+        );
+      }
+      return options;
+    }
+  );
 
   protected render() {
-    const options = this._getOptions(this.language);
+    const options = this._getOptions(this.language, this.countries);
 
     return html`
       <ha-select
         .label=${this.label}
         .value=${this.value}
         .required=${this.required}
+        .helper=${this.helper}
         .disabled=${this.disabled}
         @selected=${this._changed}
         @closed=${stopPropagation}

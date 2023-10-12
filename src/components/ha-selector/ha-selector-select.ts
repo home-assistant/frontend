@@ -2,9 +2,10 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
-import { ensureArray } from "../../common/array/ensure-array";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { SelectOption, SelectSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-checkbox";
@@ -13,10 +14,9 @@ import "../ha-chip-set";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-formfield";
+import "../ha-input-helper-text";
 import "../ha-radio";
 import "../ha-select";
-import "../ha-input-helper-text";
-import { caseInsensitiveStringCompare } from "../../common/string/compare";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
@@ -198,6 +198,7 @@ export class HaSelectSelector extends LitElement {
         .helper=${this.helper ?? ""}
         .disabled=${this.disabled}
         .required=${this.required}
+        clearable
         @closed=${stopPropagation}
         @selected=${this._valueChanged}
       >
@@ -228,7 +229,7 @@ export class HaSelectSelector extends LitElement {
   private _valueChanged(ev) {
     ev.stopPropagation();
     const value = ev.detail?.value || ev.target.value;
-    if (this.disabled || value === undefined || value === this.value) {
+    if (this.disabled || value === undefined || value === (this.value ?? "")) {
       return;
     }
     fireEvent(this, "value-changed", {
@@ -331,6 +332,9 @@ export class HaSelectSelector extends LitElement {
   }
 
   static styles = css`
+    :host {
+      position: relative;
+    }
     ha-select,
     mwc-formfield,
     ha-formfield {

@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -25,6 +25,17 @@ export class HaNumberSelector extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   @property({ type: Boolean }) public disabled = false;
+
+  private _valueStr = "";
+
+  protected willUpdate(changedProps: PropertyValues) {
+    if (changedProps.has("value")) {
+      if (this.value !== Number(this._valueStr)) {
+        this._valueStr =
+          !this.value || isNaN(this.value) ? "" : this.value.toString();
+      }
+    }
+  }
 
   protected render() {
     const isBox = this.selector.number?.mode === "box";
@@ -63,7 +74,7 @@ export class HaNumberSelector extends LitElement {
           class=${classMap({ single: this.selector.number?.mode === "box" })}
           .min=${this.selector.number?.min}
           .max=${this.selector.number?.max}
-          .value=${this.value ?? ""}
+          .value=${this._valueStr ?? ""}
           .step=${this.selector.number?.step ?? 1}
           helperPersistent
           .helper=${isBox ? this.helper : undefined}
@@ -85,6 +96,7 @@ export class HaNumberSelector extends LitElement {
 
   private _handleInputChange(ev) {
     ev.stopPropagation();
+    this._valueStr = ev.target.value;
     const value =
       ev.target.value === "" || isNaN(ev.target.value)
         ? undefined

@@ -87,6 +87,8 @@ export class HaStatisticPicker extends LitElement {
   @property({ type: Array, attribute: "exclude-statistics" })
   public excludeStatistics?: string[];
 
+  @property() public helpMissingEntityUrl = "/more-info/statistics/";
+
   @state() private _opened?: boolean;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
@@ -111,7 +113,7 @@ export class HaStatisticPicker extends LitElement {
           ? html`<a
               target="_blank"
               rel="noopener noreferrer"
-              href=${documentationUrl(this.hass, "/more-info/statistics/")}
+              href=${documentationUrl(this.hass, this.helpMissingEntityUrl)}
               >${this.hass.localize(
                 "ui.components.statistic-picker.learn_more"
               )}</a
