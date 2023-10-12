@@ -345,11 +345,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   private _duplicateOption(ev) {
     const index = (ev.target as any).idx;
-    const choose = this.action.choose
-      ? [...ensureArray(this.action.choose)]
-      : [];
-    const choice = choose[index];
-    this._addOption(deepClone(choice));
+    this._addOption(deepClone(ensureArray(this.action.choose)[index]));
   }
 
   protected firstUpdated() {
