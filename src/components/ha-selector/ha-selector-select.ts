@@ -1,10 +1,11 @@
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
-import { ensureArray } from "../../common/array/ensure-array";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { SelectOption, SelectSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-checkbox";
@@ -13,10 +14,9 @@ import "../ha-chip-set";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-formfield";
+import "../ha-input-helper-text";
 import "../ha-radio";
 import "../ha-select";
-import "../ha-input-helper-text";
-import { caseInsensitiveStringCompare } from "../../common/string/compare";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
@@ -198,6 +198,7 @@ export class HaSelectSelector extends LitElement {
         .helper=${this.helper ?? ""}
         .disabled=${this.disabled}
         .required=${this.required}
+        clearable
         @closed=${stopPropagation}
         @selected=${this._valueChanged}
       >
@@ -209,14 +210,6 @@ export class HaSelectSelector extends LitElement {
           `
         )}
       </ha-select>
-      ${!this.required && !this.disabled && this.value
-        ? html`<ha-icon-button
-            toggles
-            .label=${this.hass.localize("ui.common.clear")}
-            @click=${this._clearValue}
-            .path=${mdiClose}
-          ></ha-icon-button>`
-        : nothing}
     `;
   }
 
@@ -231,15 +224,6 @@ export class HaSelectSelector extends LitElement {
       this.selector.select?.mode ||
       ((this.selector.select?.options?.length || 0) < 6 ? "list" : "dropdown")
     );
-  }
-
-  private _clearValue(): void {
-    if (this.disabled || !this.value) {
-      return;
-    }
-    fireEvent(this, "value-changed", {
-      value: undefined,
-    });
   }
 
   private _valueChanged(ev) {
@@ -358,20 +342,6 @@ export class HaSelectSelector extends LitElement {
     }
     mwc-list-item[disabled] {
       --mdc-theme-text-primary-on-background: var(--disabled-text-color);
-    }
-    ha-select {
-      --select-selected-text-padding-end: 12px;
-    }
-    ha-icon-button {
-      position: absolute;
-      top: 10px;
-      right: 28px;
-      --mdc-icon-button-size: 36px;
-      --mdc-icon-size: 20px;
-      color: var(--secondary-text-color);
-      inset-inline-start: initial;
-      inset-inline-end: 28px;
-      direction: var(--direction);
     }
   `;
 }
