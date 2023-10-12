@@ -99,7 +99,7 @@ export interface HassTrigger extends BaseTrigger {
 
 export interface NumericStateTrigger extends BaseTrigger {
   platform: "numeric_state";
-  entity_id: string;
+  entity_id: string | string[];
   attribute?: string;
   above?: number;
   below?: number;

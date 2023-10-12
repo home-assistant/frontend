@@ -152,9 +152,7 @@ export default class HaAutomationTriggerRow extends LitElement {
               class="trigger-icon"
               .path=${TRIGGER_TYPES[this.trigger.platform]}
             ></ha-svg-icon>
-            ${capitalizeFirstLetter(
-              describeTrigger(this.trigger, this.hass, this._entityReg)
-            )}
+            ${describeTrigger(this.trigger, this.hass, this._entityReg)}
           </h3>
 
           <slot name="icons" slot="icons"></slot>
