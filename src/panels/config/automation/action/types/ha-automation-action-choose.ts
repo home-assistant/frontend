@@ -4,12 +4,14 @@ import {
   mdiDotsVertical,
   mdiRenameBox,
   mdiSort,
+  mdiContentDuplicate,
   mdiDelete,
   mdiPlus,
   mdiArrowUp,
   mdiArrowDown,
   mdiDrag,
 } from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -25,7 +27,11 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-button-menu";
 import { Condition } from "../../../../../data/automation";
-import { Action, ChooseAction } from "../../../../../data/script";
+import {
+  Action,
+  ChooseAction,
+  ChooseActionChoice,
+} from "../../../../../data/script";
 import {
   showConfirmationDialog,
   showPromptDialog,
@@ -186,6 +192,19 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         </mwc-list-item>
 
                         <mwc-list-item
+                          graphic="icon"
+                          .disabled=${this.disabled}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.automation.editor.actions.duplicate"
+                          )}
+                          <ha-svg-icon
+                            slot="graphic"
+                            .path=${mdiContentDuplicate}
+                          ></ha-svg-icon>
+                        </mwc-list-item>
+
+                        <mwc-list-item
                           class="warning"
                           graphic="icon"
                           .disabled=${this.disabled}
@@ -286,6 +305,9 @@ export class HaChooseAction extends LitElement implements ActionElement {
         fireEvent(this, "re-order");
         break;
       case 2:
+        this._duplicateOption(ev);
+        break;
+      case 3:
         this._removeOption(ev);
         break;
     }
@@ -319,6 +341,15 @@ export class HaChooseAction extends LitElement implements ActionElement {
         value: { ...this.action, choose },
       });
     }
+  }
+
+  private _duplicateOption(ev) {
+    const index = (ev.target as any).idx;
+    const choose = this.action.choose
+      ? [...ensureArray(this.action.choose)]
+      : [];
+    const choice = choose[index];
+    this._addOption(deepClone(choice));
   }
 
   protected firstUpdated() {
@@ -375,11 +406,11 @@ export class HaChooseAction extends LitElement implements ActionElement {
     });
   }
 
-  private _addOption() {
+  private _addOption(opt?: ChooseActionChoice) {
     const choose = this.action.choose
       ? [...ensureArray(this.action.choose)]
       : [];
-    choose.push({ conditions: [], sequence: [] });
+    choose.push(opt ?? { conditions: [], sequence: [] });
     fireEvent(this, "value-changed", {
       value: { ...this.action, choose },
     });
