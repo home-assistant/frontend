@@ -1437,6 +1437,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bundle-stats/plugin-webpack-filter@npm:4.7.6":
+  version: 4.7.6
+  resolution: "@bundle-stats/plugin-webpack-filter@npm:4.7.6"
+  peerDependencies:
+    core-js: ^3.0.0
+  checksum: a7bb72f6222dc8ec06c923d93772c2569885fbeb127d5a7df3e0c88b4f23b7ec7d92ae5525b5ede6a81b00416c8d3a18a00d7637990f51afc1fc0a284d275426
+  languageName: node
+  linkType: hard
+
 "@codemirror/autocomplete@npm:6.9.2":
   version: 6.9.2
   resolution: "@codemirror/autocomplete@npm:6.9.2"
@@ -3865,9 +3874,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-node-resolve@npm:15.2.2":
-  version: 15.2.2
-  resolution: "@rollup/plugin-node-resolve@npm:15.2.2"
+"@rollup/plugin-node-resolve@npm:15.2.3":
+  version: 15.2.3
+  resolution: "@rollup/plugin-node-resolve@npm:15.2.3"
   dependencies:
     "@rollup/pluginutils": ^5.0.1
     "@types/resolve": 1.20.2
@@ -3880,7 +3889,7 @@ __metadata:
   peerDependenciesMeta:
     rollup:
       optional: true
-  checksum: 478281b12914114eb663e0f9dbdc9fd2c9be694025d7b76572c6574b61b410af349d68418b0157ece792d09cbaf808331d60c253dac95f89b95530a85b3d6231
+  checksum: 730f32c2f8fdddff07cf0fca86a5dac7c475605fb96930197a868c066e62eb6388c557545e4f7d99b7a283411754c9fbf98944ab086b6074e04fc1292e234aa8
   languageName: node
   linkType: hard
 
@@ -9634,6 +9643,7 @@ __metadata:
     "@babel/preset-typescript": 7.23.0
     "@babel/runtime": 7.23.1
     "@braintree/sanitize-url": 6.0.4
+    "@bundle-stats/plugin-webpack-filter": 4.7.6
     "@codemirror/autocomplete": 6.9.2
     "@codemirror/commands": 6.3.0
     "@codemirror/language": 6.9.1
@@ -9709,7 +9719,7 @@ __metadata:
     "@rollup/plugin-babel": 6.0.4
     "@rollup/plugin-commonjs": 25.0.5
     "@rollup/plugin-json": 6.0.1
-    "@rollup/plugin-node-resolve": 15.2.2
+    "@rollup/plugin-node-resolve": 15.2.3
     "@rollup/plugin-replace": 5.0.3
     "@thomasloven/round-slider": 0.6.0
     "@types/babel__plugin-transform-runtime": 7.9.3
@@ -9840,6 +9850,7 @@ __metadata:
     webpack-cli: 5.1.4
     webpack-dev-server: 4.15.1
     webpack-manifest-plugin: 5.0.0
+    webpack-stats-plugin: 1.1.3
     webpackbar: 5.0.2
     weekstart: 2.0.0
     workbox-build: 7.0.0
@@ -16332,6 +16343,13 @@ __metadata:
   version: 3.2.3
   resolution: "webpack-sources@npm:3.2.3"
   checksum: 989e401b9fe3536529e2a99dac8c1bdc50e3a0a2c8669cbafad31271eadd994bc9405f88a3039cd2e29db5e6d9d0926ceb7a1a4e7409ece021fe79c37d9c4607
+  languageName: node
+  linkType: hard
+
+"webpack-stats-plugin@npm:1.1.3":
+  version: 1.1.3
+  resolution: "webpack-stats-plugin@npm:1.1.3"
+  checksum: 9a71d329c5d55e33105abfe4c72d715a0a6ce4ab8da6faa2bc5a65953915d656cdf3c420b3fc0628b0d9859cc59c09e49f731645746739e417da531130a7a9a8
   languageName: node
   linkType: hard
 
