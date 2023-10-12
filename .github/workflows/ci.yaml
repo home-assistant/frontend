@@ -85,6 +85,12 @@ jobs:
         run: ./node_modules/.bin/gulp build-app
         env:
           IS_TEST: "true"
+      - name: Upload bundle stats
+        uses: actions/upload-artifact@v3.1.3
+        with:
+          name: frontend-bundle-stats
+          path: build/stats/*.json
+          if-no-files-found: error
   supervisor:
     name: Build supervisor
     needs: [lint, test]
@@ -103,3 +109,9 @@ jobs:
         run: ./node_modules/.bin/gulp build-hassio
         env:
           IS_TEST: "true"
+      - name: Upload bundle stats
+        uses: actions/upload-artifact@v3.1.3
+        with:
+          name: supervisor-bundle-stats
+          path: build/stats/*.json
+          if-no-files-found: error
