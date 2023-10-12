@@ -418,6 +418,9 @@
         "conversation_agent": "Conversation agent",
         "none": "None"
       },
+      "country-picker": {
+        "country": "Country"
+      },
       "pipeline-picker": {
         "pipeline": "Assistant",
         "preferred": "Preferred assistant ({preferred})",
