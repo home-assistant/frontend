@@ -528,11 +528,15 @@
         "start_date": "Start date",
         "end_date": "End date",
         "select": "Select",
+        "select_date_range": "Select time period",
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",
           "this_week": "This week",
-          "last_week": "Last week"
+          "last_week": "Last week",
+          "this_quarter": "This quarter",
+          "this_month": "This month",
+          "this_year": "This year"
         }
       },
       "relative_time": {
@@ -5232,10 +5236,6 @@
           },
           "energy_period_selector": {
             "today": "Today",
-            "day": "Day",
-            "week": "Week",
-            "month": "Month",
-            "year": "Year",
             "previous": "Previous",
             "next": "Next",
             "compare": "Compare data"
