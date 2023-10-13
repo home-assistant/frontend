@@ -108,14 +108,6 @@ export interface ColorTempMiredSelector {
   } | null;
 }
 
-// export interface ColorTempSelector {
-//   color_temp: {
-//     unit: LightColorTemperatureUnit
-//     min?: number;
-//     max?: number;
-//   } | null;
-// }
-
 export interface ColorTempKelvinSelector {
   color_temp_kelvin: {
     min?: number;
