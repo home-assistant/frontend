@@ -4,9 +4,8 @@ import { HaSvgIcon } from "./ha-svg-icon";
 
 @customElement("ha-icon-next")
 export class HaIconNext extends HaSvgIcon {
-  @property() public override get path() {
-    return document.dir === "ltr" ? mdiChevronRight : mdiChevronLeft;
-  }
+  @property() public override path =
+    document.dir === "ltr" ? mdiChevronRight : mdiChevronLeft;
 }
 
 declare global {
