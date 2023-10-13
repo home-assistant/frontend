@@ -74,6 +74,8 @@ export class StateHistoryChartLine extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues) {
+    // console.log("Linechart willupdate");
+    // console.log(changedProps);
     if (
       !this.hasUpdated ||
       changedProps.has("showNames") ||
@@ -255,7 +257,12 @@ export class StateHistoryChartLine extends LitElement {
         prevValues = datavalues;
       };
 
-      const addDataSet = (nameY: string, fill = false, color?: string) => {
+      const addDataSet = (
+        nameY: string,
+        fill = false,
+        color?: string,
+        secondary = false
+      ) => {
         if (!color) {
           color = getGraphColorByIndex(colorIndex, computedStyles);
           colorIndex++;
@@ -263,8 +270,8 @@ export class StateHistoryChartLine extends LitElement {
         data.push({
           label: nameY,
           fill: fill ? "origin" : false,
-          borderColor: color,
-          backgroundColor: color + "7F",
+          borderColor: secondary ? color + "7F" : color,
+          backgroundColor: secondary ? color + "3F" : color + "7F",
           stepped: "before",
           pointRadius: 0,
           data: [],
@@ -469,14 +476,21 @@ export class StateHistoryChartLine extends LitElement {
         });
       } else {
         addDataSet(name);
+        // console.log("Generating line chart data");
+        // console.log(states);
+        if (states.statistics && states.statistics.length > 0) {
+          colorIndex--;
+          addDataSet(name + " (Statistics)", false, undefined, true);
+        }
 
         let lastValue: number;
         let lastDate: Date;
         let lastNullDate: Date | null = null;
 
-        // Process chart data.
-        // When state is `unknown`, calculate the value and break the line.
-        states.states.forEach((entityState) => {
+        const processData = (
+          entityState: LineChartState,
+          statistics = false
+        ) => {
           const value = safeParseFloat(entityState.state);
           const date = new Date(entityState.last_changed);
           if (value !== null && lastNullDate) {
@@ -488,14 +502,14 @@ export class StateHistoryChartLine extends LitElement {
                 ((lastNullDateTime - lastDateTime) /
                   (dateTime - lastDateTime)) +
               lastValue;
-            pushData(lastNullDate, [tmpValue]);
+            pushData(lastNullDate, statistics ? [null, tmpValue] : [tmpValue]);
             pushData(new Date(lastNullDateTime + 1), [null]);
             pushData(date, [value]);
             lastDate = date;
             lastValue = value;
             lastNullDate = null;
           } else if (value !== null && lastNullDate === null) {
-            pushData(date, [value]);
+            pushData(date, statistics ? [null, value] : [value]);
             lastDate = date;
             lastValue = value;
           } else if (
@@ -505,6 +519,17 @@ export class StateHistoryChartLine extends LitElement {
           ) {
             lastNullDate = date;
           }
+        };
+
+        // Process chart data.
+        // When state is `unknown`, calculate the value and break the line.
+        if (states.statistics) {
+          states.statistics.forEach((entityState) => {
+            processData(entityState, true);
+          });
+        }
+        states.states.forEach((entityState) => {
+          processData(entityState);
         });
         if (lastNullDate !== null) {
           pushData(lastNullDate, [null]);

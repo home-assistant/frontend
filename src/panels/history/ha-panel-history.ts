@@ -4,6 +4,7 @@ import {
   HassServiceTarget,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket/dist/types";
+import deepClone from "deep-clone-simple";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { property, query, state } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -42,7 +43,17 @@ import {
   computeHistory,
   HistoryResult,
   subscribeHistory,
+  HistoryStates,
+  EntityHistoryState,
 } from "../../data/history";
+import {
+  fetchStatistics,
+  // getDisplayUnit,
+  getStatisticMetadata,
+  Statistics,
+  StatisticsMetaData,
+  // StatisticType,
+} from "../../data/recorder";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -68,6 +79,12 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   @state() private _isLoading = false;
 
   @state() private _stateHistory?: HistoryResult;
+
+  private _mungedStateHistory?: HistoryResult;
+
+  @state() private _statistics?: Statistics;
+
+  @state() private _statsMetadata?: Record<string, StatisticsMetaData>;
 
   @state() private _deviceEntityLookup?: DeviceEntityLookup;
 
@@ -126,6 +143,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
+    // console.log("history panel render");
     return html`
       <ha-top-app-bar-fixed>
         ${this._showBack
@@ -193,7 +211,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
             : html`
                 <state-history-charts
                   .hass=${this.hass}
-                  .historyData=${this._stateHistory}
+                  .historyData=${this._mungedStateHistory}
                   .startTime=${this._startDate}
                   .endTime=${this._endDate}
                 >
@@ -206,6 +224,83 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
+
+    if (
+      changedProps.has("_stateHistory") ||
+      changedProps.has("_statistics") ||
+      changedProps.has("_startDate") ||
+      changedProps.has("_endDate") ||
+      changedProps.has("_targetPickerValue")
+    ) {
+      this._mungedStateHistory = this._stateHistory && {
+        ...this._stateHistory,
+      };
+      // convert statistics to HistoryStates
+      if (this._statistics) {
+        const statsHistoryStates: HistoryStates = {};
+        Object.entries(this._statistics).forEach(([key, value]) => {
+          const entityHistoryStates: EntityHistoryState[] = value.map((e) => ({
+            s: e.mean != null ? e.mean.toString() : e.state!.toString(),
+            lc: e.start / 1000,
+            a: {},
+            lu: e.start / 1000,
+          }));
+          statsHistoryStates[key] = entityHistoryStates;
+        });
+        const statsHistoryResult = computeHistory(
+          this.hass,
+          statsHistoryStates,
+          this.hass.localize
+        );
+
+        // Merge statistics into recorder data
+        statsHistoryResult.line.forEach((item) => {
+          const unit = item.unit;
+          const mungeItemIndex = this._stateHistory?.line.findIndex(
+            (origitem) => origitem.unit === unit
+          );
+          const mungeItem =
+            mungeItemIndex != null &&
+            mungeItemIndex !== -1 &&
+            this._stateHistory!.line[mungeItemIndex];
+          let modified = false;
+          if (mungeItem) {
+            item.data.forEach((entity) => {
+              const id = entity.entity_id;
+              const mungeEntity = mungeItem.data.find(
+                (origentity) => origentity.entity_id === id
+              );
+              if (mungeEntity) {
+                const oldest =
+                  mungeEntity.states?.length > 0 &&
+                  mungeEntity.states[0].last_changed;
+                const filteredStates = entity.states.filter(
+                  (s) => !oldest || s.last_changed < oldest
+                );
+                mungeEntity.statistics = filteredStates;
+                modified = true;
+              }
+            });
+            if (modified) {
+              // console.log(`modified munge item ${mungeItemIndex}`);
+              this._mungedStateHistory!.line[mungeItemIndex!].data =
+                mungeItem.data.concat();
+            }
+          } else {
+            const newItem = deepClone(item);
+            this._mungedStateHistory!.line.push(newItem);
+            newItem.data = item.data.map((entity) => ({
+              ...entity,
+              statistics: entity.states,
+              states: [],
+            }));
+          }
+        });
+        // console.log("Updated munged data");
+        // console.log(changedProps);
+        // console.log(this._mungedStateHistory);
+      }
+    }
 
     if (this.hasUpdated) {
       return;
@@ -264,6 +359,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
             changedProps.has("_areaDeviceLookup"))))
     ) {
       this._getHistory();
+      this._getStats();
     }
 
     if (!changedProps.has("hass") && !changedProps.has("_entities")) {
@@ -279,6 +375,77 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   private _removeAll() {
     this._targetPickerValue = undefined;
     this._updatePath();
+  }
+
+  private async _getStats() {
+    const entityIds = this._getEntityIds();
+    if (!entityIds) {
+      return;
+    }
+    this._getStatisticsMetaData(entityIds).then(() => {
+      this._getStatistics(entityIds);
+    });
+  }
+
+  private async _getStatisticsMetaData(statisticIds: string[] | undefined) {
+    const statsMetadataArray = await getStatisticMetadata(
+      this.hass!,
+      statisticIds
+    );
+    const statisticsMetaData = {};
+    statsMetadataArray.forEach((x) => {
+      statisticsMetaData[x.statistic_id] = x;
+    });
+    this._statsMetadata = statisticsMetaData;
+
+    // don't have a use for this yet, just placate the linter for now
+    this._statsMetadata = { ...this._statsMetadata };
+  }
+
+  private async _getStatistics(statisticIds: string[]): Promise<void> {
+    try {
+      // let unitClass;
+      // if (this._config!.unit && this._statsMetadata) {
+      //   const metadata = Object.values(this._statsMetadata).find(
+      //     (metaData) =>
+      //       getDisplayUnit(this.hass!, metaData?.statistic_id, metaData) ===
+      //       this._config!.unit
+      //   );
+      //   if (metadata) {
+      //     unitClass = metadata.unit_class;
+      //     this._unit = this._config!.unit;
+      //   }
+      // }
+      // if (!unitClass && this._statsMetadata) {
+      //   const metadata = this._statsMetadata[this._entities[0]];
+      //   unitClass = metadata?.unit_class;
+      //   this._unit = unitClass
+      //     ? getDisplayUnit(this.hass!, metadata.statistic_id, metadata) ||
+      //       undefined
+      //     : undefined;
+      // }
+      // const unitconfig = unitClass ? { [unitClass]: this._unit } : undefined;
+      const unitconfig = undefined;
+      const period = "hour";
+      const statistics = await fetchStatistics(
+        this.hass!,
+        this._startDate,
+        this._endDate,
+        statisticIds,
+        period,
+        unitconfig,
+        ["mean", "state"]
+      );
+
+      this._statistics = {};
+      statisticIds.forEach((id) => {
+        if (id in statistics) {
+          this._statistics![id] = statistics[id];
+        }
+      });
+    } catch (err) {
+      this._statistics = undefined;
+    }
   }
 
   private async _getHistory() {
