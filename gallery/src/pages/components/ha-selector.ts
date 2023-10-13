@@ -265,11 +265,11 @@ const SCHEMAS: {
       },
       color_temp_mired: {
         name: "Color Temperature Mired",
-        selector: { color_temp: {} },
+        selector: { color_temp_mired: {} },
       },
       color_temp_kelvin: {
         name: "Color Temperature Kelvin",
-        selector: { color_temp: {} },
+        selector: { color_temp_kelvin: {} },
       },
       color_rgb: { name: "Color", selector: { color_rgb: {} } },
     },
