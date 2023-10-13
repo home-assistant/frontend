@@ -1,6 +1,6 @@
 const CleanCSS = require("clean-css");
 const browserslist = require("browserslist");
-const lightningcss = require("lightningcss");
+const { transform, browserslistToTargets, Features } = require("lightningcss");
 
 const cleanCSS = new CleanCSS({ compatibility: "*,-properties.zeroUnits" });
 const decoder = new TextDecoder();
@@ -17,7 +17,7 @@ function unwrapCSS(text, type) {
 }
 
 module.exports.getMinifyCSS = ({ latestBuild, isProdBuild }) => {
-  const cssTargets = lightningcss.browserslistToTargets(
+  const cssTargets = browserslistToTargets(
     browserslist(
       browserslist.loadConfig({
         path: ".",
@@ -30,14 +30,18 @@ module.exports.getMinifyCSS = ({ latestBuild, isProdBuild }) => {
     if (!text) return text;
     const input = wrapCSS(text, type);
     if (!text.includes("babel-plugin-template-html-minifier")) {
-      const { code, warnings: w1 } = lightningcss.transform({
+      const { code, warnings: ws } = transform({
         filename: "style.css",
         code: Buffer.from(input),
         minify: isProdBuild,
         targets: cssTargets,
+        exclude: Features.DirSelector,
       });
-      if (w1.length > 0) {
-        console.warn("[LCSS] Warnings while transforming CSS:", ...w1);
+      const warnings = ws.filter(
+        (w) => w.message !== "Unknown at rule: @apply"
+      );
+      if (warnings.length > 0) {
+        console.warn("[LCSS] Warnings while transforming CSS:", ...warnings);
       }
       const lcss = decoder.decode(code);
       try {
@@ -48,12 +52,12 @@ module.exports.getMinifyCSS = ({ latestBuild, isProdBuild }) => {
       }
     }
     if (isProdBuild) {
-      const { styles: ccss, errors, warnings: w2 } = cleanCSS.minify(input);
+      const { styles: ccss, errors, warnings } = cleanCSS.minify(input);
       if (errors.length > 0) {
         console.error("[CCSS] Errors while transforming CSS:", ...errors);
       }
-      if (w2.length > 0) {
-        console.warn("[CCSS] Warnings while transforming CSS:", ...w2);
+      if (warnings.length > 0) {
+        console.warn("[CCSS] Warnings while transforming CSS:", ...warnings);
       }
       try {
         return unwrapCSS(ccss, type);
