@@ -206,6 +206,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             ></ha-relative-time>
           `;
         }
+        if (stateObj.attributes[content] == null) {
+          return undefined;
+        }
         return this.hass!.formatEntityAttributeValue(stateObj, content);
       })
       .filter(Boolean);
