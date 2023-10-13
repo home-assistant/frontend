@@ -29,7 +29,10 @@ module.exports.getMinifyCSS = ({ latestBuild, isProdBuild }) => {
   return (text, type) => {
     if (!text) return text;
     const input = wrapCSS(text, type);
-    if (!text.includes("babel-plugin-template-html-minifier")) {
+    if (
+      !text.includes("babel-plugin-template-html-minifier") &&
+      !text.includes("@apply")
+    ) {
       const { code, warnings: ws } = transform({
         filename: "style.css",
         code: Buffer.from(input),
