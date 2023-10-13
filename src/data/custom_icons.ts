@@ -2,7 +2,7 @@ import { customIconsets } from "./custom_iconsets";
 
 export interface CustomIcon {
   path?: string;
-  innerSvg?: string;
+  secondaryPath?: string;
   viewBox?: string;
 }
 

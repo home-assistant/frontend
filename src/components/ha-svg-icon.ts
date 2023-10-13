@@ -1,13 +1,11 @@
 import { css, CSSResultGroup, LitElement, svg, SVGTemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-// eslint-disable-next-line import/extensions
-import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 
 @customElement("ha-svg-icon")
 export class HaSvgIcon extends LitElement {
   @property() public path?: string;
 
-  @property() public innerSvg?: string;
+  @property() public secondaryPath?: string;
 
   @property() public viewBox?: string;
 
@@ -20,13 +18,18 @@ export class HaSvgIcon extends LitElement {
       role="img"
       aria-hidden="true"
     >
-      ${
-        this.innerSvg
-          ? svg`${unsafeSVG(this.innerSvg)}`
-          : this.path
-          ? svg`<g><path d=${this.path}></path></g>`
-          : ""
-      }
+      <g>
+        ${
+          this.path
+            ? svg`<path class="primary-path" d=${this.path}></path>`
+            : ""
+        }
+        ${
+          this.secondaryPath
+            ? svg`<path class="secondary-path" d=${this.secondaryPath}></path>`
+            : ""
+        }
+      </g>
     </svg>`;
   }
 
@@ -47,6 +50,14 @@ export class HaSvgIcon extends LitElement {
         height: 100%;
         pointer-events: none;
         display: block;
+      }
+      path.primary-path {
+        fill: var(--icon-primary-color, currentcolor);
+        opacity: var(--icon-primary-opactity, 1);
+      }
+      path.secondary-path {
+        fill: var(--icon-secondary-color, currentcolor);
+        opacity: var(--icon-secondary-opactity, 0.5);
       }
     `;
   }

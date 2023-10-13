@@ -47,7 +47,7 @@ export class HaIcon extends LitElement {
 
   @state() private _path?: string;
 
-  @state() private _innerSvg?: string;
+  @state() private _secondaryPath?: string;
 
   @state() private _viewBox?: string;
 
@@ -57,7 +57,7 @@ export class HaIcon extends LitElement {
     super.willUpdate(changedProps);
     if (changedProps.has("icon")) {
       this._path = undefined;
-      this._innerSvg = undefined;
+      this._secondaryPath = undefined;
       this._viewBox = undefined;
       this._loadIcon();
     }
@@ -73,7 +73,7 @@ export class HaIcon extends LitElement {
     }
     return html`<ha-svg-icon
       .path=${this._path}
-      .innerSvg=${this._innerSvg}
+      .secondaryPath=${this._secondaryPath}
       .viewBox=${this._viewBox}
     ></ha-svg-icon>`;
   }
@@ -179,7 +179,7 @@ export class HaIcon extends LitElement {
       return;
     }
     this._path = icon.path;
-    this._innerSvg = icon.innerSvg;
+    this._secondaryPath = icon.secondaryPath;
     this._viewBox = icon.viewBox;
   }
 
