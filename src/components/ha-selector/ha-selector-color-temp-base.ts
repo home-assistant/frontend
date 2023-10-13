@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { property } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -43,16 +43,4 @@ export class BaseTemperatureSelector extends LitElement {
       value: Number((ev.target as any).value),
     });
   }
-
-  static styles = css`
-    ha-labeled-slider {
-      --ha-slider-background: -webkit-linear-gradient(
-        var(--float-end),
-        rgb(255, 160, 0) 0%,
-        white 50%,
-        rgb(166, 209, 255) 100%
-      );
-      --paper-slider-knob-start-border-color: var(--primary-color);
-    }
-  `;
 }

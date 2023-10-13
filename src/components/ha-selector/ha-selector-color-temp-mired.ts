@@ -1,3 +1,4 @@
+import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { ColorTempMiredSelector } from "../../data/selector";
 import { BaseTemperatureSelector } from "./ha-selector-color-temp-base";
@@ -16,6 +17,18 @@ export class HaColorTempSelectorMired extends BaseTemperatureSelector {
       this.maxValue = this.selector.color_temp_mired?.max ?? this.maxValue;
     }
   }
+
+  static styles = css`
+    ha-labeled-slider {
+      --ha-slider-background: -webkit-linear-gradient(
+        var(--float-end),
+        rgb(255, 160, 0) 0%,
+        white 50%,
+        rgb(166, 209, 255) 100%
+      );
+      --paper-slider-knob-start-border-color: var(--primary-color);
+    }
+  `;
 }
 
 declare global {
