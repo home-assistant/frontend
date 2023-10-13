@@ -214,7 +214,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       .filter(Boolean);
 
     if (!values.length) {
-      return nothing;
+      return "-";
     }
 
     return html`
