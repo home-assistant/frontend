@@ -1,10 +1,8 @@
-import { SvgPath } from "../components/ha-svg-icon";
 import { customIconsets } from "./custom_iconsets";
 
 export interface CustomIcon {
-  // For backward compatibility with unique path icons
-  path: string;
-  paths: SvgPath[];
+  path?: string;
+  innerSvg?: string;
   viewBox?: string;
 }
 

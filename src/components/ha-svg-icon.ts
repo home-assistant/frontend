@@ -1,39 +1,15 @@
-import {
-  css,
-  CSSResultGroup,
-  LitElement,
-  nothing,
-  svg,
-  SVGTemplateResult,
-} from "lit";
+import { css, CSSResultGroup, LitElement, svg, SVGTemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { DirectiveResult } from "lit/directive";
+// eslint-disable-next-line import/extensions
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 
 @customElement("ha-svg-icon")
 export class HaSvgIcon extends LitElement {
-  @property() public paths?: SvgPath[];
+  @property() public path?: string;
+
+  @property() public innerSvg?: string;
 
   @property() public viewBox?: string;
-
-  // For backward compatibility with unique path icons
-  @property()
-  public set path(path: string | undefined) {
-    if (path !== undefined) {
-      this.paths = [
-        {
-          value: path,
-        } as SvgPath,
-      ];
-    } else {
-      this.paths = undefined;
-    }
-  }
-
-  // For backward compatibility with unique path icons
-  public get path(): string | undefined {
-    return this.paths?.map((path) => path.value).join("\n");
-  }
 
   protected render(): SVGTemplateResult {
     return svg`
@@ -44,16 +20,14 @@ export class HaSvgIcon extends LitElement {
       role="img"
       aria-hidden="true"
     >
-      <g>
-      ${this.renderPaths()}
-      </g>
+      ${
+        this.innerSvg
+          ? svg`${unsafeSVG(this.innerSvg)}`
+          : this.path
+          ? svg`<g><path d=${this.path}></path></g>`
+          : ""
+      }
     </svg>`;
-  }
-
-  protected renderPaths(): DirectiveResult[] | SVGTemplateResult {
-    return this.paths !== undefined
-      ? this.paths.map((path) => this.renderPath(path))
-      : svg`${nothing}`;
   }
 
   static get styles(): CSSResultGroup {
@@ -76,29 +50,9 @@ export class HaSvgIcon extends LitElement {
       }
     `;
   }
-
-  protected renderPath(path: SvgPath): DirectiveResult {
-    return unsafeSVG(
-      `<path d="${path.value}" ${
-        path.attributes !== undefined
-          ? Object.entries(path.attributes)
-              .map(([key, value]) => `${key}="${value}"`)
-              .join(" ")
-          : ""
-      }></path>`
-    );
-  }
 }
 declare global {
   interface HTMLElementTagNameMap {
     "ha-svg-icon": HaSvgIcon;
   }
-}
-
-// https://developer.mozilla.org/en-US/docs/Web/SVG/Element/path#attributes
-export interface SvgPath {
-  value: string;
-  attributes?: {
-    [key: string]: string;
-  };
 }
