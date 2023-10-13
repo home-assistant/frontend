@@ -47,8 +47,9 @@ const LOAD_ELEMENTS = {
   tts: () => import("./ha-selector-tts"),
   tts_voice: () => import("./ha-selector-tts-voice"),
   location: () => import("./ha-selector-location"),
-  color_temp: () => import("./ha-selector-color-temp"),
+  color_temp: () => import("./ha-selector-color-temp-old"),
   color_temp_kelvin: () => import("./ha-selector-color-temp-kelvin"),
+  color_temp_mired: () => import("./ha-selector-color-temp-mired"),
   ui_action: () => import("./ha-selector-ui-action"),
   ui_color: () => import("./ha-selector-ui-color"),
 };

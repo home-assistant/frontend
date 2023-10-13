@@ -1,65 +1,25 @@
-// import { css, html, LitElement } from "lit";
-// import { customElement, property } from "lit/decorators";
-// import { fireEvent } from "../../common/dom/fire_event";
-// import type { ColorTempSelector } from "../../data/selector";
-// import type { HomeAssistant } from "../../types";
-// import "../ha-labeled-slider";
+import { customElement, property } from "lit/decorators";
+import type { ColorTempMiredSelector } from "../../data/selector";
+import { BaseTemperatureSelector } from "./ha-selector-color-temp-base";
 
-// @customElement("ha-selector-color_temp")
-// export class HaColorTempSelectorMired extends LitElement {
-//   @property() public hass!: HomeAssistant;
+@customElement("ha-selector-color_temp_mired")
+export class HaColorTempSelectorMired extends BaseTemperatureSelector {
+  @property() public selector!: ColorTempMiredSelector;
 
-//   @property() public selector!: ColorTempSelector;
+  @property() public minValue: number = 153;
 
-//   @property() public value?: string;
+  @property() public maxValue: number = 500;
 
-//   @property() public label?: string;
+  updated(changedProperties) {
+    if (changedProperties.has("selector")) {
+      this.minValue = this.selector.color_temp_mired?.min ?? this.minValue;
+      this.maxValue = this.selector.color_temp_mired?.max ?? this.maxValue;
+    }
+  }
+}
 
-//   @property() public helper?: string;
-
-//   @property({ type: Boolean, reflect: true }) public disabled = false;
-
-//   @property({ type: Boolean }) public required = true;
-
-//   protected render() {
-//     return html`
-//       <ha-labeled-slider
-//         pin
-//         icon="hass:thermometer"
-//         .caption=${this.label || ""}
-//         .min=${this.selector.color_temp?.min_mireds ?? 153}
-//         .max=${this.selector.color_temp?.max_mireds ?? 500}
-//         .value=${this.value}
-//         .disabled=${this.disabled}
-//         .helper=${this.helper}
-//         .required=${this.required}
-//         @change=${this._valueChanged}
-//       ></ha-labeled-slider>
-//     `;
-//   }
-
-//   private _valueChanged(ev: CustomEvent) {
-//     fireEvent(this, "value-changed", {
-//       value: Number((ev.target as any).value),
-//     });
-//   }
-
-//   static styles = css`
-//     ha-labeled-slider {
-//       --ha-slider-background: -webkit-linear-gradient(
-//         var(--float-end),
-//         rgb(255, 160, 0) 0%,
-//         white 50%,
-//         rgb(166, 209, 255) 100%
-//       );
-//       /* The color temp minimum value shouldn't be rendered differently. It's not "off". */
-//       --paper-slider-knob-start-border-color: var(--primary-color);
-//     }
-//   `;
-// }
-
-// declare global {
-//   interface HTMLElementTagNameMap {
-//     "ha-selector-color_temp_mired": HaColorTempSelectorMired;
-//   }
-// }
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-selector-color_temp_mired": HaColorTempSelectorMired;
+  }
+}

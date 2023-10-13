@@ -1,15 +1,11 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
-import type { OldColorTempSelector } from "../../data/selector";
+import { property } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
+import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-labeled-slider";
 
-@customElement("ha-selector-color_temp")
-export class HaColorTempSelector extends LitElement {
+export class BaseTemperatureSelector extends LitElement {
   @property() public hass!: HomeAssistant;
-
-  @property() public selector!: OldColorTempSelector;
 
   @property() public value?: string;
 
@@ -21,14 +17,18 @@ export class HaColorTempSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
+  @property() public minValue: number = 0;
+
+  @property() public maxValue: number = 0;
+
   protected render() {
     return html`
       <ha-labeled-slider
         pin
         icon="hass:thermometer"
         .caption=${this.label || ""}
-        .min=${this.selector.color_temp?.min_mireds ?? 153}
-        .max=${this.selector.color_temp?.max_mireds ?? 500}
+        .min=${this.minValue}
+        .max=${this.maxValue}
         .value=${this.value}
         .disabled=${this.disabled}
         .helper=${this.helper}
@@ -52,14 +52,7 @@ export class HaColorTempSelector extends LitElement {
         white 50%,
         rgb(166, 209, 255) 100%
       );
-      /* The color temp minimum value shouldn't be rendered differently. It's not "off". */
       --paper-slider-knob-start-border-color: var(--primary-color);
     }
   `;
-}
-
-declare global {
-interface HTMLElementTagNameMap {
-"ha-selector-color_temp": HaColorTempSelector;
-}
 }
