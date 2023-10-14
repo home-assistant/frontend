@@ -93,28 +93,23 @@ export class HuiNotificationDrawer extends LitElement {
 
     return html`
       <ha-drawer type="modal" open @MDCDrawer:closed=${this._dialogClosed}>
-        <ha-header-bar>
-          <div slot="title">
-            ${this.hass.localize("ui.notification_drawer.title")}
-          </div>
+        <div class="title">
+          <span>${this.hass.localize("ui.notification_drawer.title")}</span>
           <ha-icon-button-prev
-            slot="actionItems"
             .hass=${this.hass}
-            @click=${this.closeDialog}
             .label=${this.hass.localize("ui.notification_drawer.close")}
+            @click=${this.closeDialog}
           >
           </ha-icon-button-prev>
-        </ha-header-bar>
+        </div>
         <div class="notifications">
           ${notifications.length
             ? html`${notifications.map(
                 (notification) =>
-                  html`<div class="notification">
-                    <notification-item
-                      .hass=${this.hass}
-                      .notification=${notification}
-                    ></notification-item>
-                  </div>`
+                  html`<notification-item
+                    .hass=${this.hass}
+                    .notification=${notification}
+                  ></notification-item>`
               )}
               ${this._notifications.length > 1
                 ? html`<div class="notification-actions">
@@ -125,9 +120,8 @@ export class HuiNotificationDrawer extends LitElement {
                     </mwc-button>
                   </div>`
                 : ""}`
-            : html` <div class="empty">
+            : html`<div class="empty">
                 ${this.hass.localize("ui.notification_drawer.empty")}
-                <div></div>
               </div>`}
         </div>
       </ha-drawer>
@@ -145,27 +139,40 @@ export class HuiNotificationDrawer extends LitElement {
   }
 
   static styles = css`
-    ha-header-bar {
-      --mdc-theme-on-primary: var(--primary-text-color);
-      --mdc-theme-primary: var(--primary-background-color);
-      border-bottom: 1px solid var(--divider-color);
-      display: block;
+    ha-drawer {
+      --mdc-theme-surface: var(--primary-background-color);
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      height: var(--header-height);
+      padding: 0 16px 0 24px;
+      padding-inline: 24px 16px;
+
+      color: var(--secondary-text-color);
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .title span {
+      margin-right: auto;
     }
 
     .notifications {
       overflow-y: auto;
-      padding-top: 16px;
+      padding-top: 4px;
       padding-left: env(safe-area-inset-left);
       padding-right: env(safe-area-inset-right);
       padding-bottom: env(safe-area-inset-bottom);
-      height: calc(100% - 1px - var(--header-height));
+      height: calc(100% - var(--header-height));
       box-sizing: border-box;
-      background-color: var(--primary-background-color);
       color: var(--primary-text-color);
     }
 
-    .notification {
-      padding: 0 16px 16px;
+    notification-item {
+      display: block;
+      margin: 0 16px 16px;
     }
 
     .notification-actions {
