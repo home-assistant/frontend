@@ -39,7 +39,7 @@ import {
   formatDate,
   formatDateMonth,
   formatDateMonthYear,
-  formatDateShort,
+  formatDateVeryShort,
   formatDateWeekdayDay,
   formatDateYear,
 } from "../../common/datetime/format_date";
@@ -128,7 +128,7 @@ _adapters._date.override({
           this.options.config
         );
       case "day":
-        return formatDateShort(
+        return formatDateVeryShort(
           new Date(time),
           this.options.locale,
           this.options.config

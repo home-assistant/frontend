@@ -119,11 +119,15 @@ export class AssistPipelineRunDebug extends LitElement {
                   </ha-button>
                 `
               : this._finished
-              ? html`
-                  <ha-button @click=${this._runAudioPipeline}>
+              ? this._pipelineRuns[0].init_options!.start_stage === "wake_word"
+                ? html`
+                    <ha-button @click=${this._runAudioWakeWordPipeline}>
+                      Continue listening for wake word
+                    </ha-button>
+                  `
+                : html`<ha-button @click=${this._runAudioPipeline}>
                     Continue talking
-                  </ha-button>
-                `
+                  </ha-button>`
               : html`
                   <ha-formfield label="Continue conversation">
                     <ha-checkbox
@@ -246,7 +250,10 @@ export class AssistPipelineRunDebug extends LitElement {
           const url = updatedRun.tts!.tts_output!.url;
           const audio = new Audio(url);
           audio.addEventListener("ended", () => {
-            if (this._continueConversationCheckbox.checked) {
+            if (
+              this.isConnected &&
+              this._continueConversationCheckbox.checked
+            ) {
               this._runAudioWakeWordPipeline();
             } else {
               this._finished = true;
@@ -320,7 +327,10 @@ export class AssistPipelineRunDebug extends LitElement {
           const url = updatedRun.tts!.tts_output!.url;
           const audio = new Audio(url);
           audio.addEventListener("ended", () => {
-            if (this._continueConversationCheckbox.checked) {
+            if (
+              this.isConnected &&
+              this._continueConversationCheckbox.checked
+            ) {
               this._runAudioPipeline();
             } else {
               this._finished = true;

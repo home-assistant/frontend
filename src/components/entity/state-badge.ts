@@ -140,6 +140,9 @@ export class StateBadge extends LitElement {
         if (domain === "update") {
           hostStyle.borderRadius = "0";
         }
+        if (domain === "media_player") {
+          hostStyle.borderRadius = "8%";
+        }
       } else if (this.color) {
         // Externally provided overriding color wins over state color
         iconStyle.color = this.color;

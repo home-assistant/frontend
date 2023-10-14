@@ -418,6 +418,9 @@
         "conversation_agent": "Conversation agent",
         "none": "None"
       },
+      "country-picker": {
+        "country": "Country"
+      },
       "pipeline-picker": {
         "pipeline": "Assistant",
         "preferred": "Preferred assistant ({preferred})",
@@ -525,11 +528,15 @@
         "start_date": "Start date",
         "end_date": "End date",
         "select": "Select",
+        "select_date_range": "Select time period",
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",
           "this_week": "This week",
-          "last_week": "Last week"
+          "last_week": "Last week",
+          "this_quarter": "This quarter",
+          "this_month": "This month",
+          "this_year": "This year"
         }
       },
       "relative_time": {
@@ -1203,6 +1210,11 @@
           "confirm_action": "Restart",
           "failed": "Failed to restart Home Assistant"
         },
+        "stop": {
+          "confirm_title": "Stop Home Assistant?",
+          "confirm_description": "This will interrupt all running automations and scripts.",
+          "confirm_action": "Stop"
+        },
         "reboot": {
           "title": "Reboot system",
           "description": "Restart the system running Home Assistant and all Add-ons.",
@@ -1456,13 +1468,6 @@
         "method": "Method: {method}",
         "nameservers": "Name Servers: {nameservers}"
       }
-    },
-    "duration": {
-      "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
-      "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
-      "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
-      "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
-      "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
     },
     "weekdays": {
       "monday": "Monday",
@@ -2222,6 +2227,13 @@
               "sign_in": "Sign in"
             }
           },
+          "debug": {
+            "header": "Debug Assistant",
+            "no_runs_found": "No runs found",
+            "older_run": "Older run",
+            "newer_run": "Newer run",
+            "start_debug_run": "Start debug run"
+          },
           "expose": {
             "caption": "Expose",
             "headers": {
@@ -2450,9 +2462,9 @@
                   "type_value": "Fixed number",
                   "type_input": "Numeric value of another entity",
                   "description": {
-                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
+                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
                   }
                 },
                 "persistent_notification": {
@@ -4670,6 +4682,8 @@
             "confirm_cancel": "Are you sure you want to cancel?",
             "show_visual_editor": "Show visual editor",
             "show_code_editor": "Show code editor",
+            "edit_ui": "[%key:ui::panel::config::automation::editor::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::config::automation::editor::edit_yaml%]",
             "add": "Add card",
             "edit": "Edit",
             "clear": "Clear",
@@ -4768,7 +4782,24 @@
               "state_not_equal": "State is not equal to",
               "current_state": "current",
               "condition_explanation": "The card will be shown when ALL conditions below are fulfilled.",
-              "change_type": "Change type"
+              "change_type": "Change type",
+              "add_condition": "Add condition",
+              "condition": {
+                "screen": {
+                  "label": "Screen",
+                  "breakpoints": "Screen sizes",
+                  "breakpoints_list": {
+                    "mobile": "Mobile",
+                    "tablet": "Tablet",
+                    "desktop": "Desktop",
+                    "wide": "Wide"
+                  },
+                  "min": "min: {size}px"
+                },
+                "state": {
+                  "label": "Entity state"
+                }
+              }
             },
             "config": {
               "required": "required",
@@ -5205,10 +5236,6 @@
           },
           "energy_period_selector": {
             "today": "Today",
-            "day": "Day",
-            "week": "Week",
-            "month": "Month",
-            "year": "Year",
             "previous": "Previous",
             "next": "Next",
             "compare": "Compare data"
@@ -5419,7 +5446,7 @@
       },
       "page-authorize": {
         "initializing": "Initializing",
-        "authorizing": "Login to your Home Assistant instance",
+        "authorizing": "Log in to your Home Assistant instance",
         "authorizing_app": "You're about to give the Home Assistant Companion app for {app} access to your Home Assistant instance.",
         "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
         "logging_in_with": "Logging in with {authProviderName}.",
@@ -5429,7 +5456,7 @@
         "form": {
           "working": "Please wait",
           "unknown_error": "Something went wrong",
-          "next": "Login",
+          "next": "Log in",
           "start_over": "Start over",
           "error": "Error: {error}",
           "providers": {
@@ -5476,7 +5503,7 @@
                 "invalid_code": "Invalid authentication code"
               },
               "abort": {
-                "login_expired": "Session expired, please login again."
+                "login_expired": "Session expired, please log in again."
               }
             },
             "legacy_api_password": {
@@ -5509,7 +5536,7 @@
                   "data": {
                     "user": "User"
                   },
-                  "description": "Please select a user you want to login as:"
+                  "description": "Please select a user you want to log in as:"
                 }
               },
               "abort": {
@@ -5853,7 +5880,14 @@
           "addons": "[%key:supervisor::backup::addons%]",
           "password_protection": "[%key:supervisor::backup::password_protection%]",
           "password": "[%key:supervisor::backup::password%]",
-          "confirm_password": "[%key:supervisor::backup::confirm_password%]"
+          "confirm_password": "[%key:supervisor::backup::confirm_password%]",
+          "confirm_restore_partial_backup_title": "[%key:supervisor::backup::confirm_restore_partial_backup_title%]",
+          "confirm_restore_partial_backup_text": "[%key:supervisor::backup::confirm_restore_partial_backup_text%]",
+          "confirm_restore_full_backup_title": "[%key:supervisor::backup::confirm_restore_full_backup_title%]",
+          "confirm_restore_full_backup_text": "[%key:supervisor::backup::confirm_restore_full_backup_text%]",
+          "restore": "[%key:supervisor::backup::restore%]",
+          "close": "[%key:ui::common::close%]",
+          "cancel": "[%key:ui::common::cancel%]"
         }
       },
       "custom": {
@@ -6256,7 +6290,8 @@
     "backup": {
       "search": "[%key:ui::panel::config::backup::picker::search%]",
       "no_backups": "You don't have any backups yet.",
-      "create_blocked_not_running": "Creating a backup is not possible right now because the system is in {state} state.",
+      "create_blocked_not_running": "Creating a backup is not possible right now because the system is in \"{state}\" state.",
+      "restore_blocked_not_running": "Restoring a backup is not possible right now because the system is in \"{state}\" state.",
       "delete_selected": "Delete selected backups",
       "delete_backup_title": "Delete backup",
       "delete_backup_text": "Do you want to delete {number} {number, plural,\n  one {backup}\n  other {backups}\n}?",
@@ -6264,6 +6299,7 @@
       "selected": "{number} selected",
       "failed_to_delete": "Failed to delete",
       "could_not_create": "Could not create backup",
+      "could_not_restore": "Could not restore backup",
       "upload_backup": "Upload backup",
       "download_backup": "Download backup",
       "create_backup": "Create backup",
@@ -6284,7 +6320,21 @@
       "password_protection": "Password protection",
       "enter_password": "Please enter a password.",
       "passwords_not_matching": "The passwords does not match",
-      "backup_already_running": "A backup or restore is already running, creating a new backup is currently not possible, try again later."
+      "backup_already_running": "A backup or restore is already running. Creating a new backup is currently not possible, try again later.",
+      "confirm_restore_partial_backup_title": "Restore partial backup",
+      "confirm_restore_partial_backup_text": "The backup will be restored. Depending on the size of the backup, this can take up to 45 min.",
+      "confirm_restore_full_backup_title": "Restore full backup",
+      "confirm_restore_full_backup_text": "Your entire system will be wiped and the backup will be restored. Depending on the size of the backup, this can take up to 45 min.",
+      "confirm_delete_title": "Delete backup",
+      "confirm_delete_text": "This backup will be permanently deleted and cannot be restored later.",
+      "restore": "Restore",
+      "close": "[%key:ui::common::close%]",
+      "cancel": "[%key:ui::common::cancel%]",
+      "delete": "[%key:ui::common::delete%]",
+      "download": "Download",
+      "more_actions": "More actions",
+      "remote_download_title": "Potentially slow download",
+      "remote_download_text": "You are accessing Home Assistant via remote access. Downloading backups over the Nabu Casa URL will take some time. If you are at home, cancel this dialog and enter your local URL, such as 'http://homeassistant.local:8123'"
     },
     "dialog": {
       "network": {
