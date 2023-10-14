@@ -306,9 +306,9 @@ class LightRgbColorPicker extends LitElement {
   }
 
   private _wvSliderChanged(ev: CustomEvent) {
-    const target = ev.target as any;
+    const target = ev.detail as any;
     let wv = Number(target.value);
-    const name = target.name;
+    const name = (ev.target as any).name;
 
     if (isNaN(wv)) {
       return;
@@ -355,7 +355,7 @@ class LightRgbColorPicker extends LitElement {
   }
 
   private _colorBrightnessSliderChanged(ev: CustomEvent) {
-    const target = ev.target as any;
+    const target = ev.detail as any;
     let value = Number(target.value);
 
     if (isNaN(value)) {

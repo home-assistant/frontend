@@ -9,7 +9,7 @@ export class HaSlider extends MdSlider {
     css`
       :host {
         --md-sys-color-primary: var(--primary-color);
-        --md-sys-color-outline: var(--divider-color);
+        --md-sys-color-outline: var(--outline-color);
 
         min-width: 100px;
         min-inline-size: 100px;

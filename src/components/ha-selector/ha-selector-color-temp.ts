@@ -40,7 +40,7 @@ export class HaColorTempSelector extends LitElement {
 
   private _valueChanged(ev: CustomEvent) {
     fireEvent(this, "value-changed", {
-      value: Number((ev.target as any).value),
+      value: Number((ev.detail as any).value),
     });
   }
 
