@@ -35,7 +35,7 @@ class DialogZWaveJSHardResetController extends LitElement {
       return nothing;
     }
 
-    return html` <ha-dialog
+    return html`<ha-dialog
       open
       @closed=${this.closeDialog}
       .heading=${createCloseHeading(
@@ -47,7 +47,7 @@ class DialogZWaveJSHardResetController extends LitElement {
         )
       )}
     >
-      ${!this._done
+      ${this._done
         ? html`<p>
             ${this.hass.localize(
               `ui.panel.config.zwave_js.hard_reset_controller.success`
