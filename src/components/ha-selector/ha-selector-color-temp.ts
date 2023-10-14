@@ -47,7 +47,7 @@ export class HaColorTempSelector extends LitElement {
   static styles = css`
     ha-labeled-slider {
       --ha-slider-background: linear-gradient(
-        to right,
+        to var(--float-end),
         rgb(255, 160, 0) 0%,
         white 50%,
         rgb(166, 209, 255) 100%
