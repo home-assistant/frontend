@@ -25,9 +25,12 @@ class DialogZWaveJSHardResetController extends LitElement {
 
   public closeDialog(): void {
     this.entry_id = undefined;
-    this._done = false;
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    if (this._done) {
+      this._done = false;
+      setTimeout(() => history.back(), 0);
+    }
   }
 
   protected render() {
