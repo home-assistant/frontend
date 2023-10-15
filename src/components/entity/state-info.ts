@@ -99,6 +99,10 @@ class StateInfo extends LitElement {
         align-items: center;
       }
 
+      state-badge {
+        flex: none;
+      }
+
       .info {
         margin-left: 8px;
         display: flex;

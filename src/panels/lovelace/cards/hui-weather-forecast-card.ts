@@ -512,6 +512,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         .temp-attribute .temp {
           position: relative;
           margin-right: 24px;
+          direction: ltr;
         }
 
         .temp-attribute .temp span {
@@ -547,6 +548,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
         .attribute {
           white-space: nowrap;
+          direction: ltr;
         }
 
         .forecast {
@@ -604,6 +606,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           font-size: 16px;
           padding: 10px 20px;
           text-align: center;
+        }
+
+        /* ============= RTL ============= */
+        :host([rtl]) .temp-attribute {
+          text-align: left;
         }
 
         /* ============= NARROW ============= */

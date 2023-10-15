@@ -418,6 +418,9 @@
         "conversation_agent": "Conversation agent",
         "none": "None"
       },
+      "country-picker": {
+        "country": "Country"
+      },
       "pipeline-picker": {
         "pipeline": "Assistant",
         "preferred": "Preferred assistant ({preferred})",
@@ -525,11 +528,13 @@
         "start_date": "Start date",
         "end_date": "End date",
         "select": "Select",
+        "select_date_range": "Select time period",
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",
           "this_week": "This week",
           "last_week": "Last week",
+          "this_quarter": "This quarter",
           "this_month": "This month",
           "last_month": "Last month",
           "this_year": "This year",
@@ -2459,9 +2464,9 @@
                   "type_value": "Fixed number",
                   "type_input": "Numeric value of another entity",
                   "description": {
-                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
+                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
                   }
                 },
                 "persistent_notification": {
@@ -5233,10 +5238,6 @@
           },
           "energy_period_selector": {
             "today": "Today",
-            "day": "Day",
-            "week": "Week",
-            "month": "Month",
-            "year": "Year",
             "previous": "Previous",
             "next": "Next",
             "compare": "Compare data"
@@ -5447,7 +5448,7 @@
       },
       "page-authorize": {
         "initializing": "Initializing",
-        "authorizing": "Login to your Home Assistant instance",
+        "authorizing": "Log in to your Home Assistant instance",
         "authorizing_app": "You're about to give the Home Assistant Companion app for {app} access to your Home Assistant instance.",
         "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
         "logging_in_with": "Logging in with {authProviderName}.",
@@ -5457,7 +5458,7 @@
         "form": {
           "working": "Please wait",
           "unknown_error": "Something went wrong",
-          "next": "Login",
+          "next": "Log in",
           "start_over": "Start over",
           "error": "Error: {error}",
           "providers": {
@@ -5504,7 +5505,7 @@
                 "invalid_code": "Invalid authentication code"
               },
               "abort": {
-                "login_expired": "Session expired, please login again."
+                "login_expired": "Session expired, please log in again."
               }
             },
             "legacy_api_password": {
@@ -5537,7 +5538,7 @@
                   "data": {
                     "user": "User"
                   },
-                  "description": "Please select a user you want to login as:"
+                  "description": "Please select a user you want to log in as:"
                 }
               },
               "abort": {

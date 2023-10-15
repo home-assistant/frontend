@@ -10,7 +10,6 @@ import {
   LovelaceViewConfig,
 } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
-import { LovelaceStrategyParams } from "../../lovelace/strategies/types";
 
 const setupWizard = async (): Promise<LovelaceViewConfig> => {
   await import("../cards/energy-setup-wizard-card");
@@ -24,16 +23,11 @@ const setupWizard = async (): Promise<LovelaceViewConfig> => {
   };
 };
 
-export interface EnergeryViewStrategyConfig extends LovelaceStrategyConfig {
-  show_date_selection?: boolean;
-}
-
 @customElement("energy-view-strategy")
 export class EnergyViewStrategy extends ReactiveElement {
   static async generate(
-    config: EnergeryViewStrategyConfig,
-    hass: HomeAssistant,
-    params: LovelaceStrategyParams
+    _config: LovelaceStrategyConfig,
+    hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const view: LovelaceViewConfig = { cards: [] };
 
@@ -66,14 +60,6 @@ export class EnergyViewStrategy extends ReactiveElement {
     const hasWater = prefs.energy_sources.some(
       (source) => source.type === "water"
     );
-
-    if (params.narrow || config.show_date_selection) {
-      view.cards!.push({
-        type: "energy-date-selection",
-        collection_key: "energy_dashboard",
-        view_layout: { position: "sidebar" },
-      });
-    }
 
     view.cards!.push({
       type: "energy-compare",
