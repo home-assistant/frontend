@@ -1,7 +1,7 @@
 [modern]
-# Modern builds target recent browsers supporting the latest features to minimize transpilation, polyfills,etc.
+# Modern builds target recent browsers supporting the latest features to minimize transpilation, polyfills, etc.
 # It is served to browsers meeting the following requirements:
-# - released in the last year + current alpha/beta versionss
+# - released in the last year + current alpha/beta versions
 # - Firefox extended support release (ESR)
 # - with global utilization at or above 0.5%
 # - must support dynamic import of ES modules
