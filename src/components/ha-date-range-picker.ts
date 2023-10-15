@@ -7,8 +7,12 @@ import {
   addDays,
   endOfDay,
   endOfWeek,
+  endOfMonth,
+  endOfYear,
   startOfDay,
   startOfWeek,
+  startOfMonth,
+  startOfYear,
 } from "date-fns";
 import {
   css,
@@ -114,6 +118,70 @@ export class HaDateRangePicker extends LitElement {
         [this.hass.localize(
           "ui.components.date-range-picker.ranges.last_week"
         )]: [addDays(weekStart, -7), addDays(weekEnd, -7)],
+        [this.hass.localize(
+          "ui.components.date-range-picker.ranges.this_month"
+        )]: [
+          calcDate(today, startOfMonth, this.hass.locale, this.hass.config, {
+            weekStartsOn,
+          }),
+          calcDate(today, endOfMonth, this.hass.locale, this.hass.config, {
+            weekStartsOn,
+          }),
+        ],
+        [this.hass.localize(
+          "ui.components.date-range-picker.ranges.last_month"
+        )]: [
+          calcDate(
+            addDays(today, -31), // this is not correct
+            startOfMonth,
+            this.hass.locale,
+            this.hass.config,
+            {
+              weekStartsOn,
+            }
+          ),
+          calcDate(
+            addDays(today, -31), // this is not correct
+            endOfMonth,
+            this.hass.locale,
+            this.hass.config,
+            {
+              weekStartsOn,
+            }
+          ),
+        ],
+        [this.hass.localize(
+          "ui.components.date-range-picker.ranges.this_year"
+        )]: [
+          calcDate(today, startOfYear, this.hass.locale, this.hass.config, {
+            weekStartsOn,
+          }),
+          calcDate(today, endOfYear, this.hass.locale, this.hass.config, {
+            weekStartsOn,
+          }),
+        ],
+        [this.hass.localize(
+          "ui.components.date-range-picker.ranges.last_year"
+        )]: [
+          calcDate(
+            addDays(today, -365), // this is not correct
+            startOfYear,
+            this.hass.locale,
+            this.hass.config,
+            {
+              weekStartsOn,
+            }
+          ),
+          calcDate(
+            addDays(today, -365), // this is not correct
+            endOfYear,
+            this.hass.locale,
+            this.hass.config,
+            {
+              weekStartsOn,
+            }
+          ),
+        ],
       };
     }
   }
