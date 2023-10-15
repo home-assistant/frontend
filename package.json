@@ -224,7 +224,7 @@
     "lint-staged": "14.0.1",
     "lit-analyzer": "2.0.0-pre.3",
     "lodash.template": "4.5.0",
-    "magic-string": "0.30.4",
+    "magic-string": "0.30.5",
     "map-stream": "0.0.7",
     "mocha": "10.2.0",
     "object-hash": "3.0.0",
