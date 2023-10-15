@@ -4,6 +4,7 @@
     if (sync) {
       script.async = false;
     }
+    script.crossOrigin = "use-credentials";
     script.src = src;
     return document.head.appendChild(script);
   }
