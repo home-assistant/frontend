@@ -1,9 +1,10 @@
 import { css, unsafeCSS } from "lit";
 import { fontStyles } from "./roboto";
-import { derivedStyles } from "./styles-data";
-
-export const DEFAULT_PRIMARY_COLOR = "#03a9f4" as const;
-export const DEFAULT_ACCENT_COLOR = "#ff9800" as const;
+import {
+  DEFAULT_ACCENT_COLOR,
+  DEFAULT_PRIMARY_COLOR,
+  derivedStyles,
+} from "./styles-data";
 
 const mainStyles = css`
   /*
