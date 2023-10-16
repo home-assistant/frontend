@@ -15,7 +15,7 @@ import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dial
 class DialogZWaveJSHardResetController extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private entry_id?: string;
+  @state() private _entryId?: string;
 
   @state() private _done = false;
 
