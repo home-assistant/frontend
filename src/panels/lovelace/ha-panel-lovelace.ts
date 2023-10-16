@@ -167,8 +167,7 @@ export class LovelacePanel extends LitElement {
       {
         type: DEFAULT_STRATEGY,
       },
-      this.hass!,
-      { narrow: this.narrow }
+      this.hass!
     );
     this._setLovelaceConfig(conf, undefined, "generated");
     this._panelState = "loaded";
@@ -258,8 +257,7 @@ export class LovelacePanel extends LitElement {
       if (rawConf.strategy) {
         conf = await generateLovelaceDashboardStrategy(
           rawConf.strategy,
-          this.hass!,
-          { narrow: this.narrow }
+          this.hass!
         );
       } else {
         conf = rawConf;
@@ -276,8 +274,7 @@ export class LovelacePanel extends LitElement {
         {
           type: DEFAULT_STRATEGY,
         },
-        this.hass!,
-        { narrow: this.narrow }
+        this.hass!
       );
       confMode = "generated";
     } finally {
@@ -365,8 +362,7 @@ export class LovelacePanel extends LitElement {
         if (newConfig.strategy) {
           conf = await generateLovelaceDashboardStrategy(
             newConfig.strategy,
-            this.hass!,
-            { narrow: this.narrow }
+            this.hass!
           );
         } else {
           conf = newConfig;
@@ -404,8 +400,7 @@ export class LovelacePanel extends LitElement {
             {
               type: DEFAULT_STRATEGY,
             },
-            this.hass!,
-            { narrow: this.narrow }
+            this.hass!
           );
           this._updateLovelace({
             config: generatedConf,

@@ -424,6 +424,11 @@ const mainStyles = css`
       line-height: 20px;
     };
 
+    direction: ltr;
+    --direction: ltr;
+    --float-start: left;
+    --float-end: right;
+
     ${unsafeCSS(
       Object.entries(derivedStyles)
         .map(([key, value]) => `--${key}: ${value};`)
