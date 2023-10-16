@@ -1,12 +1,19 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { cleanupMediaTitle } from "../data/media-player";
+import { HomeAssistant } from "../types";
 
 export default class MediaPlayerEntity {
-  constructor(hass, stateObj) {
+  public hass: HomeAssistant;
+
+  public stateObj: HassEntity;
+
+  private _attr: { [key: string]: any };
+
+  constructor(hass: HomeAssistant, stateObj: HassEntity) {
     this.hass = hass;
     this.stateObj = stateObj;
     this._attr = stateObj.attributes;
-    this._feat = this._attr.supported_features;
   }
 
   get isOff() {
@@ -219,7 +226,7 @@ export default class MediaPlayerEntity {
 
   // helper method
 
-  callService(service, data = {}) {
+  callService(service, data: any = {}) {
     data.entity_id = this.stateObj.entity_id;
     this.hass.callService("media_player", service, data);
   }

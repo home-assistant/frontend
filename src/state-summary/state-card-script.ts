@@ -10,7 +10,7 @@ import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 
 @customElement("state-card-script")
-export class StateCardScript extends LitElement {
+class StateCardScript extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public stateObj!: HassEntity;
@@ -69,5 +69,11 @@ export class StateCardScript extends LitElement {
 
   static get styles(): CSSResultGroup {
     return haStyle;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "state-card-script": StateCardScript;
   }
 }
