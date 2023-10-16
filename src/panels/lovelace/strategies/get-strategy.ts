@@ -8,7 +8,6 @@ import { isLegacyStrategy } from "./legacy-strategy";
 import {
   LovelaceDashboardStrategy,
   LovelaceStrategy,
-  LovelaceStrategyParams,
   LovelaceViewStrategy,
 } from "./types";
 
@@ -77,8 +76,7 @@ const generateStrategy = async <T extends LovelaceStrategyConfigType>(
   configType: T,
   renderError: (err: string | Error) => StrategyConfig<T>,
   strategyConfig: LovelaceStrategyConfig,
-  hass: HomeAssistant,
-  params: LovelaceStrategyParams
+  hass: HomeAssistant
 ): Promise<StrategyConfig<T>> => {
   const strategyType = strategyConfig.type;
   if (!strategyType) {
@@ -95,7 +93,6 @@ const generateStrategy = async <T extends LovelaceStrategyConfigType>(
         return (await strategy.generateDashboard({
           config: { strategy: strategyConfig, views: [] },
           hass,
-          narrow: params.narrow,
         })) as StrategyConfig<T>;
       }
       if (configType === "view" && "generateView" in strategy) {
@@ -103,7 +100,6 @@ const generateStrategy = async <T extends LovelaceStrategyConfigType>(
           config: { views: [] },
           view: { strategy: strategyConfig },
           hass,
-          narrow: params.narrow,
         })) as StrategyConfig<T>;
       }
     }
@@ -115,7 +111,7 @@ const generateStrategy = async <T extends LovelaceStrategyConfigType>(
 
     delete config.options;
 
-    return await strategy.generate(config, hass, params);
+    return await strategy.generate(config, hass);
   } catch (err: any) {
     if (err.message !== "timeout") {
       // eslint-disable-next-line
@@ -128,8 +124,7 @@ const generateStrategy = async <T extends LovelaceStrategyConfigType>(
 
 export const generateLovelaceDashboardStrategy = async (
   strategyConfig: LovelaceStrategyConfig,
-  hass: HomeAssistant,
-  params: LovelaceStrategyParams
+  hass: HomeAssistant
 ): Promise<LovelaceConfig> =>
   generateStrategy(
     "dashboard",
@@ -147,14 +142,12 @@ export const generateLovelaceDashboardStrategy = async (
       ],
     }),
     strategyConfig,
-    hass,
-    params
+    hass
   );
 
 export const generateLovelaceViewStrategy = async (
   strategyConfig: LovelaceStrategyConfig,
-  hass: HomeAssistant,
-  params: LovelaceStrategyParams
+  hass: HomeAssistant
 ): Promise<LovelaceViewConfig> =>
   generateStrategy(
     "view",
@@ -167,8 +160,7 @@ export const generateLovelaceViewStrategy = async (
       ],
     }),
     strategyConfig,
-    hass,
-    params
+    hass
   );
 
 /**
@@ -176,18 +168,15 @@ export const generateLovelaceViewStrategy = async (
  */
 export const expandLovelaceConfigStrategies = async (
   config: LovelaceConfig,
-  hass: HomeAssistant,
-  params: LovelaceStrategyParams
+  hass: HomeAssistant
 ): Promise<LovelaceConfig> => {
   const newConfig = config.strategy
-    ? await generateLovelaceDashboardStrategy(config.strategy, hass, params)
+    ? await generateLovelaceDashboardStrategy(config.strategy, hass)
     : { ...config };
 
   newConfig.views = await Promise.all(
     newConfig.views.map((view) =>
-      view.strategy
-        ? generateLovelaceViewStrategy(view.strategy, hass, params)
-        : view
+      view.strategy ? generateLovelaceViewStrategy(view.strategy, hass) : view
     )
   );
 

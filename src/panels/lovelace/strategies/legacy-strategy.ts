@@ -10,7 +10,6 @@ export interface LovelaceDashboardStrategy {
   generateDashboard(info: {
     config?: LovelaceConfig;
     hass: HomeAssistant;
-    narrow: boolean | undefined;
   }): Promise<LovelaceConfig>;
 }
 
@@ -19,6 +18,5 @@ export interface LovelaceViewStrategy {
     view: LovelaceViewConfig;
     config: LovelaceConfig;
     hass: HomeAssistant;
-    narrow: boolean | undefined;
   }): Promise<LovelaceViewConfig>;
 }

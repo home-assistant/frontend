@@ -323,8 +323,7 @@ export class HcMain extends HassElement {
         {
           type: DEFAULT_STRATEGY,
         },
-        this.hass!,
-        { narrow: false }
+        this.hass!
       )
     );
   }

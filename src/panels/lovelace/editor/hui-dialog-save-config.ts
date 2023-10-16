@@ -174,9 +174,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
       await lovelace.saveConfig(
         this._emptyConfig
           ? EMPTY_CONFIG
-          : await expandLovelaceConfigStrategies(lovelace.config, this.hass, {
-              narrow: this._params.narrow,
-            })
+          : await expandLovelaceConfigStrategies(lovelace.config, this.hass)
       );
       lovelace.setEditMode(true);
       this._saving = false;
