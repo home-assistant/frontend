@@ -5,11 +5,12 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
-import { Action, ScriptConfig } from "../../../data/script";
+import { Action, Fields, ScriptConfig } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "../automation/action/ha-automation-action";
+import "./ha-script-fields";
 
 @customElement("manual-script-editor")
 export class HaManualScriptEditor extends LitElement {
@@ -33,6 +34,34 @@ export class HaManualScriptEditor extends LitElement {
             </mwc-button>
           </ha-alert>`
         : ""}
+
+      <div class="header">
+        <h2 id="fields-heading" class="name">
+          ${this.hass.localize("ui.panel.config.script.editor.fields")}
+        </h2>
+        <a
+          href=${documentationUrl(this.hass, "/integrations/script/#fields")}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <ha-icon-button
+            .path=${mdiHelpCircle}
+            .label=${this.hass.localize(
+              "ui.panel.config.script.editor.link_help_fields"
+            )}
+          ></ha-icon-button>
+        </a>
+      </div>
+
+      <ha-script-fields
+        role="region"
+        aria-labelledby="fields-heading"
+        .fields=${this.config.fields}
+        @value-changed=${this._fieldsChanged}
+        .hass=${this.hass}
+        .disabled=${this.disabled}
+      ></ha-script-fields>
+
       <div class="header">
         <h2 id="sequence-heading" class="name">
           ${this.hass.localize("ui.panel.config.script.editor.sequence")}
@@ -61,6 +90,13 @@ export class HaManualScriptEditor extends LitElement {
         .disabled=${this.disabled}
       ></ha-automation-action>
     `;
+  }
+
+  private _fieldsChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    fireEvent(this, "value-changed", {
+      value: { ...this.config!, fields: ev.detail.value as Fields },
+    });
   }
 
   private _sequenceChanged(ev: CustomEvent): void {
