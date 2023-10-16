@@ -47,7 +47,7 @@ documentContainer.innerHTML = `<custom-style>
       --primary-background-color: #fafafa;
       --secondary-background-color: #e5e5e5; /* behind the cards on state */
       --clear-background-color: #ffffff;
-      
+
       /* for header */
       --header-height: 56px;
 
@@ -417,6 +417,11 @@ documentContainer.innerHTML = `<custom-style>
         font-weight: 500;
         line-height: 20px;
       };
+
+      direction: ltr;
+      --direction: ltr;
+      --float-start: left;
+      --float-end: right;
 
       ${Object.entries(derivedStyles)
         .map(([key, value]) => `--${key}: ${value};`)

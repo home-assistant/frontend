@@ -55,33 +55,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/compat-data@npm:^7.22.20, @babel/compat-data@npm:^7.22.6, @babel/compat-data@npm:^7.22.9":
-  version: 7.22.20
-  resolution: "@babel/compat-data@npm:7.22.20"
-  checksum: efedd1d18878c10fde95e4d82b1236a9aba41395ef798cbb651f58dbf5632dbff475736c507b8d13d4c8f44809d41c0eb2ef0d694283af9ba5dd8339b6dab451
+"@babel/compat-data@npm:^7.22.6, @babel/compat-data@npm:^7.22.9, @babel/compat-data@npm:^7.23.2":
+  version: 7.23.2
+  resolution: "@babel/compat-data@npm:7.23.2"
+  checksum: d8dc27437d40907b271161d4c88ffe72ccecb034c730deb1960a417b59a14d7c5ebca8cd80dd458a01cd396a7a329eb48cddcc3791b5a84da33d7f278f7bec6a
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7.23.0, @babel/core@npm:^7.11.1, @babel/core@npm:^7.12.3":
-  version: 7.23.0
-  resolution: "@babel/core@npm:7.23.0"
+"@babel/core@npm:7.23.2, @babel/core@npm:^7.11.1, @babel/core@npm:^7.12.3":
+  version: 7.23.2
+  resolution: "@babel/core@npm:7.23.2"
   dependencies:
     "@ampproject/remapping": ^2.2.0
     "@babel/code-frame": ^7.22.13
     "@babel/generator": ^7.23.0
     "@babel/helper-compilation-targets": ^7.22.15
     "@babel/helper-module-transforms": ^7.23.0
-    "@babel/helpers": ^7.23.0
+    "@babel/helpers": ^7.23.2
     "@babel/parser": ^7.23.0
     "@babel/template": ^7.22.15
-    "@babel/traverse": ^7.23.0
+    "@babel/traverse": ^7.23.2
     "@babel/types": ^7.23.0
     convert-source-map: ^2.0.0
     debug: ^4.1.0
     gensync: ^1.0.0-beta.2
     json5: ^2.2.3
     semver: ^6.3.1
-  checksum: cebd9b48dbc970a7548522f207f245c69567e5ea17ebb1a4e4de563823cf20a01177fe8d2fe19b6e1461361f92fa169fd0b29f8ee9d44eeec84842be1feee5f2
+  checksum: 003897718ded16f3b75632d63cd49486bf67ff206cc7ebd1a10d49e2456f8d45740910d5ec7e42e3faf0deec7a2e96b1a02e766d19a67a8309053f0d4e57c0fe
   languageName: node
   linkType: hard
 
@@ -160,9 +160,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-define-polyfill-provider@npm:^0.4.2":
-  version: 0.4.2
-  resolution: "@babel/helper-define-polyfill-provider@npm:0.4.2"
+"@babel/helper-define-polyfill-provider@npm:^0.4.3":
+  version: 0.4.3
+  resolution: "@babel/helper-define-polyfill-provider@npm:0.4.3"
   dependencies:
     "@babel/helper-compilation-targets": ^7.22.6
     "@babel/helper-plugin-utils": ^7.22.5
@@ -171,7 +171,7 @@ __metadata:
     resolve: ^1.14.2
   peerDependencies:
     "@babel/core": ^7.4.0 || ^8.0.0-0 <8.0.0
-  checksum: 1f6dec0c5d0876d278fe15b71238eccc5f74c4e2efa2c78aaafa8bc2cc96336b8e68d94cd1a78497356c96e8b91b8c1f4452179820624d1702aee2f9832e6569
+  checksum: 5d21e3f47b320e4b5b644195ec405e7ebc3739e48e65899efc808c5fa9c3bf5b06ce0d8ff5246ca99d1411e368f4557bc66730196c5781a5c4e986ee703bee79
   languageName: node
   linkType: hard
 
@@ -250,7 +250,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-remap-async-to-generator@npm:^7.22.5, @babel/helper-remap-async-to-generator@npm:^7.22.9":
+"@babel/helper-remap-async-to-generator@npm:^7.22.20, @babel/helper-remap-async-to-generator@npm:^7.22.5":
   version: 7.22.20
   resolution: "@babel/helper-remap-async-to-generator@npm:7.22.20"
   dependencies:
@@ -335,14 +335,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helpers@npm:^7.23.0":
-  version: 7.23.1
-  resolution: "@babel/helpers@npm:7.23.1"
+"@babel/helpers@npm:^7.23.2":
+  version: 7.23.2
+  resolution: "@babel/helpers@npm:7.23.2"
   dependencies:
     "@babel/template": ^7.22.15
-    "@babel/traverse": ^7.23.0
+    "@babel/traverse": ^7.23.2
     "@babel/types": ^7.23.0
-  checksum: acfc345102045c24ea2a4d60e00dcf8220e215af3add4520e2167700661338e6a80bd56baf44bb764af05ec6621101c9afc315dc107e18c61fa6da8acbdbb893
+  checksum: aaf4828df75ec460eaa70e5c9f66e6dadc28dae3728ddb7f6c13187dbf38030e142194b83d81aa8a31bbc35a5529a5d7d3f3cf59d5d0b595f5dd7f9d8f1ced8e
   languageName: node
   linkType: hard
 
@@ -390,9 +390,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-proposal-decorators@npm:7.23.0":
-  version: 7.23.0
-  resolution: "@babel/plugin-proposal-decorators@npm:7.23.0"
+"@babel/plugin-proposal-decorators@npm:7.23.2":
+  version: 7.23.2
+  resolution: "@babel/plugin-proposal-decorators@npm:7.23.2"
   dependencies:
     "@babel/helper-create-class-features-plugin": ^7.22.15
     "@babel/helper-plugin-utils": ^7.22.5
@@ -401,7 +401,7 @@ __metadata:
     "@babel/plugin-syntax-decorators": ^7.22.10
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: bd678fd06eac4215fe75790c1881e5b3dce97a35afae01c792036de459b5e090cb3839e85ced98c878ac488be45c135c17e679f82e9923d74f2bf3a36ab98b9d
+  checksum: a8f63451c4678ce34268a0493aa4bc702d0ee164b39b53c12d33619ff3b47518c4369163ef49602cde7f0674db6e6e8584ee3d6a414ea0bbc3dc16c0304ef413
   languageName: node
   linkType: hard
 
@@ -657,17 +657,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-async-generator-functions@npm:^7.22.15":
-  version: 7.22.15
-  resolution: "@babel/plugin-transform-async-generator-functions@npm:7.22.15"
+"@babel/plugin-transform-async-generator-functions@npm:^7.23.2":
+  version: 7.23.2
+  resolution: "@babel/plugin-transform-async-generator-functions@npm:7.23.2"
   dependencies:
-    "@babel/helper-environment-visitor": ^7.22.5
+    "@babel/helper-environment-visitor": ^7.22.20
     "@babel/helper-plugin-utils": ^7.22.5
-    "@babel/helper-remap-async-to-generator": ^7.22.9
+    "@babel/helper-remap-async-to-generator": ^7.22.20
     "@babel/plugin-syntax-async-generators": ^7.8.4
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: fad98786b446ce63bde0d14a221e2617eef5a7bbca62b49d96f16ab5e1694521234cfba6145b830fbf9af16d60a8a3dbf148e8694830bd91796fe333b0599e73
+  checksum: e1abae0edcda7304d7c17702ac25a127578791b89c4f767d60589249fa3e50ec33f8c9ff39d3d8d41f00b29947654eaddd4fd586e04c4d598122db745fab2868
   languageName: node
   linkType: hard
 
@@ -695,7 +695,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-block-scoping@npm:^7.22.15":
+"@babel/plugin-transform-block-scoping@npm:^7.23.0":
   version: 7.23.0
   resolution: "@babel/plugin-transform-block-scoping@npm:7.23.0"
   dependencies:
@@ -762,7 +762,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-destructuring@npm:^7.22.15":
+"@babel/plugin-transform-destructuring@npm:^7.23.0":
   version: 7.23.0
   resolution: "@babel/plugin-transform-destructuring@npm:7.23.0"
   dependencies:
@@ -902,7 +902,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-modules-amd@npm:^7.22.5":
+"@babel/plugin-transform-modules-amd@npm:^7.23.0":
   version: 7.23.0
   resolution: "@babel/plugin-transform-modules-amd@npm:7.23.0"
   dependencies:
@@ -914,7 +914,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-modules-commonjs@npm:^7.22.15, @babel/plugin-transform-modules-commonjs@npm:^7.23.0":
+"@babel/plugin-transform-modules-commonjs@npm:^7.23.0":
   version: 7.23.0
   resolution: "@babel/plugin-transform-modules-commonjs@npm:7.23.0"
   dependencies:
@@ -927,7 +927,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-modules-systemjs@npm:^7.22.11":
+"@babel/plugin-transform-modules-systemjs@npm:^7.23.0":
   version: 7.23.0
   resolution: "@babel/plugin-transform-modules-systemjs@npm:7.23.0"
   dependencies:
@@ -1039,7 +1039,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-optional-chaining@npm:^7.22.15":
+"@babel/plugin-transform-optional-chaining@npm:^7.22.15, @babel/plugin-transform-optional-chaining@npm:^7.23.0":
   version: 7.23.0
   resolution: "@babel/plugin-transform-optional-chaining@npm:7.23.0"
   dependencies:
@@ -1123,19 +1123,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-runtime@npm:7.22.15":
-  version: 7.22.15
-  resolution: "@babel/plugin-transform-runtime@npm:7.22.15"
+"@babel/plugin-transform-runtime@npm:7.23.2":
+  version: 7.23.2
+  resolution: "@babel/plugin-transform-runtime@npm:7.23.2"
   dependencies:
     "@babel/helper-module-imports": ^7.22.15
     "@babel/helper-plugin-utils": ^7.22.5
-    babel-plugin-polyfill-corejs2: ^0.4.5
-    babel-plugin-polyfill-corejs3: ^0.8.3
-    babel-plugin-polyfill-regenerator: ^0.5.2
+    babel-plugin-polyfill-corejs2: ^0.4.6
+    babel-plugin-polyfill-corejs3: ^0.8.5
+    babel-plugin-polyfill-regenerator: ^0.5.3
     semver: ^6.3.1
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 7edf20b13d02f856276221624abf3b8084daa3f265a6e5c70ee0d0c63087fcf726dc8756a9c8bb3d25a1ce8697ab66ec8cdd15be992c21aed9971cb5bfe80a5b
+  checksum: 09f4273bfe9600c67e72e26f853f11c24ee4c1cbb3935c4a28a94d388e7c0d8733479d868c333cb34e9c236f1765788c6daef7852331f5c70a3b5543fd0247a1
   languageName: node
   linkType: hard
 
@@ -1256,11 +1256,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:7.22.20, @babel/preset-env@npm:^7.11.0":
-  version: 7.22.20
-  resolution: "@babel/preset-env@npm:7.22.20"
+"@babel/preset-env@npm:7.23.2, @babel/preset-env@npm:^7.11.0":
+  version: 7.23.2
+  resolution: "@babel/preset-env@npm:7.23.2"
   dependencies:
-    "@babel/compat-data": ^7.22.20
+    "@babel/compat-data": ^7.23.2
     "@babel/helper-compilation-targets": ^7.22.15
     "@babel/helper-plugin-utils": ^7.22.5
     "@babel/helper-validator-option": ^7.22.15
@@ -1286,15 +1286,15 @@ __metadata:
     "@babel/plugin-syntax-top-level-await": ^7.14.5
     "@babel/plugin-syntax-unicode-sets-regex": ^7.18.6
     "@babel/plugin-transform-arrow-functions": ^7.22.5
-    "@babel/plugin-transform-async-generator-functions": ^7.22.15
+    "@babel/plugin-transform-async-generator-functions": ^7.23.2
     "@babel/plugin-transform-async-to-generator": ^7.22.5
     "@babel/plugin-transform-block-scoped-functions": ^7.22.5
-    "@babel/plugin-transform-block-scoping": ^7.22.15
+    "@babel/plugin-transform-block-scoping": ^7.23.0
     "@babel/plugin-transform-class-properties": ^7.22.5
     "@babel/plugin-transform-class-static-block": ^7.22.11
     "@babel/plugin-transform-classes": ^7.22.15
     "@babel/plugin-transform-computed-properties": ^7.22.5
-    "@babel/plugin-transform-destructuring": ^7.22.15
+    "@babel/plugin-transform-destructuring": ^7.23.0
     "@babel/plugin-transform-dotall-regex": ^7.22.5
     "@babel/plugin-transform-duplicate-keys": ^7.22.5
     "@babel/plugin-transform-dynamic-import": ^7.22.11
@@ -1306,9 +1306,9 @@ __metadata:
     "@babel/plugin-transform-literals": ^7.22.5
     "@babel/plugin-transform-logical-assignment-operators": ^7.22.11
     "@babel/plugin-transform-member-expression-literals": ^7.22.5
-    "@babel/plugin-transform-modules-amd": ^7.22.5
-    "@babel/plugin-transform-modules-commonjs": ^7.22.15
-    "@babel/plugin-transform-modules-systemjs": ^7.22.11
+    "@babel/plugin-transform-modules-amd": ^7.23.0
+    "@babel/plugin-transform-modules-commonjs": ^7.23.0
+    "@babel/plugin-transform-modules-systemjs": ^7.23.0
     "@babel/plugin-transform-modules-umd": ^7.22.5
     "@babel/plugin-transform-named-capturing-groups-regex": ^7.22.5
     "@babel/plugin-transform-new-target": ^7.22.5
@@ -1317,7 +1317,7 @@ __metadata:
     "@babel/plugin-transform-object-rest-spread": ^7.22.15
     "@babel/plugin-transform-object-super": ^7.22.5
     "@babel/plugin-transform-optional-catch-binding": ^7.22.11
-    "@babel/plugin-transform-optional-chaining": ^7.22.15
+    "@babel/plugin-transform-optional-chaining": ^7.23.0
     "@babel/plugin-transform-parameters": ^7.22.15
     "@babel/plugin-transform-private-methods": ^7.22.5
     "@babel/plugin-transform-private-property-in-object": ^7.22.11
@@ -1334,15 +1334,15 @@ __metadata:
     "@babel/plugin-transform-unicode-regex": ^7.22.5
     "@babel/plugin-transform-unicode-sets-regex": ^7.22.5
     "@babel/preset-modules": 0.1.6-no-external-plugins
-    "@babel/types": ^7.22.19
-    babel-plugin-polyfill-corejs2: ^0.4.5
-    babel-plugin-polyfill-corejs3: ^0.8.3
-    babel-plugin-polyfill-regenerator: ^0.5.2
+    "@babel/types": ^7.23.0
+    babel-plugin-polyfill-corejs2: ^0.4.6
+    babel-plugin-polyfill-corejs3: ^0.8.5
+    babel-plugin-polyfill-regenerator: ^0.5.3
     core-js-compat: ^3.31.0
     semver: ^6.3.1
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 99357a5cb30f53bacdc0d1cd6dff0f052ea6c2d1ba874d969bba69897ef716e87283e84a59dc52fb49aa31fd1b6f55ed756c64c04f5678380700239f6030b881
+  checksum: 49327ef584b529b56aedd6577937b80c0d89603c68b23795495a13af04b5aa008db9ad04cd280423600cdc0d3cce13ae9d0d9a977db5c8193697b20ced8a10b2
   languageName: node
   linkType: hard
 
@@ -1359,9 +1359,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-typescript@npm:7.23.0":
-  version: 7.23.0
-  resolution: "@babel/preset-typescript@npm:7.23.0"
+"@babel/preset-typescript@npm:7.23.2":
+  version: 7.23.2
+  resolution: "@babel/preset-typescript@npm:7.23.2"
   dependencies:
     "@babel/helper-plugin-utils": ^7.22.5
     "@babel/helper-validator-option": ^7.22.15
@@ -1370,7 +1370,7 @@ __metadata:
     "@babel/plugin-transform-typescript": ^7.22.15
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 3d5fce83e83f11c07e0ea13542bca181abb3b482b8981ec9c64e6add9d7beed3c54d063dc4bc9fd383165c71114a245abef89a289680833c5a8552fe3e7c4407
+  checksum: c4b065c90e7f085dd7a0e57032983ac230c7ffd1d616e4c2b66581e765d5befc9271495f33250bf1cf9b4d436239c8ca3b19ada9f6c419c70bdab2cf6c868f9f
   languageName: node
   linkType: hard
 
@@ -1381,12 +1381,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.23.1, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
-  version: 7.23.1
-  resolution: "@babel/runtime@npm:7.23.1"
+"@babel/runtime@npm:7.23.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
+  version: 7.23.2
+  resolution: "@babel/runtime@npm:7.23.2"
   dependencies:
     regenerator-runtime: ^0.14.0
-  checksum: 0cd0d43e6e7dc7f9152fda8c8312b08321cda2f56ef53d6c22ebdd773abdc6f5d0a69008de90aa41908d00e2c1facb24715ff121274e689305c858355ff02c70
+  checksum: 6c4df4839ec75ca10175f636d6362f91df8a3137f86b38f6cd3a4c90668a0fe8e9281d320958f4fbd43b394988958585a17c3aab2a4ea6bf7316b22916a371fb
   languageName: node
   linkType: hard
 
@@ -1401,9 +1401,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/traverse@npm:^7.23.0":
-  version: 7.23.0
-  resolution: "@babel/traverse@npm:7.23.0"
+"@babel/traverse@npm:^7.23.2":
+  version: 7.23.2
+  resolution: "@babel/traverse@npm:7.23.2"
   dependencies:
     "@babel/code-frame": ^7.22.13
     "@babel/generator": ^7.23.0
@@ -1415,7 +1415,7 @@ __metadata:
     "@babel/types": ^7.23.0
     debug: ^4.1.0
     globals: ^11.1.0
-  checksum: 0b17fae53269e1af2cd3edba00892bc2975ad5df9eea7b84815dab07dfec2928c451066d51bc65b4be61d8499e77db7e547ce69ef2a7b0eca3f96269cb43a0b0
+  checksum: 26a1eea0dde41ab99dde8b9773a013a0dc50324e5110a049f5d634e721ff08afffd54940b3974a20308d7952085ac769689369e9127dea655f868c0f6e1ab35d
   languageName: node
   linkType: hard
 
@@ -1437,18 +1437,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bundle-stats/plugin-webpack-filter@npm:4.7.6":
-  version: 4.7.6
-  resolution: "@bundle-stats/plugin-webpack-filter@npm:4.7.6"
+"@bundle-stats/plugin-webpack-filter@npm:4.7.7":
+  version: 4.7.7
+  resolution: "@bundle-stats/plugin-webpack-filter@npm:4.7.7"
   peerDependencies:
     core-js: ^3.0.0
-  checksum: a7bb72f6222dc8ec06c923d93772c2569885fbeb127d5a7df3e0c88b4f23b7ec7d92ae5525b5ede6a81b00416c8d3a18a00d7637990f51afc1fc0a284d275426
+  checksum: 09ab4c295305043c342db7f0509b551e75d61e6db4e2ca90858e2558e3132ffecb7296ae4a3c049d705eea1fecd2bc70c3ec9f233359e5547a8e60cb79e6cd5e
   languageName: node
   linkType: hard
 
-"@codemirror/autocomplete@npm:6.9.2":
-  version: 6.9.2
-  resolution: "@codemirror/autocomplete@npm:6.9.2"
+"@codemirror/autocomplete@npm:6.10.2":
+  version: 6.10.2
+  resolution: "@codemirror/autocomplete@npm:6.10.2"
   dependencies:
     "@codemirror/language": ^6.0.0
     "@codemirror/state": ^6.0.0
@@ -1459,7 +1459,7 @@ __metadata:
     "@codemirror/state": ^6.0.0
     "@codemirror/view": ^6.0.0
     "@lezer/common": ^1.0.0
-  checksum: 8bdf06c2b4eb1cd6c8a6e1df2eb5c92011fda0bc8970f9d68cc8dad8e4f9d3c243aaa3e42505252af542be8bbaf0a3ed7e23a6b7f603171077cc36845e188190
+  checksum: 360cea6a87ae9c4e3c996903f636a8f47f8ea6cd44504181e69dd8ccf666bad3e8cc6d8935e0eedd8aa118fdfe86ea78f41bc15288f3a7517dbb87115e057563
   languageName: node
   linkType: hard
 
@@ -1509,10 +1509,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/state@npm:6.2.1, @codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.1.4, @codemirror/state@npm:^6.2.0":
-  version: 6.2.1
-  resolution: "@codemirror/state@npm:6.2.1"
-  checksum: d12a321d0471b264b9d3259042bff913a8b939e8d28d408ff452004538a71ca9d5329df3f8a1d8a9183f5b42a7ef5b200737bcab1065714f5ae8e0a5ba9d59d3
+"@codemirror/state@npm:6.3.0, @codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.1.4, @codemirror/state@npm:^6.2.0":
+  version: 6.3.0
+  resolution: "@codemirror/state@npm:6.3.0"
+  checksum: 9d595464488e37375de8548c8f705fa737dc7e7540576810febeabb1d216b025907042f65b6ce5907964bf97ec5fb266082958a3af083ef1cd44b8c111d66ee8
   languageName: node
   linkType: hard
 
@@ -2748,20 +2748,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-slider@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-slider@npm:0.27.0"
-  dependencies:
-    "@material/dom": =14.0.0-canary.53b3cad2f.0
-    "@material/mwc-base": ^0.27.0
-    "@material/mwc-ripple": ^0.27.0
-    "@material/slider": =14.0.0-canary.53b3cad2f.0
-    lit: ^2.0.0
-    tslib: ^2.0.1
-  checksum: 0e7f9d0d418731fb9ba1ffe99cc88e79a4116e92d048476dc24fa87688f13335945fcdc9fef6d6f699e0c6b16fea5ed7527f71193bcf1365177e7ba7a865b140
-  languageName: node
-  linkType: hard
-
 "@material/mwc-switch@npm:0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-switch@npm:0.27.0"
@@ -2985,24 +2971,6 @@ __metadata:
     "@material/theme": 14.0.0-canary.53b3cad2f.0
     tslib: ^2.1.0
   checksum: 6ad9b020c09e9ba402441d7b648f9c250e88f0243a6154d587c889b2d2312d1a13532bb0c7a1dc487193faa33ba8a5e4185cc6e156b8d5421bc71839be0306ad
-  languageName: node
-  linkType: hard
-
-"@material/slider@npm:=14.0.0-canary.53b3cad2f.0":
-  version: 14.0.0-canary.53b3cad2f.0
-  resolution: "@material/slider@npm:14.0.0-canary.53b3cad2f.0"
-  dependencies:
-    "@material/animation": 14.0.0-canary.53b3cad2f.0
-    "@material/base": 14.0.0-canary.53b3cad2f.0
-    "@material/dom": 14.0.0-canary.53b3cad2f.0
-    "@material/elevation": 14.0.0-canary.53b3cad2f.0
-    "@material/feature-targeting": 14.0.0-canary.53b3cad2f.0
-    "@material/ripple": 14.0.0-canary.53b3cad2f.0
-    "@material/rtl": 14.0.0-canary.53b3cad2f.0
-    "@material/theme": 14.0.0-canary.53b3cad2f.0
-    "@material/typography": 14.0.0-canary.53b3cad2f.0
-    tslib: ^2.1.0
-  checksum: 136d6c6f77e4fa586ac375b5a108be06a394f0c55fbb10e73eaa990cd6cb38d2787e278911705571b5336402690e0b88b5fe9de9916704db948247a6b6b0c1fb
   languageName: node
   linkType: hard
 
@@ -3600,15 +3568,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-range-behavior@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/iron-range-behavior@npm:3.0.1"
-  dependencies:
-    "@polymer/polymer": ^3.0.0
-  checksum: da2405650bccc2071bebfd30f379e92d930bd95d306e2626da9d92a07b849f0e5cdc08430bfb03a6ae8f5644ab9364ff64252892da1b1ddc01d2f5f1f026e808
-  languageName: node
-  linkType: hard
-
 "@polymer/iron-resizable-behavior@npm:3.0.1, @polymer/iron-resizable-behavior@npm:^3.0.0-pre.26":
   version: 3.0.1
   resolution: "@polymer/iron-resizable-behavior@npm:3.0.1"
@@ -3661,7 +3620,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-input@npm:3.2.1, @polymer/paper-input@npm:^3.0.0-pre.26":
+"@polymer/paper-input@npm:3.2.1":
   version: 3.2.1
   resolution: "@polymer/paper-input@npm:3.2.1"
   dependencies:
@@ -3700,18 +3659,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-progress@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/paper-progress@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-flex-layout": ^3.0.0-pre.26
-    "@polymer/iron-range-behavior": ^3.0.0-pre.26
-    "@polymer/paper-styles": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.0.0
-  checksum: 5ae0ce84d05ed777c40c27c82559cedc44f1b4ed523a675932cce4a4d6a82f772ee414b21c67db528ea316686c1ed84b53e1850bbb3a6f5c3964339e2c20289b
-  languageName: node
-  linkType: hard
-
 "@polymer/paper-ripple@npm:^3.0.0-pre.26":
   version: 3.0.2
   resolution: "@polymer/paper-ripple@npm:3.0.2"
@@ -3719,23 +3666,6 @@ __metadata:
     "@polymer/iron-a11y-keys-behavior": ^3.0.0-pre.26
     "@polymer/polymer": ^3.0.0
   checksum: dea7d164a1d377ee4ab352d552cb457b810a0e5d562083b2dbcd6afb8371bea6eb4ef93d214d06bfc0a6c10c817ee2bbdb5235f9b2ff21195238292399f494b9
-  languageName: node
-  linkType: hard
-
-"@polymer/paper-slider@npm:3.0.1":
-  version: 3.0.1
-  resolution: "@polymer/paper-slider@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-a11y-keys-behavior": ^3.0.0-pre.26
-    "@polymer/iron-behaviors": ^3.0.0-pre.26
-    "@polymer/iron-flex-layout": ^3.0.0-pre.26
-    "@polymer/iron-form-element-behavior": ^3.0.0-pre.26
-    "@polymer/paper-behaviors": ^3.0.0-pre.27
-    "@polymer/paper-input": ^3.0.0-pre.26
-    "@polymer/paper-progress": ^3.0.0-pre.26
-    "@polymer/paper-styles": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.0.0
-  checksum: ab915606df8150f77ad9e03c845ce5f600882cd7c0b3bb6a6ea77816ee1b40d01d5b3f72f0d8df6ce5e46fa9f0335d3930c8cc46a23cf8d8dfdbc0aeb9c181a4
   languageName: node
   linkType: hard
 
@@ -4764,126 +4694,126 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vaadin/a11y-base@npm:~24.1.11":
-  version: 24.1.11
-  resolution: "@vaadin/a11y-base@npm:24.1.11"
+"@vaadin/a11y-base@npm:~24.2.0":
+  version: 24.2.0
+  resolution: "@vaadin/a11y-base@npm:24.2.0"
   dependencies:
     "@open-wc/dedupe-mixin": ^1.3.0
     "@polymer/polymer": ^3.0.0
-    "@vaadin/component-base": ~24.1.11
+    "@vaadin/component-base": ~24.2.0
     lit: ^2.0.0
-  checksum: e892f964924713def7239aa6da66e4c2e96629fa185f701fb12906851e2ab486f072d50d7934ad52163a95709052d962f33f77460d5c9c46c2ac240d59fbb168
+  checksum: 396e423880a1381b70796710e9dee8c40105ba1b886aaf1a34cd83398cfa83ca9e3b2635a9e0493df7536262d37d7c1abed9f879498a6dcbcf588e96d790441a
   languageName: node
   linkType: hard
 
-"@vaadin/combo-box@npm:24.1.11":
-  version: 24.1.11
-  resolution: "@vaadin/combo-box@npm:24.1.11"
+"@vaadin/combo-box@npm:24.2.0":
+  version: 24.2.0
+  resolution: "@vaadin/combo-box@npm:24.2.0"
   dependencies:
     "@open-wc/dedupe-mixin": ^1.3.0
     "@polymer/polymer": ^3.0.0
-    "@vaadin/a11y-base": ~24.1.11
-    "@vaadin/component-base": ~24.1.11
-    "@vaadin/field-base": ~24.1.11
-    "@vaadin/input-container": ~24.1.11
-    "@vaadin/item": ~24.1.11
-    "@vaadin/lit-renderer": ~24.1.11
-    "@vaadin/overlay": ~24.1.11
-    "@vaadin/vaadin-lumo-styles": ~24.1.11
-    "@vaadin/vaadin-material-styles": ~24.1.11
-    "@vaadin/vaadin-themable-mixin": ~24.1.11
-  checksum: 216406bb56dd5957dbece95664e149236ca1495a996ce6820696aacb73204770d1e671ddd5f4f8ff81d1edd50407756da7ff445ddd16b52f1756f93f28df82d2
+    "@vaadin/a11y-base": ~24.2.0
+    "@vaadin/component-base": ~24.2.0
+    "@vaadin/field-base": ~24.2.0
+    "@vaadin/input-container": ~24.2.0
+    "@vaadin/item": ~24.2.0
+    "@vaadin/lit-renderer": ~24.2.0
+    "@vaadin/overlay": ~24.2.0
+    "@vaadin/vaadin-lumo-styles": ~24.2.0
+    "@vaadin/vaadin-material-styles": ~24.2.0
+    "@vaadin/vaadin-themable-mixin": ~24.2.0
+  checksum: cc9ff9b166fd2629ca75d24e21c2e87745b1e3aa16f7ffffd91d0bb911d860cd3e70276b6321837fbe889cc6132a5c1e46dfe5f15755feaf6e124b259369fd7e
   languageName: node
   linkType: hard
 
-"@vaadin/component-base@npm:~24.1.11":
-  version: 24.1.11
-  resolution: "@vaadin/component-base@npm:24.1.11"
+"@vaadin/component-base@npm:~24.2.0":
+  version: 24.2.0
+  resolution: "@vaadin/component-base@npm:24.2.0"
   dependencies:
     "@open-wc/dedupe-mixin": ^1.3.0
     "@polymer/polymer": ^3.0.0
     "@vaadin/vaadin-development-mode-detector": ^2.0.0
     "@vaadin/vaadin-usage-statistics": ^2.1.0
     lit: ^2.0.0
-  checksum: f3e36a42dc1798436caa6212ecc45c4247c51dc3b7d22d818c96dadcf560c55db1f9a06839d80e00e21b9cfab96e2e583d879866a665a7434cf29288bfb48f32
+  checksum: c4032c579ce22fd904ceda03fab95a818ead4eb471fe00bc8705ea3259fa16d0ab3c2947403daeab995a2ead072fb29bd738731eee329f91cedfaf17bf665395
   languageName: node
   linkType: hard
 
-"@vaadin/field-base@npm:~24.1.11":
-  version: 24.1.11
-  resolution: "@vaadin/field-base@npm:24.1.11"
+"@vaadin/field-base@npm:~24.2.0":
+  version: 24.2.0
+  resolution: "@vaadin/field-base@npm:24.2.0"
   dependencies:
     "@open-wc/dedupe-mixin": ^1.3.0
     "@polymer/polymer": ^3.0.0
-    "@vaadin/a11y-base": ~24.1.11
-    "@vaadin/component-base": ~24.1.11
+    "@vaadin/a11y-base": ~24.2.0
+    "@vaadin/component-base": ~24.2.0
     lit: ^2.0.0
-  checksum: 91dda51812f98ca07cee3a35f3800c936c81ed90afd580fb5b34d12c730f9936f5f39b2156a0fbfdd4f34402c102233fc401246896605d33aa1ffb1944464661
+  checksum: f2594cee0a71e65b8b809b50ba3044c154ea9444e12bdef807a7ed060d4bbd55666bb35314033e67b54476f7c35072bc1e6f0e4724c1334feef48779529e02d6
   languageName: node
   linkType: hard
 
-"@vaadin/icon@npm:~24.1.11":
-  version: 24.1.11
-  resolution: "@vaadin/icon@npm:24.1.11"
+"@vaadin/icon@npm:~24.2.0":
+  version: 24.2.0
+  resolution: "@vaadin/icon@npm:24.2.0"
   dependencies:
     "@polymer/polymer": ^3.0.0
-    "@vaadin/component-base": ~24.1.11
-    "@vaadin/vaadin-lumo-styles": ~24.1.11
-    "@vaadin/vaadin-themable-mixin": ~24.1.11
+    "@vaadin/component-base": ~24.2.0
+    "@vaadin/vaadin-lumo-styles": ~24.2.0
+    "@vaadin/vaadin-themable-mixin": ~24.2.0
     lit: ^2.0.0
-  checksum: 39a82d43119af83a63a898ca2d20dcb3e8f8dbb1f1521776ff0a868b326ef1227623fff43fed0d3451f7e03f5f33b375a0c4b1284094ffad8e4372232f88ce85
+  checksum: 5a1f2621074026f46dc80d59e2e9d4e831afcc5da1cfb00b73d08f870d0feb6abbd2fd9d0622847d6b1538abd1ca544cb74f31797f2704b99e959f0a72f7cf92
   languageName: node
   linkType: hard
 
-"@vaadin/input-container@npm:~24.1.11":
-  version: 24.1.11
-  resolution: "@vaadin/input-container@npm:24.1.11"
+"@vaadin/input-container@npm:~24.2.0":
+  version: 24.2.0
+  resolution: "@vaadin/input-container@npm:24.2.0"
   dependencies:
     "@polymer/polymer": ^3.0.0
-    "@vaadin/component-base": ~24.1.11
-    "@vaadin/vaadin-lumo-styles": ~24.1.11
-    "@vaadin/vaadin-material-styles": ~24.1.11
-    "@vaadin/vaadin-themable-mixin": ~24.1.11
-  checksum: af5005fdb195fc7b7fa0d275c0e950dfa780bf88d32bd1be450aeaf238c399bd1fe6e49b08c9e473e87a14b884acbc3e9c40638f00f0c374afb6f3d570fe512c
+    "@vaadin/component-base": ~24.2.0
+    "@vaadin/vaadin-lumo-styles": ~24.2.0
+    "@vaadin/vaadin-material-styles": ~24.2.0
+    "@vaadin/vaadin-themable-mixin": ~24.2.0
+  checksum: 4bc075bcf4ab19b6f7d3eca030db953c064409695862471c43397646e7efb6d70d865dca153d8a6cf8e6d1d9f3f111118e36da510b9667e7d1911ffd8b4f6de5
   languageName: node
   linkType: hard
 
-"@vaadin/item@npm:~24.1.11":
-  version: 24.1.11
-  resolution: "@vaadin/item@npm:24.1.11"
+"@vaadin/item@npm:~24.2.0":
+  version: 24.2.0
+  resolution: "@vaadin/item@npm:24.2.0"
   dependencies:
     "@open-wc/dedupe-mixin": ^1.3.0
     "@polymer/polymer": ^3.0.0
-    "@vaadin/a11y-base": ~24.1.11
-    "@vaadin/component-base": ~24.1.11
-    "@vaadin/vaadin-lumo-styles": ~24.1.11
-    "@vaadin/vaadin-material-styles": ~24.1.11
-    "@vaadin/vaadin-themable-mixin": ~24.1.11
-  checksum: db354ad6dc1cc3f4af3cb3df4372d3ef8517267fea294e656c807c60e6e7f4be0ec3e53142002d265cba7019a5416f7111b384c863bd77d6415f7b6f6827e668
+    "@vaadin/a11y-base": ~24.2.0
+    "@vaadin/component-base": ~24.2.0
+    "@vaadin/vaadin-lumo-styles": ~24.2.0
+    "@vaadin/vaadin-material-styles": ~24.2.0
+    "@vaadin/vaadin-themable-mixin": ~24.2.0
+  checksum: 70c885555fc1c3d4310448b3ecf97aee9bdc9ccbc12f0b39da3eff7442054d56bbbe78af4f7c201b93c08fdf64f891493c8e00acb57be57d763db2f61ef3e218
   languageName: node
   linkType: hard
 
-"@vaadin/lit-renderer@npm:~24.1.11":
-  version: 24.1.11
-  resolution: "@vaadin/lit-renderer@npm:24.1.11"
+"@vaadin/lit-renderer@npm:~24.2.0":
+  version: 24.2.0
+  resolution: "@vaadin/lit-renderer@npm:24.2.0"
   dependencies:
     lit: ^2.0.0
-  checksum: 11b94a848975180cee04862782ce76170fb3181cf2b4372128918b9554faa891c1ff116c17ac081674f078a91036c6b98e8c26a9a43897eb9824459c40b5bf12
+  checksum: d6a9c9ea302ef7f1b2559124e5b783f07eeec615f343191c01aa64d1227154b628e82d511e1c36a79fa896904ee00608321e7008b251a7d09fd70584a8e1c7d8
   languageName: node
   linkType: hard
 
-"@vaadin/overlay@npm:~24.1.11":
-  version: 24.1.11
-  resolution: "@vaadin/overlay@npm:24.1.11"
+"@vaadin/overlay@npm:~24.2.0":
+  version: 24.2.0
+  resolution: "@vaadin/overlay@npm:24.2.0"
   dependencies:
     "@open-wc/dedupe-mixin": ^1.3.0
     "@polymer/polymer": ^3.0.0
-    "@vaadin/a11y-base": ~24.1.11
-    "@vaadin/component-base": ~24.1.11
-    "@vaadin/vaadin-lumo-styles": ~24.1.11
-    "@vaadin/vaadin-material-styles": ~24.1.11
-    "@vaadin/vaadin-themable-mixin": ~24.1.11
-  checksum: d48a680df11eac88157abf978202a983a7e4f1ad09a0c31d1daba23a84219bd2ecb1e0d93ccf2b9e9c747fb3c23e7d944da06a774cd33fc5d2b3c83a2527a02f
+    "@vaadin/a11y-base": ~24.2.0
+    "@vaadin/component-base": ~24.2.0
+    "@vaadin/vaadin-lumo-styles": ~24.2.0
+    "@vaadin/vaadin-material-styles": ~24.2.0
+    "@vaadin/vaadin-themable-mixin": ~24.2.0
+  checksum: 16876742a3d85ba19387bf5b1a67e50ec6e003c681072d117974041a95ecad754ae8d522ee7f3e9a1d25f9ed9b831b6c9bca7ffb4748d99437da6f5b954cef6b
   languageName: node
   linkType: hard
 
@@ -4894,34 +4824,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vaadin/vaadin-lumo-styles@npm:~24.1.11":
-  version: 24.1.11
-  resolution: "@vaadin/vaadin-lumo-styles@npm:24.1.11"
+"@vaadin/vaadin-lumo-styles@npm:~24.2.0":
+  version: 24.2.0
+  resolution: "@vaadin/vaadin-lumo-styles@npm:24.2.0"
   dependencies:
     "@polymer/polymer": ^3.0.0
-    "@vaadin/icon": ~24.1.11
-    "@vaadin/vaadin-themable-mixin": ~24.1.11
-  checksum: e415c1b00da743989092e44dfc0175612ea8ce14fdd48bfd53df63abe5ebc4c06df9b3459f4bc92f0f992cd804c987471e986ebe91ffb6aaab000be743229307
+    "@vaadin/component-base": ~24.2.0
+    "@vaadin/icon": ~24.2.0
+    "@vaadin/vaadin-themable-mixin": ~24.2.0
+  checksum: 61959e5df9ad5d91f8bcd6dd7fc4588aca03e1625b15d0b8390b8e450e72ac27289cc331f57b8c10525f4f4efe06a05468926303f5b122fecc9fa68fd7444b10
   languageName: node
   linkType: hard
 
-"@vaadin/vaadin-material-styles@npm:~24.1.11":
-  version: 24.1.11
-  resolution: "@vaadin/vaadin-material-styles@npm:24.1.11"
+"@vaadin/vaadin-material-styles@npm:~24.2.0":
+  version: 24.2.0
+  resolution: "@vaadin/vaadin-material-styles@npm:24.2.0"
   dependencies:
     "@polymer/polymer": ^3.0.0
-    "@vaadin/vaadin-themable-mixin": ~24.1.11
-  checksum: 2ecac65802ff9cf874c430e428d2a481f6f48c5c516e6554f670382d61525f4d8e08ac2b914ab622ac98a573366835578c7cafa4ad8b9de71416fd8fa7b24957
+    "@vaadin/component-base": ~24.2.0
+    "@vaadin/vaadin-themable-mixin": ~24.2.0
+  checksum: bf19268dd522f026e45414a602fe84d146f418027e9eada8ad4b7dbe2e6f3dc6aedf28feb6b53b89b2c37446425bcb7c5603b2b9869feb35366148ed5d5dfec3
   languageName: node
   linkType: hard
 
-"@vaadin/vaadin-themable-mixin@npm:24.1.11, @vaadin/vaadin-themable-mixin@npm:~24.1.11":
-  version: 24.1.11
-  resolution: "@vaadin/vaadin-themable-mixin@npm:24.1.11"
+"@vaadin/vaadin-themable-mixin@npm:24.2.0, @vaadin/vaadin-themable-mixin@npm:~24.2.0":
+  version: 24.2.0
+  resolution: "@vaadin/vaadin-themable-mixin@npm:24.2.0"
   dependencies:
     "@open-wc/dedupe-mixin": ^1.3.0
     lit: ^2.0.0
-  checksum: 121947abbe29973be08aeb9c20cd158aea0bd5f419cfe403f1b0e99af51a2b510479adb5366d30146ff154a2d9fef3db3dcec17e01f3f94e86d62383a99c4f13
+  checksum: 9d71c7432ea97b29128fe02799b943da80fddce3e256433fb0e9da98ca19f239002e6f66c6a061f98582ed8f7936dbbbf0985e5c58e40113e804e509ba32a55a
   languageName: node
   linkType: hard
 
@@ -6081,39 +6013,39 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-polyfill-corejs2@npm:^0.4.5":
-  version: 0.4.5
-  resolution: "babel-plugin-polyfill-corejs2@npm:0.4.5"
+"babel-plugin-polyfill-corejs2@npm:^0.4.6":
+  version: 0.4.6
+  resolution: "babel-plugin-polyfill-corejs2@npm:0.4.6"
   dependencies:
     "@babel/compat-data": ^7.22.6
-    "@babel/helper-define-polyfill-provider": ^0.4.2
+    "@babel/helper-define-polyfill-provider": ^0.4.3
     semver: ^6.3.1
   peerDependencies:
     "@babel/core": ^7.4.0 || ^8.0.0-0 <8.0.0
-  checksum: 33a8e06aa54e2858d211c743d179f0487b03222f9ca1bfd7c4865bca243fca942a3358cb75f6bb894ed476cbddede834811fbd6903ff589f055821146f053e1a
+  checksum: 08896811df31530be6a9bcdd630cb9fd4b5ae5181039d18db3796efbc54e38d57a42af460845c10a04434e1bc45c0d47743c7e6c860383cc6b141083cde22030
   languageName: node
   linkType: hard
 
-"babel-plugin-polyfill-corejs3@npm:^0.8.3":
-  version: 0.8.4
-  resolution: "babel-plugin-polyfill-corejs3@npm:0.8.4"
+"babel-plugin-polyfill-corejs3@npm:^0.8.5":
+  version: 0.8.5
+  resolution: "babel-plugin-polyfill-corejs3@npm:0.8.5"
   dependencies:
-    "@babel/helper-define-polyfill-provider": ^0.4.2
+    "@babel/helper-define-polyfill-provider": ^0.4.3
     core-js-compat: ^3.32.2
   peerDependencies:
     "@babel/core": ^7.4.0 || ^8.0.0-0 <8.0.0
-  checksum: 7243241a5b978b1335d51bcbd1248d6c4df88f6b3726706e71e0392f111c59bbf01118c85bb0ed42dce65e90e8fc768d19eda0a81a321cbe54abd3df9a285dc8
+  checksum: 54ff3956c4f88e483d38b27ceec6199b9e73fceac10ebf969469d215e6a62929384e4433f85335c9a6ba809329636e27f9bdae2f54075f833e7a745341c07d84
   languageName: node
   linkType: hard
 
-"babel-plugin-polyfill-regenerator@npm:^0.5.2":
-  version: 0.5.2
-  resolution: "babel-plugin-polyfill-regenerator@npm:0.5.2"
+"babel-plugin-polyfill-regenerator@npm:^0.5.3":
+  version: 0.5.3
+  resolution: "babel-plugin-polyfill-regenerator@npm:0.5.3"
   dependencies:
-    "@babel/helper-define-polyfill-provider": ^0.4.2
+    "@babel/helper-define-polyfill-provider": ^0.4.3
   peerDependencies:
     "@babel/core": ^7.4.0 || ^8.0.0-0 <8.0.0
-  checksum: d962200f604016a9a09bc9b4aaf60a3db7af876bb65bcefaeac04d44ac9d9ec4037cf24ce117760cc141d7046b6394c7eb0320ba9665cb4a2ee64df2be187c93
+  checksum: 2bb546582cda1870d19e646a7183baeb2cccd56e0ef3e4eaeabd28e120daf17cb87399194a9ccdcf32506bcaa68d23e73440fc8ab990a7a0f8c5a77c12d5d4bc
   languageName: node
   linkType: hard
 
@@ -9636,20 +9568,20 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "home-assistant-frontend@workspace:."
   dependencies:
-    "@babel/core": 7.23.0
-    "@babel/plugin-proposal-decorators": 7.23.0
-    "@babel/plugin-transform-runtime": 7.22.15
-    "@babel/preset-env": 7.22.20
-    "@babel/preset-typescript": 7.23.0
-    "@babel/runtime": 7.23.1
+    "@babel/core": 7.23.2
+    "@babel/plugin-proposal-decorators": 7.23.2
+    "@babel/plugin-transform-runtime": 7.23.2
+    "@babel/preset-env": 7.23.2
+    "@babel/preset-typescript": 7.23.2
+    "@babel/runtime": 7.23.2
     "@braintree/sanitize-url": 6.0.4
-    "@bundle-stats/plugin-webpack-filter": 4.7.6
-    "@codemirror/autocomplete": 6.9.2
+    "@bundle-stats/plugin-webpack-filter": 4.7.7
+    "@codemirror/autocomplete": 6.10.2
     "@codemirror/commands": 6.3.0
     "@codemirror/language": 6.9.1
     "@codemirror/legacy-modes": 6.3.3
     "@codemirror/search": 6.5.4
-    "@codemirror/state": 6.2.1
+    "@codemirror/state": 6.3.0
     "@codemirror/view": 6.21.3
     "@egjs/hammerjs": 2.0.17
     "@formatjs/intl-datetimeformat": 6.10.3
@@ -9690,7 +9622,6 @@ __metadata:
     "@material/mwc-radio": 0.27.0
     "@material/mwc-ripple": 0.27.0
     "@material/mwc-select": 0.27.0
-    "@material/mwc-slider": 0.27.0
     "@material/mwc-switch": 0.27.0
     "@material/mwc-tab": 0.27.0
     "@material/mwc-tab-bar": 0.27.0
@@ -9712,7 +9643,6 @@ __metadata:
     "@polymer/paper-input": 3.2.1
     "@polymer/paper-item": 3.0.1
     "@polymer/paper-listbox": 3.0.1
-    "@polymer/paper-slider": 3.0.1
     "@polymer/paper-tabs": 3.1.0
     "@polymer/paper-toast": 3.0.1
     "@polymer/polymer": 3.5.1
@@ -9741,8 +9671,8 @@ __metadata:
     "@types/webspeechapi": 0.0.29
     "@typescript-eslint/eslint-plugin": 6.7.5
     "@typescript-eslint/parser": 6.7.5
-    "@vaadin/combo-box": 24.1.11
-    "@vaadin/vaadin-themable-mixin": 24.1.11
+    "@vaadin/combo-box": 24.2.0
+    "@vaadin/vaadin-themable-mixin": 24.2.0
     "@vibrant/color": 3.2.1-alpha.1
     "@vibrant/core": 3.2.1-alpha.1
     "@vibrant/quantizer-mmcq": 3.2.1-alpha.1
@@ -9803,9 +9733,9 @@ __metadata:
     lit-analyzer: 2.0.0-pre.3
     lodash.template: 4.5.0
     luxon: 3.4.3
-    magic-string: 0.30.4
+    magic-string: 0.30.5
     map-stream: 0.0.7
-    marked: 9.1.0
+    marked: 9.1.1
     memoize-one: 6.0.0
     mocha: 10.2.0
     node-vibrant: 3.2.1-alpha.1
@@ -11721,12 +11651,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:0.30.4":
-  version: 0.30.4
-  resolution: "magic-string@npm:0.30.4"
+"magic-string@npm:0.30.5":
+  version: 0.30.5
+  resolution: "magic-string@npm:0.30.5"
   dependencies:
     "@jridgewell/sourcemap-codec": ^1.4.15
-  checksum: bef57c926d14e9926c142307c1494cc4bdea28a56601a7624f1a5bcd34a63800e2d8a363e826436ce86104460a63ee76c7c185a6ab1f8f7ee5af2de475b98947
+  checksum: da10fecff0c0a7d3faf756913ce62bd6d5e7b0402be48c3b27bfd651b90e29677e279069a63b764bcdc1b8ecdcdb898f29a5c5ec510f2323e8d62ee057a6eb18
   languageName: node
   linkType: hard
 
@@ -11803,12 +11733,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:9.1.0":
-  version: 9.1.0
-  resolution: "marked@npm:9.1.0"
+"marked@npm:9.1.1":
+  version: 9.1.1
+  resolution: "marked@npm:9.1.1"
   bin:
     marked: bin/marked.js
-  checksum: 452a5f564719c93a55136d77e6aa51852df9b24a4359c74d6b2c661bbb09fc8db1bb5ee0b9a8c0eb6d0ba22ec4a3af110bc97ba881e4ffae9f5e83c3ce2676d2
+  checksum: 255ba3868e9c93514882fc9ab5d5a67425a116ec9392c1f658699a553b941590e7fb7397e7939c1725ca27776706f55e92201eba6c167f42ca42735ef2f62162
   languageName: node
   linkType: hard
 

@@ -24,7 +24,7 @@ export class BaseTemperatureSelector extends LitElement {
   protected render() {
     return html`
       <ha-labeled-slider
-        pin
+        labeled
         icon="hass:thermometer"
         .caption=${this.label || ""}
         .min=${this.minValue}
@@ -33,14 +33,14 @@ export class BaseTemperatureSelector extends LitElement {
         .disabled=${this.disabled}
         .helper=${this.helper}
         .required=${this.required}
-        @change=${this._valueChanged}
+        @value-changed=${this._valueChanged}
       ></ha-labeled-slider>
     `;
   }
 
   private _valueChanged(ev: CustomEvent) {
     fireEvent(this, "value-changed", {
-      value: Number((ev.target as any).value),
+      value: Number((ev.detail as any).value),
     });
   }
 }

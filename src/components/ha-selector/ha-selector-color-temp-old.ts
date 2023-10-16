@@ -20,13 +20,12 @@ export class HaColorTempSelector extends BaseTemperatureSelector {
 
   static styles = css`
     ha-labeled-slider {
-      --ha-slider-background: -webkit-linear-gradient(
-        var(--float-end),
+      --ha-slider-background: linear-gradient(
+        to var(--float-end),
         rgb(255, 160, 0) 0%,
         white 50%,
         rgb(166, 209, 255) 100%
       );
-      --paper-slider-knob-start-border-color: var(--primary-color);
     }
   `;
 }
