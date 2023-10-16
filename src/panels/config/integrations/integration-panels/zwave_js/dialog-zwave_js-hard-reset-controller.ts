@@ -10,6 +10,7 @@ import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSHardResetControllerDialogParams } from "./show-dialog-zwave_js-hard-reset-controller";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { navigate } from "../../../../../common/navigate";
 
 @customElement("dialog-zwave_js-hard-reset-controller")
 class DialogZWaveJSHardResetController extends LitElement {
@@ -20,21 +21,18 @@ class DialogZWaveJSHardResetController extends LitElement {
   @state() private _done = false;
 
   public showDialog(params: ZWaveJSHardResetControllerDialogParams): void {
-    this.entry_id = params.entryId;
+    this._entryId = params.entryId;
   }
 
   public closeDialog(): void {
-    this.entry_id = undefined;
+    this._entryId = undefined;
+    this._done = false;
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    if (this._done) {
-      this._done = false;
-      history.back();
-    }
   }
 
   protected render() {
-    if (!this.entry_id) {
+    if (!this._entryId) {
       return nothing;
     }
 
@@ -91,8 +89,9 @@ class DialogZWaveJSHardResetController extends LitElement {
         confirmText: this.hass.localize("ui.common.continue"),
       })
     ) {
-      await hardResetController(this.hass, this.entry_id!);
+      await hardResetController(this.hass, this._entryId!);
       this._done = true;
+      navigate(`/config/devices/dashboard?config_entry=${this._entryId}`);
     }
   }
 
