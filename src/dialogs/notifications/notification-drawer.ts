@@ -93,15 +93,18 @@ export class HuiNotificationDrawer extends LitElement {
 
     return html`
       <ha-drawer type="modal" open @MDCDrawer:closed=${this._dialogClosed}>
-        <div class="title">
-          <span>${this.hass.localize("ui.notification_drawer.title")}</span>
+        <ha-header-bar>
+          <div slot="title">
+            ${this.hass.localize("ui.notification_drawer.title")}
+          </div>
           <ha-icon-button-prev
+            slot="actionItems"
             .hass=${this.hass}
             .label=${this.hass.localize("ui.notification_drawer.close")}
             @click=${this.closeDialog}
           >
           </ha-icon-button-prev>
-        </div>
+        </ha-header-bar>
         <div class="notifications">
           ${notifications.length
             ? html`${notifications.map(
@@ -143,29 +146,20 @@ export class HuiNotificationDrawer extends LitElement {
       --mdc-theme-surface: var(--primary-background-color);
     }
 
-    .title {
-      display: flex;
-      align-items: center;
-      height: var(--header-height);
-      padding: 0 16px 0 24px;
-      padding-inline: 24px 16px;
-
-      color: var(--secondary-text-color);
-      font-weight: 500;
-      font-size: 14px;
-      line-height: 20px;
-    }
-    .title span {
-      margin-right: auto;
+    ha-header-bar {
+      --mdc-theme-on-primary: var(--primary-text-color);
+      --mdc-theme-primary: var(--primary-background-color);
+      border-bottom: 1px solid var(--divider-color);
+      display: block;
     }
 
     .notifications {
       overflow-y: auto;
-      padding-top: 4px;
+      padding-top: 16px;
       padding-left: env(safe-area-inset-left);
       padding-right: env(safe-area-inset-right);
       padding-bottom: env(safe-area-inset-bottom);
-      height: calc(100% - var(--header-height));
+      height: calc(100% - 1px - var(--header-height));
       box-sizing: border-box;
       color: var(--primary-text-color);
     }
