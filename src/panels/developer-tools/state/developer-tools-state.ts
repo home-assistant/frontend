@@ -8,9 +8,11 @@ import {
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
+  HassEntities,
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
+import memoizeOne from "memoize-one";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { escapeRegExp } from "../../../common/string/escape_regexp";
@@ -29,6 +31,7 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
+import { storage } from "../../../common/decorators/storage";
 
 @customElement("developer-tools-state")
 class HaPanelDevState extends LitElement {
@@ -56,15 +59,39 @@ class HaPanelDevState extends LitElement {
 
   @state() private _validJSON: boolean = true;
 
-  @state() private _showAttributes =
-    localStorage.getItem("devToolsShowAttributes") || true;
+  @storage({
+    key: "devToolsShowAttributes",
+    state: true,
+  })
+  private _showAttributes = true;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public rtl = false;
 
+  private _filteredEntities = memoizeOne(
+    (
+      entityFilter: string,
+      stateFilter: string,
+      attributeFilter: string,
+      states: HassEntities
+    ): HassEntity[] =>
+      this._applyFiltersOnEntities(
+        entityFilter,
+        stateFilter,
+        attributeFilter,
+        states
+      )
+  );
+
   protected render() {
-    const entities = this._computeEntities();
+    const entities = this._filteredEntities(
+      this._entityFilter,
+      this._stateFilter,
+      this._attributeFilter,
+      this.hass.states
+    );
+    const showAttributes = !this.narrow && this._showAttributes;
 
     return html`
       <h1>
@@ -73,11 +100,11 @@ class HaPanelDevState extends LitElement {
         )}
       </h1>
       <ha-expansion-panel
-        header=${this.hass.localize(
+        .header=${this.hass.localize(
           "ui.panel.developer-tools.tabs.states.set_state"
         )}
         outlined
-        expanded=${this._expanded}
+        .expanded=${this._expanded}
         @expanded-changed=${this._expandedChanged}
       >
         <p>
@@ -105,7 +132,7 @@ class HaPanelDevState extends LitElement {
               >${this.hass.localize("ui.tips.key_e_hint")}</ha-tip
             >
             <ha-textfield
-              label=${this.hass.localize(
+              .label=${this.hass.localize(
                 "ui.panel.developer-tools.tabs.states.state"
               )}
               required
@@ -140,8 +167,8 @@ class HaPanelDevState extends LitElement {
               >
               <ha-icon-button
                 @click=${this._entityIdChanged}
-                label=${this.hass.localize("ui.common.refresh")}
-                path=${mdiRefresh}
+                .label=${this.hass.localize("ui.common.refresh")}
+                .path=${mdiRefresh}
               ></ha-icon-button>
             </div>
           </div>
@@ -190,7 +217,7 @@ class HaPanelDevState extends LitElement {
                     "ui.panel.developer-tools.tabs.states.attributes"
                   )}
                   <ha-checkbox
-                    checked=${this._showAttributes}
+                    .checked=${this._showAttributes}
                     @change=${this._saveAttributeCheckboxState}
                     reducedTouchTarget
                   ></ha-checkbox>
@@ -201,7 +228,7 @@ class HaPanelDevState extends LitElement {
             <th>
               <search-input
                 .hass=${this.hass}
-                label=${this.hass.localize(
+                .label=${this.hass.localize(
                   "ui.panel.developer-tools.tabs.states.filter_entities"
                 )}
                 .value=${this._entityFilter}
@@ -211,7 +238,7 @@ class HaPanelDevState extends LitElement {
             <th>
               <search-input
                 .hass=${this.hass}
-                label=${this.hass.localize(
+                .label=${this.hass.localize(
                   "ui.panel.developer-tools.tabs.states.filter_states"
                 )}
                 type="search"
@@ -219,11 +246,11 @@ class HaPanelDevState extends LitElement {
                 @value-changed=${this._stateFilterChanged}
               ></search-input>
             </th>
-            ${this._computeShowAttributes(this.narrow, this._showAttributes)
+            ${showAttributes
               ? html`<th>
                   <search-input
                     .hass=${this.hass}
-                    label=${this.hass.localize(
+                    .label=${this.hass.localize(
                       "ui.panel.developer-tools.tabs.states.filter_attributes"
                     )}
                     type="search"
@@ -233,7 +260,7 @@ class HaPanelDevState extends LitElement {
                 </th>`
               : nothing}
           </tr>
-          ${this._computeShowEntitiesPlaceholder(entities)
+          ${entities.length === 0
             ? html`<tr>
                 <td colspan="3">
                   ${this.hass.localize(
@@ -257,7 +284,7 @@ class HaPanelDevState extends LitElement {
                         title=${this.hass.localize(
                           "ui.panel.developer-tools.tabs.states.copy_id"
                         )}
-                        path=${mdiClipboardTextMultipleOutline}
+                        .path=${mdiClipboardTextMultipleOutline}
                       ></ha-svg-icon>
                       <a
                         href="#"
@@ -276,7 +303,7 @@ class HaPanelDevState extends LitElement {
                         title=${this.hass.localize(
                           "ui.panel.developer-tools.tabs.states.more_info"
                         )}
-                        path=${mdiInformationOutline}
+                        .path=${mdiInformationOutline}
                       ></ha-svg-icon>
                       <span class="secondary">
                         ${entity.attributes.friendly_name}
@@ -285,7 +312,7 @@ class HaPanelDevState extends LitElement {
                   </div>
                 </td>
                 <td>${entity.state}</td>
-                ${this._computeShowAttributes(this.narrow, this._showAttributes)
+                ${showAttributes
                   ? html`<td>${this._attributeString(entity)}</td>`
                   : nothing}
               </tr>`
@@ -396,29 +423,34 @@ class HaPanelDevState extends LitElement {
     }
   }
 
-  private _computeEntities() {
+  private _applyFiltersOnEntities(
+    entityFilter: string,
+    stateFilter: string,
+    attributeFilter: string,
+    states: HassEntities
+  ) {
     const entityFilterRegExp =
-      this._entityFilter &&
-      RegExp(escapeRegExp(this._entityFilter).replace(/\\\*/g, ".*"), "i");
+      entityFilter &&
+      RegExp(escapeRegExp(entityFilter).replace(/\\\*/g, ".*"), "i");
 
     const stateFilterRegExp =
-      this._stateFilter &&
-      RegExp(escapeRegExp(this._stateFilter).replace(/\\\*/g, ".*"), "i");
+      stateFilter &&
+      RegExp(escapeRegExp(stateFilter).replace(/\\\*/g, ".*"), "i");
 
     let keyFilterRegExp;
     let valueFilterRegExp;
     let multiMode = false;
 
-    if (this._attributeFilter) {
-      const colonIndex = this._attributeFilter.indexOf(":");
+    if (attributeFilter) {
+      const colonIndex = attributeFilter.indexOf(":");
       multiMode = colonIndex !== -1;
 
       const keyFilter = multiMode
-        ? this._attributeFilter.substring(0, colonIndex).trim()
-        : this._attributeFilter;
+        ? attributeFilter.substring(0, colonIndex).trim()
+        : attributeFilter;
       const valueFilter = multiMode
-        ? this._attributeFilter.substring(colonIndex + 1).trim()
-        : this._attributeFilter;
+        ? attributeFilter.substring(colonIndex + 1).trim()
+        : attributeFilter;
 
       keyFilterRegExp = RegExp(
         escapeRegExp(keyFilter).replace(/\\\*/g, ".*"),
@@ -429,7 +461,7 @@ class HaPanelDevState extends LitElement {
         : keyFilterRegExp;
     }
 
-    return Object.values(this.hass.states)
+    return Object.values(states)
       .filter((value) => {
         if (
           entityFilterRegExp &&
@@ -481,14 +513,6 @@ class HaPanelDevState extends LitElement {
       });
   }
 
-  private _computeShowEntitiesPlaceholder(_entities) {
-    return _entities.length === 0;
-  }
-
-  private _computeShowAttributes(narrow, _showAttributes) {
-    return !narrow && _showAttributes;
-  }
-
   private _attributeString(entity) {
     const output = "";
 
@@ -519,11 +543,6 @@ class HaPanelDevState extends LitElement {
 
   private _saveAttributeCheckboxState(ev) {
     this._showAttributes = ev.target.checked;
-    try {
-      localStorage.setItem("devToolsShowAttributes", ev.target.checked);
-    } catch (e) {
-      // Catch for Safari private mode
-    }
   }
 
   private _yamlChanged(ev) {
