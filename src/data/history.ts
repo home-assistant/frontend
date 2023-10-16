@@ -433,9 +433,9 @@ export const computeHistory = (
 
     const currentState =
       entityId in hass.states ? hass.states[entityId] : undefined;
-    const numericStateFromHistory =
-      !currentState &&
-      stateInfo.find((state) => state.a && isNumericFromAttributes(state.a));
+    const numericStateFromHistory = currentState
+      ? undefined
+      : stateInfo.find((state) => state.a && isNumericFromAttributes(state.a));
 
     let unit: string | undefined;
 
@@ -445,12 +445,14 @@ export const computeHistory = (
         isNumericFromAttributes(currentState.attributes)) ||
       (currentState != null &&
         domain === "sensor" &&
-        isNumericSensorEntity(currentState, sensorNumericalDeviceClasses));
+        isNumericSensorEntity(currentState, sensorNumericalDeviceClasses)) ||
+      numericStateFromHistory != null;
 
     if (isNumeric) {
-      unit = currentState?.attributes.unit_of_measurement || BLANK_UNIT;
-    } else if (numericStateFromHistory) {
-      unit = numericStateFromHistory.a.unit_of_measurement || BLANK_UNIT;
+      unit =
+        currentState?.attributes.unit_of_measurement ||
+        numericStateFromHistory?.a.unit_of_measurement ||
+        BLANK_UNIT;
     } else {
       unit = {
         zone: localize("ui.dialogs.more_info_control.zone.graph_unit"),
