@@ -1,19 +1,41 @@
 import { consume } from "@lit-labs/context";
 import type { SortableEvent } from "sortablejs";
-import { mdiDelete, mdiPlus, mdiArrowUp, mdiArrowDown, mdiDrag } from "@mdi/js";
+import {
+  mdiDotsVertical,
+  mdiRenameBox,
+  mdiSort,
+  mdiContentDuplicate,
+  mdiDelete,
+  mdiPlus,
+  mdiArrowUp,
+  mdiArrowDown,
+  mdiDrag,
+} from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import type { ActionDetail } from "@material/mwc-list";
 import {
   loadSortable,
   SortableInstance,
 } from "../../../../../resources/sortable.ondemand";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-button-menu";
 import { Condition } from "../../../../../data/automation";
-import { Action, ChooseAction } from "../../../../../data/script";
+import {
+  Action,
+  ChooseAction,
+  ChooseActionChoice,
+} from "../../../../../data/script";
+import {
+  showConfirmationDialog,
+  showPromptDialog,
+} from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
@@ -21,6 +43,8 @@ import { describeCondition } from "../../../../../data/automation_i18n";
 import { fullEntitiesContext } from "../../../../../data/context";
 import { EntityRegistryEntry } from "../../../../../data/entity_registry";
 import { sortableStyles } from "../../../../../resources/ha-sortable-style";
+
+const preventDefault = (ev) => ev.preventDefault();
 
 @customElement("ha-automation-action-choose")
 export class HaChooseAction extends LitElement implements ActionElement {
@@ -53,13 +77,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
     this._expandedStates[ev.target!.index] = ev.detail.expanded;
   }
 
-  private _getDescription(option, idx: number) {
-    if (option.alias) {
-      return option.alias;
-    }
-    if (this._expandedStates[idx]) {
-      return "";
-    }
+  private _getDescription(option) {
     const conditions = ensureArray(option.conditions);
     if (!conditions || conditions.length === 0) {
       return this.hass.localize(
@@ -103,7 +121,10 @@ export class HaChooseAction extends LitElement implements ActionElement {
                     "number",
                     idx + 1
                   )}:
-                  ${this._getDescription(option, idx)}
+                  ${option.alias ||
+                  (this._expandedStates[idx]
+                    ? ""
+                    : this._getDescription(option))}
                 </h3>
                 ${this.reOrderMode
                   ? html`
@@ -133,16 +154,71 @@ export class HaChooseAction extends LitElement implements ActionElement {
                       </div>
                     `
                   : html`
-                      <ha-icon-button
+                      <ha-button-menu
                         slot="icons"
                         .idx=${idx}
-                        .disabled=${this.disabled}
-                        @click=${this._removeOption}
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.editor.actions.type.choose.remove_option"
-                        )}
-                        .path=${mdiDelete}
-                      ></ha-icon-button>
+                        @action=${this._handleAction}
+                        @click=${preventDefault}
+                        fixed
+                      >
+                        <ha-icon-button
+                          slot="trigger"
+                          .label=${this.hass.localize("ui.common.menu")}
+                          .path=${mdiDotsVertical}
+                        ></ha-icon-button>
+                        <mwc-list-item
+                          graphic="icon"
+                          .disabled=${this.disabled}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.automation.editor.actions.rename"
+                          )}
+                          <ha-svg-icon
+                            slot="graphic"
+                            .path=${mdiRenameBox}
+                          ></ha-svg-icon>
+                        </mwc-list-item>
+                        <mwc-list-item
+                          graphic="icon"
+                          .disabled=${this.disabled}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.automation.editor.actions.re_order"
+                          )}
+                          <ha-svg-icon
+                            slot="graphic"
+                            .path=${mdiSort}
+                          ></ha-svg-icon>
+                        </mwc-list-item>
+
+                        <mwc-list-item
+                          graphic="icon"
+                          .disabled=${this.disabled}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.automation.editor.actions.duplicate"
+                          )}
+                          <ha-svg-icon
+                            slot="graphic"
+                            .path=${mdiContentDuplicate}
+                          ></ha-svg-icon>
+                        </mwc-list-item>
+
+                        <mwc-list-item
+                          class="warning"
+                          graphic="icon"
+                          .disabled=${this.disabled}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.automation.editor.actions.type.choose.remove_option"
+                          )}
+                          <ha-svg-icon
+                            class="warning"
+                            slot="graphic"
+                            .path=${mdiDelete}
+                          ></ha-svg-icon>
+                        </mwc-list-item>
+                      </ha-button-menu>
                     `}
                 <div class="card-content">
                   <h4>
@@ -220,6 +296,58 @@ export class HaChooseAction extends LitElement implements ActionElement {
     `;
   }
 
+  private async _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        await this._renameAction(ev);
+        break;
+      case 1:
+        fireEvent(this, "re-order");
+        break;
+      case 2:
+        this._duplicateOption(ev);
+        break;
+      case 3:
+        this._removeOption(ev);
+        break;
+    }
+  }
+
+  private async _renameAction(ev: CustomEvent<ActionDetail>): Promise<void> {
+    const index = (ev.target as any).idx;
+    const choose = this.action.choose
+      ? [...ensureArray(this.action.choose)]
+      : [];
+    const choice = choose[index];
+    const alias = await showPromptDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.editor.actions.type.choose.change_alias"
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.automation.editor.actions.type.choose.alias"
+      ),
+      inputType: "string",
+      placeholder: capitalizeFirstLetter(this._getDescription(choice)),
+      defaultValue: choice.alias,
+      confirmText: this.hass.localize("ui.common.submit"),
+    });
+    if (alias !== null) {
+      if (alias === "") {
+        delete choose[index].alias;
+      } else {
+        choose[index].alias = alias;
+      }
+      fireEvent(this, "value-changed", {
+        value: { ...this.action, choose },
+      });
+    }
+  }
+
+  private _duplicateOption(ev) {
+    const index = (ev.target as any).idx;
+    this._addOption(deepClone(ensureArray(this.action.choose)[index]));
+  }
+
   protected firstUpdated() {
     ensureArray(this.action.choose).forEach(() =>
       this._expandedStates.push(false)
@@ -274,11 +402,11 @@ export class HaChooseAction extends LitElement implements ActionElement {
     });
   }
 
-  private _addOption() {
+  private _addOption(opt?: ChooseActionChoice) {
     const choose = this.action.choose
       ? [...ensureArray(this.action.choose)]
       : [];
-    choose.push({ conditions: [], sequence: [] });
+    choose.push(opt ?? { conditions: [], sequence: [] });
     fireEvent(this, "value-changed", {
       value: { ...this.action, choose },
     });
@@ -317,14 +445,27 @@ export class HaChooseAction extends LitElement implements ActionElement {
   }
 
   private _removeOption(ev: CustomEvent) {
-    const index = (ev.currentTarget as any).idx;
-    const choose = this.action.choose
-      ? [...ensureArray(this.action.choose)]
-      : [];
-    choose.splice(index, 1);
-    this._expandedStates.splice(index, 1);
-    fireEvent(this, "value-changed", {
-      value: { ...this.action, choose },
+    const index = (ev.target as any).idx;
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.editor.actions.type.choose.delete_confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.automation.editor.actions.delete_confirm_text"
+      ),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirmText: this.hass.localize("ui.common.delete"),
+      destructive: true,
+      confirm: () => {
+        const choose = this.action.choose
+          ? [...ensureArray(this.action.choose)]
+          : [];
+        choose.splice(index, 1);
+        this._expandedStates.splice(index, 1);
+        fireEvent(this, "value-changed", {
+          value: { ...this.action, choose },
+        });
+      },
     });
   }
 
