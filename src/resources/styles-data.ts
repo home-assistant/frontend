@@ -79,13 +79,6 @@ export const derivedStyles = {
   "table-header-background-color": "var(--input-fill-color)",
   "table-row-background-color": "var(--primary-background-color)",
   "table-row-alternative-background-color": "var(--secondary-background-color)",
-  "paper-slider-knob-color": "var(--slider-color)",
-  "paper-slider-knob-start-color": "var(--slider-color)",
-  "paper-slider-pin-color": "var(--slider-color)",
-  "paper-slider-pin-start-color": "var(--slider-color)",
-  "paper-slider-active-color": "var(--slider-color)",
-  "paper-slider-secondary-color": "var(--slider-secondary-color)",
-  "paper-slider-container-color": "var(--slider-track-color)",
   "data-table-background-color": "var(--card-background-color)",
   "markdown-code-background-color": "var(--primary-background-color)",
 
