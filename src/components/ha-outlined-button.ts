@@ -5,7 +5,7 @@ import { MdOutlinedButton } from "@material/web/button/outlined-button";
 @customElement("ha-outlined-button")
 export class HaOutlinedButton extends MdOutlinedButton {
   static override styles = [
-    ...MdOutlinedButton.styles,
+    ...super.styles,
     css`
       :host {
         --ha-icon-display: block;
