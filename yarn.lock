@@ -2748,20 +2748,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-slider@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-slider@npm:0.27.0"
-  dependencies:
-    "@material/dom": =14.0.0-canary.53b3cad2f.0
-    "@material/mwc-base": ^0.27.0
-    "@material/mwc-ripple": ^0.27.0
-    "@material/slider": =14.0.0-canary.53b3cad2f.0
-    lit: ^2.0.0
-    tslib: ^2.0.1
-  checksum: 0e7f9d0d418731fb9ba1ffe99cc88e79a4116e92d048476dc24fa87688f13335945fcdc9fef6d6f699e0c6b16fea5ed7527f71193bcf1365177e7ba7a865b140
-  languageName: node
-  linkType: hard
-
 "@material/mwc-switch@npm:0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-switch@npm:0.27.0"
@@ -2985,24 +2971,6 @@ __metadata:
     "@material/theme": 14.0.0-canary.53b3cad2f.0
     tslib: ^2.1.0
   checksum: 6ad9b020c09e9ba402441d7b648f9c250e88f0243a6154d587c889b2d2312d1a13532bb0c7a1dc487193faa33ba8a5e4185cc6e156b8d5421bc71839be0306ad
-  languageName: node
-  linkType: hard
-
-"@material/slider@npm:=14.0.0-canary.53b3cad2f.0":
-  version: 14.0.0-canary.53b3cad2f.0
-  resolution: "@material/slider@npm:14.0.0-canary.53b3cad2f.0"
-  dependencies:
-    "@material/animation": 14.0.0-canary.53b3cad2f.0
-    "@material/base": 14.0.0-canary.53b3cad2f.0
-    "@material/dom": 14.0.0-canary.53b3cad2f.0
-    "@material/elevation": 14.0.0-canary.53b3cad2f.0
-    "@material/feature-targeting": 14.0.0-canary.53b3cad2f.0
-    "@material/ripple": 14.0.0-canary.53b3cad2f.0
-    "@material/rtl": 14.0.0-canary.53b3cad2f.0
-    "@material/theme": 14.0.0-canary.53b3cad2f.0
-    "@material/typography": 14.0.0-canary.53b3cad2f.0
-    tslib: ^2.1.0
-  checksum: 136d6c6f77e4fa586ac375b5a108be06a394f0c55fbb10e73eaa990cd6cb38d2787e278911705571b5336402690e0b88b5fe9de9916704db948247a6b6b0c1fb
   languageName: node
   linkType: hard
 
@@ -3600,15 +3568,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-range-behavior@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/iron-range-behavior@npm:3.0.1"
-  dependencies:
-    "@polymer/polymer": ^3.0.0
-  checksum: da2405650bccc2071bebfd30f379e92d930bd95d306e2626da9d92a07b849f0e5cdc08430bfb03a6ae8f5644ab9364ff64252892da1b1ddc01d2f5f1f026e808
-  languageName: node
-  linkType: hard
-
 "@polymer/iron-resizable-behavior@npm:3.0.1, @polymer/iron-resizable-behavior@npm:^3.0.0-pre.26":
   version: 3.0.1
   resolution: "@polymer/iron-resizable-behavior@npm:3.0.1"
@@ -3661,7 +3620,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-input@npm:3.2.1, @polymer/paper-input@npm:^3.0.0-pre.26":
+"@polymer/paper-input@npm:3.2.1":
   version: 3.2.1
   resolution: "@polymer/paper-input@npm:3.2.1"
   dependencies:
@@ -3700,18 +3659,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-progress@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/paper-progress@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-flex-layout": ^3.0.0-pre.26
-    "@polymer/iron-range-behavior": ^3.0.0-pre.26
-    "@polymer/paper-styles": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.0.0
-  checksum: 5ae0ce84d05ed777c40c27c82559cedc44f1b4ed523a675932cce4a4d6a82f772ee414b21c67db528ea316686c1ed84b53e1850bbb3a6f5c3964339e2c20289b
-  languageName: node
-  linkType: hard
-
 "@polymer/paper-ripple@npm:^3.0.0-pre.26":
   version: 3.0.2
   resolution: "@polymer/paper-ripple@npm:3.0.2"
@@ -3719,23 +3666,6 @@ __metadata:
     "@polymer/iron-a11y-keys-behavior": ^3.0.0-pre.26
     "@polymer/polymer": ^3.0.0
   checksum: dea7d164a1d377ee4ab352d552cb457b810a0e5d562083b2dbcd6afb8371bea6eb4ef93d214d06bfc0a6c10c817ee2bbdb5235f9b2ff21195238292399f494b9
-  languageName: node
-  linkType: hard
-
-"@polymer/paper-slider@npm:3.0.1":
-  version: 3.0.1
-  resolution: "@polymer/paper-slider@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-a11y-keys-behavior": ^3.0.0-pre.26
-    "@polymer/iron-behaviors": ^3.0.0-pre.26
-    "@polymer/iron-flex-layout": ^3.0.0-pre.26
-    "@polymer/iron-form-element-behavior": ^3.0.0-pre.26
-    "@polymer/paper-behaviors": ^3.0.0-pre.27
-    "@polymer/paper-input": ^3.0.0-pre.26
-    "@polymer/paper-progress": ^3.0.0-pre.26
-    "@polymer/paper-styles": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.0.0
-  checksum: ab915606df8150f77ad9e03c845ce5f600882cd7c0b3bb6a6ea77816ee1b40d01d5b3f72f0d8df6ce5e46fa9f0335d3930c8cc46a23cf8d8dfdbc0aeb9c181a4
   languageName: node
   linkType: hard
 
@@ -9690,7 +9620,6 @@ __metadata:
     "@material/mwc-radio": 0.27.0
     "@material/mwc-ripple": 0.27.0
     "@material/mwc-select": 0.27.0
-    "@material/mwc-slider": 0.27.0
     "@material/mwc-switch": 0.27.0
     "@material/mwc-tab": 0.27.0
     "@material/mwc-tab-bar": 0.27.0
@@ -9712,7 +9641,6 @@ __metadata:
     "@polymer/paper-input": 3.2.1
     "@polymer/paper-item": 3.0.1
     "@polymer/paper-listbox": 3.0.1
-    "@polymer/paper-slider": 3.0.1
     "@polymer/paper-tabs": 3.1.0
     "@polymer/paper-toast": 3.0.1
     "@polymer/polymer": 3.5.1

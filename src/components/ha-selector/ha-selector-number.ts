@@ -48,6 +48,7 @@ export class HaNumberSelector extends LitElement {
                 ? html`${this.label}${this.required ? "*" : ""}`
                 : ""}
               <ha-slider
+                labeled
                 .min=${this.selector.number?.min}
                 .max=${this.selector.number?.max}
                 .value=${this.value ?? ""}
@@ -56,8 +57,6 @@ export class HaNumberSelector extends LitElement {
                   : this.selector.number?.step ?? 1}
                 .disabled=${this.disabled}
                 .required=${this.required}
-                pin
-                ignore-bar-touch
                 @change=${this._handleSliderChange}
               >
               </ha-slider>
