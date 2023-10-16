@@ -5059,6 +5059,7 @@
               "default_color": "Default color (state)",
               "show_entity_picture": "Show entity picture",
               "vertical": "Vertical",
+              "hide_state": "Hide state",
               "state_content": "State content",
               "features": {
                 "name": "Features",

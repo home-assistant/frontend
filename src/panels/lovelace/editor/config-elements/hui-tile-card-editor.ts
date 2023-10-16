@@ -94,6 +94,7 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     name: optional(string()),
     icon: optional(string()),
+    hide_state: optional(boolean()),
     state_content: optional(union([string(), array(string())])),
     color: optional(string()),
     show_entity_picture: optional(boolean()),
@@ -124,7 +125,8 @@ export class HuiTileCardEditor
     (
       localize: LocalizeFunc,
       formatEntityAttributeName: formatEntityAttributeNameFunc,
-      stateObj: HassEntity | undefined
+      stateObj: HassEntity | undefined,
+      hideState: boolean
     ) =>
       [
         { name: "entity", selector: { entity: {} } },
@@ -164,35 +166,48 @@ export class HuiTileCardEditor
                     boolean: {},
                   },
                 },
+                {
+                  name: "hide_state",
+                  selector: {
+                    boolean: {},
+                  },
+                },
               ],
             },
-            {
-              name: "state_content",
-              selector: {
-                select: {
-                  mode: "dropdown",
-                  reorder: true,
-                  custom_value: true,
-                  multiple: true,
-                  options: [
-                    {
-                      label: "State",
-                      value: "state",
+            ...(!hideState
+              ? ([
+                  {
+                    name: "state_content",
+                    selector: {
+                      select: {
+                        mode: "dropdown",
+                        reorder: true,
+                        custom_value: true,
+                        multiple: true,
+                        options: [
+                          {
+                            label: "State",
+                            value: "state",
+                          },
+                          {
+                            label: "Last changed",
+                            value: "last-changed",
+                          },
+                          ...Object.keys(stateObj?.attributes ?? {})
+                            .filter((a) => !HIDDEN_ATTRIBUTES.includes(a))
+                            .map((attribute) => ({
+                              value: attribute,
+                              label: formatEntityAttributeName(
+                                stateObj!,
+                                attribute
+                              ),
+                            })),
+                        ],
+                      },
                     },
-                    {
-                      label: "Last changed",
-                      value: "last-changed",
-                    },
-                    ...Object.keys(stateObj?.attributes ?? {})
-                      .filter((a) => !HIDDEN_ATTRIBUTES.includes(a))
-                      .map((attribute) => ({
-                        value: attribute,
-                        label: formatEntityAttributeName(stateObj!, attribute),
-                      })),
-                  ],
-                },
-              },
-            },
+                  },
+                ] as const satisfies readonly HaFormSchema[])
+              : []),
           ],
         },
         {
@@ -234,7 +249,8 @@ export class HuiTileCardEditor
     const schema = this._schema(
       this.hass!.localize,
       this.hass.formatEntityAttributeName,
-      stateObj
+      stateObj,
+      this._config.hide_state ?? false
     );
 
     if (this._subElementEditorConfig) {
@@ -285,6 +301,10 @@ export class HuiTileCardEditor
       features: this._config.features,
       ...newConfig,
     };
+
+    if (config.hide_state) {
+      delete config.state_content;
+    }
 
     if (config.state_content) {
       if (config.state_content.length === 0) {
@@ -361,6 +381,7 @@ export class HuiTileCardEditor
       case "icon_tap_action":
       case "show_entity_picture":
       case "vertical":
+      case "hide_state":
       case "state_content":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`
