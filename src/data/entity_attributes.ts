@@ -28,6 +28,7 @@ export const TEMPERATURE_ATTRIBUTES = new Set([
   "target_temperature",
   "target_temp_temp",
   "target_temp_high",
+  "target_temp_low",
   "target_temp_step",
   "min_temp",
   "max_temp",
