@@ -35,6 +35,7 @@ import {
   MediaClassBrowserSettings,
   MediaPickedEvent,
   MediaPlayerBrowseAction,
+  MediaPlayerLayoutType,
 } from "../../data/media-player";
 import { browseLocalMediaPlayer } from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
@@ -86,6 +87,8 @@ export class HaMediaPlayerBrowse extends LitElement {
   @property() public entityId!: string;
 
   @property() public action: MediaPlayerBrowseAction = "play";
+
+  @property() public preferredLayout: MediaPlayerLayoutType = "auto";
 
   @property({ type: Boolean }) public dialog = false;
 
@@ -445,35 +448,72 @@ export class HaMediaPlayerBrowse extends LitElement {
                     </div>
                   `
                 : isTTSMediaSource(currentItem.media_content_id)
-                  ? html`
-                      <ha-browse-media-tts
-                        .item=${currentItem}
-                        .hass=${this.hass}
-                        .action=${this.action}
-                        @tts-picked=${this._ttsPicked}
-                      ></ha-browse-media-tts>
-                    `
-                  : !children.length && !currentItem.not_shown
-                    ? html`
-                        <div class="container no-items">
-                          ${currentItem.media_content_id ===
-                          "media-source://media_source/local/."
-                            ? html`
-                                <div class="highlight-add-button">
-                                  <span>
-                                    <ha-svg-icon
-                                      .path=${mdiArrowUpRight}
-                                    ></ha-svg-icon>
-                                  </span>
-                                  <span>
-                                    ${this.hass.localize(
-                                      "ui.components.media-browser.file_management.highlight_button"
-                                    )}
-                                  </span>
-                                </div>
-                              `
-                            : this.hass.localize(
-                                "ui.components.media-browser.no_items"
+                ? html`
+                    <ha-browse-media-tts
+                      .item=${currentItem}
+                      .hass=${this.hass}
+                      .action=${this.action}
+                      @tts-picked=${this._ttsPicked}
+                    ></ha-browse-media-tts>
+                  `
+                : !children.length && !currentItem.not_shown
+                ? html`
+                    <div class="container no-items">
+                      ${currentItem.media_content_id ===
+                      "media-source://media_source/local/."
+                        ? html`
+                            <div class="highlight-add-button">
+                              <span>
+                                <ha-svg-icon
+                                  .path=${mdiArrowUpRight}
+                                ></ha-svg-icon>
+                              </span>
+                              <span>
+                                ${this.hass.localize(
+                                  "ui.components.media-browser.file_management.highlight_button"
+                                )}
+                              </span>
+                            </div>
+                          `
+                        : this.hass.localize(
+                            "ui.components.media-browser.no_items"
+                          )}
+                    </div>
+                  `
+                : this.preferredLayout === "grid" ||
+                  (this.preferredLayout === "auto" &&
+                    childrenMediaClass.layout === "grid")
+                ? html`
+                    <lit-virtualizer
+                      scroller
+                      .layout=${grid({
+                        itemSize: {
+                          width: "175px",
+                          height:
+                            childrenMediaClass.thumbnail_ratio === "portrait"
+                              ? "312px"
+                              : "225px",
+                        },
+                        gap: "16px",
+                        flex: { preserve: "aspect-ratio" },
+                        justify: "space-evenly",
+                        direction: "vertical",
+                      })}
+                      .items=${children}
+                      .renderItem=${this._renderGridItem}
+                      class="children ${classMap({
+                        portrait:
+                          childrenMediaClass.thumbnail_ratio === "portrait",
+                        not_shown: !!currentItem.not_shown,
+                      })}"
+                    ></lit-virtualizer>
+                    ${currentItem.not_shown
+                      ? html`
+                          <div class="grid not-shown">
+                            <div class="title">
+                              ${this.hass.localize(
+                                "ui.components.media-browser.not_shown",
+                                { count: currentItem.not_shown }
                               )}
                         </div>
                       `

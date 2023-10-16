@@ -106,6 +106,8 @@ export type MediaPlayerBrowseAction = "pick" | "play";
 
 export const BROWSER_PLAYER = "browser";
 
+export type MediaPlayerLayoutType = "grid" | "list" | "auto";
+
 export type MediaClassBrowserSetting = {
   icon: string;
   thumbnail_ratio?: string;
