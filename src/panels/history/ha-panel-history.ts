@@ -47,12 +47,7 @@ import {
   LineChartUnit,
   LineChartEntity,
 } from "../../data/history";
-import {
-  fetchStatistics,
-  Statistics,
-  getStatisticMetadata,
-  StatisticsMetaData,
-} from "../../data/recorder";
+import { fetchStatistics, Statistics } from "../../data/recorder";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -82,8 +77,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   private _mungedStateHistory?: HistoryResult;
 
   @state() private _statisticsHistory?: HistoryResult;
-
-  @state() private _statsMetadata?: Record<string, StatisticsMetaData>;
 
   @state() private _deviceEntityLookup?: DeviceEntityLookup;
 
@@ -366,58 +359,18 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     if (!entityIds) {
       return;
     }
-    this._getStatisticsMetaData(entityIds).then(() => {
-      this._getStatistics(entityIds);
-    });
-  }
-
-  private async _getStatisticsMetaData(statisticIds: string[] | undefined) {
-    const statsMetadataArray = await getStatisticMetadata(
-      this.hass!,
-      statisticIds
-    );
-    const statisticsMetaData = {};
-    statsMetadataArray.forEach((x) => {
-      statisticsMetaData[x.statistic_id] = x;
-    });
-    this._statsMetadata = statisticsMetaData;
-
-    // don't have a use for this yet, just placate the linter for now
-    this._statsMetadata = { ...this._statsMetadata };
+    this._getStatistics(entityIds);
   }
 
   private async _getStatistics(statisticIds: string[]): Promise<void> {
     try {
-      // let unitClass;
-      // if (this._config!.unit && this._statsMetadata) {
-      //   const metadata = Object.values(this._statsMetadata).find(
-      //     (metaData) =>
-      //       getDisplayUnit(this.hass!, metaData?.statistic_id, metaData) ===
-      //       this._config!.unit
-      //   );
-      //   if (metadata) {
-      //     unitClass = metadata.unit_class;
-      //     this._unit = this._config!.unit;
-      //   }
-      // }
-      // if (!unitClass && this._statsMetadata) {
-      //   const metadata = this._statsMetadata[this._entities[0]];
-      //   unitClass = metadata?.unit_class;
-      //   this._unit = unitClass
-      //     ? getDisplayUnit(this.hass!, metadata.statistic_id, metadata) ||
-      //       undefined
-      //     : undefined;
-      // }
-      // const unitconfig = unitClass ? { [unitClass]: this._unit } : undefined;
-      const unitconfig = undefined;
-      const period = "hour";
       const statistics = await fetchStatistics(
         this.hass!,
         this._startDate,
         this._endDate,
         statisticIds,
-        period,
-        unitconfig,
+        "hour",
+        undefined,
         ["mean", "state"]
       );
 

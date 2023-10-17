@@ -161,8 +161,12 @@ export class StateHistoryChartLine extends LitElement {
                     : this.data[context.datasetIndex].states.length === 0 ||
                       context.parsed.x <
                         this.data[context.datasetIndex].states[0].last_changed
-                    ? "\nSource: Long Term Statistics"
-                    : "\nSource: History"
+                    ? `\n${this.hass.localize(
+                        "ui.components.history_charts.source_stats"
+                      )}`
+                    : `\n${this.hass.localize(
+                        "ui.components.history_charts.source_history"
+                      )}`
                 }`,
             },
           },
@@ -481,10 +485,13 @@ export class StateHistoryChartLine extends LitElement {
         });
       } else {
         addDataSet(name);
+
         let lastValue: number;
         let lastDate: Date;
         let lastNullDate: Date | null = null;
 
+        // Process chart data.
+        // When state is `unknown`, calculate the value and break the line.
         const processData = (entityState: LineChartState) => {
           const value = safeParseFloat(entityState.state);
           const date = new Date(entityState.last_changed);
@@ -516,8 +523,6 @@ export class StateHistoryChartLine extends LitElement {
           }
         };
 
-        // Process chart data.
-        // When state is `unknown`, calculate the value and break the line.
         if (states.statistics) {
           const stopTime =
             !states.states || states.states.length === 0

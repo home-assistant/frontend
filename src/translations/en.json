@@ -552,7 +552,9 @@
         "loading_history": "Loading state history…",
         "no_history_found": "No state history found.",
         "error": "Unable to load history",
-        "duration": "Duration"
+        "duration": "Duration",
+        "source_history": "Source: History",
+        "source_stats": "Source: Long term statistics"
       },
       "map": {
         "error": "Unable to load map"
