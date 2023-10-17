@@ -269,7 +269,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       changedProps.has("_endDate") ||
       changedProps.has("_targetPickerValue")
     ) {
-      // convert statistics to HistoryStates
       if (this._statisticsHistory && this._stateHistory) {
         this._mungedStateHistory = this.mergeHistoryResults(
           this._statisticsHistory,
