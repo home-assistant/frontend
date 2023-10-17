@@ -328,7 +328,7 @@ export const triggerAutomationActions = (
 export const deleteAutomation = (hass: HomeAssistant, id: string) =>
   hass.callApi("DELETE", `config/automation/config/${id}`);
 
-let inititialAutomationEditorData: Partial<AutomationConfig> | undefined;
+let initialAutomationEditorData: Partial<AutomationConfig> | undefined;
 
 export const fetchAutomationFileConfig = (hass: HomeAssistant, id: string) =>
   hass.callApi<AutomationConfig>("GET", `config/automation/config/${id}`);
@@ -349,7 +349,7 @@ export const saveAutomationConfig = (
 ) => hass.callApi<void>("POST", `config/automation/config/${id}`, config);
 
 export const showAutomationEditor = (data?: Partial<AutomationConfig>) => {
-  inititialAutomationEditorData = data;
+  initialAutomationEditorData = data;
   navigate("/config/automation/edit/new");
 };
 
@@ -362,8 +362,8 @@ export const duplicateAutomation = (config: AutomationConfig) => {
 };
 
 export const getAutomationEditorInitData = () => {
-  const data = inititialAutomationEditorData;
-  inititialAutomationEditorData = undefined;
+  const data = initialAutomationEditorData;
+  initialAutomationEditorData = undefined;
   return data;
 };
 
