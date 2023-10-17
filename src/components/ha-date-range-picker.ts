@@ -5,6 +5,8 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiCalendar } from "@mdi/js";
 import {
   addDays,
+  addMonths,
+  addYears,
   endOfDay,
   endOfWeek,
   endOfMonth,
@@ -61,6 +63,8 @@ export class HaDateRangePicker extends LitElement {
   @property({ type: String }) private _rtlDirection = "ltr";
 
   @property({ type: Boolean }) private minimal = false;
+
+  @property({ type: Boolean }) public extendedPresets = false;
 
   @property() private _openingDirection = "right";
 
@@ -134,70 +138,92 @@ export class HaDateRangePicker extends LitElement {
         [this.hass.localize(
           "ui.components.date-range-picker.ranges.last_week"
         )]: [addDays(weekStart, -7), addDays(weekEnd, -7)],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.this_month"
-        )]: [
-          calcDate(today, startOfMonth, this.hass.locale, this.hass.config, {
-            weekStartsOn,
-          }),
-          calcDate(today, endOfMonth, this.hass.locale, this.hass.config, {
-            weekStartsOn,
-          }),
-        ],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.last_month"
-        )]: [
-          calcDate(
-            addDays(today, -31), // this is not correct
-            startOfMonth,
-            this.hass.locale,
-            this.hass.config,
-            {
-              weekStartsOn,
+        ...(this.extendedPresets
+          ? {
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.this_month"
+              )]: [
+                calcDate(
+                  today,
+                  startOfMonth,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+                calcDate(
+                  today,
+                  endOfMonth,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+              ],
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.last_month"
+              )]: [
+                calcDate(
+                  addMonths(today, -1),
+                  startOfMonth,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+                calcDate(
+                  addMonths(today, -1),
+                  endOfMonth,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+              ],
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.this_year"
+              )]: [
+                calcDate(
+                  today,
+                  startOfYear,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+                calcDate(today, endOfYear, this.hass.locale, this.hass.config, {
+                  weekStartsOn,
+                }),
+              ],
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.last_year"
+              )]: [
+                calcDate(
+                  addYears(today, -1),
+                  startOfYear,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+                calcDate(
+                  addYears(today, -1),
+                  endOfYear,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+              ],
             }
-          ),
-          calcDate(
-            addDays(today, -31), // this is not correct
-            endOfMonth,
-            this.hass.locale,
-            this.hass.config,
-            {
-              weekStartsOn,
-            }
-          ),
-        ],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.this_year"
-        )]: [
-          calcDate(today, startOfYear, this.hass.locale, this.hass.config, {
-            weekStartsOn,
-          }),
-          calcDate(today, endOfYear, this.hass.locale, this.hass.config, {
-            weekStartsOn,
-          }),
-        ],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.last_year"
-        )]: [
-          calcDate(
-            addDays(today, -365), // this is not correct
-            startOfYear,
-            this.hass.locale,
-            this.hass.config,
-            {
-              weekStartsOn,
-            }
-          ),
-          calcDate(
-            addDays(today, -365), // this is not correct
-            endOfYear,
-            this.hass.locale,
-            this.hass.config,
-            {
-              weekStartsOn,
-            }
-          ),
-        ],
+          : {}),
       };
     }
   }

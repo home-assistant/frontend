@@ -74,13 +74,12 @@ export class StateHistoryChartLine extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues) {
-    // console.log("Linechart willupdate");
-    // console.log(changedProps);
     if (
       !this.hasUpdated ||
       changedProps.has("showNames") ||
       changedProps.has("startTime") ||
-      changedProps.has("endTime")
+      changedProps.has("endTime") ||
+      changedProps.has("unit")
     ) {
       this._chartOptions = {
         parsing: false,
@@ -143,6 +142,8 @@ export class StateHistoryChartLine extends LitElement {
                 `${context.dataset.label}: ${formatNumber(
                   context.parsed.y,
                   this.hass.locale,
+                  // this has a pre-existing bug here, when rendering a climate entity, the datasetIndex no longer correctly indexes data
+                  // since the climate entity may have multiple datasetIndexes (0,1,2), but only a single this.data index (0)
                   this.data[context.datasetIndex]?.entity_id
                     ? getNumberFormatOptions(
                         this.hass.states[
@@ -153,7 +154,16 @@ export class StateHistoryChartLine extends LitElement {
                         ]
                       )
                     : undefined
-                )} ${this.unit}`,
+                )} ${this.unit}${
+                  !this.data[context.datasetIndex]?.statistics ||
+                  this.data[context.datasetIndex].statistics!.length === 0
+                    ? ""
+                    : this.data[context.datasetIndex].states.length === 0 ||
+                      context.parsed.x <
+                        this.data[context.datasetIndex].states[0].last_changed
+                    ? "\nSource: Long Term Statistics"
+                    : "\nSource: History"
+                }`,
             },
           },
           filler: {
@@ -257,12 +267,7 @@ export class StateHistoryChartLine extends LitElement {
         prevValues = datavalues;
       };
 
-      const addDataSet = (
-        nameY: string,
-        fill = false,
-        color?: string,
-        secondary = false
-      ) => {
+      const addDataSet = (nameY: string, fill = false, color?: string) => {
         if (!color) {
           color = getGraphColorByIndex(colorIndex, computedStyles);
           colorIndex++;
@@ -270,8 +275,8 @@ export class StateHistoryChartLine extends LitElement {
         data.push({
           label: nameY,
           fill: fill ? "origin" : false,
-          borderColor: secondary ? color + "7F" : color,
-          backgroundColor: secondary ? color + "3F" : color + "7F",
+          borderColor: color,
+          backgroundColor: color + "7F",
           stepped: "before",
           pointRadius: 0,
           data: [],
@@ -476,21 +481,11 @@ export class StateHistoryChartLine extends LitElement {
         });
       } else {
         addDataSet(name);
-        // console.log("Generating line chart data");
-        // console.log(states);
-        if (states.statistics && states.statistics.length > 0) {
-          colorIndex--;
-          addDataSet(name + " (Statistics)", false, undefined, true);
-        }
-
         let lastValue: number;
         let lastDate: Date;
         let lastNullDate: Date | null = null;
 
-        const processData = (
-          entityState: LineChartState,
-          statistics = false
-        ) => {
+        const processData = (entityState: LineChartState) => {
           const value = safeParseFloat(entityState.state);
           const date = new Date(entityState.last_changed);
           if (value !== null && lastNullDate) {
@@ -502,14 +497,14 @@ export class StateHistoryChartLine extends LitElement {
                 ((lastNullDateTime - lastDateTime) /
                   (dateTime - lastDateTime)) +
               lastValue;
-            pushData(lastNullDate, statistics ? [null, tmpValue] : [tmpValue]);
+            pushData(lastNullDate, [tmpValue]);
             pushData(new Date(lastNullDateTime + 1), [null]);
             pushData(date, [value]);
             lastDate = date;
             lastValue = value;
             lastNullDate = null;
           } else if (value !== null && lastNullDate === null) {
-            pushData(date, statistics ? [null, value] : [value]);
+            pushData(date, [value]);
             lastDate = date;
             lastValue = value;
           } else if (
@@ -524,9 +519,16 @@ export class StateHistoryChartLine extends LitElement {
         // Process chart data.
         // When state is `unknown`, calculate the value and break the line.
         if (states.statistics) {
-          states.statistics.forEach((entityState) => {
-            processData(entityState, true);
-          });
+          const stopTime =
+            !states.states || states.states.length === 0
+              ? 0
+              : states.states[0].last_changed;
+          for (let i = 0; i < states.statistics.length; i++) {
+            if (stopTime && states.statistics[i].last_changed > stopTime) {
+              break;
+            }
+            processData(states.statistics[i]);
+          }
         }
         states.states.forEach((entityState) => {
           processData(entityState);

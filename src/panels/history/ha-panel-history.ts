@@ -4,7 +4,6 @@ import {
   HassServiceTarget,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket/dist/types";
-import deepClone from "deep-clone-simple";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { property, query, state } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -45,14 +44,14 @@ import {
   subscribeHistory,
   HistoryStates,
   EntityHistoryState,
+  LineChartUnit,
+  LineChartEntity,
 } from "../../data/history";
 import {
   fetchStatistics,
-  // getDisplayUnit,
-  getStatisticMetadata,
   Statistics,
+  getStatisticMetadata,
   StatisticsMetaData,
-  // StatisticType,
 } from "../../data/recorder";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
@@ -82,7 +81,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   private _mungedStateHistory?: HistoryResult;
 
-  @state() private _statistics?: Statistics;
+  @state() private _statisticsHistory?: HistoryResult;
 
   @state() private _statsMetadata?: Record<string, StatisticsMetaData>;
 
@@ -143,7 +142,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
-    // console.log("history panel render");
     return html`
       <ha-top-app-bar-fixed>
         ${this._showBack
@@ -187,6 +185,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               ?disabled=${this._isLoading}
               .startDate=${this._startDate}
               .endDate=${this._endDate}
+              extendedPresets
               @change=${this._dateRangeChanged}
             ></ha-date-range-picker>
             <ha-target-picker
@@ -222,83 +221,68 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     `;
   }
 
+  private mergeHistoryResults(
+    ltsResult: HistoryResult,
+    historyResult: HistoryResult
+  ): HistoryResult {
+    const result: HistoryResult = { ...historyResult, line: [] };
+
+    let units: string[] = [];
+    units = units.concat(historyResult.line.map((i) => i.unit));
+    units = units.concat(ltsResult.line.map((i) => i.unit));
+    units = [...new Set(units)];
+    units.forEach((unit) => {
+      const historyItem = historyResult.line.find((i) => i.unit === unit);
+      const ltsItem = ltsResult.line.find((i) => i.unit === unit);
+      if (historyItem && ltsItem) {
+        const newLineItem: LineChartUnit = { ...historyItem, data: [] };
+        let entities: string[] = [];
+        entities = entities.concat(historyItem.data.map((d) => d.entity_id));
+        entities = entities.concat(ltsItem.data.map((d) => d.entity_id));
+        entities = [...new Set(entities)];
+        entities.forEach((entity) => {
+          const historyDataItem = historyItem.data.find(
+            (d) => d.entity_id === entity
+          );
+          const ltsDataItem = ltsItem.data.find((d) => d.entity_id === entity);
+          if (historyDataItem && ltsDataItem) {
+            const newDataItem: LineChartEntity = {
+              ...historyDataItem,
+              statistics: ltsDataItem.statistics,
+            };
+            newLineItem.data.push(newDataItem);
+          } else {
+            newLineItem.data.push(historyDataItem || ltsDataItem!);
+          }
+        });
+        result.line.push(newLineItem);
+      } else {
+        // Only one result has data for this item, so just push it directly instead of merging.
+        result.line.push(historyItem || ltsItem!);
+      }
+    });
+    return result;
+  }
+
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
     if (
       changedProps.has("_stateHistory") ||
-      changedProps.has("_statistics") ||
+      changedProps.has("_statisticsHistory") ||
       changedProps.has("_startDate") ||
       changedProps.has("_endDate") ||
       changedProps.has("_targetPickerValue")
     ) {
-      this._mungedStateHistory = this._stateHistory && {
-        ...this._stateHistory,
-      };
       // convert statistics to HistoryStates
-      if (this._statistics) {
-        const statsHistoryStates: HistoryStates = {};
-        Object.entries(this._statistics).forEach(([key, value]) => {
-          const entityHistoryStates: EntityHistoryState[] = value.map((e) => ({
-            s: e.mean != null ? e.mean.toString() : e.state!.toString(),
-            lc: e.start / 1000,
-            a: {},
-            lu: e.start / 1000,
-          }));
-          statsHistoryStates[key] = entityHistoryStates;
-        });
-        const statsHistoryResult = computeHistory(
-          this.hass,
-          statsHistoryStates,
-          this.hass.localize
+      if (this._statisticsHistory && this._stateHistory) {
+        this._mungedStateHistory = this.mergeHistoryResults(
+          this._statisticsHistory,
+          this._stateHistory
         );
-
-        // Merge statistics into recorder data
-        statsHistoryResult.line.forEach((item) => {
-          const unit = item.unit;
-          const mungeItemIndex = this._stateHistory?.line.findIndex(
-            (origitem) => origitem.unit === unit
-          );
-          const mungeItem =
-            mungeItemIndex != null &&
-            mungeItemIndex !== -1 &&
-            this._stateHistory!.line[mungeItemIndex];
-          let modified = false;
-          if (mungeItem) {
-            item.data.forEach((entity) => {
-              const id = entity.entity_id;
-              const mungeEntity = mungeItem.data.find(
-                (origentity) => origentity.entity_id === id
-              );
-              if (mungeEntity) {
-                const oldest =
-                  mungeEntity.states?.length > 0 &&
-                  mungeEntity.states[0].last_changed;
-                const filteredStates = entity.states.filter(
-                  (s) => !oldest || s.last_changed < oldest
-                );
-                mungeEntity.statistics = filteredStates;
-                modified = true;
-              }
-            });
-            if (modified) {
-              // console.log(`modified munge item ${mungeItemIndex}`);
-              this._mungedStateHistory!.line[mungeItemIndex!].data =
-                mungeItem.data.concat();
-            }
-          } else {
-            const newItem = deepClone(item);
-            this._mungedStateHistory!.line.push(newItem);
-            newItem.data = item.data.map((entity) => ({
-              ...entity,
-              statistics: entity.states,
-              states: [],
-            }));
-          }
-        });
-        // console.log("Updated munged data");
-        // console.log(changedProps);
-        // console.log(this._mungedStateHistory);
+      } else {
+        this._mungedStateHistory =
+          this._stateHistory || this._statisticsHistory;
       }
     }
 
@@ -437,14 +421,39 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         ["mean", "state"]
       );
 
-      this._statistics = {};
+      // Maintain the statistic id ordering
+      const orderedStatistics: Statistics = {};
       statisticIds.forEach((id) => {
         if (id in statistics) {
-          this._statistics![id] = statistics[id];
+          orderedStatistics[id] = statistics[id];
         }
       });
+
+      // Convert statistics to HistoryResult format
+      const statsHistoryStates: HistoryStates = {};
+      Object.entries(orderedStatistics).forEach(([key, value]) => {
+        const entityHistoryStates: EntityHistoryState[] = value.map((e) => ({
+          s: e.mean != null ? e.mean.toString() : e.state!.toString(),
+          lc: e.start / 1000,
+          a: {},
+          lu: e.start / 1000,
+        }));
+        statsHistoryStates[key] = entityHistoryStates;
+      });
+      this._statisticsHistory = computeHistory(
+        this.hass,
+        statsHistoryStates,
+        this.hass.localize
+      );
+      // remap states array to statistics array
+      (this._statisticsHistory?.line || []).forEach((item) => {
+        item.data.forEach((data) => {
+          data.statistics = data.states;
+          data.states = [];
+        });
+      });
     } catch (err) {
-      this._statistics = undefined;
+      this._statisticsHistory = undefined;
     }
   }
 
