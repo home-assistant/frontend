@@ -220,19 +220,21 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   ): HistoryResult {
     const result: HistoryResult = { ...historyResult, line: [] };
 
-    let units: string[] = [];
-    units = units.concat(historyResult.line.map((i) => i.unit));
-    units = units.concat(ltsResult.line.map((i) => i.unit));
-    units = [...new Set(units)];
+    const units = new Set(
+      historyResult.line
+        .map((i) => i.unit)
+        .concat(ltsResult.line.map((i) => i.unit))
+    );
     units.forEach((unit) => {
       const historyItem = historyResult.line.find((i) => i.unit === unit);
       const ltsItem = ltsResult.line.find((i) => i.unit === unit);
       if (historyItem && ltsItem) {
         const newLineItem: LineChartUnit = { ...historyItem, data: [] };
-        let entities: string[] = [];
-        entities = entities.concat(historyItem.data.map((d) => d.entity_id));
-        entities = entities.concat(ltsItem.data.map((d) => d.entity_id));
-        entities = [...new Set(entities)];
+        const entities = new Set(
+          historyItem.data
+            .map((d) => d.entity_id)
+            .concat(ltsItem.data.map((d) => d.entity_id))
+        );
         entities.forEach((entity) => {
           const historyDataItem = historyItem.data.find(
             (d) => d.entity_id === entity
