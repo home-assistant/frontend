@@ -57,8 +57,8 @@ export class DemoHaHsColorPicker extends LitElement {
           ></ha-hs-color-picker>
           <p>Hue : ${this.value[0]}</p>
           <ha-slider
+            labeled
             step="1"
-            pin
             min="0"
             max="360"
             .value=${this.value[0]}
@@ -67,8 +67,8 @@ export class DemoHaHsColorPicker extends LitElement {
           </ha-slider>
           <p>Saturation : ${this.value[1]}</p>
           <ha-slider
+            labeled
             step="0.01"
-            pin
             min="0"
             max="1"
             .value=${this.value[1]}
@@ -77,8 +77,8 @@ export class DemoHaHsColorPicker extends LitElement {
           </ha-slider>
           <p>Color Brighness : ${this.brightness}</p>
           <ha-slider
+            labeled
             step="1"
-            pin
             min="0"
             max="255"
             .value=${this.brightness}

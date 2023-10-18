@@ -149,7 +149,7 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
   sourceMaps: !isTestBuild,
 });
 
-const nameSuffix = (latestBuild) => (latestBuild ? "-latest" : "-es5");
+const nameSuffix = (latestBuild) => (latestBuild ? "-modern" : "-legacy");
 
 const outputPath = (outputRoot, latestBuild) =>
   path.resolve(outputRoot, latestBuild ? "frontend_latest" : "frontend_es5");
@@ -183,7 +183,7 @@ const publicPath = (latestBuild, root = "") =>
 module.exports.config = {
   app({ isProdBuild, latestBuild, isStatsBuild, isTestBuild, isWDS }) {
     return {
-      name: "app" + nameSuffix(latestBuild),
+      name: "frontend" + nameSuffix(latestBuild),
       entry: {
         service_worker: "./src/entrypoints/service_worker.ts",
         app: "./src/entrypoints/app.ts",
