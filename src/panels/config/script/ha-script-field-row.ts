@@ -4,6 +4,7 @@ import { mdiDelete, mdiDotsVertical } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
@@ -15,33 +16,7 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { SchemaUnion } from "../../../components/ha-form/types";
-
-const SCHEMA = [
-  {
-    name: "name",
-    selector: { text: {} },
-  },
-  {
-    name: "description",
-    selector: { text: {} },
-  },
-  {
-    name: "required",
-    selector: { boolean: {} },
-  },
-  {
-    name: "example",
-    selector: { text: {} },
-  },
-  {
-    name: "default",
-    selector: { object: {} },
-  },
-  {
-    name: "selector",
-    selector: { object: {} },
-  },
-] as const;
+import { SelectorTypes } from "../../../components/ha-selector/ha-selector";
 
 const preventDefault = (ev) => ev.preventDefault();
 
@@ -51,11 +26,55 @@ export default class HaScriptFieldRow extends LitElement {
 
   @property() public key!: string;
 
+  @property() public excludeKeys: string[] = [];
+
   @property() public field!: Field;
 
   @property({ type: Boolean }) public disabled = false;
 
+  private _schema = memoizeOne(
+    (selector: any) =>
+      [
+        {
+          name: "name",
+          selector: { text: {} },
+        },
+        {
+          name: "key",
+          selector: { text: {} },
+        },
+        {
+          name: "description",
+          selector: { text: {} },
+        },
+        {
+          name: "selector",
+          selector: { object: {} },
+        },
+        {
+          name: "default",
+          selector: selector,
+        },
+        {
+          name: "required",
+          selector: { boolean: {} },
+        },
+      ] as const
+  );
+
   protected render() {
+    let selector = { object: null };
+    if (typeof this.field.selector === "object") {
+      const keys = Object.keys(this.field.selector);
+      if (keys.length === 1 && SelectorTypes.includes(keys[0])) {
+        selector = this.field.selector;
+      }
+    }
+
+    const schema = this._schema(selector);
+
+    const data = { ...this.field, key: this.key };
+
     return html`
       <ha-card outlined>
         <ha-expansion-panel leftChevron>
@@ -94,8 +113,8 @@ export default class HaScriptFieldRow extends LitElement {
             })}
           >
             <ha-form
-              .schema=${SCHEMA}
-              .data=${this.field}
+              .schema=${schema}
+              .data=${data}
               .hass=${this.hass}
               .disabled=${this.disabled}
               .computeLabel=${this._computeLabelCallback}
@@ -135,6 +154,18 @@ export default class HaScriptFieldRow extends LitElement {
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const value = { ...ev.detail.value };
+
+    // Don't allow to set an empty key, or duplicate an existing key.
+    if (!value.key || this.excludeKeys.includes(value.key)) {
+      return;
+    }
+
+    // If we render the default with an incompatible selector, it risks throwing an exception and not rendering.
+    // Clear the default when changing the selector.
+    if (this.field.selector !== value.selector) {
+      delete value.default;
+    }
+
     fireEvent(this, "value-changed", { value });
   }
 
@@ -145,7 +176,7 @@ export default class HaScriptFieldRow extends LitElement {
   }
 
   private _computeLabelCallback = (
-    schema: SchemaUnion<typeof SCHEMA>
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string => {
     switch (schema.name) {
       default:

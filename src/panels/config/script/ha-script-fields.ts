@@ -16,7 +16,6 @@ import "../../../components/ha-svg-icon";
 import { Fields } from "../../../data/script";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
 import { HomeAssistant } from "../../../types";
-import { slugify } from "../../../common/string/slugify";
 import type HaScriptFieldRow from "./ha-script-field-row";
 import "./ha-script-field-row";
 
@@ -38,6 +37,9 @@ export default class HaScriptFields extends LitElement {
               ([key, field]) => html`
                 <ha-script-field-row
                   .key=${key}
+                  .excludeKeys=${Object.keys(this.fields).filter(
+                    (k) => k !== key
+                  )}
                   .field=${field}
                   .disabled=${this.disabled}
                   @value-changed=${this._fieldChanged}
@@ -85,32 +87,26 @@ export default class HaScriptFields extends LitElement {
 
   private _fieldChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const newValue = ev.detail.value;
     const key = (ev.target as any).key;
-
-    const nameChanged =
-      newValue !== null && this.fields[key].name !== newValue.name;
     let fields: Fields = {};
-
-    // If the field name is changed, change the key as well, but recreate the entire object
-    // to maintain the same insertion order.
-    if (nameChanged) {
-      const oldFields = { ...this.fields };
-      delete oldFields[key];
-      const newKey = this._getUniqueKey(
-        slugify(newValue.name || "unnamed_field"),
-        oldFields
-      );
-      Object.entries(this.fields).forEach(([k, v]) => {
-        if (k === key) {
-          fields[newKey] = newValue;
-        } else fields[k] = v;
-      });
-    } else {
+    if (ev.detail.value === null) {
       fields = { ...this.fields };
-      if (newValue === null) {
-        delete fields[key];
+      delete fields[key];
+    } else {
+      const newValue = { ...ev.detail.value };
+      const newKey = newValue.key;
+      delete newValue.key;
+      const keyChanged = key !== newKey;
+
+      // If key is changed, recreate the object to maintain the same insertion order.
+      if (keyChanged) {
+        Object.entries(this.fields).forEach(([k, v]) => {
+          if (k === key) {
+            fields[newKey] = newValue;
+          } else fields[k] = v;
+        });
       } else {
+        fields = { ...this.fields };
         fields[key] = newValue;
       }
     }

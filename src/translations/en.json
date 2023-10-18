@@ -3011,6 +3011,7 @@
             "link_help_fields": "Learn more about fields.",
             "field": {
               "name": "[%key:ui::common::name%]",
+              "key": "Field variable key name",
               "description": "Description",
               "required": "Required",
               "example": "Example",
