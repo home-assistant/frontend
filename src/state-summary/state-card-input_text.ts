@@ -1,4 +1,3 @@
-/* eslint-plugin-disable lit */
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
