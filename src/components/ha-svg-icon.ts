@@ -22,7 +22,7 @@ export class HaSvgIcon extends LitElement {
         ${
           this.path
             ? svg`<path class="primary-path" d=${this.path}></path>`
-            : ""
+            : nothing
         }
         ${
           this.secondaryPath
