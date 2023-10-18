@@ -3855,18 +3855,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-replace@npm:5.0.3":
-  version: 5.0.3
-  resolution: "@rollup/plugin-replace@npm:5.0.3"
+"@rollup/plugin-replace@npm:5.0.4":
+  version: 5.0.4
+  resolution: "@rollup/plugin-replace@npm:5.0.4"
   dependencies:
     "@rollup/pluginutils": ^5.0.1
-    magic-string: ^0.27.0
+    magic-string: ^0.30.3
   peerDependencies:
     rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
   peerDependenciesMeta:
     rollup:
       optional: true
-  checksum: 6cb1ba5ef9ac713840532ba0d1ddf70274fd10a74ac46d102508fbe1b84eb1a87c34019cff40c1ac96dbf43131e4e5d3a7873683a05299c44c0256d4a6f38a94
+  checksum: 50c9ec927e98c9978954b1fdec171c3e5d62c2ae6c9e4eb1569e58ae2deff5483b0eec5817ed2fe02f70ec25c574dd83e4ddd8c0a63ae626e75039dc93fb4bc0
   languageName: node
   linkType: hard
 
@@ -9674,7 +9674,7 @@ __metadata:
     "@rollup/plugin-commonjs": 25.0.7
     "@rollup/plugin-json": 6.0.1
     "@rollup/plugin-node-resolve": 15.2.3
-    "@rollup/plugin-replace": 5.0.3
+    "@rollup/plugin-replace": 5.0.4
     "@thomasloven/round-slider": 0.6.0
     "@types/babel__plugin-transform-runtime": 7.9.3
     "@types/chromecast-caf-receiver": 6.0.10
