@@ -22,8 +22,6 @@ class DialogZWaveJSHardResetController extends LitElement {
 
   @state() private _done = false;
 
-  private _devices?: DeviceRegistryEntry[];
-
   private _subscribedDeviceRegistryUpdates?: Promise<UnsubscribeFunc>;
 
   public showDialog(params: ZWaveJSHardResetControllerDialogParams): void {
@@ -105,7 +103,11 @@ class DialogZWaveJSHardResetController extends LitElement {
                 device.config_entries.includes(this._entryId!)
               );
               if (deviceEntries.length === 1) {
-                navigate(`/config/devices/device/${deviceEntries[0].id}`);
+                setTimeout(
+                  () =>
+                    navigate(`/config/devices/device/${deviceEntries[0].id}`),
+                  0
+                );
                 this._unsubscribe();
               }
             }),
