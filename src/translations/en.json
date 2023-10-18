@@ -2701,7 +2701,7 @@
               "delete": "[%key:ui::common::delete%]",
               "delete_confirm_title": "Delete action?",
               "delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
-              "unsupported_action": "No visual editor support for action: {action}",
+              "unsupported_action": "No visual editor support for this action",
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "type": {
