@@ -56,7 +56,6 @@ export class HaDateRangePicker extends LitElement {
 
   @property({ type: String }) private _rtlDirection = "ltr";
 
-
   @property({ type: Boolean }) private minimal = false;
 
   @property() private _openingDirection = "right";
