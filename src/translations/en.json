@@ -3014,7 +3014,6 @@
               "key": "Field variable key name",
               "description": "Description",
               "required": "Required",
-              "example": "Example",
               "default": "Default",
               "selector": "Selector",
               "yaml_error": "Field yaml has invalid format.",
