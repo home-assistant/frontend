@@ -529,7 +529,7 @@ export class StateHistoryChartLine extends LitElement {
               ? 0
               : states.states[0].last_changed;
           for (let i = 0; i < states.statistics.length; i++) {
-            if (stopTime && states.statistics[i].last_changed > stopTime) {
+            if (stopTime && states.statistics[i].last_changed >= stopTime) {
               break;
             }
             processData(states.statistics[i]);
