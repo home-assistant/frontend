@@ -3016,7 +3016,9 @@
               "required": "Required",
               "example": "Example",
               "default": "Default",
-              "selector": "Selector"
+              "selector": "Selector",
+              "key_not_null": "The field key must not be empty.",
+              "key_not_unique": "The field key must not be the same value as another field."
             },
             "add_field": "Add field",
             "field_delete_confirm_title": "Delete field?",

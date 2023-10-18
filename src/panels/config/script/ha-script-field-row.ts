@@ -2,7 +2,7 @@ import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDelete, mdiDotsVertical } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -31,6 +31,10 @@ export default class HaScriptFieldRow extends LitElement {
   @property() public field!: Field;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @state() private _error?: Record<string, string>;
+
+  private _errorKey?: string;
 
   private _schema = memoizeOne(
     (selector: any) =>
@@ -73,7 +77,7 @@ export default class HaScriptFieldRow extends LitElement {
 
     const schema = this._schema(selector);
 
-    const data = { ...this.field, key: this.key };
+    const data = { ...this.field, key: this._errorKey ?? this.key };
 
     return html`
       <ha-card outlined>
@@ -115,9 +119,11 @@ export default class HaScriptFieldRow extends LitElement {
             <ha-form
               .schema=${schema}
               .data=${data}
+              .error=${this._error}
               .hass=${this.hass}
               .disabled=${this.disabled}
               .computeLabel=${this._computeLabelCallback}
+              .computeError=${this._computeError}
               @value-changed=${this._valueChanged}
             ></ha-form>
           </div>
@@ -157,8 +163,18 @@ export default class HaScriptFieldRow extends LitElement {
 
     // Don't allow to set an empty key, or duplicate an existing key.
     if (!value.key || this.excludeKeys.includes(value.key)) {
+      this._error = value.key
+        ? {
+            key: "key_not_unique",
+          }
+        : {
+            key: "key_not_null",
+          };
+      this._errorKey = value.key ?? "";
       return;
     }
+    this._errorKey = undefined;
+    this._error = undefined;
 
     // If we render the default with an incompatible selector, it risks throwing an exception and not rendering.
     // Clear the default when changing the selector.
@@ -185,6 +201,10 @@ export default class HaScriptFieldRow extends LitElement {
         );
     }
   };
+
+  private _computeError = (error: string) =>
+    this.hass.localize(`ui.panel.config.script.editor.field.${error}` as any) ||
+    error;
 
   static get styles(): CSSResultGroup {
     return [
