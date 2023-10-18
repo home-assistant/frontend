@@ -49,7 +49,6 @@ export class HaSvgIcon extends LitElement {
         position: relative;
         vertical-align: middle;
         fill: var(--icon-primary-color, currentcolor);
-        opacity: var(--icon-primary-opactity, 1);
         width: var(--mdc-icon-size, 24px);
         height: var(--mdc-icon-size, 24px);
       }
@@ -58,6 +57,9 @@ export class HaSvgIcon extends LitElement {
         height: 100%;
         pointer-events: none;
         display: block;
+      }
+      path.primary-path {
+        opacity: var(--icon-primary-opactity, 1);
       }
       path.secondary-path {
         fill: var(--icon-secondary-color, currentcolor);
