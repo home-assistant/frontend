@@ -54,8 +54,12 @@ export class HaDateRangePicker extends LitElement {
 
   @property({ type: String }) private _rtlDirection = "ltr";
 
-  protected willUpdate() {
-    if (!this.hasUpdated && this.ranges === undefined) {
+  protected willUpdate(changedProps: PropertyValues) {
+    if (
+      (this.hasUpdated && this.ranges === undefined) ||
+      (changedProps.has("hass") &&
+        this.hass?.localize !== changedProps.get("hass")?.localize)
+    ) {
       const today = new Date();
       const weekStartsOn = firstWeekdayIndex(this.hass.locale);
       const weekStart = calcDate(
