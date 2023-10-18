@@ -1,7 +1,7 @@
 import { customIconsets } from "./custom_iconsets";
 
 export interface CustomIcon {
-  path?: string;
+  path: string;
   secondaryPath?: string;
   viewBox?: string;
 }

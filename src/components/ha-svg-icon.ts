@@ -1,4 +1,11 @@
-import { css, CSSResultGroup, LitElement, svg, SVGTemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  LitElement,
+  nothing,
+  svg,
+  SVGTemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-svg-icon")
@@ -27,7 +34,7 @@ export class HaSvgIcon extends LitElement {
         ${
           this.secondaryPath
             ? svg`<path class="secondary-path" d=${this.secondaryPath}></path>`
-            : ""
+            : nothing
         }
       </g>
     </svg>`;
@@ -41,7 +48,8 @@ export class HaSvgIcon extends LitElement {
         justify-content: center;
         position: relative;
         vertical-align: middle;
-        fill: currentcolor;
+        fill: var(--icon-primary-color, currentcolor);
+        opacity: var(--icon-primary-opactity, 1);
         width: var(--mdc-icon-size, 24px);
         height: var(--mdc-icon-size, 24px);
       }
@@ -50,10 +58,6 @@ export class HaSvgIcon extends LitElement {
         height: 100%;
         pointer-events: none;
         display: block;
-      }
-      path.primary-path {
-        fill: var(--icon-primary-color, currentcolor);
-        opacity: var(--icon-primary-opactity, 1);
       }
       path.secondary-path {
         fill: var(--icon-secondary-color, currentcolor);
