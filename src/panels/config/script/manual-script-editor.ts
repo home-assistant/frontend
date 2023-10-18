@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, nothing, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
@@ -34,33 +34,37 @@ export class HaManualScriptEditor extends LitElement {
             </mwc-button>
           </ha-alert>`
         : ""}
+      ${this.config.fields
+        ? html` <div class="header">
+              <h2 id="fields-heading" class="name">
+                ${this.hass.localize("ui.panel.config.script.editor.fields")}
+              </h2>
+              <a
+                href=${documentationUrl(
+                  this.hass,
+                  "/integrations/script/#fields"
+                )}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ha-icon-button
+                  .path=${mdiHelpCircle}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.script.editor.link_help_fields"
+                  )}
+                ></ha-icon-button>
+              </a>
+            </div>
 
-      <div class="header">
-        <h2 id="fields-heading" class="name">
-          ${this.hass.localize("ui.panel.config.script.editor.fields")}
-        </h2>
-        <a
-          href=${documentationUrl(this.hass, "/integrations/script/#fields")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <ha-icon-button
-            .path=${mdiHelpCircle}
-            .label=${this.hass.localize(
-              "ui.panel.config.script.editor.link_help_fields"
-            )}
-          ></ha-icon-button>
-        </a>
-      </div>
-
-      <ha-script-fields
-        role="region"
-        aria-labelledby="fields-heading"
-        .fields=${this.config.fields}
-        @value-changed=${this._fieldsChanged}
-        .hass=${this.hass}
-        .disabled=${this.disabled}
-      ></ha-script-fields>
+            <ha-script-fields
+              role="region"
+              aria-labelledby="fields-heading"
+              .fields=${this.config.fields}
+              @value-changed=${this._fieldsChanged}
+              .hass=${this.hass}
+              .disabled=${this.disabled}
+            ></ha-script-fields>`
+        : nothing}
 
       <div class="header">
         <h2 id="sequence-heading" class="name">

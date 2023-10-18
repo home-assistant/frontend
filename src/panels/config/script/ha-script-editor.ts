@@ -8,6 +8,7 @@ import {
   mdiInformationOutline,
   mdiPlay,
   mdiTransitConnection,
+  mdiFormTextbox,
 } from "@mdi/js";
 import {
   css,
@@ -45,9 +46,11 @@ import {
   getScriptEditorInitData,
   getScriptStateConfig,
   isMaxMode,
+  Fields,
   MODES,
   MODES_MAX,
   ScriptConfig,
+  ManualScriptConfig,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
@@ -231,6 +234,23 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
           </mwc-list-item>
 
+          ${!useBlueprint && !("fields" in this._config)
+            ? html`
+                <mwc-list-item
+                  graphic="icon"
+                  .disabled=${!this.scriptId}
+                  @click=${this._addFields}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.script.editor.add_field"
+                  )}
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiFormTextbox}
+                  ></ha-svg-icon>
+                </mwc-list-item>
+              `
+            : nothing}
           ${this.scriptId && this.narrow
             ? html`
                 <a href="/config/script/trace/${this.scriptId}">
@@ -659,6 +679,23 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
       this._setEntityId(newComputedId);
     }
+  }
+
+  private _addFields() {
+    if ("fields" in this._config!) {
+      return;
+    }
+    this._config = {
+      ...this._config,
+      fields: {
+        new_field: {
+          selector: {
+            text: null,
+          },
+        },
+      } as Fields,
+    } as ManualScriptConfig;
+    this._dirty = true;
   }
 
   private _valueChanged(ev: CustomEvent) {

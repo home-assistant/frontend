@@ -52,8 +52,6 @@ const LOAD_ELEMENTS = {
   ui_color: () => import("./ha-selector-ui-color"),
 };
 
-export const SelectorTypes = Object.keys(LOAD_ELEMENTS);
-
 const LEGACY_UI_SELECTORS = new Set(["ui-action", "ui-color"]);
 
 @customElement("ha-selector")

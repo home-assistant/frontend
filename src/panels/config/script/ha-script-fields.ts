@@ -80,7 +80,14 @@ export default class HaScriptFields extends LitElement {
 
   private _addField() {
     const key = this._getUniqueKey("new_field", this.fields || {});
-    const fields = { ...(this.fields || {}), [key]: {} };
+    const fields = {
+      ...(this.fields || {}),
+      [key]: {
+        selector: {
+          text: null,
+        },
+      },
+    };
     this._focusLastActionOnChange = true;
     fireEvent(this, "value-changed", { value: fields });
   }

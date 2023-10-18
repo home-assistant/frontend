@@ -3017,6 +3017,7 @@
               "example": "Example",
               "default": "Default",
               "selector": "Selector",
+              "yaml_error": "Field yaml has invalid format.",
               "key_not_null": "The field key must not be empty.",
               "key_not_unique": "The field key must not be the same value as another field."
             },
