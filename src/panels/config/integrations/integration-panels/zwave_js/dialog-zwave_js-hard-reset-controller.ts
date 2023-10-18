@@ -2,6 +2,7 @@ import { mdiDeleteForever } from "@mdi/js";
 import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-svg-icon";
@@ -11,6 +12,7 @@ import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSHardResetControllerDialogParams } from "./show-dialog-zwave_js-hard-reset-controller";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { navigate } from "../../../../../common/navigate";
+import { fetchDeviceRegistry } from "../../../../../data/device_registry";
 
 @customElement("dialog-zwave_js-hard-reset-controller")
 class DialogZWaveJSHardResetController extends LitElement {
@@ -20,6 +22,10 @@ class DialogZWaveJSHardResetController extends LitElement {
 
   @state() private _done = false;
 
+  private _devices?: DeviceRegistryEntry[];
+
+  private _subscribedDeviceRegistryUpdates?: Promise<UnsubscribeFunc>;
+
   public showDialog(params: ZWaveJSHardResetControllerDialogParams): void {
     this._entryId = params.entryId;
   }
@@ -27,6 +33,8 @@ class DialogZWaveJSHardResetController extends LitElement {
   public closeDialog(): void {
     this._entryId = undefined;
     this._done = false;
+
+    this._unsubscribe();
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -89,9 +97,29 @@ class DialogZWaveJSHardResetController extends LitElement {
         confirmText: this.hass.localize("ui.common.continue"),
       })
     ) {
+      this._subscribedDeviceRegistryUpdates =
+        this.hass.connection.subscribeEvents(
+          () =>
+            fetchDeviceRegistry(this.hass.connection).then((devices) => {
+              const deviceEntries = devices.filter((device) =>
+                device.config_entries.includes(this._entryId!)
+              );
+              if (deviceEntries.length === 1) {
+                navigate(`/config/devices/device/${deviceEntries[0].id}`);
+                this._unsubscribe();
+              }
+            }),
+          "device_registry_updated"
+        );
       await hardResetController(this.hass, this._entryId!);
       this._done = true;
-      navigate(`/config/devices/dashboard?config_entry=${this._entryId}`);
+    }
+  }
+
+  private _unsubscribe() {
+    if (this._subscribedDeviceRegistryUpdates) {
+      this._subscribedDeviceRegistryUpdates.then((unsub) => unsub());
+      this._subscribedDeviceRegistryUpdates = undefined;
     }
   }
 
