@@ -1,3 +1,4 @@
+import { ensureArray } from "../../../common/array/ensure-array";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 
@@ -5,15 +6,15 @@ export type Condition = StateCondition | ScreenCondition;
 
 export type LegacyCondition = {
   entity?: string;
-  state?: string;
-  state_not?: string;
+  state?: string | string[];
+  state_not?: string | string[];
 };
 
 export type StateCondition = {
   condition: "state";
   entity?: string;
-  state?: string;
-  state_not?: string;
+  state?: string | string[];
+  state_not?: string | string[];
 };
 
 export type ScreenCondition = {
@@ -31,8 +32,8 @@ function checkStateCondition(
       : UNAVAILABLE;
 
   return condition.state != null
-    ? state === condition.state
-    : state !== condition.state_not;
+    ? ensureArray(condition.state).includes(state)
+    : ensureArray(condition.state_not).includes(state);
 }
 
 function checkScreenCondition(

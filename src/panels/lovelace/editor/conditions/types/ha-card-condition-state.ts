@@ -103,7 +103,10 @@ export class HaCardConditionState extends LitElement {
       ...content,
       entity: this.condition.entity ?? "",
       invert: this.condition.state_not ? "true" : "false",
-      state: this.condition.state_not ?? this.condition.state ?? "",
+      state:
+        (this.condition.state_not as string | undefined) ??
+        (this.condition.state as string | undefined) ??
+        "",
     };
 
     return html`
