@@ -1488,7 +1488,8 @@
         "key_missing": "Required key ''{key}'' is missing.",
         "key_not_expected": "Key ''{key}'' is not expected or not supported by the visual editor.",
         "key_wrong_type": "The provided value for ''{key}'' is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
-        "no_template_editor_support": "Templates not supported in visual editor"
+        "no_template_editor_support": "Templates not supported in visual editor",
+        "media_query_not_supported": "This media query is not supported by the visual editor."
       },
       "supervisor": {
         "title": "Could not load the Supervisor panel!",

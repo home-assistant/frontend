@@ -12,7 +12,7 @@ import { StateCondition } from "../../../common/validate-condition";
 
 const stateConditionStruct = object({
   condition: literal("state"),
-  entity: string(),
+  entity: optional(string()),
   state: optional(string()),
   state_not: optional(string()),
 });
@@ -34,6 +34,10 @@ export class HaCardConditionState extends LitElement {
 
   public static get defaultConfig(): StateCondition {
     return { condition: "state", entity: "", state: "" };
+  }
+
+  protected static validateUIConfig(condition: StateCondition) {
+    return assert(condition, stateConditionStruct);
   }
 
   protected willUpdate(changedProperties: PropertyValues): void {

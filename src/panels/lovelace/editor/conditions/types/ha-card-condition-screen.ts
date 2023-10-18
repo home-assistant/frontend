@@ -103,10 +103,17 @@ export class HaCardConditionScreen extends LitElement {
     return { condition: "screen", media_query: "" };
   }
 
-  protected static validateUIConfig(condition: ScreenCondition) {
-    return (
-      !condition.media_query || mediaQueryReverseMap.get(condition.media_query)
-    );
+  protected static validateUIConfig(
+    condition: ScreenCondition,
+    hass: HomeAssistant
+  ) {
+    const valid =
+      !condition.media_query || mediaQueryReverseMap.has(condition.media_query);
+    if (!valid) {
+      throw new Error(
+        hass.localize("ui.errors.config.media_query_not_supported")
+      );
+    }
   }
 
   private _schema = memoizeOne(
