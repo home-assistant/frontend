@@ -31,13 +31,14 @@ export class HaCardConditionUser extends LitElement {
     )
   );
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected async firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    this._fetchUsers();
+  }
 
-    fetchUsers(this.hass).then((users) => {
-      this._users = users.filter((user) => !user.system_generated);
-      fireEvent(this, "iron-resize");
-    });
+  private async _fetchUsers() {
+    const users = await fetchUsers(this.hass);
+    this._users = users.filter((user) => !user.system_generated);
   }
 
   protected render() {
