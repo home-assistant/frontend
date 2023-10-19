@@ -172,8 +172,8 @@ class PanelCalendar extends LitElement {
   }
 
   private async _fetchEvents(
-    start: Date,
-    end: Date,
+    start: Date | undefined,
+    end: Date | undefined,
     calendars: Calendar[]
   ): Promise<{ events: CalendarEvent[]; errors: string[] }> {
     if (!calendars.length || !start || !end) {
@@ -184,6 +184,8 @@ class PanelCalendar extends LitElement {
   }
 
   private async _handleSelected(ev): Promise<void> {
+    const oldSelected = this._selectedCalendars;
+
     const deselectedCalendars: Set<string> = new Set(
       this._calendars.map((cal) => cal.entity_id)
     );
@@ -192,13 +194,15 @@ class PanelCalendar extends LitElement {
     }
     this._deSelectedCalendars = [...deselectedCalendars];
 
-    if (ev.detail.diff.added.length) {
+    if (ev.detail.diff.added.length === 1) {
       const cal = this._calendars[ev.detail.diff.added[0]];
-      const result = await this._fetchEvents(this._start, this._end, [cal]);
-      this._events = [...this._events, ...result.events];
-      this._handleErrors(result.errors);
+      if (!oldSelected.includes(cal)) {
+        const result = await this._fetchEvents(this._start, this._end, [cal]);
+        this._events = [...this._events, ...result.events];
+        this._handleErrors(result.errors);
+      }
     }
-    if (ev.detail.diff.removed.length) {
+    if (ev.detail.diff.removed.length === 1) {
       const cal = this._calendars[ev.detail.diff.removed[0]];
       this._events = this._events.filter(
         (event) => event.calendar !== cal.entity_id
