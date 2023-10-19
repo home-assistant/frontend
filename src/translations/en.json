@@ -4005,12 +4005,19 @@
             "node_statistics": "Statistics"
           },
           "hard_reset_controller": {
-            "Done": "Your controller has been reset to factory settings and has been restarted! You can now close this dialog.",
-            "InProgress": "Your controller is being reset and restarted. Wait until the process is complete before closing this dialog",
-            "NotStarted": "If you decide to move forward, you will reset your controller to factory settings. As a result, the controller will forget all devices it is paired with and all Z-Wave devices for this network will be removed from Home Assistant. If there are any devices still paired with the controller when it is reset, they will have to go through the exclusion process before they can be re-paired. Would you like to continue?",
-            "title_not_done": "Reset Controller to Factory Settings",
-            "title_done": "Controller Reset Complete",
-            "final_warning": "This action cannot be undone unless you have an NVM backup from your controller."
+            "NotStarted": {
+              "title": "Reset Controller to Factory Settings",
+              "body": "If you decide to move forward, you will reset your controller to factory settings. As a result, the controller will forget all devices it is paired with and all Z-Wave devices for this network will be removed from Home Assistant. If there are any devices still paired with the controller when it is reset, they will have to go through the exclusion process before they can be re-paired. Would you like to continue?"
+            },
+            "InProgress": {
+              "title": "Resetting Controller",
+              "body": "Your controller is being reset and restarted. Wait until the process is complete before closing this dialog"
+            },
+            "Done": {
+              "title": "Controller Reset Complete",
+              "body": "Your controller has been reset to factory settings and has been restarted! You can now close this dialog."
+            },
+            "confirmation": "This action cannot be undone unless you have an NVM backup from your controller."
           },
           "node_statistics": {
             "title": "Device statistics",

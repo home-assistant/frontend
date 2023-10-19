@@ -54,9 +54,9 @@ class DialogZWaveJSHardResetController extends LitElement {
       .heading=${createCloseHeading(
         this.hass,
         this.hass.localize(
-          `ui.panel.config.zwave_js.hard_reset_controller.title_${
-            this._resetStatus === ResetStatus.Done ? "done" : "not_done"
-          }`
+          `ui.panel.config.zwave_js.hard_reset_controller.${
+            ResetStatus[this._resetStatus]
+          }.title`
         )
       )}
     >
@@ -71,7 +71,7 @@ class DialogZWaveJSHardResetController extends LitElement {
           ${this.hass.localize(
             `ui.panel.config.zwave_js.hard_reset_controller.${
               ResetStatus[this._resetStatus]
-            }`
+            }.body`
           )}
         </p>
       </div>
@@ -93,7 +93,7 @@ class DialogZWaveJSHardResetController extends LitElement {
     if (
       await showConfirmationDialog(this, {
         text: this.hass.localize(
-          `ui.panel.config.zwave_js.hard_reset_controller.final_warning`
+          `ui.panel.config.zwave_js.hard_reset_controller.confirmation`
         ),
         dismissText: this.hass.localize("ui.common.cancel"),
         confirmText: this.hass.localize("ui.common.continue"),
