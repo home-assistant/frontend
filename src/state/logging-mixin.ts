@@ -25,7 +25,6 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
     protected hassConnected() {
       super.hassConnected();
       window.addEventListener("error", async (ev) => {
-        return;
         if (!this.hass?.connected) {
           return;
         }
@@ -59,7 +58,6 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
         }
       });
       window.addEventListener("unhandledrejection", async (ev) => {
-        return;
         if (!this.hass?.connected) {
           return;
         }
