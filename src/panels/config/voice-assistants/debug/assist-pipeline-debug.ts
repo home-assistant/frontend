@@ -3,15 +3,15 @@ import {
   mdiRayEndArrow,
   mdiRayStartArrow,
 } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import {
-  listAssistPipelineRuns,
-  getAssistPipelineRun,
   PipelineRunEvent,
   assistRunListing,
+  getAssistPipelineRun,
+  listAssistPipelineRuns,
 } from "../../../../data/assist_pipeline";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
@@ -41,12 +41,19 @@ export class AssistPipelineDebug extends LitElement {
     return html`<hass-subpage
       .narrow=${this.narrow}
       .hass=${this.hass}
-      header="Debug Assistant"
+      .header=${this.hass.localize(
+        "ui.panel.config.voice_assistants.debug.header"
+      )}
     >
       <a
         href="/config/voice-assistants/debug?pipeline=${this.pipelineId}"
         slot="toolbar-icon"
-        ><ha-icon-button .path=${mdiMicrophoneMessage}></ha-icon-button
+        ><ha-icon-button
+          .path=${mdiMicrophoneMessage}
+          .label=${this.hass.localize(
+            "ui.panel.config.voice_assistants.debug.start_debug_run"
+          )}
+        ></ha-icon-button
       ></a>
       <div class="toolbar">
         ${this._runs?.length
@@ -54,7 +61,9 @@ export class AssistPipelineDebug extends LitElement {
               <ha-icon-button
                 .disabled=${this._runs[this._runs.length - 1]
                   .pipeline_run_id === this._runId}
-                label="Older run"
+                .label=${this.hass.localize(
+                  "ui.panel.config.voice_assistants.debug.older_run"
+                )}
                 @click=${this._pickOlderRun}
                 .path=${mdiRayEndArrow}
               ></ha-icon-button>
@@ -74,7 +83,9 @@ export class AssistPipelineDebug extends LitElement {
               </select>
               <ha-icon-button
                 .disabled=${this._runs[0].pipeline_run_id === this._runId}
-                label="Newer run"
+                .label=${this.hass.localize(
+                  "ui.panel.config.voice_assistants.debug.newer_run"
+                )}
                 @click=${this._pickNewerRun}
                 .path=${mdiRayStartArrow}
               ></ha-icon-button>
@@ -82,7 +93,11 @@ export class AssistPipelineDebug extends LitElement {
           : ""}
       </div>
       ${this._runs?.length === 0
-        ? html`<div class="container">No runs found</div>`
+        ? html`<div class="container">
+            ${this.hass.localize(
+              "ui.panel.config.voice_assistants.debug.no_runs_found"
+            )}
+          </div>`
         : ""}
       <div class="content">
         ${this._events

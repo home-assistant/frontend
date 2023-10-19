@@ -60,7 +60,8 @@ export const moreInfoControlCircularSliderStyle = css`
     justify-content: space-between;
   }
   .buttons ha-outlined-icon-button {
-    --md-outlined-icon-button-container-size: 48px;
+    --md-outlined-icon-button-container-width: 48px;
+    --md-outlined-icon-button-container-height: 48px;
     --md-outlined-icon-button-icon-size: 24px;
   }
   /* Accessibility */

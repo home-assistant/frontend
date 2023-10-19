@@ -100,7 +100,7 @@ export class DialogEnterCode
             .label=${this.hass.localize("ui.dialogs.enter_code.input_label")}
             type="password"
             pattern=${ifDefined(this._dialogParams.codePattern)}
-            input-mode="text"
+            inputmode="text"
           ></ha-textfield>
           <ha-button slot="secondaryAction" dialogAction="cancel">
             ${this._dialogParams.cancelText ??
@@ -130,7 +130,7 @@ export class DialogEnterCode
             id="code"
             .label=${this.hass.localize("ui.dialogs.enter_code.input_label")}
             type="password"
-            input-mode="numeric"
+            inputmode="numeric"
           ></ha-textfield>
           <div class="keypad">
             ${BUTTONS.map((value) =>

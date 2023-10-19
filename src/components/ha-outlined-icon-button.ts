@@ -1,21 +1,11 @@
 import { css } from "lit";
 import { customElement } from "lit/decorators";
-import { IconButton } from "@material/web/iconbutton/internal/icon-button";
-import { styles as outlinedStyles } from "@material/web/iconbutton/internal/outlined-styles.css";
-import { styles as sharedStyles } from "@material/web/iconbutton/internal/shared-styles.css";
+import { MdOutlinedIconButton } from "@material/web/iconbutton/outlined-icon-button";
 
 @customElement("ha-outlined-icon-button")
-export class HaOutlinedIconButton extends IconButton {
-  protected override getRenderClasses() {
-    return {
-      ...super.getRenderClasses(),
-      outlined: true,
-    };
-  }
-
+export class HaOutlinedIconButton extends MdOutlinedIconButton {
   static override styles = [
-    sharedStyles,
-    outlinedStyles,
+    ...super.styles,
     css`
       :host {
         --ha-icon-display: block;
@@ -28,11 +18,6 @@ export class HaOutlinedIconButton extends IconButton {
         --md-ripple-focus-opacity: 0;
         --md-ripple-hover-opacity: 0;
         --md-ripple-pressed-opacity: 0;
-      }
-      .outlined {
-        /* Fix md-outlined-icon-button padding and margin for iOS */
-        padding: 0;
-        margin: 0;
       }
     `,
   ];

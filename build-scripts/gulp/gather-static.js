@@ -4,6 +4,7 @@ import fs from "fs-extra";
 import gulp from "gulp";
 import path from "path";
 import paths from "../paths.cjs";
+import env from "../env.cjs";
 
 const npmPath = (...parts) =>
   path.resolve(paths.polymer_dir, "node_modules", ...parts);
@@ -62,6 +63,9 @@ function copyPolyfills(staticDir) {
 }
 
 function copyLoaderJS(staticDir) {
+  if (!env.useRollup()) {
+    return;
+  }
   const staticPath = genStaticPath(staticDir);
   copyFileDir(npmPath("systemjs/dist/s.min.js"), staticPath("js"));
   copyFileDir(npmPath("systemjs/dist/s.min.js.map"), staticPath("js"));

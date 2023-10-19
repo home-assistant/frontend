@@ -1,3 +1,6 @@
+export const DEFAULT_PRIMARY_COLOR = "#03a9f4" as const;
+export const DEFAULT_ACCENT_COLOR = "#ff9800" as const;
+
 export const darkStyles = {
   "primary-background-color": "#111111",
   "card-background-color": "#1c1c1c",
@@ -11,6 +14,7 @@ export const darkStyles = {
   "switch-unchecked-button-color": "#999999",
   "switch-unchecked-track-color": "#9b9b9b",
   "divider-color": "rgba(225, 225, 225, .12)",
+  "outline-color": "rgba(225, 225, 225, .12)",
   "mdc-ripple-color": "#AAAAAA",
   "mdc-linear-progress-buffer-color": "rgba(255, 255, 255, 0.1)",
 
@@ -49,7 +53,7 @@ export const darkStyles = {
   "map-filter":
     "invert(.9) hue-rotate(170deg) brightness(1.5) contrast(1.2) saturate(.3)",
   "disabled-color": "#464646",
-};
+} as const;
 
 export const derivedStyles = {
   "state-icon-error-color": "var(--error-state-color, var(--error-color))",
@@ -81,13 +85,6 @@ export const derivedStyles = {
   "table-header-background-color": "var(--input-fill-color)",
   "table-row-background-color": "var(--primary-background-color)",
   "table-row-alternative-background-color": "var(--secondary-background-color)",
-  "paper-slider-knob-color": "var(--slider-color)",
-  "paper-slider-knob-start-color": "var(--slider-color)",
-  "paper-slider-pin-color": "var(--slider-color)",
-  "paper-slider-pin-start-color": "var(--slider-color)",
-  "paper-slider-active-color": "var(--slider-color)",
-  "paper-slider-secondary-color": "var(--slider-secondary-color)",
-  "paper-slider-container-color": "var(--slider-track-color)",
   "data-table-background-color": "var(--card-background-color)",
   "markdown-code-background-color": "var(--primary-background-color)",
 
@@ -113,7 +110,7 @@ export const derivedStyles = {
   "mdc-radio-disabled-color": "var(--disabled-text-color)",
   "mdc-tab-text-label-color-default": "var(--primary-text-color)",
   "mdc-button-disabled-ink-color": "var(--disabled-text-color)",
-  "mdc-button-outline-color": "var(--divider-color)",
+  "mdc-button-outline-color": "var(--outline-color)",
   "mdc-dialog-scroll-divider-color": "var(--divider-color)",
   "mdc-dialog-heading-ink-color": "var(--primary-text-color)",
   "mdc-dialog-content-ink-color": "var(--primary-text-color)",
@@ -155,4 +152,4 @@ export const derivedStyles = {
   "material-background-color": "var(--card-background-color)",
   "material-secondary-background-color": "var(--secondary-background-color)",
   "material-secondary-text-color": "var(--secondary-text-color)",
-};
+} as const;

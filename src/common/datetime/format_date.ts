@@ -37,6 +37,23 @@ const formatDateMem = memoizeOne(
     })
 );
 
+// Aug 10, 2021
+export const formatDateShort = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => formatDateShortMem(locale, config.time_zone).format(dateObj);
+
+const formatDateShortMem = memoizeOne(
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
+    new Intl.DateTimeFormat(locale.language, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
+    })
+);
+
 // 10/08/2021
 export const formatDateNumeric = (
   dateObj: Date,
@@ -102,13 +119,13 @@ const formatDateNumericMem = memoizeOne(
 );
 
 // Aug 10
-export const formatDateShort = (
+export const formatDateVeryShort = (
   dateObj: Date,
   locale: FrontendLocaleData,
   config: HassConfig
-) => formatDateShortMem(locale, config.time_zone).format(dateObj);
+) => formatDateVeryShortMem(locale, config.time_zone).format(dateObj);
 
-const formatDateShortMem = memoizeOne(
+const formatDateVeryShortMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(locale.language, {
       day: "numeric",
