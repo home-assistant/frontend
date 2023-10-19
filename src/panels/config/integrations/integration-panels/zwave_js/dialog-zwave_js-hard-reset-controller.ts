@@ -67,17 +67,15 @@ class DialogZWaveJSHardResetController extends LitElement {
             .class="icon"
           ></ha-svg-icon>
         </div>
+        <p>
+          ${this.hass.localize(
+            `ui.panel.config.zwave_js.hard_reset_controller.${
+              ResetStatus[this._resetStatus]
+            }`
+          )}
+        </p>
       </div>
-      <p>
-        ${this.hass.localize(
-          `ui.panel.config.zwave_js.hard_reset_controller.${
-            ResetStatus[this._resetStatus]
-          }`
-        )}
-      </p>
-    </div>
-    ${
-      this._resetStatus === ResetStatus.NotStarted
+      ${this._resetStatus === ResetStatus.NotStarted
         ? html`<mwc-button
               slot="primaryAction"
               @click=${this._hardResetController}
@@ -87,8 +85,7 @@ class DialogZWaveJSHardResetController extends LitElement {
             <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
               ${this.hass.localize("ui.common.cancel")}
             </mwc-button>`
-        : nothing
-    }
+        : nothing}
     </ha-dialog>`;
   }
 
