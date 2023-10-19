@@ -1,8 +1,7 @@
-import { mdiDeleteForever } from "@mdi/js";
+import { mdiCheckCircle, mdiDeleteForever, mdiRestore } from "@mdi/js";
 import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-svg-icon";
@@ -12,7 +11,18 @@ import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSHardResetControllerDialogParams } from "./show-dialog-zwave_js-hard-reset-controller";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { navigate } from "../../../../../common/navigate";
-import { fetchDeviceRegistry } from "../../../../../data/device_registry";
+
+enum ResetStatus {
+  NotStarted,
+  InProgress,
+  Done,
+}
+
+const iconMap = {
+  [ResetStatus.NotStarted]: mdiDeleteForever,
+  [ResetStatus.InProgress]: mdiRestore,
+  [ResetStatus.Done]: mdiCheckCircle,
+};
 
 @customElement("dialog-zwave_js-hard-reset-controller")
 class DialogZWaveJSHardResetController extends LitElement {
@@ -20,9 +30,7 @@ class DialogZWaveJSHardResetController extends LitElement {
 
   @state() private _entryId?: string;
 
-  @state() private _done = false;
-
-  private _subscribedDeviceRegistryUpdates?: Promise<UnsubscribeFunc>;
+  @state() private _resetStatus = ResetStatus.NotStarted;
 
   public showDialog(params: ZWaveJSHardResetControllerDialogParams): void {
     this._entryId = params.entryId;
@@ -30,9 +38,7 @@ class DialogZWaveJSHardResetController extends LitElement {
 
   public closeDialog(): void {
     this._entryId = undefined;
-    this._done = false;
-
-    this._unsubscribe();
+    this._resetStatus = ResetStatus.NotStarted;
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -49,31 +55,30 @@ class DialogZWaveJSHardResetController extends LitElement {
         this.hass,
         this.hass.localize(
           `ui.panel.config.zwave_js.hard_reset_controller.title_${
-            this._done ? "done" : "not_done"
+            this._resetStatus === ResetStatus.Done ? "done" : "not_done"
           }`
         )
       )}
     >
-      ${this._done
-        ? html`<p>
-            ${this.hass.localize(
-              `ui.panel.config.zwave_js.hard_reset_controller.success`
-            )}
-          </p>`
-        : html`<div class="flex-container">
-              <div>
-                <ha-svg-icon
-                  .path=${mdiDeleteForever}
-                  .class="icon"
-                ></ha-svg-icon>
-              </div>
-              <p>
-                ${this.hass.localize(
-                  `ui.panel.config.zwave_js.hard_reset_controller.dialog_body`
-                )}
-              </p>
-            </div>
-            <mwc-button
+      <div class="flex-container">
+        <div>
+          <ha-svg-icon
+            .path=${iconMap[this._resetStatus]}
+            .class="icon"
+          ></ha-svg-icon>
+        </div>
+      </div>
+      <p>
+        ${this.hass.localize(
+          `ui.panel.config.zwave_js.hard_reset_controller.${
+            ResetStatus[this._resetStatus]
+          }`
+        )}
+      </p>
+    </div>
+    ${
+      this._resetStatus === ResetStatus.NotStarted
+        ? html`<mwc-button
               slot="primaryAction"
               @click=${this._hardResetController}
             >
@@ -81,7 +86,9 @@ class DialogZWaveJSHardResetController extends LitElement {
             </mwc-button>
             <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
               ${this.hass.localize("ui.common.cancel")}
-            </mwc-button>`}
+            </mwc-button>`
+        : nothing
+    }
     </ha-dialog>`;
   }
 
@@ -95,33 +102,10 @@ class DialogZWaveJSHardResetController extends LitElement {
         confirmText: this.hass.localize("ui.common.continue"),
       })
     ) {
-      this._subscribedDeviceRegistryUpdates =
-        this.hass.connection.subscribeEvents(
-          () =>
-            fetchDeviceRegistry(this.hass.connection).then((devices) => {
-              const deviceEntries = devices.filter((device) =>
-                device.config_entries.includes(this._entryId!)
-              );
-              if (deviceEntries.length === 1) {
-                setTimeout(
-                  () =>
-                    navigate(`/config/devices/device/${deviceEntries[0].id}`),
-                  0
-                );
-                this._unsubscribe();
-              }
-            }),
-          "device_registry_updated"
-        );
-      await hardResetController(this.hass, this._entryId!);
-      this._done = true;
-    }
-  }
-
-  private _unsubscribe() {
-    if (this._subscribedDeviceRegistryUpdates) {
-      this._subscribedDeviceRegistryUpdates.then((unsub) => unsub());
-      this._subscribedDeviceRegistryUpdates = undefined;
+      this._resetStatus = ResetStatus.InProgress;
+      const deviceId = await hardResetController(this.hass, this._entryId!);
+      setTimeout(() => navigate(`/config/devices/device/${deviceId}`), 0);
+      this._resetStatus = ResetStatus.Done;
     }
   }
 
