@@ -4758,6 +4758,9 @@
             "explanation": "The card will be shown when ALL conditions below are fulfilled.",
             "add": "Add condition",
             "condition": {
+              "numeric_state": {
+                "label": "Entity numeric state"
+              },
               "screen": {
                 "label": "Screen",
                 "breakpoints": "Screen sizes",
