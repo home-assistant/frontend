@@ -455,10 +455,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
               .value=${this._deviceClass}
               naturalMenuWidth
               fixedMenuPosition
+              clearable
               @selected=${this._deviceClassChanged}
               @closed=${stopPropagation}
             >
-              <ha-list-item></ha-list-item>
               ${this._deviceClassesSorted(
                 domain,
                 this._deviceClassOptions[0],

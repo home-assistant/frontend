@@ -140,6 +140,7 @@ export interface CallServiceActionConfig extends BaseActionConfig {
 export interface NavigateActionConfig extends BaseActionConfig {
   action: "navigate";
   navigation_path: string;
+  navigation_replace?: boolean;
 }
 
 export interface UrlActionConfig extends BaseActionConfig {

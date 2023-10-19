@@ -24,7 +24,7 @@ import {
   rgb2lab,
 } from "../../../../common/color/convert-color";
 import { labBrighten, labDarken } from "../../../../common/color/lab";
-import { formatDateShort } from "../../../../common/datetime/format_date";
+import { formatDateVeryShort } from "../../../../common/datetime/format_date";
 import { formatTime } from "../../../../common/datetime/format_time";
 import {
   formatNumber,
@@ -228,7 +228,9 @@ export class HuiEnergyWaterGraphCard
                 }
                 const date = new Date(datasets[0].parsed.x);
                 return `${
-                  compare ? `${formatDateShort(date, locale, config)}: ` : ""
+                  compare
+                    ? `${formatDateVeryShort(date, locale, config)}: `
+                    : ""
                 }${formatTime(date, locale, config)} – ${formatTime(
                   addHours(date, 1),
                   locale,
@@ -311,7 +313,8 @@ export class HuiEnergyWaterGraphCard
         energyData.stats,
         energyData.statsMetadata,
         waterSources,
-        waterColor
+        waterColor,
+        computedStyles
       )
     );
 
@@ -333,6 +336,7 @@ export class HuiEnergyWaterGraphCard
           energyData.statsMetadata,
           waterSources,
           waterColor,
+          computedStyles,
           true
         )
       );
@@ -354,20 +358,26 @@ export class HuiEnergyWaterGraphCard
     statisticsMetaData: Record<string, StatisticsMetaData>,
     waterSources: WaterSourceTypeEnergyPreference[],
     waterColor: string,
+    computedStyles: CSSStyleDeclaration,
     compare = false
   ) {
     const data: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
 
     waterSources.forEach((source, idx) => {
-      const modifiedColor =
-        idx > 0
-          ? this.hass.themes.darkMode
-            ? labBrighten(rgb2lab(hex2rgb(waterColor)), idx)
-            : labDarken(rgb2lab(hex2rgb(waterColor)), idx)
-          : undefined;
-      const borderColor = modifiedColor
-        ? rgb2hex(lab2rgb(modifiedColor))
-        : waterColor;
+      let borderColor = computedStyles
+        .getPropertyValue("--energy-water-color-" + idx)
+        .trim();
+      if (borderColor.length === 0) {
+        const modifiedColor =
+          idx > 0
+            ? this.hass.themes.darkMode
+              ? labBrighten(rgb2lab(hex2rgb(waterColor)), idx)
+              : labDarken(rgb2lab(hex2rgb(waterColor)), idx)
+            : undefined;
+        borderColor = modifiedColor
+          ? rgb2hex(lab2rgb(modifiedColor))
+          : waterColor;
+      }
 
       let prevStart: number | null = null;
 

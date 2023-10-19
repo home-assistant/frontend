@@ -1,8 +1,9 @@
 <script>
-  function _ls(src, sync) {
+  function _ls(src, notCustom) {
     var script = document.createElement("script");
-    if (sync) {
+    if (notCustom) {
       script.async = false;
+      script.crossOrigin = "use-credentials";
     }
     script.src = src;
     return document.head.appendChild(script);

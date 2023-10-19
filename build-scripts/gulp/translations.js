@@ -1,12 +1,7 @@
 import { createHash } from "crypto";
 import { deleteSync } from "del";
-import {
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  renameSync,
-  writeFile,
-} from "fs";
+import { mkdirSync, readdirSync, readFileSync, renameSync } from "fs";
+import { writeFile } from "node:fs/promises";
 import gulp from "gulp";
 import flatmap from "gulp-flatmap";
 import transform from "gulp-json-transform";
@@ -136,27 +131,23 @@ gulp.task("ensure-translations-build-dir", async () => {
   mkdirSync(workDir, { recursive: true });
 });
 
-gulp.task("create-test-metadata", (cb) => {
-  writeFile(
-    workDir + "/testMetadata.json",
-    JSON.stringify({
-      test: {
-        nativeName: "Test",
-      },
-    }),
-    cb
-  );
-});
+gulp.task("create-test-metadata", () =>
+  env.isProdBuild()
+    ? Promise.resolve()
+    : writeFile(
+        workDir + "/testMetadata.json",
+        JSON.stringify({ test: { nativeName: "Test" } })
+      )
+);
 
-gulp.task(
-  "create-test-translation",
-  gulp.series("create-test-metadata", () =>
-    gulp
-      .src(path.join(paths.translations_src, "en.json"))
-      .pipe(transform((data, _file) => recursiveEmpty(data)))
-      .pipe(rename("test.json"))
-      .pipe(gulp.dest(workDir))
-  )
+gulp.task("create-test-translation", () =>
+  env.isProdBuild()
+    ? Promise.resolve()
+    : gulp
+        .src(path.join(paths.translations_src, "en.json"))
+        .pipe(transform((data, _file) => recursiveEmpty(data)))
+        .pipe(rename("test.json"))
+        .pipe(gulp.dest(workDir))
 );
 
 /**
@@ -188,16 +179,11 @@ gulp.task("build-master-translation", () => {
 
 gulp.task("build-merged-translations", () =>
   gulp
-    .src(
-      [
-        inFrontendDir + "/*.json",
-        "!" + inFrontendDir + "/en.json",
-        workDir + "/test.json",
-      ],
-      {
-        allowEmpty: true,
-      }
-    )
+    .src([
+      inFrontendDir + "/*.json",
+      "!" + inFrontendDir + "/en.json",
+      ...(env.isProdBuild() ? [] : [workDir + "/test.json"]),
+    ])
     .pipe(transform((data, file) => lokaliseTransform(data, data, file)))
     .pipe(
       flatmap((stream, file) => {
@@ -377,14 +363,11 @@ gulp.task("build-translation-flatten-supervisor", () =>
 
 gulp.task("build-translation-write-metadata", () =>
   gulp
-    .src(
-      [
-        path.join(paths.translations_src, "translationMetadata.json"),
-        workDir + "/testMetadata.json",
-        workDir + "/translationFingerprints.json",
-      ],
-      { allowEmpty: true }
-    )
+    .src([
+      path.join(paths.translations_src, "translationMetadata.json"),
+      ...(env.isProdBuild() ? [] : [workDir + "/testMetadata.json"]),
+      workDir + "/translationFingerprints.json",
+    ])
     .pipe(merge({}))
     .pipe(
       transform((data) => {
@@ -415,7 +398,7 @@ gulp.task("build-translation-write-metadata", () =>
 gulp.task(
   "create-translations",
   gulp.series(
-    ...(env.isProdBuild() ? [] : ["create-test-translation"]),
+    gulp.parallel("create-test-metadata", "create-test-translation"),
     "build-master-translation",
     "build-merged-translations",
     gulp.parallel(...splitTasks),

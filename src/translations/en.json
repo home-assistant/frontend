@@ -418,6 +418,9 @@
         "conversation_agent": "Conversation agent",
         "none": "None"
       },
+      "country-picker": {
+        "country": "Country"
+      },
       "pipeline-picker": {
         "pipeline": "Assistant",
         "preferred": "Preferred assistant ({preferred})",
@@ -525,11 +528,15 @@
         "start_date": "Start date",
         "end_date": "End date",
         "select": "Select",
+        "select_date_range": "Select time period",
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",
           "this_week": "This week",
-          "last_week": "Last week"
+          "last_week": "Last week",
+          "this_quarter": "This quarter",
+          "this_month": "This month",
+          "this_year": "This year"
         }
       },
       "relative_time": {
@@ -1462,13 +1469,6 @@
         "nameservers": "Name Servers: {nameservers}"
       }
     },
-    "duration": {
-      "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
-      "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
-      "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
-      "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
-      "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
-    },
     "weekdays": {
       "monday": "Monday",
       "tuesday": "Tuesday",
@@ -2227,6 +2227,13 @@
               "sign_in": "Sign in"
             }
           },
+          "debug": {
+            "header": "Debug Assistant",
+            "no_runs_found": "No runs found",
+            "older_run": "Older run",
+            "newer_run": "Newer run",
+            "start_debug_run": "Start debug run"
+          },
           "expose": {
             "caption": "Expose",
             "headers": {
@@ -2455,9 +2462,9 @@
                   "type_value": "Fixed number",
                   "type_input": "Numeric value of another entity",
                   "description": {
-                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
+                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
                   }
                 },
                 "persistent_notification": {
@@ -2694,7 +2701,7 @@
               "delete": "[%key:ui::common::delete%]",
               "delete_confirm_title": "Delete action?",
               "delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
-              "unsupported_action": "No visual editor support for action: {action}",
+              "unsupported_action": "No visual editor support for this action",
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "type": {
@@ -2818,6 +2825,9 @@
                   "option": "Option {number}",
                   "add_option": "Add option",
                   "remove_option": "Remove option",
+                  "change_alias": "Rename option",
+                  "alias": "Option name",
+                  "delete_confirm_title": "Remove option?",
                   "option_description_additional": " {numberOfAdditionalConditions, plural,\n one {and 1 more condition}\n other {and {numberOfAdditionalConditions} more conditions}}",
                   "conditions": "Conditions",
                   "no_conditions": "[%key:ui::panel::config::devices::automation::conditions::no_conditions%]",
@@ -4675,6 +4685,8 @@
             "confirm_cancel": "Are you sure you want to cancel?",
             "show_visual_editor": "Show visual editor",
             "show_code_editor": "Show code editor",
+            "edit_ui": "[%key:ui::panel::config::automation::editor::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::config::automation::editor::edit_yaml%]",
             "add": "Add card",
             "edit": "Edit",
             "clear": "Clear",
@@ -4773,7 +4785,24 @@
               "state_not_equal": "State is not equal to",
               "current_state": "current",
               "condition_explanation": "The card will be shown when ALL conditions below are fulfilled.",
-              "change_type": "Change type"
+              "change_type": "Change type",
+              "add_condition": "Add condition",
+              "condition": {
+                "screen": {
+                  "label": "Screen",
+                  "breakpoints": "Screen sizes",
+                  "breakpoints_list": {
+                    "mobile": "Mobile",
+                    "tablet": "Tablet",
+                    "desktop": "Desktop",
+                    "wide": "Wide"
+                  },
+                  "min": "min: {size}px"
+                },
+                "state": {
+                  "label": "Entity state"
+                }
+              }
             },
             "config": {
               "required": "required",
@@ -5210,10 +5239,6 @@
           },
           "energy_period_selector": {
             "today": "Today",
-            "day": "Day",
-            "week": "Week",
-            "month": "Month",
-            "year": "Year",
             "previous": "Previous",
             "next": "Next",
             "compare": "Compare data"
@@ -5424,7 +5449,7 @@
       },
       "page-authorize": {
         "initializing": "Initializing",
-        "authorizing": "Login to your Home Assistant instance",
+        "authorizing": "Log in to your Home Assistant instance",
         "authorizing_app": "You're about to give the Home Assistant Companion app for {app} access to your Home Assistant instance.",
         "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
         "logging_in_with": "Logging in with {authProviderName}.",
@@ -5434,7 +5459,7 @@
         "form": {
           "working": "Please wait",
           "unknown_error": "Something went wrong",
-          "next": "Login",
+          "next": "Log in",
           "start_over": "Start over",
           "error": "Error: {error}",
           "providers": {
@@ -5481,7 +5506,7 @@
                 "invalid_code": "Invalid authentication code"
               },
               "abort": {
-                "login_expired": "Session expired, please login again."
+                "login_expired": "Session expired, please log in again."
               }
             },
             "legacy_api_password": {
@@ -5514,7 +5539,7 @@
                   "data": {
                     "user": "User"
                   },
-                  "description": "Please select a user you want to login as:"
+                  "description": "Please select a user you want to log in as:"
                 }
               },
               "abort": {

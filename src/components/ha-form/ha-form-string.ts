@@ -138,15 +138,13 @@ export class HaFormString extends LitElement implements HaFormElement {
       }
       ha-icon-button {
         position: absolute;
-        top: 1em;
-        right: 12px;
-        --mdc-icon-button-size: 24px;
-        color: var(--secondary-text-color);
-      }
-
-      ha-icon-button {
+        top: 8px;
+        right: 8px;
         inset-inline-start: initial;
-        inset-inline-end: 12px;
+        inset-inline-end: 8px;
+        --mdc-icon-button-size: 40px;
+        --mdc-icon-size: 20px;
+        color: var(--secondary-text-color);
         direction: var(--direction);
       }
     `;

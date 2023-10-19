@@ -115,46 +115,50 @@ class LightRgbColorPicker extends LitElement {
       </div>
       ${supportsRgbw || supportsRgbww
         ? html`<ha-labeled-slider
+            labeled
             .caption=${this.hass.localize("ui.card.light.color_brightness")}
             icon="hass:brightness-7"
+            min="0"
             max="100"
             .value=${this._colorBrightnessSliderValue}
-            @change=${this._colorBrightnessSliderChanged}
-            pin
+            @value-changed=${this._colorBrightnessSliderChanged}
           ></ha-labeled-slider>`
         : nothing}
       ${supportsRgbw
         ? html`
             <ha-labeled-slider
+              labeled
               .caption=${this.hass.localize("ui.card.light.white_value")}
               icon="hass:file-word-box"
+              min="0"
               max="100"
               .name=${"wv"}
               .value=${this._wvSliderValue}
-              @change=${this._wvSliderChanged}
-              pin
+              @value-changed=${this._wvSliderChanged}
             ></ha-labeled-slider>
           `
         : nothing}
       ${supportsRgbww
         ? html`
             <ha-labeled-slider
+              labeled
               .caption=${this.hass.localize("ui.card.light.cold_white_value")}
               icon="hass:file-word-box-outline"
+              min="0"
               max="100"
               .name=${"cw"}
               .value=${this._cwSliderValue}
-              @change=${this._wvSliderChanged}
-              pin
+              @value-changed=${this._wvSliderChanged}
             ></ha-labeled-slider>
             <ha-labeled-slider
+              labeled
               .caption=${this.hass.localize("ui.card.light.warm_white_value")}
               icon="hass:file-word-box"
+              min="0"
               max="100"
               .name=${"ww"}
               .value=${this._wwSliderValue}
-              @change=${this._wvSliderChanged}
-              pin
+              @value-changed=${this._wvSliderChanged}
             ></ha-labeled-slider>
           `
         : nothing}
@@ -302,9 +306,9 @@ class LightRgbColorPicker extends LitElement {
   }
 
   private _wvSliderChanged(ev: CustomEvent) {
-    const target = ev.target as any;
+    const target = ev.detail as any;
     let wv = Number(target.value);
-    const name = target.name;
+    const name = (ev.target as any).name;
 
     if (isNaN(wv)) {
       return;
@@ -351,7 +355,7 @@ class LightRgbColorPicker extends LitElement {
   }
 
   private _colorBrightnessSliderChanged(ev: CustomEvent) {
-    const target = ev.target as any;
+    const target = ev.detail as any;
     let value = Number(target.value);
 
     if (isNaN(value)) {

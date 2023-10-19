@@ -24,7 +24,7 @@ import {
   rgb2lab,
 } from "../../../../common/color/convert-color";
 import { labBrighten, labDarken } from "../../../../common/color/lab";
-import { formatDateShort } from "../../../../common/datetime/format_date";
+import { formatDateVeryShort } from "../../../../common/datetime/format_date";
 import { formatTime } from "../../../../common/datetime/format_time";
 import {
   formatNumber,
@@ -233,7 +233,9 @@ export class HuiEnergyUsageGraphCard
                 }
                 const date = new Date(datasets[0].parsed.x);
                 return `${
-                  compare ? `${formatDateShort(date, locale, config)}: ` : ""
+                  compare
+                    ? `${formatDateVeryShort(date, locale, config)}: `
+                    : ""
                 }${formatTime(date, locale, config)} – ${formatTime(
                   addHours(date, 1),
                   locale,
