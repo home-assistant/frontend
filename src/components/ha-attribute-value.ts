@@ -67,6 +67,7 @@ class HaAttributeValue extends LitElement {
 
   static styles = css`
     pre {
+      margin: 0;
       white-space: pre-wrap;
     }
   `;
