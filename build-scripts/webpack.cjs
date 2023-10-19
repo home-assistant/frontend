@@ -194,6 +194,7 @@ const createWebpackConfig = ({
         isProdBuild && !isStatsBuild ? "[id]-[contenthash].js" : "[name].js",
       assetModuleFilename:
         isProdBuild && !isStatsBuild ? "[id]-[contenthash][ext]" : "[id][ext]",
+      crossOriginLoading: "use-credentials",
       hashFunction: "xxhash64",
       hashDigest: "base64url",
       hashDigestLength: 11, // full length of 64 bit base64url

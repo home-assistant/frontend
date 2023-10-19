@@ -9,14 +9,12 @@ import {
 } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
-import { LovelaceStrategyParams } from "./types";
 
 @customElement("original-states-view-strategy")
 export class OriginalStatesViewStrategy extends ReactiveElement {
   static async generate(
     _config: LovelaceStrategyConfig,
-    hass: HomeAssistant,
-    _params?: LovelaceStrategyParams
+    hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     if (hass.config.state === STATE_NOT_RUNNING) {
       return {
