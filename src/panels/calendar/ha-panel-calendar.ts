@@ -1,22 +1,28 @@
-import "@material/mwc-checkbox";
-import "@material/mwc-formfield";
-import { mdiRefresh } from "@mdi/js";
+import "@material/mwc-list";
+import { mdiChevronDown, mdiRefresh } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { storage } from "../../common/decorators/storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import "../../components/ha-button";
+import "../../components/ha-button-menu";
 import "../../components/ha-card";
+import "../../components/ha-check-list-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
+import "../../components/ha-state-icon";
+import "../../components/ha-svg-icon";
+import "../../components/ha-two-pane-top-app-bar-fixed";
 import {
   Calendar,
   CalendarEvent,
@@ -26,7 +32,6 @@ import {
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import "./ha-full-calendar";
-import "../../components/ha-top-app-bar-fixed";
 
 @customElement("ha-panel-calendar")
 class PanelCalendar extends LitElement {
@@ -34,6 +39,8 @@ class PanelCalendar extends LitElement {
 
   @property({ type: Boolean, reflect: true })
   public narrow!: boolean;
+
+  @property({ type: Boolean, reflect: true }) public mobile = false;
 
   @state() private _calendars: Calendar[] = [];
 
@@ -51,6 +58,33 @@ class PanelCalendar extends LitElement {
 
   private _end?: Date;
 
+  private _mql?: MediaQueryList;
+
+  private _headerHeight = 56;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._mql = window.matchMedia(
+      "(max-width: 450px), all and (max-height: 500px)"
+    );
+    this._mql.addListener(this._setIsMobile);
+    this.mobile = this._mql.matches;
+    const computedStyles = getComputedStyle(this);
+    this._headerHeight = Number(
+      computedStyles.getPropertyValue("--header-height").replace("px", "")
+    );
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._mql?.removeListener(this._setIsMobile!);
+    this._mql = undefined;
+  }
+
+  private _setIsMobile = (ev: MediaQueryListEvent) => {
+    this.mobile = ev.matches;
+  };
+
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
@@ -59,54 +93,75 @@ class PanelCalendar extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const calendarItems = this._calendars.map(
+      (selCal) => html`
+        <ha-check-list-item
+          graphic="icon"
+          style=${styleMap({
+            "--mdc-theme-secondary": selCal.backgroundColor!,
+          })}
+          .value=${selCal.entity_id}
+          .selected=${!this._deSelectedCalendars.includes(selCal.entity_id)}
+        >
+          <ha-state-icon slot="graphic" .state=${selCal}></ha-state-icon>
+          ${selCal.name}
+        </ha-check-list-item>
+      `
+    );
+    const showPane = !this.narrow;
     return html`
-      <ha-top-app-bar-fixed>
+      <ha-two-pane-top-app-bar-fixed .pane=${showPane}>
         <ha-menu-button
           slot="navigationIcon"
           .hass=${this.hass}
           .narrow=${this.narrow}
         ></ha-menu-button>
-        <div slot="title">${this.hass.localize("panel.calendar")}</div>
+
+        ${!showPane
+          ? html`<ha-button-menu
+              slot="title"
+              class="lists"
+              multi
+              fixed
+              .noAnchor=${this.mobile}
+              .y=${this.mobile
+                ? this._headerHeight / 2
+                : this._headerHeight / 4}
+              .x=${this.mobile ? 0 : undefined}
+              @selected=${this._handleSelected}
+            >
+              <ha-button slot="trigger">
+                ${this.hass.localize("ui.components.calendar.my_calendars")}
+                <ha-svg-icon
+                  slot="trailingIcon"
+                  .path=${mdiChevronDown}
+                ></ha-svg-icon>
+              </ha-button>
+              ${calendarItems}
+            </ha-button-menu>`
+          : html`<div slot="title">
+              ${this.hass.localize("ui.components.calendar.my_calendars")}
+            </div>`}
         <ha-icon-button
           slot="actionItems"
           .path=${mdiRefresh}
           .label=${this.hass.localize("ui.common.refresh")}
           @click=${this._handleRefresh}
         ></ha-icon-button>
-        <div class="content">
-          <div class="calendar-list">
-            <div class="calendar-list-header">
-              ${this.hass.localize("ui.components.calendar.my_calendars")}
-            </div>
-            ${this._calendars.map(
-              (selCal) => html`
-                <div>
-                  <mwc-formfield .label=${selCal.name}>
-                    <mwc-checkbox
-                      style=${styleMap({
-                        "--mdc-theme-secondary": selCal.backgroundColor!,
-                      })}
-                      .value=${selCal.entity_id}
-                      .checked=${!this._deSelectedCalendars.includes(
-                        selCal.entity_id
-                      )}
-                      @change=${this._handleToggle}
-                    ></mwc-checkbox>
-                  </mwc-formfield>
-                </div>
-              `
-            )}
-          </div>
-          <ha-full-calendar
-            .events=${this._events}
-            .calendars=${this._calendars}
-            .narrow=${this.narrow}
-            .hass=${this.hass}
-            .error=${this._error}
-            @view-changed=${this._handleViewChanged}
-          ></ha-full-calendar>
-        </div>
-      </ha-top-app-bar-fixed>
+        ${showPane
+          ? html`<mwc-list slot="pane" multi @selected=${this._handleSelected}
+              >${calendarItems}</mwc-list
+            > `
+          : nothing}
+        <ha-full-calendar
+          .events=${this._events}
+          .calendars=${this._calendars}
+          .narrow=${this.narrow}
+          .hass=${this.hass}
+          .error=${this._error}
+          @view-changed=${this._handleViewChanged}
+        ></ha-full-calendar>
+      </ha-two-pane-top-app-bar-fixed>
     `;
   }
 
@@ -121,42 +176,34 @@ class PanelCalendar extends LitElement {
     end: Date,
     calendars: Calendar[]
   ): Promise<{ events: CalendarEvent[]; errors: string[] }> {
-    if (!calendars.length) {
+    if (!calendars.length || !start || !end) {
       return { events: [], errors: [] };
     }
 
     return fetchCalendarEvents(this.hass, start, end, calendars);
   }
 
-  private async _handleToggle(ev): Promise<void> {
-    const results = this._calendars.map(async (cal) => {
-      if (ev.target.value !== cal.entity_id) {
-        return cal;
-      }
+  private async _handleSelected(ev): Promise<void> {
+    const deselectedCalendars: Set<string> = new Set(
+      this._calendars.map((cal) => cal.entity_id)
+    );
+    for (const index of ev.detail.index) {
+      deselectedCalendars.delete(this._calendars[index].entity_id);
+    }
+    this._deSelectedCalendars = [...deselectedCalendars];
 
-      const checked = ev.target.checked;
-
-      if (checked) {
-        const result = await this._fetchEvents(this._start!, this._end!, [cal]);
-        this._events = [...this._events, ...result.events];
-        this._handleErrors(result.errors);
-        this._deSelectedCalendars = this._deSelectedCalendars.filter(
-          (deCal) => deCal !== cal.entity_id
-        );
-      } else {
-        this._events = this._events.filter(
-          (event) => event.calendar !== cal.entity_id
-        );
-        this._deSelectedCalendars = [
-          ...this._deSelectedCalendars,
-          cal.entity_id,
-        ];
-      }
-
-      return cal;
-    });
-
-    this._calendars = await Promise.all(results);
+    if (ev.detail.diff.added.length) {
+      const cal = this._calendars[ev.detail.diff.added[0]];
+      const result = await this._fetchEvents(this._start, this._end, [cal]);
+      this._events = [...this._events, ...result.events];
+      this._handleErrors(result.errors);
+    }
+    if (ev.detail.diff.removed.length) {
+      const cal = this._calendars[ev.detail.diff.removed[0]];
+      this._events = this._events.filter(
+        (event) => event.calendar !== cal.entity_id
+      );
+    }
   }
 
   private async _handleViewChanged(
@@ -175,8 +222,8 @@ class PanelCalendar extends LitElement {
 
   private async _handleRefresh(): Promise<void> {
     const result = await this._fetchEvents(
-      this._start!,
-      this._end!,
+      this._start,
+      this._end,
       this._selectedCalendars
     );
     this._events = result.events;
@@ -204,56 +251,42 @@ class PanelCalendar extends LitElement {
     return [
       haStyle,
       css`
-        .content {
-          padding: 16px;
-          display: flex;
-          box-sizing: border-box;
+        ha-full-calendar {
+          height: 100%;
+          --calendar-header-padding: 12px;
+          --calendar-border-radius: 0;
+          --calendar-border-width: 1px 0;
         }
-
-        :host(:not([narrow])) .content {
+        :host([narrow]) ha-full-calendar {
           height: calc(100vh - var(--header-height));
         }
-
-        .calendar-list {
-          padding-right: 16px;
-          padding-inline-end: 16px;
-          padding-inline-start: initial;
-          min-width: 170px;
-          flex: 0 0 15%;
-          overflow-x: hidden;
-          overflow-y: auto;
-          --mdc-theme-text-primary-on-background: var(--primary-text-color);
-          direction: var(--direction);
+        ha-button-menu ha-button {
+          --mdc-theme-primary: currentColor;
+          --mdc-typography-button-text-transform: none;
+          --mdc-typography-button-font-size: var(
+            --mdc-typography-headline6-font-size,
+            1.25rem
+          );
+          --mdc-typography-button-font-weight: var(
+            --mdc-typography-headline6-font-weight,
+            500
+          );
+          --mdc-typography-button-letter-spacing: var(
+            --mdc-typography-headline6-letter-spacing,
+            0.0125em
+          );
+          --mdc-typography-button-line-height: var(
+            --mdc-typography-headline6-line-height,
+            2rem
+          );
+          --button-height: 40px;
         }
-
-        .calendar-list > div {
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          overflow: hidden;
+        :host([mobile]) .lists {
+          --mdc-menu-min-width: 100vw;
         }
-
-        .calendar-list-header {
-          font-size: 16px;
-          padding: 16px 16px 8px 8px;
-        }
-
-        ha-full-calendar {
-          flex-grow: 1;
-        }
-
-        :host([narrow]) ha-full-calendar {
-          height: calc(100vh - 72px);
-        }
-
-        :host([narrow]) .content {
-          flex-direction: column-reverse;
-          padding: 8px 0 0 0;
-        }
-
-        :host([narrow]) .calendar-list {
-          margin-bottom: 24px;
-          width: 100%;
-          padding-right: 0;
+        :host([mobile]) ha-button-menu {
+          --mdc-shape-medium: 0 0 var(--mdc-shape-medium)
+            var(--mdc-shape-medium);
         }
       `,
     ];
