@@ -71,7 +71,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       let themeSettings: Partial<HomeAssistant["selectedTheme"]> =
-        this.hass!.selectedTheme;
+        this.hass.selectedTheme;
 
       const themeName =
         themeSettings?.theme ||
@@ -80,7 +80,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           : this.hass.themes.default_theme);
 
       let darkMode =
-        themeSettings?.dark === undefined ? darkPreferred : themeSettings?.dark;
+        themeSettings?.dark === undefined ? darkPreferred : themeSettings.dark;
 
       const selectedTheme = themeName
         ? this.hass.themes.themes[themeName]
