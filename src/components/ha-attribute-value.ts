@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
 import { HomeAssistant } from "../types";
@@ -64,6 +64,13 @@ class HaAttributeValue extends LitElement {
 
     return this.hass.formatEntityAttributeValue(this.stateObj!, this.attribute);
   }
+
+  static styles = css`
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+  `;
 }
 
 declare global {
