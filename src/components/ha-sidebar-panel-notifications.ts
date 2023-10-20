@@ -36,7 +36,7 @@ class HaSidebarPanelNotifications extends LitElement {
     >
       <div class="target"></div>
       <span class="icon">
-        <ha-svg-icon slot="item-icon" .path=${mdiBell}></ha-svg-icon>
+        <ha-svg-icon .path=${mdiBell}></ha-svg-icon>
         ${!this.expanded && notificationCount > 0
           ? html`<span class="badge">${notificationCount}</span>`
           : ""}

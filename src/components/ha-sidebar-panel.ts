@@ -42,11 +42,8 @@ class HaSidebarPanel extends LitElement {
       <div class="target"></div>
       <span class="icon">
         ${this.iconPath
-          ? html`<ha-svg-icon
-              slot="item-icon"
-              .path=${this.iconPath}
-            ></ha-svg-icon>`
-          : html`<ha-icon slot="item-icon" .icon=${this.icon}></ha-icon>`}
+          ? html`<ha-svg-icon .path=${this.iconPath}></ha-svg-icon>`
+          : html`<ha-icon .icon=${this.icon}></ha-icon>`}
       </span>
       <span class="name">${this.name}</span>
     </a>`;

@@ -40,7 +40,6 @@ class HaSidebarPanelUser extends LitElement {
       <span class="icon">
         <span class="user-icon">
           <ha-user-badge
-            slot="item-icon"
             .user=${this.hass.user}
             .hass=${this.hass}
           ></ha-user-badge>

@@ -114,11 +114,8 @@ class HaSidebarEditPanels extends LitElement {
       html`<div class="panel" data-panel=${panel.url_path}>
         <span class="icon">
           ${panel.icon
-            ? html`<ha-icon slot="item-icon" .icon=${panel.icon}></ha-icon>`
-            : html`<ha-svg-icon
-                slot="item-icon"
-                .path=${panel.iconPath}
-              ></ha-svg-icon>`}
+            ? html`<ha-icon .icon=${panel.icon}></ha-icon>`
+            : html`<ha-svg-icon .path=${panel.iconPath}></ha-svg-icon>`}
         </span>
         ${panel.name}
         <ha-icon-button
@@ -136,11 +133,8 @@ class HaSidebarEditPanels extends LitElement {
       >
         <span class="icon">
           ${panel.icon
-            ? html`<ha-icon slot="item-icon" .icon=${panel.icon}></ha-icon>`
-            : html`<ha-svg-icon
-                slot="item-icon"
-                .path=${panel.iconPath}
-              ></ha-svg-icon>`}
+            ? html`<ha-icon .icon=${panel.icon}></ha-icon>`
+            : html`<ha-svg-icon .path=${panel.iconPath}></ha-svg-icon>`}
         </span>
         ${panel.name}
         <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>

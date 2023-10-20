@@ -44,7 +44,7 @@ class HaSidebarPanelConfig extends LitElement {
     >
       <div class="target"></div>
       <span class="icon">
-        <ha-svg-icon slot="item-icon" .path=${mdiCog}></ha-svg-icon>
+        <ha-svg-icon .path=${mdiCog}></ha-svg-icon>
         ${!this.expanded && notices > 0
           ? html`<span class="badge">${notices}</span>`
           : ""}
