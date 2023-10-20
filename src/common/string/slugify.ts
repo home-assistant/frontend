@@ -9,6 +9,7 @@ export const slugify = (value: string, delimiter = "_") => {
     .toString()
     .toLowerCase()
     .replace(/\s+/g, delimiter) // Replace spaces with delimiter
+    .replace(/\.+/g, delimiter) // Replace dots with delimiter
     .replace(p, (c) => b.charAt(a.indexOf(c))) // Replace special characters
     .replace(/&/g, `${delimiter}and${delimiter}`) // Replace & with 'and'
     .replace(/[^\w-]+/g, "") // Remove all non-word characters
