@@ -10,6 +10,7 @@ describe("slugify", () => {
   assert.strictEqual(slugify("1`-=~!@#$%^&*()_+[];',./{}:\"<>?\\|aA"), "1_aa");
   assert.strictEqual(slugify("abc-DEF"), "abc_def");
   assert.strictEqual(slugify("abc_DEF"), "abc_def");
+  assert.strictEqual(slugify("1,1"), "11");
   assert.strictEqual(slugify("abc å DEF"), "abc_a_def");
   assert.strictEqual(slugify("abc:DEF"), "abc_def");
   assert.strictEqual(slugify("abc&DEF"), "abc_and_def");
