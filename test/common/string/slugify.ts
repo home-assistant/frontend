@@ -6,6 +6,7 @@ describe("slugify", () => {
   assert.strictEqual(slugify("abc"), "abc");
   assert.strictEqual(slugify("ABC"), "abc");
   assert.strictEqual(slugify("abc DEF"), "abc_def");
+  assert.strictEqual(slugify("abc.DEF"), "abc_def");
   assert.strictEqual(slugify("abc-DEF"), "abc_def");
   assert.strictEqual(slugify("abc_DEF"), "abc_def");
   assert.strictEqual(slugify("abc å DEF"), "abc_a_def");
