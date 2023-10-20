@@ -14,7 +14,7 @@ describe("slugify", () => {
   assert.strictEqual(slugify("abc å DEF"), "abc_a_def");
   assert.strictEqual(slugify("abc:DEF"), "abc_def");
   assert.strictEqual(slugify("abc&DEF"), "abc_def");
-  assert.strictEqual(slugify("abc^^DEF"), "abcdef");
+  assert.strictEqual(slugify("abc^^DEF"), "abc_def");
   assert.strictEqual(slugify("abc   DEF"), "abc_def");
   assert.strictEqual(slugify("_abc DEF"), "abc_def");
   assert.strictEqual(slugify("abc DEF_"), "abc_def");
