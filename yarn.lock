@@ -4212,10 +4212,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/html-minifier-terser@npm:7.0.0":
-  version: 7.0.0
-  resolution: "@types/html-minifier-terser@npm:7.0.0"
-  checksum: a7a42816bdacf507c9df764c0de6b55b00bfc341e69b8a2adb936aa68da8c7eb73c3d58957d9fd74610198893bce1c73f40fdbb47f468b2621eb4ccdbc3c9ba1
+"@types/html-minifier-terser@npm:7.0.1":
+  version: 7.0.1
+  resolution: "@types/html-minifier-terser@npm:7.0.1"
+  checksum: 8e5fdcac3f4b1072a36dbb3b492d96f554fcd04a0a895a8fd97c26f618abdc99e3417d500a38a05f0931789c039efb9e60bf46f8e2481f5bfd7c8440882bffed
   languageName: node
   linkType: hard
 
@@ -9681,7 +9681,7 @@ __metadata:
     "@types/chromecast-caf-sender": 1.0.7
     "@types/esprima": 4.0.5
     "@types/glob": 8.1.0
-    "@types/html-minifier-terser": 7.0.0
+    "@types/html-minifier-terser": 7.0.1
     "@types/js-yaml": 4.0.7
     "@types/leaflet": 1.9.6
     "@types/leaflet-draw": 1.0.9
