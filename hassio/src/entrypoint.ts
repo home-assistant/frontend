@@ -1,12 +1,12 @@
 // Compat needs to be first import
 import "../../src/resources/compatibility";
-import { setCancelSyntheticClickEvents } from "@polymer/polymer/lib/utils/settings";
 import "../../src/resources/safari-14-attachshadow-patch";
 import "./hassio-main";
 
 import("../../src/resources/ha-style");
-
-setCancelSyntheticClickEvents(false);
+import("@polymer/polymer/lib/utils/settings").then(
+  ({ setCancelSyntheticClickEvents }) => setCancelSyntheticClickEvents(false)
+);
 
 const styleEl = document.createElement("style");
 styleEl.textContent = `
