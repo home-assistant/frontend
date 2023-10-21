@@ -33,16 +33,15 @@ const styles = css`
     border-radius: var(--sidebar-item-radius, 25px);
     height: 50px;
   }
-  .panel .icon {
+  .panel > .icon {
+    display: flex;
     width: 36px;
     text-align: left;
   }
-  .panel ha-icon-button {
+  .panel > ha-icon-button {
     margin-left: auto;
     margin-right: -12px;
-  }
-  .panel ha-svg-icon {
-    margin-left: auto;
+    margin-inline: auto -12px;
   }
   .panel:hover {
     color: rgb(var(--rgb-text));
