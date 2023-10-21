@@ -4118,12 +4118,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/esprima@npm:4.0.4":
-  version: 4.0.4
-  resolution: "@types/esprima@npm:4.0.4"
+"@types/esprima@npm:4.0.5":
+  version: 4.0.5
+  resolution: "@types/esprima@npm:4.0.5"
   dependencies:
     "@types/estree": "*"
-  checksum: 7730922b45b0412db472252bb1d8f1311f4997022360cacc83d24b11609e7579eb0022b90e19bb3b93beb567e8375ea22d2baa4d366f7585d2c34ab6184dd511
+  checksum: bb722d9833bdae19c915d3d0f5cba5320ac30806eea8c93af168ee1f9dfc0e924003cff0cacf3f625dc00e2639ed457ceb910e9d9b57e847e1459760f0cefce3
   languageName: node
   linkType: hard
 
@@ -9679,7 +9679,7 @@ __metadata:
     "@types/babel__plugin-transform-runtime": 7.9.4
     "@types/chromecast-caf-receiver": 6.0.10
     "@types/chromecast-caf-sender": 1.0.7
-    "@types/esprima": 4.0.4
+    "@types/esprima": 4.0.5
     "@types/glob": 8.1.0
     "@types/html-minifier-terser": 7.0.0
     "@types/js-yaml": 4.0.7
