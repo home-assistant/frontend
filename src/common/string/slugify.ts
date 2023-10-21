@@ -5,7 +5,7 @@ export const slugify = (value: string, delimiter = "_") => {
   const b = `aaaaaaaaaacccddeeeeeeeegghiiiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz${delimiter}`;
   const p = new RegExp(a.split("").join("|"), "g");
 
-  return value
+  const slugified = value
     .toString()
     .toLowerCase()
     .replace(p, (c) => b.charAt(a.indexOf(c))) // Replace special characters
@@ -14,4 +14,12 @@ export const slugify = (value: string, delimiter = "_") => {
     .replace(new RegExp(`(${delimiter})\\1+`, "g"), "$1") // Replace multiple delimiters with single delimiter
     .replace(new RegExp(`^${delimiter}+`), "") // Trim delimiter from start of text
     .replace(new RegExp(`${delimiter}+$`), ""); // Trim delimiter from end of text
+
+  if (value == "") {
+    return "";
+  } else if (slugified == "") {
+    return "unknown";
+  } else {
+    return slugified;
+  }
 };

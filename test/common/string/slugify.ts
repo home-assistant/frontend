@@ -23,6 +23,7 @@ describe("slugify", () => {
   assert.strictEqual(slugify("abc - DEF - ghi"), "abc_def_ghi");
   assert.strictEqual(slugify("abc---DEF---ghi"), "abc_def_ghi");
   assert.strictEqual(slugify("___abc___DEF___ghi___"), "abc_def_ghi");
+  assert.strictEqual(slugify("___"), "unknown");
 
   // With custom delimiter
   assert.strictEqual(slugify("abc def", "-"), "abc-def");
