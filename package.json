@@ -171,7 +171,7 @@
     "@rollup/plugin-replace": "5.0.4",
     "@types/babel__plugin-transform-runtime": "7.9.4",
     "@types/chromecast-caf-receiver": "6.0.10",
-    "@types/chromecast-caf-sender": "1.0.6",
+    "@types/chromecast-caf-sender": "1.0.7",
     "@types/esprima": "4.0.4",
     "@types/glob": "8.1.0",
     "@types/html-minifier-terser": "7.0.0",
