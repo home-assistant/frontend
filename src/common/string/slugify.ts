@@ -15,11 +15,10 @@ export const slugify = (value: string, delimiter = "_") => {
     .replace(new RegExp(`^${delimiter}+`), "") // Trim delimiter from start of text
     .replace(new RegExp(`${delimiter}+$`), ""); // Trim delimiter from end of text
 
-  if (value == "") {
+  if (value === "") {
     return "";
-  } else if (slugified == "") {
+  } else if (slugified === "") {
     return "unknown";
-  } else {
-    return slugified;
   }
+  return slugified;
 };
