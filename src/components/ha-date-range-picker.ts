@@ -72,7 +72,7 @@ export class HaDateRangePicker extends LitElement {
     }
 
     if (
-      (this.hasUpdated && this.ranges === undefined) ||
+      (!this.hasUpdated && this.ranges === undefined) ||
       (changedProps.has("hass") &&
         this.hass?.localize !== changedProps.get("hass")?.localize)
     ) {
