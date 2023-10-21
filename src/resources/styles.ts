@@ -226,11 +226,11 @@ export const haStyleSidebarItem = css`
     color: rgb(var(--rgb-text));
     background-color: rgba(var(--rgb-text), 0.12);
   }
-  .item[aria-selected="true"] {
+  .item[aria-current="page"] {
     --rgb-text: var(--rgb-sidebar-selected-color);
     background-color: rgba(var(--rgb-text), 0.12);
   }
-  .item[aria-selected="true"]:focus-visible {
+  .item[aria-current="page"]:focus-visible {
     background-color: rgba(var(--rgb-text), 0.2);
   }
   .item.expanded {
