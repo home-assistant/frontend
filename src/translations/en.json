@@ -2705,7 +2705,7 @@
               "delete": "[%key:ui::common::delete%]",
               "delete_confirm_title": "Delete action?",
               "delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
-              "unsupported_action": "No visual editor support for action: {action}",
+              "unsupported_action": "No visual editor support for this action",
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "type": {
@@ -2829,6 +2829,9 @@
                   "option": "Option {number}",
                   "add_option": "Add option",
                   "remove_option": "Remove option",
+                  "change_alias": "Rename option",
+                  "alias": "Option name",
+                  "delete_confirm_title": "Remove option?",
                   "option_description_additional": " {numberOfAdditionalConditions, plural,\n one {and 1 more condition}\n other {and {numberOfAdditionalConditions} more conditions}}",
                   "conditions": "Conditions",
                   "no_conditions": "[%key:ui::panel::config::devices::automation::conditions::no_conditions%]",

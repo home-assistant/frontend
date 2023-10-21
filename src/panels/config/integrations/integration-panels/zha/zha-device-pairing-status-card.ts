@@ -1,10 +1,6 @@
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "../../../../../components/buttons/ha-call-service-button";
-import "../../../../../components/entity/state-badge";
-import "../../../../../components/ha-area-picker";
 import "../../../../../components/ha-card";
 import {
   CONFIGURED,

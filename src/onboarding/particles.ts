@@ -1,6 +1,6 @@
 import { tsParticles } from "tsparticles-engine";
 import { loadLinksPreset } from "tsparticles-preset-links";
-import { DEFAULT_PRIMARY_COLOR } from "../resources/ha-style";
+import { DEFAULT_PRIMARY_COLOR } from "../resources/styles-data";
 
 loadLinksPreset(tsParticles).then(() => {
   tsParticles.load("particles", {

@@ -19,7 +19,7 @@ import "../../components/ha-textfield";
 import {
   DEFAULT_ACCENT_COLOR,
   DEFAULT_PRIMARY_COLOR,
-} from "../../resources/ha-style";
+} from "../../resources/styles-data";
 import { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
