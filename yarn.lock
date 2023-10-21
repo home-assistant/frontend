@@ -4523,13 +4523,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/tar@npm:6.1.6":
-  version: 6.1.6
-  resolution: "@types/tar@npm:6.1.6"
+"@types/tar@npm:6.1.7":
+  version: 6.1.7
+  resolution: "@types/tar@npm:6.1.7"
   dependencies:
     "@types/node": "*"
     minipass: ^4.0.0
-  checksum: d4bcb5a06d8e4b6eac564f22274d72f6a14c614eaf5f6c6c270f3a43c197da2797a7c707bc0377cd2e6d8c429f277e1ca446121546c86021e9782034a306eafb
+  checksum: 74a346c86eb9fd1d7849b675e019ec784accf2f4a2abedc607e5449809f5205db6c31a7c0e7ac34e1ae5beabc3d260dbf82d7829398791397b971a56de4028b9
   languageName: node
   linkType: hard
 
@@ -9690,7 +9690,7 @@ __metadata:
     "@types/qrcode": 1.5.4
     "@types/serve-handler": 6.1.3
     "@types/sortablejs": 1.15.4
-    "@types/tar": 6.1.6
+    "@types/tar": 6.1.7
     "@types/ua-parser-js": 0.7.37
     "@types/webspeechapi": 0.0.29
     "@typescript-eslint/eslint-plugin": 6.8.0
