@@ -4044,12 +4044,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chromecast-caf-sender@npm:1.0.6":
-  version: 1.0.6
-  resolution: "@types/chromecast-caf-sender@npm:1.0.6"
+"@types/chromecast-caf-sender@npm:1.0.7":
+  version: 1.0.7
+  resolution: "@types/chromecast-caf-sender@npm:1.0.7"
   dependencies:
     "@types/chrome": "*"
-  checksum: 25def059bcf83cd354c3ad1f78edf740a739b02ba16fb99a4deaae36dafd9530825a2e9b071f1cb2f145de916fb0d67119ad0d499d7f8599442e49b99d28cd12
+  checksum: fe96696094446903b926eb692b5394a93bd89d049a01daad38fd87e81bdc0f8f8f7fe27dd72f66257dba279f7d6a8f0e954f61b54c4cf73df75bcde009b1f050
   languageName: node
   linkType: hard
 
@@ -9678,7 +9678,7 @@ __metadata:
     "@thomasloven/round-slider": 0.6.0
     "@types/babel__plugin-transform-runtime": 7.9.3
     "@types/chromecast-caf-receiver": 6.0.10
-    "@types/chromecast-caf-sender": 1.0.6
+    "@types/chromecast-caf-sender": 1.0.7
     "@types/esprima": 4.0.4
     "@types/glob": 8.1.0
     "@types/html-minifier-terser": 7.0.0
