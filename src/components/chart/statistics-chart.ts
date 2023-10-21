@@ -411,11 +411,7 @@ export class StatisticsChart extends LitElement {
           } else {
             val = stat[type];
           }
-          dataValues.push(
-            val !== null && val !== undefined
-              ? Math.round(val * 100) / 100
-              : null
-          );
+          dataValues.push(val ?? null);
         });
         pushData(startDate, new Date(stat.end), dataValues);
       });
