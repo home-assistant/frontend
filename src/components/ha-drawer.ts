@@ -1,5 +1,4 @@
-import { DrawerBase } from "@material/mwc-drawer/mwc-drawer-base";
-import { styles } from "@material/mwc-drawer/mwc-drawer.css";
+import { Drawer } from "@material/mwc-drawer";
 import { css, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -7,7 +6,7 @@ import { fireEvent } from "../common/dom/fire_event";
 const blockingElements = (document as any).$blockingElements;
 
 @customElement("ha-drawer")
-export class HaDrawer extends DrawerBase {
+export class HaDrawer extends Drawer {
   @property() public direction: "ltr" | "rtl" = "ltr";
 
   private _mc?: HammerManager;
@@ -60,7 +59,7 @@ export class HaDrawer extends DrawerBase {
   }
 
   static override styles = [
-    styles,
+    ...super.styles,
     css`
       .mdc-drawer {
         position: fixed;

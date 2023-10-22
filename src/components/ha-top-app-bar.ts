@@ -1,12 +1,11 @@
-import { TopAppBarBase } from "@material/mwc-top-app-bar/mwc-top-app-bar-base";
-import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
+import { TopAppBar } from "@material/mwc-top-app-bar";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-top-app-bar")
-export class HaTopAppBar extends TopAppBarBase {
+export class HaTopAppBar extends TopAppBar {
   static override styles = [
-    styles,
+    ...super.styles,
     css`
       .mdc-top-app-bar__row {
         height: var(--header-height);

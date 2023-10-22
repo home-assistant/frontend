@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html } from "lit";
+import { css, html } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { HaListItem } from "./ha-list-item";
 
@@ -32,20 +32,18 @@ export class HaClickableListItem extends HaListItem {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return [
-      super.styles,
-      css`
-        a {
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          overflow: hidden;
-        }
-      `,
-    ];
-  }
+  static styles = [
+    ...super.styles,
+    css`
+      a {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+      }
+    `,
+  ];
 }
 
 declare global {

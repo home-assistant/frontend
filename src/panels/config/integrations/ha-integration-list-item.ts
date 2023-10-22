@@ -1,10 +1,6 @@
-import {
-  GraphicType,
-  ListItemBase,
-} from "@material/mwc-list/mwc-list-item-base";
-import { styles } from "@material/mwc-list/mwc-list-item.css";
+import { GraphicType, ListItem } from "@material/mwc-list/mwc-list-item";
 import { mdiCloudOutline, mdiOpenInNew, mdiPackageVariant } from "@mdi/js";
-import { css, CSSResultGroup, html, nothing } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { domainToName } from "../../../data/integration";
@@ -13,7 +9,7 @@ import { brandsUrl } from "../../../util/brands-url";
 import { IntegrationListItem } from "./dialog-add-integration";
 
 @customElement("ha-integration-list-item")
-export class HaIntegrationListItem extends ListItemBase {
+export class HaIntegrationListItem extends ListItem {
   public hass!: HomeAssistant;
 
   @property({ attribute: false }) public integration?: IntegrationListItem;
@@ -106,55 +102,50 @@ export class HaIntegrationListItem extends ListItemBase {
     </span>`;
   }
 
-  static get styles(): CSSResultGroup {
-    return [
-      styles,
-      css`
-        :host {
-          --mdc-list-side-padding: 24px;
-          --mdc-list-item-graphic-size: 40px;
-        }
-        :host([graphic="avatar"]:not([twoLine])),
-        :host([graphic="icon"]:not([twoLine])) {
-          height: 48px;
-        }
-        span.material-icons:first-of-type {
-          margin-inline-start: 0px !important;
-          margin-inline-end: var(
-            --mdc-list-item-graphic-margin,
-            16px
-          ) !important;
-          direction: var(--direction);
-        }
-        span.material-icons:last-of-type {
-          margin-inline-start: auto !important;
-          margin-inline-end: 0px !important;
-          direction: var(--direction);
-        }
-        img {
-          width: 40px;
-          height: 40px;
-        }
-        .mdc-deprecated-list-item__meta {
-          width: auto;
-          white-space: nowrap;
-        }
-        .mdc-deprecated-list-item__meta > * {
-          margin-right: 8px;
-        }
-        .mdc-deprecated-list-item__meta > *:last-child {
-          margin-right: 0px;
-        }
-        ha-icon-next {
-          margin-right: 8px;
-        }
-        .open-in-new {
-          --mdc-icon-size: 22px;
-          padding: 1px;
-        }
-      `,
-    ];
-  }
+  static styles = [
+    ...super.styles,
+    css`
+      :host {
+        --mdc-list-side-padding: 24px;
+        --mdc-list-item-graphic-size: 40px;
+      }
+      :host([graphic="avatar"]:not([twoLine])),
+      :host([graphic="icon"]:not([twoLine])) {
+        height: 48px;
+      }
+      span.material-icons:first-of-type {
+        margin-inline-start: 0px !important;
+        margin-inline-end: var(--mdc-list-item-graphic-margin, 16px) !important;
+        direction: var(--direction);
+      }
+      span.material-icons:last-of-type {
+        margin-inline-start: auto !important;
+        margin-inline-end: 0px !important;
+        direction: var(--direction);
+      }
+      img {
+        width: 40px;
+        height: 40px;
+      }
+      .mdc-deprecated-list-item__meta {
+        width: auto;
+        white-space: nowrap;
+      }
+      .mdc-deprecated-list-item__meta > * {
+        margin-right: 8px;
+      }
+      .mdc-deprecated-list-item__meta > *:last-child {
+        margin-right: 0px;
+      }
+      ha-icon-next {
+        margin-right: 8px;
+      }
+      .open-in-new {
+        --mdc-icon-size: 22px;
+        padding: 1px;
+      }
+    `,
+  ];
 }
 
 declare global {

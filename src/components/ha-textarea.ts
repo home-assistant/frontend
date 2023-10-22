@@ -1,11 +1,9 @@
-import { TextAreaBase } from "@material/mwc-textarea/mwc-textarea-base";
-import { styles as textfieldStyles } from "@material/mwc-textfield/mwc-textfield.css";
-import { styles as textareaStyles } from "@material/mwc-textarea/mwc-textarea.css";
+import { TextArea } from "@material/mwc-textarea";
 import { css, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-textarea")
-export class HaTextArea extends TextAreaBase {
+export class HaTextArea extends TextArea {
   @property({ type: Boolean, reflect: true }) autogrow = false;
 
   firstUpdated() {
@@ -22,8 +20,7 @@ export class HaTextArea extends TextAreaBase {
   }
 
   static override styles = [
-    textfieldStyles,
-    textareaStyles,
+    ...super.styles,
     css`
       :host([autogrow]) .mdc-text-field {
         position: relative;

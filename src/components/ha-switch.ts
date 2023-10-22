@@ -1,11 +1,10 @@
-import { SwitchBase } from "@material/mwc-switch/deprecated/mwc-switch-base";
-import { styles } from "@material/mwc-switch/deprecated/mwc-switch.css";
+import { Switch } from "@material/mwc-switch/deprecated";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 import { forwardHaptic } from "../data/haptics";
 
 @customElement("ha-switch")
-export class HaSwitch extends SwitchBase {
+export class HaSwitch extends Switch {
   // Generate a haptic vibration.
   // Only set to true if the new value of the switch is applied right away when toggling.
   // Do not add haptic when a user is required to press save.
@@ -21,7 +20,7 @@ export class HaSwitch extends SwitchBase {
   }
 
   static override styles = [
-    styles,
+    ...super.styles,
     css`
       :host {
         --mdc-theme-secondary: var(--switch-checked-color);

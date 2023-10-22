@@ -1,5 +1,4 @@
-import { SelectBase } from "@material/mwc-select/mwc-select-base";
-import { styles } from "@material/mwc-select/mwc-select.css";
+import { Select } from "@material/mwc-select";
 import { mdiClose } from "@mdi/js";
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -8,7 +7,7 @@ import { nextRender } from "../common/util/render-status";
 import "./ha-icon-button";
 
 @customElement("ha-select")
-export class HaSelect extends SelectBase {
+export class HaSelect extends Select {
   // @ts-ignore
   @property({ type: Boolean }) public icon?: boolean;
 
@@ -65,7 +64,7 @@ export class HaSelect extends SelectBase {
   }, 500);
 
   static override styles = [
-    styles,
+    ...super.styles,
     css`
       :host([clearable]) {
         position: relative;

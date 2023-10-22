@@ -1,5 +1,4 @@
-import { DialogBase } from "@material/mwc-dialog/mwc-dialog-base";
-import { styles } from "@material/mwc-dialog/mwc-dialog.css";
+import { Dialog } from "@material/mwc-dialog";
 import { mdiClose } from "@mdi/js";
 import { css, html, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
@@ -23,7 +22,7 @@ export const createCloseHeading = (
 `;
 
 @customElement("ha-dialog")
-export class HaDialog extends DialogBase {
+export class HaDialog extends Dialog {
   protected readonly [FOCUS_TARGET];
 
   public scrollToPos(x: number, y: number) {
@@ -61,7 +60,7 @@ export class HaDialog extends DialogBase {
   }
 
   static override styles = [
-    styles,
+    ...super.styles,
     css`
       :host([scrolled]) ::slotted(ha-dialog-header) {
         border-bottom: 1px solid

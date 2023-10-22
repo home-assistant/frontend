@@ -1,12 +1,11 @@
-import { TopAppBarFixedBase } from "@material/mwc-top-app-bar-fixed/mwc-top-app-bar-fixed-base";
-import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
+import { TopAppBarFixed } from "@material/mwc-top-app-bar-fixed";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-top-app-bar-fixed")
-export class HaTopAppBarFixed extends TopAppBarFixedBase {
+export class HaTopAppBarFixed extends TopAppBarFixed {
   static override styles = [
-    styles,
+    ...super.styles,
     css`
       .mdc-top-app-bar__row {
         height: var(--header-height);

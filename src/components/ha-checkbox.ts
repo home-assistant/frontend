@@ -1,12 +1,11 @@
-import { CheckboxBase } from "@material/mwc-checkbox/mwc-checkbox-base";
-import { styles } from "@material/mwc-checkbox/mwc-checkbox.css";
+import { Checkbox } from "@material/mwc-checkbox";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-checkbox")
-export class HaCheckbox extends CheckboxBase {
+export class HaCheckbox extends Checkbox {
   static override styles = [
-    styles,
+    ...super.styles,
     css`
       :host {
         --mdc-theme-secondary: var(--primary-color);

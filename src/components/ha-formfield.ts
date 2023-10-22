@@ -1,11 +1,10 @@
-import { FormfieldBase } from "@material/mwc-formfield/mwc-formfield-base";
-import { styles } from "@material/mwc-formfield/mwc-formfield.css";
+import { Formfield } from "@material/mwc-formfield";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("ha-formfield")
-export class HaFormfield extends FormfieldBase {
+export class HaFormfield extends Formfield {
   protected _labelClick() {
     const input = this.input as HTMLInputElement | undefined;
     if (!input) return;
@@ -30,7 +29,7 @@ export class HaFormfield extends FormfieldBase {
   }
 
   static override styles = [
-    styles,
+    ...super.styles,
     css`
       :host(:not([alignEnd])) ::slotted(ha-switch) {
         margin-right: 10px;
