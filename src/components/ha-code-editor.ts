@@ -12,7 +12,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import { CodeMirror, loadCodeMirror } from "../resources/codemirror.ondemand";
 import { HomeAssistant } from "../types";
 import "./ha-icon";
 
@@ -58,7 +57,7 @@ export class HaCodeEditor extends ReactiveElement {
 
   @state() private _value = "";
 
-  private _loadedCodeMirror?: CodeMirror;
+  private _loadedCodeMirror?: typeof import("../resources/codemirror");
 
   private _iconList?: Completion[];
 
@@ -110,7 +109,7 @@ export class HaCodeEditor extends ReactiveElement {
 
   // Ensure CodeMirror module is loaded before any update
   protected override async scheduleUpdate() {
-    this._loadedCodeMirror ??= await loadCodeMirror();
+    this._loadedCodeMirror ??= await import("../resources/codemirror");
     super.scheduleUpdate();
   }
 
