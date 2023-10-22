@@ -255,6 +255,7 @@
   "resolutions": {
     "@polymer/polymer": "patch:@polymer/polymer@3.5.1#./.yarn/patches/@polymer/polymer/pr-5569.patch",
     "@material/mwc-button@^0.25.3": "^0.27.0",
+    "lit@^2.7.4 || ^3.0.0": "^2.7.4",
     "sortablejs@1.15.0": "patch:sortablejs@npm%3A1.15.0#./.yarn/patches/sortablejs-npm-1.15.0-f3a393abcc.patch",
     "leaflet-draw@1.0.4": "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch"
   },
