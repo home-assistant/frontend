@@ -234,7 +234,7 @@
     "rollup-plugin-terser": "7.0.2",
     "rollup-plugin-visualizer": "5.9.2",
     "serve-handler": "6.1.5",
-    "sinon": "16.1.1",
+    "sinon": "16.1.3",
     "source-map-url": "0.4.1",
     "systemjs": "6.14.2",
     "tar": "6.2.0",
