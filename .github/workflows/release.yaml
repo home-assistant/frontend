@@ -23,7 +23,7 @@ jobs:
       contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v4.1.1
 
       - name: Verify version
         uses: home-assistant/actions/helpers/verify-version@master
