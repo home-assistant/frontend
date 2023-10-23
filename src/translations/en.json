@@ -4759,7 +4759,9 @@
             "add": "Add condition",
             "condition": {
               "numeric_state": {
-                "label": "Entity numeric state"
+                "label": "Entity numeric state",
+                "above": "Above",
+                "below": "Below"
               },
               "screen": {
                 "label": "Screen",
