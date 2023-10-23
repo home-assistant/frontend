@@ -21,7 +21,7 @@ type StateConditionData = {
   condition: "state";
   entity: string;
   invert: "true" | "false";
-  state?: string;
+  state?: string | string[];
 };
 
 @customElement("ha-card-condition-state")
@@ -103,7 +103,10 @@ export class HaCardConditionState extends LitElement {
       ...content,
       entity: this.condition.entity ?? "",
       invert: this.condition.state_not ? "true" : "false",
-      state: this.condition.state_not ?? this.condition.state ?? "",
+      state:
+        (this.condition.state_not as string | string[] | undefined) ??
+        (this.condition.state as string | string[] | undefined) ??
+        "",
     };
 
     return html`
