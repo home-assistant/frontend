@@ -74,7 +74,7 @@ jobs:
           echo "home-assistant-frontend==$version" > ./requirements.txt
 
       - name: Build wheels
-        uses: home-assistant/wheels@2023.10.4
+        uses: home-assistant/wheels@2023.10.5
         with:
           abi: cp311
           tag: musllinux_1_2
