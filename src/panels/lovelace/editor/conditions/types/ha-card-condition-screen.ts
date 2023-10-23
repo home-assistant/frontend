@@ -129,11 +129,11 @@ export class HaCardConditionScreen extends LitElement {
                 return {
                   value: b,
                   label: `${localize(
-                    `ui.panel.lovelace.editor.card.conditional.condition.screen.breakpoints_list.${b}`
+                    `ui.panel.lovelace.editor.condition-editor.condition.screen.breakpoints_list.${b}`
                   )}${
                     value
                       ? ` (${localize(
-                          `ui.panel.lovelace.editor.card.conditional.condition.screen.min`,
+                          `ui.panel.lovelace.editor.condition-editor.condition.screen.min`,
                           { size: value }
                         )})`
                       : ""
@@ -188,7 +188,7 @@ export class HaCardConditionScreen extends LitElement {
     switch (schema.name) {
       case "breakpoints":
         return this.hass.localize(
-          `ui.panel.lovelace.editor.card.conditional.condition.screen.${schema.name}`
+          `ui.panel.lovelace.editor.condition-editor.condition.screen.${schema.name}`
         );
       default:
         return "";

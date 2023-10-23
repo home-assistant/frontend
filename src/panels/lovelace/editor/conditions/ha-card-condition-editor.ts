@@ -6,6 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
@@ -14,15 +15,14 @@ import "../../../../components/ha-yaml-editor";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
-import { Condition } from "../../common/validate-condition";
+import { Condition, LegacyCondition } from "../../common/validate-condition";
 import type { LovelaceConditionEditorConstructor } from "./types";
-import { handleStructError } from "../../../../common/structs/handle-errors";
 
 @customElement("ha-card-condition-editor")
 export default class HaCardConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) condition!: Condition;
+  @property({ attribute: false }) condition!: Condition | LegacyCondition;
 
   @state() public _yamlMode = false;
 
@@ -30,20 +30,25 @@ export default class HaCardConditionEditor extends LitElement {
 
   @state() public _uiWarnings: string[] = [];
 
-  private get _editor() {
-    const element = customElements.get(
-      `ha-card-condition-${this.condition.condition}`
-    ) as LovelaceConditionEditorConstructor | undefined;
+  @state() _condition?: Condition;
 
-    return element;
+  private get _editor() {
+    if (!this._condition) return undefined;
+    return customElements.get(
+      `ha-card-condition-${this._condition.condition}`
+    ) as LovelaceConditionEditorConstructor | undefined;
   }
 
   protected willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has("condition")) {
+      this._condition = {
+        condition: "state",
+        ...this.condition,
+      };
       const validator = this._editor?.validateUIConfig;
       if (validator) {
         try {
-          validator(this.condition, this.hass);
+          validator(this._condition, this.hass);
           this._uiAvailable = true;
           this._uiWarnings = [];
         } catch (err) {
@@ -65,7 +70,9 @@ export default class HaCardConditionEditor extends LitElement {
   }
 
   protected render() {
-    const condition = this.condition;
+    const condition = this._condition;
+
+    if (!condition) return nothing;
 
     return html`
       <div class="header">
@@ -75,7 +82,7 @@ export default class HaCardConditionEditor extends LitElement {
         ></ha-svg-icon>
         <span class="title">
           ${this.hass.localize(
-            `ui.panel.lovelace.editor.card.conditional.condition.${condition.condition}.label`
+            `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
           ) || condition.condition}
         </span>
         <ha-button-menu
