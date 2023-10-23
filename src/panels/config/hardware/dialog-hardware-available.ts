@@ -1,4 +1,5 @@
 import { mdiClose } from "@mdi/js";
+import { dump } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -15,7 +16,6 @@ import {
 } from "../../../data/hassio/hardware";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
-import { dump } from "../../../resources/js-yaml-dump";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 
