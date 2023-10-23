@@ -1,7 +1,7 @@
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiDrag } from "@mdi/js";
+import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { repeat } from "lit/directives/repeat";
 import { SortableEvent } from "sortablejs";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -11,7 +11,6 @@ import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { SelectOption, SelectSelector } from "../../data/selector";
 import { sortableStyles } from "../../resources/ha-sortable-style";
 import { SortableInstance } from "../../resources/sortable";
-import { loadSortable } from "../../resources/sortable.ondemand";
 import type { HomeAssistant } from "../../types";
 import "../ha-checkbox";
 import "../ha-chip";
@@ -47,20 +46,20 @@ export class HaSelectSelector extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     if (changedProps.has("value") || changedProps.has("selector")) {
-      if (
-        this.value?.length &&
-        !this._sortable &&
-        this.selector.select?.reorder
-      ) {
+      const sortableNeeded =
+        this.selector.select?.multiple &&
+        this.selector.select.reorder &&
+        this.value?.length;
+      if (!this._sortable && sortableNeeded) {
         this._createSortable();
-      } else if (!this.value?.length && this._sortable) {
+      } else if (this._sortable && !sortableNeeded) {
         this._destroySortable();
       }
     }
   }
 
   private async _createSortable() {
-    const Sortable = await loadSortable();
+    const Sortable = (await import("../../resources/sortable")).default;
     this._sortable = new Sortable(
       this.shadowRoot!.querySelector("ha-chip-set")!,
       {
