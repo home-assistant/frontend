@@ -1492,7 +1492,8 @@
         "key_missing": "Required key ''{key}'' is missing.",
         "key_not_expected": "Key ''{key}'' is not expected or not supported by the visual editor.",
         "key_wrong_type": "The provided value for ''{key}'' is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
-        "no_template_editor_support": "Templates not supported in visual editor"
+        "no_template_editor_support": "Templates not supported in visual editor",
+        "media_query_not_supported": "This media query is not supported by the visual editor."
       },
       "supervisor": {
         "title": "Could not load the Supervisor panel!",
@@ -4757,6 +4758,32 @@
               "none": "No action"
             }
           },
+          "condition-editor": {
+            "explanation": "The card will be shown when ALL conditions below are fulfilled.",
+            "add": "Add condition",
+            "condition": {
+              "screen": {
+                "label": "Screen",
+                "breakpoints": "Screen sizes",
+                "breakpoints_list": {
+                  "mobile": "Mobile",
+                  "tablet": "Tablet",
+                  "desktop": "Desktop",
+                  "wide": "Wide"
+                },
+                "min": "min: {size}px"
+              },
+              "state": {
+                "label": "Entity state",
+                "state_equal": "State is equal to",
+                "state_not_equal": "State is not equal to",
+                "current_state": "current"
+              },
+              "user": {
+                "label": "User"
+              }
+            }
+          },
           "card": {
             "alarm-panel": {
               "name": "Alarm panel",
@@ -4785,28 +4812,7 @@
               "description": "The Conditional card displays another card based on entity states.",
               "conditions": "Conditions",
               "card": "Card",
-              "state_equal": "State is equal to",
-              "state_not_equal": "State is not equal to",
-              "current_state": "current",
-              "condition_explanation": "The card will be shown when ALL conditions below are fulfilled.",
-              "change_type": "Change type",
-              "add_condition": "Add condition",
-              "condition": {
-                "screen": {
-                  "label": "Screen",
-                  "breakpoints": "Screen sizes",
-                  "breakpoints_list": {
-                    "mobile": "Mobile",
-                    "tablet": "Tablet",
-                    "desktop": "Desktop",
-                    "wide": "Wide"
-                  },
-                  "min": "min: {size}px"
-                },
-                "state": {
-                  "label": "Entity state"
-                }
-              }
+              "change_type": "Change type"
             },
             "config": {
               "required": "required",

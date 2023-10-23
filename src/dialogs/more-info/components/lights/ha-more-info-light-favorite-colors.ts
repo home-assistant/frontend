@@ -24,10 +24,7 @@ import {
   computeDefaultFavoriteColors,
 } from "../../../../data/light";
 import { actionHandler } from "../../../../panels/lovelace/common/directives/action-handler-directive";
-import {
-  SortableInstance,
-  loadSortable,
-} from "../../../../resources/sortable.ondemand";
+import type { SortableInstance } from "../../../../resources/sortable";
 import { HomeAssistant } from "../../../../types";
 import { showConfirmationDialog } from "../../../generic/show-dialog-box";
 import "./ha-favorite-color-button";
@@ -73,7 +70,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
   }
 
   private async _createSortable() {
-    const Sortable = await loadSortable();
+    const Sortable = (await import("../../../../resources/sortable")).default;
     this._sortable = new Sortable(
       this.shadowRoot!.querySelector(".container")!,
       {

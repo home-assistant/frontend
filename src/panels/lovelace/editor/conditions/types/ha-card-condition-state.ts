@@ -12,7 +12,7 @@ import { StateCondition } from "../../../common/validate-condition";
 
 const stateConditionStruct = object({
   condition: literal("state"),
-  entity: string(),
+  entity: optional(string()),
   state: optional(string()),
   state_not: optional(string()),
 });
@@ -21,7 +21,7 @@ type StateConditionData = {
   condition: "state";
   entity: string;
   invert: "true" | "false";
-  state?: string;
+  state?: string | string[];
 };
 
 @customElement("ha-card-condition-state")
@@ -34,6 +34,10 @@ export class HaCardConditionState extends LitElement {
 
   public static get defaultConfig(): StateCondition {
     return { condition: "state", entity: "", state: "" };
+  }
+
+  protected static validateUIConfig(condition: StateCondition) {
+    return assert(condition, stateConditionStruct);
   }
 
   protected willUpdate(changedProperties: PropertyValues): void {
@@ -57,19 +61,20 @@ export class HaCardConditionState extends LitElement {
           schema: [
             {
               name: "invert",
+              required: true,
               selector: {
                 select: {
                   mode: "dropdown",
                   options: [
                     {
                       label: localize(
-                        "ui.panel.lovelace.editor.card.conditional.state_equal"
+                        "ui.panel.lovelace.editor.condition-editor.condition.state.state_equal"
                       ),
                       value: "false",
                     },
                     {
                       label: localize(
-                        "ui.panel.lovelace.editor.card.conditional.state_not_equal"
+                        "ui.panel.lovelace.editor.condition-editor.condition.state.state_not_equal"
                       ),
                       value: "true",
                     },
@@ -98,7 +103,10 @@ export class HaCardConditionState extends LitElement {
       ...content,
       entity: this.condition.entity ?? "",
       invert: this.condition.state_not ? "true" : "false",
-      state: this.condition.state_not ?? this.condition.state ?? "",
+      state:
+        (this.condition.state_not as string | string[] | undefined) ??
+        (this.condition.state as string | string[] | undefined) ??
+        "",
     };
 
     return html`
@@ -144,7 +152,7 @@ export class HaCardConditionState extends LitElement {
           return `${this.hass.localize(
             "ui.components.entity.entity-state-picker.state"
           )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.conditional.current_state"
+            "ui.panel.lovelace.editor.condition-editor.condition.state.current_state"
           )}: ${this.hass.formatEntityState(entity)})`;
         }
         return `${this.hass.localize(

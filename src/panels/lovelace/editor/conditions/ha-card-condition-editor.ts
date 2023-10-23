@@ -1,11 +1,12 @@
 import { preventDefault } from "@fullcalendar/core/internal";
 import { ActionDetail } from "@material/mwc-list";
 import { mdiCheck, mdiDelete, mdiDotsVertical } from "@mdi/js";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
@@ -13,9 +14,9 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-yaml-editor";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { ICON_CONDITION } from "../../common/icon-condition";
 import { Condition, LegacyCondition } from "../../common/validate-condition";
 import type { LovelaceConditionEditorConstructor } from "./types";
-import { ICON_CONDITION } from "../../common/icon-condition";
 
 @customElement("ha-card-condition-editor")
 export default class HaCardConditionEditor extends LitElement {
@@ -25,21 +26,53 @@ export default class HaCardConditionEditor extends LitElement {
 
   @state() public _yamlMode = false;
 
-  protected render() {
-    const condition: Condition = {
-      condition: "state",
-      ...this.condition,
-    };
-    const element = customElements.get(
-      `ha-card-condition-${condition.condition}`
+  @state() public _uiAvailable = false;
+
+  @state() public _uiWarnings: string[] = [];
+
+  @state() _condition?: Condition;
+
+  private get _editor() {
+    if (!this._condition) return undefined;
+    return customElements.get(
+      `ha-card-condition-${this._condition.condition}`
     ) as LovelaceConditionEditorConstructor | undefined;
-    const supported = element !== undefined;
+  }
 
-    const valid =
-      element &&
-      (!element.validateUIConfig || element.validateUIConfig(condition));
+  protected willUpdate(changedProperties: PropertyValues): void {
+    if (changedProperties.has("condition")) {
+      this._condition = {
+        condition: "state",
+        ...this.condition,
+      };
+      const validator = this._editor?.validateUIConfig;
+      if (validator) {
+        try {
+          validator(this._condition, this.hass);
+          this._uiAvailable = true;
+          this._uiWarnings = [];
+        } catch (err) {
+          this._uiWarnings = handleStructError(
+            this.hass,
+            err as Error
+          ).warnings;
+          this._uiAvailable = false;
+        }
+      } else {
+        this._uiAvailable = false;
+        this._uiWarnings = [];
+      }
 
-    const yamlMode = this._yamlMode || !supported || !valid;
+      if (!this._uiAvailable && !this._yamlMode) {
+        this._yamlMode = true;
+      }
+    }
+  }
+
+  protected render() {
+    const condition = this._condition;
+
+    if (!condition) return nothing;
 
     return html`
       <div class="header">
@@ -49,7 +82,7 @@ export default class HaCardConditionEditor extends LitElement {
         ></ha-svg-icon>
         <span class="title">
           ${this.hass.localize(
-            `ui.panel.lovelace.editor.card.conditional.condition.${condition.condition}.label`
+            `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
           ) || condition.condition}
         </span>
         <ha-button-menu
@@ -68,9 +101,9 @@ export default class HaCardConditionEditor extends LitElement {
           >
           </ha-icon-button>
 
-          <ha-list-item graphic="icon" .disabled=${!supported || !valid}>
+          <ha-list-item graphic="icon" .disabled=${!this._uiAvailable}>
             ${this.hass.localize("ui.panel.lovelace.editor.edit_card.edit_ui")}
-            ${!yamlMode
+            ${!this._yamlMode
               ? html`
                   <ha-svg-icon
                     class="selected_menu_item"
@@ -85,7 +118,7 @@ export default class HaCardConditionEditor extends LitElement {
             ${this.hass.localize(
               "ui.panel.lovelace.editor.edit_card.edit_yaml"
             )}
-            ${yamlMode
+            ${this._yamlMode
               ? html`
                   <ha-svg-icon
                     class="selected_menu_item"
@@ -108,15 +141,30 @@ export default class HaCardConditionEditor extends LitElement {
           </ha-list-item>
         </ha-button-menu>
       </div>
-      ${!valid
+      ${!this._uiAvailable
         ? html`
-            <ha-alert alert-type="warning">
-              ${this.hass.localize("ui.errors.config.editor_not_supported")}
+            <ha-alert
+              alert-type="warning"
+              .title=${this.hass.localize(
+                "ui.errors.config.editor_not_supported"
+              )}
+            >
+              ${this._uiWarnings!.length > 0 &&
+              this._uiWarnings![0] !== undefined
+                ? html`
+                    <ul>
+                      ${this._uiWarnings!.map(
+                        (warning) => html`<li>${warning}</li>`
+                      )}
+                    </ul>
+                  `
+                : nothing}
+              ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
             </ha-alert>
           `
         : nothing}
       <div class="content">
-        ${yamlMode
+        ${this._yamlMode
           ? html`
               <ha-yaml-editor
                 .hass=${this.hass}

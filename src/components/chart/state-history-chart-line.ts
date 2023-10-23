@@ -142,18 +142,10 @@ export class StateHistoryChartLine extends LitElement {
                 `${context.dataset.label}: ${formatNumber(
                   context.parsed.y,
                   this.hass.locale,
-                  // this has a pre-existing bug here, when rendering a climate entity, the datasetIndex no longer correctly indexes data
-                  // since the climate entity may have multiple datasetIndexes (0,1,2), but only a single this.data index (0)
-                  this.data[context.datasetIndex]?.entity_id
-                    ? getNumberFormatOptions(
-                        this.hass.states[
-                          this.data[context.datasetIndex].entity_id
-                        ],
-                        this.hass.entities[
-                          this.data[context.datasetIndex].entity_id
-                        ]
-                      )
-                    : undefined
+                  getNumberFormatOptions(
+                    undefined,
+                    this.hass.entities[this._entityIds[context.datasetIndex]]
+                  )
                 )} ${this.unit}${
                   !this.data[context.datasetIndex]?.statistics ||
                   this.data[context.datasetIndex].statistics!.length === 0
