@@ -26,7 +26,7 @@ export class HaButtonMenu extends LitElement {
 
   @property({ type: Boolean }) public fixed = false;
 
-  @property({ type: Boolean }) public noAnchor = false;
+  @property({ type: Boolean, attribute: "no-anchor" }) public noAnchor = false;
 
   @query("mwc-menu", true) private _menu?: Menu;
 
