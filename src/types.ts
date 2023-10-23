@@ -132,6 +132,8 @@ export interface CalendarViewChanged {
   end: Date;
   start: Date;
   view: string;
+  // Date range for the current view
+  label: string;
 }
 
 export type FullCalendarView =
