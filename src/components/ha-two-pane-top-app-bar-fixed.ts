@@ -280,8 +280,8 @@ export abstract class TopAppBarBaseBase extends BaseElement {
       }
       #title {
         border-right: 1px solid rgba(255, 255, 255, 0.12);
-        flex: 0 0 var(--sidepane-width, 250px);
         box-sizing: border-box;
+        flex: 0 0 var(--sidepane-width, 250px);
       }
       div.mdc-top-app-bar--pane {
         display: flex;
@@ -289,9 +289,9 @@ export abstract class TopAppBarBaseBase extends BaseElement {
       }
       .pane {
         border-right: 1px solid var(--divider-color);
-        width: var(--sidepane-width, 250px);
         box-sizing: border-box;
         display: flex;
+        flex: 0 0 var(--sidepane-width, 250px);
         flex-direction: column;
         position: relative;
       }
