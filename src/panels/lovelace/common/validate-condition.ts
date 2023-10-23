@@ -64,6 +64,11 @@ function checkStateNumericCondition(
   }
 
   const numericState = Number(entity.state);
+
+  if (isNaN(numericState)) {
+    return false;
+  }
+
   return (
     (condition.above == null || condition.above < numericState) &&
     (condition.below == null || condition.below >= numericState)
