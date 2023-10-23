@@ -2106,7 +2106,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/ssr-dom-shim@npm:^1.0.0, @lit-labs/ssr-dom-shim@npm:^1.1.0":
+"@lit-labs/observers@npm:2.0.1":
+  version: 2.0.1
+  resolution: "@lit-labs/observers@npm:2.0.1"
+  dependencies:
+    "@lit/reactive-element": ^2.0.0
+  checksum: 6c4518ee37678d86b263799590edd5c202a9f6800b52b52d2a0fc47e572d029c587fa9722108e449ab6bc7b1b1aee9e780b3e42ca2e91d63a43fc96541a80f98
+  languageName: node
+  linkType: hard
+
+"@lit-labs/ssr-dom-shim@npm:^1.0.0, @lit-labs/ssr-dom-shim@npm:^1.1.0, @lit-labs/ssr-dom-shim@npm:^1.1.2-pre.0":
   version: 1.1.2
   resolution: "@lit-labs/ssr-dom-shim@npm:1.1.2"
   checksum: 73fd787893851d4ec4aaa5c775405ed2aae4ca0891b2dd3c973b32c2f4bf70ada5481dd0224e52b786d037aa8a00052186ad1623c44551affd66f6409cca8da6
@@ -2129,6 +2138,15 @@ __metadata:
   dependencies:
     "@lit-labs/ssr-dom-shim": ^1.0.0
   checksum: 79b58631c38effeabad090070324431da8a22cf0ff665f5e4de35e4d791f984742b3d340c9c7fce996d1124a8da95febc582471b4c237236c770b1300b56ef6e
+  languageName: node
+  linkType: hard
+
+"@lit/reactive-element@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@lit/reactive-element@npm:2.0.0"
+  dependencies:
+    "@lit-labs/ssr-dom-shim": ^1.1.2-pre.0
+  checksum: afa12f1cf72e8735cb7eaa51d428610785ee796882ca52108310e75ac54bbf5690da718c8bf85d042060f98c139ff0d5efd54f677a9d3fc4d794ad2e0f7a12c5
   languageName: node
   linkType: hard
 
@@ -2497,7 +2515,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-base@npm:^0.27.0":
+"@material/mwc-base@npm:0.27.0, @material/mwc-base@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-base@npm:0.27.0"
   dependencies:
@@ -9636,11 +9654,13 @@ __metadata:
     "@lezer/highlight": 1.1.6
     "@lit-labs/context": 0.4.1
     "@lit-labs/motion": 1.0.4
+    "@lit-labs/observers": 2.0.1
     "@lit-labs/virtualizer": 2.0.7
     "@lokalise/node-api": 12.0.0
     "@lrnwebcomponents/simple-tooltip": 7.0.18
     "@material/chips": =14.0.0-canary.53b3cad2f.0
     "@material/data-table": =14.0.0-canary.53b3cad2f.0
+    "@material/mwc-base": 0.27.0
     "@material/mwc-button": 0.27.0
     "@material/mwc-checkbox": 0.27.0
     "@material/mwc-circular-progress": 0.27.0
