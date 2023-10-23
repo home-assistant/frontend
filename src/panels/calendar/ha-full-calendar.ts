@@ -439,6 +439,11 @@ export class HAFullCalendar extends LitElement {
           justify-content: initial;
         }
 
+        .header {
+          padding-right: var(--calendar-header-padding);
+          padding-left: var(--calendar-header-padding);
+        }
+
         .navigation {
           display: flex;
           align-items: center;
@@ -513,7 +518,11 @@ export class HAFullCalendar extends LitElement {
 
         .fc-theme-standard .fc-scrollgrid {
           border: 1px solid var(--divider-color);
-          border-radius: var(--mdc-shape-small, 4px);
+          border-width: var(--calendar-border-width, 1px);
+          border-radius: var(
+            --calendar-border-radius,
+            var(--mdc-shape-small, 4px)
+          );
         }
 
         .fc-theme-standard td {
