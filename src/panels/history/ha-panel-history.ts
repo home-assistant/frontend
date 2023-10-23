@@ -395,10 +395,15 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         }));
         statsHistoryStates[key] = entityHistoryStates;
       });
+
+      const { numeric_device_classes: sensorNumericDeviceClasses } =
+        await getSensorNumericDeviceClasses(this.hass);
+
       this._statisticsHistory = computeHistory(
         this.hass,
         statsHistoryStates,
-        this.hass.localize
+        this.hass.localize,
+        sensorNumericDeviceClasses
       );
       // remap states array to statistics array
       (this._statisticsHistory?.line || []).forEach((item) => {

@@ -49,6 +49,8 @@ export class StateHistoryChartLine extends LitElement {
 
   @state() private _entityIds: string[] = [];
 
+  private _datasetToDataIndex: number[] = [];
+
   @state() private _chartOptions?: ChartOptions;
 
   @state() private _yWidth = 0;
@@ -138,28 +140,32 @@ export class StateHistoryChartLine extends LitElement {
         plugins: {
           tooltip: {
             callbacks: {
-              label: (context) =>
-                `${context.dataset.label}: ${formatNumber(
+              label: (context) => {
+                let label = `${context.dataset.label}: ${formatNumber(
                   context.parsed.y,
                   this.hass.locale,
                   getNumberFormatOptions(
                     undefined,
                     this.hass.entities[this._entityIds[context.datasetIndex]]
                   )
-                )} ${this.unit}${
-                  !this.data[context.datasetIndex]?.statistics ||
-                  this.data[context.datasetIndex].statistics!.length === 0
-                    ? ""
-                    : this.data[context.datasetIndex].states.length === 0 ||
-                      context.parsed.x <
-                        this.data[context.datasetIndex].states[0].last_changed
-                    ? `\n${this.hass.localize(
-                        "ui.components.history_charts.source_stats"
-                      )}`
-                    : `\n${this.hass.localize(
-                        "ui.components.history_charts.source_history"
-                      )}`
-                }`,
+                )} ${this.unit}`;
+                const dataIndex =
+                  this._datasetToDataIndex[context.datasetIndex];
+                const data = this.data[dataIndex];
+                if (data.statistics && data.statistics.length > 0) {
+                  const source =
+                    data.states.length === 0 ||
+                    context.parsed.x < data.states[0].last_changed
+                      ? `\n${this.hass.localize(
+                          "ui.components.history_charts.source_stats"
+                        )}`
+                      : `\n${this.hass.localize(
+                          "ui.components.history_charts.source_history"
+                        )}`;
+                  label += source;
+                }
+                return label;
+              },
             },
           },
           filler: {
@@ -226,6 +232,7 @@ export class StateHistoryChartLine extends LitElement {
     const entityStates = this.data;
     const datasets: ChartDataset<"line">[] = [];
     const entityIds: string[] = [];
+    const datasetToDataIndex: number[] = [];
     if (entityStates.length === 0) {
       return;
     }
@@ -233,7 +240,7 @@ export class StateHistoryChartLine extends LitElement {
     this._chartTime = new Date();
     const endTime = this.endTime;
     const names = this.names || {};
-    entityStates.forEach((states) => {
+    entityStates.forEach((states, dataIdx) => {
       const domain = states.domain;
       const name = names[states.entity_id] || states.name;
       // array containing [value1, value2, etc]
@@ -278,6 +285,7 @@ export class StateHistoryChartLine extends LitElement {
           data: [],
         });
         entityIds.push(states.entity_id);
+        datasetToDataIndex.push(dataIdx);
       };
 
       if (
@@ -546,6 +554,7 @@ export class StateHistoryChartLine extends LitElement {
       datasets,
     };
     this._entityIds = entityIds;
+    this._datasetToDataIndex = datasetToDataIndex;
   }
 }
 customElements.define("state-history-chart-line", StateHistoryChartLine);
