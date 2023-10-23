@@ -19,7 +19,7 @@ const stateConditionStruct = object({
 
 type StateConditionData = {
   condition: "state";
-  entity: string;
+  entity?: string;
   invert: "true" | "false";
   state?: string | string[];
 };
@@ -101,12 +101,9 @@ export class HaCardConditionState extends LitElement {
 
     const data: StateConditionData = {
       ...content,
-      entity: this.condition.entity ?? "",
+      entity: this.condition.entity,
       invert: this.condition.state_not ? "true" : "false",
-      state:
-        (this.condition.state_not as string | string[] | undefined) ??
-        (this.condition.state as string | string[] | undefined) ??
-        "",
+      state: this.condition.state_not ?? this.condition.state,
     };
 
     return html`
@@ -125,12 +122,11 @@ export class HaCardConditionState extends LitElement {
     ev.stopPropagation();
     const data = ev.detail.value as StateConditionData;
 
-    const { invert, state, entity, condition: _, ...content } = data;
+    const { invert, state, condition: _, ...content } = data;
 
     const condition: StateCondition = {
       condition: "state",
       ...content,
-      entity: entity ?? "",
       state: invert === "false" ? state ?? "" : undefined,
       state_not: invert === "true" ? state ?? "" : undefined,
     };
