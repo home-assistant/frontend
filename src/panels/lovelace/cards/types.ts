@@ -1,7 +1,7 @@
 import { Statistic, StatisticType } from "../../../data/recorder";
 import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { FullCalendarView, TranslationDict } from "../../../types";
-import { Condition } from "../common/validate-condition";
+import { Condition, LegacyCondition } from "../common/validate-condition";
 import { HuiImage } from "../components/hui-image";
 import { LovelaceElementConfig } from "../elements/types";
 import {
@@ -37,7 +37,7 @@ export interface CalendarCardConfig extends LovelaceCardConfig {
 
 export interface ConditionalCardConfig extends LovelaceCardConfig {
   card: LovelaceCardConfig;
-  conditions: Condition[];
+  conditions: (Condition | LegacyCondition)[];
 }
 
 export interface EmptyStateCardConfig extends LovelaceCardConfig {
