@@ -19,10 +19,7 @@ import {
   stripCustomPrefix,
 } from "../../../../data/lovelace_custom_cards";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
-import {
-  SortableInstance,
-  loadSortable,
-} from "../../../../resources/sortable.ondemand";
+import type { SortableInstance } from "../../../../resources/sortable";
 import { HomeAssistant } from "../../../../types";
 import { getTileFeatureElementClass } from "../../create-element/create-tile-feature-element";
 import { supportsAlarmModesTileFeature } from "../../tile-features/hui-alarm-modes-tile-feature";
@@ -321,7 +318,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
   }
 
   private async _createSortable() {
-    const Sortable = await loadSortable();
+    const Sortable = (await import("../../../../resources/sortable")).default;
     this._sortable = new Sortable(
       this.shadowRoot!.querySelector(".features")!,
       {
