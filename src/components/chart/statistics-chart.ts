@@ -194,7 +194,7 @@ export class StatisticsChart extends LitElement {
                 context.parsed.y,
                 this.hass.locale,
                 getNumberFormatOptions(
-                  this.hass.states[this._statisticIds[context.datasetIndex]],
+                  undefined,
                   this.hass.entities[this._statisticIds[context.datasetIndex]]
                 )
               )} ${

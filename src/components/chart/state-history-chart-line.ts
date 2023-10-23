@@ -142,7 +142,7 @@ export class StateHistoryChartLine extends LitElement {
                   context.parsed.y,
                   this.hass.locale,
                   getNumberFormatOptions(
-                    this.hass.states[this._entityIds[context.datasetIndex]],
+                    undefined,
                     this.hass.entities[this._entityIds[context.datasetIndex]]
                   )
                 )} ${this.unit}`,
