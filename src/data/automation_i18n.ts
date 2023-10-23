@@ -937,32 +937,35 @@ const tryDescribeCondition = (
             }`
           : localizeTimeString(condition.after, hass.locale, hass.config);
 
-      let result = "Confirm the ";
-      if (after || before) {
-        result += "time is ";
-      }
-      if (after) {
-        result += "after " + after;
-      }
-      if (before && after) {
-        result += " and ";
-      }
-      if (before) {
-        result += "before " + before;
-      }
-      if ((after || before) && validWeekdays) {
-        result += " and the ";
-      }
+      let localizedDays: string[] = [];
       if (validWeekdays) {
-        const localizedDays = weekdaysArray.map((d) =>
+        localizedDays = weekdaysArray.map((d) =>
           hass.localize(
             `ui.panel.config.automation.editor.conditions.type.time.weekdays.${d}`
           )
         );
-        result += " day is " + formatListWithOrs(hass.locale, localizedDays);
       }
 
-      return result;
+      let hasTime = "";
+      if (after !== undefined && before !== undefined) {
+        hasTime = "after_before";
+      } else if (after !== undefined) {
+        hasTime = "after";
+      } else if (before !== undefined) {
+        hasTime = "before";
+      }
+
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.time.description.full`,
+        {
+          hasTime: hasTime,
+          hasTimeAndDay: (after || before) && validWeekdays,
+          hasDay: validWeekdays,
+          time_before: before,
+          time_after: after,
+          day: formatListWithOrs(hass.locale, localizedDays),
+        }
+      );
     }
   }
 
