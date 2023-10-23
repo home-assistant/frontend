@@ -5039,7 +5039,7 @@
             "shopping-list": {
               "name": "Shopping list",
               "description": "The Shopping list card allows you to add, edit, check-off, and clear items from your shopping list.",
-              "integration_not_loaded": "This card requires the `shopping_list` integration to be set up."
+              "integration_not_loaded": "This card requires the `todo` integration to be set up."
             },
             "thermostat": {
               "name": "Thermostat",

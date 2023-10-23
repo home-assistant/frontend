@@ -50,7 +50,7 @@ export class HuiShoppingListEditor
 
     return html`
       <div class="card-config">
-        ${!isComponentLoaded(this.hass, "shopping_list")
+        ${!isComponentLoaded(this.hass, "todo")
           ? html`
               <div class="error">
                 ${this.hass.localize(

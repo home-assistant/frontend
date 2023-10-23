@@ -39,6 +39,7 @@ import { SortableInstance } from "../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ShoppingListCardConfig } from "./types";
+import { findEntities } from "../common/find-entities";
 
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard
@@ -50,8 +51,22 @@ class HuiShoppingListCard
     return document.createElement("hui-shopping-list-card-editor");
   }
 
-  public static getStubConfig(): ShoppingListCardConfig {
-    return { type: "shopping-list" };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ): ShoppingListCardConfig {
+    const includeDomains = ["todo"];
+    const maxEntities = 1;
+    const foundEntities = findEntities(
+      hass,
+      maxEntities,
+      entities,
+      entitiesFallback,
+      includeDomains
+    );
+
+    return { type: "shopping-list", entity: foundEntities[0] || "" };
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -94,8 +109,20 @@ class HuiShoppingListCard
     if (!this.hasUpdated) {
       if (!this._entityId) {
         const todoLists = getTodoLists(this.hass!);
-        if (todoLists.length > 0) {
-          this._entityId = todoLists[0].entity_id;
+        if (todoLists.length) {
+          if (todoLists.length > 1) {
+            // find first entity provided by "shopping_list"
+            for (const list of todoLists) {
+              const entityReg = this.hass?.entities[list.entity_id];
+              if (entityReg?.platform === "shopping_list") {
+                this._entityId = list.entity_id;
+                break;
+              }
+            }
+          }
+          if (!this._entityId) {
+            this._entityId = todoLists[0].entity_id;
+          }
         }
       }
       this._fetchData();
