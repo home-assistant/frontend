@@ -21,7 +21,10 @@ export type ScreenCondition = {
   media_query?: string;
 };
 
-function checkStateCondition(condition: StateCondition, hass: HomeAssistant) {
+function checkStateCondition(
+  condition: StateCondition | LegacyCondition,
+  hass: HomeAssistant
+) {
   const state =
     condition.entity && hass.states[condition.entity]
       ? hass.states[condition.entity].state
@@ -42,19 +45,20 @@ function checkScreenCondition(
 }
 
 export function checkConditionsMet(
-  conditions: Condition[],
+  conditions: (Condition | LegacyCondition)[],
   hass: HomeAssistant
 ): boolean {
   return conditions.every((c) => {
-    if (c.condition === "screen") {
-      return checkScreenCondition(c, hass);
+    if ("condition" in c) {
+      if (c.condition === "screen") {
+        return checkScreenCondition(c, hass);
+      }
     }
-
     return checkStateCondition(c, hass);
   });
 }
 
-function valideStateCondition(condition: StateCondition) {
+function valideStateCondition(condition: StateCondition | LegacyCondition) {
   return (
     condition.entity != null &&
     (condition.state != null || condition.state_not != null)
@@ -65,10 +69,14 @@ function validateScreenCondition(condition: ScreenCondition) {
   return condition.media_query != null;
 }
 
-export function validateConditionalConfig(conditions: Condition[]): boolean {
+export function validateConditionalConfig(
+  conditions: (Condition | LegacyCondition)[]
+): boolean {
   return conditions.every((c) => {
-    if (c.condition === "screen") {
-      return validateScreenCondition(c);
+    if ("condition" in c) {
+      if (c.condition === "screen") {
+        return validateScreenCondition(c);
+      }
     }
     return valideStateCondition(c);
   });

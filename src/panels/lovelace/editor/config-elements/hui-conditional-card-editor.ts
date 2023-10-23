@@ -163,21 +163,27 @@ export class HuiConditionalCardEditor
           `
         : html`
             <div class="conditions">
-              ${this.hass!.localize(
-                "ui.panel.lovelace.editor.card.conditional.condition_explanation"
-              )}
-              ${this._config.conditions.map(
-                (cond, idx) => html`
+              <ha-alert alert-type="info">
+                ${this.hass!.localize(
+                  "ui.panel.lovelace.editor.card.conditional.condition_explanation"
+                )}
+              </ha-alert>
+              ${this._config.conditions.map((cond, idx) => {
+                const condition: Condition = {
+                  condition: "state",
+                  ...cond,
+                };
+                return html`
                   <div class="condition">
                     <ha-card-condition-editor
                       .index=${idx}
                       @value-changed=${this._conditionChanged}
                       .hass=${this.hass}
-                      .condition=${cond}
+                      .condition=${condition}
                     ></ha-card-condition-editor>
                   </div>
-                `
-              )}
+                `;
+              })}
               <div>
                 <ha-button-menu
                   @action=${this._addCondition}
