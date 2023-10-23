@@ -433,9 +433,12 @@ export const computeHistory = (
 
     const currentState =
       entityId in hass.states ? hass.states[entityId] : undefined;
-    const numericStateFromHistory = currentState || isNumericFromDomain(domain)
-      ? undefined
-      : stateInfo.find((state) => state.a && isNumericFromAttributes(state.a));
+    const numericStateFromHistory =
+      currentState || isNumericFromDomain(domain)
+        ? undefined
+        : stateInfo.find(
+            (state) => state.a && isNumericFromAttributes(state.a)
+          );
 
     let unit: string | undefined;
 
