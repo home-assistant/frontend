@@ -16,10 +16,7 @@ import type { InputSelect } from "../../../../data/input_select";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import {
-  loadSortable,
-  SortableInstance,
-} from "../../../../resources/sortable.ondemand";
+import type { SortableInstance } from "../../../../resources/sortable";
 
 @customElement("ha-input_select-form")
 class HaInputSelectForm extends LitElement {
@@ -50,7 +47,7 @@ class HaInputSelectForm extends LitElement {
   }
 
   private async _createSortable() {
-    const Sortable = await loadSortable();
+    const Sortable = (await import("../../../../resources/sortable")).default;
     this._sortable = new Sortable(this.shadowRoot!.querySelector(".options")!, {
       animation: 150,
       fallbackClass: "sortable-fallback",
