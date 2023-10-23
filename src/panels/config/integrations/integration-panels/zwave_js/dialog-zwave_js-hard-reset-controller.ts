@@ -97,7 +97,7 @@ class DialogZWaveJSHardResetController extends LitElement {
         ),
         dismissText: this.hass.localize("ui.common.cancel"),
         confirmText: this.hass.localize("ui.common.continue"),
-        destructive: true
+        destructive: true,
       })
     ) {
       this._resetStatus = ResetStatus.InProgress;
