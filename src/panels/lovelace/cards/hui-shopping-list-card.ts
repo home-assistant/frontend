@@ -28,10 +28,7 @@ import {
   updateItem,
 } from "../../../data/shopping-list";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import {
-  loadSortable,
-  SortableInstance,
-} from "../../../resources/sortable.ondemand";
+import type { SortableInstance } from "../../../resources/sortable";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { SensorCardConfig, ShoppingListCardConfig } from "./types";
@@ -318,7 +315,7 @@ class HuiShoppingListCard
   }
 
   private async _createSortable() {
-    const Sortable = await loadSortable();
+    const Sortable = (await import("../../../resources/sortable")).default;
     const sortableEl = this._sortableEl;
     this._sortable = new Sortable(sortableEl!, {
       animation: 150,
