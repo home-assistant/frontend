@@ -61,19 +61,20 @@ export class HaCardConditionState extends LitElement {
           schema: [
             {
               name: "invert",
+              required: true,
               selector: {
                 select: {
                   mode: "dropdown",
                   options: [
                     {
                       label: localize(
-                        "ui.panel.lovelace.editor.card.conditional.state_equal"
+                        "ui.panel.lovelace.editor.condition-editor.condition.state.state_equal"
                       ),
                       value: "false",
                     },
                     {
                       label: localize(
-                        "ui.panel.lovelace.editor.card.conditional.state_not_equal"
+                        "ui.panel.lovelace.editor.condition-editor.condition.state.state_not_equal"
                       ),
                       value: "true",
                     },
@@ -148,7 +149,7 @@ export class HaCardConditionState extends LitElement {
           return `${this.hass.localize(
             "ui.components.entity.entity-state-picker.state"
           )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.conditional.current_state"
+            "ui.panel.lovelace.editor.condition-editor.condition.state.current_state"
           )}: ${this.hass.formatEntityState(entity)})`;
         }
         return `${this.hass.localize(
