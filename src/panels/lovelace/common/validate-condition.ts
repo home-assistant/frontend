@@ -1,7 +1,7 @@
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 
-export type Condition = StateCondition | ScreenCondition;
+export type Condition = StateCondition | ScreenCondition | UserCondition;
 
 export type LegacyCondition = {
   entity?: string;
@@ -21,6 +21,11 @@ export type ScreenCondition = {
   media_query?: string;
 };
 
+export type UserCondition = {
+  condition: "user";
+  users?: string[];
+};
+
 function checkStateCondition(
   condition: StateCondition | LegacyCondition,
   hass: HomeAssistant
@@ -35,12 +40,15 @@ function checkStateCondition(
     : state !== condition.state_not;
 }
 
-function checkScreenCondition(
-  condition: ScreenCondition,
-  _hass: HomeAssistant
-) {
+function checkScreenCondition(condition: ScreenCondition, _: HomeAssistant) {
   return condition.media_query
     ? matchMedia(condition.media_query).matches
+    : false;
+}
+
+function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
+  return condition.users && hass.user?.id
+    ? condition.users.includes(hass.user.id)
     : false;
 }
 
@@ -50,15 +58,20 @@ export function checkConditionsMet(
 ): boolean {
   return conditions.every((c) => {
     if ("condition" in c) {
-      if (c.condition === "screen") {
-        return checkScreenCondition(c, hass);
+      switch (c.condition) {
+        case "screen":
+          return checkScreenCondition(c, hass);
+        case "user":
+          return checkUserCondition(c, hass);
+        default:
+          return checkStateCondition(c, hass);
       }
     }
     return checkStateCondition(c, hass);
   });
 }
 
-function valideStateCondition(condition: StateCondition | LegacyCondition) {
+function validateStateCondition(condition: StateCondition | LegacyCondition) {
   return (
     condition.entity != null &&
     (condition.state != null || condition.state_not != null)
@@ -69,15 +82,24 @@ function validateScreenCondition(condition: ScreenCondition) {
   return condition.media_query != null;
 }
 
+function validateUserCondition(condition: UserCondition) {
+  return condition.users != null;
+}
+
 export function validateConditionalConfig(
   conditions: (Condition | LegacyCondition)[]
 ): boolean {
   return conditions.every((c) => {
     if ("condition" in c) {
-      if (c.condition === "screen") {
-        return validateScreenCondition(c);
+      switch (c.condition) {
+        case "screen":
+          return validateScreenCondition(c);
+        case "user":
+          return validateUserCondition(c);
+        default:
+          return validateStateCondition(c);
       }
     }
-    return valideStateCondition(c);
+    return validateStateCondition(c);
   });
 }
