@@ -101,6 +101,8 @@ const cardConfigStruct = assign(
     show_entity_picture: optional(boolean()),
     vertical: optional(boolean()),
     tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
     icon_tap_action: optional(actionConfigStruct),
     features: optional(array(any())),
   })
@@ -228,6 +230,18 @@ export class HuiTileCardEditor
                 ui_action: {
                   default_action: "more-info",
                 },
+              },
+            },
+            {
+              name: "hold_action",
+              selector: {
+                ui_action: {},
+              },
+            },
+            {
+              name: "double_tap_action",
+              selector: {
+                ui_action: {},
               },
             },
             {
