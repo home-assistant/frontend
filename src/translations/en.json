@@ -8,7 +8,7 @@
     "logbook": "Logbook",
     "history": "History",
     "mailbox": "Mailbox",
-    "shopping_list": "Shopping list",
+    "todo": "To-do Lists",
     "developer_tools": "Developer tools",
     "media_browser": "Media",
     "profile": "Profile"
@@ -4471,6 +4471,7 @@
             "never_triggered": "Never triggered"
           },
           "shopping-list": {
+            "lists": "To-do Lists",
             "checked_items": "Checked items",
             "clear_items": "Clear checked items",
             "add_item": "Add item",
@@ -5046,7 +5047,7 @@
             "shopping-list": {
               "name": "Shopping list",
               "description": "The Shopping list card allows you to add, edit, check-off, and clear items from your shopping list.",
-              "integration_not_loaded": "This card requires the `shopping_list` integration to be set up."
+              "integration_not_loaded": "This card requires the `todo` integration to be set up."
             },
             "thermostat": {
               "name": "Thermostat",
@@ -5458,7 +5459,7 @@
           "qr_code_image": "QR code for token {name}"
         }
       },
-      "shopping_list": {
+      "todo": {
         "start_conversation": "Start conversation"
       },
       "page-authorize": {

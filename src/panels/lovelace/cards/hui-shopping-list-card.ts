@@ -1,11 +1,12 @@
 import { mdiDrag, mdiNotificationClearAll, mdiPlus, mdiSort } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
+  PropertyValueMap,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -13,25 +14,31 @@ import { classMap } from "lit/directives/class-map";
 import { guard } from "lit/directives/guard";
 import { repeat } from "lit/directives/repeat";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-card";
 import "../../../components/ha-checkbox";
+import "../../../components/ha-list-item";
+import "../../../components/ha-select";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import {
-  addItem,
-  clearItems,
+  TodoItem,
+  TodoItemStatus,
+  TodoListEntityFeature,
+  createItem,
+  deleteItem,
   fetchItems,
-  removeItem,
-  reorderItems,
-  ShoppingListItem,
+  getTodoLists,
+  moveItem,
   updateItem,
-} from "../../../data/shopping-list";
+} from "../../../data/todo";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { SortableInstance } from "../../../resources/sortable";
 import { HomeAssistant } from "../../../types";
+import { findEntities } from "../common/find-entities";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { SensorCardConfig, ShoppingListCardConfig } from "./types";
+import { ShoppingListCardConfig } from "./types";
 
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard
@@ -43,17 +50,35 @@ class HuiShoppingListCard
     return document.createElement("hui-shopping-list-card-editor");
   }
 
-  public static getStubConfig(): ShoppingListCardConfig {
-    return { type: "shopping-list" };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ): ShoppingListCardConfig {
+    const includeDomains = ["todo"];
+    const maxEntities = 1;
+    const foundEntities = findEntities(
+      hass,
+      maxEntities,
+      entities,
+      entitiesFallback,
+      includeDomains
+    );
+
+    return { type: "shopping-list", entity: foundEntities[0] || "" };
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: ShoppingListCardConfig;
 
-  @state() private _uncheckedItems?: ShoppingListItem[];
+  @state() private _entityId?: string;
 
-  @state() private _checkedItems?: ShoppingListItem[];
+  @state() private _items: Record<string, TodoItem> = {};
+
+  @state() private _uncheckedItems?: TodoItem[];
+
+  @state() private _checkedItems?: TodoItem[];
 
   @state() private _reordering = false;
 
@@ -71,10 +96,39 @@ class HuiShoppingListCard
     this._config = config;
     this._uncheckedItems = [];
     this._checkedItems = [];
+
+    if (this._config!.entity) {
+      this._entityId = this._config!.entity;
+    }
+  }
+
+  public willUpdate(
+    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+  ): void {
+    if (!this.hasUpdated) {
+      if (!this._entityId) {
+        const todoLists = getTodoLists(this.hass!);
+        if (todoLists.length) {
+          if (todoLists.length > 1) {
+            // find first entity provided by "shopping_list"
+            for (const list of todoLists) {
+              const entityReg = this.hass?.entities[list.entity_id];
+              if (entityReg?.platform === "shopping_list") {
+                this._entityId = list.entity_id;
+                break;
+              }
+            }
+          }
+          if (!this._entityId) {
+            this._entityId = todoLists[0].entity_id;
+          }
+        }
+      }
+      this._fetchData();
+    }
   }
 
   public hassSubscribe(): Promise<UnsubscribeFunc>[] {
-    this._fetchData();
     return [
       this.hass!.connection.subscribeEvents(
         () => this._fetchData(),
@@ -91,7 +145,7 @@ class HuiShoppingListCard
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | SensorCardConfig
+      | ShoppingListCardConfig
       | undefined;
 
     if (
@@ -103,7 +157,7 @@ class HuiShoppingListCard
   }
 
   protected render() {
-    if (!this._config || !this.hass) {
+    if (!this._config || !this.hass || !this._entityId) {
       return nothing;
     }
 
@@ -115,31 +169,39 @@ class HuiShoppingListCard
         })}
       >
         <div class="addRow">
-          <ha-svg-icon
-            class="addButton"
-            .path=${mdiPlus}
-            .title=${this.hass!.localize(
-              "ui.panel.lovelace.cards.shopping-list.add_item"
-            )}
-            @click=${this._addItem}
-          >
-          </ha-svg-icon>
-          <ha-textfield
-            class="addBox"
-            .placeholder=${this.hass!.localize(
-              "ui.panel.lovelace.cards.shopping-list.add_item"
-            )}
-            @keydown=${this._addKeyPress}
-          ></ha-textfield>
-          <ha-svg-icon
-            class="reorderButton"
-            .path=${mdiSort}
-            .title=${this.hass!.localize(
-              "ui.panel.lovelace.cards.shopping-list.reorder_items"
-            )}
-            @click=${this._toggleReorder}
-          >
-          </ha-svg-icon>
+          ${this.todoListSupportsFeature(TodoListEntityFeature.CREATE_TODO_ITEM)
+            ? html`
+                <ha-svg-icon
+                  class="addButton"
+                  .path=${mdiPlus}
+                  .title=${this.hass!.localize(
+                    "ui.panel.lovelace.cards.shopping-list.add_item"
+                  )}
+                  @click=${this._addItem}
+                >
+                </ha-svg-icon>
+                <ha-textfield
+                  class="addBox"
+                  .placeholder=${this.hass!.localize(
+                    "ui.panel.lovelace.cards.shopping-list.add_item"
+                  )}
+                  @keydown=${this._addKeyPress}
+                ></ha-textfield>
+              `
+            : nothing}
+          ${this.todoListSupportsFeature(TodoListEntityFeature.MOVE_TODO_ITEM)
+            ? html`
+                <ha-svg-icon
+                  class="reorderButton"
+                  .path=${mdiSort}
+                  .title=${this.hass!.localize(
+                    "ui.panel.lovelace.cards.shopping-list.reorder_items"
+                  )}
+                  @click=${this._toggleReorder}
+                >
+                </ha-svg-icon>
+              `
+            : nothing}
         </div>
         ${this._reordering
           ? html`
@@ -163,32 +225,43 @@ class HuiShoppingListCard
                     "ui.panel.lovelace.cards.shopping-list.checked_items"
                   )}
                 </span>
-                <ha-svg-icon
-                  class="clearall"
-                  tabindex="0"
-                  .path=${mdiNotificationClearAll}
-                  .title=${this.hass!.localize(
-                    "ui.panel.lovelace.cards.shopping-list.clear_items"
-                  )}
-                  @click=${this._clearItems}
-                >
-                </ha-svg-icon>
+                ${this.todoListSupportsFeature(
+                  TodoListEntityFeature.DELETE_TODO_ITEM
+                )
+                  ? html` <ha-svg-icon
+                      class="clearall"
+                      tabindex="0"
+                      .path=${mdiNotificationClearAll}
+                      .title=${this.hass!.localize(
+                        "ui.panel.lovelace.cards.shopping-list.clear_items"
+                      )}
+                      @click=${this._clearCompletedItems}
+                    >
+                    </ha-svg-icon>`
+                  : nothing}
               </div>
               ${repeat(
                 this._checkedItems!,
-                (item) => item.id,
+                (item) => item.uid,
                 (item) => html`
                   <div class="editRow">
-                    <ha-checkbox
-                      tabindex="0"
-                      .checked=${item.complete}
-                      .itemId=${item.id}
-                      @change=${this._completeItem}
-                    ></ha-checkbox>
+                    ${this.todoListSupportsFeature(
+                      TodoListEntityFeature.UPDATE_TODO_ITEM
+                    )
+                      ? html` <ha-checkbox
+                          tabindex="0"
+                          .checked=${item.status === TodoItemStatus.Completed}
+                          .itemId=${item.uid}
+                          @change=${this._completeItem}
+                        ></ha-checkbox>`
+                      : nothing}
                     <ha-textfield
                       class="item"
-                      .value=${item.name}
-                      .itemId=${item.id}
+                      .disabled=${!this.todoListSupportsFeature(
+                        TodoListEntityFeature.UPDATE_TODO_ITEM
+                      )}
+                      .value=${item.summary}
+                      .itemId=${item.uid}
                       @change=${this._saveEdit}
                     ></ha-textfield>
                   </div>
@@ -200,23 +273,30 @@ class HuiShoppingListCard
     `;
   }
 
-  private _renderItems(items: ShoppingListItem[]) {
+  private _renderItems(items: TodoItem[]) {
     return html`
       ${repeat(
         items,
-        (item) => item.id,
+        (item) => item.uid,
         (item) => html`
-          <div class="editRow" item-id=${item.id}>
-            <ha-checkbox
-              tabindex="0"
-              .checked=${item.complete}
-              .itemId=${item.id}
-              @change=${this._completeItem}
-            ></ha-checkbox>
+          <div class="editRow" item-id=${item.uid}>
+            ${this.todoListSupportsFeature(
+              TodoListEntityFeature.UPDATE_TODO_ITEM
+            )
+              ? html` <ha-checkbox
+                  tabindex="0"
+                  .checked=${item.status === TodoItemStatus.Completed}
+                  .itemId=${item.uid}
+                  @change=${this._completeItem}
+                ></ha-checkbox>`
+              : nothing}
             <ha-textfield
               class="item"
-              .value=${item.name}
-              .itemId=${item.id}
+              .disabled=${!this.todoListSupportsFeature(
+                TodoListEntityFeature.UPDATE_TODO_ITEM
+              )}
+              .value=${item.summary}
+              .itemId=${item.uid}
               @change=${this._saveEdit}
             ></ha-textfield>
             ${this._reordering
@@ -237,47 +317,70 @@ class HuiShoppingListCard
     `;
   }
 
+  private todoListSupportsFeature(feature: number): boolean {
+    const entityStateObj = this.hass!.states[this._entityId!];
+    return entityStateObj && supportsFeature(entityStateObj, feature);
+  }
+
   private async _fetchData(): Promise<void> {
-    if (!this.hass) {
+    if (!this.hass || !this._entityId) {
       return;
     }
-    const checkedItems: ShoppingListItem[] = [];
-    const uncheckedItems: ShoppingListItem[] = [];
-    const items = await fetchItems(this.hass);
-    for (const key in items) {
-      if (items[key].complete) {
-        checkedItems.push(items[key]);
+    const checkedItems: TodoItem[] = [];
+    const uncheckedItems: TodoItem[] = [];
+    const items = await fetchItems(this.hass!, this._entityId!);
+    const records: Record<string, TodoItem> = {};
+    items.forEach((item) => {
+      records[item.uid!] = item;
+      if (item.status === TodoItemStatus.Completed) {
+        checkedItems.push(item);
       } else {
-        uncheckedItems.push(items[key]);
+        uncheckedItems.push(item);
       }
-    }
+    });
+    this._items = records;
     this._checkedItems = checkedItems;
     this._uncheckedItems = uncheckedItems;
   }
 
   private _completeItem(ev): void {
-    updateItem(this.hass!, ev.target.itemId, {
-      complete: ev.target.checked,
-    }).catch(() => this._fetchData());
+    const item = this._items[ev.target.itemId];
+    updateItem(this.hass!, this._entityId!, {
+      ...item,
+      status: ev.target.checked
+        ? TodoItemStatus.Completed
+        : TodoItemStatus.NeedsAction,
+    }).finally(() => this._fetchData());
   }
 
   private _saveEdit(ev): void {
     // If name is not empty, update the item otherwise remove it
     if (ev.target.value) {
-      updateItem(this.hass!, ev.target.itemId, {
-        name: ev.target.value,
-      }).catch(() => this._fetchData());
-    } else {
-      removeItem(this.hass!, ev.target.itemId).catch(() => this._fetchData());
+      const item = this._items[ev.target.itemId];
+      updateItem(this.hass!, this._entityId!, {
+        ...item,
+        summary: ev.target.value,
+      }).finally(() => this._fetchData());
+    } else if (
+      this.todoListSupportsFeature(TodoListEntityFeature.DELETE_TODO_ITEM)
+    ) {
+      deleteItem(this.hass!, this._entityId!, ev.target.itemId).finally(() =>
+        this._fetchData()
+      );
     }
 
     ev.target.blur();
   }
 
-  private _clearItems(): void {
-    if (this.hass) {
-      clearItems(this.hass).catch(() => this._fetchData());
+  private async _clearCompletedItems(): Promise<void> {
+    if (!this.hass) {
+      return;
     }
+    const deleteActions: Array<Promise<any>> = [];
+    this._checkedItems!.forEach((item: TodoItem) => {
+      deleteActions.push(deleteItem(this.hass!, this._entityId!, item.uid!));
+    });
+    await Promise.all(deleteActions).finally(() => this._fetchData());
   }
 
   private get _newItem(): HaTextField {
@@ -286,9 +389,10 @@ class HuiShoppingListCard
 
   private _addItem(ev): void {
     const newItem = this._newItem;
-
     if (newItem.value!.length > 0) {
-      addItem(this.hass!, newItem.value!).catch(() => this._fetchData());
+      createItem(this.hass!, this._entityId!, newItem.value!).finally(() =>
+        this._fetchData()
+      );
     }
 
     newItem.value = "";
@@ -329,9 +433,13 @@ class HuiShoppingListCard
         // Since this is `onEnd` event, it's possible that
         // an item wa dragged away and was put back to its original position.
         if (evt.oldIndex !== evt.newIndex) {
-          reorderItems(this.hass!, this._sortable!.toArray()).catch(() =>
-            this._fetchData()
-          );
+          const item = this._uncheckedItems![evt.oldIndex];
+          moveItem(
+            this.hass!,
+            this._entityId!,
+            item.uid!,
+            evt.newIndex
+          ).finally(() => this._fetchData());
           // Move the shopping list item in memory.
           this._uncheckedItems!.splice(
             evt.newIndex,
@@ -415,6 +523,11 @@ class HuiShoppingListCard
 
       .clearall {
         cursor: pointer;
+      }
+
+      .todoList {
+        display: block;
+        padding: 8px;
       }
     `;
   }

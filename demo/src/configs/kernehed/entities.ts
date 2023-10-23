@@ -3,6 +3,15 @@ import { DemoConfig } from "../types";
 
 export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
   convertEntities({
+    "todo.shopping_list": {
+      entity_id: "todo.shopping_list",
+      state: "2",
+      attributes: {
+        supported_features: 15,
+        friendly_name: "Shopping List",
+        icon: "mdi:cart",
+      },
+    },
     "zone.anna": {
       entity_id: "zone.anna",
       state: "zoning",
