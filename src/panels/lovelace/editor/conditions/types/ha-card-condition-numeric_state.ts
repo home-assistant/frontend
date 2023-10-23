@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert, literal, number, object, optional, string } from "superstruct";
@@ -8,11 +8,14 @@ import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
-import { NumericStateCondition } from "../../../common/validate-condition";
+import {
+  NumericStateCondition,
+  StateCondition,
+} from "../../../common/validate-condition";
 
 const numericStateConditionStruct = object({
-  condition: literal("state"),
-  entity: string(),
+  condition: literal("numeric_state"),
+  entity: optional(string()),
   above: optional(number()),
   below: optional(number()),
 });
@@ -29,15 +32,8 @@ export class HaCardConditionNumericState extends LitElement {
     return { condition: "numeric_state", entity: "" };
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
-    if (!changedProperties.has("condition")) {
-      return;
-    }
-    try {
-      assert(this.condition, numericStateConditionStruct);
-    } catch (err: any) {
-      fireEvent(this, "ui-mode-not-available", err);
-    }
+  protected static validateUIConfig(condition: StateCondition) {
+    return assert(condition, numericStateConditionStruct);
   }
 
   private _schema = memoizeOne(
