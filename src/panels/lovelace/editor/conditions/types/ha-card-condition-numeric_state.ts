@@ -97,9 +97,10 @@ export class HaCardConditionNumericState extends LitElement {
       case "entity":
         return this.hass.localize("ui.components.entity.entity-picker.entity");
       case "below":
-        return "Below";
       case "above":
-        return "Above";
+        return this.hass.localize(
+          `ui.panel.lovelace.editor.condition-editor.condition.numeric_state.${schema.name}`
+        );
       default:
         return "";
     }
