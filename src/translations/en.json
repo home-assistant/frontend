@@ -2663,6 +2663,9 @@
                     "fri": "Friday",
                     "sat": "Saturday",
                     "sun": "Sunday"
+                  },
+                  "description": {
+                    "full": "Confirm the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
                   }
                 },
                 "trigger": {
