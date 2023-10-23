@@ -1,4 +1,6 @@
 import "@material/mwc-list";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiChevronDown, mdiRefresh } from "@mdi/js";
 import {
   CSSResultGroup,
@@ -11,7 +13,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { storage } from "../../common/decorators/storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
@@ -20,6 +21,7 @@ import "../../components/ha-button-menu";
 import "../../components/ha-card";
 import "../../components/ha-check-list-item";
 import "../../components/ha-icon-button";
+import type { HaListItem } from "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
@@ -33,7 +35,6 @@ import {
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import "./ha-full-calendar";
-import { HaListItem } from "../../components/ha-list-item";
 
 @customElement("ha-panel-calendar")
 class PanelCalendar extends LitElement {
@@ -59,6 +60,11 @@ class PanelCalendar extends LitElement {
   private _start?: Date;
 
   private _end?: Date;
+
+  private _showPaneController = new ResizeController(this, {
+    callback: (entries: ResizeObserverEntry[]) =>
+      entries[0]?.contentRect.width > 750,
+  });
 
   private _mql?: MediaQueryList;
 
@@ -111,7 +117,7 @@ class PanelCalendar extends LitElement {
         </ha-check-list-item>
       `
     );
-    const showPane = !this.narrow;
+    const showPane = this._showPaneController.value ?? !this.narrow;
     return html`
       <ha-two-pane-top-app-bar-fixed .pane=${showPane}>
         <ha-menu-button
@@ -151,9 +157,7 @@ class PanelCalendar extends LitElement {
           @click=${this._handleRefresh}
         ></ha-icon-button>
         ${showPane
-          ? html`<mwc-list slot="pane" multi @selected=${this._handleSelected}
-              >${calendarItems}</mwc-list
-            > `
+          ? html`<mwc-list slot="pane" multi}>${calendarItems}</mwc-list>`
           : nothing}
         <ha-full-calendar
           .events=${this._events}
@@ -260,14 +264,14 @@ class PanelCalendar extends LitElement {
     return [
       haStyle,
       css`
+        :host {
+          display: block;
+        }
         ha-full-calendar {
-          height: 100%;
+          height: calc(100vh - var(--header-height));
           --calendar-header-padding: 12px;
           --calendar-border-radius: 0;
           --calendar-border-width: 1px 0;
-        }
-        :host([narrow]) ha-full-calendar {
-          height: calc(100vh - var(--header-height));
         }
         ha-button-menu ha-button {
           --mdc-theme-primary: currentColor;

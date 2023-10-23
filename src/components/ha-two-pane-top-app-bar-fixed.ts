@@ -303,10 +303,13 @@ export abstract class TopAppBarBaseBase extends BaseElement {
       .pane .footer {
         border-top: 1px solid var(--divider-color);
       }
+      .main {
+        min-height: 100%;
+      }
       .mdc-top-app-bar--pane .main {
         position: relative;
-        height: 100%;
         flex: 1;
+        height: 100%;
       }
       .mdc-top-app-bar--pane .content {
         height: 100%;
