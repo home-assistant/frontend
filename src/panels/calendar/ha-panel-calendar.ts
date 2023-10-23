@@ -11,6 +11,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { storage } from "../../common/decorators/storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
@@ -32,6 +33,7 @@ import {
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import "./ha-full-calendar";
+import { HaListItem } from "../../components/ha-list-item";
 
 @customElement("ha-panel-calendar")
 class PanelCalendar extends LitElement {
@@ -96,6 +98,7 @@ class PanelCalendar extends LitElement {
     const calendarItems = this._calendars.map(
       (selCal) => html`
         <ha-check-list-item
+          @request-selected=${this._requestSelected}
           graphic="icon"
           style=${styleMap({
             "--mdc-theme-secondary": selCal.backgroundColor!,
@@ -128,7 +131,6 @@ class PanelCalendar extends LitElement {
                 ? this._headerHeight / 2
                 : this._headerHeight / 4}
               .x=${this.mobile ? 0 : undefined}
-              @selected=${this._handleSelected}
             >
               <ha-button slot="trigger">
                 ${this.hass.localize("ui.components.calendar.my_calendars")}
@@ -183,29 +185,32 @@ class PanelCalendar extends LitElement {
     return fetchCalendarEvents(this.hass, start, end, calendars);
   }
 
-  private async _handleSelected(ev): Promise<void> {
-    const oldSelected = this._selectedCalendars;
-
-    const deselectedCalendars: Set<string> = new Set(
-      this._calendars.map((cal) => cal.entity_id)
-    );
-    for (const index of ev.detail.index) {
-      deselectedCalendars.delete(this._calendars[index].entity_id);
-    }
-    this._deSelectedCalendars = [...deselectedCalendars];
-
-    if (ev.detail.diff.added.length === 1) {
-      const cal = this._calendars[ev.detail.diff.added[0]];
-      if (!oldSelected.includes(cal)) {
-        const result = await this._fetchEvents(this._start, this._end, [cal]);
-        this._events = [...this._events, ...result.events];
-        this._handleErrors(result.errors);
+  private async _requestSelected(ev: CustomEvent<RequestSelectedDetail>) {
+    ev.stopPropagation();
+    const entityId = (ev.target as HaListItem).value;
+    if (ev.detail.selected) {
+      this._deSelectedCalendars = this._deSelectedCalendars.filter(
+        (cal) => cal !== entityId
+      );
+      if (ev.detail.source === "interaction") {
+        // prevent adding the same calendar twice, an interaction event will be followed by a property event
+        return;
       }
-    }
-    if (ev.detail.diff.removed.length === 1) {
-      const cal = this._calendars[ev.detail.diff.removed[0]];
+      const calendar = this._calendars.find(
+        (cal) => cal.entity_id === entityId
+      );
+      if (!calendar) {
+        return;
+      }
+      const result = await this._fetchEvents(this._start, this._end, [
+        calendar,
+      ]);
+      this._events = [...this._events, ...result.events];
+      this._handleErrors(result.errors);
+    } else {
+      this._deSelectedCalendars = [...this._deSelectedCalendars, entityId];
       this._events = this._events.filter(
-        (event) => event.calendar !== cal.entity_id
+        (event) => event.calendar !== entityId
       );
     }
   }
