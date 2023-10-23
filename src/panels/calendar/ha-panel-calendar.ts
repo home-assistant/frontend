@@ -1,5 +1,5 @@
-import "@material/mwc-list";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import "@material/mwc-list";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiChevronDown, mdiRefresh } from "@mdi/js";
 import {
