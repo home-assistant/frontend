@@ -1,15 +1,21 @@
 import "@material/mwc-list";
-import { html, css, LitElement, PropertyValues } from "lit";
+import { LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { array, assert, literal, object, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-switch";
 import "../../../../../components/user/ha-user-badge";
-import { fetchUsers, User } from "../../../../../data/user";
+import { User, fetchUsers } from "../../../../../data/user";
 import type { HomeAssistant } from "../../../../../types";
 import { UserCondition } from "../../../common/validate-condition";
+
+const userConditionStruct = object({
+  condition: literal("user"),
+  users: array(string()),
+});
 
 @customElement("ha-card-condition-user")
 export class HaCardConditionUser extends LitElement {
@@ -24,6 +30,10 @@ export class HaCardConditionUser extends LitElement {
   }
 
   @state() private _users: User[] = [];
+
+  protected static validateUIConfig(condition: UserCondition) {
+    return assert(condition, userConditionStruct);
+  }
 
   private _sortedUsers = memoizeOne((users: User[]) =>
     users.sort((a, b) =>
