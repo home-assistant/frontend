@@ -5,7 +5,7 @@ import memoizeOne from "memoize-one";
 import { array, assert, literal, object, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../../common/string/compare";
-import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-check-list-item";
 import "../../../../../components/ha-switch";
 import "../../../../../components/user/ha-user-badge";
 import { User, fetchUsers } from "../../../../../data/user";
@@ -58,20 +58,20 @@ export class HaCardConditionUser extends LitElement {
       <mwc-list>
         ${this._sortedUsers(this._users).map(
           (user) => html`
-            <ha-list-item graphic="avatar" hasMeta noninteractive>
+            <ha-check-list-item
+              graphic="avatar"
+              hasMeta
+              .userId=${user.id}
+              .selected=${selectedUsers.includes(user.id)}
+              @request-selected=${this._userChanged}
+            >
               <ha-user-badge
                 slot="graphic"
                 .hass=${this.hass}
                 .user=${user}
               ></ha-user-badge>
               <span>${user.name}</span>
-              <ha-switch
-                slot="meta"
-                .userId=${user.id}
-                @change=${this._userChanged}
-                .checked=${selectedUsers.includes(user.id)}
-              ></ha-switch>
-            </ha-list-item>
+            </ha-check-list-item>
           `
         )}
       </mwc-list>
@@ -81,14 +81,18 @@ export class HaCardConditionUser extends LitElement {
   private _userChanged(ev) {
     ev.stopPropagation();
     const selectedUsers = this.condition.users ?? [];
-    const userId = ev.target.userId as string;
-    const checked = ev.target.checked as boolean;
+    const userId = ev.currentTarget.userId as string;
+    const checked = ev.detail.selected as boolean;
 
-    const users = [...selectedUsers];
+    if (checked === selectedUsers.includes(userId)) {
+      return;
+    }
+
+    let users = selectedUsers;
     if (checked) {
-      users.push(userId);
+      users = [...users, userId];
     } else {
-      users.splice(users.indexOf(userId), 1);
+      users = users.filter((user) => user !== userId);
     }
 
     const condition: UserCondition = {
@@ -104,13 +108,8 @@ export class HaCardConditionUser extends LitElement {
       :host {
         display: block;
       }
-      ha-list-item {
-        overflow: visible;
-        padding-inline-start: 0;
-        direction: var(--direction);
-      }
-      ha-switch {
-        padding: 13px 5px;
+      mwc-list {
+        --mdc-list-vertical-padding: 0;
       }
     `;
   }
