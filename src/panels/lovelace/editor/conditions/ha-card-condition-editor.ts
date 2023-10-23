@@ -40,7 +40,7 @@ export default class HaCardConditionEditor extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has("condition")) {
-      const validator = this._editor && this._editor.validateUIConfig;
+      const validator = this._editor?.validateUIConfig;
       if (validator) {
         try {
           validator(this.condition, this.hass);
