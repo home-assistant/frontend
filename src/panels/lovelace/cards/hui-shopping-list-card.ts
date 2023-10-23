@@ -22,7 +22,6 @@ import "../../../components/ha-select";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
-
 import {
   TodoItem,
   TodoItemStatus,
@@ -35,11 +34,11 @@ import {
   updateItem,
 } from "../../../data/todo";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { SortableInstance } from "../../../resources/sortable.ondemand";
+import type { SortableInstance } from "../../../resources/sortable";
 import { HomeAssistant } from "../../../types";
+import { findEntities } from "../common/find-entities";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ShoppingListCardConfig } from "./types";
-import { findEntities } from "../common/find-entities";
 
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard
