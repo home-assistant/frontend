@@ -430,6 +430,7 @@ export interface SensorCardConfig extends LovelaceCardConfig {
 export interface ShoppingListCardConfig extends LovelaceCardConfig {
   title?: string;
   theme?: string;
+  entity?: string;
 }
 
 export interface StackCardConfig extends LovelaceCardConfig {

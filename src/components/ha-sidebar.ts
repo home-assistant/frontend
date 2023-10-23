@@ -2,9 +2,9 @@ import "@material/mwc-button/mwc-button";
 import {
   mdiBell,
   mdiCalendar,
-  mdiCart,
   mdiCellphoneCog,
   mdiChartBox,
+  mdiClipboardList,
   mdiClose,
   mdiCog,
   mdiFormatListBulletedType,
@@ -81,7 +81,7 @@ const PANEL_ICONS = {
   lovelace: mdiViewDashboard,
   map: mdiTooltipAccount,
   "media-browser": mdiPlayBoxMultiple,
-  "shopping-list": mdiCart,
+  todo: mdiClipboardList,
 };
 
 const panelSorter = (

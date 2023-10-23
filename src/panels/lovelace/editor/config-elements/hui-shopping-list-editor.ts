@@ -3,6 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-textfield";
 import "../../../../components/ha-theme-picker";
 import { HomeAssistant } from "../../../../types";
@@ -16,6 +17,7 @@ const cardConfigStruct = assign(
   object({
     title: optional(string()),
     theme: optional(string()),
+    entity: optional(string()),
   })
 );
 
@@ -48,7 +50,7 @@ export class HuiShoppingListEditor
 
     return html`
       <div class="card-config">
-        ${!isComponentLoaded(this.hass, "shopping_list")
+        ${!isComponentLoaded(this.hass, "todo")
           ? html`
               <div class="error">
                 ${this.hass.localize(
@@ -67,6 +69,14 @@ export class HuiShoppingListEditor
           .configValue=${"title"}
           @input=${this._valueChanged}
         ></ha-textfield>
+        <ha-entity-picker
+          .hass=${this.hass!}
+          .configValue=${"entity"}
+          .value=${this._config.entity}
+          .includeDomains=${["todo"]}
+          @value-changed=${this._valueChanged}
+        >
+        </ha-entity-picker>
         <ha-theme-picker
           .hass=${this.hass}
           .value=${this._theme}
