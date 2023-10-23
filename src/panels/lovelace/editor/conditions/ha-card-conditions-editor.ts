@@ -14,10 +14,12 @@ import "./ha-card-condition-editor";
 import { LovelaceConditionEditorConstructor } from "./types";
 import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
+import "./types/ha-card-condition-user";
 
 const UI_CONDITION = [
   "state",
   "screen",
+  "user",
 ] as const satisfies readonly Condition["condition"][];
 
 @customElement("ha-card-conditions-editor")
