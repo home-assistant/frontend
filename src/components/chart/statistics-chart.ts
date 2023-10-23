@@ -392,7 +392,6 @@ export class StatisticsChart extends LitElement {
             data: [],
             // @ts-ignore
             unit: meta?.unit_of_measurement,
-            statistic_id,
             band,
           });
           statisticIds.push(statistic_id);
