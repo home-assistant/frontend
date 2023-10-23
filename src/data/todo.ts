@@ -3,14 +3,14 @@ import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isUnavailableState } from "./entity";
 
-export enum TodoItemStatus {
-  NeedsAction = "needs-action",
-  Completed = "completed",
-}
-
 export interface TodoList {
   entity_id: string;
   name: string;
+}
+
+export const enum TodoItemStatus {
+  NeedsAction = "needs-action",
+  Completed = "completed",
 }
 
 export interface TodoItem {
