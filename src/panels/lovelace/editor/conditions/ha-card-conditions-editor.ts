@@ -12,11 +12,13 @@ import { ICON_CONDITION } from "../../common/icon-condition";
 import { Condition, LegacyCondition } from "../../common/validate-condition";
 import "./ha-card-condition-editor";
 import { LovelaceConditionEditorConstructor } from "./types";
+import "./types/ha-card-condition-numeric_state";
 import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
 import "./types/ha-card-condition-user";
 
 const UI_CONDITION = [
+  "numeric_state",
   "state",
   "screen",
   "user",
