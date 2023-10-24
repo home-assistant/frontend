@@ -786,6 +786,10 @@
       }
     },
     "dialogs": {
+      "safe_mode": {
+        "title": "Safe mode",
+        "text": "Home Assistant is running in safe mode, custom integrations and frontend modules are not available. Restart Home Assistant to exit safe mode."
+      },
       "quick-bar": {
         "commands": {
           "reload": {
@@ -1236,9 +1240,9 @@
         },
         "restart-safe-mode": {
           "title": "Restart Home Assistant in safe mode",
-          "description": "Restart Home Assistant without loading any custom integrations and modules.",
+          "description": "Restart Home Assistant without loading any custom integrations and frontend modules.",
           "confirm_title": "Restart Home Assistant in safe mode?",
-          "confirm_description": "This will restart Home Assistant without loading any custom integrations and modules.",
+          "confirm_description": "This will restart Home Assistant without loading any custom integrations and frontend modules.",
           "confirm_action": "Restart",
           "failed": "Failed to restart Home Assistant"
         }
