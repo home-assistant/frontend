@@ -3007,8 +3007,6 @@
             "unavailable": "Script is unavailable",
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
-            "fields": "Fields",
-            "link_help_fields": "Learn more about fields.",
             "field": {
               "name": "[%key:ui::common::name%]",
               "key": "Field variable key name",
@@ -3018,10 +3016,13 @@
               "selector": "Selector",
               "yaml_error": "Field yaml has invalid format.",
               "key_not_null": "The field key must not be empty.",
-              "key_not_unique": "The field key must not be the same value as another field."
+              "key_not_unique": "The field key must not be the same value as another field.",
+              "fields": "Fields",
+              "link_help_fields": "Learn more about fields.",
+              "add_fields": "Add fields",
+              "add_field": "Add field",
+              "field": "field"
             },
-            "add_fields": "Add fields",
-            "add_field": "Add field",
             "field_delete_confirm_title": "Delete field?",
             "field_delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
             "header": "Script: {name}",

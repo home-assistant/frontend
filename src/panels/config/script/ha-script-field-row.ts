@@ -225,16 +225,24 @@ export default class HaScriptFieldRow extends LitElement {
     if (!nameChanged || keyChanged) {
       return;
     }
-    const slugifyName = this.field.name ? slugify(this.field.name) : "field";
+    const slugifyName = this.field.name
+      ? slugify(this.field.name)
+      : this.hass.localize("ui.panel.config.script.editor.field.field") ||
+        "field";
     const regex = new RegExp(`^${slugifyName}(_\\d)?$`);
     if (regex.test(this.key)) {
-      let key = !value.name ? "field" : slugify(value.name);
+      let key = !value.name
+        ? this.hass.localize("ui.panel.config.script.editor.field.field") ||
+          "field"
+        : slugify(value.name);
       if (this.excludeKeys.includes(key)) {
+        let uniqueKey = key;
         let i = 2;
         do {
-          key = `${key}_${i}`;
+          uniqueKey = `${key}_${i}`;
           i++;
-        } while (this.excludeKeys.includes(key));
+        } while (this.excludeKeys.includes(uniqueKey));
+        key = uniqueKey;
       }
       value.key = key;
     }

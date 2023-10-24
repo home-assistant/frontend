@@ -240,7 +240,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             ? html`
                 <mwc-list-item graphic="icon" @click=${this._addFields}>
                   ${this.hass.localize(
-                    "ui.panel.config.script.editor.add_fields"
+                    "ui.panel.config.script.editor.field.add_fields"
                   )}
                   <ha-svg-icon
                     slot="graphic"

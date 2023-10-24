@@ -36,7 +36,8 @@ export class HaManualScriptEditor extends LitElement {
       value: {
         ...this.config,
         fields: {
-          field: {
+          [this.hass.localize("ui.panel.config.script.editor.field.field") ||
+          "field"]: {
             selector: {
               text: null,
             },
@@ -68,7 +69,9 @@ export class HaManualScriptEditor extends LitElement {
       ${this.config.fields
         ? html`<div class="header">
               <h2 id="fields-heading" class="name">
-                ${this.hass.localize("ui.panel.config.script.editor.fields")}
+                ${this.hass.localize(
+                  "ui.panel.config.script.editor.field.fields"
+                )}
               </h2>
               <a
                 href=${documentationUrl(
@@ -81,7 +84,7 @@ export class HaManualScriptEditor extends LitElement {
                 <ha-icon-button
                   .path=${mdiHelpCircle}
                   .label=${this.hass.localize(
-                    "ui.panel.config.script.editor.link_help_fields"
+                    "ui.panel.config.script.editor.field.link_help_fields"
                   )}
                 ></ha-icon-button>
               </a>

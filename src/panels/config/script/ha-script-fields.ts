@@ -54,7 +54,9 @@ export default class HaScriptFields extends LitElement {
         outlined
         @click=${this._addField}
         .disabled=${this.disabled}
-        .label=${this.hass.localize("ui.panel.config.script.editor.add_field")}
+        .label=${this.hass.localize(
+          "ui.panel.config.script.editor.field.add_field"
+        )}
       >
         <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
       </ha-button>
@@ -82,7 +84,11 @@ export default class HaScriptFields extends LitElement {
   }
 
   private _addField() {
-    const key = this._getUniqueKey("field", this.fields || {});
+    const key = this._getUniqueKey(
+      this.hass.localize("ui.panel.config.script.editor.field.field") ||
+        "field",
+      this.fields || {}
+    );
     const fields = {
       ...(this.fields || {}),
       [key]: {
