@@ -221,6 +221,7 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
         },
         {
           type: "todo-list",
+          entity: "todo.shopping_list",
         },
         {
           entities: [
