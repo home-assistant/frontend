@@ -2,6 +2,7 @@ import {
   mdiGrid,
   mdiListBoxOutline,
   mdiArrowLeft,
+  mdiAlphaABoxOutline,
   mdiDotsVertical,
 } from "@mdi/js";
 import { ActionDetail } from "@material/mwc-list";
@@ -123,6 +124,16 @@ class PanelMediaBrowser extends LitElement {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
           <mwc-list-item graphic="icon">
+            ${this.hass.localize("ui.components.media-browser.auto")}
+            <ha-svg-icon
+              class=${this._preferredLayout === "auto"
+                ? "selected_menu_item"
+                : ""}
+              slot="graphic"
+              .path=${mdiAlphaABoxOutline}
+            ></ha-svg-icon>
+          </mwc-list-item>
+          <mwc-list-item graphic="icon">
             ${this.hass.localize("ui.components.media-browser.grid")}
             <ha-svg-icon
               class=${this._preferredLayout === "grid"
@@ -170,12 +181,13 @@ class PanelMediaBrowser extends LitElement {
   private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this._preferredLayout =
-          this._preferredLayout === "grid" ? "auto" : "grid";
+        this._preferredLayout = "auto";
         break;
       case 1:
-        this._preferredLayout =
-          this._preferredLayout === "list" ? "auto" : "list";
+        this._preferredLayout = "grid";
+        break;
+      case 2:
+        this._preferredLayout = "list";
         break;
     }
   }
