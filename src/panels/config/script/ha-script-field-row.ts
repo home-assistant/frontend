@@ -62,7 +62,7 @@ export default class HaScriptFieldRow extends LitElement {
         },
         {
           name: "default",
-          selector: selector,
+          selector: selector && typeof selector === "object" ? selector : {},
         },
         {
           name: "required",
@@ -268,12 +268,6 @@ export default class HaScriptFieldRow extends LitElement {
     }
     this._errorKey = undefined;
     this._uiError = undefined;
-
-    // If we render the default with an incompatible selector, it risks throwing an exception and not rendering.
-    // Clear the default when changing the selector.
-    if (this.field.selector !== value.selector) {
-      delete value.default;
-    }
 
     fireEvent(this, "value-changed", { value });
   }
