@@ -1233,6 +1233,14 @@
           "confirm_action": "Shut down",
           "shutting_down": "Shutting down system",
           "failed": "Failed to shut down system"
+        },
+        "restart-safe-mode": {
+          "title": "Restart Home Assistant in safe mode",
+          "description": "Restart Home Assistant without loading any custom integrations and modules.",
+          "confirm_title": "Restart Home Assistant in safe mode?",
+          "confirm_description": "This will restart Home Assistant without loading any custom integrations and modules.",
+          "confirm_action": "Restart",
+          "failed": "Failed to restart Home Assistant"
         }
       },
       "aliases": {
