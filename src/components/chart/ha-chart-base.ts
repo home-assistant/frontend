@@ -140,7 +140,7 @@ export class HaChartBase extends LitElement {
         if (this._paddingUpdateCount > 300) {
           this._paddingUpdateLock = true;
           // eslint-disable-next-line
-          console.warn(
+          console.error(
             "Detected excessive chart padding updates, possibly an infinite loop. Disabling axis padding."
           );
         } else {
