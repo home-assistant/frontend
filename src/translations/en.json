@@ -5475,7 +5475,8 @@
         }
       },
       "todo": {
-        "start_conversation": "Start conversation"
+        "start_conversation": "Start conversation",
+        "create_list": "Create list"
       },
       "page-authorize": {
         "initializing": "Initializing",
