@@ -187,9 +187,8 @@ class HaConfigInfo extends LitElement {
                 `
               )}
             </mwc-list>
-            ${!customUiList.length
-              ? ""
-              : html`
+            ${customUiList.length
+              ? html`
                   <div class="custom-ui">
                     ${this.hass.localize("ui.panel.config.info.custom_uis")}
                     ${customUiList.map(
@@ -201,7 +200,8 @@ class HaConfigInfo extends LitElement {
                       `
                     )}
                   </div>
-                `}
+                `
+              : nothing}
           </ha-card>
         </div>
       </hass-subpage>
@@ -256,10 +256,6 @@ class HaConfigInfo extends LitElement {
           padding: 16px;
         }
 
-        .pages {
-          margin-bottom: max(24px, env(safe-area-inset-bottom));
-        }
-
         .header {
           display: flex;
           flex-direction: column;
@@ -309,8 +305,18 @@ class HaConfigInfo extends LitElement {
           font-size: 16px;
         }
 
+        .pages {
+          margin-bottom: max(24px, env(safe-area-inset-bottom));
+          padding: 4px 0;
+        }
+
         mwc-list {
-          --mdc-list-side-padding: 4px;
+          --mdc-list-side-padding: 16px;
+          --mdc-list-vertical-padding: 0;
+        }
+
+        ha-clickable-list-item {
+          height: 64px;
         }
 
         ha-svg-icon {
