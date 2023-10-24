@@ -13,6 +13,7 @@ import {
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
+import { dump } from "js-yaml";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { escapeRegExp } from "../../../common/string/escape_regexp";
@@ -513,12 +514,23 @@ class HaPanelDevState extends LitElement {
       });
   }
 
+  private _formatAttributeValue(value) {
+    if (
+      (Array.isArray(value) && value.some((val) => val instanceof Object)) ||
+      (!Array.isArray(value) && value instanceof Object)
+    ) {
+      return `\n${dump(value)}`;
+    }
+    return Array.isArray(value) ? value.join(", ") : value;
+  }
+
   private _attributeString(entity) {
     const output = "";
 
     if (entity && entity.attributes) {
       return Object.keys(entity.attributes).map(
-        (key) => `${key}: ${entity.attributes[key]}\n`
+        (key) =>
+          `${key}: ${this._formatAttributeValue(entity.attributes[key])}\n`
       );
     }
 
