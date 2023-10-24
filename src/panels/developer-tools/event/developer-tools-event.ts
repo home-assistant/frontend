@@ -150,6 +150,10 @@ class HaPanelDevEvent extends LitElement {
           display: block;
         }
 
+        .flex {
+          min-width: 0;
+        }
+
         .inputs {
           max-width: 400px;
         }
