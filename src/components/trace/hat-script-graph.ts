@@ -298,7 +298,7 @@ export class HatScriptGraph extends LitElement {
             .notEnabled=${disabled || config.enabled === false}
             nofocus
           ></hat-graph-node>
-          ${ensureArray(config.then).map((action, j) =>
+          ${ensureArray(config.then ?? []).map((action, j) =>
             this.render_action_node(
               action,
               `${path}/then/${j}`,
