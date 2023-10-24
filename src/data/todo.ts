@@ -9,7 +9,7 @@ export interface TodoList {
 }
 
 export const enum TodoItemStatus {
-  NeedsAction = "needs-action",
+  NeedsAction = "needs_action",
   Completed = "completed",
 }
 
