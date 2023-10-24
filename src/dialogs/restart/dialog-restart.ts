@@ -424,6 +424,7 @@ class DialogRestart extends LitElement {
         .icon-background {
           border-radius: 50%;
           color: #fff;
+          display: flex;
         }
         .reload {
           background-color: #5f8a49;
