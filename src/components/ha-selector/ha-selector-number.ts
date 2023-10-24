@@ -38,7 +38,10 @@ export class HaNumberSelector extends LitElement {
   }
 
   protected render() {
-    const isBox = this.selector.number?.mode === "box";
+    const isBox =
+      this.selector.number?.mode === "box" ||
+      this.selector.number?.min === undefined ||
+      this.selector.number?.max === undefined;
 
     return html`
       <div class="input">

@@ -16,8 +16,8 @@ import "../../../components/ha-svg-icon";
 import { Fields } from "../../../data/script";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
 import { HomeAssistant } from "../../../types";
-import type HaScriptFieldRow from "./ha-script-field-row";
 import "./ha-script-field-row";
+import type HaScriptFieldRow from "./ha-script-field-row";
 
 @customElement("ha-script-fields")
 export default class HaScriptFields extends LitElement {
@@ -66,20 +66,23 @@ export default class HaScriptFields extends LitElement {
 
     if (changedProps.has("fields") && this._focusLastActionOnChange) {
       this._focusLastActionOnChange = false;
-
-      const row = this.shadowRoot!.querySelector<HaScriptFieldRow>(
-        "ha-script-field-row:last-of-type"
-      )!;
-      row.updateComplete.then(() => {
-        row.expand();
-        row.scrollIntoView();
-        row.focus();
-      });
+      this.focusLastField();
     }
   }
 
+  public focusLastField() {
+    const row = this.shadowRoot!.querySelector<HaScriptFieldRow>(
+      "ha-script-field-row:last-of-type"
+    )!;
+    row.updateComplete.then(() => {
+      row.expand();
+      row.scrollIntoView();
+      row.focus();
+    });
+  }
+
   private _addField() {
-    const key = this._getUniqueKey("new_field", this.fields || {});
+    const key = this._getUniqueKey("field", this.fields || {});
     const fields = {
       ...(this.fields || {}),
       [key]: {

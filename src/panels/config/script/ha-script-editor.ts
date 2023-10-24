@@ -5,18 +5,18 @@ import {
   mdiContentSave,
   mdiDelete,
   mdiDotsVertical,
+  mdiFormTextbox,
   mdiInformationOutline,
   mdiPlay,
   mdiTransitConnection,
-  mdiFormTextbox,
 } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
   nothing,
 } from "lit";
 import { property, query, state } from "lit/decorators";
@@ -39,18 +39,18 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
+import { validateConfig } from "../../../data/config";
+import { UNAVAILABLE } from "../../../data/entity";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
+  MODES,
+  MODES_MAX,
+  ScriptConfig,
   deleteScript,
   fetchScriptFileConfig,
   getScriptEditorInitData,
   getScriptStateConfig,
   isMaxMode,
-  Fields,
-  MODES,
-  MODES_MAX,
-  ScriptConfig,
-  ManualScriptConfig,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
@@ -63,8 +63,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
-import { UNAVAILABLE } from "../../../data/entity";
-import { validateConfig } from "../../../data/config";
+import type { HaManualScriptEditor } from "./manual-script-editor";
 
 export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -95,7 +94,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _readOnly = false;
 
-  @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
+  @query("manual-script-editor")
+  private _manualEditor?: HaManualScriptEditor;
 
   @state() private _validationErrors?: (string | TemplateResult)[];
 
@@ -236,13 +238,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
           ${!useBlueprint && !("fields" in this._config)
             ? html`
-                <mwc-list-item
-                  graphic="icon"
-                  .disabled=${!this.scriptId}
-                  @click=${this._addFields}
-                >
+                <mwc-list-item graphic="icon" @click=${this._addFields}>
                   ${this.hass.localize(
-                    "ui.panel.config.script.editor.add_field"
+                    "ui.panel.config.script.editor.add_fields"
                   )}
                   <ha-svg-icon
                     slot="graphic"
@@ -685,16 +683,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     if ("fields" in this._config!) {
       return;
     }
-    this._config = {
-      ...this._config,
-      fields: {
-        new_field: {
-          selector: {
-            text: null,
-          },
-        },
-      } as Fields,
-    } as ManualScriptConfig;
+    this._manualEditor?.addFields();
     this._dirty = true;
   }
 

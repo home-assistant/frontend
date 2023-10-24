@@ -6,17 +6,18 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { slugify } from "../../../common/string/slugify";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-expansion-panel";
+import type { SchemaUnion } from "../../../components/ha-form/types";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-yaml-editor";
 import { Field } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import type { SchemaUnion } from "../../../components/ha-form/types";
 
 const preventDefault = (ev) => ev.preventDefault();
 
@@ -218,9 +219,32 @@ export default class HaScriptFieldRow extends LitElement {
     fireEvent(this, "value-changed", { value: newValue });
   }
 
+  private _maybeSetKey(value): void {
+    const nameChanged = value.name !== this.field.name;
+    const keyChanged = value.key !== this.key;
+    if (!nameChanged || keyChanged) {
+      return;
+    }
+    const slugifyName = this.field.name ? slugify(this.field.name) : "field";
+    const regex = new RegExp(`^${slugifyName}(_\\d)?$`);
+    if (regex.test(this.key)) {
+      let key = !value.name ? "field" : slugify(value.name);
+      if (this.excludeKeys.includes(key)) {
+        let i = 2;
+        do {
+          key = `${key}_${i}`;
+          i++;
+        } while (this.excludeKeys.includes(key));
+      }
+      value.key = key;
+    }
+  }
+
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const value = { ...ev.detail.value };
+
+    this._maybeSetKey(value);
 
     // Don't allow to set an empty key, or duplicate an existing key.
     if (!value.key || this.excludeKeys.includes(value.key)) {
