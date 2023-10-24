@@ -309,6 +309,7 @@ export interface SelectSelector {
     options: readonly string[] | readonly SelectOption[];
     translation_key?: string;
     sort?: boolean;
+    reorder?: boolean;
   } | null;
 }
 
