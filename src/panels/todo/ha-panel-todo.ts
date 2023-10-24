@@ -113,7 +113,7 @@ class PanelTodo extends LitElement {
       return;
     }
     this._card = createCardElement({
-      type: "shopping-list",
+      type: "todo-list",
       entity: this._entityId,
     }) as LovelaceCard;
     this._card.hass = this.hass;

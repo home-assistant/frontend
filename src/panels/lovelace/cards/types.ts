@@ -427,7 +427,7 @@ export interface SensorCardConfig extends LovelaceCardConfig {
   };
 }
 
-export interface ShoppingListCardConfig extends LovelaceCardConfig {
+export interface TodoListCardConfig extends LovelaceCardConfig {
   title?: string;
   theme?: string;
   entity?: string;
