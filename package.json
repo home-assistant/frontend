@@ -114,7 +114,7 @@
     "fuse.js": "6.6.2",
     "google-timezones-json": "1.2.0",
     "hls.js": "1.4.12",
-    "home-assistant-js-websocket": "9.0.0",
+    "home-assistant-js-websocket": "9.1.0",
     "idb-keyval": "6.2.1",
     "intl-messageformat": "10.5.4",
     "js-yaml": "4.1.0",

@@ -229,10 +229,12 @@ export class LovelacePanel extends LitElement {
     }
     if (!resourcesLoaded) {
       resourcesLoaded = true;
-      (llWindow.llResProm || fetchResources(this.hass!.connection)).then(
-        (resources) =>
-          loadLovelaceResources(resources, this.hass!.auth.data.hassUrl)
-      );
+      // Don't load resources in safe mode
+      if (!this.hass!.config.safe_mode) {
+        const resources = await (llWindow.llResProm ||
+          fetchResources(this.hass!.connection));
+        loadLovelaceResources(resources, this.hass!.auth.data.hassUrl);
+      }
     }
 
     if (this.urlPath !== null || !confProm) {
