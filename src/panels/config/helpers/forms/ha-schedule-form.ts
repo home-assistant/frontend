@@ -68,8 +68,6 @@ class HaScheduleForm extends LitElement {
 
   private _item?: Schedule;
 
-  private _resizeObserver?: ResizeObserver;
-
   set item(item: Schedule) {
     this._item = item;
     if (item) {
