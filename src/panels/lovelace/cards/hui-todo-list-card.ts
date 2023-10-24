@@ -73,7 +73,7 @@ export class HuiTodoListCard
 
   @state() private _entityId?: string;
 
-  @state() private _items: Record<string, TodoItem> = {};
+  @state() private _items?: Record<string, TodoItem>;
 
   @state() private _uncheckedItems?: TodoItem[];
 
@@ -96,8 +96,6 @@ export class HuiTodoListCard
 
     this._config = config;
     this._entityId = config.entity;
-    this._uncheckedItems = [];
-    this._checkedItems = [];
   }
 
   protected checkConfig(config: TodoListCardConfig): void {
@@ -112,12 +110,16 @@ export class HuiTodoListCard
   }
 
   public willUpdate(
-    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+    changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
     if (!this.hasUpdated) {
       if (!this._entityId) {
         this._entityId = this.getEntityId();
       }
+      this._fetchData();
+    } else if (changedProperties.has("_entityId") || !this._items) {
+      this._uncheckedItems = [];
+      this._checkedItems = [];
       this._fetchData();
     }
   }
@@ -338,7 +340,7 @@ export class HuiTodoListCard
   }
 
   private _completeItem(ev): void {
-    const item = this._items[ev.target.itemId];
+    const item = this._items![ev.target.itemId];
     updateItem(this.hass!, this._entityId!, {
       ...item,
       status: ev.target.checked
@@ -350,7 +352,7 @@ export class HuiTodoListCard
   private _saveEdit(ev): void {
     // If name is not empty, update the item otherwise remove it
     if (ev.target.value) {
-      const item = this._items[ev.target.itemId];
+      const item = this._items![ev.target.itemId];
       updateItem(this.hass!, this._entityId!, {
         ...item,
         summary: ev.target.value,

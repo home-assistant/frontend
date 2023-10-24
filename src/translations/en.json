@@ -786,6 +786,10 @@
       }
     },
     "dialogs": {
+      "safe_mode": {
+        "title": "Safe mode",
+        "text": "Home Assistant is running in safe mode, custom integrations and frontend modules are not available. Restart Home Assistant to exit safe mode."
+      },
       "quick-bar": {
         "commands": {
           "reload": {
@@ -1236,9 +1240,9 @@
         },
         "restart-safe-mode": {
           "title": "Restart Home Assistant in safe mode",
-          "description": "Restarts Home Assistant without loading any custom integrations and modules.",
+          "description": "Restarts Home Assistant without loading any custom integrations and frontend modules.",
           "confirm_title": "Restart Home Assistant in safe mode?",
-          "confirm_description": "This will restart Home Assistant without loading any custom integrations and modules.",
+          "confirm_description": "This will restart Home Assistant without loading any custom integrations and frontend modules.",
           "confirm_action": "Restart",
           "failed": "Failed to restart Home Assistant"
         }
@@ -4026,10 +4030,26 @@
             "remove_failed": "Remove failed",
             "update_firmware": "Update",
             "highest_security": "Highest security",
+            "hard_reset_controller": "Factory reset",
             "unknown": "Unknown",
             "zwave_plus": "Z-Wave Plus",
             "zwave_plus_version": "Version {version}",
             "node_statistics": "Statistics"
+          },
+          "hard_reset_controller": {
+            "NotStarted": {
+              "title": "Reset Controller to Factory Settings",
+              "body": "If you decide to move forward, you will reset your controller to factory settings. As a result, the controller will forget all devices it is paired with and all Z-Wave devices for this network will be removed from Home Assistant. If there are any devices still paired with the controller when it is reset, they will have to go through the exclusion process before they can be re-paired. Would you like to continue?"
+            },
+            "InProgress": {
+              "title": "Resetting Controller",
+              "body": "Your controller is being reset and restarted. Wait until the process is complete before closing this dialog"
+            },
+            "Done": {
+              "title": "Controller Reset Complete",
+              "body": "Your controller has been reset to factory settings and has been restarted! You can now close this dialog."
+            },
+            "confirmation": "This action cannot be undone unless you have an NVM backup from your controller."
           },
           "node_statistics": {
             "title": "Device statistics",

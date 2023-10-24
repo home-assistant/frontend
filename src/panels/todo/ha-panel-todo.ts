@@ -14,7 +14,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { storage } from "../../common/decorators/storage";
-import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import "../../components/ha-button";
 import "../../components/ha-icon-button";
@@ -87,9 +86,7 @@ class PanelTodo extends LitElement {
     super.willUpdate(changedProperties);
 
     if (!this.hasUpdated && !this._entityId) {
-      this._entityId = Object.keys(this.hass.states).find(
-        (entityId) => computeDomain(entityId) === "todo"
-      );
+      this._entityId = getTodoLists(this.hass)[0]?.entity_id;
     } else if (!this.hasUpdated) {
       this._createCard();
     }

@@ -2,6 +2,7 @@ import { HomeAssistant, ServiceCallResponse } from "../types";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isUnavailableState } from "./entity";
+import { stringCompare } from "../common/string/compare";
 
 export interface TodoList {
   entity_id: string;
@@ -33,12 +34,12 @@ export const getTodoLists = (hass: HomeAssistant): TodoList[] =>
         computeDomain(entityId) === "todo" &&
         !isUnavailableState(hass.states[entityId].state)
     )
-    .sort()
     .map((entityId) => ({
       ...hass.states[entityId],
       entity_id: entityId,
       name: computeStateName(hass.states[entityId]),
-    }));
+    }))
+    .sort((a, b) => stringCompare(a.name, b.name, hass.locale.language));
 
 export interface TodoItems {
   items: TodoItem[];
