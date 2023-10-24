@@ -9789,7 +9789,7 @@ __metadata:
     gulp-rename: 2.0.0
     gulp-zopfli-green: 6.0.1
     hls.js: 1.4.12
-    home-assistant-js-websocket: 8.2.0
+    home-assistant-js-websocket: 9.0.0
     html-minifier-terser: 7.2.0
     husky: 8.0.3
     idb-keyval: 6.2.1
@@ -9865,10 +9865,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"home-assistant-js-websocket@npm:8.2.0":
-  version: 8.2.0
-  resolution: "home-assistant-js-websocket@npm:8.2.0"
-  checksum: 4eacdfe8d1bd35492ff77079779e2e0a1967b20a46b168752d8c037bf155fa5d2a8e898e7d1aee5514976d93589d26fe2d6c1975e4fcb039b0beff852564c64c
+"home-assistant-js-websocket@npm:9.0.0":
+  version: 9.0.0
+  resolution: "home-assistant-js-websocket@npm:9.0.0"
+  checksum: c1543483f55c1d135400b9bd6dce084b5942f57dc8098f4c84c6ece7b8289c558dc6578c45c94eecde99fec134041d8c4f458492e2573875bfb706df70ffd902
   languageName: node
   linkType: hard
 

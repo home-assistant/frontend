@@ -4490,9 +4490,9 @@
           "iframe": {
             "error_secure_context": "Unable to load iframes pointing at websites using {target_protocol} if Home Assistant is served over {context_protocol}."
           },
-          "safe-mode": {
-            "header": "Safe mode activated",
-            "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong."
+          "recovery-mode": {
+            "header": "Recovery mode activated",
+            "description": "Home Assistant ran into trouble while loading your configuration and is now running in recovery mode. Take a look at the error log to see what went wrong."
           },
           "starting": {
             "description": "Home Assistant is starting, please wait…"
