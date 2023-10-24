@@ -1199,7 +1199,7 @@
         "advanced_options": "Advanced options",
         "reload": {
           "title": "Quick reload",
-          "description": "Load new YAML configurations without a restart.",
+          "description": "Loads new YAML configurations without a restart.",
           "reloading": "Reloading configuration",
           "failed": "Failed to reload configuration"
         },
@@ -1218,7 +1218,7 @@
         },
         "reboot": {
           "title": "Reboot system",
-          "description": "Restart the system running Home Assistant and all Add-ons.",
+          "description": "Restarts the system running Home Assistant and all add-ons.",
           "confirm_title": "Reboot system?",
           "confirm_description": "This will reboot the complete system which includes Home Assistant and all the add-ons.",
           "confirm_action": "Reboot",
@@ -1227,7 +1227,7 @@
         },
         "shutdown": {
           "title": "Shut down system",
-          "description": "Shut down the system running Home Assistant and all add-ons.",
+          "description": "Shuts down the system running Home Assistant and all add-ons.",
           "confirm_title": "Shut down system?",
           "confirm_description": "This will shut down the complete system which includes Home Assistant and all add-ons.",
           "confirm_action": "Shut down",
@@ -1236,7 +1236,7 @@
         },
         "restart-safe-mode": {
           "title": "Restart Home Assistant in safe mode",
-          "description": "Restart Home Assistant without loading any custom integrations and modules.",
+          "description": "Restarts Home Assistant without loading any custom integrations and modules.",
           "confirm_title": "Restart Home Assistant in safe mode?",
           "confirm_description": "This will restart Home Assistant without loading any custom integrations and modules.",
           "confirm_action": "Restart",
