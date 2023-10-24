@@ -229,10 +229,9 @@ export class LovelacePanel extends LitElement {
     }
     if (!resourcesLoaded) {
       resourcesLoaded = true;
-      (llWindow.llResProm || fetchResources(this.hass!.connection)).then(
-        (resources) =>
-          loadLovelaceResources(resources, this.hass!.auth.data.hassUrl)
-      );
+      const resources = await (llWindow.llResProm ||
+        fetchResources(this.hass!.connection));
+      loadLovelaceResources(resources, this.hass!);
     }
 
     if (this.urlPath !== null || !confProm) {
