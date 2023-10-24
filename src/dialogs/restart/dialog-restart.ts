@@ -60,19 +60,6 @@ class DialogRestart extends LitElement {
         this._loadingHostInfo = false;
       }
     }
-
-    const showReload = this.hass.userData?.showAdvanced;
-    const showSafeMode = this.hass.userData?.showAdvanced;
-    const showRebootShutdown = !!this._hostInfo;
-
-    // Present restart core dialog if no host actions and not advanced mode as it's the only option
-    if (!showReload && !showSafeMode && !showRebootShutdown) {
-      this._open = false;
-      this._showRestartDialog().then(() => this.closeDialog());
-      return;
-    }
-
-    await this.updateComplete;
   }
 
   public closeDialog(): void {
@@ -87,7 +74,6 @@ class DialogRestart extends LitElement {
     }
 
     const showReload = this.hass.userData?.showAdvanced;
-    const showSafeMode = this.hass.userData?.showAdvanced;
     const showRebootShutdown = !!this._hostInfo;
 
     return html`
@@ -153,99 +139,84 @@ class DialogRestart extends LitElement {
                   </span>
                 </ha-list-item>
               </mwc-list>
-
-              ${showRebootShutdown || showSafeMode
-                ? html`<ha-expansion-panel
-                    .header=${this.hass.localize(
-                      "ui.dialogs.restart.advanced_options"
-                    )}
+              <ha-expansion-panel
+                .header=${this.hass.localize(
+                  "ui.dialogs.restart.advanced_options"
+                )}
+              >
+                <mwc-list>
+                  ${showRebootShutdown
+                    ? html`
+                        <ha-list-item
+                          graphic="avatar"
+                          twoline
+                          multiline-secondary
+                          hasMeta
+                          @request-selected=${this._hostReboot}
+                        >
+                          <div slot="graphic" class="icon-background reboot">
+                            <ha-svg-icon .path=${mdiPowerCycle}></ha-svg-icon>
+                          </div>
+                          <span>
+                            ${this.hass.localize(
+                              "ui.dialogs.restart.reboot.title"
+                            )}
+                          </span>
+                          <span slot="secondary">
+                            ${this.hass.localize(
+                              "ui.dialogs.restart.reboot.description"
+                            )}
+                          </span>
+                        </ha-list-item>
+                        <ha-list-item
+                          graphic="avatar"
+                          twoline
+                          multiline-secondary
+                          hasMeta
+                          @request-selected=${this._hostShutdown}
+                        >
+                          <div slot="graphic" class="icon-background shutdown">
+                            <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
+                          </div>
+                          <span>
+                            ${this.hass.localize(
+                              "ui.dialogs.restart.shutdown.title"
+                            )}
+                          </span>
+                          <span slot="secondary">
+                            ${this.hass.localize(
+                              "ui.dialogs.restart.shutdown.description"
+                            )}
+                          </span>
+                        </ha-list-item>
+                      `
+                    : nothing}
+                  <ha-list-item
+                    graphic="avatar"
+                    twoline
+                    multiline-secondary
+                    hasMeta
+                    @request-selected=${this._restartSafeMode}
                   >
-                    <mwc-list>
-                      ${showRebootShutdown
-                        ? html`
-                            <ha-list-item
-                              graphic="avatar"
-                              twoline
-                              multiline-secondary
-                              hasMeta
-                              @request-selected=${this._hostReboot}
-                            >
-                              <div
-                                slot="graphic"
-                                class="icon-background reboot"
-                              >
-                                <ha-svg-icon
-                                  .path=${mdiPowerCycle}
-                                ></ha-svg-icon>
-                              </div>
-                              <span>
-                                ${this.hass.localize(
-                                  "ui.dialogs.restart.reboot.title"
-                                )}
-                              </span>
-                              <span slot="secondary">
-                                ${this.hass.localize(
-                                  "ui.dialogs.restart.reboot.description"
-                                )}
-                              </span>
-                            </ha-list-item>
-                            <ha-list-item
-                              graphic="avatar"
-                              twoline
-                              multiline-secondary
-                              hasMeta
-                              @request-selected=${this._hostShutdown}
-                            >
-                              <div
-                                slot="graphic"
-                                class="icon-background shutdown"
-                              >
-                                <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
-                              </div>
-                              <span>
-                                ${this.hass.localize(
-                                  "ui.dialogs.restart.shutdown.title"
-                                )}
-                              </span>
-                              <span slot="secondary">
-                                ${this.hass.localize(
-                                  "ui.dialogs.restart.shutdown.description"
-                                )}
-                              </span>
-                            </ha-list-item>
-                          `
-                        : nothing}
-                      ${showSafeMode
-                        ? html`
-                            <ha-list-item
-                              graphic="avatar"
-                              twoline
-                              multiline-secondary
-                              hasMeta
-                              @request-selected=${this._restartSafeMode}
-                            >
-                              <div
-                                slot="graphic"
-                                class="icon-background restart-safe-mode"
-                              >
-                                <ha-svg-icon .path=${mdiLifebuoy}></ha-svg-icon>
-                              </div>
-                              <span>
-                                ${this.hass.localize(
-                                  "ui.dialogs.restart.restart-safe-mode.title"
-                                )}
-                              </span>
-                              <span slot="secondary">
-                                ${this.hass.localize(
-                                  "ui.dialogs.restart.restart-safe-mode.description"
-                                )}
-                              </span>
-                            </ha-list-item>
-                          `
-                        : nothing}
-                    </mwc-list>
-                  </ha-expansion-panel>`
-                : nothing}
+                    <div
+                      slot="graphic"
+                      class="icon-background restart-safe-mode"
+                    >
+                      <ha-svg-icon .path=${mdiLifebuoy}></ha-svg-icon>
+                    </div>
+                    <span>
+                      ${this.hass.localize(
+                        "ui.dialogs.restart.restart-safe-mode.title"
+                      )}
+                    </span>
+                    <span slot="secondary">
+                      ${this.hass.localize(
+                        "ui.dialogs.restart.restart-safe-mode.description"
+                      )}
+                    </span>
+                  </ha-list-item>
+                </mwc-list>
+              </ha-expansion-panel>
             `}
       </ha-dialog>
     `;
