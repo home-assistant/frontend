@@ -309,7 +309,7 @@ export class HcMain extends HassElement {
         ? await fetchResources(this.hass!.connection)
         : (this._lovelaceConfig as LegacyLovelaceConfig).resources;
       if (resources) {
-        loadLovelaceResources(resources, this.hass!.auth.data.hassUrl);
+        loadLovelaceResources(resources, this.hass!);
       }
     }
 

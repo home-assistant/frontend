@@ -229,12 +229,9 @@ export class LovelacePanel extends LitElement {
     }
     if (!resourcesLoaded) {
       resourcesLoaded = true;
-      // Don't load resources in safe mode
-      if (!this.hass!.config.safe_mode) {
-        const resources = await (llWindow.llResProm ||
-          fetchResources(this.hass!.connection));
-        loadLovelaceResources(resources, this.hass!.auth.data.hassUrl);
-      }
+      const resources = await (llWindow.llResProm ||
+        fetchResources(this.hass!.connection));
+      loadLovelaceResources(resources, this.hass!);
     }
 
     if (this.urlPath !== null || !confProm) {
