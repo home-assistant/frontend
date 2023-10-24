@@ -6,7 +6,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-form/ha-form";
 import { HomeAssistant } from "../../../../types";
-import { ShoppingListCardConfig } from "../../cards/types";
+import { TodoListCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { SchemaUnion } from "../../../../components/ha-form/types";
@@ -32,16 +32,16 @@ const SCHEMA = [
   { name: "theme", selector: { theme: {} } },
 ] as const;
 
-@customElement("hui-shopping-list-card-editor")
-export class HuiShoppingListEditor
+@customElement("hui-todo-list-card-editor")
+export class HuiTodoListEditor
   extends LitElement
   implements LovelaceCardEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: ShoppingListCardConfig;
+  @state() private _config?: TodoListCardConfig;
 
-  public setConfig(config: ShoppingListCardConfig): void {
+  public setConfig(config: TodoListCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
   }
@@ -101,6 +101,6 @@ export class HuiShoppingListEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-shopping-list-card-editor": HuiShoppingListEditor;
+    "hui-todo-list-card-editor": HuiTodoListEditor;
   }
 }

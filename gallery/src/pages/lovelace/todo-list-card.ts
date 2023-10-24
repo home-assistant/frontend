@@ -19,22 +19,22 @@ const CONFIGS = [
   {
     heading: "List example",
     config: `
-- type: shopping-list
+- type: todo-list
   entity: todo.shopping_list
     `,
   },
   {
     heading: "List with title example",
     config: `
-- type: shopping-list
+- type: todo-list
   title: Shopping List
   entity: todo.read_only
     `,
   },
 ];
 
-@customElement("demo-lovelace-shopping-list-card")
-class DemoShoppingListEntity extends LitElement {
+@customElement("demo-lovelace-todo-list-card")
+class DemoTodoListEntity extends LitElement {
   @query("#demos") private _demoRoot!: HTMLElement;
 
   protected render(): TemplateResult {
@@ -54,6 +54,6 @@ class DemoShoppingListEntity extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-lovelace-shopping-list-card": DemoShoppingListEntity;
+    "demo-lovelace-todo-list-card": DemoTodoListEntity;
   }
 }

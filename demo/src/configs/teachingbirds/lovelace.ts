@@ -220,7 +220,7 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
           state_filter: ["on"],
         },
         {
-          type: "shopping-list",
+          type: "todo-list",
         },
         {
           entities: [
