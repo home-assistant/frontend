@@ -50,15 +50,6 @@ class PanelEnergy extends LitElement {
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
-    if (
-      changedProps.has("narrow") &&
-      changedProps.get("narrow") !== undefined
-    ) {
-      this._reloadView();
-    }
-  }
-
   protected render(): TemplateResult {
     return html`
       <div class="header">
