@@ -21,7 +21,7 @@ export const demoConfig: HassConfig = {
   allowlist_external_dirs: [],
   allowlist_external_urls: [],
   config_source: "storage",
-  safe_mode: false,
+  recovery_mode: false,
   state: STATE_RUNNING,
   internal_url: "http://homeassistant.local:8123",
   external_url: null,
