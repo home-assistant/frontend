@@ -1,8 +1,9 @@
 import { mdiPlus } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html } from "lit";
+import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-list-item";
 import type { HaSelect } from "../../../../components/ha-select";
@@ -11,6 +12,7 @@ import type { HomeAssistant } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
 import { Condition, LegacyCondition } from "../../common/validate-condition";
 import "./ha-card-condition-editor";
+import type { HaCardConditionEditor } from "./ha-card-condition-editor";
 import { LovelaceConditionEditorConstructor } from "./types";
 import "./types/ha-card-condition-numeric_state";
 import "./types/ha-card-condition-screen";
@@ -33,22 +35,54 @@ export class HaCardConditionsEditor extends LitElement {
     | LegacyCondition
   )[];
 
+  private _focusLastConditionOnChange = false;
+
+  protected firstUpdated() {
+    // Expand the condition if there is only one
+    if (this.conditions.length === 1) {
+      const row = this.shadowRoot!.querySelector<HaCardConditionEditor>(
+        "ha-card-condition-editor"
+      )!;
+      row.updateComplete.then(() => {
+        row.expand();
+      });
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues) {
+    if (!changedProperties.has("conditions")) {
+      return;
+    }
+
+    if (this._focusLastConditionOnChange) {
+      this._focusLastConditionOnChange = false;
+      const row = this.shadowRoot!.querySelector<HaCardConditionEditor>(
+        "ha-card-condition-editor:last-of-type"
+      )!;
+      row.updateComplete.then(() => {
+        row.expand();
+        row.scrollIntoView();
+        row.focus();
+      });
+    }
+  }
+
   protected render() {
     return html`
       <div class="conditions">
-        ${this.hass!.localize(
-          "ui.panel.lovelace.editor.condition-editor.explanation"
-        )}
+        <ha-alert alert-type="info">
+          ${this.hass!.localize(
+            "ui.panel.lovelace.editor.condition-editor.explanation"
+          )}
+        </ha-alert>
         ${this.conditions.map(
           (cond, idx) => html`
-            <div class="condition">
-              <ha-card-condition-editor
-                .index=${idx}
-                @value-changed=${this._conditionChanged}
-                .hass=${this.hass}
-                .condition=${cond}
-              ></ha-card-condition-editor>
-            </div>
+            <ha-card-condition-editor
+              .index=${idx}
+              @value-changed=${this._conditionChanged}
+              .hass=${this.hass}
+              .condition=${cond}
+            ></ha-card-condition-editor>
           `
         )}
         <div>
@@ -99,6 +133,7 @@ export class HaCardConditionsEditor extends LitElement {
         ? { ...elClass.defaultConfig }
         : { condition: condition }
     );
+    this._focusLastConditionOnChange = true;
     fireEvent(this, "value-changed", { value: conditions });
   }
 
@@ -123,15 +158,14 @@ export class HaCardConditionsEditor extends LitElement {
         mwc-tab-bar {
           border-bottom: 1px solid var(--divider-color);
         }
-        .conditions {
-          margin-top: 8px;
+        ha-alert {
+          display: block;
+          margin-top: 12px;
         }
-        .condition {
-          margin-top: 8px;
-          border: 1px solid var(--divider-color);
-        }
-        .condition .content {
-          padding: 12px;
+        ha-card-condition-editor {
+          display: block;
+          margin-top: 12px;
+          scroll-margin-top: 48px;
         }
         ha-button-menu {
           margin-top: 12px;

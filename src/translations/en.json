@@ -1204,7 +1204,7 @@
         "advanced_options": "Advanced options",
         "reload": {
           "title": "Quick reload",
-          "description": "Load new YAML configurations without a restart.",
+          "description": "Loads new YAML configurations without a restart.",
           "reloading": "Reloading configuration",
           "failed": "Failed to reload configuration"
         },
@@ -1223,7 +1223,7 @@
         },
         "reboot": {
           "title": "Reboot system",
-          "description": "Restart the system running Home Assistant and all Add-ons.",
+          "description": "Restarts the system running Home Assistant and all add-ons.",
           "confirm_title": "Reboot system?",
           "confirm_description": "This will reboot the complete system which includes Home Assistant and all the add-ons.",
           "confirm_action": "Reboot",
@@ -1232,7 +1232,7 @@
         },
         "shutdown": {
           "title": "Shut down system",
-          "description": "Shut down the system running Home Assistant and all add-ons.",
+          "description": "Shuts down the system running Home Assistant and all add-ons.",
           "confirm_title": "Shut down system?",
           "confirm_description": "This will shut down the complete system which includes Home Assistant and all add-ons.",
           "confirm_action": "Shut down",
@@ -1241,7 +1241,7 @@
         },
         "restart-safe-mode": {
           "title": "Restart Home Assistant in safe mode",
-          "description": "Restart Home Assistant without loading any custom integrations and frontend modules.",
+          "description": "Restarts Home Assistant without loading any custom integrations and frontend modules.",
           "confirm_title": "Restart Home Assistant in safe mode?",
           "confirm_description": "This will restart Home Assistant without loading any custom integrations and frontend modules.",
           "confirm_action": "Restart",
@@ -4049,10 +4049,26 @@
             "remove_failed": "Remove failed",
             "update_firmware": "Update",
             "highest_security": "Highest security",
+            "hard_reset_controller": "Factory reset",
             "unknown": "Unknown",
             "zwave_plus": "Z-Wave Plus",
             "zwave_plus_version": "Version {version}",
             "node_statistics": "Statistics"
+          },
+          "hard_reset_controller": {
+            "NotStarted": {
+              "title": "Reset Controller to Factory Settings",
+              "body": "If you decide to move forward, you will reset your controller to factory settings. As a result, the controller will forget all devices it is paired with and all Z-Wave devices for this network will be removed from Home Assistant. If there are any devices still paired with the controller when it is reset, they will have to go through the exclusion process before they can be re-paired. Would you like to continue?"
+            },
+            "InProgress": {
+              "title": "Resetting Controller",
+              "body": "Your controller is being reset and restarted. Wait until the process is complete before closing this dialog"
+            },
+            "Done": {
+              "title": "Controller Reset Complete",
+              "body": "Your controller has been reset to factory settings and has been restarted! You can now close this dialog."
+            },
+            "confirmation": "This action cannot be undone unless you have an NVM backup from your controller."
           },
           "node_statistics": {
             "title": "Device statistics",
