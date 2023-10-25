@@ -609,11 +609,12 @@ export class HaMediaPlayerBrowse extends LitElement {
             ${child.thumbnail
               ? html`
                   <div
-                    class="${["app", "directory"].includes(child.media_class)
-                      ? "centered-image"
-                      : ""} ${isBrandUrl(child.thumbnail)
-                      ? "brand-image"
-                      : ""} image"
+                    class="${classMap({
+                      "centered-image": ["app", "directory"].includes(
+                        child.media_class
+                      ),
+                      "brand-image": isBrandUrl(child.thumbnail),
+                    })} image"
                     style="background-image: ${until(backgroundImage, "")}"
                   ></div>
                 `
@@ -674,26 +675,37 @@ export class HaMediaPlayerBrowse extends LitElement {
         .graphic=${mediaClass.show_list_images ? "medium" : "avatar"}
         dir=${computeRTLDirection(this.hass)}
       >
-        <div
-          class=${classMap({
-            graphic: true,
-            thumbnail: mediaClass.show_list_images === true,
-          })}
-          style="background-image: ${until(backgroundImage, "")}"
-          slot="graphic"
-        >
-          <ha-icon-button
-            class="play ${classMap({
-              show: !mediaClass.show_list_images || !child.thumbnail,
-            })}"
-            .item=${child}
-            .label=${this.hass.localize(
-              `ui.components.media-browser.${this.action}-media`
-            )}
-            .path=${this.action === "play" ? mdiPlay : mdiPlus}
-            @click=${this._actionClicked}
-          ></ha-icon-button>
-        </div>
+        ${backgroundImage === "none" && !child.can_play
+          ? html`<ha-svg-icon
+              .path=${MediaClassBrowserSettings[
+                child.media_class === "directory"
+                  ? child.children_media_class || child.media_class
+                  : child.media_class
+              ].icon}
+              slot="graphic"
+            ></ha-svg-icon>`
+          : html`<div
+              class=${classMap({
+                graphic: true,
+                thumbnail: mediaClass.show_list_images === true,
+              })}
+              style="background-image: ${until(backgroundImage, "")}"
+              slot="graphic"
+            >
+              ${child.can_play
+                ? html`<ha-icon-button
+                    class="play ${classMap({
+                      show: !mediaClass.show_list_images || !child.thumbnail,
+                    })}"
+                    .item=${child}
+                    .label=${this.hass.localize(
+                      `ui.components.media-browser.${this.action}-media`
+                    )}
+                    .path=${this.action === "play" ? mdiPlay : mdiPlus}
+                    @click=${this._actionClicked}
+                  ></ha-icon-button>`
+                : nothing}
+            </div>`}
         <span class="title">${child.title}</span>
       </mwc-list-item>
     `;
@@ -953,7 +965,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           top: 0;
           right: 0;
           left: 0;
-          z-index: 5;
+          z-index: 3;
           padding: 16px;
         }
         .header_button {
@@ -1194,6 +1206,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         mwc-list-item .graphic {
           background-size: contain;
+          background-repeat: no-repeat;
+          background-position: center;
           border-radius: 2px;
           display: flex;
           align-content: center;
