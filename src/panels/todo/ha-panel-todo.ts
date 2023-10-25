@@ -1,6 +1,11 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@material/mwc-list";
-import { mdiChevronDown, mdiDotsVertical, mdiMicrophone } from "@mdi/js";
+import {
+  mdiChevronDown,
+  mdiDotsVertical,
+  mdiMicrophone,
+  mdiPlus,
+} from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -29,6 +34,8 @@ import { HomeAssistant } from "../../types";
 import { HuiErrorCard } from "../lovelace/cards/hui-error-card";
 import { createCardElement } from "../lovelace/create-element/create-card-element";
 import { LovelaceCard } from "../lovelace/types";
+import { fetchIntegrationManifest } from "../../data/integration";
+import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
 
 @customElement("ha-panel-todo")
 class PanelTodo extends LitElement {
@@ -131,7 +138,7 @@ class PanelTodo extends LitElement {
         </ha-list-item> `
     );
     return html`
-      <ha-two-pane-top-app-bar-fixed .pane=${showPane}>
+      <ha-two-pane-top-app-bar-fixed .pane=${showPane} footer>
         <ha-menu-button
           slot="navigationIcon"
           .hass=${this.hass}
@@ -160,10 +167,18 @@ class PanelTodo extends LitElement {
                 </ha-button>
                 ${listItems}
                 <li divider role="separator"></li>
+                <ha-list-item graphic="icon" @click=${this._addList}>
+                  <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
+                  ${this.hass.localize("ui.panel.todo.create_list")}
+                </ha-list-item>
               </ha-button-menu>`
             : "Lists"}
         </div>
         <mwc-list slot="pane" activatable>${listItems}</mwc-list>
+        <ha-list-item graphic="icon" slot="pane-footer" @click=${this._addList}>
+          <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
+          ${this.hass.localize("ui.panel.todo.create_list")}
+        </ha-list-item>
         <ha-button-menu slot="actionItems">
           <ha-icon-button
             slot="trigger"
@@ -190,6 +205,14 @@ class PanelTodo extends LitElement {
 
   private _handleEntityPicked(ev) {
     this._entityId = ev.currentTarget.entityId;
+  }
+
+  private async _addList(): Promise<void> {
+    showConfigFlowDialog(this, {
+      startFlowHandler: "local_todo",
+      showAdvanced: this.hass.userData?.showAdvanced,
+      manifest: await fetchIntegrationManifest(this.hass, "local_todo"),
+    });
   }
 
   private _showVoiceCommandDialog(): void {
