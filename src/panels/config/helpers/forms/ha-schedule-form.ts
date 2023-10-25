@@ -93,6 +93,20 @@ class HaScheduleForm extends LitElement {
     }
   }
 
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.calendar?.destroy();
+    this.calendar = undefined;
+    this.renderRoot.querySelector("style[data-fullcalendar]")?.remove();
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hasUpdated && !this.calendar) {
+      this.setupCalendar();
+    }
+  }
+
   public focus() {
     this.updateComplete.then(
       () =>
@@ -165,6 +179,10 @@ class HaScheduleForm extends LitElement {
   }
 
   protected firstUpdated(): void {
+    this.setupCalendar();
+  }
+
+  private setupCalendar(): void {
     const config: CalendarOptions = {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
