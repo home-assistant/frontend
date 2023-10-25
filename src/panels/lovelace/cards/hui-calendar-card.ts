@@ -242,6 +242,10 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
         padding-inline-start: 8px;
         direction: var(--direction);
       }
+
+      ha-full-calendar {
+        --calendar-height: 400px;
+      }
     `;
   }
 }
