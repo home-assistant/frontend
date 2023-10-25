@@ -101,8 +101,7 @@ export class HaDeviceCard extends LitElement {
                 <div class="extra-info">
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.serial_number",
-                    "serial_number",
-                    this.device.serial_number
+                    {serial_number: this.device.serial_number}
                   )}
                 </div>
               `
