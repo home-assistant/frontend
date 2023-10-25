@@ -384,6 +384,7 @@ export interface TTSVoiceSelector {
 export interface UiActionSelector {
   ui_action: {
     actions?: UiAction[];
+    default?: UiAction;
   } | null;
 }
 
