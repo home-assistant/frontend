@@ -110,7 +110,10 @@ export class HaDeviceCard extends LitElement {
           ${this._getAddresses().map(
             (connection) => html`
               <div class="extra-info">
-                ${titleCase(connection[0])}: ${connection[1].toUpperCase()}
+                ${connection[0] === "mac"
+                  ? connection[0].toUpperCase()
+                  : titleCase(connection[0])}:
+                ${connection[1].toUpperCase()}
               </div>
             `
           )}
@@ -122,14 +125,9 @@ export class HaDeviceCard extends LitElement {
   }
 
   protected _getAddresses() {
-    const connections = [
-      ...this.device.connections,
-      ...this.device.identifiers,
-    ];
-    const filtered = connections.filter(
+    return this.device.connections.filter(
       (conn) => conn[0] === "mac" || conn[0] === "bluetooth"
     );
-    return [...new Set(filtered)];
   }
 
   protected firstUpdated(changedProps) {
