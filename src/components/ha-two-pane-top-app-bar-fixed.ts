@@ -302,6 +302,7 @@ export abstract class TopAppBarBaseBase extends BaseElement {
       }
       .pane .footer {
         border-top: 1px solid var(--divider-color);
+        padding-bottom: 8px;
       }
       .main {
         min-height: 100%;
