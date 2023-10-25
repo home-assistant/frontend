@@ -34,7 +34,6 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
     // On first load, we speed up loading page by having energyPreferencesProm ready
     if (preloadWindow.energyPreferencesProm) {
       energyPreferencesProm = preloadWindow.energyPreferencesProm;
-      preloadWindow.energyPreferencesProm = undefined;
     }
 
     const [localize, energyPrefs] = await Promise.all([

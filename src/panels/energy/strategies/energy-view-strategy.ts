@@ -37,7 +37,6 @@ export class EnergyViewStrategy extends ReactiveElement {
     // On first load, we speed up loading page by having energyPreferencesProm ready
     if (preloadWindow.energyPreferencesProm) {
       energyPreferencesProm = preloadWindow.energyPreferencesProm;
-      preloadWindow.energyPreferencesProm = undefined;
     }
 
     let prefs: EnergyPreferences;
