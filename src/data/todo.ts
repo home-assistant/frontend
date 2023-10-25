@@ -95,11 +95,11 @@ export const moveItem = (
   hass: HomeAssistant,
   entity_id: string,
   uid: string,
-  pos: number
+  previous_uid: string | undefined
 ): Promise<void> =>
   hass.callWS({
     type: "todo/item/move",
     entity_id,
     uid,
-    pos,
+    previous_uid,
   });

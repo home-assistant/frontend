@@ -74,7 +74,7 @@ export class HuiTodoListCard
 
   @state() private _entityId?: string;
 
-  @state() private _items?: Record<string, TodoItem>;
+  @state() private _items?: TodoItem[];
 
   @state() private _reordering = false;
 
@@ -104,22 +104,16 @@ export class HuiTodoListCard
     return undefined;
   }
 
-  private _getCheckedItems = memoizeOne(
-    (items?: Record<string, TodoItem>): TodoItem[] =>
-      items
-        ? Object.values(items).filter(
-            (item) => item.status === TodoItemStatus.Completed
-          )
-        : []
+  private _getCheckedItems = memoizeOne((items?: TodoItem[]): TodoItem[] =>
+    items
+      ? items.filter((item) => item.status === TodoItemStatus.Completed)
+      : []
   );
 
-  private _getUncheckedItems = memoizeOne(
-    (items?: Record<string, TodoItem>): TodoItem[] =>
-      items
-        ? Object.values(items).filter(
-            (item) => item.status === TodoItemStatus.NeedsAction
-          )
-        : []
+  private _getUncheckedItems = memoizeOne((items?: TodoItem[]): TodoItem[] =>
+    items
+      ? items.filter((item) => item.status === TodoItemStatus.NeedsAction)
+      : []
   );
 
   public willUpdate(
@@ -325,16 +319,18 @@ export class HuiTodoListCard
     if (!this.hass || !this._entityId) {
       return;
     }
-    const items = await fetchItems(this.hass!, this._entityId!);
-    const records: Record<string, TodoItem> = {};
-    items.forEach((item) => {
-      records[item.uid!] = item;
-    });
-    this._items = records;
+    this._items = await fetchItems(this.hass!, this._entityId!);
+  }
+
+  private _getItem(itemId: string) {
+    return this._items?.find((item) => item.uid === itemId);
   }
 
   private _completeItem(ev): void {
-    const item = this._items![ev.target.itemId];
+    const item = this._getItem(ev.target.itemId);
+    if (!item) {
+      return;
+    }
     updateItem(this.hass!, this._entityId!, {
       ...item,
       status: ev.target.checked
@@ -346,7 +342,10 @@ export class HuiTodoListCard
   private _saveEdit(ev): void {
     // If name is not empty, update the item otherwise remove it
     if (ev.target.value) {
-      const item = this._items![ev.target.itemId];
+      const item = this._getItem(ev.target.itemId);
+      if (!item) {
+        return;
+      }
       updateItem(this.hass!, this._entityId!, {
         ...item,
         summary: ev.target.value,
@@ -439,10 +438,36 @@ export class HuiTodoListCard
   }
 
   private async _moveItem(oldIndex, newIndex) {
-    const item = this._getUncheckedItems(this._items)[oldIndex];
-    await moveItem(this.hass!, this._entityId!, item.uid!, newIndex).finally(
-      () => this._fetchData()
-    );
+    const uncheckedItems = this._getUncheckedItems(this._items);
+    const item = uncheckedItems[oldIndex];
+    let prevItem: TodoItem | undefined;
+    if (newIndex > 0) {
+      if (newIndex < oldIndex) {
+        prevItem = uncheckedItems[newIndex - 1];
+      } else {
+        prevItem = uncheckedItems[newIndex];
+      }
+    }
+
+    // Optimistic change
+    const itemIndex = this._items!.findIndex((itm) => itm.uid === item.uid);
+    this._items!.splice(itemIndex, 1);
+    if (newIndex === 0) {
+      this._items!.unshift(item);
+    } else {
+      const prevIndex = this._items!.findIndex(
+        (itm) => itm.uid === prevItem!.uid
+      );
+      this._items!.splice(prevIndex + 1, 0, item);
+    }
+    this._items = [...this._items!];
+
+    await moveItem(
+      this.hass!,
+      this._entityId!,
+      item.uid!,
+      prevItem?.uid
+    ).finally(() => this._fetchData());
   }
 
   static get styles(): CSSResultGroup {
