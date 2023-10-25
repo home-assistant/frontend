@@ -26,6 +26,8 @@ export class HaButtonMenu extends LitElement {
 
   @property({ type: Boolean }) public fixed = false;
 
+  @property({ type: Boolean, attribute: "no-anchor" }) public noAnchor = false;
+
   @query("mwc-menu", true) private _menu?: Menu;
 
   public get items() {
@@ -82,7 +84,7 @@ export class HaButtonMenu extends LitElement {
     if (this.disabled) {
       return;
     }
-    this._menu!.anchor = this;
+    this._menu!.anchor = this.noAnchor ? null : this;
     this._menu!.show();
   }
 

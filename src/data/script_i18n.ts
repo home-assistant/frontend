@@ -213,7 +213,7 @@ const tryDescribeAction = <T extends ActionType>(
       duration = hass.localize(
         `${actionTranslationBaseKey}.delay.description.duration_string`,
         {
-          string: formatDuration(config.delay),
+          string: formatDuration(hass.locale, config.delay),
         }
       );
     } else {

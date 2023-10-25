@@ -4,7 +4,7 @@ import {
   HassServiceTarget,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket/dist/types";
-import { css, html, LitElement, PropertyValues } from "lit";
+import { LitElement, PropertyValues, css, html } from "lit";
 import { property, query, state } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
@@ -39,10 +39,11 @@ import {
 } from "../../data/device_registry";
 import { subscribeEntityRegistry } from "../../data/entity_registry";
 import {
-  computeHistory,
   HistoryResult,
+  computeHistory,
   subscribeHistory,
 } from "../../data/history";
+import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -306,6 +307,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
     const now = new Date();
 
+    const { numeric_device_classes: sensorNumericDeviceClasses } =
+      await getSensorNumericDeviceClasses(this.hass);
+
     this._subscribed = subscribeHistory(
       this.hass,
       (history) => {
@@ -313,7 +317,8 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         this._stateHistory = computeHistory(
           this.hass,
           history,
-          this.hass.localize
+          this.hass.localize,
+          sensorNumericDeviceClasses
         );
       },
       this._startDate,

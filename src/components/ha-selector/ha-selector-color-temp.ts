@@ -24,7 +24,7 @@ export class HaColorTempSelector extends LitElement {
   protected render() {
     return html`
       <ha-labeled-slider
-        pin
+        labeled
         icon="hass:thermometer"
         .caption=${this.label || ""}
         .min=${this.selector.color_temp?.min_mireds ?? 153}
@@ -33,27 +33,25 @@ export class HaColorTempSelector extends LitElement {
         .disabled=${this.disabled}
         .helper=${this.helper}
         .required=${this.required}
-        @change=${this._valueChanged}
+        @value-changed=${this._valueChanged}
       ></ha-labeled-slider>
     `;
   }
 
   private _valueChanged(ev: CustomEvent) {
     fireEvent(this, "value-changed", {
-      value: Number((ev.target as any).value),
+      value: Number((ev.detail as any).value),
     });
   }
 
   static styles = css`
     ha-labeled-slider {
-      --ha-slider-background: -webkit-linear-gradient(
-        var(--float-end),
+      --ha-slider-background: linear-gradient(
+        to var(--float-end),
         rgb(255, 160, 0) 0%,
         white 50%,
         rgb(166, 209, 255) 100%
       );
-      /* The color temp minimum value shouldn't be rendered differently. It's not "off". */
-      --paper-slider-knob-start-border-color: var(--primary-color);
     }
   `;
 }

@@ -1,22 +1,23 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/chart/state-history-charts";
-import "../../../components/ha-card";
 import "../../../components/ha-alert";
+import "../../../components/ha-card";
 import {
-  computeHistory,
   HistoryResult,
+  computeHistory,
   subscribeHistoryStatesTimeWindow,
 } from "../../../data/history";
+import { getSensorNumericDeviceClasses } from "../../../data/sensor";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -97,10 +98,14 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     this._unsubscribeHistory();
   }
 
-  private _subscribeHistory() {
+  private async _subscribeHistory() {
     if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
       return;
     }
+
+    const { numeric_device_classes: sensorNumericDeviceClasses } =
+      await getSensorNumericDeviceClasses(this.hass!);
+
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
       (combinedHistory) => {
@@ -108,10 +113,12 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           // Message came in before we had a chance to unload
           return;
         }
+
         this._stateHistory = computeHistory(
           this.hass!,
           combinedHistory,
-          this.hass!.localize
+          this.hass!.localize,
+          sensorNumericDeviceClasses
         );
       },
       this._hoursToShow,

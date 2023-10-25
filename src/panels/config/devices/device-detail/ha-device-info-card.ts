@@ -9,6 +9,7 @@ import {
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { loadDeviceRegistryDetailDialog } from "../device-registry-detail/show-dialog-device-registry-detail";
+import { titleCase } from "../../../../common/string/title-case";
 
 @customElement("ha-device-info-card")
 export class HaDeviceCard extends LitElement {
@@ -96,11 +97,35 @@ export class HaDeviceCard extends LitElement {
                 </div>
               `
             : ""}
+          ${this.device.serial_number
+            ? html`
+                <div class="extra-info">
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.serial_number",
+                    { serial_number: this.device.serial_number }
+                  )}
+                </div>
+              `
+            : ""}
+          ${this._getAddresses().map(
+            ([type, value]) => html`
+              <div class="extra-info">
+                ${type === "mac" ? "MAC" : titleCase(type)}:
+                ${value.toUpperCase()}
+              </div>
+            `
+          )}
           <slot></slot>
         </div>
         <slot name="actions"></slot>
       </ha-card>
     `;
+  }
+
+  protected _getAddresses() {
+    return this.device.connections.filter(
+      (conn) => conn[0] === "mac" || conn[0] === "bluetooth"
+    );
   }
 
   protected firstUpdated(changedProps) {

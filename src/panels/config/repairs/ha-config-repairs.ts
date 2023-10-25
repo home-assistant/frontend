@@ -60,6 +60,7 @@ class HaConfigRepairs extends LitElement {
                   darkOptimized: this.hass.themes?.darkMode,
                 })}
                 .title=${domainToName(this.hass.localize, issue.domain)}
+                crossorigin="anonymous"
                 referrerpolicy="no-referrer"
                 slot="graphic"
               />
