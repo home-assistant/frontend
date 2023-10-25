@@ -49,7 +49,7 @@ function checkStateCondition(
 
   return condition.state != null
     ? ensureArray(condition.state).includes(state)
-    : ensureArray(condition.state_not).includes(state);
+    : !ensureArray(condition.state_not).includes(state);
 }
 
 function checkStateNumericCondition(
