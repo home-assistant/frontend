@@ -223,7 +223,7 @@ export class StateHistoryCharts extends LitElement {
         );
       } else {
         this._computedStartTime = new Date(
-          this.historyData.timeline.reduce(
+          (this.historyData?.timeline ?? []).reduce(
             (minTime, stateInfo) =>
               Math.min(
                 minTime,
