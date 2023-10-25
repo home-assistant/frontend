@@ -7,22 +7,21 @@ import { ConditionalCardConfig } from "../cards/types";
 import {
   Condition,
   LegacyCondition,
-  ScreenCondition,
   checkConditionsMet,
   validateConditionalConfig,
 } from "../common/validate-condition";
 import { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 
-function extractScreenConditions(
+function extractMediaQueries(
   conditions: (Condition | LegacyCondition)[]
-): ScreenCondition[] {
-  return conditions.reduce<ScreenCondition[]>((array, c) => {
+): string[] {
+  return conditions.reduce<string[]>((array, c) => {
     if ("conditions" in c && c.conditions) {
-      array.push(...extractScreenConditions(c.conditions));
+      array.push(...extractMediaQueries(c.conditions));
     }
-    if ("condition" in c && c.condition === "screen") {
-      array.push(c);
+    if ("condition" in c && c.condition === "screen" && c.media_query) {
+      array.push(c.media_query);
     }
     return array;
   }, []);
@@ -93,11 +92,7 @@ export class HuiConditionalBase extends ReactiveElement {
       return;
     }
 
-    const screenConditions = extractScreenConditions(this._config.conditions);
-
-    const mediaQueries = screenConditions
-      .filter((c) => c.media_query)
-      .map((c) => c.media_query as string);
+    const mediaQueries = extractMediaQueries(this._config.conditions);
 
     if (deepEqual(mediaQueries, this._mediaQueries)) return;
 
