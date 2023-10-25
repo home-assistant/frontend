@@ -142,7 +142,7 @@ class HaConfigEnergy extends LitElement {
     const validationPromise = getEnergyPreferenceValidation(this.hass);
     const energyInfoPromise = await getEnergyInfo(this.hass);
     try {
-      this._preferences = await getEnergyPreferences(this.hass.connection);
+      this._preferences = await getEnergyPreferences(this.hass);
     } catch (err: any) {
       if (err.code === "not_found") {
         this._preferences = INITIAL_CONFIG;

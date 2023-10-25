@@ -14,7 +14,6 @@ import { loadTokens, saveTokens } from "../common/auth/token_storage";
 import { hassUrl } from "../data/auth";
 import { isExternal } from "../data/external";
 import { getRecorderInfo } from "../data/recorder";
-import { getEnergyPreferences } from "../data/energy";
 import { subscribeFrontendUserData } from "../data/frontend";
 import { fetchConfig, fetchResources } from "../data/lovelace";
 import { subscribePanels } from "../data/ws-panels";
@@ -132,6 +131,5 @@ window.hassConnection.then(({ conn }) => {
       // Ignore it, it is handled by Lovelace panel.
     });
     preloadWindow.llResProm = fetchResources(conn);
-    preloadWindow.energyPreferencesProm = getEnergyPreferences(conn);
   }
 });

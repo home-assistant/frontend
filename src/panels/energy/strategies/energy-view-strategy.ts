@@ -9,7 +9,6 @@ import {
   LovelaceStrategyConfig,
   LovelaceViewConfig,
 } from "../../../data/lovelace";
-import { WindowWithPreloads } from "../../../data/preloads";
 import { HomeAssistant } from "../../../types";
 
 const setupWizard = async (): Promise<LovelaceViewConfig> => {
@@ -32,18 +31,10 @@ export class EnergyViewStrategy extends ReactiveElement {
   ): Promise<LovelaceViewConfig> {
     const view: LovelaceViewConfig = { cards: [] };
 
-    let energyPreferencesProm: Promise<EnergyPreferences> | undefined;
-    const preloadWindow = window as WindowWithPreloads;
-    // On first load, we speed up loading page by having energyPreferencesProm ready
-    if (preloadWindow.energyPreferencesProm) {
-      energyPreferencesProm = preloadWindow.energyPreferencesProm;
-    }
-
     let prefs: EnergyPreferences;
 
     try {
-      prefs = await (energyPreferencesProm ||
-        getEnergyPreferences(hass.connection));
+      prefs = await getEnergyPreferences(hass);
     } catch (err: any) {
       if (err.code === "not_found") {
         return setupWizard();
