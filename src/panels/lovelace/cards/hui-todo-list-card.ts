@@ -11,8 +11,9 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { guard } from "lit/directives/guard";
 import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
+import type { SortableEvent } from "sortablejs";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-card";
@@ -75,17 +76,11 @@ export class HuiTodoListCard
 
   @state() private _items?: Record<string, TodoItem>;
 
-  @state() private _uncheckedItems?: TodoItem[];
-
-  @state() private _checkedItems?: TodoItem[];
-
   @state() private _reordering = false;
-
-  @state() private _renderEmptySortable = false;
 
   private _sortable?: SortableInstance;
 
-  @query("#sortable") private _sortableEl?: HTMLElement;
+  @query("#unchecked") private _uncheckedContainer?: HTMLElement;
 
   public getCardSize(): number {
     return (this._config ? (this._config.title ? 2 : 0) : 0) + 3;
@@ -109,6 +104,24 @@ export class HuiTodoListCard
     return undefined;
   }
 
+  private _getCheckedItems = memoizeOne(
+    (items?: Record<string, TodoItem>): TodoItem[] =>
+      items
+        ? Object.values(items).filter(
+            (item) => item.status === TodoItemStatus.Completed
+          )
+        : []
+  );
+
+  private _getUncheckedItems = memoizeOne(
+    (items?: Record<string, TodoItem>): TodoItem[] =>
+      items
+        ? Object.values(items).filter(
+            (item) => item.status === TodoItemStatus.NeedsAction
+          )
+        : []
+  );
+
   public willUpdate(
     changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
@@ -118,8 +131,7 @@ export class HuiTodoListCard
       }
       this._fetchData();
     } else if (changedProperties.has("_entityId") || !this._items) {
-      this._uncheckedItems = [];
-      this._checkedItems = [];
+      this._items = undefined;
       this._fetchData();
     }
   }
@@ -156,6 +168,9 @@ export class HuiTodoListCard
     if (!this._config || !this.hass || !this._entityId) {
       return nothing;
     }
+
+    const checkedItems = this._getCheckedItems(this._items);
+    const uncheckedItems = this._getUncheckedItems(this._items);
 
     return html`
       <ha-card
@@ -199,20 +214,8 @@ export class HuiTodoListCard
               `
             : nothing}
         </div>
-        ${this._reordering
-          ? html`
-              <div id="sortable">
-                ${guard(
-                  [this._uncheckedItems, this._renderEmptySortable],
-                  () =>
-                    this._renderEmptySortable
-                      ? ""
-                      : this._renderItems(this._uncheckedItems!)
-                )}
-              </div>
-            `
-          : this._renderItems(this._uncheckedItems!)}
-        ${this._checkedItems!.length > 0
+        <div id="unchecked">${this._renderItems(uncheckedItems)}</div>
+        ${checkedItems.length
           ? html`
               <div class="divider"></div>
               <div class="checked">
@@ -224,7 +227,7 @@ export class HuiTodoListCard
                 ${this.todoListSupportsFeature(
                   TodoListEntityFeature.DELETE_TODO_ITEM
                 )
-                  ? html` <ha-svg-icon
+                  ? html`<ha-svg-icon
                       class="clearall"
                       tabindex="0"
                       .path=${mdiNotificationClearAll}
@@ -237,7 +240,7 @@ export class HuiTodoListCard
                   : nothing}
               </div>
               ${repeat(
-                this._checkedItems!,
+                checkedItems,
                 (item) => item.uid,
                 (item) => html`
                   <div class="editRow">
@@ -322,21 +325,12 @@ export class HuiTodoListCard
     if (!this.hass || !this._entityId) {
       return;
     }
-    const checkedItems: TodoItem[] = [];
-    const uncheckedItems: TodoItem[] = [];
     const items = await fetchItems(this.hass!, this._entityId!);
     const records: Record<string, TodoItem> = {};
     items.forEach((item) => {
       records[item.uid!] = item;
-      if (item.status === TodoItemStatus.Completed) {
-        checkedItems.push(item);
-      } else {
-        uncheckedItems.push(item);
-      }
     });
     this._items = records;
-    this._checkedItems = checkedItems;
-    this._uncheckedItems = uncheckedItems;
   }
 
   private _completeItem(ev): void {
@@ -373,7 +367,7 @@ export class HuiTodoListCard
       return;
     }
     const deleteActions: Array<Promise<any>> = [];
-    this._checkedItems!.forEach((item: TodoItem) => {
+    this._getCheckedItems(this._items).forEach((item: TodoItem) => {
       deleteActions.push(deleteItem(this.hass!, this._entityId!, item.uid!));
     });
     await Promise.all(deleteActions).finally(() => this._fetchData());
@@ -416,41 +410,39 @@ export class HuiTodoListCard
 
   private async _createSortable() {
     const Sortable = (await import("../../../resources/sortable")).default;
-    const sortableEl = this._sortableEl;
-    this._sortable = new Sortable(sortableEl!, {
+    this._sortable = new Sortable(this._uncheckedContainer!, {
       animation: 150,
       fallbackClass: "sortable-fallback",
       dataIdAttr: "item-id",
       handle: "ha-svg-icon",
-      onEnd: async (evt) => {
+      onChoose: (evt: SortableEvent) => {
+        (evt.item as any).placeholder =
+          document.createComment("sort-placeholder");
+        evt.item.after((evt.item as any).placeholder);
+      },
+      onEnd: (evt: SortableEvent) => {
+        // put back in original location
+        if ((evt.item as any).placeholder) {
+          (evt.item as any).placeholder.replaceWith(evt.item);
+          delete (evt.item as any).placeholder;
+        }
         if (evt.newIndex === undefined || evt.oldIndex === undefined) {
           return;
         }
         // Since this is `onEnd` event, it's possible that
-        // an item wa dragged away and was put back to its original position.
+        // an item was dragged away and was put back to its original position.
         if (evt.oldIndex !== evt.newIndex) {
-          const item = this._uncheckedItems![evt.oldIndex];
-          moveItem(
-            this.hass!,
-            this._entityId!,
-            item.uid!,
-            evt.newIndex
-          ).finally(() => this._fetchData());
-          // Move the shopping list item in memory.
-          this._uncheckedItems!.splice(
-            evt.newIndex,
-            0,
-            this._uncheckedItems!.splice(evt.oldIndex, 1)[0]
-          );
+          this._moveItem(evt.oldIndex, evt.newIndex);
         }
-        this._renderEmptySortable = true;
-        await this.updateComplete;
-        while (sortableEl?.lastElementChild) {
-          sortableEl.removeChild(sortableEl.lastElementChild);
-        }
-        this._renderEmptySortable = false;
       },
     });
+  }
+
+  private async _moveItem(oldIndex, newIndex) {
+    const item = this._getUncheckedItems(this._items)[oldIndex];
+    await moveItem(this.hass!, this._entityId!, item.uid!, newIndex).finally(
+      () => this._fetchData()
+    );
   }
 
   static get styles(): CSSResultGroup {
