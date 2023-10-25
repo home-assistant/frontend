@@ -259,6 +259,7 @@ export class HAFullCalendar extends LitElement {
 
   protected firstUpdated(): void {
     this._loadCalendar(this.initialView);
+    this._activeView = this.initialView;
   }
 
   private async _loadCalendar(initialView: FullCalendarView) {
@@ -512,7 +513,7 @@ export class HAFullCalendar extends LitElement {
             --ha-card-background,
             var(--card-background-color, white)
           );
-          min-height: 400px;
+          height: var(--calendar-height);
           --fc-neutral-bg-color: var(
             --ha-card-background,
             var(--card-background-color, white)
