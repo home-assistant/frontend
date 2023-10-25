@@ -88,7 +88,7 @@ export class HuiButtonCardEditor
           name: "tap_action",
           selector: {
             ui_action: {
-              default: getEntityDefaultButtonAction(entityId),
+              default_action: getEntityDefaultButtonAction(entityId),
             },
           },
         },
@@ -96,7 +96,7 @@ export class HuiButtonCardEditor
           name: "hold_action",
           selector: {
             ui_action: {
-              default: "more-info",
+              default_action: "more-info",
             },
           },
         },

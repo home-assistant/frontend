@@ -222,7 +222,7 @@ export class HuiTileCardEditor
               name: "tap_action",
               selector: {
                 ui_action: {
-                  default: "more-info",
+                  default_action: "more-info",
                 },
               },
             },
@@ -230,7 +230,7 @@ export class HuiTileCardEditor
               name: "icon_tap_action",
               selector: {
                 ui_action: {
-                  default: entityId
+                  default_action: entityId
                     ? getEntityDefaultTileIconAction(entityId)
                     : "more-info",
                 },
