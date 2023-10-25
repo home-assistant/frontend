@@ -10,7 +10,11 @@ import {
   isFirstDayOfMonth,
   isLastDayOfMonth,
 } from "date-fns/esm";
-import { Collection, getCollection } from "home-assistant-js-websocket";
+import {
+  Collection,
+  Connection,
+  getCollection,
+} from "home-assistant-js-websocket";
 import { calcDate, calcDateProperty } from "../common/datetime/calc_date";
 import { formatTime24h } from "../common/datetime/format_time";
 import { groupBy } from "../common/util/group-by";
@@ -208,8 +212,8 @@ export const getEnergyPreferenceValidation = async (hass: HomeAssistant) => {
   });
 };
 
-export const getEnergyPreferences = (hass: HomeAssistant) =>
-  hass.callWS<EnergyPreferences>({
+export const getEnergyPreferences = (conn: Connection) =>
+  conn.sendMessagePromise<EnergyPreferences>({
     type: "energy/get_prefs",
   });
 
@@ -606,7 +610,7 @@ export const getEnergyDataCollection = (
       if (!collection.prefs) {
         // This will raise if not found.
         // Detect by checking `e.code === "not_found"
-        collection.prefs = await getEnergyPreferences(hass);
+        collection.prefs = await getEnergyPreferences(hass.connection);
       }
 
       if (collection._refreshTimeout) {

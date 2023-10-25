@@ -34,7 +34,7 @@ export class EnergyViewStrategy extends ReactiveElement {
     let prefs: EnergyPreferences;
 
     try {
-      prefs = await getEnergyPreferences(hass);
+      prefs = await getEnergyPreferences(hass.connection);
     } catch (err: any) {
       if (err.code === "not_found") {
         return setupWizard();

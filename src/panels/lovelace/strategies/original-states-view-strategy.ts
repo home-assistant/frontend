@@ -2,7 +2,8 @@ import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { getEnergyPreferences } from "../../../data/energy";
+import { getEnergyPreferences, EnergyPreferences } from "../../../data/energy";
+import { WindowWithPreloads } from "../../../data/preloads";
 import {
   LovelaceStrategyConfig,
   LovelaceViewConfig,
@@ -28,11 +29,21 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
       };
     }
 
+    let energyPreferencesProm: Promise<EnergyPreferences> | undefined;
+    const preloadWindow = window as WindowWithPreloads;
+    // On first load, we speed up loading page by having energyPreferencesProm ready
+    if (preloadWindow.energyPreferencesProm) {
+      energyPreferencesProm = preloadWindow.energyPreferencesProm;
+      preloadWindow.energyPreferencesProm = undefined;
+    }
+
     const [localize, energyPrefs] = await Promise.all([
       hass.loadBackendTranslation("title"),
       isComponentLoaded(hass, "energy")
         ? // It raises if not configured, just swallow that.
-          getEnergyPreferences(hass).catch(() => undefined)
+          (
+            energyPreferencesProm || getEnergyPreferences(hass.connection)
+          ).catch(() => undefined)
         : undefined,
     ]);
 
