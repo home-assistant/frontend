@@ -108,12 +108,10 @@ export class HaDeviceCard extends LitElement {
               `
             : ""}
           ${this._getAddresses().map(
-            (connection) => html`
+            ([type, value]) => html`
               <div class="extra-info">
-                ${connection[0] === "mac"
-                  ? connection[0].toUpperCase()
-                  : titleCase(connection[0])}:
-                ${connection[1].toUpperCase()}
+                ${type === "mac" ? "MAC" : titleCase(type)}:
+                ${value.toUpperCase()}
               </div>
             `
           )}
