@@ -14,14 +14,16 @@ import {
 import { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 
-function flatConditions(
+function extractScreenConditions(
   conditions: (Condition | LegacyCondition)[]
-): (Condition | LegacyCondition)[] {
-  return conditions.reduce<(Condition | LegacyCondition)[]>((array, c) => {
+): ScreenCondition[] {
+  return conditions.reduce<ScreenCondition[]>((array, c) => {
     if ("conditions" in c && c.conditions) {
-      array.push(...flatConditions(c.conditions));
+      array.push(...extractScreenConditions(c.conditions));
     }
-    array.push(c);
+    if ("condition" in c && c.condition === "screen") {
+      array.push(c);
+    }
     return array;
   }, []);
 }
@@ -91,13 +93,9 @@ export class HuiConditionalBase extends ReactiveElement {
       return;
     }
 
-    const flattenConditions = flatConditions(this._config.conditions);
+    const screenConditions = extractScreenConditions(this._config.conditions);
 
-    const conditions = flattenConditions.filter(
-      (c) => "condition" in c && c.condition === "screen"
-    ) as ScreenCondition[];
-
-    const mediaQueries = conditions
+    const mediaQueries = screenConditions
       .filter((c) => c.media_query)
       .map((c) => c.media_query as string);
 
