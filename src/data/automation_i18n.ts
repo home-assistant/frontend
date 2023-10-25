@@ -661,9 +661,14 @@ const tryDescribeTrigger = (
     }`;
   }
 
-  return `${
-    trigger.platform ? trigger.platform.replace(/_/g, " ") : "Unknown"
-  } trigger`;
+  if (typeof trigger.platform) {
+    return hass.localize(
+      `ui.panel.config.automation.editor.triggers.type.${trigger.platform}.label`
+    );
+  }
+  return hass.localize(
+    `ui.panel.config.automation.editor.triggers.unknown_trigger`
+  );
 };
 
 export const describeCondition = (
@@ -1100,7 +1105,12 @@ const tryDescribeCondition = (
     return `When triggered by ${condition.id}`;
   }
 
-  return `${
-    condition.condition ? condition.condition.replace(/_/g, " ") : "Unknown"
-  } condition`;
+  if (condition.condition) {
+    return hass.localize(
+      `ui.panel.config.automation.editor.conditions.type.${condition.condition}.label`
+    );
+  }
+  return hass.localize(
+    `ui.panel.config.automation.editor.conditions.unknown_condition`
+  );
 };
