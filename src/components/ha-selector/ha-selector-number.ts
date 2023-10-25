@@ -70,11 +70,9 @@ export class HaNumberSelector extends LitElement {
           (this.selector.number?.step ?? 1) % 1 !== 0
             ? "decimal"
             : "numeric"}
-          .label=${this.selector.number?.mode !== "box"
-            ? undefined
-            : this.label}
+          .label=${!isBox ? undefined : this.label}
           .placeholder=${this.placeholder}
-          class=${classMap({ single: this.selector.number?.mode === "box" })}
+          class=${classMap({ single: isBox })}
           .min=${this.selector.number?.min}
           .max=${this.selector.number?.max}
           .value=${this._valueStr ?? ""}
@@ -86,7 +84,7 @@ export class HaNumberSelector extends LitElement {
           .suffix=${this.selector.number?.unit_of_measurement}
           type="number"
           autoValidate
-          ?no-spinner=${this.selector.number?.mode !== "box"}
+          ?no-spinner=${!isBox}
           @input=${this._handleInputChange}
         >
         </ha-textfield>
