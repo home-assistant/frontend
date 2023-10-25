@@ -15,7 +15,7 @@ export const enum TodoItemStatus {
 }
 
 export interface TodoItem {
-  uid?: string;
+  uid: string;
   summary: string;
   status: TodoItemStatus;
 }
