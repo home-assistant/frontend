@@ -183,6 +183,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
                   alt=${router.brand}
+                  crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                   @error=${this._onImageError}
                   @load=${this._onImageLoad}

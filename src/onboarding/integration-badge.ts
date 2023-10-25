@@ -23,6 +23,7 @@ class IntegrationBadge extends LitElement {
             type: "icon",
             darkOptimized: this.darkOptimizedIcon,
           })}
+          crossorigin="anonymous"
           referrerpolicy="no-referrer"
         />
       </div>

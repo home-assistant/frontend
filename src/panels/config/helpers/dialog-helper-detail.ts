@@ -207,13 +207,14 @@ export class DialogHelperDetail extends LitElement {
                 <img
                   slot="graphic"
                   loading="lazy"
+                  alt=""
                   src=${brandsUrl({
                     domain,
                     type: "icon",
                     useFallback: true,
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
-                  aria-hidden="true"
+                  crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                 />
                 <span class="item-text"> ${label} </span>

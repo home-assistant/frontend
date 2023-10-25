@@ -225,6 +225,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                     type: "icon",
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
+                  crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                   slot="prefix"
                 />
