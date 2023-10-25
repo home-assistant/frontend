@@ -1,3 +1,0 @@
----
-title: Shopping List Card
----

@@ -14,6 +14,7 @@ import { ConfigEntry, getConfigEntries } from "../../../../data/config_entries";
 import {
   emptySolarEnergyPreference,
   SolarSourceTypeEnergyPreference,
+  energyStatisticHelpUrl,
 } from "../../../../data/energy";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
@@ -98,6 +99,7 @@ export class DialogEnergySolarSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
+          .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_from}
           .label=${this.hass.localize(
@@ -153,6 +155,7 @@ export class DialogEnergySolarSettings
                     >
                       <img
                         alt=""
+                        crossorigin="anonymous"
                         referrerpolicy="no-referrer"
                         style="height: 24px; margin-right: 16px;"
                         src=${brandsUrl({

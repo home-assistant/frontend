@@ -1,11 +1,10 @@
-import {
-  setPassiveTouchGestures,
-  setCancelSyntheticClickEvents,
-} from "@polymer/polymer/lib/utils/settings";
 import "@webcomponents/scoped-custom-element-registry/scoped-custom-element-registry.min";
 import "../layouts/home-assistant";
-import "../resources/ha-style";
-import "../resources/roboto";
 
-setPassiveTouchGestures(true);
-setCancelSyntheticClickEvents(false);
+import("../resources/ha-style");
+import("@polymer/polymer/lib/utils/settings").then(
+  ({ setCancelSyntheticClickEvents, setPassiveTouchGestures }) => {
+    setCancelSyntheticClickEvents(false);
+    setPassiveTouchGestures(true);
+  }
+);

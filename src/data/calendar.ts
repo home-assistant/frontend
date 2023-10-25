@@ -143,7 +143,7 @@ export const getCalendars = (hass: HomeAssistant): Calendar[] =>
     )
     .sort()
     .map((eid, idx) => ({
-      entity_id: eid,
+      ...hass.states[eid],
       name: computeStateName(hass.states[eid]),
       backgroundColor: getColorByIndex(idx),
     }));

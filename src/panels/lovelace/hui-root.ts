@@ -407,7 +407,7 @@ class HUIRoot extends LitElement {
                                 `
                               : ""}
                             ${this.hass!.user?.is_admin &&
-                            !this.hass!.config.safe_mode
+                            !this.hass!.config.recovery_mode
                               ? html`
                                   <mwc-list-item
                                     graphic="icon"
@@ -691,7 +691,7 @@ class HUIRoot extends LitElement {
     return (
       (this.narrow && this._conversation(this.hass.config.components)) ||
       this._editMode ||
-      (this.hass!.user?.is_admin && !this.hass!.config.safe_mode) ||
+      (this.hass!.user?.is_admin && !this.hass!.config.recovery_mode) ||
       (this.hass.panels.lovelace?.config as LovelacePanelConfig)?.mode ===
         "yaml" ||
       this._yamlMode
@@ -844,6 +844,9 @@ class HUIRoot extends LitElement {
     const oldIndex = this._curView as number;
     const newIndex = (this._curView as number) - 1;
     this._curView = newIndex;
+    if (!this.config.views[oldIndex].path) {
+      this._navigateToView(newIndex, true);
+    }
     lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
   }
 
@@ -856,6 +859,9 @@ class HUIRoot extends LitElement {
     const oldIndex = this._curView as number;
     const newIndex = (this._curView as number) + 1;
     this._curView = newIndex;
+    if (!this.config.views[oldIndex].path) {
+      this._navigateToView(newIndex, true);
+    }
     lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
   }
 

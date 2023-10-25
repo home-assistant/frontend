@@ -8,7 +8,7 @@
     "logbook": "Logbook",
     "history": "History",
     "mailbox": "Mailbox",
-    "shopping_list": "Shopping list",
+    "todo": "To-do lists",
     "developer_tools": "Developer tools",
     "media_browser": "Media",
     "profile": "Profile"
@@ -311,7 +311,8 @@
       "successfully_deleted": "Successfully deleted",
       "error_required": "Required",
       "copied": "Copied",
-      "copied_clipboard": "Copied to clipboard"
+      "copied_clipboard": "Copied to clipboard",
+      "name": "Name"
     },
     "components": {
       "selectors": {
@@ -417,6 +418,9 @@
       "coversation-agent-picker": {
         "conversation_agent": "Conversation agent",
         "none": "None"
+      },
+      "country-picker": {
+        "country": "Country"
       },
       "pipeline-picker": {
         "pipeline": "Assistant",
@@ -525,11 +529,15 @@
         "start_date": "Start date",
         "end_date": "End date",
         "select": "Select",
+        "select_date_range": "Select time period",
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",
           "this_week": "This week",
-          "last_week": "Last week"
+          "last_week": "Last week",
+          "this_quarter": "This quarter",
+          "this_month": "This month",
+          "this_year": "This year"
         }
       },
       "relative_time": {
@@ -664,6 +672,7 @@
       "calendar": {
         "label": "Calendar",
         "my_calendars": "My calendars",
+        "create_calendar": "Create calendar",
         "today": "Today",
         "event_retrieval_error": "Could not retrieve events for calendars:",
         "event": {
@@ -778,6 +787,10 @@
       }
     },
     "dialogs": {
+      "safe_mode": {
+        "title": "Safe mode",
+        "text": "Home Assistant is running in safe mode, custom integrations and frontend modules are not available. Restart Home Assistant to exit safe mode."
+      },
       "quick-bar": {
         "commands": {
           "reload": {
@@ -1191,7 +1204,7 @@
         "advanced_options": "Advanced options",
         "reload": {
           "title": "Quick reload",
-          "description": "Load new YAML configurations without a restart.",
+          "description": "Loads new YAML configurations without a restart.",
           "reloading": "Reloading configuration",
           "failed": "Failed to reload configuration"
         },
@@ -1210,7 +1223,7 @@
         },
         "reboot": {
           "title": "Reboot system",
-          "description": "Restart the system running Home Assistant and all Add-ons.",
+          "description": "Restarts the system running Home Assistant and all add-ons.",
           "confirm_title": "Reboot system?",
           "confirm_description": "This will reboot the complete system which includes Home Assistant and all the add-ons.",
           "confirm_action": "Reboot",
@@ -1219,12 +1232,20 @@
         },
         "shutdown": {
           "title": "Shut down system",
-          "description": "Shut down the system running Home Assistant and all add-ons.",
+          "description": "Shuts down the system running Home Assistant and all add-ons.",
           "confirm_title": "Shut down system?",
           "confirm_description": "This will shut down the complete system which includes Home Assistant and all add-ons.",
           "confirm_action": "Shut down",
           "shutting_down": "Shutting down system",
           "failed": "Failed to shut down system"
+        },
+        "restart-safe-mode": {
+          "title": "Restart Home Assistant in safe mode",
+          "description": "Restarts Home Assistant without loading any custom integrations and frontend modules.",
+          "confirm_title": "Restart Home Assistant in safe mode?",
+          "confirm_description": "This will restart Home Assistant without loading any custom integrations and frontend modules.",
+          "confirm_action": "Restart",
+          "failed": "Failed to restart Home Assistant"
         }
       },
       "aliases": {
@@ -1462,13 +1483,6 @@
         "nameservers": "Name Servers: {nameservers}"
       }
     },
-    "duration": {
-      "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
-      "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
-      "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
-      "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
-      "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
-    },
     "weekdays": {
       "monday": "Monday",
       "tuesday": "Tuesday",
@@ -1488,7 +1502,8 @@
         "key_missing": "Required key ''{key}'' is missing.",
         "key_not_expected": "Key ''{key}'' is not expected or not supported by the visual editor.",
         "key_wrong_type": "The provided value for ''{key}'' is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
-        "no_template_editor_support": "Templates not supported in visual editor"
+        "no_template_editor_support": "Templates not supported in visual editor",
+        "media_query_not_supported": "This media query is not supported by the visual editor."
       },
       "supervisor": {
         "title": "Could not load the Supervisor panel!",
@@ -2023,7 +2038,7 @@
           "frontend": "frontend-ui",
           "built_using": "Built using",
           "icons_by": "Icons by",
-          "frontend_version": "Frontend {version} - {type}",
+          "frontend_version_label": "Frontend",
           "custom_uis": "Custom UIs:",
           "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
           "documentation": "Documentation",
@@ -2226,6 +2241,13 @@
               "try_one_month": "Try 1 month for free",
               "sign_in": "Sign in"
             }
+          },
+          "debug": {
+            "header": "Debug Assistant",
+            "no_runs_found": "No runs found",
+            "older_run": "Older run",
+            "newer_run": "Newer run",
+            "start_debug_run": "Start debug run"
           },
           "expose": {
             "caption": "Expose",
@@ -2455,9 +2477,9 @@
                   "type_value": "Fixed number",
                   "type_input": "Numeric value of another entity",
                   "description": {
-                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
+                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
                   }
                 },
                 "persistent_notification": {
@@ -2655,6 +2677,9 @@
                     "fri": "Friday",
                     "sat": "Saturday",
                     "sun": "Sunday"
+                  },
+                  "description": {
+                    "full": "Confirm the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
                   }
                 },
                 "trigger": {
@@ -2694,7 +2719,7 @@
               "delete": "[%key:ui::common::delete%]",
               "delete_confirm_title": "Delete action?",
               "delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
-              "unsupported_action": "No visual editor support for action: {action}",
+              "unsupported_action": "No visual editor support for this action",
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "type": {
@@ -2818,6 +2843,9 @@
                   "option": "Option {number}",
                   "add_option": "Add option",
                   "remove_option": "Remove option",
+                  "change_alias": "Rename option",
+                  "alias": "Option name",
+                  "delete_confirm_title": "Remove option?",
                   "option_description_additional": " {numberOfAdditionalConditions, plural,\n one {and 1 more condition}\n other {and {numberOfAdditionalConditions} more conditions}}",
                   "conditions": "Conditions",
                   "no_conditions": "[%key:ui::panel::config::devices::automation::conditions::no_conditions%]",
@@ -2979,6 +3007,24 @@
             "unavailable": "Script is unavailable",
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
+            "field": {
+              "name": "[%key:ui::common::name%]",
+              "key": "Field variable key name",
+              "description": "Description",
+              "required": "Required",
+              "default": "Default",
+              "selector": "Selector",
+              "yaml_error": "Field yaml has invalid format.",
+              "key_not_null": "The field key must not be empty.",
+              "key_not_unique": "The field key must not be the same value as another field.",
+              "fields": "Fields",
+              "link_help_fields": "Learn more about fields.",
+              "add_fields": "Add fields",
+              "add_field": "Add field",
+              "field": "field"
+            },
+            "field_delete_confirm_title": "Delete field?",
+            "field_delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
             "header": "Script: {name}",
             "default_name": "New Script",
             "modes": {
@@ -3586,6 +3632,7 @@
             "firmware": "Firmware: {version}",
             "hardware": "Hardware: {version}",
             "version": "Version: {version}",
+            "serial_number": "Serial number: {serial_number}",
             "unnamed_entry": "Unnamed entry",
             "unknown_via_device": "Unknown device",
             "area": "In {area}",
@@ -4003,10 +4050,26 @@
             "remove_failed": "Remove failed",
             "update_firmware": "Update",
             "highest_security": "Highest security",
+            "hard_reset_controller": "Factory reset",
             "unknown": "Unknown",
             "zwave_plus": "Z-Wave Plus",
             "zwave_plus_version": "Version {version}",
             "node_statistics": "Statistics"
+          },
+          "hard_reset_controller": {
+            "NotStarted": {
+              "title": "Reset Controller to Factory Settings",
+              "body": "If you decide to move forward, you will reset your controller to factory settings. As a result, the controller will forget all devices it is paired with and all Z-Wave devices for this network will be removed from Home Assistant. If there are any devices still paired with the controller when it is reset, they will have to go through the exclusion process before they can be re-paired. Would you like to continue?"
+            },
+            "InProgress": {
+              "title": "Resetting Controller",
+              "body": "Your controller is being reset and restarted. Wait until the process is complete before closing this dialog"
+            },
+            "Done": {
+              "title": "Controller Reset Complete",
+              "body": "Your controller has been reset to factory settings and has been restarted! You can now close this dialog."
+            },
+            "confirmation": "This action cannot be undone unless you have an NVM backup from your controller."
           },
           "node_statistics": {
             "title": "Device statistics",
@@ -4456,7 +4519,8 @@
           "entities": {
             "never_triggered": "Never triggered"
           },
-          "shopping-list": {
+          "todo-list": {
+            "lists": "To-do Lists",
             "checked_items": "Checked items",
             "clear_items": "Clear checked items",
             "add_item": "Add item",
@@ -4475,9 +4539,9 @@
           "iframe": {
             "error_secure_context": "Unable to load iframes pointing at websites using {target_protocol} if Home Assistant is served over {context_protocol}."
           },
-          "safe-mode": {
-            "header": "Safe mode activated",
-            "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong."
+          "recovery-mode": {
+            "header": "Recovery mode activated",
+            "description": "Home Assistant ran into trouble while loading your configuration and is now running in recovery mode. Take a look at the error log to see what went wrong."
           },
           "starting": {
             "description": "Home Assistant is starting, please wait…"
@@ -4675,6 +4739,8 @@
             "confirm_cancel": "Are you sure you want to cancel?",
             "show_visual_editor": "Show visual editor",
             "show_code_editor": "Show code editor",
+            "edit_ui": "[%key:ui::panel::config::automation::editor::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::config::automation::editor::edit_yaml%]",
             "add": "Add card",
             "edit": "Edit",
             "clear": "Clear",
@@ -4741,6 +4807,37 @@
               "none": "No action"
             }
           },
+          "condition-editor": {
+            "explanation": "The card will be shown when ALL conditions below are fulfilled.",
+            "add": "Add condition",
+            "condition": {
+              "numeric_state": {
+                "label": "Entity numeric state",
+                "above": "Above",
+                "below": "Below"
+              },
+              "screen": {
+                "label": "Screen",
+                "breakpoints": "Screen sizes",
+                "breakpoints_list": {
+                  "mobile": "Mobile",
+                  "tablet": "Tablet",
+                  "desktop": "Desktop",
+                  "wide": "Wide"
+                },
+                "min": "min: {size}px"
+              },
+              "state": {
+                "label": "Entity state",
+                "state_equal": "State is equal to",
+                "state_not_equal": "State is not equal to",
+                "current_state": "current"
+              },
+              "user": {
+                "label": "User"
+              }
+            }
+          },
           "card": {
             "alarm-panel": {
               "name": "Alarm panel",
@@ -4769,10 +4866,6 @@
               "description": "The Conditional card displays another card based on entity states.",
               "conditions": "Conditions",
               "card": "Card",
-              "state_equal": "State is equal to",
-              "state_not_equal": "State is not equal to",
-              "current_state": "current",
-              "condition_explanation": "The card will be shown when ALL conditions below are fulfilled.",
               "change_type": "Change type"
             },
             "config": {
@@ -5000,10 +5093,10 @@
               "graph_type": "Graph type",
               "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time."
             },
-            "shopping-list": {
-              "name": "Shopping list",
-              "description": "The Shopping list card allows you to add, edit, check-off, and clear items from your shopping list.",
-              "integration_not_loaded": "This card requires the `shopping_list` integration to be set up."
+            "todo-list": {
+              "name": "Todo list",
+              "description": "The to-do list card allows you to add, edit, check-off, and clear items from your to-do list.",
+              "integration_not_loaded": "This card requires the `todo` integration to be set up."
             },
             "thermostat": {
               "name": "Thermostat",
@@ -5019,6 +5112,8 @@
               "default_color": "Default color (state)",
               "show_entity_picture": "Show entity picture",
               "vertical": "Vertical",
+              "hide_state": "Hide state",
+              "state_content": "State content",
               "features": {
                 "name": "Features",
                 "not_compatible": "Not compatible",
@@ -5210,10 +5305,6 @@
           },
           "energy_period_selector": {
             "today": "Today",
-            "day": "Day",
-            "week": "Week",
-            "month": "Month",
-            "year": "Year",
             "previous": "Previous",
             "next": "Next",
             "compare": "Compare data"
@@ -5419,12 +5510,13 @@
           "qr_code_image": "QR code for token {name}"
         }
       },
-      "shopping_list": {
-        "start_conversation": "Start conversation"
+      "todo": {
+        "start_conversation": "Start conversation",
+        "create_list": "Create list"
       },
       "page-authorize": {
         "initializing": "Initializing",
-        "authorizing": "Login to your Home Assistant instance",
+        "authorizing": "Log in to your Home Assistant instance",
         "authorizing_app": "You're about to give the Home Assistant Companion app for {app} access to your Home Assistant instance.",
         "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
         "logging_in_with": "Logging in with {authProviderName}.",
@@ -5434,7 +5526,7 @@
         "form": {
           "working": "Please wait",
           "unknown_error": "Something went wrong",
-          "next": "Login",
+          "next": "Log in",
           "start_over": "Start over",
           "error": "Error: {error}",
           "providers": {
@@ -5481,7 +5573,7 @@
                 "invalid_code": "Invalid authentication code"
               },
               "abort": {
-                "login_expired": "Session expired, please login again."
+                "login_expired": "Session expired, please log in again."
               }
             },
             "legacy_api_password": {
@@ -5514,7 +5606,7 @@
                   "data": {
                     "user": "User"
                   },
-                  "description": "Please select a user you want to login as:"
+                  "description": "Please select a user you want to log in as:"
                 }
               },
               "abort": {

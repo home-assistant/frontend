@@ -21,6 +21,7 @@ import {
 } from "../data/lovelace";
 import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
+import { subscribeRepairsIssueRegistry } from "../data/repairs";
 import { subscribeUser } from "../data/ws-user";
 import type { ExternalAuth } from "../external_app/external_auth";
 import "../resources/array.flat.polyfill";
@@ -121,6 +122,7 @@ window.hassConnection.then(({ conn }) => {
   subscribeThemes(conn, noop);
   subscribeUser(conn, noop);
   subscribeFrontendUserData(conn, "core", noop);
+  subscribeRepairsIssueRegistry(conn, noop);
 
   if (location.pathname === "/" || location.pathname.startsWith("/lovelace/")) {
     const llWindow = window as WindowWithLovelaceProm;

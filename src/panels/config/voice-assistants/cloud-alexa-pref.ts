@@ -67,6 +67,7 @@ export class CloudAlexaPref extends LitElement {
               type: "icon",
               darkOptimized: this.hass.themes?.darkMode,
             })}
+            crossorigin="anonymous"
             referrerpolicy="no-referrer"
           />${this.hass.localize("ui.panel.config.cloud.account.alexa.title")}
         </h1>

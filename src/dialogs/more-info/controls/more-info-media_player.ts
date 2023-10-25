@@ -128,9 +128,8 @@ class MoreInfoMediaPlayer extends LitElement {
               ${supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
                 ? html`
                     <ha-slider
+                      labeled
                       id="input"
-                      pin
-                      ignore-bar-touch
                       .dir=${computeRTLDirection(this.hass!)}
                       .value=${Number(stateObj.attributes.volume_level) * 100}
                       @change=${this._selectedValueChanged}
@@ -283,8 +282,7 @@ class MoreInfoMediaPlayer extends LitElement {
   private _selectedValueChanged(e: Event): void {
     this.hass!.callService("media_player", "volume_set", {
       entity_id: this.stateObj!.entity_id,
-      volume_level:
-        Number((e.currentTarget! as HTMLElement).getAttribute("value")!) / 100,
+      volume_level: (e.target as any).value / 100,
     });
   }
 

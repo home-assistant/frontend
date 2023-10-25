@@ -278,6 +278,8 @@ export class HuiEnergyDevicesGraphCard
 
     chartData.sort((a, b) => b.x - a.x);
 
+    chartData.length = this._config?.max_devices || chartData.length;
+
     chartData.forEach((d: any) => {
       const color = getColorByIndex(d.idx);
 

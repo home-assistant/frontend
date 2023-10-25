@@ -6,8 +6,8 @@ import { HomeAssistant } from "../../../types";
 import "../../config/logs/error-log-card";
 import { LovelaceCard } from "../types";
 
-@customElement("hui-safe-mode-card")
-export class HuiSafeModeCard extends LitElement implements LovelaceCard {
+@customElement("hui-recovery-mode-card")
+export class HuiRecoveryModeCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   public getCardSize(): number {
@@ -22,12 +22,12 @@ export class HuiSafeModeCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         .header=${this.hass!.localize(
-          "ui.panel.lovelace.cards.safe-mode.header"
+          "ui.panel.lovelace.cards.recovery-mode.header"
         )}
       >
         <div class="card-content">
           ${this.hass!.localize(
-            "ui.panel.lovelace.cards.safe-mode.description"
+            "ui.panel.lovelace.cards.recovery-mode.description"
           )}
         </div>
         <error-log-card .hass=${this.hass}></error-log-card>
@@ -50,6 +50,6 @@ export class HuiSafeModeCard extends LitElement implements LovelaceCard {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-safe-mode-card": HuiSafeModeCard;
+    "hui-recovery-mode-card": HuiRecoveryModeCard;
   }
 }
