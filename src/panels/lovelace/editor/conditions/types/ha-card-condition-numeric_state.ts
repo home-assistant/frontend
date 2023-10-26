@@ -48,6 +48,7 @@ export class HaCardConditionNumericState extends LitElement {
               name: "above",
               selector: {
                 number: {
+                  step: "any",
                   mode: "box",
                   unit_of_measurement: stateObj?.attributes.unit_of_measurement,
                 },
@@ -57,6 +58,7 @@ export class HaCardConditionNumericState extends LitElement {
               name: "below",
               selector: {
                 number: {
+                  step: "any",
                   mode: "box",
                   unit_of_measurement: stateObj?.attributes.unit_of_measurement,
                 },

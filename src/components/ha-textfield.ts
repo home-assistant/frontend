@@ -136,6 +136,11 @@ export class HaTextField extends TextFieldBase {
         text-align: var(--text-field-text-align, start);
       }
 
+      /* Edge, hide reveal password icon */
+      ::-ms-reveal {
+        display: none;
+      }
+
       /* Chrome, Safari, Edge, Opera */
       :host([no-spinner]) input::-webkit-outer-spin-button,
       :host([no-spinner]) input::-webkit-inner-spin-button {
