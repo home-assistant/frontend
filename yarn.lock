@@ -1634,25 +1634,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-datetimeformat@npm:6.11.0":
-  version: 6.11.0
-  resolution: "@formatjs/intl-datetimeformat@npm:6.11.0"
+"@formatjs/intl-datetimeformat@npm:6.11.1":
+  version: 6.11.1
+  resolution: "@formatjs/intl-datetimeformat@npm:6.11.1"
   dependencies:
     "@formatjs/ecma402-abstract": 1.17.2
     "@formatjs/intl-localematcher": 0.4.2
     tslib: ^2.4.0
-  checksum: 6a503d0bfc2bcdbf904080bcc7da9531f2491496969b47640dd75b0ac029b0d1b11ea7a380f32153b4a07b275af522945b6bc66e153b47e9ab34754ac710cb8e
+  checksum: 585f33cc292ef509e1716062a83e887914180708452df273032df34e721ddb81b9a7d96bbe66333765f4834bee2ca788fff11acdd71a95bf7df58a9ed5224dec
   languageName: node
   linkType: hard
 
-"@formatjs/intl-displaynames@npm:6.6.0":
-  version: 6.6.0
-  resolution: "@formatjs/intl-displaynames@npm:6.6.0"
+"@formatjs/intl-displaynames@npm:6.6.1":
+  version: 6.6.1
+  resolution: "@formatjs/intl-displaynames@npm:6.6.1"
   dependencies:
     "@formatjs/ecma402-abstract": 1.17.2
     "@formatjs/intl-localematcher": 0.4.2
     tslib: ^2.4.0
-  checksum: d7794fd618499a85ea4a2b9ab47588259325f866f941eadd5047c05934d64504083758c9dfc50ec26665513bdeeb3f44f0bc81c9af919fd4ef68dd5192d114b4
+  checksum: e70c18f5f6228fbf937434c9168eac4d42c7f115410b42b66785ba43db4604184849d9e55b76ca4ce116359fec645b5e41e06b036dcb0966387c19753970c8e5
   languageName: node
   linkType: hard
 
@@ -9653,8 +9653,8 @@ __metadata:
     "@codemirror/state": 6.3.1
     "@codemirror/view": 6.21.3
     "@egjs/hammerjs": 2.0.17
-    "@formatjs/intl-datetimeformat": 6.11.0
-    "@formatjs/intl-displaynames": 6.6.0
+    "@formatjs/intl-datetimeformat": 6.11.1
+    "@formatjs/intl-displaynames": 6.6.1
     "@formatjs/intl-getcanonicallocales": 2.3.0
     "@formatjs/intl-listformat": 7.5.0
     "@formatjs/intl-locale": 3.4.0
