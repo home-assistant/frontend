@@ -237,6 +237,7 @@ export class HaSelectorSelector extends LitElement {
     this.hass.localize(
       `ui.components.selectors.selector.${schema.name}` as LocalizeKeys
     ) || schema.name;
+
   static get styles(): CSSResultGroup {
     return css`
       ha-alert {

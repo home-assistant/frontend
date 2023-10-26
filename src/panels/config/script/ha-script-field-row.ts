@@ -269,6 +269,14 @@ export default class HaScriptFieldRow extends LitElement {
     this._errorKey = undefined;
     this._uiError = undefined;
 
+    // If we render the default with an incompatible selector, it risks throwing an exception and not rendering.
+    // Clear the default when changing the selector type.
+    if (
+      Object.keys(this.field.selector)[0] !== Object.keys(value.selector)[0]
+    ) {
+      delete value.default;
+    }
+
     fireEvent(this, "value-changed", { value });
   }
 
