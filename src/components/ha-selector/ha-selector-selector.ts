@@ -161,7 +161,18 @@ export class HaSelectorSelector extends LitElement {
               },
             ] as const)
           : []),
-        ...(SELECTOR_SCHEMAS[choice] ?? []),
+        ...(SELECTOR_SCHEMAS[choice]
+          ? SELECTOR_SCHEMAS[choice].length > 1
+            ? [
+                {
+                  name: "",
+                  type: "expandable",
+                  title: localize("ui.components.selectors.selector.options"),
+                  schema: SELECTOR_SCHEMAS[choice],
+                },
+              ]
+            : SELECTOR_SCHEMAS[choice]
+          : []),
       ] as const
   );
 

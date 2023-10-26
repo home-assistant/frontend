@@ -330,6 +330,7 @@
           "unknown_file": "Unknown file"
         },
         "selector": {
+          "options": "Selector Options",
           "types": {
             "action": "Action",
             "area": "Area",
