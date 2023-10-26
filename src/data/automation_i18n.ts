@@ -642,10 +642,7 @@ const tryDescribeTrigger = (
   }
 
   // Device Trigger
-  if (trigger.platform === "device") {
-    if (!trigger.device_id) {
-      return "Device trigger";
-    }
+  if (trigger.platform === "device" && trigger.device_id) {
     const config = trigger as DeviceTrigger;
     const localized = localizeDeviceAutomationTrigger(
       hass,
@@ -1081,10 +1078,7 @@ const tryDescribeCondition = (
     );
   }
 
-  if (condition.condition === "device") {
-    if (!condition.device_id) {
-      return "Device condition";
-    }
+  if (condition.condition === "device" && condition.device_id) {
     const config = condition as DeviceCondition;
     const localized = localizeDeviceAutomationCondition(
       hass,
@@ -1100,10 +1094,7 @@ const tryDescribeCondition = (
     }`;
   }
 
-  if (condition.condition === "trigger") {
-    if (!condition.id) {
-      return "Trigger condition";
-    }
+  if (condition.condition === "trigger" && condition.id) {
     return `When triggered by ${condition.id}`;
   }
 
