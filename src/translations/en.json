@@ -328,6 +328,35 @@
         "file": {
           "upload_failed": "Upload failed",
           "unknown_file": "Unknown file"
+        },
+        "selector": {
+          "types": {
+            "action": "Action",
+            "area": "Area",
+            "attribute": "Attribute",
+            "boolean": "Boolean",
+            "color_temp": "Color temperature",
+            "condition": "Condition",
+            "date": "Date",
+            "datetime": "Date and Time",
+            "device": "Device",
+            "duration": "Duration",
+            "entity": "Entity",
+            "icon": "Icon",
+            "location": "Location",
+            "media": "Media",
+            "number": "Number",
+            "object": "Object",
+            "color_rgb": "RGB Color",
+            "select": "Select",
+            "state": "State",
+            "target": "Target",
+            "template": "Template",
+            "text": "Text",
+            "theme": "Theme",
+            "time": "Time",
+            "manual": "Manual Entry"
+          }
         }
       },
       "logbook": {

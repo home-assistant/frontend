@@ -58,7 +58,7 @@ export default class HaScriptFieldRow extends LitElement {
         },
         {
           name: "selector",
-          selector: { object: {} },
+          selector: { selector: {} },
         },
         {
           name: "default",

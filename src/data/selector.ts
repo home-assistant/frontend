@@ -41,6 +41,7 @@ export type Selector =
   | ObjectSelector
   | AssistPipelineSelector
   | SelectSelector
+  | SelectorSelector
   | StateSelector
   | StatisticSelector
   | StringSelector
@@ -311,6 +312,11 @@ export interface SelectSelector {
     sort?: boolean;
     reorder?: boolean;
   } | null;
+}
+
+export interface SelectorSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  selector: {} | null;
 }
 
 export interface StateSelector {
