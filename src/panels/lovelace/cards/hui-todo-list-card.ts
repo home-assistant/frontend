@@ -21,6 +21,7 @@ import "../../../components/ha-checkbox";
 import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import {
@@ -37,8 +38,10 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { SortableInstance } from "../../../resources/sortable";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { TodoListCardConfig } from "./types";
+import { isUnavailableState } from "../../../data/entity";
 
 @customElement("hui-todo-list-card")
 export class HuiTodoListCard
@@ -74,7 +77,7 @@ export class HuiTodoListCard
 
   @state() private _entityId?: string;
 
-  @state() private _items?: Record<string, TodoItem>;
+  @state() private _items?: TodoItem[];
 
   @state() private _reordering = false;
 
@@ -104,22 +107,16 @@ export class HuiTodoListCard
     return undefined;
   }
 
-  private _getCheckedItems = memoizeOne(
-    (items?: Record<string, TodoItem>): TodoItem[] =>
-      items
-        ? Object.values(items).filter(
-            (item) => item.status === TodoItemStatus.Completed
-          )
-        : []
+  private _getCheckedItems = memoizeOne((items?: TodoItem[]): TodoItem[] =>
+    items
+      ? items.filter((item) => item.status === TodoItemStatus.Completed)
+      : []
   );
 
-  private _getUncheckedItems = memoizeOne(
-    (items?: Record<string, TodoItem>): TodoItem[] =>
-      items
-        ? Object.values(items).filter(
-            (item) => item.status === TodoItemStatus.NeedsAction
-          )
-        : []
+  private _getUncheckedItems = memoizeOne((items?: TodoItem[]): TodoItem[] =>
+    items
+      ? items.filter((item) => item.status === TodoItemStatus.NeedsAction)
+      : []
   );
 
   public willUpdate(
@@ -169,6 +166,18 @@ export class HuiTodoListCard
       return nothing;
     }
 
+    const stateObj = this.hass.states[this._entityId];
+
+    if (!stateObj) {
+      return html`
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._entityId)}
+        </hui-warning>
+      `;
+    }
+
+    const unavailable = isUnavailableState(stateObj.state);
+
     const checkedItems = this._getCheckedItems(this._items);
     const uncheckedItems = this._getUncheckedItems(this._items);
 
@@ -182,39 +191,44 @@ export class HuiTodoListCard
         <div class="addRow">
           ${this.todoListSupportsFeature(TodoListEntityFeature.CREATE_TODO_ITEM)
             ? html`
-                <ha-svg-icon
+                <ha-icon-button
                   class="addButton"
                   .path=${mdiPlus}
                   .title=${this.hass!.localize(
                     "ui.panel.lovelace.cards.todo-list.add_item"
                   )}
+                  .disabled=${unavailable}
                   @click=${this._addItem}
                 >
-                </ha-svg-icon>
+                </ha-icon-button>
                 <ha-textfield
                   class="addBox"
                   .placeholder=${this.hass!.localize(
                     "ui.panel.lovelace.cards.todo-list.add_item"
                   )}
                   @keydown=${this._addKeyPress}
+                  .disabled=${unavailable}
                 ></ha-textfield>
               `
             : nothing}
           ${this.todoListSupportsFeature(TodoListEntityFeature.MOVE_TODO_ITEM)
             ? html`
-                <ha-svg-icon
+                <ha-icon-button
                   class="reorderButton"
                   .path=${mdiSort}
                   .title=${this.hass!.localize(
                     "ui.panel.lovelace.cards.todo-list.reorder_items"
                   )}
                   @click=${this._toggleReorder}
+                  .disabled=${unavailable}
                 >
-                </ha-svg-icon>
+                </ha-icon-button>
               `
             : nothing}
         </div>
-        <div id="unchecked">${this._renderItems(uncheckedItems)}</div>
+        <div id="unchecked">
+          ${this._renderItems(uncheckedItems, unavailable)}
+        </div>
         ${checkedItems.length
           ? html`
               <div class="divider"></div>
@@ -235,6 +249,7 @@ export class HuiTodoListCard
                         "ui.panel.lovelace.cards.todo-list.clear_items"
                       )}
                       @click=${this._clearCompletedItems}
+                      .disabled=${unavailable}
                     >
                     </ha-svg-icon>`
                   : nothing}
@@ -247,16 +262,18 @@ export class HuiTodoListCard
                     ${this.todoListSupportsFeature(
                       TodoListEntityFeature.UPDATE_TODO_ITEM
                     )
-                      ? html` <ha-checkbox
+                      ? html`<ha-checkbox
                           tabindex="0"
                           .checked=${item.status === TodoItemStatus.Completed}
                           .itemId=${item.uid}
                           @change=${this._completeItem}
+                          .disabled=${unavailable}
                         ></ha-checkbox>`
                       : nothing}
                     <ha-textfield
                       class="item"
-                      .disabled=${!this.todoListSupportsFeature(
+                      .disabled=${unavailable ||
+                      !this.todoListSupportsFeature(
                         TodoListEntityFeature.UPDATE_TODO_ITEM
                       )}
                       .value=${item.summary}
@@ -272,7 +289,7 @@ export class HuiTodoListCard
     `;
   }
 
-  private _renderItems(items: TodoItem[]) {
+  private _renderItems(items: TodoItem[], unavailable = false) {
     return html`
       ${repeat(
         items,
@@ -282,16 +299,18 @@ export class HuiTodoListCard
             ${this.todoListSupportsFeature(
               TodoListEntityFeature.UPDATE_TODO_ITEM
             )
-              ? html` <ha-checkbox
+              ? html`<ha-checkbox
                   tabindex="0"
                   .checked=${item.status === TodoItemStatus.Completed}
                   .itemId=${item.uid}
+                  .disabled=${unavailable}
                   @change=${this._completeItem}
                 ></ha-checkbox>`
               : nothing}
             <ha-textfield
               class="item"
-              .disabled=${!this.todoListSupportsFeature(
+              .disabled=${unavailable ||
+              !this.todoListSupportsFeature(
                 TodoListEntityFeature.UPDATE_TODO_ITEM
               )}
               .value=${item.summary}
@@ -325,16 +344,21 @@ export class HuiTodoListCard
     if (!this.hass || !this._entityId) {
       return;
     }
-    const items = await fetchItems(this.hass!, this._entityId!);
-    const records: Record<string, TodoItem> = {};
-    items.forEach((item) => {
-      records[item.uid!] = item;
-    });
-    this._items = records;
+    if (!(this._entityId in this.hass.states)) {
+      return;
+    }
+    this._items = await fetchItems(this.hass!, this._entityId!);
+  }
+
+  private _getItem(itemId: string) {
+    return this._items?.find((item) => item.uid === itemId);
   }
 
   private _completeItem(ev): void {
-    const item = this._items![ev.target.itemId];
+    const item = this._getItem(ev.target.itemId);
+    if (!item) {
+      return;
+    }
     updateItem(this.hass!, this._entityId!, {
       ...item,
       status: ev.target.checked
@@ -346,7 +370,10 @@ export class HuiTodoListCard
   private _saveEdit(ev): void {
     // If name is not empty, update the item otherwise remove it
     if (ev.target.value) {
-      const item = this._items![ev.target.itemId];
+      const item = this._getItem(ev.target.itemId);
+      if (!item) {
+        return;
+      }
       updateItem(this.hass!, this._entityId!, {
         ...item,
         summary: ev.target.value,
@@ -368,7 +395,7 @@ export class HuiTodoListCard
     }
     const deleteActions: Array<Promise<any>> = [];
     this._getCheckedItems(this._items).forEach((item: TodoItem) => {
-      deleteActions.push(deleteItem(this.hass!, this._entityId!, item.uid!));
+      deleteActions.push(deleteItem(this.hass!, this._entityId!, item.uid));
     });
     await Promise.all(deleteActions).finally(() => this._fetchData());
   }
@@ -438,11 +465,37 @@ export class HuiTodoListCard
     });
   }
 
-  private async _moveItem(oldIndex, newIndex) {
-    const item = this._getUncheckedItems(this._items)[oldIndex];
-    await moveItem(this.hass!, this._entityId!, item.uid!, newIndex).finally(
-      () => this._fetchData()
-    );
+  private async _moveItem(oldIndex: number, newIndex: number) {
+    const uncheckedItems = this._getUncheckedItems(this._items);
+    const item = uncheckedItems[oldIndex];
+    let prevItem: TodoItem | undefined;
+    if (newIndex > 0) {
+      if (newIndex < oldIndex) {
+        prevItem = uncheckedItems[newIndex - 1];
+      } else {
+        prevItem = uncheckedItems[newIndex];
+      }
+    }
+
+    // Optimistic change
+    const itemIndex = this._items!.findIndex((itm) => itm.uid === item.uid);
+    this._items!.splice(itemIndex, 1);
+    if (newIndex === 0) {
+      this._items!.unshift(item);
+    } else {
+      const prevIndex = this._items!.findIndex(
+        (itm) => itm.uid === prevItem!.uid
+      );
+      this._items!.splice(prevIndex + 1, 0, item);
+    }
+    this._items = [...this._items!];
+
+    await moveItem(
+      this.hass!,
+      this._entityId!,
+      item.uid,
+      prevItem?.uid
+    ).finally(() => this._fetchData());
   }
 
   static get styles(): CSSResultGroup {
@@ -470,16 +523,14 @@ export class HuiTodoListCard
       }
 
       .addButton {
-        padding-right: 16px;
-        padding-inline-end: 16px;
-        cursor: pointer;
+        margin-left: -12px;
+        margin-inline-start: -12px;
         direction: var(--direction);
       }
 
       .reorderButton {
-        padding-left: 16px;
-        padding-inline-start: 16px;
-        cursor: pointer;
+        margin-right: -12px;
+        margin-inline-end: -12px;
         direction: var(--direction);
       }
 
