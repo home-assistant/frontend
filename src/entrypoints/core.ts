@@ -13,12 +13,9 @@ import {
 import { loadTokens, saveTokens } from "../common/auth/token_storage";
 import { hassUrl } from "../data/auth";
 import { isExternal } from "../data/external";
+import { getRecorderInfo } from "../data/recorder";
 import { subscribeFrontendUserData } from "../data/frontend";
-import {
-  fetchConfig,
-  fetchResources,
-  WindowWithLovelaceProm,
-} from "../data/lovelace";
+import { fetchConfig, fetchResources } from "../data/lovelace";
 import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";
@@ -27,6 +24,7 @@ import type { ExternalAuth } from "../external_app/external_auth";
 import "../resources/array.flat.polyfill";
 import "../resources/safari-14-attachshadow-patch";
 import { MAIN_WINDOW_NAME } from "../data/main_window";
+import { WindowWithPreloads } from "../data/preloads";
 
 window.name = MAIN_WINDOW_NAME;
 (window as any).frontendVersion = __VERSION__;
@@ -124,12 +122,14 @@ window.hassConnection.then(({ conn }) => {
   subscribeFrontendUserData(conn, "core", noop);
   subscribeRepairsIssueRegistry(conn, noop);
 
+  const preloadWindow = window as WindowWithPreloads;
+  preloadWindow.recorderInfoProm = getRecorderInfo(conn);
+
   if (location.pathname === "/" || location.pathname.startsWith("/lovelace/")) {
-    const llWindow = window as WindowWithLovelaceProm;
-    llWindow.llConfProm = fetchConfig(conn, null, false);
-    llWindow.llConfProm.catch(() => {
+    preloadWindow.llConfProm = fetchConfig(conn, null, false);
+    preloadWindow.llConfProm.catch(() => {
       // Ignore it, it is handled by Lovelace panel.
     });
-    llWindow.llResProm = fetchResources(conn);
+    preloadWindow.llResProm = fetchResources(conn);
   }
 });
