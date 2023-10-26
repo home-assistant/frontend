@@ -11,7 +11,8 @@ export const loadLovelaceResources = (
   hass: HomeAssistant
 ) => {
   // Don't load ressources on safe mode
-  if (hass.config.safe_mode) {
+  // Sometimes, hass.config is null but it should not.
+  if (hass.config?.safe_mode) {
     return;
   }
   resources.forEach((resource) => {
