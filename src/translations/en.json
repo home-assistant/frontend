@@ -5114,6 +5114,10 @@
               "vertical": "Vertical",
               "hide_state": "Hide state",
               "state_content": "State content",
+              "state_content_options": {
+                "state": "State",
+                "last-changed": "Last changed"
+              },
               "features": {
                 "name": "Features",
                 "not_compatible": "Not compatible",

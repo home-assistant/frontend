@@ -186,11 +186,15 @@ export class HuiTileCardEditor
                         multiple: true,
                         options: [
                           {
-                            label: "State",
+                            label: localize(
+                              `ui.panel.lovelace.editor.card.tile.state_content_options.state`
+                            ),
                             value: "state",
                           },
                           {
-                            label: "Last changed",
+                            label: localize(
+                              `ui.panel.lovelace.editor.card.tile.state_content_options.last-changed`
+                            ),
                             value: "last-changed",
                           },
                           ...Object.keys(stateObj?.attributes ?? {})
