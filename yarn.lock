@@ -5019,14 +5019,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vue/compiler-sfc@npm:2.7.14":
-  version: 2.7.14
-  resolution: "@vue/compiler-sfc@npm:2.7.14"
+"@vue/compiler-sfc@npm:2.7.15":
+  version: 2.7.15
+  resolution: "@vue/compiler-sfc@npm:2.7.15"
   dependencies:
     "@babel/parser": ^7.18.4
     postcss: ^8.4.14
     source-map: ^0.6.1
-  checksum: 25e00abaecb311f1effbf539bc3e4fdeedb39d35f9c2947b2640187a047e6a7400e693fd7da1d3a98977b9078c5bf629ca47f8b9a59dc14a080c0a1e1dd06a49
+  checksum: 9052c3f08d619021e9f8f0e9762fb1dc72afe9829909cd2045bdad82dacc7867344c457549ba31c94684442931cfb32db8a30c9df6ef4a62bef9346320ea7638
   languageName: node
   linkType: hard
 
@@ -9845,7 +9845,7 @@ __metadata:
     vinyl-source-stream: 2.0.0
     vis-data: 7.1.7
     vis-network: 9.1.8
-    vue: 2.7.14
+    vue: 2.7.15
     vue2-daterange-picker: 0.6.8
     webpack: 5.89.0
     webpack-cli: 5.1.4
@@ -16141,13 +16141,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue@npm:2.7.14, vue@npm:^2.6.10":
-  version: 2.7.14
-  resolution: "vue@npm:2.7.14"
+"vue@npm:2.7.15, vue@npm:^2.6.10":
+  version: 2.7.15
+  resolution: "vue@npm:2.7.15"
   dependencies:
-    "@vue/compiler-sfc": 2.7.14
+    "@vue/compiler-sfc": 2.7.15
     csstype: ^3.1.0
-  checksum: 8b06da67cc40870c66a30b7a6bc2874950cd4383792c371eb30497dd14fc7b41cf308b1c4517368d8f0e7ac16198c08de19236f6a79fe43f4bdbc4a1d9d4ad07
+  checksum: b829a42b60a3388c23735390412011c7859226ba6eb43ceda8eabb295e67b00d3db941b8fa8660682f463ed1028a2da8dff6db29a72efd67f0fc0088de1bb334
   languageName: node
   linkType: hard
 
