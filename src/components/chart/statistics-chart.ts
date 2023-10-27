@@ -97,7 +97,8 @@ export class StatisticsChart extends LitElement {
     if (
       !this.hasUpdated ||
       changedProps.has("unit") ||
-      (this.chartType === "bar" && changedProps.has("period"))
+      changedProps.has("period") ||
+      changedProps.has("chartType")
     ) {
       this._createOptions();
     }
@@ -442,8 +443,8 @@ export class StatisticsChart extends LitElement {
       Array.prototype.push.apply(totalDataSets, statDataSets);
     });
 
-    if (unit || this.chartType === "bar") {
-      this._createOptions(unit ?? undefined);
+    if (unit) {
+      this._createOptions(unit);
     }
 
     this._chartData = {
