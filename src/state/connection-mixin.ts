@@ -274,6 +274,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       // on reconnect always fetch config as we might miss an update while we were disconnected
       // @ts-ignore
       this.hass!.callWS({ type: "get_config" }).then((config: HassConfig) => {
+        if (config.safe_mode) {
+          // @ts-ignore Firefox supports forceGet
+          location.reload(true);
+        }
         this._updateHass({ config });
         this.checkDataBaseMigration();
       });
