@@ -10,11 +10,6 @@ export const loadLovelaceResources = (
   resources: NonNullable<LovelaceResource[]>,
   hass: HomeAssistant
 ) => {
-  // Don't load ressources on safe mode
-  // Sometimes, hass.config is null but it should not.
-  if (hass.config?.safe_mode) {
-    return;
-  }
   resources.forEach((resource) => {
     const normalizedUrl = new URL(
       resource.url,

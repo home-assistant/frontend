@@ -2140,6 +2140,8 @@
               "js": "JavaScript file (deprecated)",
               "module": "JavaScript module"
             },
+            "unavailable": "Resources unavailable",
+            "unavailable_safe_mode": "Resources are not available in safe mode",
             "picker": {
               "headers": {
                 "url": "URL",
