@@ -148,6 +148,9 @@ class PanelTodo extends LitElement {
           @click=${this._handleEntityPicked}
           .entityId=${list.entity_id}
           .activated=${list.entity_id === this._entityId}
+          style=${!showPane && !this.mobile
+            ? "max-width: calc(100vw - 120px)"
+            : ""}
         >
           <ha-state-icon .state=${list} slot="graphic"></ha-state-icon
           >${list.name}
@@ -173,11 +176,13 @@ class PanelTodo extends LitElement {
                 .x=${this.mobile ? 0 : undefined}
               >
                 <ha-button slot="trigger">
-                  ${this._entityId
-                    ? this._entityId in this.hass.states
-                      ? computeStateName(this.hass.states[this._entityId])
-                      : this._entityId
-                    : ""}
+                  <div>
+                    ${this._entityId
+                      ? this._entityId in this.hass.states
+                        ? computeStateName(this.hass.states[this._entityId])
+                        : this._entityId
+                      : ""}
+                  </div>
                   <ha-svg-icon
                     slot="trailingIcon"
                     .path=${mdiChevronDown}
@@ -340,7 +345,11 @@ class PanelTodo extends LitElement {
           --mdc-shape-medium: 0 0 var(--mdc-shape-medium)
             var(--mdc-shape-medium);
         }
+        ha-button-menu {
+          max-width: 100%;
+        }
         ha-button-menu ha-button {
+          max-width: 100%;
           --mdc-theme-primary: currentColor;
           --mdc-typography-button-text-transform: none;
           --mdc-typography-button-font-size: var(
@@ -360,6 +369,13 @@ class PanelTodo extends LitElement {
             2rem
           );
           --button-height: 40px;
+        }
+        ha-button-menu ha-button div {
+          text-overflow: ellipsis;
+          width: 100%;
+          overflow: hidden;
+          white-space: nowrap;
+          display: block;
         }
       `,
     ];

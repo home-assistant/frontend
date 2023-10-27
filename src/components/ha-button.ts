@@ -20,6 +20,10 @@ export class HaButton extends Button {
       .trailing-icon {
         display: flex;
       }
+      .slot-container {
+        width: 100%;
+        overflow: hidden;
+      }
     `,
   ];
 }
