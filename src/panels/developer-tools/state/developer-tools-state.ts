@@ -125,7 +125,7 @@ class HaPanelDevState extends LitElement {
               autofocus
               .hass=${this.hass}
               .value=${this._entityId}
-              @change=${this._entityIdChanged}
+              @value-changed=${this._entityIdChanged}
               allow-custom-entity
               item-label-path="entity_id"
             ></ha-entity-picker>
@@ -347,7 +347,8 @@ class HaPanelDevState extends LitElement {
     ev.preventDefault();
   }
 
-  private _entityIdChanged() {
+  private _entityIdChanged(ev: CustomEvent) {
+    this._entityId = ev.detail.value;
     if (!this._entityId) {
       this._entity = undefined;
       this._state = "";
