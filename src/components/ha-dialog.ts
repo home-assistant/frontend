@@ -96,7 +96,6 @@ export class HaDialog extends DialogBase {
         padding: 24px 24px 0 24px;
         text-overflow: ellipsis;
         overflow: hidden;
-        white-space: break-spaces;
       }
       .mdc-dialog__actions {
         padding: 12px 24px 12px 24px;
