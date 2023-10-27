@@ -46,6 +46,8 @@ export class HaDateRangePicker extends LitElement {
 
   @property() public ranges?: DateRangePickerRanges | false;
 
+  @state() private _ranges?: DateRangePickerRanges;
+
   @property() public autoApply = false;
 
   @property() public timePicker = true;
@@ -93,7 +95,7 @@ export class HaDateRangePicker extends LitElement {
         }
       );
 
-      this.ranges = {
+      this._ranges = {
         [this.hass.localize("ui.components.date-range-picker.ranges.today")]: [
           calcDate(today, startOfDay, this.hass.locale, this.hass.config, {
             weekStartsOn,
@@ -206,15 +208,15 @@ export class HaDateRangePicker extends LitElement {
                 .path=${mdiCalendar}
               ></ha-icon-button>`}
         </div>
-        ${this.ranges
+        ${this.ranges !== false && (this.ranges || this._ranges)
           ? html`<div
               slot="ranges"
               class="date-range-ranges"
               .dir=${this._rtlDirection}
             >
               <mwc-list @action=${this._setDateRange} activatable>
-                ${Object.keys(this.ranges).map(
-                  (name) => html`<mwc-list-item> ${name} </mwc-list-item>`
+                ${Object.keys(this.ranges || this._ranges!).map(
+                  (name) => html`<mwc-list-item>${name}</mwc-list-item>`
                 )}
               </mwc-list>
             </div>`
@@ -234,7 +236,9 @@ export class HaDateRangePicker extends LitElement {
   }
 
   private _setDateRange(ev: CustomEvent<ActionDetail>) {
-    const dateRange = Object.values(this.ranges!)[ev.detail.index];
+    const dateRange = Object.values(this.ranges || this._ranges!)[
+      ev.detail.index
+    ];
     const dateRangePicker = this._dateRangePicker;
     dateRangePicker.clickRange(dateRange);
     dateRangePicker.clickedApply();

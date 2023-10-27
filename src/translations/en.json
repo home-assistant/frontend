@@ -2140,6 +2140,8 @@
               "js": "JavaScript file (deprecated)",
               "module": "JavaScript module"
             },
+            "unavailable": "Resources unavailable",
+            "unavailable_safe_mode": "Resources are not available in safe mode",
             "picker": {
               "headers": {
                 "url": "URL",
@@ -4520,7 +4522,6 @@
             "never_triggered": "Never triggered"
           },
           "todo-list": {
-            "lists": "To-do Lists",
             "checked_items": "Checked items",
             "clear_items": "Clear checked items",
             "add_item": "Add item",
@@ -5094,7 +5095,7 @@
               "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time."
             },
             "todo-list": {
-              "name": "Todo list",
+              "name": "To-do list",
               "description": "The to-do list card allows you to add, edit, check-off, and clear items from your to-do list.",
               "integration_not_loaded": "This card requires the `todo` integration to be set up."
             },
@@ -5515,7 +5516,7 @@
         }
       },
       "todo": {
-        "start_conversation": "Start conversation",
+        "assist": "[%key:ui::panel::lovelace::menu::assist%]",
         "create_list": "Create list",
         "delete_list": "Delete list",
         "information": "Information",
