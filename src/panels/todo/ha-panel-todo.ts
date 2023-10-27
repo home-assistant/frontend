@@ -2,10 +2,10 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@material/mwc-list";
 import {
   mdiChevronDown,
+  mdiCommentProcessingOutline,
   mdiDelete,
   mdiDotsVertical,
   mdiInformationOutline,
-  mdiMicrophone,
   mdiPlus,
 } from "@mdi/js";
 import {
@@ -173,11 +173,13 @@ class PanelTodo extends LitElement {
                 .x=${this.mobile ? 0 : undefined}
               >
                 <ha-button slot="trigger">
-                  ${this._entityId
-                    ? this._entityId in this.hass.states
-                      ? computeStateName(this.hass.states[this._entityId])
-                      : this._entityId
-                    : ""}
+                  <div>
+                    ${this._entityId
+                      ? this._entityId in this.hass.states
+                        ? computeStateName(this.hass.states[this._entityId])
+                        : this._entityId
+                      : ""}
+                  </div>
                   <ha-svg-icon
                     slot="trailingIcon"
                     .path=${mdiChevronDown}
@@ -190,7 +192,7 @@ class PanelTodo extends LitElement {
                   ${this.hass.localize("ui.panel.todo.create_list")}
                 </ha-list-item>
               </ha-button-menu>`
-            : "Lists"}
+            : this.hass.localize("panel.todo")}
         </div>
         <mwc-list slot="pane" activatable>${listItems}</mwc-list>
         <ha-list-item graphic="icon" slot="pane-footer" @click=${this._addList}>
@@ -216,8 +218,9 @@ class PanelTodo extends LitElement {
             : nothing}
           <li divider role="separator"></li>
           <ha-list-item graphic="icon" @click=${this._showVoiceCommandDialog}>
-            <ha-svg-icon .path=${mdiMicrophone} slot="graphic"> </ha-svg-icon>
-            ${this.hass.localize("ui.panel.todo.start_conversation")}
+            <ha-svg-icon .path=${mdiCommentProcessingOutline} slot="graphic">
+            </ha-svg-icon>
+            ${this.hass.localize("ui.panel.todo.assist")}
           </ha-list-item>
           ${entityRegistryEntry?.platform === "local_todo"
             ? html` <li divider role="separator"></li>
@@ -335,11 +338,18 @@ class PanelTodo extends LitElement {
         :host([mobile]) .lists {
           --mdc-menu-min-width: 100vw;
         }
+        :host(:not([mobile])) .lists ha-list-item {
+          max-width: calc(100vw - 120px);
+        }
         :host([mobile]) ha-button-menu {
           --mdc-shape-medium: 0 0 var(--mdc-shape-medium)
             var(--mdc-shape-medium);
         }
+        ha-button-menu {
+          max-width: 100%;
+        }
         ha-button-menu ha-button {
+          max-width: 100%;
           --mdc-theme-primary: currentColor;
           --mdc-typography-button-text-transform: none;
           --mdc-typography-button-font-size: var(
@@ -359,6 +369,13 @@ class PanelTodo extends LitElement {
             2rem
           );
           --button-height: 40px;
+        }
+        ha-button-menu ha-button div {
+          text-overflow: ellipsis;
+          width: 100%;
+          overflow: hidden;
+          white-space: nowrap;
+          display: block;
         }
       `,
     ];
