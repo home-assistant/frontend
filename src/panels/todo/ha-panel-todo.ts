@@ -2,10 +2,10 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@material/mwc-list";
 import {
   mdiChevronDown,
+  mdiCommentProcessingOutline,
   mdiDelete,
   mdiDotsVertical,
   mdiInformationOutline,
-  mdiMicrophone,
   mdiPlus,
 } from "@mdi/js";
 import {
@@ -190,7 +190,7 @@ class PanelTodo extends LitElement {
                   ${this.hass.localize("ui.panel.todo.create_list")}
                 </ha-list-item>
               </ha-button-menu>`
-            : "Lists"}
+            : this.hass.localize("panel.todo")}
         </div>
         <mwc-list slot="pane" activatable>${listItems}</mwc-list>
         <ha-list-item graphic="icon" slot="pane-footer" @click=${this._addList}>
@@ -216,8 +216,9 @@ class PanelTodo extends LitElement {
             : nothing}
           <li divider role="separator"></li>
           <ha-list-item graphic="icon" @click=${this._showVoiceCommandDialog}>
-            <ha-svg-icon .path=${mdiMicrophone} slot="graphic"> </ha-svg-icon>
-            ${this.hass.localize("ui.panel.todo.start_conversation")}
+            <ha-svg-icon .path=${mdiCommentProcessingOutline} slot="graphic">
+            </ha-svg-icon>
+            ${this.hass.localize("ui.panel.todo.assist")}
           </ha-list-item>
           ${entityRegistryEntry?.platform === "local_todo"
             ? html` <li divider role="separator"></li>
