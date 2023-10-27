@@ -148,9 +148,6 @@ class PanelTodo extends LitElement {
           @click=${this._handleEntityPicked}
           .entityId=${list.entity_id}
           .activated=${list.entity_id === this._entityId}
-          style=${!showPane && !this.mobile
-            ? "max-width: calc(100vw - 120px)"
-            : ""}
         >
           <ha-state-icon .state=${list} slot="graphic"></ha-state-icon
           >${list.name}
@@ -340,6 +337,9 @@ class PanelTodo extends LitElement {
         }
         :host([mobile]) .lists {
           --mdc-menu-min-width: 100vw;
+        }
+        :host(:not([mobile])) .lists ha-list-item {
+          max-width: calc(100vw - 120px);
         }
         :host([mobile]) ha-button-menu {
           --mdc-shape-medium: 0 0 var(--mdc-shape-medium)
