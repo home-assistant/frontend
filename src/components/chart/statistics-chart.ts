@@ -182,6 +182,7 @@ export class StatisticsChart extends LitElement {
             tooltipFormat: "datetime",
             unit:
               this.chartType === "bar" &&
+              this.period &&
               ["hour", "day", "week", "month"].includes(this.period)
                 ? this.period
                 : undefined,
@@ -442,7 +443,7 @@ export class StatisticsChart extends LitElement {
     });
 
     if (unit || this.chartType === "bar") {
-      this._createOptions(unit);
+      this._createOptions(unit ?? undefined);
     }
 
     this._chartData = {
