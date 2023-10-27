@@ -135,10 +135,14 @@ export class HuiTodoListCard
 
   public hassSubscribe(): Promise<UnsubscribeFunc>[] {
     return [
-      this.hass!.connection.subscribeEvents(
-        () => this._fetchData(),
-        "shopping_list_updated"
-      ),
+      this.hass!.connection.subscribeEvents(() => {
+        if (
+          this._entityId &&
+          this.hass!.entities[this._entityId]?.platform === "shopping_list"
+        ) {
+          this._fetchData();
+        }
+      }, "shopping_list_updated"),
     ];
   }
 
@@ -158,6 +162,15 @@ export class HuiTodoListCard
       (changedProps.has("_config") && oldConfig?.theme !== this._config.theme)
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
+
+    if (
+      this._entityId &&
+      oldHass &&
+      oldHass.states[this._entityId] !== this.hass.states[this._entityId] &&
+      this.hass.entities[this._entityId]?.platform !== "shopping_list"
+    ) {
+      this._fetchData();
     }
   }
 
