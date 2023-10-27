@@ -73,6 +73,8 @@ export class StatisticsChart extends LitElement {
 
   @property({ type: Boolean }) public isLoadingData = false;
 
+  @property() public period?: string;
+
   @state() private _chartData: ChartData = { datasets: [] };
 
   @state() private _statisticIds: string[] = [];
@@ -92,7 +94,11 @@ export class StatisticsChart extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues) {
-    if (!this.hasUpdated || changedProps.has("unit")) {
+    if (
+      !this.hasUpdated ||
+      changedProps.has("unit") ||
+      (this.chartType === "bar" && changedProps.has("period"))
+    ) {
       this._createOptions();
     }
     if (
@@ -160,6 +166,7 @@ export class StatisticsChart extends LitElement {
             },
           },
           ticks: {
+            source: this.chartType === "bar" ? "data" : undefined,
             maxRotation: 0,
             sampleSize: 5,
             autoSkipPadding: 20,
@@ -173,6 +180,11 @@ export class StatisticsChart extends LitElement {
           },
           time: {
             tooltipFormat: "datetime",
+            unit:
+              this.chartType === "bar" &&
+              ["hour", "day", "week", "month"].includes(this.period)
+                ? this.period
+                : undefined,
           },
         },
         y: {
@@ -429,7 +441,7 @@ export class StatisticsChart extends LitElement {
       Array.prototype.push.apply(totalDataSets, statDataSets);
     });
 
-    if (unit) {
+    if (unit || this.chartType === "bar") {
       this._createOptions(unit);
     }
 
