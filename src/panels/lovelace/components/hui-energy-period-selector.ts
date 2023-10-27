@@ -65,7 +65,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   @state() _endDate?: Date;
 
-  @state() private _ranges?: DateRangePickerRanges;
+  @state() private _ranges: DateRangePickerRanges = {};
 
   @state() private _compare = false;
 
