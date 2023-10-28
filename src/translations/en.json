@@ -5207,6 +5207,9 @@
                   "toggle": {
                     "label": "Toggle"
                   },
+                  "button": {
+                    "label": "Button"
+                  },
                   "target-temperature": {
                     "label": "Target temperature"
                   },

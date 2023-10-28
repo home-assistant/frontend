@@ -60,6 +60,7 @@ const UI_FEATURE_TYPES = [
   "vacuum-commands",
   "water-heater-operation-modes",
   "toggle",
+  "button",
 ] as const satisfies readonly FeatureType[];
 
 type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
