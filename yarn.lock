@@ -5870,7 +5870,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"array.prototype.find@npm:^2.2.1":
+"array.prototype.find@npm:^2.2.2":
   version: 2.2.2
   resolution: "array.prototype.find@npm:2.2.2"
   dependencies:
@@ -7985,25 +7985,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-import-resolver-webpack@npm:0.13.7":
-  version: 0.13.7
-  resolution: "eslint-import-resolver-webpack@npm:0.13.7"
+"eslint-import-resolver-webpack@npm:0.13.8":
+  version: 0.13.8
+  resolution: "eslint-import-resolver-webpack@npm:0.13.8"
   dependencies:
-    array.prototype.find: ^2.2.1
+    array.prototype.find: ^2.2.2
     debug: ^3.2.7
     enhanced-resolve: ^0.9.1
     find-root: ^1.1.0
-    has: ^1.0.3
+    hasown: ^2.0.0
     interpret: ^1.4.0
-    is-core-module: ^2.13.0
+    is-core-module: ^2.13.1
     is-regex: ^1.1.4
     lodash: ^4.17.21
-    resolve: ^2.0.0-next.4
+    resolve: ^2.0.0-next.5
     semver: ^5.7.2
   peerDependencies:
     eslint-plugin-import: ">=1.4.0"
     webpack: ">=1.11.0"
-  checksum: 7e7bd7d48c570cb3110b04f9bb7ec6a2f2cfee29471c89a292c5825d3c1209af227310a53e9e9a46d83a8c6eed32bb3ad28f24f5499b25a18d4e21770acfc6fe
+  checksum: 968aaee69d1e0ef789a10746ff50556e10d43c5f887587d4c34e73dd2215f57f0d3266c43fcdee36a36ce19a2b1beb08aebeb10f6c3ee9edb095506eead28eb6
   languageName: node
   linkType: hard
 
@@ -9769,7 +9769,7 @@ __metadata:
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.1.0
     eslint-config-prettier: 9.0.0
-    eslint-import-resolver-webpack: 0.13.7
+    eslint-import-resolver-webpack: 0.13.8
     eslint-plugin-disable: 2.0.3
     eslint-plugin-import: 2.29.0
     eslint-plugin-lit: 1.9.1
@@ -13861,7 +13861,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^2.0.0-next.4":
+"resolve@npm:^2.0.0-next.5":
   version: 2.0.0-next.5
   resolution: "resolve@npm:2.0.0-next.5"
   dependencies:
@@ -13887,7 +13887,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^2.0.0-next.4#~builtin<compat/resolve>":
+"resolve@patch:resolve@^2.0.0-next.5#~builtin<compat/resolve>":
   version: 2.0.0-next.5
   resolution: "resolve@patch:resolve@npm%3A2.0.0-next.5#~builtin<compat/resolve>::version=2.0.0-next.5&hash=c3c19d"
   dependencies:
