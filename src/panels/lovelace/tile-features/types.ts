@@ -50,6 +50,10 @@ export interface SelectOptionsTileFeatureConfig {
   type: "select-options";
 }
 
+export interface ToggleTileFeatureConfig {
+  type: "toggle";
+}
+
 export interface TargetTemperatureTileFeatureConfig {
   type: "target-temperature";
 }
@@ -98,7 +102,8 @@ export type LovelaceTileFeatureConfig =
   | VacuumCommandsTileFeatureConfig
   | TargetTemperatureTileFeatureConfig
   | WaterHeaterOperationModesTileFeatureConfig
-  | SelectOptionsTileFeatureConfig;
+  | SelectOptionsTileFeatureConfig
+  | ToggleTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
   entity_id?: string;

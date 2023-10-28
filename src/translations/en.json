@@ -5204,6 +5204,9 @@
                   "select-options": {
                     "label": "Select options"
                   },
+                  "toggle": {
+                    "label": "Toggle"
+                  },
                   "target-temperature": {
                     "label": "Target temperature"
                   },
