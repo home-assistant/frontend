@@ -79,7 +79,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     return this.stateObj.attributes.max_temp;
   }
 
-  private _valueChanged(ev: CustomEvent) {
+  private async _valueChanged(ev: CustomEvent) {
     const value = (ev.detail as any).value;
     if (isNaN(value)) return;
     const target = ev.type.replace("-changed", "");
@@ -88,7 +88,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       [target]: value,
     };
     this._selectTargetTemperature = target as Target;
-    this._callService(target);
+    await this._callService(target);
   }
 
   private _valueChanging(ev: CustomEvent) {
@@ -107,19 +107,40 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     1000
   );
 
-  private _callService(type: string) {
-    if (type === "high" || type === "low") {
-      this.hass.callService("climate", "set_temperature", {
-        entity_id: this.stateObj!.entity_id,
-        target_temp_low: this._targetTemperature.low,
-        target_temp_high: this._targetTemperature.high,
-      });
-      return;
+  private async _callService(type: string) {
+    try {
+      await this.hass.callService(
+        "climate",
+        "set_temperature",
+        this.buildServiceData(type)
+      );
+    } catch (err) {
+      this.resetTemperatureValues(type);
     }
-    this.hass.callService("climate", "set_temperature", {
+  }
+
+  private async resetTemperatureValues(type: string) {
+    if (type === "high") {
+      this._targetTemperature.high = this.stateObj.attributes.target_temp_high;
+    } else if (type === "low") {
+      this._targetTemperature.low = this.stateObj.attributes.target_temp_low;
+    } else {
+      this._targetTemperature.value = this.stateObj.attributes.temperature;
+    }
+    this.requestUpdate();
+  }
+
+  private buildServiceData(type: string) {
+    const data: any = {
       entity_id: this.stateObj!.entity_id,
-      temperature: this._targetTemperature.value,
-    });
+    };
+    if (type === "low" || type === "high") {
+      data.target_temp_low = this._targetTemperature.low;
+      data.target_temp_high = this._targetTemperature.high;
+    } else {
+      data.temperature = this._targetTemperature.value;
+    }
+    return data;
   }
 
   private _handleButton(ev) {

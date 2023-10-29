@@ -113,20 +113,41 @@ class HuiTargetTemperatureTileFeature
     1000
   );
 
-  private _callService(type: string) {
+  private async _callService(type: string) {
     const domain = computeStateDomain(this.stateObj!);
-    if (type === "high" || type === "low") {
-      this.hass!.callService(domain, "set_temperature", {
-        entity_id: this.stateObj!.entity_id,
-        target_temp_low: this._targetTemperature.low,
-        target_temp_high: this._targetTemperature.high,
-      });
-      return;
+    try {
+      await this.hass!.callService(
+        domain,
+        "set_temperature",
+        this.buildServiceData(type)
+      );
+    } catch (err) {
+      this.resetTemperatureValues(type);
     }
-    this.hass!.callService(domain, "set_temperature", {
+  }
+
+  private async resetTemperatureValues(type: string) {
+    if (type === "high") {
+      this._targetTemperature.high = this.stateObj!.attributes.target_temp_high;
+    } else if (type === "low") {
+      this._targetTemperature.low = this.stateObj!.attributes.target_temp_low;
+    } else {
+      this._targetTemperature.value = this.stateObj!.attributes.temperature;
+    }
+    this.requestUpdate();
+  }
+
+  private buildServiceData(type: string) {
+    const data: any = {
       entity_id: this.stateObj!.entity_id,
-      temperature: this._targetTemperature.value,
-    });
+    };
+    if (type === "low" || type === "high") {
+      data.target_temp_low = this._targetTemperature.low;
+      data.target_temp_high = this._targetTemperature.high;
+    } else {
+      data.temperature = this._targetTemperature.value;
+    }
+    return data;
   }
 
   private _supportsTarget() {

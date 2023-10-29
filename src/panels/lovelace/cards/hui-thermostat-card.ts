@@ -91,6 +91,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   @state() private resyncSetpoint = false;
 
+  @state() private _error?: string;
+
   public getCardSize(): number {
     return 7;
   }
@@ -487,9 +489,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
 
     data.entity_id = this._config!.entity;
-
-    await this.hass!.callService("climate", service, data);
-
+    try {
+      await this.hass!.callService("climate", service, data);
+    } catch (err: any) {
+      this._error = err.message;
+    }
     // After updating temperature, wait 2s and check if the values
     // from call service are reflected in the entity. If not, resync
     // the slider to the entity values.
