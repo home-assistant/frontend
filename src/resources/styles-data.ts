@@ -1,3 +1,6 @@
+export const DEFAULT_PRIMARY_COLOR = "#03a9f4" as const;
+export const DEFAULT_ACCENT_COLOR = "#ff9800" as const;
+
 export const darkStyles = {
   "primary-background-color": "#111111",
   "card-background-color": "#1c1c1c",
@@ -50,7 +53,7 @@ export const darkStyles = {
   "map-filter":
     "invert(.9) hue-rotate(170deg) brightness(1.5) contrast(1.2) saturate(.3)",
   "disabled-color": "#464646",
-};
+} as const;
 
 export const derivedStyles = {
   "state-icon-error-color": "var(--error-state-color, var(--error-color))",
@@ -146,4 +149,4 @@ export const derivedStyles = {
   "material-background-color": "var(--card-background-color)",
   "material-secondary-background-color": "var(--secondary-background-color)",
   "material-secondary-text-color": "var(--secondary-text-color)",
-};
+} as const;

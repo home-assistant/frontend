@@ -100,7 +100,9 @@ export class HcMain extends HassElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    import("../second-load");
+    import("./hc-lovelace");
+    import("../../../../src/resources/ha-style");
+
     window.addEventListener("location-changed", () => {
       const panelPath = `/${this._urlPath || "lovelace"}/`;
       if (location.pathname.startsWith(panelPath)) {
@@ -307,7 +309,7 @@ export class HcMain extends HassElement {
         ? await fetchResources(this.hass!.connection)
         : (this._lovelaceConfig as LegacyLovelaceConfig).resources;
       if (resources) {
-        loadLovelaceResources(resources, this.hass!.auth.data.hassUrl);
+        loadLovelaceResources(resources, this.hass!);
       }
     }
 

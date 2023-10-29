@@ -757,6 +757,15 @@ export const fetchZwaveNodeFirmwareUpdateCapabilities = (
     device_id,
   });
 
+export const hardResetController = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<string> =>
+  hass.callWS({
+    type: "zwave_js/hard_reset_controller",
+    entry_id,
+  });
+
 export const uploadFirmwareAndBeginUpdate = async (
   hass: HomeAssistant,
   device_id: string,

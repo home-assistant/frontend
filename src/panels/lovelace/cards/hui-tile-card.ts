@@ -21,6 +21,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../../common/array/ensure-array";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
@@ -34,15 +35,7 @@ import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
-import {
-  CoverEntity,
-  computeCoverPositionStateDisplay,
-} from "../../../data/cover";
 import { isUnavailableState } from "../../../data/entity";
-import { FanEntity, computeFanSpeedStateDisplay } from "../../../data/fan";
-import type { HumidifierEntity } from "../../../data/humidifier";
-import type { ClimateEntity } from "../../../data/climate";
-import type { LightEntity } from "../../../data/light";
 import type { ActionHandlerEvent } from "../../../data/lovelace";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import { HomeAssistant } from "../../../types";
@@ -181,80 +174,89 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
   );
 
-  private _formatState(stateObj: HassEntity): TemplateResult | string {
+  private _renderStateContent(
+    stateObj: HassEntity,
+    stateContent: string | string[]
+  ) {
+    const contents = ensureArray(stateContent);
+
+    const values = contents
+      .map((content) => {
+        if (content === "state") {
+          const domain = computeDomain(stateObj.entity_id);
+          if (
+            (stateObj.attributes.device_class ===
+              SENSOR_DEVICE_CLASS_TIMESTAMP ||
+              TIMESTAMP_STATE_DOMAINS.includes(domain)) &&
+            !isUnavailableState(stateObj.state)
+          ) {
+            return html`
+              <hui-timestamp-display
+                .hass=${this.hass}
+                .ts=${new Date(stateObj.state)}
+                format="relative"
+                capitalize
+              ></hui-timestamp-display>
+            `;
+          }
+
+          return this.hass!.formatEntityState(stateObj);
+        }
+        if (content === "last-changed") {
+          return html`
+            <ha-relative-time
+              .hass=${this.hass}
+              .datetime=${stateObj.last_changed}
+            ></ha-relative-time>
+          `;
+        }
+        if (stateObj.attributes[content] == null) {
+          return undefined;
+        }
+        return this.hass!.formatEntityAttributeValue(stateObj, content);
+      })
+      .filter(Boolean);
+
+    if (!values.length) {
+      return html`${this.hass!.formatEntityState(stateObj)}`;
+    }
+
+    return html`
+      ${values.map(
+        (value, index, array) =>
+          html`${value}${index < array.length - 1 ? " ⸱ " : nothing}`
+      )}
+    `;
+  }
+
+  private _renderState(stateObj: HassEntity): TemplateResult | typeof nothing {
     const domain = computeDomain(stateObj.entity_id);
+    const active = stateActive(stateObj);
 
-    if (
-      (stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP ||
-        TIMESTAMP_STATE_DOMAINS.includes(domain)) &&
-      !isUnavailableState(stateObj.state)
-    ) {
-      return html`
-        <hui-timestamp-display
-          .hass=${this.hass}
-          .ts=${new Date(stateObj.state)}
-          format="relative"
-          capitalize
-        ></hui-timestamp-display>
-      `;
+    if (domain === "light" && active) {
+      return this._renderStateContent(stateObj, ["brightness"]);
     }
 
-    if (domain === "light" && stateActive(stateObj)) {
-      const brightness = (stateObj as LightEntity).attributes.brightness;
-      if (brightness) {
-        return this.hass!.formatEntityAttributeValue(stateObj, "brightness");
-      }
+    if (domain === "fan" && active) {
+      return this._renderStateContent(stateObj, ["percentage"]);
     }
 
-    if (domain === "fan") {
-      const speedStateDisplay = computeFanSpeedStateDisplay(
-        stateObj as FanEntity,
-        this.hass!
-      );
-      if (speedStateDisplay) {
-        return speedStateDisplay;
-      }
+    if (domain === "cover" && active) {
+      return this._renderStateContent(stateObj, ["state", "current_position"]);
     }
 
-    const stateDisplay = this.hass!.formatEntityState(stateObj);
-
-    if (domain === "cover") {
-      const positionStateDisplay = computeCoverPositionStateDisplay(
-        stateObj as CoverEntity,
-        this.hass!
-      );
-      if (positionStateDisplay) {
-        return `${stateDisplay} ⸱ ${positionStateDisplay}`;
-      }
-    }
-
-    if (domain === "humidifier" && stateActive(stateObj)) {
-      const humidity = (stateObj as HumidifierEntity).attributes.humidity;
-      if (humidity) {
-        const formattedHumidity = this.hass!.formatEntityAttributeValue(
-          stateObj,
-          "humidity",
-          Math.round(humidity)
-        );
-        return `${stateDisplay} ⸱ ${formattedHumidity}`;
-      }
+    if (domain === "humidifier") {
+      return this._renderStateContent(stateObj, ["state", "current_humidity"]);
     }
 
     if (domain === "climate") {
-      const current_temperature = (stateObj as ClimateEntity).attributes
-        .current_temperature;
-      if (current_temperature) {
-        const formattedCurrentTemperature =
-          this.hass!.formatEntityAttributeValue(
-            stateObj,
-            "current_temperature",
-            current_temperature
-          );
-        return `${stateDisplay} ⸱ ${formattedCurrentTemperature}`;
-      }
+      return this._renderStateContent(stateObj, [
+        "state",
+        "current_temperature",
+      ]);
     }
 
-    return stateDisplay;
+    return this._renderStateContent(stateObj, "state");
   }
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
@@ -323,7 +325,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const name = this._config.name || stateObj.attributes.friendly_name;
 
-    const localizedState = this._formatState(stateObj);
+    const localizedState = this._config.hide_state
+      ? nothing
+      : this._config.state_content
+      ? this._renderStateContent(stateObj, this._config.state_content)
+      : this._renderState(stateObj);
 
     const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);

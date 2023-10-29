@@ -155,6 +155,7 @@ export class DialogEnergySolarSettings
                     >
                       <img
                         alt=""
+                        crossorigin="anonymous"
                         referrerpolicy="no-referrer"
                         style="height: 24px; margin-right: 16px;"
                         src=${brandsUrl({

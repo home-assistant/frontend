@@ -2,9 +2,9 @@ import "@material/mwc-button/mwc-button";
 import {
   mdiBell,
   mdiCalendar,
-  mdiCart,
   mdiCellphoneCog,
   mdiChartBox,
+  mdiClipboardList,
   mdiClose,
   mdiCog,
   mdiFormatListBulletedType,
@@ -50,7 +50,7 @@ import { subscribeRepairsIssueRegistry } from "../data/repairs";
 import { UpdateEntity, updateCanInstall } from "../data/update";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
-import { SortableInstance, loadSortable } from "../resources/sortable.ondemand";
+import type { SortableInstance } from "../resources/sortable";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
 import "./ha-icon";
@@ -81,7 +81,7 @@ const PANEL_ICONS = {
   lovelace: mdiViewDashboard,
   map: mdiTooltipAccount,
   "media-browser": mdiPlayBoxMultiple,
-  "shopping-list": mdiCart,
+  todo: mdiClipboardList,
 };
 
 const panelSorter = (
@@ -689,7 +689,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private async _createSortable() {
-    const Sortable = await loadSortable();
+    const Sortable = (await import("../resources/sortable")).default;
     this._sortable = new Sortable(
       this.shadowRoot!.getElementById("sortable")!,
       {

@@ -22,9 +22,9 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
       };
     }
 
-    if (hass.config.safe_mode) {
+    if (hass.config.recovery_mode) {
       return {
-        cards: [{ type: "safe-mode" }],
+        cards: [{ type: "recovery-mode" }],
       };
     }
 

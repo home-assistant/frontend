@@ -11,10 +11,7 @@ import type {
 } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon-button";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
-import {
-  loadSortable,
-  SortableInstance,
-} from "../../../resources/sortable.ondemand";
+import type { SortableInstance } from "../../../resources/sortable";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig } from "../entity-rows/types";
 
@@ -93,7 +90,7 @@ export class HuiEntityEditor extends LitElement {
   }
 
   private async _createSortable() {
-    const Sortable = await loadSortable();
+    const Sortable = (await import("../../../resources/sortable")).default;
     this._sortable = new Sortable(
       this.shadowRoot!.querySelector(".entities")!,
       {

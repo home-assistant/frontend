@@ -16,10 +16,7 @@ import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import type { ActionDetail } from "@material/mwc-list";
-import {
-  loadSortable,
-  SortableInstance,
-} from "../../../../../resources/sortable.ondemand";
+import type { SortableInstance } from "../../../../../resources/sortable";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
@@ -481,7 +478,8 @@ export class HaChooseAction extends LitElement implements ActionElement {
   }
 
   private async _createSortable() {
-    const Sortable = await loadSortable();
+    const Sortable = (await import("../../../../../resources/sortable"))
+      .default;
     this._sortable = new Sortable(this.shadowRoot!.querySelector(".options")!, {
       animation: 150,
       fallbackClass: "sortable-fallback",
