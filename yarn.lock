@@ -9828,7 +9828,7 @@ __metadata:
     tar: 6.2.0
     terser-webpack-plugin: 5.3.9
     tinykeys: 2.1.0
-    ts-lit-plugin: 2.0.0-pre.1
+    ts-lit-plugin: 2.0.0
     tsparticles-engine: 2.12.0
     tsparticles-preset-links: 2.12.0
     typescript: 5.2.2
@@ -11424,7 +11424,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-analyzer@npm:2.0.1, lit-analyzer@npm:^2.0.0-pre.3":
+"lit-analyzer@npm:2.0.1, lit-analyzer@npm:^2.0.0":
   version: 2.0.1
   resolution: "lit-analyzer@npm:2.0.1"
   dependencies:
@@ -15385,13 +15385,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-lit-plugin@npm:2.0.0-pre.1":
-  version: 2.0.0-pre.1
-  resolution: "ts-lit-plugin@npm:2.0.0-pre.1"
+"ts-lit-plugin@npm:2.0.0":
+  version: 2.0.0
+  resolution: "ts-lit-plugin@npm:2.0.0"
   dependencies:
-    lit-analyzer: ^2.0.0-pre.3
-    web-component-analyzer: ^2.0.0-next.5
-  checksum: d9c8b3c0d8867e9564c7a3083accaf9f8b48b04c8f42e32c224806a7a606983abb3b7acb912e57d0d8f90ff650745bb1af18b1e379316b433838e37eddccfe1e
+    lit-analyzer: ^2.0.0
+    web-component-analyzer: ^2.0.0
+  checksum: 1dd6ceffb98d03c81de5a7874c81058cfda6be7a4b4cd760acab1776b9bb32143117aca9ff4c922118e83d919e0a09fc4fa21160ff7133a2133ef9d9e7eea2fc
   languageName: node
   linkType: hard
 
@@ -16170,7 +16170,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-component-analyzer@npm:^2.0.0, web-component-analyzer@npm:^2.0.0-next.5":
+"web-component-analyzer@npm:^2.0.0":
   version: 2.0.0
   resolution: "web-component-analyzer@npm:2.0.0"
   dependencies:
