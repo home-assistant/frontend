@@ -8,6 +8,7 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
 import { UpdateTileFeatureConfig } from "./types";
 import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
 
 export const supportsUpdateTileFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -74,22 +75,29 @@ class HuiUpdateTileFeature extends LitElement implements LovelaceTileFeature {
 
     return html`
       <div class="container">
-        <ha-control-button
-          .disabled=${stateObj.state === OFF ||
-          stateObj.state === UNAVAILABLE ||
-          Boolean(stateObj.attributes.in_progress)}
-          @click=${this._skip}
-        >
-          ${this.hass!.localize("ui.dialogs.more_info_control.update.skip")}
-        </ha-control-button>
-        <ha-control-button
-          .disabled=${stateObj.state === OFF ||
-          stateObj.state === UNAVAILABLE ||
-          Boolean(stateObj.attributes.in_progress)}
-          @click=${this._install}
-        >
-          ${this.hass!.localize("ui.dialogs.more_info_control.update.install")}
-        </ha-control-button>
+        <ha-control-button-group>
+          <ha-control-button
+            .disabled=${stateObj.state === OFF ||
+            stateObj.state === UNAVAILABLE ||
+            Boolean(stateObj.attributes.in_progress)}
+            @click=${this._skip}
+          >
+            ${this.hass!.localize("ui.dialogs.more_info_control.update.skip")}
+          </ha-control-button>
+          <ha-control-button
+            .disabled=${(stateObj.state === OFF &&
+              (stateObj.attributes.skipped_version === undefined ||
+                stateObj.attributes.skipped_version === null)) ||
+            stateObj.state === UNAVAILABLE ||
+            Boolean(stateObj.attributes.in_progress) ||
+            (stateObj.attributes.supported_features ?? 0) === 0}
+            @click=${this._install}
+          >
+            ${this.hass!.localize(
+              "ui.dialogs.more_info_control.update.install"
+            )}
+          </ha-control-button>
+        </ha-control-button-group>
       </div>
     `;
   }
@@ -103,8 +111,6 @@ class HuiUpdateTileFeature extends LitElement implements LovelaceTileFeature {
       .container {
         padding: 0 12px 12px 12px;
         width: auto;
-        display: flex;
-        gap: 12px;
       }
     `;
   }
