@@ -9794,7 +9794,7 @@ __metadata:
     leaflet-draw: 1.0.4
     lint-staged: 15.0.2
     lit: 2.8.0
-    lit-analyzer: 2.0.0-pre.3
+    lit-analyzer: 2.0.1
     lodash.template: 4.5.0
     luxon: 3.4.3
     magic-string: 0.30.5
@@ -11424,9 +11424,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-analyzer@npm:2.0.0-pre.3, lit-analyzer@npm:^2.0.0-pre.3":
-  version: 2.0.0-pre.3
-  resolution: "lit-analyzer@npm:2.0.0-pre.3"
+"lit-analyzer@npm:2.0.1, lit-analyzer@npm:^2.0.0-pre.3":
+  version: 2.0.1
+  resolution: "lit-analyzer@npm:2.0.1"
   dependencies:
     "@vscode/web-custom-data": ^0.4.2
     chalk: ^2.4.2
@@ -11436,10 +11436,10 @@ __metadata:
     ts-simple-type: ~2.0.0-next.0
     vscode-css-languageservice: 4.3.0
     vscode-html-languageservice: 3.1.0
-    web-component-analyzer: ^2.0.0-next.5
+    web-component-analyzer: ^2.0.0
   bin:
     lit-analyzer: cli.js
-  checksum: c6dcf657a0030342d183fcd9d550753bd5dd0692b478aff271085a5a0e7e08aff39cc6dde3d547ffca72897975ef07aac7de8a97e0060d2db70a85350412efae
+  checksum: 73ec7a6d20a7b74a6027a7581c48b31c79b33ae10c14629f13604fa01edf9d8434d01ef30f31a8a0f11d9a2c8dce15b8b2d34bcce48d8e4487d16cf8b58d081b
   languageName: node
   linkType: hard
 
@@ -16170,7 +16170,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-component-analyzer@npm:^2.0.0-next.5":
+"web-component-analyzer@npm:^2.0.0, web-component-analyzer@npm:^2.0.0-next.5":
   version: 2.0.0
   resolution: "web-component-analyzer@npm:2.0.0"
   dependencies:
