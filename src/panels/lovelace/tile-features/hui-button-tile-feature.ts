@@ -3,7 +3,7 @@ import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { UNAVAILABLE } from "../../../data/entity";
-import { LightEntity } from "../../../data/light";
+import { ScriptEntity } from "../../../data/script";
 import { AutomationEntity } from "../../../data/automation";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
@@ -23,7 +23,7 @@ class HuiButtonTileFeature extends LitElement implements LovelaceTileFeature {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?:
-    | LightEntity
+    | ScriptEntity
     | AutomationEntity
     | HassEntity;
 

@@ -58,6 +58,10 @@ export interface ButtonTileFeatureConfig {
   type: "button";
 }
 
+export interface UpdateTileFeatureConfig {
+  type: "update";
+}
+
 export interface TargetTemperatureTileFeatureConfig {
   type: "target-temperature";
 }
@@ -108,7 +112,8 @@ export type LovelaceTileFeatureConfig =
   | WaterHeaterOperationModesTileFeatureConfig
   | SelectOptionsTileFeatureConfig
   | ToggleTileFeatureConfig
-  | ButtonTileFeatureConfig;
+  | ButtonTileFeatureConfig
+  | UpdateTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
   entity_id?: string;

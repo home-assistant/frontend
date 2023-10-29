@@ -5210,6 +5210,9 @@
                   "button": {
                     "label": "Button"
                   },
+                  "update": {
+                    "label": "Update"
+                  },
                   "target-temperature": {
                     "label": "Target temperature"
                   },

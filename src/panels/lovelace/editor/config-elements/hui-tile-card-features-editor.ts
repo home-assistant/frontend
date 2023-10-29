@@ -39,6 +39,8 @@ import { supportsWaterHeaterOperationModesTileFeature } from "../../tile-feature
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
 import { supportsClimatePresetModesTileFeature } from "../../tile-features/hui-climate-preset-modes-tile-feature";
 import { supportsToggleTileFeature } from "../../tile-features/hui-toggle-tile-feature";
+import { supportsButtonTileFeature } from "../../tile-features/hui-button-tile-feature";
+import { supportsUpdateTileFeature } from "../../tile-features/hui-update-tile-feature";
 
 type FeatureType = LovelaceTileFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
@@ -61,6 +63,7 @@ const UI_FEATURE_TYPES = [
   "water-heater-operation-modes",
   "toggle",
   "button",
+  "update",
 ] as const satisfies readonly FeatureType[];
 
 type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
@@ -94,6 +97,8 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "water-heater-operation-modes": supportsWaterHeaterOperationModesTileFeature,
   "select-options": supportsSelectOptionTileFeature,
   toggle: supportsToggleTileFeature,
+  button: supportsButtonTileFeature,
+  update: supportsUpdateTileFeature,
 };
 
 const CUSTOM_FEATURE_ENTRIES: Record<
