@@ -297,7 +297,7 @@ export class HuiTodoListCard
                       )}
                       .value=${item.summary}
                       .itemId=${item.uid}
-                      @click=${this._saveEdit}
+                      @change=${this._saveEdit}
                     ></ha-textfield>
                     ${this.todoListSupportsFeature(
                       TodoListEntityFeature.DELETE_TODO_ITEM
