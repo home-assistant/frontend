@@ -305,7 +305,7 @@ export class HuiTodoListCard
                     !this.todoListSupportsFeature(
                       TodoListEntityFeature.UPDATE_TODO_ITEM
                     )
-                      ? html` <ha-icon-button
+                      ? html`<ha-icon-button
                           .title=${this.hass!.localize(
                             "ui.panel.lovelace.cards.todo-list.delete_item"
                           )}
@@ -370,7 +370,7 @@ export class HuiTodoListCard
                 !this.todoListSupportsFeature(
                   TodoListEntityFeature.UPDATE_TODO_ITEM
                 )
-              ? html` <ha-icon-button
+              ? html`<ha-icon-button
                   .title=${this.hass!.localize(
                     "ui.panel.lovelace.cards.todo-list.delete_item"
                   )}
