@@ -301,6 +301,9 @@ export class HuiTodoListCard
                     ></ha-textfield>
                     ${this.todoListSupportsFeature(
                       TodoListEntityFeature.DELETE_TODO_ITEM
+                    ) &&
+                    !this.todoListSupportsFeature(
+                      TodoListEntityFeature.UPDATE_TODO_ITEM
                     )
                       ? html` <ha-icon-button
                           .title=${this.hass!.localize(
@@ -363,6 +366,9 @@ export class HuiTodoListCard
                 `
               : this.todoListSupportsFeature(
                   TodoListEntityFeature.DELETE_TODO_ITEM
+                ) &&
+                !this.todoListSupportsFeature(
+                  TodoListEntityFeature.UPDATE_TODO_ITEM
                 )
               ? html` <ha-icon-button
                   .title=${this.hass!.localize(
