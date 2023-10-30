@@ -122,19 +122,19 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             }
             if (notifyOnError) {
               forwardHaptic("failure");
-              const lokalizedErrorMessage = (this as any).hass.localize(
+              const localizedErrorMessage = (this as any).hass.localize(
                 `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
                 err.translation_placeholders
               );
               const message =
-                lokalizedErrorMessage ||
+                localizedErrorMessage ||
                 (this as any).hass.localize(
                   "ui.notification_toast.service_call_failed",
                   "service",
                   `${domain}/${service}`
                 ) +
                   ` ${
-                    (lokalizedErrorMessage ? "" : err.message) ||
+                    err.message ||
                     (err.error?.code === ERR_CONNECTION_LOST
                       ? "connection lost"
                       : "unknown error")
