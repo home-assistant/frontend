@@ -349,6 +349,7 @@ class PanelTodo extends LitElement {
           max-width: 100%;
         }
         ha-button-menu ha-button {
+          --button-slot-container-overflow: hidden;
           max-width: 100%;
           --mdc-theme-primary: currentColor;
           --mdc-typography-button-text-transform: none;

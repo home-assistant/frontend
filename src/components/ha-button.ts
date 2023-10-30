@@ -21,8 +21,7 @@ export class HaButton extends Button {
         display: flex;
       }
       .slot-container {
-        width: 100%;
-        overflow: hidden;
+        overflow: var(--button-slot-container-overflow, visible);
       }
     `,
   ];
