@@ -1,123 +1,38 @@
-import { mdiGestureTap, mdiPalette } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, css, html, nothing } from "lit";
+import { html, LitElement, nothing, css } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import {
-  any,
-  array,
-  assert,
-  assign,
-  boolean,
-  object,
-  optional,
-  string,
-  union,
-} from "superstruct";
-import { ensureArray } from "../../../../common/array/ensure-array";
-import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
-import { formatEntityAttributeNameFunc } from "../../../../common/translations/entity-state";
-import { LocalizeFunc } from "../../../../common/translations/localize";
+import { HassEntity } from "home-assistant-js-websocket";
+import { mdiGestureTap, mdiPalette } from "@mdi/js";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { TileCardConfig } from "../../cards/types";
 import {
-  LovelaceTileFeatureConfig,
+  EntityTileFeatureConfig,
   LovelaceTileFeatureContext,
 } from "../../tile-features/types";
-import type { LovelaceCardEditor } from "../../types";
-import "../hui-sub-element-editor";
-import { actionConfigStruct } from "../structs/action-struct";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { EditSubElementEvent, SubElementEditorConfig } from "../types";
+import type { LovelaceTileFeatureEditor } from "../../types";
+import { LocalizeFunc } from "../../../../common/translations/localize";
+import { formatEntityAttributeNameFunc } from "../../../../common/translations/entity-state";
+import { HIDDEN_ATTRIBUTES } from "./hui-tile-card-editor";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { configElementStyle } from "./config-elements-style";
-import "./hui-tile-card-features-editor";
 
-export const HIDDEN_ATTRIBUTES = [
-  "access_token",
-  "available_modes",
-  "code_arm_required",
-  "code_format",
-  "color_modes",
-  "device_class",
-  "editable",
-  "effect_list",
-  "entity_id",
-  "entity_picture",
-  "event_types",
-  "fan_modes",
-  "fan_speed_list",
-  "friendly_name",
-  "frontend_stream_type",
-  "has_date",
-  "has_time",
-  "hvac_modes",
-  "icon",
-  "id",
-  "max_color_temp_kelvin",
-  "max_mireds",
-  "max_temp",
-  "max",
-  "min_color_temp_kelvin",
-  "min_mireds",
-  "min_temp",
-  "min",
-  "mode",
-  "operation_list",
-  "options",
-  "percentage_step",
-  "precipitation_unit",
-  "preset_modes",
-  "pressure_unit",
-  "sound_mode_list",
-  "source_list",
-  "state_class",
-  "step",
-  "supported_color_modes",
-  "supported_features",
-  "swing_modes",
-  "target_temp_step",
-  "temperature_unit",
-  "token",
-  "unit_of_measurement",
-  "visibility_unit",
-  "wind_speed_unit",
-];
-
-const cardConfigStruct = assign(
-  baseLovelaceCardConfig,
-  object({
-    entity: optional(string()),
-    name: optional(string()),
-    icon: optional(string()),
-    hide_state: optional(boolean()),
-    state_content: optional(union([string(), array(string())])),
-    color: optional(string()),
-    show_entity_picture: optional(boolean()),
-    vertical: optional(boolean()),
-    tap_action: optional(actionConfigStruct),
-    icon_tap_action: optional(actionConfigStruct),
-    features: optional(array(any())),
-  })
-);
-
-@customElement("hui-tile-card-editor")
-export class HuiTileCardEditor
+@customElement("hui-entity-tile-feature-editor")
+export class HuiEntityTileFeatureEditor
   extends LitElement
-  implements LovelaceCardEditor
+  implements LovelaceTileFeatureEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: TileCardConfig;
+  @property({ attribute: false }) public context?: LovelaceTileFeatureContext;
 
-  @state() private _subElementEditorConfig?: SubElementEditorConfig;
+  @state() private _config?: EntityTileFeatureConfig;
 
-  public setConfig(config: TileCardConfig): void {
-    assert(config, cardConfigStruct);
+  public setConfig(config: EntityTileFeatureConfig): void {
     this._config = config;
   }
 
@@ -129,7 +44,12 @@ export class HuiTileCardEditor
       hideState: boolean
     ) =>
       [
-        { name: "entity", selector: { entity: {} } },
+        {
+          name: "entity",
+          selector: {
+            entity: {},
+          },
+        },
         {
           name: "",
           type: "expandable",
@@ -156,12 +76,6 @@ export class HuiTileCardEditor
                 },
                 {
                   name: "show_entity_picture",
-                  selector: {
-                    boolean: {},
-                  },
-                },
-                {
-                  name: "vertical",
                   selector: {
                     boolean: {},
                   },
@@ -221,12 +135,6 @@ export class HuiTileCardEditor
           iconPath: mdiGestureTap,
           schema: [
             {
-              name: "tap_action",
-              selector: {
-                ui_action: {},
-              },
-            },
-            {
               name: "icon_tap_action",
               selector: {
                 ui_action: {},
@@ -234,11 +142,7 @@ export class HuiTileCardEditor
             },
           ],
         },
-      ] as const satisfies readonly HaFormSchema[]
-  );
-
-  private _context = memoizeOne(
-    (entity_id?: string): LovelaceTileFeatureContext => ({ entity_id })
+      ] as const
   );
 
   protected render() {
@@ -257,19 +161,6 @@ export class HuiTileCardEditor
       this._config.hide_state ?? false
     );
 
-    if (this._subElementEditorConfig) {
-      return html`
-        <hui-sub-element-editor
-          .hass=${this.hass}
-          .config=${this._subElementEditorConfig}
-          .context=${this._context(this._config.entity)}
-          @go-back=${this._goBack}
-          @config-changed=${this.subElementChanged}
-        >
-        </hui-sub-element-editor>
-      `;
-    }
-
     const data = {
       ...this._config,
       state_content: ensureArray(this._config.state_content),
@@ -283,13 +174,6 @@ export class HuiTileCardEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
-      <hui-tile-card-features-editor
-        .hass=${this.hass}
-        .stateObj=${stateObj}
-        .features=${this._config!.features ?? []}
-        @features-changed=${this._featuresChanged}
-        @edit-detail-element=${this._editDetailElement}
-      ></hui-tile-card-features-editor>
     `;
   }
 
@@ -299,12 +183,7 @@ export class HuiTileCardEditor
       return;
     }
 
-    const newConfig = ev.detail.value as TileCardConfig;
-
-    const config: TileCardConfig = {
-      features: this._config.features,
-      ...newConfig,
-    };
+    const config = ev.detail.value as EntityTileFeatureConfig;
 
     if (config.hide_state) {
       delete config.state_content;
@@ -318,73 +197,17 @@ export class HuiTileCardEditor
       }
     }
 
-    fireEvent(this, "config-changed", { config });
-  }
-
-  private _featuresChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    if (!this._config || !this.hass) {
-      return;
-    }
-
-    const features = ev.detail.features as LovelaceTileFeatureConfig[];
-    const config: TileCardConfig = {
-      ...this._config,
-      features,
-    };
-
-    if (features.length === 0) {
-      delete config.features;
-    }
-
-    fireEvent(this, "config-changed", { config });
-  }
-
-  private subElementChanged(ev: CustomEvent): void {
-    ev.stopPropagation();
-    if (!this._config || !this.hass) {
-      return;
-    }
-
-    const value = ev.detail.config;
-
-    const newConfigFeatures = this._config!.features
-      ? [...this._config!.features]
-      : [];
-
-    if (!value) {
-      newConfigFeatures.splice(this._subElementEditorConfig!.index!, 1);
-      this._goBack();
-    } else {
-      newConfigFeatures[this._subElementEditorConfig!.index!] = value;
-    }
-
-    this._config = { ...this._config!, features: newConfigFeatures };
-
-    this._subElementEditorConfig = {
-      ...this._subElementEditorConfig!,
-      elementConfig: value,
-    };
-
-    fireEvent(this, "config-changed", { config: this._config });
-  }
-
-  private _editDetailElement(ev: HASSDomEvent<EditSubElementEvent>): void {
-    this._subElementEditorConfig = ev.detail.subElementConfig;
-  }
-
-  private _goBack(): void {
-    this._subElementEditorConfig = undefined;
+    fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
+      case "entity":
       case "color":
       case "icon_tap_action":
       case "show_entity_picture":
-      case "vertical":
       case "hide_state":
       case "state_content":
         return this.hass!.localize(
@@ -417,6 +240,6 @@ export class HuiTileCardEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-tile-card-editor": HuiTileCardEditor;
+    "hui-entity-tile-feature-editor": HuiEntityTileFeatureEditor;
   }
 }

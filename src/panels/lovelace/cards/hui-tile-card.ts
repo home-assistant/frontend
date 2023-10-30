@@ -48,7 +48,7 @@ import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import { computeTileBadge } from "./tile/badges/tile-badge";
 import type { ThermostatCardConfig, TileCardConfig } from "./types";
 
-const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
+export const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
 @customElement("hui-tile-card")
 export class HuiTileCard extends LitElement implements LovelaceCard {

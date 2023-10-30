@@ -1,6 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-select-menu";
@@ -9,7 +10,7 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { InputSelectEntity } from "../../../data/input_select";
 import { SelectEntity } from "../../../data/select";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature } from "../types";
+import { LovelaceTileFeature, LovelaceTileFeatureEditor } from "../types";
 import { SelectOptionsTileFeatureConfig } from "./types";
 
 export const supportsSelectOptionTileFeature = (stateObj: HassEntity) => {
@@ -38,7 +39,15 @@ class HuiSelectOptionsTileFeature
   static getStubConfig(): SelectOptionsTileFeatureConfig {
     return {
       type: "select-options",
+      style: "dropdown",
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceTileFeatureEditor> {
+    await import(
+      "../editor/config-elements/hui-select-options-tile-feature-editor"
+    );
+    return document.createElement("hui-select-options-tile-feature-editor");
   }
 
   public setConfig(config: SelectOptionsTileFeatureConfig): void {
@@ -105,6 +114,24 @@ class HuiSelectOptionsTileFeature
 
     const stateObj = this.stateObj;
 
+    if (this._config.style === "buttons") {
+      return html`
+        <div class="container">
+          <ha-control-select
+            .options=${stateObj.attributes.options!.map((option) => ({
+              value: option,
+              label: this.hass!.formatEntityState(stateObj, option),
+            }))}
+            .value=${stateObj.state}
+            @value-changed=${this._valueChanged}
+            .label=${this.hass.localize("ui.card.select.option")}
+            .disabled=${this.stateObj!.state === UNAVAILABLE}
+          >
+          </ha-control-select>
+        </div>
+      `;
+    }
+
     return html`
       <div class="container">
         <ha-control-select-menu
@@ -118,7 +145,8 @@ class HuiSelectOptionsTileFeature
           @selected=${this._valueChanged}
           @closed=${stopPropagation}
         >
-          ${stateObj.attributes.options!.map(
+          ${repeat(
+            stateObj.attributes.options!,
             (option) => html`
               <ha-list-item .value=${option}>
                 ${this.hass!.formatEntityState(stateObj, option)}
@@ -139,6 +167,9 @@ class HuiSelectOptionsTileFeature
         line-height: 1.2;
         display: block;
         width: 100%;
+      }
+      ha-control-select {
+        --control-select-color: var(--tile-color);
       }
       .container {
         padding: 0 12px 12px 12px;

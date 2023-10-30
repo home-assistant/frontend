@@ -5221,6 +5221,9 @@
                     "label": "Media Volume Controls",
                     "buttons": "Use buttons"
                   },
+                  "entity": {
+                    "label": "Entity"
+                  },
                   "target-temperature": {
                     "label": "Target temperature"
                   },

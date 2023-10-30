@@ -1,5 +1,6 @@
 import { AlarmMode } from "../../../data/alarm_control_panel";
 import { HvacMode } from "../../../data/climate";
+import { ActionConfig } from "../../../data/lovelace";
 import { OperationMode } from "../../../data/water_heater";
 
 export interface CoverOpenCloseTileFeatureConfig {
@@ -48,6 +49,7 @@ export interface ClimatePresetModesTileFeatureConfig {
 
 export interface SelectOptionsTileFeatureConfig {
   type: "select-options";
+  style?: "dropdown" | "buttons";
 }
 
 export interface ToggleTileFeatureConfig {
@@ -70,6 +72,18 @@ export interface MediaControlsTileFeatureConfig {
 export interface MediaVolumeTileFeatureConfig {
   type: "media-volume";
   buttons: boolean;
+}
+
+export interface EntityTileFeatureConfig {
+  type: "entity";
+  entity: string;
+  name?: string;
+  icon?: string;
+  color?: string;
+  hide_state?: boolean;
+  state_content?: string | string[];
+  show_entity_picture?: boolean;
+  icon_tap_action?: ActionConfig;
 }
 
 export interface TargetTemperatureTileFeatureConfig {
@@ -125,11 +139,9 @@ export type LovelaceTileFeatureConfig =
   | ButtonTileFeatureConfig
   | UpdateTileFeatureConfig
   | MediaControlsTileFeatureConfig
-  | MediaVolumeTileFeatureConfig;
+  | MediaVolumeTileFeatureConfig
+  | EntityTileFeatureConfig;
 
-// TODO: Media player
-// TODO: Calendar (next event: name, time, location) (configurable)
-// TODO: Entity? (just puts `icon name state` of another entity inside the tile card)
 // TODO: input_* (number, text, data &| time)
 // TODO: input_select with buttons or menu
 

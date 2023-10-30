@@ -2,7 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { isUnavailableState } from "../../../data/entity";
+import { isOffState, isUnavailableState } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature, LovelaceTileFeatureEditor } from "../types";
 import { MediaVolumeTileFeatureConfig } from "./types";
@@ -95,6 +95,10 @@ class HuiMediaVolumeTileFeature
     }
 
     const stateObj = this.stateObj;
+
+    if (isOffState(stateObj.state)) {
+      return nothing;
+    }
 
     return html`
       <div class="container">

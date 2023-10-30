@@ -43,6 +43,7 @@ import { supportsButtonTileFeature } from "../../tile-features/hui-button-tile-f
 import { supportsUpdateTileFeature } from "../../tile-features/hui-update-tile-feature";
 import { supportsMediaControlsTileFeature } from "../../tile-features/hui-media-controls-tile-feature";
 import { supportsMediaVolumeTileFeature } from "../../tile-features/hui-media-volume-tile-feature";
+import { supportsEntityTileFeature } from "../../tile-features/hui-entity-tile-feature";
 
 type FeatureType = LovelaceTileFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
@@ -68,6 +69,7 @@ const UI_FEATURE_TYPES = [
   "update",
   "media-controls",
   "media-volume",
+  "entity",
 ] as const satisfies readonly FeatureType[];
 
 type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
@@ -81,6 +83,8 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "climate-preset-modes",
   "media-controls",
   "media-volume",
+  "entity",
+  "select-options",
 ]);
 
 const SUPPORTS_FEATURE_TYPES: Record<
@@ -107,6 +111,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   update: supportsUpdateTileFeature,
   "media-controls": supportsMediaControlsTileFeature,
   "media-volume": supportsMediaVolumeTileFeature,
+  entity: supportsEntityTileFeature,
 };
 
 const CUSTOM_FEATURE_ENTRIES: Record<
