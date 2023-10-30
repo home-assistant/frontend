@@ -20,15 +20,27 @@ export class HaColorTempSelector extends LitElement {
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
-
+  
   protected render() {
+    const min = this.selector.color_temp?.min_mireds ?? 153;
+    const max = this.selector.color_temp?.max_mireds ?? 500;
+
+    const firstPercentage = 100 * (153 - min) / 173.5;
+    const secondPercentage = 50 * (153 - min + 500 - max) / 173.5 + 50;
+    const thirdPercentage = 100 * (500 - max) / 173.5 + 100;
+
     return html`
       <ha-labeled-slider
+        style="
+          --first-percentage: ${firstPercentage}%;
+          --second-percentage: ${secondPercentage}%;
+          --third-percentage: ${thirdPercentage}%;
+        "
         labeled
         icon="hass:thermometer"
         .caption=${this.label || ""}
-        .min=${this.selector.color_temp?.min_mireds ?? 153}
-        .max=${this.selector.color_temp?.max_mireds ?? 500}
+        .min=${min}
+        .max=${max}
         .value=${this.value}
         .disabled=${this.disabled}
         .helper=${this.helper}
@@ -48,9 +60,9 @@ export class HaColorTempSelector extends LitElement {
     ha-labeled-slider {
       --ha-slider-background: linear-gradient(
         to var(--float-end),
-        rgb(255, 160, 0) 0%,
-        white 50%,
-        rgb(166, 209, 255) 100%
+        rgb(255, 160, 0) var(--first-percentage),
+        white var(--second-percentage),
+        rgb(166, 209, 255) var(--third-percentage)
       );
     }
   `;
