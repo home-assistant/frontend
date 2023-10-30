@@ -9025,10 +9025,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fuse.js@npm:6.6.2":
-  version: 6.6.2
-  resolution: "fuse.js@npm:6.6.2"
-  checksum: 17ae758ce205276ebd88bd9c9f088a100be0b4896abac9f6b09847151269d1690f41d7f98ff5813d4a58973162dbd99d0072ce807020fee6f9de60170f6b08eb
+"fuse.js@npm:7.0.0":
+  version: 7.0.0
+  resolution: "fuse.js@npm:7.0.0"
+  checksum: d15750efec1808370c0cae92ec9473aa7261c59bca1f15f1cf60039ba6f804b8f95340b5cabd83a4ef55839c1034764856e0128e443921f072aa0d8a20e4cacf
   languageName: node
   linkType: hard
 
@@ -9772,7 +9772,7 @@ __metadata:
     esprima: 4.0.1
     fancy-log: 2.0.0
     fs-extra: 11.1.1
-    fuse.js: 6.6.2
+    fuse.js: 7.0.0
     glob: 10.3.10
     google-timezones-json: 1.2.0
     gulp: 4.0.2
