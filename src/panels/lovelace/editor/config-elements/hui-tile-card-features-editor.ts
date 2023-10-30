@@ -41,6 +41,7 @@ import { supportsClimatePresetModesTileFeature } from "../../tile-features/hui-c
 import { supportsToggleTileFeature } from "../../tile-features/hui-toggle-tile-feature";
 import { supportsButtonTileFeature } from "../../tile-features/hui-button-tile-feature";
 import { supportsUpdateTileFeature } from "../../tile-features/hui-update-tile-feature";
+import { supportsMediaControlsTileFeature } from "../../tile-features/hui-media-controls-tile-feature";
 
 type FeatureType = LovelaceTileFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
@@ -64,6 +65,7 @@ const UI_FEATURE_TYPES = [
   "toggle",
   "button",
   "update",
+  "media-controls",
 ] as const satisfies readonly FeatureType[];
 
 type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
@@ -75,6 +77,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "water-heater-operation-modes",
   "lawn-mower-commands",
   "climate-preset-modes",
+  "media-controls",
 ]);
 
 const SUPPORTS_FEATURE_TYPES: Record<
@@ -99,6 +102,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   toggle: supportsToggleTileFeature,
   button: supportsButtonTileFeature,
   update: supportsUpdateTileFeature,
+  "media-controls": supportsMediaControlsTileFeature,
 };
 
 const CUSTOM_FEATURE_ENTRIES: Record<

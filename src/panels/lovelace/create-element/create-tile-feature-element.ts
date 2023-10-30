@@ -16,6 +16,7 @@ import "../tile-features/hui-water-heater-operation-modes-tile-feature";
 import "../tile-features/hui-toggle-tile-feature";
 import "../tile-features/hui-button-tile-feature";
 import "../tile-features/hui-update-tile-feature";
+import "../tile-features/hui-media-controls-tile-feature";
 import { LovelaceTileFeatureConfig } from "../tile-features/types";
 import {
   createLovelaceElement,
@@ -41,6 +42,7 @@ const TYPES: Set<LovelaceTileFeatureConfig["type"]> = new Set([
   "toggle",
   "button",
   "update",
+  "media-controls",
 ]);
 
 export const createTileFeatureElement = (config: LovelaceTileFeatureConfig) =>

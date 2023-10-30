@@ -1,6 +1,7 @@
 import { AlarmMode } from "../../../data/alarm_control_panel";
 import { HvacMode } from "../../../data/climate";
 import { OperationMode } from "../../../data/water_heater";
+import { MEDIA_CONTROLS } from "./hui-media-controls-tile-feature";
 
 export interface CoverOpenCloseTileFeatureConfig {
   type: "cover-open-close";
@@ -62,6 +63,11 @@ export interface UpdateTileFeatureConfig {
   type: "update";
 }
 
+export interface MediaControlsTileFeatureConfig {
+  type: "media-controls";
+  controls: (typeof MEDIA_CONTROLS)[number][];
+}
+
 export interface TargetTemperatureTileFeatureConfig {
   type: "target-temperature";
 }
@@ -113,7 +119,14 @@ export type LovelaceTileFeatureConfig =
   | SelectOptionsTileFeatureConfig
   | ToggleTileFeatureConfig
   | ButtonTileFeatureConfig
-  | UpdateTileFeatureConfig;
+  | UpdateTileFeatureConfig
+  | MediaControlsTileFeatureConfig;
+
+// TODO: Media player
+// TODO: Calendar (next event: name, time, location) (configurable)
+// TODO: Entity? (just puts `icon name state` of another entity inside the tile card)
+// TODO: input_* (number, text, data &| time)
+// TODO: input_select with buttons or menu
 
 export type LovelaceTileFeatureContext = {
   entity_id?: string;

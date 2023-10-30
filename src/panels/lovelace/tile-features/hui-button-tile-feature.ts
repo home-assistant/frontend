@@ -2,7 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { UNAVAILABLE } from "../../../data/entity";
+import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
 import { ScriptEntity } from "../../../data/script";
 import { AutomationEntity } from "../../../data/automation";
 import { HomeAssistant } from "../../../types";
@@ -93,7 +93,7 @@ class HuiButtonTileFeature extends LitElement implements LovelaceTileFeature {
     return html`
       <div class="container">
         <ha-control-button
-          .disabled=${stateObj.state === UNAVAILABLE}
+          .disabled=${isUnavailableState(stateObj.state)}
           @click=${this._press}
         >
           ${this.hass.localize(

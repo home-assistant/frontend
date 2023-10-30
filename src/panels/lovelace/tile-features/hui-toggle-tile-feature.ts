@@ -3,7 +3,11 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { UNAVAILABLE } from "../../../data/entity";
+import {
+  UNAVAILABLE,
+  isOffState,
+  isUnavailableState,
+} from "../../../data/entity";
 import { LightEntity } from "../../../data/light";
 import { AutomationEntity } from "../../../data/automation";
 import { HomeAssistant } from "../../../types";
@@ -91,8 +95,9 @@ class HuiToggleTileFeature extends LitElement implements LovelaceTileFeature {
         <ha-control-switch
           .pathOn=${domain === "light" ? mdiLightbulb : mdiPower}
           .pathOff=${domain === "light" ? mdiLightbulbOff : mdiPowerOff}
-          .checked=${stateObj.state !== UNAVAILABLE && stateObj.state !== "off"}
-          .disabled=${stateObj.state === UNAVAILABLE}
+          .checked=${!isUnavailableState(stateObj.state) &&
+          isOffState(stateObj.state)}
+          .disabled=${isUnavailableState(stateObj.state)}
           @change=${this._valueChanged}
           hide-label
         >

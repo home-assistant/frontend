@@ -2,8 +2,13 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { OFF, UNAVAILABLE } from "../../../data/entity";
-import { UpdateEntity } from "../../../data/update";
+import {
+  isOffState,
+  isUnavailableState,
+  OFF,
+  UNAVAILABLE,
+} from "../../../data/entity";
+import { updateCanInstall, UpdateEntity } from "../../../data/update";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
 import { UpdateTileFeatureConfig } from "./types";
@@ -77,20 +82,13 @@ class HuiUpdateTileFeature extends LitElement implements LovelaceTileFeature {
       <div class="container">
         <ha-control-button-group>
           <ha-control-button
-            .disabled=${stateObj.state === OFF ||
-            stateObj.state === UNAVAILABLE ||
-            Boolean(stateObj.attributes.in_progress)}
+            .disabled=${!updateCanInstall(stateObj)}
             @click=${this._skip}
           >
             ${this.hass!.localize("ui.dialogs.more_info_control.update.skip")}
           </ha-control-button>
           <ha-control-button
-            .disabled=${(stateObj.state === OFF &&
-              (stateObj.attributes.skipped_version === undefined ||
-                stateObj.attributes.skipped_version === null)) ||
-            stateObj.state === UNAVAILABLE ||
-            Boolean(stateObj.attributes.in_progress) ||
-            (stateObj.attributes.supported_features ?? 0) === 0}
+            .disabled=${!updateCanInstall(stateObj, true)}
             @click=${this._install}
           >
             ${this.hass!.localize(
