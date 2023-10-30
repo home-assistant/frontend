@@ -4526,7 +4526,8 @@
             "clear_items": "Clear checked items",
             "add_item": "Add item",
             "reorder_items": "Reorder items",
-            "drag_and_drop": "Drag and drop"
+            "drag_and_drop": "Drag and drop",
+            "delete_item": "Delete item"
           },
           "picture-elements": {
             "hold": "Hold:",
