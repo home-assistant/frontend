@@ -61,18 +61,23 @@ export const updateItem = (
   entity_id: string,
   item: TodoItem
 ): Promise<ServiceCallResponse> =>
-  hass.callService("todo", "update_item", item, { entity_id });
+  hass.callService(
+    "todo",
+    "update_item",
+    { ...item, item: item.uid, rename: item.summary },
+    { entity_id }
+  );
 
 export const createItem = (
   hass: HomeAssistant,
   entity_id: string,
-  summary: string
+  item: string
 ): Promise<ServiceCallResponse> =>
   hass.callService(
     "todo",
-    "create_item",
+    "add_item",
     {
-      summary,
+      item,
     },
     { entity_id }
   );
@@ -84,9 +89,9 @@ export const deleteItem = (
 ): Promise<ServiceCallResponse> =>
   hass.callService(
     "todo",
-    "delete_item",
+    "remove_item",
     {
-      uid,
+      item: uid,
     },
     { entity_id }
   );
