@@ -29,7 +29,6 @@ export class HaColorTempSelector extends LitElement {
     const min = this.selector.color_temp?.min_mireds ?? 153;
     const max = this.selector.color_temp?.max_mireds ?? 500;
 
-
     const gradient = this._generateTemperatureGradient(min, max);
 
     return html`
@@ -37,7 +36,6 @@ export class HaColorTempSelector extends LitElement {
         style=${styleMap({
           "--ha-slider-background": `linear-gradient( to var(--float-end), ${gradient})`,
         })}
-  
         labeled
         icon="hass:thermometer"
         .caption=${this.label || ""}
@@ -53,7 +51,8 @@ export class HaColorTempSelector extends LitElement {
   }
 
   private _generateTemperatureGradient = memoizeOne(
-    (min: number, max: number) => generateColorTemperatureGradient(mired2kelvin(min), mired2kelvin(max))
+    (min: number, max: number) =>
+      generateColorTemperatureGradient(mired2kelvin(min), mired2kelvin(max))
   );
 
   private _valueChanged(ev: CustomEvent) {
