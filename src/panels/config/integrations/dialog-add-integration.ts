@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
-import Fuse from "fuse.js";
+import Fuse, { IFuseOptions } from "fuse.js";
 import { HassConfig } from "home-assistant-js-websocket";
 import {
   css,
@@ -239,7 +239,7 @@ class AddIntegrationDialog extends LitElement {
       });
 
       if (filter) {
-        const options: Fuse.IFuseOptions<IntegrationListItem> = {
+        const options: IFuseOptions<IntegrationListItem> = {
           keys: [
             { name: "name", weight: 5 },
             { name: "domain", weight: 5 },

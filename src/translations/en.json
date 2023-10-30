@@ -2401,6 +2401,7 @@
               "delete_confirm_text": "It will be permanently deleted.",
               "unsupported_platform": "No visual editor support for platform: {platform}",
               "type_select": "Trigger type",
+              "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
               "type": {
                 "calendar": {
                   "label": "Calendar",
@@ -2596,6 +2597,7 @@
               "delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
               "unsupported_condition": "No visual editor support for condition: {condition}",
               "type_select": "Condition type",
+              "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
               "type": {
                 "and": {
                   "label": "And",
@@ -4526,7 +4528,8 @@
             "clear_items": "Clear checked items",
             "add_item": "Add item",
             "reorder_items": "Reorder items",
-            "drag_and_drop": "Drag and drop"
+            "drag_and_drop": "Drag and drop",
+            "delete_item": "Delete item"
           },
           "picture-elements": {
             "hold": "Hold:",

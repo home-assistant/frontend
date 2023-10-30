@@ -1,6 +1,7 @@
 import { ActionDetail } from "@material/mwc-list";
 import { mdiFilterVariant, mdiPlus } from "@mdi/js";
 import Fuse from "fuse.js";
+import type { IFuseOptions } from "fuse.js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -157,7 +158,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       const disabled: ConfigEntryExtended[] = [];
       const integrations: ConfigEntryExtended[] = [];
       if (filter) {
-        const options: Fuse.IFuseOptions<ConfigEntryExtended> = {
+        const options: IFuseOptions<ConfigEntryExtended> = {
           keys: ["domain", "localized_domain_name", "title"],
           isCaseSensitive: false,
           minMatchCharLength: 2,
@@ -201,7 +202,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     ): DataEntryFlowProgressExtended[] => {
       let filteredEntries: DataEntryFlowProgressExtended[];
       if (filter) {
-        const options: Fuse.IFuseOptions<DataEntryFlowProgressExtended> = {
+        const options: IFuseOptions<DataEntryFlowProgressExtended> = {
           keys: ["handler", "localized_title"],
           isCaseSensitive: false,
           minMatchCharLength: 2,
