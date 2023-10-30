@@ -71,13 +71,13 @@ export const updateItem = (
 export const createItem = (
   hass: HomeAssistant,
   entity_id: string,
-  item: string
+  summary: string
 ): Promise<ServiceCallResponse> =>
   hass.callService(
     "todo",
     "add_item",
     {
-      item,
+      item: summary,
     },
     { entity_id }
   );
