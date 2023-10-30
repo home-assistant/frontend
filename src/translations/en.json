@@ -5215,17 +5215,7 @@
                   },
                   "media-controls": {
                     "label": "Media Controls",
-                    "controls": "Controls",
-                    "control": {
-                      "power": "Power",
-                      "browse_media": "Browse media",
-                      "play_pause": "Play / Pause",
-                      "shuffle": "Shuffle",
-                      "repeat": "Repeat",
-                      "stop": "Stop",
-                      "next_track": "Next track",
-                      "previous_track": "Previous track"
-                    }
+                    "use_extended_controls": "Use Extended Controls"
                   },
                   "target-temperature": {
                     "label": "Target temperature"

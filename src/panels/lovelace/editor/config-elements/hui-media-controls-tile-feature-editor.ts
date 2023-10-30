@@ -10,7 +10,6 @@ import {
   LovelaceTileFeatureContext,
 } from "../../tile-features/types";
 import type { LovelaceTileFeatureEditor } from "../../types";
-import { MEDIA_CONTROLS } from "../../tile-features/hui-media-controls-tile-feature";
 
 @customElement("hui-media-controls-tile-feature-editor")
 export class HuiMediaControlsTileFeatureEditor
@@ -31,18 +30,9 @@ export class HuiMediaControlsTileFeatureEditor
     () =>
       [
         {
-          name: "controls",
+          name: "use_extended_controls",
           selector: {
-            select: {
-              multiple: true,
-              mode: "list",
-              options: MEDIA_CONTROLS.map((control) => ({
-                value: control,
-                label: this.hass!.localize(
-                  `ui.panel.lovelace.editor.card.tile.features.types.media-controls.control.${control}`
-                ),
-              })),
-            },
+            boolean: {},
           },
         },
       ] as const
@@ -72,18 +62,10 @@ export class HuiMediaControlsTileFeatureEditor
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
-    switch (schema.name) {
-      case "controls":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.features.types.media-controls.${schema.name}`
-        );
-      default:
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}`
-        );
-    }
-  };
+  ) =>
+    this.hass!.localize(
+      `ui.panel.lovelace.editor.card.tile.features.types.media-controls.${schema.name}`
+    );
 }
 
 declare global {

@@ -1,7 +1,6 @@
 import { AlarmMode } from "../../../data/alarm_control_panel";
 import { HvacMode } from "../../../data/climate";
 import { OperationMode } from "../../../data/water_heater";
-import { MEDIA_CONTROLS } from "./hui-media-controls-tile-feature";
 
 export interface CoverOpenCloseTileFeatureConfig {
   type: "cover-open-close";
@@ -65,7 +64,7 @@ export interface UpdateTileFeatureConfig {
 
 export interface MediaControlsTileFeatureConfig {
   type: "media-controls";
-  controls: (typeof MEDIA_CONTROLS)[number][];
+  use_extended_controls: boolean;
 }
 
 export interface TargetTemperatureTileFeatureConfig {
