@@ -658,14 +658,10 @@ const tryDescribeTrigger = (
     }`;
   }
 
-  const triggerType = trigger.platform
-    ? hass.localize(
-        `ui.panel.config.automation.editor.triggers.type.${trigger.platform}.label`
-      )
-    : "";
-
   return (
-    triggerType ||
+    hass.localize(
+        `ui.panel.config.automation.editor.triggers.type.${trigger.platform}.label`
+      ) ||
     hass.localize(`ui.panel.config.automation.editor.triggers.unknown_trigger`)
   );
 };
@@ -1098,14 +1094,11 @@ const tryDescribeCondition = (
     return `When triggered by ${condition.id}`;
   }
 
-  const conditionType = condition.condition
-    ? hass.localize(
-        `ui.panel.config.automation.editor.conditions.type.${condition.condition}.label`
-      )
-    : "";
 
   return (
-    conditionType ||
+    hass.localize(
+        `ui.panel.config.automation.editor.conditions.type.${condition.condition}.label`
+      ) ||
     hass.localize(
       `ui.panel.config.automation.editor.conditions.unknown_condition`
     )
