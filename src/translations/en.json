@@ -3099,6 +3099,9 @@
                 },
                 "parallel": {
                   "label": "Run in parallel",
+                  "add_sequence": "Add parallel actions",
+                  "remove_sequence": "Remove actions",
+                  "sequence": "Actions",
                   "description": {
                     "picker": "Perform a sequence of actions in parallel.",
                     "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in parallel"
