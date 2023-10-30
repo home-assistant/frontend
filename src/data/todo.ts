@@ -64,7 +64,7 @@ export const updateItem = (
   hass.callService(
     "todo",
     "update_item",
-    { ...item, item: item.uid, rename: item.summary },
+    { item: item.uid, rename: item.summary, status: item.status },
     { entity_id }
   );
 
