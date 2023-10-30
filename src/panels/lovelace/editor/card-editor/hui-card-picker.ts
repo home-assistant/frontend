@@ -1,4 +1,4 @@
-import Fuse, { IFuseOptions } from "fuse.js/basic";
+import Fuse, { IFuseOptions } from "fuse.js";
 import {
   css,
   CSSResultGroup,

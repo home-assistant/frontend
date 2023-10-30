@@ -1,6 +1,6 @@
 import { ActionDetail } from "@material/mwc-list";
 import { mdiFilterVariant, mdiPlus } from "@mdi/js";
-import Fuse from "fuse.js/basic";
+import Fuse from "fuse.js";
 import type { IFuseOptions } from "fuse.js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {

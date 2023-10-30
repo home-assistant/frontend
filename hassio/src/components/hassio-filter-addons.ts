@@ -1,4 +1,4 @@
-import Fuse from "fuse.js/basic";
+import Fuse from "fuse.js";
 import type { IFuseOptions } from "fuse.js";
 import { StoreAddon } from "../../../src/data/supervisor/store";
 

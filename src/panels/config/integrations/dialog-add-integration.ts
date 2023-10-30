@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
-import Fuse, { IFuseOptions } from "fuse.js/basic";
+import Fuse, { IFuseOptions } from "fuse.js";
 import { HassConfig } from "home-assistant-js-websocket";
 import {
   css,
