@@ -9832,7 +9832,7 @@ __metadata:
     tsparticles-engine: 2.12.0
     tsparticles-preset-links: 2.12.0
     typescript: 5.2.2
-    ua-parser-js: 1.0.36
+    ua-parser-js: 1.0.37
     unfetch: 5.0.0
     vinyl-buffer: 1.0.1
     vinyl-source-stream: 2.0.0
@@ -15673,10 +15673,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ua-parser-js@npm:1.0.36":
-  version: 1.0.36
-  resolution: "ua-parser-js@npm:1.0.36"
-  checksum: 5b2c8a5e3443dfbba7624421805de946457c26ae167cb2275781a2729d1518f7067c9d5c74c3b0acac4b9ff3278cae4eace08ca6eecb63848bc3b2f6a63cc975
+"ua-parser-js@npm:1.0.37":
+  version: 1.0.37
+  resolution: "ua-parser-js@npm:1.0.37"
+  checksum: 4d481c720d523366d7762dc8a46a1b58967d979aacf786f9ceceb1cd767de069f64a4bdffb63956294f1c0696eb465ddb950f28ba90571709e33521b4bd75e07
   languageName: node
   linkType: hard
 
