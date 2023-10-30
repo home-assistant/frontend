@@ -642,10 +642,7 @@ const tryDescribeTrigger = (
   }
 
   // Device Trigger
-  if (trigger.platform === "device") {
-    if (!trigger.device_id) {
-      return "Device trigger";
-    }
+  if (trigger.platform === "device" && trigger.device_id) {
     const config = trigger as DeviceTrigger;
     const localized = localizeDeviceAutomationTrigger(
       hass,
@@ -661,9 +658,12 @@ const tryDescribeTrigger = (
     }`;
   }
 
-  return `${
-    trigger.platform ? trigger.platform.replace(/_/g, " ") : "Unknown"
-  } trigger`;
+  return (
+    hass.localize(
+      `ui.panel.config.automation.editor.triggers.type.${trigger.platform}.label`
+    ) ||
+    hass.localize(`ui.panel.config.automation.editor.triggers.unknown_trigger`)
+  );
 };
 
 export const describeCondition = (
@@ -1074,10 +1074,7 @@ const tryDescribeCondition = (
     );
   }
 
-  if (condition.condition === "device") {
-    if (!condition.device_id) {
-      return "Device condition";
-    }
+  if (condition.condition === "device" && condition.device_id) {
     const config = condition as DeviceCondition;
     const localized = localizeDeviceAutomationCondition(
       hass,
@@ -1093,14 +1090,16 @@ const tryDescribeCondition = (
     }`;
   }
 
-  if (condition.condition === "trigger") {
-    if (!condition.id) {
-      return "Trigger condition";
-    }
+  if (condition.condition === "trigger" && condition.id) {
     return `When triggered by ${condition.id}`;
   }
 
-  return `${
-    condition.condition ? condition.condition.replace(/_/g, " ") : "Unknown"
-  } condition`;
+  return (
+    hass.localize(
+      `ui.panel.config.automation.editor.conditions.type.${condition.condition}.label`
+    ) ||
+    hass.localize(
+      `ui.panel.config.automation.editor.conditions.unknown_condition`
+    )
+  );
 };

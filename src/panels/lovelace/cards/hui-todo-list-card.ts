@@ -1,4 +1,10 @@
-import { mdiDrag, mdiNotificationClearAll, mdiPlus, mdiSort } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDrag,
+  mdiNotificationClearAll,
+  mdiPlus,
+  mdiSort,
+} from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
@@ -293,6 +299,23 @@ export class HuiTodoListCard
                       .itemId=${item.uid}
                       @change=${this._saveEdit}
                     ></ha-textfield>
+                    ${this.todoListSupportsFeature(
+                      TodoListEntityFeature.DELETE_TODO_ITEM
+                    ) &&
+                    !this.todoListSupportsFeature(
+                      TodoListEntityFeature.UPDATE_TODO_ITEM
+                    )
+                      ? html`<ha-icon-button
+                          .title=${this.hass!.localize(
+                            "ui.panel.lovelace.cards.todo-list.delete_item"
+                          )}
+                          class="deleteItemButton"
+                          .path=${mdiDelete}
+                          .itemId=${item.uid}
+                          @click=${this._deleteItem}
+                        >
+                        </ha-icon-button>`
+                      : nothing}
                   </div>
                 `
               )}
@@ -341,7 +364,23 @@ export class HuiTodoListCard
                   >
                   </ha-svg-icon>
                 `
-              : ""}
+              : this.todoListSupportsFeature(
+                  TodoListEntityFeature.DELETE_TODO_ITEM
+                ) &&
+                !this.todoListSupportsFeature(
+                  TodoListEntityFeature.UPDATE_TODO_ITEM
+                )
+              ? html`<ha-icon-button
+                  .title=${this.hass!.localize(
+                    "ui.panel.lovelace.cards.todo-list.delete_item"
+                  )}
+                  class="deleteItemButton"
+                  .path=${mdiDelete}
+                  .itemId=${item.uid}
+                  @click=${this._deleteItem}
+                >
+                </ha-icon-button>`
+              : nothing}
           </div>
         `
       )}
@@ -429,6 +468,16 @@ export class HuiTodoListCard
     if (ev) {
       newItem.focus();
     }
+  }
+
+  private _deleteItem(ev): void {
+    const item = this._getItem(ev.target.itemId);
+    if (!item) {
+      return;
+    }
+    deleteItem(this.hass!, this._entityId!, item.uid).finally(() =>
+      this._fetchData()
+    );
   }
 
   private _addKeyPress(ev): void {
@@ -538,6 +587,12 @@ export class HuiTodoListCard
       .addButton {
         margin-left: -12px;
         margin-inline-start: -12px;
+        direction: var(--direction);
+      }
+
+      .deleteItemButton {
+        margin-right: -12px;
+        margin-inline-end: -12px;
         direction: var(--direction);
       }
 
