@@ -67,6 +67,11 @@ export interface MediaControlsTileFeatureConfig {
   use_extended_controls: boolean;
 }
 
+export interface MediaVolumeTileFeatureConfig {
+  type: "media-volume";
+  buttons: boolean;
+}
+
 export interface TargetTemperatureTileFeatureConfig {
   type: "target-temperature";
 }
@@ -119,7 +124,8 @@ export type LovelaceTileFeatureConfig =
   | ToggleTileFeatureConfig
   | ButtonTileFeatureConfig
   | UpdateTileFeatureConfig
-  | MediaControlsTileFeatureConfig;
+  | MediaControlsTileFeatureConfig
+  | MediaVolumeTileFeatureConfig;
 
 // TODO: Media player
 // TODO: Calendar (next event: name, time, location) (configurable)

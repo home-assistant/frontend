@@ -17,6 +17,7 @@ import "../tile-features/hui-toggle-tile-feature";
 import "../tile-features/hui-button-tile-feature";
 import "../tile-features/hui-update-tile-feature";
 import "../tile-features/hui-media-controls-tile-feature";
+import "../tile-features/hui-media-volume-tile-feature";
 import { LovelaceTileFeatureConfig } from "../tile-features/types";
 import {
   createLovelaceElement,
@@ -43,6 +44,7 @@ const TYPES: Set<LovelaceTileFeatureConfig["type"]> = new Set([
   "button",
   "update",
   "media-controls",
+  "media-volume",
 ]);
 
 export const createTileFeatureElement = (config: LovelaceTileFeatureConfig) =>

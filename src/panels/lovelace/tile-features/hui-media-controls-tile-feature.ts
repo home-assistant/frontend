@@ -14,14 +14,6 @@ import {
   MediaPlayerEntity,
 } from "../../../data/media-player";
 
-export const MEDIA_CONTROLS = [
-  "power",
-  "browse_media",
-  "play_pause",
-  "shuffle",
-  "repeat",
-] as const;
-
 export const REPEAT_MODES = ["off", "all", "one"] as const;
 
 export const supportsMediaControlsTileFeature = (stateObj: HassEntity) => {

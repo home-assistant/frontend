@@ -2,7 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import { ScriptEntity } from "../../../data/script";
 import { AutomationEntity } from "../../../data/automation";
 import { HomeAssistant } from "../../../types";

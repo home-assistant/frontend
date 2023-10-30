@@ -5215,7 +5215,11 @@
                   },
                   "media-controls": {
                     "label": "Media Controls",
-                    "use_extended_controls": "Use Extended Controls"
+                    "use_extended_controls": "Use extended controls"
+                  },
+                  "media-volume": {
+                    "label": "Media Volume Controls",
+                    "buttons": "Use buttons"
                   },
                   "target-temperature": {
                     "label": "Target temperature"
