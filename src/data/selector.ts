@@ -52,7 +52,8 @@ export type Selector =
   | TTSSelector
   | TTSVoiceSelector
   | UiActionSelector
-  | UiColorSelector;
+  | UiColorSelector
+  | UserSelector;
 
 export interface ActionSelector {
   action: {
@@ -390,6 +391,13 @@ export interface UiActionSelector {
 export interface UiColorSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   ui_color: {} | null;
+}
+
+export interface UserSelector {
+  user: {
+    multiple?: boolean;
+    include_system?: boolean;
+  } | null;
 }
 
 export const expandAreaTarget = (

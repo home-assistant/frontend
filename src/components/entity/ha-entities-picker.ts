@@ -71,7 +71,8 @@ class HaEntitiesPickerLight extends LitElement {
   @property({ attribute: "picked-entity-label" })
   public pickedEntityLabel?: string;
 
-  @property({ attribute: "pick-entity-label" }) public pickEntityLabel?: string;
+  @property({ attribute: "pick-entity-label" })
+  public pickEntityLabel?: string;
 
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
 
