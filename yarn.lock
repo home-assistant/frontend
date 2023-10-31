@@ -2096,12 +2096,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/observers@npm:2.0.1":
-  version: 2.0.1
-  resolution: "@lit-labs/observers@npm:2.0.1"
+"@lit-labs/observers@npm:2.0.2":
+  version: 2.0.2
+  resolution: "@lit-labs/observers@npm:2.0.2"
   dependencies:
-    "@lit/reactive-element": ^2.0.0
-  checksum: 6c4518ee37678d86b263799590edd5c202a9f6800b52b52d2a0fc47e572d029c587fa9722108e449ab6bc7b1b1aee9e780b3e42ca2e91d63a43fc96541a80f98
+    "@lit/reactive-element": ^1.0.0 || ^2.0.0
+  checksum: 2eb7c5681695409ac802f59f8f3762520053bc47fc7f605a9ad89a4b26a1bcdbabd4c8db862acb778b08fbc744147f194b01ff9d61c7aa6d87aaa3648c26e24e
   languageName: node
   linkType: hard
 
@@ -2131,21 +2131,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lit/reactive-element@npm:^1.0.0 || ^2.0.0":
+  version: 2.0.1
+  resolution: "@lit/reactive-element@npm:2.0.1"
+  dependencies:
+    "@lit-labs/ssr-dom-shim": ^1.1.2
+  checksum: e9cacc3743c28b7b417739ffb292288076df115d08d9e9a895e2879c7087938d50c6b8141986743535e06156efd1ca505c8cf6ef8702db99966d190df9f8e869
+  languageName: node
+  linkType: hard
+
 "@lit/reactive-element@npm:^1.3.0, @lit/reactive-element@npm:^1.6.0, @lit/reactive-element@npm:^1.6.2":
   version: 1.6.3
   resolution: "@lit/reactive-element@npm:1.6.3"
   dependencies:
     "@lit-labs/ssr-dom-shim": ^1.0.0
   checksum: 79b58631c38effeabad090070324431da8a22cf0ff665f5e4de35e4d791f984742b3d340c9c7fce996d1124a8da95febc582471b4c237236c770b1300b56ef6e
-  languageName: node
-  linkType: hard
-
-"@lit/reactive-element@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "@lit/reactive-element@npm:2.0.1"
-  dependencies:
-    "@lit-labs/ssr-dom-shim": ^1.1.2
-  checksum: e9cacc3743c28b7b417739ffb292288076df115d08d9e9a895e2879c7087938d50c6b8141986743535e06156efd1ca505c8cf6ef8702db99966d190df9f8e869
   languageName: node
   linkType: hard
 
@@ -9662,7 +9662,7 @@ __metadata:
     "@koa/cors": 4.0.0
     "@lezer/highlight": 1.1.6
     "@lit-labs/motion": 1.0.6
-    "@lit-labs/observers": 2.0.1
+    "@lit-labs/observers": 2.0.2
     "@lit-labs/virtualizer": 2.0.9
     "@lit/context": 1.0.1
     "@lokalise/node-api": 12.0.0

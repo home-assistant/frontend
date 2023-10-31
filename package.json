@@ -51,7 +51,7 @@
     "@fullcalendar/timegrid": "6.1.9",
     "@lezer/highlight": "1.1.6",
     "@lit-labs/motion": "1.0.6",
-    "@lit-labs/observers": "2.0.1",
+    "@lit-labs/observers": "2.0.2",
     "@lit-labs/virtualizer": "2.0.9",
     "@lit/context": "1.0.1",
     "@lrnwebcomponents/simple-tooltip": "7.0.18",
