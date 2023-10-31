@@ -1,8 +1,8 @@
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-chip";
-import "../../../../components/ha-chip-set";
+import "../../../../components/chips/ha-assist-chip";
+import "../../../../components/chips/ha-chip-set";
 import { showAutomationEditor } from "../../../../data/automation";
 import {
   DeviceAction,
@@ -77,17 +77,18 @@ export abstract class HaDeviceAutomationCard<
         <ha-chip-set>
           ${automations.map(
             (automation, idx) => html`
-              <ha-chip
+              <ha-assist-chip
+                filled
                 .index=${idx}
                 @click=${this._handleAutomationClicked}
                 class=${automation.metadata?.secondary ? "secondary" : ""}
-              >
-                ${this._localizeDeviceAutomation(
+                .label=${this._localizeDeviceAutomation(
                   this.hass,
                   this.entityReg!,
                   automation
                 )}
-              </ha-chip>
+              >
+              </ha-assist-chip>
             `
           )}
         </ha-chip-set>

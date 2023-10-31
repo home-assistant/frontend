@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-chip";
-import "../../../components/ha-chip-set";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-help-tooltip";
@@ -76,7 +75,7 @@ class DialogUserDetail extends LitElement {
           ${badges.length === 0
             ? ""
             : html`
-                <ha-chip-set>
+                <div class="badge-container">
                   ${badges.map(
                     ([icon, label]) => html`
                       <ha-chip hasIcon>
@@ -85,7 +84,7 @@ class DialogUserDetail extends LitElement {
                       </ha-chip>
                     `
                   )}
-                </ha-chip-set>
+                </div>
               `}
           <div class="form">
             <ha-textfield
@@ -286,9 +285,14 @@ class DialogUserDetail extends LitElement {
         .secondary {
           color: var(--secondary-text-color);
         }
-        ha-chip-set,
         ha-textfield {
           display: block;
+        }
+        .badge-container {
+          margin-top: 4px;
+        }
+        .badge-container > * {
+          margin: 4px 4px 4px 0;
         }
         .state {
           background-color: rgba(var(--rgb-primary-text-color), 0.15);
