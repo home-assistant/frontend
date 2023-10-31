@@ -143,7 +143,7 @@ class HaSidebarEditPanels extends LitElement {
   }
 
   protected async firstUpdated() {
-    const { default: Sortable } = (await import("../resources/sortable"));
+    const { default: Sortable } = await import("../resources/sortable");
     this._sortable = new Sortable(
       this.shadowRoot!.getElementById("sortable")!,
       {
