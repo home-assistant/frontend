@@ -53,7 +53,7 @@
     "@lit-labs/context": "0.4.1",
     "@lit-labs/motion": "1.0.4",
     "@lit-labs/observers": "2.0.1",
-    "@lit-labs/virtualizer": "2.0.7",
+    "@lit-labs/virtualizer": "2.0.9",
     "@lrnwebcomponents/simple-tooltip": "7.0.18",
     "@material/chips": "=14.0.0-canary.53b3cad2f.0",
     "@material/data-table": "=14.0.0-canary.53b3cad2f.0",
@@ -258,6 +258,7 @@
     "@polymer/polymer": "patch:@polymer/polymer@3.5.1#./.yarn/patches/@polymer/polymer/pr-5569.patch",
     "@material/mwc-button@^0.25.3": "^0.27.0",
     "lit@^2.7.4 || ^3.0.0": "^2.7.4",
+    "lit@^2 || ^3": "^2",
     "sortablejs@1.15.0": "patch:sortablejs@npm%3A1.15.0#./.yarn/patches/sortablejs-npm-1.15.0-f3a393abcc.patch",
     "leaflet-draw@1.0.4": "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch"
   },
