@@ -51,7 +51,7 @@
     "@fullcalendar/timegrid": "6.1.9",
     "@lezer/highlight": "1.1.6",
     "@lit-labs/context": "0.4.1",
-    "@lit-labs/motion": "1.0.4",
+    "@lit-labs/motion": "1.0.6",
     "@lit-labs/observers": "2.0.1",
     "@lit-labs/virtualizer": "2.0.9",
     "@lrnwebcomponents/simple-tooltip": "7.0.18",
@@ -259,6 +259,7 @@
     "@material/mwc-button@^0.25.3": "^0.27.0",
     "lit@^2.7.4 || ^3.0.0": "^2.7.4",
     "lit@^2 || ^3": "^2",
+    "lit@^2.0.0 || ^3.0.0": "^2.0.0",
     "sortablejs@1.15.0": "patch:sortablejs@npm%3A1.15.0#./.yarn/patches/sortablejs-npm-1.15.0-f3a393abcc.patch",
     "leaflet-draw@1.0.4": "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch"
   },
