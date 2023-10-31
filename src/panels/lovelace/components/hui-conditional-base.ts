@@ -78,7 +78,7 @@ export class HuiConditionalBase extends ReactiveElement {
     }
 
     const conditions = this._config.conditions.filter(
-      (c) => c.condition === "screen"
+      (c) => "condition" in c && c.condition === "screen"
     ) as ScreenCondition[];
 
     const mediaQueries = conditions

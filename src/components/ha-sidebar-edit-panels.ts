@@ -2,7 +2,7 @@ import { mdiClose, mdiPlus } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { loadSortable, SortableInstance } from "../resources/sortable.ondemand";
+import type { SortableInstance } from "../resources/sortable";
 import { HomeAssistant } from "../types";
 import "./ha-icon";
 import "./ha-icon-button";
@@ -143,7 +143,7 @@ class HaSidebarEditPanels extends LitElement {
   }
 
   protected async firstUpdated() {
-    const Sortable = await loadSortable();
+    const { default: Sortable } = (await import("../resources/sortable"));
     this._sortable = new Sortable(
       this.shadowRoot!.getElementById("sortable")!,
       {

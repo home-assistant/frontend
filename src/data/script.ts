@@ -93,10 +93,25 @@ export interface ManualScriptConfig {
   icon?: string;
   mode?: (typeof MODES)[number];
   max?: number;
+  fields?: Fields;
 }
 
 export interface BlueprintScriptConfig extends ManualScriptConfig {
   use_blueprint: { path: string; input?: BlueprintInput };
+}
+
+export interface Fields {
+  [key: string]: Field;
+}
+
+export interface Field {
+  name?: string;
+  description?: string;
+  advanced?: boolean;
+  required?: boolean;
+  example?: string;
+  default?: any;
+  selector?: any;
 }
 
 interface BaseAction {

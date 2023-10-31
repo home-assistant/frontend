@@ -15,8 +15,8 @@ import {
   LovelaceConfig,
   saveConfig,
   subscribeLovelaceUpdates,
-  WindowWithLovelaceProm,
 } from "../../data/lovelace";
+import { WindowWithPreloads } from "../../data/preloads";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
 import { HomeAssistant, PanelInfo, Route } from "../../types";
@@ -220,18 +220,17 @@ export class LovelacePanel extends LitElement {
     let rawConf: LovelaceConfig | undefined;
     let confMode: Lovelace["mode"] = this.panel!.config.mode;
     let confProm: Promise<LovelaceConfig> | undefined;
-    const llWindow = window as WindowWithLovelaceProm;
+    const preloadWindow = window as WindowWithPreloads;
 
     // On first load, we speed up loading page by having LL promise ready
-    if (llWindow.llConfProm) {
-      confProm = llWindow.llConfProm;
-      llWindow.llConfProm = undefined;
+    if (preloadWindow.llConfProm) {
+      confProm = preloadWindow.llConfProm;
+      preloadWindow.llConfProm = undefined;
     }
     if (!resourcesLoaded) {
       resourcesLoaded = true;
-      (llWindow.llConfProm || fetchResources(this.hass!.connection)).then(
-        (resources) =>
-          loadLovelaceResources(resources, this.hass!.auth.data.hassUrl)
+      (preloadWindow.llResProm || fetchResources(this.hass!.connection)).then(
+        (resources) => loadLovelaceResources(resources, this.hass!)
       );
     }
 

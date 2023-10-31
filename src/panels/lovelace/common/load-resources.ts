@@ -1,5 +1,6 @@
 import { loadCSS, loadJS, loadModule } from "../../../common/dom/load_resource";
 import { LovelaceResource } from "../../../data/lovelace";
+import type { HomeAssistant } from "../../../types";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -7,10 +8,13 @@ const JS_CACHE = {};
 
 export const loadLovelaceResources = (
   resources: NonNullable<LovelaceResource[]>,
-  hassUrl: string
-) =>
+  hass: HomeAssistant
+) => {
   resources.forEach((resource) => {
-    const normalizedUrl = new URL(resource.url, hassUrl).toString();
+    const normalizedUrl = new URL(
+      resource.url,
+      hass.auth.data.hassUrl
+    ).toString();
     switch (resource.type) {
       case "css":
         if (normalizedUrl in CSS_CACHE) {
@@ -35,3 +39,4 @@ export const loadLovelaceResources = (
         console.warn(`Unknown resource type specified: ${resource.type}`);
     }
   });
+};

@@ -23,7 +23,7 @@ jobs:
       contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v4.1.1
 
       - name: Verify version
         uses: home-assistant/actions/helpers/verify-version@master
@@ -34,7 +34,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Setup Node
-        uses: actions/setup-node@v3.8.1
+        uses: actions/setup-node@v4.0.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -74,7 +74,7 @@ jobs:
           echo "home-assistant-frontend==$version" > ./requirements.txt
 
       - name: Build wheels
-        uses: home-assistant/wheels@2023.10.4
+        uses: home-assistant/wheels@2023.10.5
         with:
           abi: cp311
           tag: musllinux_1_2

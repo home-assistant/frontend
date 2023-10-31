@@ -32,10 +32,7 @@ import { ACTION_TYPES } from "../../../../data/action";
 import { AutomationClipboard } from "../../../../data/automation";
 import { Action } from "../../../../data/script";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
-import {
-  SortableInstance,
-  loadSortable,
-} from "../../../../resources/sortable.ondemand";
+import type { SortableInstance } from "../../../../resources/sortable";
 import { Entries, HomeAssistant } from "../../../../types";
 import type HaAutomationActionRow from "./ha-automation-action-row";
 import { getType } from "./ha-automation-action-row";
@@ -227,7 +224,7 @@ export default class HaAutomationAction extends LitElement {
   }
 
   private async _createSortable() {
-    const Sortable = await loadSortable();
+    const Sortable = (await import("../../../../resources/sortable")).default;
     this._sortable = new Sortable(this.shadowRoot!.querySelector(".actions")!, {
       animation: 150,
       fallbackClass: "sortable-fallback",

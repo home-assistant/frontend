@@ -141,16 +141,10 @@ export class StateHistoryChartLine extends LitElement {
                 `${context.dataset.label}: ${formatNumber(
                   context.parsed.y,
                   this.hass.locale,
-                  this.data[context.datasetIndex]?.entity_id
-                    ? getNumberFormatOptions(
-                        this.hass.states[
-                          this.data[context.datasetIndex].entity_id
-                        ],
-                        this.hass.entities[
-                          this.data[context.datasetIndex].entity_id
-                        ]
-                      )
-                    : undefined
+                  getNumberFormatOptions(
+                    undefined,
+                    this.hass.entities[this._entityIds[context.datasetIndex]]
+                  )
                 )} ${this.unit}`,
             },
           },

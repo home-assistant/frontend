@@ -105,7 +105,7 @@ class ErrorLogCard extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    if (this.hass?.config.safe_mode || this.show) {
+    if (this.hass?.config.recovery_mode || this.show) {
       this.hass.loadFragmentTranslation("config");
       this._refreshLogs();
     }

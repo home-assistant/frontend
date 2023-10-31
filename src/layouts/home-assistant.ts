@@ -3,11 +3,12 @@ import { customElement, state } from "lit/decorators";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
-import { getRecorderInfo } from "../data/recorder";
+import { getRecorderInfo, RecorderInfo } from "../data/recorder";
 import "../resources/custom-card-support";
 import { HassElement } from "../state/hass-element";
 import QuickBarMixin from "../state/quick-bar-mixin";
 import { HomeAssistant, Route } from "../types";
+import { WindowWithPreloads } from "../data/preloads";
 import { storeState } from "../util/ha-pref-storage";
 import {
   renderLaunchScreenInfoBox,
@@ -204,7 +205,15 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   protected async checkDataBaseMigration() {
     if (this.hass?.config?.components.includes("recorder")) {
-      const info = await getRecorderInfo(this.hass);
+      let recorderInfoProm: Promise<RecorderInfo> | undefined;
+      const preloadWindow = window as WindowWithPreloads;
+      // On first load, we speed up loading page by having recorderInfoProm ready
+      if (preloadWindow.recorderInfoProm) {
+        recorderInfoProm = preloadWindow.recorderInfoProm;
+        preloadWindow.recorderInfoProm = undefined;
+      }
+      const info = await (recorderInfoProm ||
+        getRecorderInfo(this.hass.connection));
       this._databaseMigration =
         info.migration_in_progress && !info.migration_is_live;
       if (this._databaseMigration) {

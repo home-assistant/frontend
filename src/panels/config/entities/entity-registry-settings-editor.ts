@@ -1,5 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-formfield/mwc-formfield";
+import { mdiContentCopy } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -11,7 +12,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { mdiContentCopy } from "@mdi/js";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -25,6 +25,7 @@ import {
   LocalizeFunc,
   LocalizeKeys,
 } from "../../../common/translations/localize";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-icon";
@@ -38,9 +39,9 @@ import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import {
-  CameraPreferences,
   CAMERA_ORIENTATIONS,
   CAMERA_SUPPORT_STREAM,
+  CameraPreferences,
   fetchCameraPrefs,
   STREAM_TYPE_HLS,
   updateCameraPrefs,
@@ -66,7 +67,10 @@ import {
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
 import { getNumberDeviceClassConvertibleUnits } from "../../../data/number";
-import { getSensorDeviceClassConvertibleUnits } from "../../../data/sensor";
+import {
+  getSensorDeviceClassConvertibleUnits,
+  getSensorNumericDeviceClasses,
+} from "../../../data/sensor";
 import {
   getWeatherConvertibleUnits,
   WeatherUnits,
@@ -80,9 +84,8 @@ import { showVoiceAssistantsView } from "../../../dialogs/more-info/components/v
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { showToast } from "../../../util/toast";
+import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -173,6 +176,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
   @state() private _numberDeviceClassConvertibleUnits?: string[];
 
   @state() private _sensorDeviceClassConvertibleUnits?: string[];
+
+  @state() private _sensorNumericalDeviceClasses?: string[];
 
   @state() private _weatherConvertibleUnits?: WeatherUnits;
 
@@ -293,6 +298,14 @@ export class EntityRegistrySettingsEditor extends LitElement {
         this._numberDeviceClassConvertibleUnits = units;
       } else {
         this._numberDeviceClassConvertibleUnits = [];
+      }
+      if (domain === "sensor") {
+        const { numeric_device_classes } = await getSensorNumericDeviceClasses(
+          this.hass
+        );
+        this._sensorNumericalDeviceClasses = numeric_device_classes;
+      } else {
+        this._sensorNumericalDeviceClasses = [];
       }
       if (domain === "sensor" && this._deviceClass) {
         const { units } = await getSensorDeviceClassConvertibleUnits(
@@ -558,7 +571,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       // Allow customizing the precision for a sensor with numerical device class,
       // a unit of measurement or state class
       ((this._deviceClass &&
-        !["date", "enum", "timestamp"].includes(this._deviceClass)) ||
+        this._sensorNumericalDeviceClasses?.includes(this._deviceClass)) ||
         stateObj?.attributes.unit_of_measurement ||
         stateObj?.attributes.state_class)
         ? html`

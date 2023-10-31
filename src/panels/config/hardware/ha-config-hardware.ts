@@ -282,7 +282,14 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
             ? html`
                 <ha-card outlined>
                   <div class="card-content">
-                    ${imageURL ? html`<img alt="" src=${imageURL} />` : ""}
+                    ${imageURL
+                      ? html`<img
+                          alt=""
+                          src=${imageURL}
+                          crossorigin="anonymous"
+                          referrerpolicy="no-referrer"
+                        />`
+                      : ""}
                     <div class="board-info">
                       <p class="primary-text">
                         ${boardName ||

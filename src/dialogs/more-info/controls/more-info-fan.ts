@@ -87,6 +87,9 @@ class MoreInfoFan extends LitElement {
 
   _handleOscillating(ev) {
     const newVal = ev.target.value === "true";
+    const oldVal = this.stateObj?.attributes.oscillating;
+
+    if (oldVal === newVal) return;
 
     this.hass.callService("fan", "oscillate", {
       entity_id: this.stateObj!.entity_id,
