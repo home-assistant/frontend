@@ -5815,7 +5815,9 @@
                 "introduction": "A basic validation of the configuration is automatically done before restarting. The basic validation ensures the YAML configuration doesn't have errors which will prevent Home Assistant or any integration from starting. It's also possible to only do the basic validation check without restarting.",
                 "check_config": "Check configuration",
                 "valid": "Configuration will not prevent Home Assistant from starting!",
-                "invalid": "Configuration invalid!"
+                "invalid": "Configuration invalid!",
+                "warnings": "Configuration warnings",
+                "errors": "Configuration errors"
               },
               "reloading": {
                 "all": "All YAML configuration",
