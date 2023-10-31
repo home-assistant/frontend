@@ -2105,7 +2105,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/ssr-dom-shim@npm:^1.0.0, @lit-labs/ssr-dom-shim@npm:^1.1.0, @lit-labs/ssr-dom-shim@npm:^1.1.2":
+"@lit-labs/ssr-dom-shim@npm:^1.0.0, @lit-labs/ssr-dom-shim@npm:^1.1.0":
   version: 1.1.2
   resolution: "@lit-labs/ssr-dom-shim@npm:1.1.2"
   checksum: 73fd787893851d4ec4aaa5c775405ed2aae4ca0891b2dd3c973b32c2f4bf70ada5481dd0224e52b786d037aa8a00052186ad1623c44551affd66f6409cca8da6
@@ -2131,16 +2131,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:^1.0.0 || ^2.0.0":
-  version: 2.0.1
-  resolution: "@lit/reactive-element@npm:2.0.1"
-  dependencies:
-    "@lit-labs/ssr-dom-shim": ^1.1.2
-  checksum: e9cacc3743c28b7b417739ffb292288076df115d08d9e9a895e2879c7087938d50c6b8141986743535e06156efd1ca505c8cf6ef8702db99966d190df9f8e869
-  languageName: node
-  linkType: hard
-
-"@lit/reactive-element@npm:^1.3.0, @lit/reactive-element@npm:^1.6.0, @lit/reactive-element@npm:^1.6.2":
+"@lit/reactive-element@npm:^1.0.0, @lit/reactive-element@npm:^1.3.0, @lit/reactive-element@npm:^1.6.0, @lit/reactive-element@npm:^1.6.2":
   version: 1.6.3
   resolution: "@lit/reactive-element@npm:1.6.3"
   dependencies:
