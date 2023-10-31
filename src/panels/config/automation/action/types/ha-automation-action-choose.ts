@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import type { SortableEvent } from "sortablejs";
 import {
   mdiDotsVertical,
