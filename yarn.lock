@@ -2087,13 +2087,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/context@npm:0.4.1":
-  version: 0.4.1
-  resolution: "@lit-labs/context@npm:0.4.1"
+"@lit-labs/context@npm:0.5.1":
+  version: 0.5.1
+  resolution: "@lit-labs/context@npm:0.5.1"
   dependencies:
-    "@lit/reactive-element": ^1.5.0
-    lit: ^2.7.0
-  checksum: 0f5bf4bd0beb4ff97c0df990997f0d56872682d8597e39f43cb5171aa3b7a53c7a0fc2e16f710282d7abe93c5d6ff6dd52b096d1682df277439cec47291b8023
+    "@lit/context": ^1.0.0
+  checksum: 9ee65db0ce84574c24bc16a5301121f033133c233049fe3962b6713c3fff13b25a4be839595202242eb34e23596b9707feb38597e7a376078ec456e0fab6f76b
   languageName: node
   linkType: hard
 
@@ -2115,7 +2114,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/ssr-dom-shim@npm:^1.0.0, @lit-labs/ssr-dom-shim@npm:^1.1.0, @lit-labs/ssr-dom-shim@npm:^1.1.2-pre.0":
+"@lit-labs/ssr-dom-shim@npm:^1.0.0, @lit-labs/ssr-dom-shim@npm:^1.1.0, @lit-labs/ssr-dom-shim@npm:^1.1.2":
   version: 1.1.2
   resolution: "@lit-labs/ssr-dom-shim@npm:1.1.2"
   checksum: 73fd787893851d4ec4aaa5c775405ed2aae4ca0891b2dd3c973b32c2f4bf70ada5481dd0224e52b786d037aa8a00052186ad1623c44551affd66f6409cca8da6
@@ -2132,7 +2131,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:^1.3.0, @lit/reactive-element@npm:^1.5.0, @lit/reactive-element@npm:^1.6.0":
+"@lit/context@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "@lit/context@npm:1.0.1"
+  dependencies:
+    "@lit/reactive-element": ^1.6.2 || ^2.0.0
+  checksum: 9f6115ecdb979de9a0a0837fbe5df9e87411b2ace608da449afdcf9abdd9e154247bfedb97297d655143f98613730ca15d5840b854f23486609c0207c91ab8cf
+  languageName: node
+  linkType: hard
+
+"@lit/reactive-element@npm:^1.3.0, @lit/reactive-element@npm:^1.6.0":
   version: 1.6.3
   resolution: "@lit/reactive-element@npm:1.6.3"
   dependencies:
@@ -2141,12 +2149,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@lit/reactive-element@npm:2.0.0"
+"@lit/reactive-element@npm:^1.6.2 || ^2.0.0, @lit/reactive-element@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "@lit/reactive-element@npm:2.0.1"
   dependencies:
-    "@lit-labs/ssr-dom-shim": ^1.1.2-pre.0
-  checksum: afa12f1cf72e8735cb7eaa51d428610785ee796882ca52108310e75ac54bbf5690da718c8bf85d042060f98c139ff0d5efd54f677a9d3fc4d794ad2e0f7a12c5
+    "@lit-labs/ssr-dom-shim": ^1.1.2
+  checksum: e9cacc3743c28b7b417739ffb292288076df115d08d9e9a895e2879c7087938d50c6b8141986743535e06156efd1ca505c8cf6ef8702db99966d190df9f8e869
   languageName: node
   linkType: hard
 
@@ -9662,7 +9670,7 @@ __metadata:
     "@fullcalendar/timegrid": 6.1.9
     "@koa/cors": 4.0.0
     "@lezer/highlight": 1.1.6
-    "@lit-labs/context": 0.4.1
+    "@lit-labs/context": 0.5.1
     "@lit-labs/motion": 1.0.6
     "@lit-labs/observers": 2.0.1
     "@lit-labs/virtualizer": 2.0.9
@@ -11474,7 +11482,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:2.8.0, lit@npm:^2, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.7.0, lit@npm:^2.7.4, lit@npm:^2.8.0":
+"lit@npm:2.8.0, lit@npm:^2, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.7.4, lit@npm:^2.8.0":
   version: 2.8.0
   resolution: "lit@npm:2.8.0"
   dependencies:
