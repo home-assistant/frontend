@@ -1090,8 +1090,16 @@ const tryDescribeCondition = (
     }`;
   }
 
-  if (condition.condition === "trigger" && condition.id) {
-    return `When triggered by ${condition.id}`;
+  if (condition.condition === "trigger" && condition.id != null) {
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.trigger.description.full`,
+      {
+        id: formatListWithOrs(
+          hass.locale,
+          ensureArray(condition.id).map((id) => id.toString())
+        ),
+      }
+    );
   }
 
   return (
