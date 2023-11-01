@@ -1090,6 +1090,12 @@ const tryDescribeCondition = (
     }`;
   }
 
+  if (condition.condition === "template") {
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.template.description.full`
+    );
+  }
+
   if (condition.condition === "trigger" && condition.id != null) {
     return hass.localize(
       `${conditionsTranslationBaseKey}.trigger.description.full`,
