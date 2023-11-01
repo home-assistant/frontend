@@ -223,7 +223,7 @@ export class HuiDialogEditCard
             ${this._error
               ? html`
                   <ha-circular-progress
-                    intermdiate
+                    indeterminate
                     aria-label="Can't update card"
                   ></ha-circular-progress>
                 `
