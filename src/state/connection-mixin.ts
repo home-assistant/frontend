@@ -122,10 +122,16 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             }
             if (notifyOnError) {
               forwardHaptic("failure");
-              const localizedErrorMessage = (this as any).hass.localize(
-                `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
-                err.translation_placeholders
+              const lokalize = await this.hass?.loadBackendTranslation(
+                "exceptions",
+                domain
               );
+              const localizedErrorMessage =
+                lokalize &&
+                lokalize(
+                  `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
+                  err.translation_placeholders
+                );
               const message =
                 localizedErrorMessage ||
                 (this as any).hass.localize(
