@@ -4844,6 +4844,12 @@
               },
               "user": {
                 "label": "User"
+              },
+              "or": {
+                "label": "Or"
+              },
+              "and": {
+                "label": "And"
               }
             }
           },
