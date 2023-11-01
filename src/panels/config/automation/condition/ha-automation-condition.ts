@@ -275,9 +275,6 @@ export default class HaAutomationCondition extends LitElement {
   }
 
   private _getKey(condition: Condition) {
-    if (typeof condition !== "object") {
-      return "";
-    }
     if (!this._conditionKeys.has(condition)) {
       this._conditionKeys.set(condition, Math.random().toString());
     }
