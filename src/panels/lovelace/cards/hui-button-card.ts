@@ -1,4 +1,4 @@
-import { consume } from "@lit/context";
+import { consume } from "@lit-labs/context";
 import "@material/mwc-ripple";
 import type { Ripple } from "@material/mwc-ripple";
 import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";

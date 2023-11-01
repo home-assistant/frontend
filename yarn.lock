@@ -2087,6 +2087,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lit-labs/context@npm:0.4.1":
+  version: 0.4.1
+  resolution: "@lit-labs/context@npm:0.4.1"
+  dependencies:
+    "@lit/reactive-element": ^1.5.0
+    lit: ^2.7.0
+  checksum: 0f5bf4bd0beb4ff97c0df990997f0d56872682d8597e39f43cb5171aa3b7a53c7a0fc2e16f710282d7abe93c5d6ff6dd52b096d1682df277439cec47291b8023
+  languageName: node
+  linkType: hard
+
 "@lit-labs/motion@npm:1.0.6":
   version: 1.0.6
   resolution: "@lit-labs/motion@npm:1.0.6"
@@ -2122,16 +2132,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/context@npm:1.0.1":
-  version: 1.0.1
-  resolution: "@lit/context@npm:1.0.1"
-  dependencies:
-    "@lit/reactive-element": ^1.6.2 || ^2.0.0
-  checksum: 9f6115ecdb979de9a0a0837fbe5df9e87411b2ace608da449afdcf9abdd9e154247bfedb97297d655143f98613730ca15d5840b854f23486609c0207c91ab8cf
-  languageName: node
-  linkType: hard
-
-"@lit/reactive-element@npm:^1.0.0, @lit/reactive-element@npm:^1.3.0, @lit/reactive-element@npm:^1.6.0, @lit/reactive-element@npm:^1.6.2":
+"@lit/reactive-element@npm:^1.6.3":
   version: 1.6.3
   resolution: "@lit/reactive-element@npm:1.6.3"
   dependencies:
@@ -9652,10 +9653,10 @@ __metadata:
     "@fullcalendar/timegrid": 6.1.9
     "@koa/cors": 4.0.0
     "@lezer/highlight": 1.1.6
+    "@lit-labs/context": 0.4.1
     "@lit-labs/motion": 1.0.6
     "@lit-labs/observers": 2.0.2
     "@lit-labs/virtualizer": 2.0.9
-    "@lit/context": 1.0.1
     "@lokalise/node-api": 12.0.0
     "@lrnwebcomponents/simple-tooltip": 7.0.18
     "@material/chips": =14.0.0-canary.53b3cad2f.0
@@ -11464,7 +11465,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:2.8.0, lit@npm:^2, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.7.4, lit@npm:^2.8.0":
+"lit@npm:^2.8.0":
   version: 2.8.0
   resolution: "lit@npm:2.8.0"
   dependencies:

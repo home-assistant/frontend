@@ -20,7 +20,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
-import { consume } from "@lit/context";
+import { consume } from "@lit-labs/context";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { SENSOR_ENTITIES } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
