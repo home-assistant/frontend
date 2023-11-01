@@ -4814,6 +4814,11 @@
           "condition-editor": {
             "explanation": "The card will be shown when ALL conditions below are fulfilled.",
             "add": "Add condition",
+            "test": "[%key:ui::panel::config::automation::editor::conditions::test%]",
+            "testing_pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
+            "testing_error": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
+            "invalid_config_title": "Invalid configuration",
+            "invalid_config_text": "The condition can not be tested because the configuration is not valid.",
             "condition": {
               "numeric_state": {
                 "label": "Entity numeric state",
