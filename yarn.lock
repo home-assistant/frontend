@@ -2132,7 +2132,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:^1.6.3":
+"@lit/reactive-element@npm:1.6.3":
   version: 1.6.3
   resolution: "@lit/reactive-element@npm:1.6.3"
   dependencies:
@@ -11465,7 +11465,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:^2.8.0":
+"lit@npm:2.8.0":
   version: 2.8.0
   resolution: "lit@npm:2.8.0"
   dependencies:
