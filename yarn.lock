@@ -2087,13 +2087,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/context@npm:0.4.1":
-  version: 0.4.1
-  resolution: "@lit-labs/context@npm:0.4.1"
+"@lit-labs/context@npm:0.5.1":
+  version: 0.5.1
+  resolution: "@lit-labs/context@npm:0.5.1"
   dependencies:
-    "@lit/reactive-element": "npm:^1.5.0"
-    lit: "npm:^2.7.0"
-  checksum: 4d0ecbfe390d64306e5756bea46818ce02fdc3946acdd77a6bc8a32b0db179ffdba5b9e37d249c01923f5813c96b85502cad29ff496ea440708b43a64ad0636e
+    "@lit/context": "npm:^1.0.0"
+  checksum: 9ee65db0ce84574c24bc16a5301121f033133c233049fe3962b6713c3fff13b25a4be839595202242eb34e23596b9707feb38597e7a376078ec456e0fab6f76b
   languageName: node
   linkType: hard
 
@@ -2129,6 +2128,15 @@ __metadata:
     lit: "npm:^2 || ^3"
     tslib: "npm:^2.0.3"
   checksum: d638997118b6757f47b6b5aab6eaa217fc0f9771af5008e79e136b5cd176fc490f055ea26ec3c851e1789b866e37e36827a5a34a86aee554c38d86982dc34205
+  languageName: node
+  linkType: hard
+
+"@lit/context@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "@lit/context@npm:1.0.1"
+  dependencies:
+    "@lit/reactive-element": "npm:^1.6.2 || ^2.0.0"
+  checksum: ef3e3dd8ff67c504423f637ca439d68ec18c52175507a2ffa380893d1d9f8a74672e64552323c3ea3188dd21ea4100b85692d3412590614267e061b82100b439
   languageName: node
   linkType: hard
 
@@ -9653,7 +9661,7 @@ __metadata:
     "@fullcalendar/timegrid": "npm:6.1.9"
     "@koa/cors": "npm:4.0.0"
     "@lezer/highlight": "npm:1.1.6"
-    "@lit-labs/context": "npm:0.4.1"
+    "@lit-labs/context": "npm:0.5.1"
     "@lit-labs/motion": "npm:1.0.6"
     "@lit-labs/observers": "npm:2.0.2"
     "@lit-labs/virtualizer": "npm:2.0.9"
