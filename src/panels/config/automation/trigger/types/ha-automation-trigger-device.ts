@@ -1,4 +1,4 @@
-import { consume } from "@lit/context";
+import { consume } from "@lit-labs/context";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
