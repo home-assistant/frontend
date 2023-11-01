@@ -2689,7 +2689,10 @@
                 "trigger": {
                   "label": "Triggered by",
                   "no_triggers": "No triggers have an ID set. You can set an ID using the trigger menu button.",
-                  "id": "Trigger"
+                  "id": "Trigger",
+                  "description": {
+                    "full": "When triggered by {id}"
+                  }
                 },
                 "zone": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
