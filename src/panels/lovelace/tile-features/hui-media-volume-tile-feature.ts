@@ -41,7 +41,7 @@ class HuiMediaVolumeTileFeature
   static getStubConfig(): MediaVolumeTileFeatureConfig {
     return {
       type: "media-volume",
-      buttons: true,
+      style: "slider",
     };
   }
 
@@ -116,7 +116,7 @@ class HuiMediaVolumeTileFeature
               </ha-control-button>`
             : nothing}
           ${supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
-            ? this._config.buttons
+            ? this._config.style === "buttons"
               ? html`<ha-control-number-buttons
                   value=${stateObj.attributes.volume_level! * 100}
                   min="0"

@@ -5202,7 +5202,12 @@
                     "preset_modes": "Preset modes"
                   },
                   "select-options": {
-                    "label": "Select options"
+                    "label": "Select options",
+                    "style": "Style",
+                    "style_list": {
+                      "buttons": "Buttons",
+                      "dropdown": "Dropdown"
+                    }
                   },
                   "toggle": {
                     "label": "Toggle"
@@ -5219,10 +5224,25 @@
                   },
                   "media-volume": {
                     "label": "Media Volume Controls",
-                    "buttons": "Use buttons"
+                    "style": "Style",
+                    "style_list": {
+                      "buttons": "Buttons",
+                      "slider": "Slider"
+                    }
                   },
                   "entity": {
                     "label": "Entity"
+                  },
+                  "datetime": {
+                    "label": "Date/Time Input"
+                  },
+                  "number": {
+                    "label": "Number Input",
+                    "style": "Style",
+                    "style_list": {
+                      "buttons": "Buttons",
+                      "slider": "Slider"
+                    }
                   },
                   "target-temperature": {
                     "label": "Target temperature"

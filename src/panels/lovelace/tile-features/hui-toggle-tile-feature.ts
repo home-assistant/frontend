@@ -91,8 +91,7 @@ class HuiToggleTileFeature extends LitElement implements LovelaceTileFeature {
         <ha-control-switch
           .pathOn=${domain === "light" ? mdiLightbulb : mdiPower}
           .pathOff=${domain === "light" ? mdiLightbulbOff : mdiPowerOff}
-          .checked=${!isUnavailableState(stateObj.state) &&
-          isOffState(stateObj.state)}
+          .checked=${!isOffState(stateObj.state)}
           .disabled=${isUnavailableState(stateObj.state)}
           @change=${this._valueChanged}
           hide-label

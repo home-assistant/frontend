@@ -44,6 +44,9 @@ import { supportsUpdateTileFeature } from "../../tile-features/hui-update-tile-f
 import { supportsMediaControlsTileFeature } from "../../tile-features/hui-media-controls-tile-feature";
 import { supportsMediaVolumeTileFeature } from "../../tile-features/hui-media-volume-tile-feature";
 import { supportsEntityTileFeature } from "../../tile-features/hui-entity-tile-feature";
+import { supportsDatetimeTileFeature } from "../../tile-features/hui-datetime-tile-feature";
+import { supportsNumberTileFeature } from "../../tile-features/hui-number-tile-feature";
+import { supportsTextTileFeature } from "../../tile-features/hui-text-tile-feature";
 
 type FeatureType = LovelaceTileFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
@@ -70,6 +73,9 @@ const UI_FEATURE_TYPES = [
   "media-controls",
   "media-volume",
   "entity",
+  "datetime",
+  "number",
+  "text",
 ] as const satisfies readonly FeatureType[];
 
 type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
@@ -85,6 +91,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "media-volume",
   "entity",
   "select-options",
+  "number",
 ]);
 
 const SUPPORTS_FEATURE_TYPES: Record<
@@ -112,6 +119,9 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "media-controls": supportsMediaControlsTileFeature,
   "media-volume": supportsMediaVolumeTileFeature,
   entity: supportsEntityTileFeature,
+  datetime: supportsDatetimeTileFeature,
+  number: supportsNumberTileFeature,
+  text: supportsTextTileFeature,
 };
 
 const CUSTOM_FEATURE_ENTRIES: Record<

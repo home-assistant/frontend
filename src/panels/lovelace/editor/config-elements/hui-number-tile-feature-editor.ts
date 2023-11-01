@@ -6,14 +6,14 @@ import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import {
-  MediaVolumeTileFeatureConfig,
+  NumberTileFeatureConfig,
   LovelaceTileFeatureContext,
 } from "../../tile-features/types";
 import type { LovelaceTileFeatureEditor } from "../../types";
 import { LocalizeFunc } from "../../../../common/translations/localize";
 
-@customElement("hui-media-volume-tile-feature-editor")
-export class HuiMediaVolumeTileFeatureEditor
+@customElement("hui-number-tile-feature-editor")
+export class HuiNumberTileFeatureEditor
   extends LitElement
   implements LovelaceTileFeatureEditor
 {
@@ -21,9 +21,9 @@ export class HuiMediaVolumeTileFeatureEditor
 
   @property({ attribute: false }) public context?: LovelaceTileFeatureContext;
 
-  @state() private _config?: MediaVolumeTileFeatureConfig;
+  @state() private _config?: NumberTileFeatureConfig;
 
-  public setConfig(config: MediaVolumeTileFeatureConfig): void {
+  public setConfig(config: NumberTileFeatureConfig): void {
     this._config = config;
   }
 
@@ -39,7 +39,7 @@ export class HuiMediaVolumeTileFeatureEditor
               options: ["slider", "buttons"].map((mode) => ({
                 value: mode,
                 label: localize(
-                  `ui.panel.lovelace.editor.card.tile.features.types.media-volume.style_list.${mode}`
+                  `ui.panel.lovelace.editor.card.tile.features.types.number.style_list.${mode}`
                 ),
               })),
             },
@@ -53,8 +53,8 @@ export class HuiMediaVolumeTileFeatureEditor
       return nothing;
     }
 
-    const data: MediaVolumeTileFeatureConfig = {
-      style: "slider",
+    const data: NumberTileFeatureConfig = {
+      style: "buttons",
       ...this._config,
     };
 
@@ -79,12 +79,12 @@ export class HuiMediaVolumeTileFeatureEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) =>
     this.hass!.localize(
-      `ui.panel.lovelace.editor.card.tile.features.types.media-volume.${schema.name}`
+      `ui.panel.lovelace.editor.card.tile.features.types.number.${schema.name}`
     );
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-media-volume-tile-feature-editor": HuiMediaVolumeTileFeatureEditor;
+    "hui-number-tile-feature-editor": HuiNumberTileFeatureEditor;
   }
 }

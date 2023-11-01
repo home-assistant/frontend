@@ -71,7 +71,7 @@ export interface MediaControlsTileFeatureConfig {
 
 export interface MediaVolumeTileFeatureConfig {
   type: "media-volume";
-  buttons: boolean;
+  style?: "buttons" | "slider";
 }
 
 export interface EntityTileFeatureConfig {
@@ -84,6 +84,19 @@ export interface EntityTileFeatureConfig {
   state_content?: string | string[];
   show_entity_picture?: boolean;
   icon_tap_action?: ActionConfig;
+}
+
+export interface DatetimeTileFeatureConfig {
+  type: "datetime";
+}
+
+export interface NumberTileFeatureConfig {
+  type: "number";
+  style?: "buttons" | "slider";
+}
+
+export interface TextTileFeatureConfig {
+  type: "text";
 }
 
 export interface TargetTemperatureTileFeatureConfig {
@@ -140,10 +153,10 @@ export type LovelaceTileFeatureConfig =
   | UpdateTileFeatureConfig
   | MediaControlsTileFeatureConfig
   | MediaVolumeTileFeatureConfig
-  | EntityTileFeatureConfig;
-
-// TODO: input_* (number, text, data &| time)
-// TODO: input_select with buttons or menu
+  | EntityTileFeatureConfig
+  | DatetimeTileFeatureConfig
+  | NumberTileFeatureConfig
+  | TextTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
   entity_id?: string;

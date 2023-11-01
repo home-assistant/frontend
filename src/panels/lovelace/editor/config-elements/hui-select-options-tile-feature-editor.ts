@@ -80,16 +80,10 @@ export class HuiSelectOptionsTileFeatureEditor
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
-    switch (schema.name) {
-      case "style":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.features.types.select-options.${schema.name}`
-        );
-      default:
-        return "";
-    }
-  };
+  ) =>
+    this.hass!.localize(
+      `ui.panel.lovelace.editor.card.tile.features.types.select-options.${schema.name}`
+    );
 }
 
 declare global {
