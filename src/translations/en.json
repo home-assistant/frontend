@@ -5589,7 +5589,7 @@
                   "data": {
                     "code": "Two-factor authentication code"
                   },
-                  "description": "Open the **{mfa_module_name}** on your device to view your two-factor authentication code and verify your identity:"
+                  "description": "Open the {mfa_module_name} on your device to view your two-factor authentication code."
                 }
               },
               "error": {
