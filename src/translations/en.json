@@ -5244,6 +5244,9 @@
                       "slider": "Slider"
                     }
                   },
+                  "text": {
+                    "label": "Text Input"
+                  },
                   "target-temperature": {
                     "label": "Target temperature"
                   },
