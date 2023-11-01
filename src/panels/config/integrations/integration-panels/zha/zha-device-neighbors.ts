@@ -120,9 +120,8 @@ class ZHADeviceNeighbors extends LitElement {
     return html`
       ${!this._devices
         ? html`<ha-circular-progress
-            alt="Loading"
             size="large"
-            active
+            indeterminate
           ></ha-circular-progress>`
         : html`<ha-data-table
             .hass=${this.hass}

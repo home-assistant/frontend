@@ -83,7 +83,7 @@ class HaMfaModuleSetupFlow extends LitElement {
             : ""}
           ${!this._step
             ? html`<div class="init-spinner">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
               </div>`
             : html`${this._step.type === "abort"
                 ? html` <ha-markdown

@@ -98,9 +98,9 @@ export class ZHAAddGroupPage extends LitElement {
             >
               ${this._processingAdd
                 ? html`<ha-circular-progress
-                    active
+                    indeterminate
                     size="small"
-                    .title=${this.hass!.localize(
+                    aria-label=${this.hass!.localize(
                       "ui.panel.config.zha.groups.creating_group"
                     )}
                   ></ha-circular-progress>`

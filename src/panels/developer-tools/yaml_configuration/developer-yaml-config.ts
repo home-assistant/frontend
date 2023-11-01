@@ -82,7 +82,9 @@ export class DeveloperYamlConfig extends LitElement {
                             : ""}
                         `
                       : html`
-                          <ha-circular-progress active></ha-circular-progress>
+                          <ha-circular-progress
+                            indeterminate
+                          ></ha-circular-progress>
                         `}
                   </div>
                 `

@@ -63,9 +63,9 @@ export class HuiDialogEditLovelace extends LitElement {
         >
           ${this._saving
             ? html`<ha-circular-progress
-                active
+                indeterminate
                 size="small"
-                title="Saving"
+                aria-label="Saving"
               ></ha-circular-progress>`
             : ""}
           ${this.hass!.localize("ui.common.save")}</mwc-button

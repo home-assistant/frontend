@@ -164,7 +164,9 @@ export class DialogHelperDetail extends LitElement {
         </mwc-button>
       `;
     } else if (this._loading || this._helperFlows === undefined) {
-      content = html`<ha-circular-progress active></ha-circular-progress>`;
+      content = html`<ha-circular-progress
+        indeterminate
+      ></ha-circular-progress>`;
     } else {
       const items: [string, string][] = [];
 

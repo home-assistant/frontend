@@ -116,7 +116,10 @@ class DialogZWaveJSAddNode extends LitElement {
       >
         ${this._status === "loading"
           ? html`<div style="display: flex; justify-content: center;">
-              <ha-circular-progress size="large" active></ha-circular-progress>
+              <ha-circular-progress
+                size="large"
+                indeterminate
+              ></ha-circular-progress>
             </div>`
           : this._status === "choose_strategy"
           ? html`<h3>Choose strategy</h3>
@@ -277,7 +280,7 @@ class DialogZWaveJSAddNode extends LitElement {
                   "ui.panel.config.zwave_js.add_node.searching_device"
                 )}
               </h3>
-              <ha-circular-progress active></ha-circular-progress>
+              <ha-circular-progress indeterminate></ha-circular-progress>
               <p>
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.add_node.follow_device_instructions"
@@ -292,7 +295,7 @@ class DialogZWaveJSAddNode extends LitElement {
                       "ui.panel.config.zwave_js.add_node.searching_device"
                     )}
                   </h2>
-                  <ha-circular-progress active></ha-circular-progress>
+                  <ha-circular-progress indeterminate></ha-circular-progress>
                   <p>
                     ${this.hass.localize(
                       "ui.panel.config.zwave_js.add_node.follow_device_instructions"
@@ -339,7 +342,7 @@ class DialogZWaveJSAddNode extends LitElement {
           : this._status === "interviewing"
           ? html`
               <div class="flex-container">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
                 <div class="status">
                   <p>
                     <b

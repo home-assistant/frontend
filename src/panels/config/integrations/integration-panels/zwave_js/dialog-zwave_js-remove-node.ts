@@ -71,7 +71,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
         ${this._status === "started"
           ? html`
               <div class="flex-container">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
                 <div class="status">
                   <p>
                     <b

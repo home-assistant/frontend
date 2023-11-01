@@ -263,7 +263,7 @@ export class HuiImage extends LitElement {
             >
               <ha-circular-progress
                 class="render-spinner"
-                active
+                indeterminate
                 size="small"
               ></ha-circular-progress>
             </div>`

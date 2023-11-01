@@ -132,9 +132,9 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
               >
                 ${this._saving
                   ? html`<ha-circular-progress
-                      active
+                      indeterminate
                       size="small"
-                      title="Saving"
+                      aria-label="Saving"
                     ></ha-circular-progress>`
                   : ""}
                 ${this.hass!.localize(

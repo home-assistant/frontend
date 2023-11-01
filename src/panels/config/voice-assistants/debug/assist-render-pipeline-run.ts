@@ -89,7 +89,7 @@ const renderProgress = (
       return html`❌`;
     }
     return html`
-      <ha-circular-progress size="tiny" active></ha-circular-progress>
+      <ha-circular-progress size="tiny" indeterminate></ha-circular-progress>
     `;
   }
 

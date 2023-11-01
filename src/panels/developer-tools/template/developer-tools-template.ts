@@ -156,7 +156,7 @@ class HaPanelDevTemplate extends LitElement {
           ${this._rendering
             ? html`<ha-circular-progress
                 class="render-spinner"
-                active
+                indeterminate
                 size="small"
               ></ha-circular-progress>`
             : ""}

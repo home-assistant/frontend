@@ -45,7 +45,7 @@ export class HaProgressButton extends LitElement {
                 ? html`
                     <ha-circular-progress
                       size="small"
-                      active
+                      indeterminate
                     ></ha-circular-progress>
                   `
                 : ""}

@@ -131,7 +131,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     let stats: TemplateResult;
 
     if (!this._stats5min || !this._statsHour) {
-      stats = html`<ha-circular-progress active></ha-circular-progress>`;
+      stats = html`<ha-circular-progress indeterminate></ha-circular-progress>`;
     } else if (this._statsHour.length < 1 && this._stats5min.length < 1) {
       stats = html`<p>No statistics found for this period.</p>`;
     } else {

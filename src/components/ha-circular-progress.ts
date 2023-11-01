@@ -1,54 +1,38 @@
-import { CircularProgress } from "@material/mwc-circular-progress";
-import { CSSResultGroup, css } from "lit";
+import { MdCircularProgress } from "@material/web/progress/circular-progress";
+import { CSSResult, css } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-circular-progress")
-// @ts-ignore
-export class HaCircularProgress extends CircularProgress {
-  @property({ type: Boolean })
-  public active = false;
+export class HaCircularProgress extends MdCircularProgress {
+  @property({ attribute: "aria-label", type: String }) public ariaLabel =
+    "Loading";
 
-  @property()
-  public alt = "Loading";
+  @property() public size: "tiny" | "small" | "medium" | "large" = "medium";
 
-  @property()
-  public size: "tiny" | "small" | "medium" | "large" = "medium";
+  public firstUpdated(changedProperties) {
+    super.firstUpdated(changedProperties);
 
-  // @ts-ignore
-  public set density(_) {
-    // just a dummy
-  }
-
-  public get density() {
     switch (this.size) {
       case "tiny":
-        return -8;
+        this.style.setProperty("--md-circular-progress-size", "16px");
+        break;
       case "small":
-        return -5;
-      case "medium":
-        return 0;
+        this.style.setProperty("--md-circular-progress-size", "28px");
+        break;
+      // medium is default size
       case "large":
-        return 5;
-      default:
-        return 0;
+        this.style.setProperty("--md-circular-progress-size", "68px");
+        break;
     }
   }
 
-  // @ts-ignore
-  public set indeterminate(_) {
-    // just a dummy
-  }
-
-  public get indeterminate() {
-    return this.active;
-  }
-
-  static get styles(): CSSResultGroup {
+  static get styles(): CSSResult[] {
     return [
-      super.styles,
+      ...super.styles,
       css`
         :host {
-          overflow: hidden;
+          --md-sys-color-primary: var(--primary-color);
+          --md-circular-progress-size: 48px;
         }
       `,
     ];

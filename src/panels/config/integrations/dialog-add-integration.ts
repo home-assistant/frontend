@@ -448,7 +448,7 @@ class AddIntegrationDialog extends LitElement {
             >
             </lit-virtualizer>
           </mwc-list>`
-        : html`<ha-circular-progress active></ha-circular-progress>`} `;
+        : html`<ha-circular-progress indeterminate></ha-circular-progress>`} `;
   }
 
   private _keyFunction = (integration: IntegrationListItem) =>

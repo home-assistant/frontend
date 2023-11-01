@@ -207,8 +207,7 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
                 ${this._loading
                   ? html`
                       <ha-circular-progress
-                        active
-                        alt="Loading"
+                        indeterminate
                         class="center margin-bot"
                       ></ha-circular-progress>
                     `

@@ -2238,21 +2238,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/circular-progress@npm:=14.0.0-canary.53b3cad2f.0":
-  version: 14.0.0-canary.53b3cad2f.0
-  resolution: "@material/circular-progress@npm:14.0.0-canary.53b3cad2f.0"
-  dependencies:
-    "@material/animation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/base": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/feature-targeting": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/progress-indicator": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/rtl": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
-    tslib: "npm:^2.1.0"
-  checksum: 8eb6d82f341b361cf82056c57f46c45397cb74309cc041545b69d43d4beeafdb9842c86f3c615dc7b844e1d41674875cd9354081bd67fc73ef556fff84f36e5f
-  languageName: node
-  linkType: hard
-
 "@material/data-table@npm:=14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/data-table@npm:14.0.0-canary.53b3cad2f.0"
@@ -2539,19 +2524,6 @@ __metadata:
     lit: "npm:^2.0.0"
     tslib: "npm:^2.0.1"
   checksum: 064a32f238e6582f1d83f545a7f953a14f4774b0f7205f440fd34531d3cc72c9bfdd3e87c9a309eec0c4f42b1de9fb29ac8b35ccf2bdb76fd3216dfed2f387ad
-  languageName: node
-  linkType: hard
-
-"@material/mwc-circular-progress@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-circular-progress@npm:0.27.0"
-  dependencies:
-    "@material/circular-progress": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/mwc-base": "npm:^0.27.0"
-    "@material/theme": "npm:=14.0.0-canary.53b3cad2f.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 6b7c798efe583f9cdfa4900751dd17a10730740a755715a9d08bbde344352cb048b6883885d372a71992266ab067a0e7257aa2737bc02a05ba753c746e994425
   languageName: node
   linkType: hard
 
@@ -9664,7 +9636,6 @@ __metadata:
     "@material/mwc-base": "npm:0.27.0"
     "@material/mwc-button": "npm:0.27.0"
     "@material/mwc-checkbox": "npm:0.27.0"
-    "@material/mwc-circular-progress": "npm:0.27.0"
     "@material/mwc-dialog": "npm:0.27.0"
     "@material/mwc-drawer": "npm:0.27.0"
     "@material/mwc-fab": "npm:0.27.0"

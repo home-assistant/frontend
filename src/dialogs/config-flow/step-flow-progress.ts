@@ -24,7 +24,7 @@ class StepFlowProgress extends LitElement {
         ${this.flowConfig.renderShowFormProgressHeader(this.hass, this.step)}
       </h2>
       <div class="content">
-        <ha-circular-progress active></ha-circular-progress>
+        <ha-circular-progress indeterminate></ha-circular-progress>
         ${this.flowConfig.renderShowFormProgressDescription(
           this.hass,
           this.step

@@ -147,7 +147,7 @@ class DialogMediaManage extends LitElement {
         ${!this._currentItem
           ? html`
               <div class="refresh">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
               </div>
             `
           : !children.length

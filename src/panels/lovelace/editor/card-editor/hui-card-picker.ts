@@ -144,8 +144,7 @@ export class HuiCardPicker extends LitElement {
                   html`
                     <div class="card spinner">
                       <ha-circular-progress
-                        active
-                        alt="Loading"
+                        indeterminate
                       ></ha-circular-progress>
                     </div>
                   `
@@ -240,7 +239,7 @@ export class HuiCardPicker extends LitElement {
         this._renderCardElement(card),
         html`
           <div class="card spinner">
-            <ha-circular-progress active alt="Loading"></ha-circular-progress>
+            <ha-circular-progress indeterminate></ha-circular-progress>
           </div>
         `
       )}`,

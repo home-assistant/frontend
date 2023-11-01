@@ -106,7 +106,11 @@ class MoveDatadiskDialog extends LitElement {
       >
         ${this._moving
           ? html`
-              <ha-circular-progress alt="Moving" size="large" active>
+              <ha-circular-progress
+                aria-label="Moving"
+                size="large"
+                indeterminate
+              >
               </ha-circular-progress>
               <p class="progress-text">
                 ${this.hass.localize(

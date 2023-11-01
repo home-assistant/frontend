@@ -92,7 +92,9 @@ export class CloudWebhooks extends LitElement {
                     ${this._progress.includes(entry.webhook_id)
                       ? html`
                           <div class="progress">
-                            <ha-circular-progress active></ha-circular-progress>
+                            <ha-circular-progress
+                              indeterminate
+                            ></ha-circular-progress>
                           </div>
                         `
                       : this._cloudHooks![entry.webhook_id]

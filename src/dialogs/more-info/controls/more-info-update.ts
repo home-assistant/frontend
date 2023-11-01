@@ -102,7 +102,7 @@ class MoreInfoUpdate extends LitElement {
       ${supportsFeature(this.stateObj!, UPDATE_SUPPORT_RELEASE_NOTES) &&
       !this._error
         ? this._releaseNotes === undefined
-          ? html`<ha-circular-progress active></ha-circular-progress>`
+          ? html`<ha-circular-progress indeterminate></ha-circular-progress>`
           : html`<hr />
               <ha-faded>
                 <ha-markdown .content=${this._releaseNotes}></ha-markdown>

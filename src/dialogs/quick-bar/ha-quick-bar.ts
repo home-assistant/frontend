@@ -214,7 +214,7 @@ export class QuickBar extends LitElement {
         ${!items
           ? html`<ha-circular-progress
               size="small"
-              active
+              indeterminate
             ></ha-circular-progress>`
           : items.length === 0
           ? html`
@@ -376,7 +376,7 @@ export class QuickBar extends LitElement {
     const spinner = document.createElement("ha-circular-progress");
     spinner.size = "small";
     spinner.slot = "meta";
-    spinner.active = true;
+    spinner.indeterminate = true;
     this._getItemAtIndex(index)?.appendChild(spinner);
   }
 
