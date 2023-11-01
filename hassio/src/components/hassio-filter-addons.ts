@@ -1,8 +1,9 @@
 import Fuse from "fuse.js";
+import type { IFuseOptions } from "fuse.js";
 import { StoreAddon } from "../../../src/data/supervisor/store";
 
 export function filterAndSort(addons: StoreAddon[], filter: string) {
-  const options: Fuse.IFuseOptions<StoreAddon> = {
+  const options: IFuseOptions<StoreAddon> = {
     keys: ["name", "description", "slug"],
     isCaseSensitive: false,
     minMatchCharLength: 2,

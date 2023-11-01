@@ -17,6 +17,12 @@ export class HaButton extends Button {
       .mdc-button {
         height: var(--button-height, 36px);
       }
+      .trailing-icon {
+        display: flex;
+      }
+      .slot-container {
+        overflow: var(--button-slot-container-overflow, visible);
+      }
     `,
   ];
 }

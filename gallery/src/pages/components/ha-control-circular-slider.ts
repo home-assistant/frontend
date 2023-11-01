@@ -49,11 +49,11 @@ export class DemoHaCircularSlider extends LitElement {
           <div class="field">
             <p>Current</p>
             <ha-slider
+              labeled
               min="10"
               max="30"
               .value=${this.current}
               @change=${this._currentChanged}
-              pin
             ></ha-slider>
             <p>${this.current} °C</p>
           </div>

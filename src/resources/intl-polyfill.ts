@@ -5,7 +5,10 @@ import { shouldPolyfill as shouldPolyfillPluralRules } from "@formatjs/intl-plur
 import { shouldPolyfill as shouldPolyfillRelativeTime } from "@formatjs/intl-relativetimeformat/should-polyfill";
 import { shouldPolyfill as shouldPolyfillListFormat } from "@formatjs/intl-listformat/should-polyfill";
 import { getLocalLanguage } from "../util/common-translation";
-import { polyfillLocaleData } from "./locale-data-polyfill";
+import {
+  polyfillLocaleData,
+  polyfillTimeZoneData,
+} from "./locale-data-polyfill";
 
 const polyfillIntl = async () => {
   const locale = getLocalLanguage();
@@ -22,8 +25,8 @@ const polyfillIntl = async () => {
   }
   if (shouldPolyfillDateTime(locale)) {
     polyfills.push(
-      import("@formatjs/intl-datetimeformat/polyfill-force").then(
-        () => import("@formatjs/intl-datetimeformat/add-all-tz")
+      import("@formatjs/intl-datetimeformat/polyfill-force").then(() =>
+        polyfillTimeZoneData()
       )
     );
   }

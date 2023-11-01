@@ -31,8 +31,7 @@ import "../../../../components/ha-svg-icon";
 import { AutomationClipboard, Trigger } from "../../../../data/automation";
 import { TRIGGER_TYPES } from "../../../../data/trigger";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
-import { SortableInstance } from "../../../../resources/sortable";
-import { loadSortable } from "../../../../resources/sortable.ondemand";
+import type { SortableInstance } from "../../../../resources/sortable";
 import { Entries, HomeAssistant } from "../../../../types";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
@@ -225,7 +224,7 @@ export default class HaAutomationTrigger extends LitElement {
   }
 
   private async _createSortable() {
-    const Sortable = await loadSortable();
+    const Sortable = (await import("../../../../resources/sortable")).default;
     this._sortable = new Sortable(
       this.shadowRoot!.querySelector(".triggers")!,
       {

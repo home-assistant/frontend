@@ -140,6 +140,7 @@ export interface CallServiceActionConfig extends BaseActionConfig {
 export interface NavigateActionConfig extends BaseActionConfig {
   action: "navigate";
   navigation_path: string;
+  navigation_replace?: boolean;
 }
 
 export interface UrlActionConfig extends BaseActionConfig {
@@ -346,11 +347,6 @@ export const getLegacyLovelaceCollection = (conn: Connection) =>
         )
       )
   );
-
-export interface WindowWithLovelaceProm extends Window {
-  llConfProm?: Promise<LovelaceConfig>;
-  llResProm?: Promise<LovelaceResource[]>;
-}
 
 export interface ActionHandlerOptions {
   hasHold?: boolean;

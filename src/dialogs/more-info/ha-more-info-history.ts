@@ -1,28 +1,29 @@
 import { startOfYesterday, subHours } from "date-fns/esm";
-import { css, html, LitElement, PropertyValues, nothing } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { LitElement, PropertyValues, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { createSearchParam } from "../../common/url/search-params";
+import { ChartResizeOptions } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
 import "../../components/chart/statistics-chart";
+import type { StatisticsChart } from "../../components/chart/statistics-chart";
 import {
-  computeHistory,
   HistoryResult,
+  computeHistory,
   subscribeHistoryStatesTimeWindow,
 } from "../../data/history";
 import {
-  fetchStatistics,
-  getStatisticMetadata,
   Statistics,
   StatisticsMetaData,
   StatisticsTypes,
+  fetchStatistics,
+  getStatisticMetadata,
 } from "../../data/recorder";
+import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { HomeAssistant } from "../../types";
-import type { StatisticsChart } from "../../components/chart/statistics-chart";
-import { ChartResizeOptions } from "../../components/chart/ha-chart-base";
 
 declare global {
   interface HASSDomEvents {
@@ -213,6 +214,10 @@ export class MoreInfoHistory extends LitElement {
     if (this._subscribed) {
       this._unsubscribeHistory();
     }
+
+    const { numeric_device_classes: sensorNumericDeviceClasses } =
+      await getSensorNumericDeviceClasses(this.hass);
+
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
       (combinedHistory) => {
@@ -223,7 +228,8 @@ export class MoreInfoHistory extends LitElement {
         this._stateHistory = computeHistory(
           this.hass!,
           combinedHistory,
-          this.hass!.localize
+          this.hass!.localize,
+          sensorNumericDeviceClasses
         );
       },
       24,

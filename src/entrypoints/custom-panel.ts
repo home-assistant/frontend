@@ -1,6 +1,5 @@
 // Compat needs to be first import
 import "../resources/compatibility";
-import { setCancelSyntheticClickEvents } from "@polymer/polymer/lib/utils/settings";
 import "../resources/safari-14-attachshadow-patch";
 
 import { PolymerElement } from "@polymer/polymer";
@@ -16,7 +15,9 @@ import { createCustomPanelElement } from "../util/custom-panel/create-custom-pan
 import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
 import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
 
-setCancelSyntheticClickEvents(false);
+import("@polymer/polymer/lib/utils/settings").then(
+  ({ setCancelSyntheticClickEvents }) => setCancelSyntheticClickEvents(false)
+);
 
 declare global {
   interface Window {

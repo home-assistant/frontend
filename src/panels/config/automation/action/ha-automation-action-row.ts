@@ -377,9 +377,7 @@ export default class HaAutomationActionRow extends LitElement {
                   ${type === undefined
                     ? html`
                         ${this.hass.localize(
-                          "ui.panel.config.automation.editor.actions.unsupported_action",
-                          "action",
-                          type
+                          "ui.panel.config.automation.editor.actions.unsupported_action"
                         )}
                       `
                     : ""}
@@ -391,7 +389,10 @@ export default class HaAutomationActionRow extends LitElement {
                   ></ha-yaml-editor>
                 `
               : html`
-                  <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
+                  <div
+                    @ui-mode-not-available=${this._handleUiModeNotAvailable}
+                    @value-changed=${this._onUiChanged}
+                  >
                     ${dynamicElement(`ha-automation-action-${type}`, {
                       hass: this.hass,
                       action: this.action,
@@ -528,6 +529,15 @@ export default class HaAutomationActionRow extends LitElement {
       return;
     }
     fireEvent(this, "value-changed", { value: ev.detail.value });
+  }
+
+  private _onUiChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    const value = {
+      ...(this.action.alias ? { alias: this.action.alias } : {}),
+      ...ev.detail.value,
+    };
+    fireEvent(this, "value-changed", { value });
   }
 
   private _switchUiMode() {

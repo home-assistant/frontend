@@ -183,6 +183,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
                   alt=${router.brand}
+                  crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                   @error=${this._onImageError}
                   @load=${this._onImageLoad}
@@ -634,6 +635,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         --mdc-list-side-padding: 16px;
         cursor: default;
         overflow: visible;
+      }
+      ha-list-item img {
+        border-radius: 0;
       }
       ha-svg-icon[slot="meta"] {
         width: 24px;

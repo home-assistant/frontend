@@ -35,6 +35,7 @@ export class HaIntegrationActionCard extends LitElement {
               type: "icon",
               darkOptimized: this.hass.themes?.darkMode,
             })}
+            crossorigin="anonymous"
             referrerpolicy="no-referrer"
             @error=${this._onImageError}
             @load=${this._onImageLoad}

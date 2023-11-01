@@ -4,11 +4,14 @@ import {
   addMilliseconds,
   addMonths,
   differenceInDays,
+  differenceInMonths,
   endOfDay,
   startOfDay,
+  isFirstDayOfMonth,
+  isLastDayOfMonth,
 } from "date-fns/esm";
 import { Collection, getCollection } from "home-assistant-js-websocket";
-import { calcDate } from "../common/datetime/calc_date";
+import { calcDate, calcDateProperty } from "../common/datetime/calc_date";
 import { formatTime24h } from "../common/datetime/format_time";
 import { groupBy } from "../common/util/group-by";
 import { HomeAssistant } from "../types";
@@ -416,11 +419,42 @@ const getEnergyData = async (
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
 
   if (compare) {
-    if (dayDifference > 27 && dayDifference < 32) {
-      // When comparing a month, we want to start at the begining of the month
-      startCompare = addMonths(start, -1);
+    if (
+      (calcDateProperty(
+        start,
+        isFirstDayOfMonth,
+        hass.locale,
+        hass.config
+      ) as boolean) &&
+      (calcDateProperty(
+        end || new Date(),
+        isLastDayOfMonth,
+        hass.locale,
+        hass.config
+      ) as boolean)
+    ) {
+      // When comparing a month (or multiple), we want to start at the begining of the month
+      startCompare = calcDate(
+        start,
+        addMonths,
+        hass.locale,
+        hass.config,
+        -(calcDateProperty(
+          end || new Date(),
+          differenceInMonths,
+          hass.locale,
+          hass.config,
+          start
+        ) as number) - 1
+      );
     } else {
-      startCompare = addDays(start, (dayDifference + 1) * -1);
+      startCompare = calcDate(
+        start,
+        addDays,
+        hass.locale,
+        hass.config,
+        (dayDifference + 1) * -1
+      );
     }
     endCompare = addMilliseconds(start, -1);
     if (energyStatIds.length) {
@@ -739,3 +773,6 @@ export const getEnergyGasUnit = (
 
 export const getEnergyWaterUnit = (hass: HomeAssistant): string | undefined =>
   hass.config.unit_system.length === "km" ? "L" : "gal";
+
+export const energyStatisticHelpUrl =
+  "/docs/energy/faq/#troubleshooting-missing-entities";

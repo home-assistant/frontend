@@ -261,6 +261,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       type: "logo",
                       darkOptimized: this.hass.themes?.darkMode,
                     })}
+                    crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                     @load=${this._onImageLoad}
                     @error=${this._onImageError}

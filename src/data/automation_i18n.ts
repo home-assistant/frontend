@@ -29,14 +29,17 @@ const triggerTranslationBaseKey =
 const conditionsTranslationBaseKey =
   "ui.panel.config.automation.editor.conditions.type";
 
-const describeDuration = (forTime: number | string | ForDict) => {
+const describeDuration = (
+  locale: FrontendLocaleData,
+  forTime: number | string | ForDict
+) => {
   let duration: string | null;
   if (typeof forTime === "number") {
     duration = secondsToDuration(forTime);
   } else if (typeof forTime === "string") {
     duration = forTime;
   } else {
-    duration = formatDuration(forTime);
+    duration = formatDuration(locale, forTime);
   }
   return duration;
 };
@@ -138,8 +141,26 @@ const tryDescribeTrigger = (
 
   // Numeric State Trigger
   if (trigger.platform === "numeric_state" && trigger.entity_id) {
-    const stateObj = hass.states[trigger.entity_id];
-    const entity = stateObj ? computeStateName(stateObj) : trigger.entity_id;
+    const entities: string[] = [];
+    const states = hass.states;
+
+    const stateObj = Array.isArray(trigger.entity_id)
+      ? hass.states[trigger.entity_id[0]]
+      : hass.states[trigger.entity_id];
+
+    if (Array.isArray(trigger.entity_id)) {
+      for (const entity of trigger.entity_id.values()) {
+        if (states[entity]) {
+          entities.push(computeStateName(states[entity]) || entity);
+        }
+      }
+    } else if (trigger.entity_id) {
+      entities.push(
+        states[trigger.entity_id]
+          ? computeStateName(states[trigger.entity_id])
+          : trigger.entity_id
+      );
+    }
 
     const attribute = trigger.attribute
       ? computeAttributeNameDisplay(
@@ -150,37 +171,42 @@ const tryDescribeTrigger = (
         )
       : undefined;
 
-    const duration = trigger.for ? describeDuration(trigger.for) : undefined;
+    const duration = trigger.for
+      ? describeDuration(hass.locale, trigger.for)
+      : undefined;
 
-    if (trigger.above && trigger.below) {
+    if (trigger.above !== undefined && trigger.below !== undefined) {
       return hass.localize(
         `${triggerTranslationBaseKey}.numeric_state.description.above-below`,
         {
           attribute: attribute,
-          entity: entity,
+          entity: formatListWithOrs(hass.locale, entities),
+          numberOfEntities: entities.length,
           above: trigger.above,
           below: trigger.below,
           duration: duration,
         }
       );
     }
-    if (trigger.above) {
+    if (trigger.above !== undefined) {
       return hass.localize(
         `${triggerTranslationBaseKey}.numeric_state.description.above`,
         {
           attribute: attribute,
-          entity: entity,
+          entity: formatListWithOrs(hass.locale, entities),
+          numberOfEntities: entities.length,
           above: trigger.above,
           duration: duration,
         }
       );
     }
-    if (trigger.below) {
+    if (trigger.below !== undefined) {
       return hass.localize(
         `${triggerTranslationBaseKey}.numeric_state.description.below`,
         {
           attribute: attribute,
-          entity: entity,
+          entity: formatListWithOrs(hass.locale, entities),
+          numberOfEntities: entities.length,
           below: trigger.below,
           duration: duration,
         }
@@ -322,7 +348,7 @@ const tryDescribeTrigger = (
     }
 
     if (trigger.for) {
-      const duration = describeDuration(trigger.for);
+      const duration = describeDuration(hass.locale, trigger.for);
       if (duration) {
         base += ` for ${duration}`;
       }
@@ -573,7 +599,7 @@ const tryDescribeTrigger = (
   if (trigger.platform === "template") {
     let duration = "";
     if (trigger.for) {
-      duration = describeDuration(trigger.for) ?? "";
+      duration = describeDuration(hass.locale, trigger.for) ?? "";
     }
 
     return hass.localize(
@@ -616,10 +642,7 @@ const tryDescribeTrigger = (
   }
 
   // Device Trigger
-  if (trigger.platform === "device") {
-    if (!trigger.device_id) {
-      return "Device trigger";
-    }
+  if (trigger.platform === "device" && trigger.device_id) {
     const config = trigger as DeviceTrigger;
     const localized = localizeDeviceAutomationTrigger(
       hass,
@@ -635,9 +658,12 @@ const tryDescribeTrigger = (
     }`;
   }
 
-  return `${
-    trigger.platform ? trigger.platform.replace(/_/g, " ") : "Unknown"
-  } trigger`;
+  return (
+    hass.localize(
+      `ui.panel.config.automation.editor.triggers.type.${trigger.platform}.label`
+    ) ||
+    hass.localize(`ui.panel.config.automation.editor.triggers.unknown_trigger`)
+  );
 };
 
 export const describeCondition = (
@@ -827,7 +853,7 @@ const tryDescribeCondition = (
     base += ` ${statesString}`;
 
     if (condition.for) {
-      const duration = describeDuration(condition.for);
+      const duration = describeDuration(hass.locale, condition.for);
       if (duration) {
         base += ` for ${duration}`;
       }
@@ -911,32 +937,35 @@ const tryDescribeCondition = (
             }`
           : localizeTimeString(condition.after, hass.locale, hass.config);
 
-      let result = "Confirm the ";
-      if (after || before) {
-        result += "time is ";
-      }
-      if (after) {
-        result += "after " + after;
-      }
-      if (before && after) {
-        result += " and ";
-      }
-      if (before) {
-        result += "before " + before;
-      }
-      if ((after || before) && validWeekdays) {
-        result += " and the ";
-      }
+      let localizedDays: string[] = [];
       if (validWeekdays) {
-        const localizedDays = weekdaysArray.map((d) =>
+        localizedDays = weekdaysArray.map((d) =>
           hass.localize(
             `ui.panel.config.automation.editor.conditions.type.time.weekdays.${d}`
           )
         );
-        result += " day is " + formatListWithOrs(hass.locale, localizedDays);
       }
 
-      return result;
+      let hasTime = "";
+      if (after !== undefined && before !== undefined) {
+        hasTime = "after_before";
+      } else if (after !== undefined) {
+        hasTime = "after";
+      } else if (before !== undefined) {
+        hasTime = "before";
+      }
+
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.time.description.full`,
+        {
+          hasTime: hasTime,
+          hasTimeAndDay: (after || before) && validWeekdays,
+          hasDay: validWeekdays,
+          time_before: before,
+          time_after: after,
+          day: formatListWithOrs(hass.locale, localizedDays),
+        }
+      );
     }
   }
 
@@ -955,23 +984,43 @@ const tryDescribeCondition = (
     base += " sun";
 
     if (condition.after) {
-      let duration = "";
+      let after_duration = "";
 
       if (condition.after_offset) {
         if (typeof condition.after_offset === "number") {
-          duration = ` offset by ${secondsToDuration(condition.after_offset)!}`;
+          after_duration = ` offset by ${secondsToDuration(
+            condition.after_offset
+          )!}`;
         } else if (typeof condition.after_offset === "string") {
-          duration = ` offset by ${condition.after_offset}`;
+          after_duration = ` offset by ${condition.after_offset}`;
         } else {
-          duration = ` offset by ${JSON.stringify(condition.after_offset)}`;
+          after_duration = ` offset by ${JSON.stringify(
+            condition.after_offset
+          )}`;
         }
       }
 
-      base += ` after ${condition.after}${duration}`;
+      base += ` after ${condition.after}${after_duration}`;
     }
 
     if (condition.before) {
-      base += ` before ${condition.before}`;
+      let before_duration = "";
+
+      if (condition.before_offset) {
+        if (typeof condition.before_offset === "number") {
+          before_duration = ` offset by ${secondsToDuration(
+            condition.before_offset
+          )!}`;
+        } else if (typeof condition.before_offset === "string") {
+          before_duration = ` offset by ${condition.before_offset}`;
+        } else {
+          before_duration = ` offset by ${JSON.stringify(
+            condition.before_offset
+          )}`;
+        }
+      }
+
+      base += ` before ${condition.before}${before_duration}`;
     }
 
     return base;
@@ -1025,10 +1074,7 @@ const tryDescribeCondition = (
     );
   }
 
-  if (condition.condition === "device") {
-    if (!condition.device_id) {
-      return "Device condition";
-    }
+  if (condition.condition === "device" && condition.device_id) {
     const config = condition as DeviceCondition;
     const localized = localizeDeviceAutomationCondition(
       hass,
@@ -1044,14 +1090,24 @@ const tryDescribeCondition = (
     }`;
   }
 
-  if (condition.condition === "trigger") {
-    if (!condition.id) {
-      return "Trigger condition";
-    }
-    return `When triggered by ${condition.id}`;
+  if (condition.condition === "trigger" && condition.id != null) {
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.trigger.description.full`,
+      {
+        id: formatListWithOrs(
+          hass.locale,
+          ensureArray(condition.id).map((id) => id.toString())
+        ),
+      }
+    );
   }
 
-  return `${
-    condition.condition ? condition.condition.replace(/_/g, " ") : "Unknown"
-  } condition`;
+  return (
+    hass.localize(
+      `ui.panel.config.automation.editor.conditions.type.${condition.condition}.label`
+    ) ||
+    hass.localize(
+      `ui.panel.config.automation.editor.conditions.unknown_condition`
+    )
+  );
 };

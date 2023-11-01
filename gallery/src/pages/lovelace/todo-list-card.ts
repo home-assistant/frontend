@@ -2,25 +2,39 @@ import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, query } from "lit/decorators";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
+import { getEntity } from "../../../../src/fake_data/entity";
+import { mockTodo } from "../../../../demo/src/stubs/todo";
+
+const ENTITIES = [
+  getEntity("todo", "shopping_list", "2", {
+    friendly_name: "Shopping List",
+    supported_features: 15,
+  }),
+  getEntity("todo", "read_only", "2", {
+    friendly_name: "Read only",
+  }),
+];
 
 const CONFIGS = [
   {
     heading: "List example",
     config: `
-- type: shopping-list
+- type: todo-list
+  entity: todo.shopping_list
     `,
   },
   {
     heading: "List with title example",
     config: `
-- type: shopping-list
+- type: todo-list
   title: Shopping List
+  entity: todo.read_only
     `,
   },
 ];
 
-@customElement("demo-lovelace-shopping-list-card")
-class DemoShoppingListEntity extends LitElement {
+@customElement("demo-lovelace-todo-list-card")
+class DemoTodoListEntity extends LitElement {
   @query("#demos") private _demoRoot!: HTMLElement;
 
   protected render(): TemplateResult {
@@ -32,18 +46,14 @@ class DemoShoppingListEntity extends LitElement {
     const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");
     hass.updateTranslations("lovelace", "en");
+    hass.addEntities(ENTITIES);
 
-    hass.mockAPI("shopping_list", () => [
-      { name: "list", id: 1, complete: false },
-      { name: "all", id: 2, complete: false },
-      { name: "the", id: 3, complete: false },
-      { name: "things", id: 4, complete: true },
-    ]);
+    mockTodo(hass);
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-lovelace-shopping-list-card": DemoShoppingListEntity;
+    "demo-lovelace-todo-list-card": DemoTodoListEntity;
   }
 }

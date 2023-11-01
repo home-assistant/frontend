@@ -164,6 +164,7 @@ export class HuiEnergyDevicesGraphCard
           // @ts-ignore
           entityId: this._chartData?.datasets[0]?.data[index]?.y,
         });
+        chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
       },
     })
   );
@@ -276,6 +277,8 @@ export class HuiEnergyDevicesGraphCard
     });
 
     chartData.sort((a, b) => b.x - a.x);
+
+    chartData.length = this._config?.max_devices || chartData.length;
 
     chartData.forEach((d: any) => {
       const color = getColorByIndex(d.idx);

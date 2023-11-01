@@ -1,9 +1,13 @@
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { ColorTempSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-labeled-slider";
+import { generateColorTemperatureGradient } from "../../dialogs/more-info/components/lights/light-color-temp-picker";
+import { mired2kelvin } from "../../common/color/convert-light-color";
 
 @customElement("ha-selector-color_temp")
 export class HaColorTempSelector extends LitElement {
@@ -22,40 +26,40 @@ export class HaColorTempSelector extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   protected render() {
+    const min = this.selector.color_temp?.min_mireds ?? 153;
+    const max = this.selector.color_temp?.max_mireds ?? 500;
+
+    const gradient = this._generateTemperatureGradient(min, max);
+
     return html`
       <ha-labeled-slider
-        pin
+        style=${styleMap({
+          "--ha-slider-background": `linear-gradient( to var(--float-end), ${gradient})`,
+        })}
+        labeled
         icon="hass:thermometer"
         .caption=${this.label || ""}
-        .min=${this.selector.color_temp?.min_mireds ?? 153}
-        .max=${this.selector.color_temp?.max_mireds ?? 500}
+        .min=${min}
+        .max=${max}
         .value=${this.value}
         .disabled=${this.disabled}
         .helper=${this.helper}
         .required=${this.required}
-        @change=${this._valueChanged}
+        @value-changed=${this._valueChanged}
       ></ha-labeled-slider>
     `;
   }
 
+  private _generateTemperatureGradient = memoizeOne(
+    (min: number, max: number) =>
+      generateColorTemperatureGradient(mired2kelvin(min), mired2kelvin(max))
+  );
+
   private _valueChanged(ev: CustomEvent) {
     fireEvent(this, "value-changed", {
-      value: Number((ev.target as any).value),
+      value: Number((ev.detail as any).value),
     });
   }
-
-  static styles = css`
-    ha-labeled-slider {
-      --ha-slider-background: -webkit-linear-gradient(
-        var(--float-end),
-        rgb(255, 160, 0) 0%,
-        white 50%,
-        rgb(166, 209, 255) 100%
-      );
-      /* The color temp minimum value shouldn't be rendered differently. It's not "off". */
-      --paper-slider-knob-start-border-color: var(--primary-color);
-    }
-  `;
 }
 
 declare global {
