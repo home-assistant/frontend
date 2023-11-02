@@ -236,26 +236,28 @@ class HassioAddonInfo extends LitElement {
 
           <ha-chip-set class="capabilities">
             ${this.addon.stage !== "stable"
-              ? html`<ha-assist-chip
-                  filled
-                  class=${classMap({
-                    yellow: this.addon.stage === "experimental",
-                    red: this.addon.stage === "deprecated",
-                  })}
-                  @click=${this._showMoreInfo}
-                  id="stage"
-                  .label=${capitalizeFirstLetter(
-                    this.supervisor.localize(
-                      `addon.dashboard.capability.stages.${this.addon.stage}`
-                    )
-                  )}
-                >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${STAGE_ICON[this.addon.stage]}
+              ? html`
+                  <ha-assist-chip
+                    filled
+                    class=${classMap({
+                      yellow: this.addon.stage === "experimental",
+                      red: this.addon.stage === "deprecated",
+                    })}
+                    @click=${this._showMoreInfo}
+                    id="stage"
+                    .label=${capitalizeFirstLetter(
+                      this.supervisor.localize(
+                        `addon.dashboard.capability.stages.${this.addon.stage}`
+                      )
+                    )}
                   >
-                  </ha-svg-icon>
-                </ha-assist-chip>`
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${STAGE_ICON[this.addon.stage]}
+                    >
+                    </ha-svg-icon>
+                  </ha-assist-chip>
+                `
               : ""}
 
             <ha-assist-chip
