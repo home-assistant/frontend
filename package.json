@@ -126,7 +126,7 @@
     "memoize-one": "6.0.0",
     "node-vibrant": "3.2.1-alpha.1",
     "proxy-polyfill": "0.3.2",
-    "punycode": "2.3.0",
+    "punycode": "2.3.1",
     "qr-scanner": "1.4.2",
     "qrcode": "1.5.3",
     "resize-observer-polyfill": "1.5.1",
