@@ -49,6 +49,7 @@ export type Selector =
   | TemplateSelector
   | ThemeSelector
   | TimeSelector
+  | TriggerSelector
   | TTSSelector
   | TTSVoiceSelector
   | UiActionSelector
@@ -371,6 +372,13 @@ export interface ThemeSelector {
 export interface TimeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   time: {} | null;
+}
+
+export interface TriggerSelector {
+  trigger: {
+    reorder_mode?: boolean;
+    nested?: boolean;
+  } | null;
 }
 
 export interface TTSSelector {
