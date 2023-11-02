@@ -1,14 +1,14 @@
 import type { SelectedDetail } from "@material/mwc-list";
 import { formatInTimeZone, toDate } from "date-fns-tz";
-import { css, html, LitElement, PropertyValues, nothing } from "lit";
+import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import type { Options, WeekdayStr } from "rrule";
 import { ByWeekday, RRule, Weekday } from "rrule";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { LocalizeKeys } from "../../common/translations/localize";
-import "../../components/ha-chip";
+import "../../components/chips/ha-chip-set";
+import "../../components/chips/ha-filter-chip";
 import "../../components/ha-date-input";
 import "../../components/ha-list-item";
 import "../../components/ha-select";
@@ -16,17 +16,17 @@ import type { HaSelect } from "../../components/ha-select";
 import "../../components/ha-textfield";
 import { HomeAssistant } from "../../types";
 import {
+  DEFAULT_COUNT,
+  MonthlyRepeatItem,
+  RepeatEnd,
+  RepeatFrequency,
   convertFrequency,
   convertRepeatFrequency,
-  DEFAULT_COUNT,
   getMonthdayRepeatFromRule,
   getMonthlyRepeatItems,
   getMonthlyRepeatWeekdayFromRule,
   getWeekday,
   getWeekdays,
-  MonthlyRepeatItem,
-  RepeatEnd,
-  RepeatFrequency,
   ruleByWeekDay,
   untilValue,
 } from "./recurrence";
@@ -240,22 +240,24 @@ export class RecurrenceRuleEditor extends LitElement {
   renderWeekly() {
     return html`
       ${this.renderInterval()}
-      <div class="weekdays">
+      <ha-chip-set class="weekdays">
         ${this._allWeekdays!.map(
           (item) => html`
-            <ha-chip
+            <ha-filter-chip
+              no-leading-icon
               .value=${item}
-              class=${classMap({ active: this._weekday.has(item) })}
+              .selected=${this._weekday.has(item)}
               @click=${this._onWeekdayToggle}
-              >${this.hass.localize(
+              .label=${this.hass.localize(
                 `ui.components.calendar.event.repeat.weekly.weekday.${
                   item.toLowerCase() as Lowercase<WeekdayStr>
                 }`
-              )}</ha-chip
+              )}
             >
+            </ha-filter-chip>
           `
         )}
-      </div>
+      </ha-chip-set>
     `;
   }
 
@@ -379,10 +381,10 @@ export class RecurrenceRuleEditor extends LitElement {
   private _onWeekdayToggle(e: MouseEvent) {
     const target = e.currentTarget as any;
     const value = target.value as WeekdayStr;
-    if (!target.classList.contains("active")) {
-      this._weekday.add(value);
-    } else {
+    if (this._weekday.has(value)) {
       this._weekday.delete(value);
+    } else {
+      this._weekday.add(value);
     }
     this.requestUpdate("_weekday");
   }
@@ -504,8 +506,6 @@ export class RecurrenceRuleEditor extends LitElement {
       margin-bottom: 16px;
     }
     .weekdays {
-      display: flex;
-      justify-content: space-between;
       margin-bottom: 16px;
     }
     ha-textfield:last-child,
