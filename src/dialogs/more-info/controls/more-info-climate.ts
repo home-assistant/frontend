@@ -436,7 +436,6 @@ class MoreInfoClimate extends LitElement {
           line-height: 28px;
           direction: ltr;
         }
-        
         ha-select {
           width: 100%;
           margin-top: 8px;
