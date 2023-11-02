@@ -356,6 +356,7 @@ class MoreInfoWeather extends LitElement {
       .templow {
         min-width: 48px;
         text-align: right;
+        direction: ltr;
       }
 
       .templow {
