@@ -7100,10 +7100,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:3.33.1":
-  version: 3.33.1
-  resolution: "core-js@npm:3.33.1"
-  checksum: 66a00c765bc9dfbae546f36e53513e9f9e4a94fd9ec07029ddaf9225641739677ea22c6888743151b96a0f2d80309e06f76df3d5dca1a72ee35d544289e56bb7
+"core-js@npm:3.33.2":
+  version: 3.33.2
+  resolution: "core-js@npm:3.33.2"
+  checksum: d62554d51ce8a3f33d0b1f8b064cbd21afcae275043ae96d3d43f18701b80cd423fab484517a81ee1d096db252e2aeada6ef6d1fd80a26db54f82f8f349a62c7
   languageName: node
   linkType: hard
 
@@ -9742,7 +9742,7 @@ __metadata:
     chai: "npm:4.3.10"
     chart.js: "npm:4.4.0"
     comlink: "npm:4.4.1"
-    core-js: "npm:3.33.1"
+    core-js: "npm:3.33.2"
     cropperjs: "npm:1.6.1"
     date-fns: "npm:2.30.0"
     date-fns-tz: "npm:2.0.0"
