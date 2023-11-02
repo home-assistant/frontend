@@ -50,6 +50,15 @@ import type { ThermostatCardConfig, TileCardConfig } from "./types";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
+export const getEntityDefaultTileIconAction = (entityId: string) => {
+  const domain = computeDomain(entityId);
+  const supportsIconAction =
+    DOMAINS_TOGGLE.has(domain) ||
+    ["button", "input_button", "scene"].includes(domain);
+
+  return supportsIconAction ? "toggle" : "more-info";
+};
+
 @customElement("hui-tile-card")
 export class HuiTileCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -87,17 +96,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       throw new Error("Specify an entity");
     }
 
-    const domain = computeDomain(config.entity);
-    const supportsIconAction =
-      DOMAINS_TOGGLE.has(domain) ||
-      ["button", "input_button", "scene"].includes(domain);
-
     this._config = {
       tap_action: {
         action: "more-info",
       },
       icon_tap_action: {
-        action: supportsIconAction ? "toggle" : "more-info",
+        action: getEntityDefaultTileIconAction(config.entity),
       },
       ...config,
     };
