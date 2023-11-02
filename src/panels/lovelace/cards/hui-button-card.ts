@@ -55,6 +55,11 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ButtonCardConfig } from "./types";
 
+export const getEntityDefaultButtonAction = (entityId?: string) =>
+  entityId && DOMAINS_TOGGLE.has(computeDomain(entityId))
+    ? "toggle"
+    : "more-info";
+
 @customElement("hui-button-card")
 export class HuiButtonCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -149,10 +154,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
     this._config = {
       tap_action: {
-        action:
-          config.entity && DOMAINS_TOGGLE.has(computeDomain(config.entity))
-            ? "toggle"
-            : "more-info",
+        action: getEntityDefaultButtonAction(config.entity),
       },
       hold_action: { action: "more-info" },
       show_icon: true,
