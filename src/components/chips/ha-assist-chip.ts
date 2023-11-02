@@ -23,6 +23,7 @@ export class HaAssistChip extends MdAssistChip {
         --md-sys-color-on-surface: var(--primary-text-color);
         --md-assist-chip-container-shape: 16px;
         --md-assist-chip-outline-color: var(--outline-color);
+        --md-assist-chip-label-text-weight: 400;
       }
       /** Material 3 doesn't have a filled chip, so we have to make our own using elevated variant **/
       :host([filled]) {
