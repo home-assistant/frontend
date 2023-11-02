@@ -2,12 +2,6 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import {
-  isOffState,
-  isUnavailableState,
-  OFF,
-  UNAVAILABLE,
-} from "../../../data/entity";
 import { updateCanInstall, UpdateEntity } from "../../../data/update";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
