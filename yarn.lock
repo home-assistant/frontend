@@ -6597,16 +6597,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clean-css@npm:^4.2.1, clean-css@npm:^4.2.3":
-  version: 4.2.4
-  resolution: "clean-css@npm:4.2.4"
-  dependencies:
-    source-map: "npm:~0.6.0"
-  checksum: 4f64dbebfa29feb79be25d6f91239239179adc805c6d7442e2c728970ca23a75b5f238118477b4b78553b89e50f14a64fe35145ecc86b6badf971883c4ad2ffe
-  languageName: node
-  linkType: hard
-
-"clean-css@npm:~5.3.2":
+"clean-css@npm:^5.0.0":
   version: 5.3.2
   resolution: "clean-css@npm:5.3.2"
   dependencies:
