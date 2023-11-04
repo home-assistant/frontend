@@ -167,7 +167,7 @@ class HaPanelDevState extends LitElement {
                 )}</mwc-button
               >
               <ha-icon-button
-                @click=${this._entityIdChanged}
+                @click=${this._updateEntity}
                 .label=${this.hass.localize("ui.common.refresh")}
                 .path=${mdiRefresh}
               ></ha-icon-button>
@@ -355,6 +355,10 @@ class HaPanelDevState extends LitElement {
       this._stateAttributes = {};
       return;
     }
+    this._updateEntity();
+  }
+
+  private _updateEntity() {
     const entityState = this.hass.states[this._entityId];
     if (!entityState) {
       return;
