@@ -204,7 +204,7 @@
     "eslint-plugin-disable": "2.0.3",
     "eslint-plugin-import": "2.29.0",
     "eslint-plugin-lit": "1.10.1",
-    "eslint-plugin-lit-a11y": "4.1.0",
+    "eslint-plugin-lit-a11y": "4.1.1",
     "eslint-plugin-unused-imports": "3.0.0",
     "eslint-plugin-wc": "2.0.4",
     "esprima": "4.0.1",
