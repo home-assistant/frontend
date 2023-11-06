@@ -415,6 +415,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           line-height: 64px;
           letter-spacing: -0.25px;
           margin: 0;
+          direction: ltr;
         }
         .temperature span {
           display: inline-flex;
