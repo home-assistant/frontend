@@ -23,6 +23,8 @@ export class HaTimeInput extends LitElement {
   @property({ type: Boolean, attribute: "enable-second" })
   public enableSecond = false;
 
+  @property({ type: Boolean, reflect: true }) public clearable?: boolean;
+
   protected render() {
     const useAMPM = useAmPm(this.locale);
 
@@ -48,6 +50,7 @@ export class HaTimeInput extends LitElement {
         @value-changed=${this._timeChanged}
         .enableSecond=${this.enableSecond}
         .required=${this.required}
+        .clearable=${this.clearable}
         .helper=${this.helper}
       ></ha-base-time-input>
     `;
@@ -60,7 +63,9 @@ export class HaTimeInput extends LitElement {
     const useAMPM = useAmPm(this.locale);
     let value;
 
-    if (
+    if (typeof eventValue === "undefined") {
+      value = undefined;
+    } else if (
       !isNaN(eventValue.hours) ||
       !isNaN(eventValue.minutes) ||
       !isNaN(eventValue.seconds)

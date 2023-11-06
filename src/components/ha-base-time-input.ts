@@ -1,10 +1,12 @@
 import "@material/mwc-list/mwc-list-item";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { mdiClose } from "@mdi/js";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import "./ha-select";
+import "./ha-icon-button";
 import { HaTextField } from "./ha-textfield";
 import "./ha-input-helper-text";
 
@@ -123,6 +125,8 @@ export class HaBaseTimeInput extends LitElement {
    * AM or PM
    */
   @property() amPm: "AM" | "PM" = "AM";
+
+  @property({ type: Boolean, reflect: true }) public clearable?: boolean;
 
   protected render(): TemplateResult {
     return html`
@@ -249,11 +253,26 @@ export class HaBaseTimeInput extends LitElement {
               <mwc-list-item value="AM">AM</mwc-list-item>
               <mwc-list-item value="PM">PM</mwc-list-item>
             </ha-select>`}
+        ${this.clearable && !this.required && !this.disabled
+          ? html`<ha-icon-button
+              label="clear"
+              @click=${this._clearValue}
+              .path=${mdiClose}
+            ></ha-icon-button>`
+          : nothing}
       </div>
       ${this.helper
         ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
         : ""}
     `;
+  }
+
+  private _clearValue(): void {
+    const value = undefined;
+
+    fireEvent(this, "value-changed", {
+      value,
+    });
   }
 
   private _valueChanged(ev: InputEvent) {
@@ -302,6 +321,9 @@ export class HaBaseTimeInput extends LitElement {
   }
 
   static styles = css`
+    :host([clearable]) {
+      position: relative;
+    }
     :host {
       display: block;
     }
@@ -334,6 +356,18 @@ export class HaBaseTimeInput extends LitElement {
     ha-select {
       --mdc-shape-small: 0;
       width: 85px;
+    }
+    :host([clearable]) .mdc-select__anchor {
+        padding-inline-end: var(--select-selected-text-padding-end, 12px);
+    }
+    ha-icon-button {
+      position: relative
+      --mdc-icon-button-size: 36px;
+      --mdc-icon-size: 20px;
+      color: var(--secondary-text-color);
+      direction: var(--direction);
+      display: flex;
+      align-items: center;
     }
     label {
       -moz-osx-font-smoothing: grayscale;
