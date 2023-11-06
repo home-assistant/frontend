@@ -2115,7 +2115,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/ssr-dom-shim@npm:^1.0.0, @lit-labs/ssr-dom-shim@npm:^1.1.0":
+"@lit-labs/ssr-dom-shim@npm:^1.0.0, @lit-labs/ssr-dom-shim@npm:^1.1.2":
   version: 1.1.2
   resolution: "@lit-labs/ssr-dom-shim@npm:1.1.2"
   checksum: a930f7de57b952dc21317a5754aa0411e000bb4991053cde771c111b7792c4a4cdc896922f0353c832215bed71400431c5ab5a6252c8f4f70bb9ce0b37fe4752
@@ -9784,7 +9784,7 @@ __metadata:
     leaflet: "npm:1.9.4"
     leaflet-draw: "npm:1.0.4"
     lint-staged: "npm:15.0.2"
-    lit: "npm:2.8.0"
+    lit: "npm:3.0.2"
     lit-analyzer: "npm:2.0.1"
     lodash.template: "npm:4.5.0"
     luxon: "npm:3.4.3"
@@ -11434,23 +11434,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-element@npm:^3.3.0":
-  version: 3.3.3
-  resolution: "lit-element@npm:3.3.3"
+"lit-element@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "lit-element@npm:4.0.1"
   dependencies:
-    "@lit-labs/ssr-dom-shim": "npm:^1.1.0"
-    "@lit/reactive-element": "npm:^1.3.0"
-    lit-html: "npm:^2.8.0"
-  checksum: 7968e7f3ce3994911f27c4c54acc956488c91d8af81677cce3d6f0c2eaea45cceb79b064077159392238d6e43d46015a950269db9914fea8913566aacb17eaa1
+    "@lit-labs/ssr-dom-shim": "npm:^1.1.2"
+    "@lit/reactive-element": "npm:^2.0.0"
+    lit-html: "npm:^3.0.0"
+  checksum: bc44ff7531c40edbf8482cd696bb62cbe931d3c098ab820b76cb77099889d363e6a8fa607adb4c8efa48d4deefad92580d0d85be4a95bc15a85946a66b5273e1
   languageName: node
   linkType: hard
 
-"lit-html@npm:^2.8.0":
-  version: 2.8.0
-  resolution: "lit-html@npm:2.8.0"
+"lit-html@npm:^3.0.0":
+  version: 3.0.2
+  resolution: "lit-html@npm:3.0.2"
   dependencies:
     "@types/trusted-types": "npm:^2.0.2"
-  checksum: 3503e55e2927c2ff94773cf041fc4128f92291869c9192f36eacb7f95132d11f6b329e5b910ab60a4456349cd2e6d23b33d83291b24d557bcd6b904d6314ac1a
+  checksum: f68e13e4fce25268712ec45d78ccc515be4c6f85f4820b32229f10f839c2c8b2a68a8e905793d0621237840d1078b97c0a5f157f75d81073aa6447f986d0f292
   languageName: node
   linkType: hard
 
@@ -11465,14 +11465,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:2.8.0":
-  version: 2.8.0
-  resolution: "lit@npm:2.8.0"
+"lit@npm:3.0.2":
+  version: 3.0.2
+  resolution: "lit@npm:3.0.2"
   dependencies:
-    "@lit/reactive-element": "npm:^1.6.0"
-    lit-element: "npm:^3.3.0"
-    lit-html: "npm:^2.8.0"
-  checksum: aa64c1136b855ba328d41157dba67657d480345aeec3c1dd829abeb67719d759c9ff2ade9903f9cfb4f9d012b16087034aaa5b33f1182e70c615765562e3251b
+    "@lit/reactive-element": "npm:^2.0.0"
+    lit-element: "npm:^4.0.0"
+    lit-html: "npm:^3.0.0"
+  checksum: 54a173cb9eb2287ed91d093cece8af3c699303dc5a050a6c67810e0c332a193df59f4b6c5aaa8a51f53987597838ecbc10c49e7fdbcb9754dedd92a22482e9c6
   languageName: node
   linkType: hard
 
