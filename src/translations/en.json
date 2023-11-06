@@ -2532,7 +2532,7 @@
                   "value_template": "Value template",
                   "for": "For",
                   "description": {
-                    "full": "When a template triggers{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                    "full": "When a template changes from false to true{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
                 "time": {
@@ -2662,7 +2662,10 @@
                 },
                 "template": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::template::label%]",
-                  "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]"
+                  "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]",
+                  "description": {
+                    "full": "Test if template renders a value equal to true"
+                  }
                 },
                 "time": {
                   "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_value%]",
