@@ -122,18 +122,27 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             }
             if (notifyOnError) {
               forwardHaptic("failure");
+              const lokalize = await this.hass!.loadBackendTranslation(
+                "exceptions",
+                err.translation_domain
+              );
+              const localizedErrorMessage = lokalize(
+                `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
+                err.translation_placeholders
+              );
               const message =
+                localizedErrorMessage ||
                 (this as any).hass.localize(
                   "ui.notification_toast.service_call_failed",
                   "service",
                   `${domain}/${service}`
                 ) +
-                ` ${
-                  err.message ||
-                  (err.error?.code === ERR_CONNECTION_LOST
-                    ? "connection lost"
-                    : "unknown error")
-                }`;
+                  ` ${
+                    err.message ||
+                    (err.error?.code === ERR_CONNECTION_LOST
+                      ? "connection lost"
+                      : "unknown error")
+                  }`;
               fireEvent(this as any, "hass-notification", { message });
             }
             throw err;
