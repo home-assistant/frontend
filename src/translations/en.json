@@ -5207,6 +5207,14 @@
                   "select-options": {
                     "label": "Select options"
                   },
+                  "number": {
+                    "label": "Number Input",
+                    "style": "Style",
+                    "style_list": {
+                      "buttons": "Buttons",
+                      "slider": "Slider"
+                    }
+                  },
                   "target-temperature": {
                     "label": "Target temperature"
                   },
