@@ -71,7 +71,7 @@ function checkStateNumericCondition(
 
   return (
     (condition.above == null || condition.above < numericState) &&
-    (condition.below == null || condition.below >= numericState)
+    (condition.below == null || condition.below > numericState)
   );
 }
 
