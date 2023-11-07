@@ -4136,15 +4136,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/esprima@npm:4.0.5":
-  version: 4.0.5
-  resolution: "@types/esprima@npm:4.0.5"
-  dependencies:
-    "@types/estree": "npm:*"
-  checksum: bb722d9833bdae19c915d3d0f5cba5320ac30806eea8c93af168ee1f9dfc0e924003cff0cacf3f625dc00e2639ed457ceb910e9d9b57e847e1459760f0cefce3
-  languageName: node
-  linkType: hard
-
 "@types/estree@npm:*, @types/estree@npm:^1.0.0":
   version: 1.0.3
   resolution: "@types/estree@npm:1.0.3"
@@ -8209,16 +8200,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esprima@npm:4.0.1":
-  version: 4.0.1
-  resolution: "esprima@npm:4.0.1"
-  bin:
-    esparse: ./bin/esparse.js
-    esvalidate: ./bin/esvalidate.js
-  checksum: f1d3c622ad992421362294f7acf866aa9409fbad4eb2e8fa230bd33944ce371d32279667b242d8b8907ec2b6ad7353a717f3c0e60e748873a34a7905174bc0eb
-  languageName: node
-  linkType: hard
-
 "esquery@npm:^1.4.2":
   version: 1.5.0
   resolution: "esquery@npm:1.5.0"
@@ -9710,7 +9691,6 @@ __metadata:
     "@types/babel__plugin-transform-runtime": "npm:7.9.4"
     "@types/chromecast-caf-receiver": "npm:6.0.11"
     "@types/chromecast-caf-sender": "npm:1.0.7"
-    "@types/esprima": "npm:4.0.5"
     "@types/glob": "npm:8.1.0"
     "@types/html-minifier-terser": "npm:7.0.1"
     "@types/js-yaml": "npm:4.0.8"
@@ -9760,7 +9740,6 @@ __metadata:
     eslint-plugin-lit-a11y: "npm:4.1.1"
     eslint-plugin-unused-imports: "npm:3.0.0"
     eslint-plugin-wc: "npm:2.0.4"
-    esprima: "npm:4.0.1"
     fancy-log: "npm:2.0.0"
     fs-extra: "npm:11.1.1"
     fuse.js: "npm:7.0.0"

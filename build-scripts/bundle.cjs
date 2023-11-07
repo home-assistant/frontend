@@ -12,11 +12,7 @@ module.exports.sourceMapURL = () => {
 };
 
 // Files from NPM Packages that should not be imported
-// eslint-disable-next-line unused-imports/no-unused-vars
-module.exports.ignorePackages = ({ latestBuild }) => [
-  // Part of yaml.js and only used for !!js functions that we don't use
-  require.resolve("esprima"),
-];
+module.exports.ignorePackages = () => [];
 
 // Files from NPM packages that we should replace with empty file
 module.exports.emptyPackages = ({ latestBuild, isHassioBuild }) =>
