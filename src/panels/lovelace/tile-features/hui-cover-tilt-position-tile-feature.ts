@@ -50,6 +50,13 @@ class HuiCoverTiltPositionTileFeature
     this._config = config;
   }
 
+  private _tooltipFormatter = (value: number): string =>
+    this.hass!.formatEntityAttributeValue(
+      this.stateObj!,
+      "current_tilt_position",
+      value
+    );
+
   protected render() {
     if (
       !this._config ||
@@ -92,6 +99,7 @@ class HuiCoverTiltPositionTileFeature
             "current_tilt_position"
           )}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
+          .tooltipFormatter=${this._tooltipFormatter}
         >
           <div slot="background" class="gradient"></div
         ></ha-control-slider>

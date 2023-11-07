@@ -33,6 +33,13 @@ export class HaMoreInfoLightBrightness extends LitElement {
     }
   }
 
+  private _tooltipFormatter = (value: number): string =>
+    this.hass.formatEntityAttributeValue(
+      this.stateObj,
+      "brightness",
+      value * 2.55
+    );
+
   private _valueChanged(ev: CustomEvent) {
     const value = (ev.detail as any).value;
     if (isNaN(value)) return;
@@ -77,6 +84,7 @@ export class HaMoreInfoLightBrightness extends LitElement {
           "--control-slider-background": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
+        .tooltipFormatter=${this._tooltipFormatter}
       >
       </ha-control-slider>
     `;

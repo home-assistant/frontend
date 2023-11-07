@@ -48,6 +48,13 @@ class HuiCoverPositionTileFeature
     this._config = config;
   }
 
+  private _tooltipFormatter = (value: number): string =>
+    this.hass!.formatEntityAttributeValue(
+      this.stateObj!,
+      "current_position",
+      value
+    );
+
   protected render() {
     if (
       !this._config ||
@@ -93,6 +100,7 @@ class HuiCoverPositionTileFeature
             "current_position"
           )}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
+          .tooltipFormatter=${this._tooltipFormatter}
         ></ha-control-slider>
       </div>
     `;

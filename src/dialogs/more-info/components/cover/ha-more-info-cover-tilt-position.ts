@@ -71,6 +71,13 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
     });
   }
 
+  private _tooltipFormatter = (value: number): string =>
+    this.hass.formatEntityAttributeValue(
+      this.stateObj,
+      "current_tilt_position",
+      value
+    );
+
   protected render(): TemplateResult {
     const openColor = stateColorCss(this.stateObj, "open");
     const color = stateColorCss(this.stateObj);
@@ -96,6 +103,7 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
           "--control-slider-background": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
+        .tooltipFormatter=${this._tooltipFormatter}
       >
         <div slot="background" class="gradient"></div>
       </ha-control-slider>

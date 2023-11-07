@@ -62,6 +62,13 @@ class LightColorTempPicker extends LitElement {
 
   @state() private _ctPickerValue?: number;
 
+  private _tooltipFormatter = (value: number): string =>
+    this.hass.formatEntityAttributeValue(
+      this.stateObj,
+      "color_temp_kelvin",
+      value
+    );
+
   protected render() {
     if (!this.stateObj) {
       return nothing;
@@ -93,6 +100,7 @@ class LightColorTempPicker extends LitElement {
           "--gradient": gradient,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
+        .tooltipFormatter=${this._tooltipFormatter}
       >
       </ha-control-slider>
     `;

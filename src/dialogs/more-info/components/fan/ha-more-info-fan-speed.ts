@@ -75,6 +75,9 @@ export class HaMoreInfoFanSpeed extends LitElement {
     );
   }
 
+  private _tooltipFormatter = (value: number): string =>
+    this.hass.formatEntityAttributeValue(this.stateObj, "percentage", value);
+
   protected render() {
     const color = stateColorCss(this.stateObj);
 
@@ -130,6 +133,7 @@ export class HaMoreInfoFanSpeed extends LitElement {
           "--control-slider-background": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
+        .tooltipFormatter=${this._tooltipFormatter}
       >
       </ha-control-slider>
     `;

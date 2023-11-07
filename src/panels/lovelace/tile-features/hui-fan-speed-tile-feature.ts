@@ -62,6 +62,9 @@ class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
     );
   }
 
+  private _tooltipFormatter = (value: number): string =>
+    this.hass!.formatEntityAttributeValue(this.stateObj!, "percentage", value);
+
   protected render() {
     if (
       !this._config ||
@@ -126,6 +129,7 @@ class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
             "percentage"
           )}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
+          .tooltipFormatter=${this._tooltipFormatter}
         ></ha-control-slider>
       </div>
     `;

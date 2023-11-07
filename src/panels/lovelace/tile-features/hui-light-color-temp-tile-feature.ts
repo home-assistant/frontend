@@ -49,6 +49,13 @@ class HuiLightColorTempTileFeature
     this._config = config;
   }
 
+  private _tooltipFormatter = (value: number): string =>
+    this.hass!.formatEntityAttributeValue(
+      this.stateObj!,
+      "color_temp_kelvin",
+      value
+    );
+
   protected render() {
     if (
       !this._config ||
@@ -85,6 +92,7 @@ class HuiLightColorTempTileFeature
           style=${styleMap({
             "--gradient": gradient,
           })}
+          .tooltipFormatter=${this._tooltipFormatter}
         ></ha-control-slider>
       </div>
     `;

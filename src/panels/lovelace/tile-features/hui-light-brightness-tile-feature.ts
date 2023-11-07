@@ -39,6 +39,13 @@ class HuiLightBrightnessTileFeature
     this._config = config;
   }
 
+  private _tooltipFormatter = (value: number): string =>
+    this.hass!.formatEntityAttributeValue(
+      this.stateObj!,
+      "brightness",
+      value * 2.55
+    );
+
   protected render() {
     if (
       !this._config ||
@@ -67,6 +74,7 @@ class HuiLightBrightnessTileFeature
           .disabled=${this.stateObj!.state === UNAVAILABLE}
           @value-changed=${this._valueChanged}
           .label=${this.hass.localize("ui.card.light.brightness")}
+          .tooltipFormatter=${this._tooltipFormatter}
         ></ha-control-slider>
       </div>
     `;

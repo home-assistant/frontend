@@ -69,6 +69,10 @@ export class HaControlSlider extends LitElement {
     | "left"
     | "right";
 
+  @property({ attribute: "tooltip-position" }) tooltipFormatter?: (
+    value: number
+  ) => string;
+
   @state()
   public tooltipVisible = false;
 
@@ -316,7 +320,9 @@ export class HaControlSlider extends LitElement {
             "show-handle": this.showHandle || this.mode === "cursor",
           })}"
         >
-          ${steppedValue}%
+          ${this.tooltipFormatter
+            ? this.tooltipFormatter(steppedValue)
+            : steppedValue}
         </span>
       </div>
     `;
@@ -360,6 +366,7 @@ export class HaControlSlider extends LitElement {
         border-radius: 0.8em;
         padding: 0.2em 0.4em;
         opacity: 0;
+        white-space: nowrap;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         transition: opacity 180ms ease-in-out;
         --tooltip-range: 100%;
