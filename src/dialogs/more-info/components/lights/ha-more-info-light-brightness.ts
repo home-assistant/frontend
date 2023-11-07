@@ -93,6 +93,7 @@ export class HaMoreInfoLightBrightness extends LitElement {
         --control-slider-color: var(--primary-color);
         --control-slider-background: var(--disabled-color);
         --control-slider-background-opacity: 0.2;
+        --control-slider-tooltip-font-size: 20px;
       }
     `;
   }

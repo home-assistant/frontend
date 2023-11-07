@@ -7,7 +7,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
@@ -62,6 +62,15 @@ export class HaControlSlider extends LitElement {
 
   @property({ type: Boolean, reflect: true })
   public pressed = false;
+
+  @property({ attribute: "tooltip-position" }) tooltipPosition?:
+    | "top"
+    | "bottom"
+    | "left"
+    | "right";
+
+  @state()
+  public tooltipVisible = false;
 
   valueToPercentage(value: number) {
     const percentage =
@@ -143,11 +152,13 @@ export class HaControlSlider extends LitElement {
       this._mc.on("panstart", () => {
         if (this.disabled) return;
         this.pressed = true;
+        this._showTooltip();
         savedValue = this.value;
       });
       this._mc.on("pancancel", () => {
         if (this.disabled) return;
         this.pressed = false;
+        this._hideTooltip();
         this.value = savedValue;
       });
       this._mc.on("panmove", (e) => {
@@ -160,6 +171,7 @@ export class HaControlSlider extends LitElement {
       this._mc.on("panend", (e) => {
         if (this.disabled) return;
         this.pressed = false;
+        this._hideTooltip();
         const percentage = this._getPercentageFromEvent(e);
         this.value = this.steppedValue(this.percentageToValue(percentage));
         fireEvent(this, "slider-moved", { value: undefined });
@@ -191,6 +203,21 @@ export class HaControlSlider extends LitElement {
     return Math.max(this.step, (this.max - this.min) / 10);
   }
 
+  _showTooltip() {
+    if (this._tooltipTimeout != null) window.clearTimeout(this._tooltipTimeout);
+    this.tooltipVisible = true;
+  }
+
+  _hideTooltip(delay?: number) {
+    if (!delay) {
+      this.tooltipVisible = false;
+      return;
+    }
+    this._tooltipTimeout = window.setTimeout(() => {
+      this.tooltipVisible = false;
+    }, delay);
+  }
+
   _handleKeyDown(e: KeyboardEvent) {
     if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
@@ -220,12 +247,16 @@ export class HaControlSlider extends LitElement {
         this.value = this.max;
         break;
     }
+    this._showTooltip();
     fireEvent(this, "slider-moved", { value: this.value });
   }
+
+  private _tooltipTimeout?: number;
 
   _handleKeyUp(e: KeyboardEvent) {
     if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
+    this._hideTooltip(500);
     fireEvent(this, "value-changed", { value: this.value });
   }
 
@@ -243,35 +274,50 @@ export class HaControlSlider extends LitElement {
   };
 
   protected render(): TemplateResult {
+    const steppedValue = this.steppedValue(this.value ?? 0);
+
+    const tooltipPosition =
+      this.tooltipPosition ?? (this.vertical ? "left" : "top");
+
     return html`
       <div
-        id="slider"
-        class="slider"
+        class="container"
         style=${styleMap({
           "--value": `${this.valueToPercentage(this.value ?? 0)}`,
         })}
       >
-        <div class="slider-track-background"></div>
-        <slot name="background"></slot>
-        ${this.mode === "cursor"
-          ? this.value != null
-            ? html`
+        <div id="slider" class="slider">
+          <div class="slider-track-background"></div>
+          <slot name="background"></slot>
+          ${this.mode === "cursor"
+            ? this.value != null
+              ? html`
+                  <div
+                    class=${classMap({
+                      "slider-track-cursor": true,
+                    })}
+                  ></div>
+                `
+              : null
+            : html`
                 <div
                   class=${classMap({
-                    "slider-track-cursor": true,
+                    "slider-track-bar": true,
+                    [this.mode ?? "start"]: true,
+                    "show-handle": this.showHandle,
                   })}
                 ></div>
-              `
-            : null
-          : html`
-              <div
-                class=${classMap({
-                  "slider-track-bar": true,
-                  [this.mode ?? "start"]: true,
-                  "show-handle": this.showHandle,
-                })}
-              ></div>
-            `}
+              `}
+        </div>
+        <span
+          class="tooltip ${classMap({
+            visible: this.tooltipVisible,
+            [tooltipPosition]: true,
+            "show-handle": this.showHandle || this.mode === "cursor",
+          })}"
+        >
+          ${steppedValue}%
+        </span>
       </div>
     `;
   }
@@ -285,6 +331,7 @@ export class HaControlSlider extends LitElement {
         --control-slider-background-opacity: 0.2;
         --control-slider-thickness: 40px;
         --control-slider-border-radius: 10px;
+        --control-slider-tooltip-font-size: 14px;
         height: var(--control-slider-thickness);
         width: 100%;
         border-radius: var(--control-slider-border-radius);
@@ -297,6 +344,66 @@ export class HaControlSlider extends LitElement {
       :host([vertical]) {
         width: var(--control-slider-thickness);
         height: 100%;
+      }
+      .container {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        --handle-size: 4px;
+        --handle-margin: calc(var(--control-slider-thickness) / 8);
+      }
+      .tooltip {
+        position: absolute;
+        background-color: var(--clear-background-color);
+        color: var(--primary-text-color);
+        font-size: var(--control-slider-tooltip-font-size);
+        border-radius: 0.8em;
+        padding: 0.2em 0.4em;
+        opacity: 0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transition: opacity 180ms ease-in-out;
+        --tooltip-range: 100%;
+        --tooltip-offset: calc(
+          -1 * (var(--handle-margin) + var(--handle-size) / 2)
+        );
+        --tooltip-position: calc(
+          min(
+            max(
+              var(--value) * var(--tooltip-range) + var(--tooltip-offset),
+              0%
+            ),
+            100%
+          )
+        );
+      }
+      .tooltip.top {
+        transform: translate3d(-50%, -100%, 0);
+        top: -2px;
+        left: var(--tooltip-position);
+      }
+      .tooltip.bottom {
+        transform: translate3d(-50%, 100%, 0);
+        bottom: -2px;
+        left: var(--tooltip-position);
+      }
+      .tooltip.left {
+        transform: translate3d(-100%, 50%, 0);
+        bottom: var(--tooltip-position);
+        left: -2px;
+      }
+      .tooltip.right {
+        transform: translate3d(100%, 50%, 0);
+        bottom: var(--tooltip-position);
+        right: -2px;
+      }
+      .tooltip.show-handle {
+        --tooltip-range: calc(
+          100% - 2 * var(--handle-margin) - var(--handle-size)
+        );
+        --tooltip-offset: calc(var(--handle-margin) + var(--handle-size) / 2);
+      }
+      .tooltip.visible {
+        opacity: 1;
       }
       .slider {
         position: relative;
@@ -328,8 +435,6 @@ export class HaControlSlider extends LitElement {
       }
       .slider .slider-track-bar {
         --border-radius: var(--control-slider-border-radius);
-        --handle-size: 4px;
-        --handle-margin: calc(var(--control-slider-thickness) / 8);
         --slider-size: 100%;
         position: absolute;
         height: 100%;
@@ -432,7 +537,6 @@ export class HaControlSlider extends LitElement {
 
       .slider .slider-track-cursor {
         --cursor-size: calc(var(--control-slider-thickness) / 4);
-        --handle-size: 4px;
         position: absolute;
         background-color: white;
         border-radius: var(--handle-size);
@@ -462,7 +566,9 @@ export class HaControlSlider extends LitElement {
         height: var(--handle-size);
         width: 50%;
       }
-
+      :host([pressed]) .tooltip {
+        transition: opacity 180ms ease-in-out;
+      }
       :host([pressed]) .slider-track-bar,
       :host([pressed]) .slider-track-cursor {
         transition: none;
