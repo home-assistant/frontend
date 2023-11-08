@@ -48,13 +48,7 @@ class PanelEnergy extends LitElement {
     if (oldHass?.locale !== this.hass.locale) {
       this._setLovelace();
     }
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    if (
-      changedProps.has("narrow") &&
-      changedProps.get("narrow") !== undefined
-    ) {
+    if (oldHass && oldHass.localize !== this.hass.localize) {
       this._reloadView();
     }
   }

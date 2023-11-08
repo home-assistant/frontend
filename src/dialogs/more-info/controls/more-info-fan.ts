@@ -40,18 +40,6 @@ class MoreInfoFan extends LitElement {
 
   @state() public _presetMode?: string;
 
-  @state() private _liveSpeed?: number;
-
-  private _speedSliderMoved(ev) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
-    this._liveSpeed = value;
-  }
-
-  private _speedValueChanged() {
-    this._liveSpeed = undefined;
-  }
-
   private _toggle = () => {
     const service = this.stateObj?.state === "on" ? "turn_off" : "turn_on";
     forwardHaptic("light");
@@ -87,6 +75,9 @@ class MoreInfoFan extends LitElement {
 
   _handleOscillating(ev) {
     const newVal = ev.target.value === "true";
+    const oldVal = this.stateObj?.attributes.oscillating;
+
+    if (oldVal === newVal) return;
 
     this.hass.callService("fan", "oscillate", {
       entity_id: this.stateObj!.entity_id,
@@ -101,23 +92,14 @@ class MoreInfoFan extends LitElement {
   }
 
   private get _stateOverride() {
-    const liveValue = this._liveSpeed;
-
-    const forcedState =
-      liveValue != null ? (liveValue ? "on" : "off") : undefined;
-
-    const stateDisplay = this.hass.formatEntityState(
-      this.stateObj!,
-      forcedState
-    );
+    const stateDisplay = this.hass.formatEntityState(this.stateObj!);
 
     const positionStateDisplay = computeFanSpeedStateDisplay(
       this.stateObj!,
-      this.hass,
-      liveValue
+      this.hass
     );
 
-    if (positionStateDisplay && (stateActive(this.stateObj!) || liveValue)) {
+    if (positionStateDisplay && stateActive(this.stateObj!)) {
       return positionStateDisplay;
     }
     return stateDisplay;
@@ -162,8 +144,6 @@ class MoreInfoFan extends LitElement {
               <ha-more-info-fan-speed
                 .stateObj=${this.stateObj}
                 .hass=${this.hass}
-                @slider-moved=${this._speedSliderMoved}
-                @value-changed=${this._speedValueChanged}
               >
               </ha-more-info-fan-speed>
             `

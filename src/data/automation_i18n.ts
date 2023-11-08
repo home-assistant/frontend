@@ -642,10 +642,7 @@ const tryDescribeTrigger = (
   }
 
   // Device Trigger
-  if (trigger.platform === "device") {
-    if (!trigger.device_id) {
-      return "Device trigger";
-    }
+  if (trigger.platform === "device" && trigger.device_id) {
     const config = trigger as DeviceTrigger;
     const localized = localizeDeviceAutomationTrigger(
       hass,
@@ -661,9 +658,12 @@ const tryDescribeTrigger = (
     }`;
   }
 
-  return `${
-    trigger.platform ? trigger.platform.replace(/_/g, " ") : "Unknown"
-  } trigger`;
+  return (
+    hass.localize(
+      `ui.panel.config.automation.editor.triggers.type.${trigger.platform}.label`
+    ) ||
+    hass.localize(`ui.panel.config.automation.editor.triggers.unknown_trigger`)
+  );
 };
 
 export const describeCondition = (
@@ -937,32 +937,35 @@ const tryDescribeCondition = (
             }`
           : localizeTimeString(condition.after, hass.locale, hass.config);
 
-      let result = "Confirm the ";
-      if (after || before) {
-        result += "time is ";
-      }
-      if (after) {
-        result += "after " + after;
-      }
-      if (before && after) {
-        result += " and ";
-      }
-      if (before) {
-        result += "before " + before;
-      }
-      if ((after || before) && validWeekdays) {
-        result += " and the ";
-      }
+      let localizedDays: string[] = [];
       if (validWeekdays) {
-        const localizedDays = weekdaysArray.map((d) =>
+        localizedDays = weekdaysArray.map((d) =>
           hass.localize(
             `ui.panel.config.automation.editor.conditions.type.time.weekdays.${d}`
           )
         );
-        result += " day is " + formatListWithOrs(hass.locale, localizedDays);
       }
 
-      return result;
+      let hasTime = "";
+      if (after !== undefined && before !== undefined) {
+        hasTime = "after_before";
+      } else if (after !== undefined) {
+        hasTime = "after";
+      } else if (before !== undefined) {
+        hasTime = "before";
+      }
+
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.time.description.full`,
+        {
+          hasTime: hasTime,
+          hasTimeAndDay: (after || before) && validWeekdays,
+          hasDay: validWeekdays,
+          time_before: before,
+          time_after: after,
+          day: formatListWithOrs(hass.locale, localizedDays),
+        }
+      );
     }
   }
 
@@ -1071,10 +1074,7 @@ const tryDescribeCondition = (
     );
   }
 
-  if (condition.condition === "device") {
-    if (!condition.device_id) {
-      return "Device condition";
-    }
+  if (condition.condition === "device" && condition.device_id) {
     const config = condition as DeviceCondition;
     const localized = localizeDeviceAutomationCondition(
       hass,
@@ -1090,14 +1090,30 @@ const tryDescribeCondition = (
     }`;
   }
 
-  if (condition.condition === "trigger") {
-    if (!condition.id) {
-      return "Trigger condition";
-    }
-    return `When triggered by ${condition.id}`;
+  if (condition.condition === "template") {
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.template.description.full`
+    );
   }
 
-  return `${
-    condition.condition ? condition.condition.replace(/_/g, " ") : "Unknown"
-  } condition`;
+  if (condition.condition === "trigger" && condition.id != null) {
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.trigger.description.full`,
+      {
+        id: formatListWithOrs(
+          hass.locale,
+          ensureArray(condition.id).map((id) => id.toString())
+        ),
+      }
+    );
+  }
+
+  return (
+    hass.localize(
+      `ui.panel.config.automation.editor.conditions.type.${condition.condition}.label`
+    ) ||
+    hass.localize(
+      `ui.panel.config.automation.editor.conditions.unknown_condition`
+    )
+  );
 };

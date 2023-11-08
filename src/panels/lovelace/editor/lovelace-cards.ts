@@ -123,6 +123,6 @@ export const coreCards: Card[] = [
     type: "vertical-stack",
   },
   {
-    type: "shopping-list",
+    type: "todo-list",
   },
 ];

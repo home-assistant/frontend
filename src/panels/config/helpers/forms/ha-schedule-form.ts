@@ -4,11 +4,11 @@ import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { addDays, isSameDay, isSameWeek, nextDay } from "date-fns";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -16,15 +16,13 @@ import { firstWeekdayIndex } from "../../../../common/datetime/first_weekday";
 import { formatTime24h } from "../../../../common/datetime/format_time";
 import { useAmPm } from "../../../../common/datetime/use_am_pm";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
 import { Schedule, ScheduleDay, weekdays } from "../../../../data/schedule";
-import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
-import { loadPolyfillIfNeeded } from "../../../../resources/resize-observer.polyfill";
 import { TimeZone } from "../../../../data/translation";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
 
 const defaultFullCalendarConfig: CalendarOptions = {
   plugins: [timeGridPlugin, interactionPlugin],
@@ -70,8 +68,6 @@ class HaScheduleForm extends LitElement {
 
   private _item?: Schedule;
 
-  private _resizeObserver?: ResizeObserver;
-
   set item(item: Schedule) {
     this._item = item;
     if (item) {
@@ -97,6 +93,20 @@ class HaScheduleForm extends LitElement {
     }
   }
 
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.calendar?.destroy();
+    this.calendar = undefined;
+    this.renderRoot.querySelector("style[data-fullcalendar]")?.remove();
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hasUpdated && !this.calendar) {
+      this.setupCalendar();
+    }
+  }
+
   public focus() {
     this.updateComplete.then(
       () =>
@@ -104,41 +114,6 @@ class HaScheduleForm extends LitElement {
           this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
         )?.focus()
     );
-  }
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this.updateComplete.then(() => this._attachObserver());
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    if (this._resizeObserver) {
-      this._resizeObserver.disconnect();
-    }
-  }
-
-  private _measureForm() {
-    const form = this.shadowRoot!.querySelector(".form");
-    if (!form) {
-      return;
-    }
-
-    this.calendar?.updateSize();
-  }
-
-  private async _attachObserver(): Promise<void> {
-    if (!this._resizeObserver) {
-      await loadPolyfillIfNeeded();
-      this._resizeObserver = new ResizeObserver(
-        debounce(() => this._measureForm(), 250, false)
-      );
-    }
-    const form = this.shadowRoot!.querySelector(".form");
-    if (!form) {
-      return;
-    }
-    this._resizeObserver.observe(form);
   }
 
   protected render() {
@@ -204,6 +179,10 @@ class HaScheduleForm extends LitElement {
   }
 
   protected firstUpdated(): void {
+    this.setupCalendar();
+  }
+
+  private setupCalendar(): void {
     const config: CalendarOptions = {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
@@ -233,13 +212,6 @@ class HaScheduleForm extends LitElement {
     );
 
     this.calendar!.render();
-
-    // Update size after fully rendered to avoid a bad render in the more info
-    this.updateComplete.then(() =>
-      window.setTimeout(() => {
-        this.calendar!.updateSize();
-      }, 500)
-    );
   }
 
   private get _events() {

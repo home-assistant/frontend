@@ -4,7 +4,6 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
-import "./ha-area-picker";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 import { fireEvent } from "../common/dom/fire_event";

@@ -182,6 +182,8 @@ const createWebpackConfig = ({
           "@lit-labs/virtualizer/layouts/grid.js",
         "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver":
           "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver.js",
+        "@lit-labs/observers/resize-controller":
+          "@lit-labs/observers/resize-controller.js",
       },
     },
     output: {
@@ -194,6 +196,7 @@ const createWebpackConfig = ({
         isProdBuild && !isStatsBuild ? "[id]-[contenthash].js" : "[name].js",
       assetModuleFilename:
         isProdBuild && !isStatsBuild ? "[id]-[contenthash][ext]" : "[id][ext]",
+      crossOriginLoading: "use-credentials",
       hashFunction: "xxhash64",
       hashDigest: "base64url",
       hashDigestLength: 11, // full length of 64 bit base64url

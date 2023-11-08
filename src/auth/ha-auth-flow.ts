@@ -8,7 +8,6 @@ import "../components/ha-alert";
 import "../components/ha-checkbox";
 import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
 import "../components/ha-formfield";
-import "../components/ha-markdown";
 import { AuthProvider, autocompleteLoginFields } from "../data/auth";
 import {
   DataEntryFlowStep,
@@ -182,24 +181,13 @@ export class HaAuthFlow extends LitElement {
       case "abort":
         return html`
           ${this.localize("ui.panel.page-authorize.abort_intro")}:
-          <ha-markdown
-            allowsvg
-            breaks
-            .content=${this.localize(
-              `ui.panel.page-authorize.form.providers.${step.handler[0]}.abort.${step.reason}`
-            )}
-          ></ha-markdown>
+          ${this.localize(
+            `ui.panel.page-authorize.form.providers.${step.handler[0]}.abort.${step.reason}`
+          )}
         `;
       case "form":
         return html`
-          ${this._computeStepDescription(step)
-            ? html`
-                <ha-markdown
-                  breaks
-                  .content=${this._computeStepDescription(step)}
-                ></ha-markdown>
-              `
-            : nothing}
+          ${this._computeStepDescription(step)}
           <ha-auth-form
             .data=${this._stepData}
             .schema=${autocompleteLoginFields(step.data_schema)}
@@ -314,13 +302,7 @@ export class HaAuthFlow extends LitElement {
   private _computeStepDescription(step: DataEntryFlowStepForm) {
     const resourceKey =
       `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.description` as const;
-    const args: string[] = [];
-    const placeholders = step.description_placeholders || {};
-    Object.keys(placeholders).forEach((key) => {
-      args.push(key);
-      args.push(placeholders[key]);
-    });
-    return this.localize(resourceKey, ...args);
+    return this.localize(resourceKey, step.description_placeholders);
   }
 
   private _computeLabelCallback(step: DataEntryFlowStepForm) {

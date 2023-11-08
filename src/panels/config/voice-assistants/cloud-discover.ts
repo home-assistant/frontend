@@ -54,6 +54,7 @@ export class CloudDiscover extends LitElement {
                     type: "icon",
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
+                  crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                 />
                 <img
@@ -63,6 +64,7 @@ export class CloudDiscover extends LitElement {
                     type: "icon",
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
+                  crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                 />
               </div>

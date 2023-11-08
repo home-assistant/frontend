@@ -19,7 +19,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { calcDate } from "../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import { formatDate } from "../common/datetime/format_date";
@@ -46,6 +46,8 @@ export class HaDateRangePicker extends LitElement {
 
   @property() public ranges?: DateRangePickerRanges | false;
 
+  @state() private _ranges?: DateRangePickerRanges;
+
   @property() public autoApply = false;
 
   @property() public timePicker = true;
@@ -58,20 +60,20 @@ export class HaDateRangePicker extends LitElement {
 
   @property({ type: Boolean }) private minimal = false;
 
-  @property() private _openingDirection = "right";
+  @property() public openingDirection?: "right" | "left" | "center" | "inline";
 
-  protected willUpdate() {
-    // set dialog opening direction based on position
-    const datePickerPosition = this.getBoundingClientRect().x;
-    if (datePickerPosition > (2 * window.innerWidth) / 3) {
-      this._openingDirection = "left";
-    } else if (datePickerPosition < window.innerWidth / 3) {
-      this._openingDirection = "right";
-    } else {
-      this._openingDirection = "center";
-    }
+  @state() private _calcedOpeningDirection?:
+    | "right"
+    | "left"
+    | "center"
+    | "inline";
 
-    if (!this.hasUpdated && this.ranges === undefined) {
+  protected willUpdate(changedProps: PropertyValues) {
+    if (
+      (!this.hasUpdated && this.ranges === undefined) ||
+      (changedProps.has("hass") &&
+        this.hass?.localize !== changedProps.get("hass")?.localize)
+    ) {
       const today = new Date();
       const weekStartsOn = firstWeekdayIndex(this.hass.locale);
       const weekStart = calcDate(
@@ -93,7 +95,7 @@ export class HaDateRangePicker extends LitElement {
         }
       );
 
-      this.ranges = {
+      this._ranges = {
         [this.hass.localize("ui.components.date-range-picker.ranges.today")]: [
           calcDate(today, startOfDay, this.hass.locale, this.hass.config, {
             weekStartsOn,
@@ -154,10 +156,11 @@ export class HaDateRangePicker extends LitElement {
         start-date=${this.startDate}
         end-date=${this.endDate}
         ?ranges=${this.ranges !== false}
-        opening-direction=${this._openingDirection}
+        opening-direction=${this.openingDirection ||
+        this._calcedOpeningDirection}
         first-day=${firstWeekdayIndex(this.hass.locale)}
       >
-        <div slot="input" class="date-range-inputs">
+        <div slot="input" class="date-range-inputs" @click=${this._handleClick}>
           ${!this.minimal
             ? html`<ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
                 <ha-textfield
@@ -205,15 +208,15 @@ export class HaDateRangePicker extends LitElement {
                 .path=${mdiCalendar}
               ></ha-icon-button>`}
         </div>
-        ${this.ranges
+        ${this.ranges !== false && (this.ranges || this._ranges)
           ? html`<div
               slot="ranges"
               class="date-range-ranges"
               .dir=${this._rtlDirection}
             >
               <mwc-list @action=${this._setDateRange} activatable>
-                ${Object.keys(this.ranges).map(
-                  (name) => html`<mwc-list-item> ${name} </mwc-list-item>`
+                ${Object.keys(this.ranges || this._ranges!).map(
+                  (name) => html`<mwc-list-item>${name}</mwc-list-item>`
                 )}
               </mwc-list>
             </div>`
@@ -233,7 +236,9 @@ export class HaDateRangePicker extends LitElement {
   }
 
   private _setDateRange(ev: CustomEvent<ActionDetail>) {
-    const dateRange = Object.values(this.ranges!)[ev.detail.index];
+    const dateRange = Object.values(this.ranges || this._ranges!)[
+      ev.detail.index
+    ];
     const dateRangePicker = this._dateRangePicker;
     dateRangePicker.clickRange(dateRange);
     dateRangePicker.clickedApply();
@@ -258,6 +263,22 @@ export class HaDateRangePicker extends LitElement {
     // close the date picker, so it will open again on the click event
     if (this._dateRangePicker.open) {
       this._dateRangePicker.open = false;
+    }
+  }
+
+  private _handleClick() {
+    // calculate opening direction if not set
+    if (!this._dateRangePicker.open && !this.openingDirection) {
+      const datePickerPosition = this.getBoundingClientRect().x;
+      let opens: "right" | "left" | "center" | "inline";
+      if (datePickerPosition > (2 * window.innerWidth) / 3) {
+        opens = "left";
+      } else if (datePickerPosition < window.innerWidth / 3) {
+        opens = "right";
+      } else {
+        opens = "center";
+      }
+      this._calcedOpeningDirection = opens;
     }
   }
 

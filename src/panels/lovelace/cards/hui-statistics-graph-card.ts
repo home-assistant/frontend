@@ -193,6 +193,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .isLoadingData=${!this._statistics}
             .statisticsData=${this._statistics}
             .metadata=${this._metadata}
+            .period=${this._config.period}
             .chartType=${this._config.chart_type || "line"}
             .statTypes=${this._statTypes!}
             .names=${this._names}
