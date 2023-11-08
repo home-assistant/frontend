@@ -14,7 +14,7 @@ import "../../../components/ha-icon";
 
 export const supportsNumberTileFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
-  return domain === "input_number";
+  return domain === "input_number" || domain === "number";
 };
 
 @customElement("hui-number-tile-feature")
