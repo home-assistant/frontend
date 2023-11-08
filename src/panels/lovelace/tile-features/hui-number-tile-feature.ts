@@ -56,7 +56,9 @@ class HuiNumberTileFeature extends LitElement implements LovelaceTileFeature {
   private async _setValue(ev: CustomEvent) {
     const stateObj = this.stateObj!;
 
-    await this.hass!.callService("input_number", "set_value", {
+    const domain = computeDomain(stateObj.entity_id);
+    
+    await this.hass!.callService(domain, "set_value", {
       entity_id: stateObj.entity_id,
       value: ev.detail.value,
     });
