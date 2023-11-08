@@ -69,9 +69,12 @@ export class HaControlSlider extends LitElement {
     | "left"
     | "right";
 
-  @property({ attribute: "tooltip-position" }) tooltipFormatter?: (
-    value: number
-  ) => string;
+  @property() tooltipFormatter?: (value: number) => string;
+
+  @property({ attribute: "tooltip-mode" }) tooltipMode:
+    | "never"
+    | "always"
+    | "interaction" = "interaction";
 
   @state()
   public tooltipVisible = false;
@@ -282,6 +285,9 @@ export class HaControlSlider extends LitElement {
 
     const tooltipPosition =
       this.tooltipPosition ?? (this.vertical ? "left" : "top");
+    const tooltipVisible =
+      this.tooltipMode === "always" ||
+      (this.tooltipVisible && this.tooltipMode === "interaction");
 
     return html`
       <div
@@ -315,9 +321,9 @@ export class HaControlSlider extends LitElement {
         </div>
         <span
           class="tooltip ${classMap({
-            visible: this.tooltipVisible,
+            visible: tooltipVisible,
             [tooltipPosition]: true,
-            "show-handle": this.showHandle || this.mode === "cursor",
+            "handle-offset": this.showHandle || this.mode === "cursor",
           })}"
         >
           ${this.tooltipFormatter
@@ -368,7 +374,10 @@ export class HaControlSlider extends LitElement {
         opacity: 0;
         white-space: nowrap;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        transition: opacity 180ms ease-in-out;
+        transition:
+          opacity 180ms ease-in-out,
+          left 180ms ease-in-out,
+          bottom 180ms ease-in-out;
         --tooltip-range: 100%;
         --tooltip-offset: calc(
           -1 * (var(--handle-margin) + var(--handle-size) / 2)
@@ -383,34 +392,42 @@ export class HaControlSlider extends LitElement {
           )
         );
       }
-      .tooltip.top {
-        transform: translate3d(-50%, -100%, 0);
-        top: -2px;
-        left: var(--tooltip-position);
+      .tooltip.visible {
+        opacity: 1;
       }
-      .tooltip.bottom {
-        transform: translate3d(-50%, 100%, 0);
-        bottom: -2px;
-        left: var(--tooltip-position);
-      }
-      .tooltip.left {
-        transform: translate3d(-100%, 50%, 0);
-        bottom: var(--tooltip-position);
-        left: -2px;
-      }
-      .tooltip.right {
-        transform: translate3d(100%, 50%, 0);
-        bottom: var(--tooltip-position);
-        right: -2px;
-      }
-      .tooltip.show-handle {
+      .tooltip.handle-offset {
         --tooltip-range: calc(
           100% - 2 * var(--handle-margin) - var(--handle-size)
         );
         --tooltip-offset: calc(var(--handle-margin) + var(--handle-size) / 2);
       }
-      .tooltip.visible {
-        opacity: 1;
+      .tooltip.top {
+        transform: translate3d(-50%, -100%, 0);
+        top: -2px;
+        left: 50%;
+      }
+      .tooltip.bottom {
+        transform: translate3d(-50%, 100%, 0);
+        bottom: -2px;
+        left: 50%;
+      }
+      .tooltip.left {
+        transform: translate3d(-100%, 50%, 0);
+        bottom: 50%;
+        left: -2px;
+      }
+      .tooltip.right {
+        transform: translate3d(100%, 50%, 0);
+        bottom: 50%;
+        right: -2px;
+      }
+      :host(:not([vertical])) .tooltip.top,
+      :host(:not([vertical])) .tooltip.bottom {
+        left: var(--tooltip-position);
+      }
+      :host([vertical]) .tooltip.right,
+      :host([vertical]) .tooltip.left {
+        bottom: var(--tooltip-position);
       }
       .slider {
         position: relative;
