@@ -92,7 +92,7 @@ class HuiNumberTileFeature extends LitElement implements LovelaceTileFeature {
               step=${stateObj.attributes.step}
               @value-changed=${this._setValue}
               .disabled=${isUnavailableState(stateObj.state)}
-              >test
+              >
             </ha-control-slider>`}
       </div>
     `;

@@ -5208,7 +5208,7 @@
                     "label": "Select options"
                   },
                   "number": {
-                    "label": "Number Input",
+                    "label": "Number",
                     "style": "Style",
                     "style_list": {
                       "buttons": "Buttons",
