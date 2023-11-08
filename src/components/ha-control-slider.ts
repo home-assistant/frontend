@@ -408,14 +408,15 @@ export class HaControlSlider extends LitElement {
           opacity 180ms ease-in-out,
           left 180ms ease-in-out,
           bottom 180ms ease-in-out;
-        --tooltip-margin: -4px;
-        --tooltip-range: 100%;
-        --tooltip-offset: 0px;
         --handle-spacing: calc(2 * var(--handle-margin) + var(--handle-size));
-        --tooltip-position: calc(
+        --slider-tooltip-margin: -4px;
+        --slider-tooltip-range: 100%;
+        --slider-tooltip-offset: 0px;
+        --slider-tooltip-position: calc(
           min(
             max(
-              var(--value) * var(--tooltip-range) + var(--tooltip-offset),
+              var(--value) * var(--slider-tooltip-range) +
+                var(--slider-tooltip-offset),
               0%
             ),
             100%
@@ -423,49 +424,49 @@ export class HaControlSlider extends LitElement {
         );
       }
       .tooltip.start {
-        --tooltip-offset: calc(-0.5 * (var(--handle-spacing)));
+        --slider-tooltip-offset: calc(-0.5 * (var(--handle-spacing)));
       }
       .tooltip.end {
-        --tooltip-offset: calc(0.5 * (var(--handle-spacing)));
+        --slider-tooltip-offset: calc(0.5 * (var(--handle-spacing)));
       }
       .tooltip.cursor {
-        --tooltip-range: calc(100% - var(--handle-spacing));
-        --tooltip-offset: calc(0.5 * (var(--handle-spacing)));
+        --slider-tooltip-range: calc(100% - var(--handle-spacing));
+        --slider-tooltip-offset: calc(0.5 * (var(--handle-spacing)));
       }
       .tooltip.show-handle {
-        --tooltip-range: calc(100% - var(--handle-spacing));
-        --tooltip-offset: calc(0.5 * (var(--handle-spacing)));
+        --slider-tooltip-range: calc(100% - var(--handle-spacing));
+        --slider-tooltip-offset: calc(0.5 * (var(--handle-spacing)));
       }
       .tooltip.visible {
         opacity: 1;
       }
       .tooltip.top {
         transform: translate3d(-50%, -100%, 0);
-        top: var(--tooltip-margin);
+        top: var(--slider-tooltip-margin);
         left: 50%;
       }
       .tooltip.bottom {
         transform: translate3d(-50%, 100%, 0);
-        bottom: var(--tooltip-margin);
+        bottom: var(--slider-tooltip-margin);
         left: 50%;
       }
       .tooltip.left {
         transform: translate3d(-100%, 50%, 0);
         bottom: 50%;
-        left: var(--tooltip-margin);
+        left: var(--slider-tooltip-margin);
       }
       .tooltip.right {
         transform: translate3d(100%, 50%, 0);
         bottom: 50%;
-        right: var(--tooltip-margin);
+        right: var(--slider-tooltip-margin);
       }
       :host(:not([vertical])) .tooltip.top,
       :host(:not([vertical])) .tooltip.bottom {
-        left: var(--tooltip-position);
+        left: var(--slider-tooltip-position);
       }
       :host([vertical]) .tooltip.right,
       :host([vertical]) .tooltip.left {
-        bottom: var(--tooltip-position);
+        bottom: var(--slider-tooltip-position);
       }
       .slider {
         position: relative;
