@@ -314,7 +314,8 @@ export class HaControlSlider extends LitElement {
         class="tooltip ${classMap({
           visible,
           [position]: true,
-          "handle-offset": this.showHandle || this.mode === "cursor",
+          [this.mode ?? "start"]: true,
+          "show-handle": this.showHandle,
         })}"
       >
         ${this._formatValue(value)}
@@ -389,6 +390,7 @@ export class HaControlSlider extends LitElement {
         --handle-margin: calc(var(--control-slider-thickness) / 8);
       }
       .tooltip {
+        user-select: none;
         position: absolute;
         background-color: var(--clear-background-color);
         color: var(--primary-text-color);
@@ -404,9 +406,8 @@ export class HaControlSlider extends LitElement {
           bottom 180ms ease-in-out;
         --tooltip-margin: -4px;
         --tooltip-range: 100%;
-        --tooltip-offset: calc(
-          -1 * (var(--handle-margin) + var(--handle-size) / 2)
-        );
+        --tooltip-offset: 0px;
+        --handle-spacing: calc(2 * var(--handle-margin) + var(--handle-size));
         --tooltip-position: calc(
           min(
             max(
@@ -417,14 +418,22 @@ export class HaControlSlider extends LitElement {
           )
         );
       }
+      .tooltip.start {
+        --tooltip-offset: calc(-0.5 * (var(--handle-spacing)));
+      }
+      .tooltip.end {
+        --tooltip-offset: calc(0.5 * (var(--handle-spacing)));
+      }
+      .tooltip.cursor {
+        --tooltip-range: calc(100% - var(--handle-spacing));
+        --tooltip-offset: calc(0.5 * (var(--handle-spacing)));
+      }
+      .tooltip.show-handle {
+        --tooltip-range: calc(100% - var(--handle-spacing));
+        --tooltip-offset: calc(0.5 * (var(--handle-spacing)));
+      }
       .tooltip.visible {
         opacity: 1;
-      }
-      .tooltip.handle-offset {
-        --tooltip-range: calc(
-          100% - 2 * var(--handle-margin) - var(--handle-size)
-        );
-        --tooltip-offset: calc(var(--handle-margin) + var(--handle-size) / 2);
       }
       .tooltip.top {
         transform: translate3d(-50%, -100%, 0);
