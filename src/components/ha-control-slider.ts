@@ -120,6 +120,7 @@ export class HaControlSlider extends LitElement {
     if (changedProps.has("value")) {
       const valuenow = this.steppedValue(this.value ?? 0);
       this.setAttribute("aria-valuenow", valuenow.toString());
+      this.setAttribute("aria-valuetext", this._formatValue(valuenow));
     }
     if (changedProps.has("min")) {
       this.setAttribute("aria-valuemin", this.min.toString());
@@ -286,6 +287,16 @@ export class HaControlSlider extends LitElement {
     return Math.max(Math.min(1, (x - offset) / total), 0);
   };
 
+  private _formatValue(value: number) {
+    const formattedValue = formatNumber(value, this.locale);
+
+    const formattedUnit = this.tooltipUnit
+      ? `${blankBeforeUnit(this.tooltipUnit, this.locale)}${this.tooltipUnit}`
+      : "";
+
+    return `${formattedValue}${formattedUnit}`;
+  }
+
   private _renderTooltip() {
     if (this.tooltipMode === "never") return nothing;
 
@@ -295,21 +306,18 @@ export class HaControlSlider extends LitElement {
       this.tooltipMode === "always" ||
       (this.tooltipVisible && this.tooltipMode === "interaction");
 
-    const value = formatNumber(this.steppedValue(this.value ?? 0), this.locale);
-
-    const unit = this.tooltipUnit
-      ? `${blankBeforeUnit(this.tooltipUnit, this.locale)}${this.tooltipUnit}`
-      : "";
+    const value = this.steppedValue(this.value ?? 0);
 
     return html`
       <span
+        aria-hidden="true"
         class="tooltip ${classMap({
           visible,
           [position]: true,
           "handle-offset": this.showHandle || this.mode === "cursor",
         })}"
       >
-        ${value}${unit}
+        ${this._formatValue(value)}
       </span>
     `;
   }
