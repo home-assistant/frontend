@@ -33,6 +33,12 @@ const A11Y_KEY_CODES = new Set([
   "End",
 ]);
 
+type TooltipPosition = "top" | "bottom" | "left" | "right";
+
+type TooltipMode = "never" | "always" | "interaction";
+
+type SliderMode = "start" | "end" | "cursor";
+
 @customElement("ha-control-slider")
 export class HaControlSlider extends LitElement {
   @property({ attribute: false }) public locale?: FrontendLocaleData;
@@ -41,7 +47,7 @@ export class HaControlSlider extends LitElement {
   public disabled = false;
 
   @property()
-  public mode?: "start" | "end" | "cursor" = "start";
+  public mode?: SliderMode = "start";
 
   @property({ type: Boolean, reflect: true })
   public vertical = false;
@@ -51,6 +57,15 @@ export class HaControlSlider extends LitElement {
 
   @property({ type: Boolean, attribute: "inverted" })
   public inverted = false;
+
+  @property({ attribute: "tooltip-position" })
+  public tooltipPosition?: TooltipPosition;
+
+  @property({ attribute: "tooltip-unit" })
+  public tooltipUnit?: string;
+
+  @property({ attribute: "tooltip-mode" })
+  public tooltipMode: TooltipMode = "interaction";
 
   @property({ type: Number })
   public value?: number;
@@ -64,26 +79,13 @@ export class HaControlSlider extends LitElement {
   @property({ type: Number })
   public max = 100;
 
-  private _mc?: HammerManager;
-
-  @property({ type: Boolean, reflect: true })
+  @state()
   public pressed = false;
-
-  @property({ attribute: "tooltip-position" }) tooltipPosition?:
-    | "top"
-    | "bottom"
-    | "left"
-    | "right";
-
-  @property({ attribute: "tooltip-unit" }) tooltipUnit?: string;
-
-  @property({ attribute: "tooltip-mode" }) tooltipMode:
-    | "never"
-    | "always"
-    | "interaction" = "interaction";
 
   @state()
   public tooltipVisible = false;
+
+  private _mc?: HammerManager;
 
   valueToPercentage(value: number) {
     const percentage =
@@ -326,7 +328,9 @@ export class HaControlSlider extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div
-        class="container"
+        class="container${classMap({
+          pressed: this.pressed,
+        })}"
         style=${styleMap({
           "--value": `${this.valueToPercentage(this.value ?? 0)}`,
         })}
@@ -624,11 +628,11 @@ export class HaControlSlider extends LitElement {
         height: var(--handle-size);
         width: 50%;
       }
-      :host([pressed]) .tooltip {
+      .pressed .tooltip {
         transition: opacity 180ms ease-in-out;
       }
-      :host([pressed]) .slider-track-bar,
-      :host([pressed]) .slider-track-cursor {
+      .pressed .slider-track-bar,
+      .pressed .slider-track-cursor {
         transition: none;
       }
       :host(:disabled) .slider {
