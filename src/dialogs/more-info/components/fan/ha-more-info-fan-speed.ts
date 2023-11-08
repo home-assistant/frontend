@@ -8,6 +8,7 @@ import "../../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../../components/ha-control-select";
 import "../../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../../data/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity_attributes";
 import {
   computeFanSpeedCount,
   computeFanSpeedIcon,
@@ -75,9 +76,6 @@ export class HaMoreInfoFanSpeed extends LitElement {
     );
   }
 
-  private _tooltipFormatter = (value: number): string =>
-    this.hass.formatEntityAttributeValue(this.stateObj, "percentage", value);
-
   protected render() {
     const color = stateColorCss(this.stateObj);
 
@@ -133,7 +131,8 @@ export class HaMoreInfoFanSpeed extends LitElement {
           "--control-slider-background": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
-        .tooltipFormatter=${this._tooltipFormatter}
+        .tooltipUnit=${DOMAIN_ATTRIBUTES_UNITS.fan.percentage}
+        .locale=${this.hass.locale}
       >
       </ha-control-slider>
     `;

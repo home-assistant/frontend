@@ -13,6 +13,7 @@ import { generateTiltSliderTrackBackgroundGradient } from "../../../dialogs/more
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
 import { CoverTiltPositionTileFeatureConfig } from "./types";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
 
 const GRADIENT = generateTiltSliderTrackBackgroundGradient();
 
@@ -49,13 +50,6 @@ class HuiCoverTiltPositionTileFeature
     }
     this._config = config;
   }
-
-  private _tooltipFormatter = (value: number): string =>
-    this.hass!.formatEntityAttributeValue(
-      this.stateObj!,
-      "current_tilt_position",
-      value
-    );
 
   protected render() {
     if (
@@ -99,7 +93,8 @@ class HuiCoverTiltPositionTileFeature
             "current_tilt_position"
           )}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
-          .tooltipFormatter=${this._tooltipFormatter}
+          .tooltipUnit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_tilt_position}
+          .locale=${this.hass.locale}
         >
           <div slot="background" class="gradient"></div
         ></ha-control-slider>

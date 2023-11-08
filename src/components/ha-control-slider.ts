@@ -4,6 +4,7 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   TemplateResult,
 } from "lit";
@@ -11,6 +12,9 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
+import { FrontendLocaleData } from "../data/translation";
+import { formatNumber } from "../common/number/format_number";
+import { blankBeforeUnit } from "../common/translations/blank_before_unit";
 
 declare global {
   interface HASSDomEvents {
@@ -31,6 +35,8 @@ const A11Y_KEY_CODES = new Set([
 
 @customElement("ha-control-slider")
 export class HaControlSlider extends LitElement {
+  @property({ attribute: false }) public locale?: FrontendLocaleData;
+
   @property({ type: Boolean, reflect: true })
   public disabled = false;
 
@@ -69,7 +75,7 @@ export class HaControlSlider extends LitElement {
     | "left"
     | "right";
 
-  @property() tooltipFormatter?: (value: number) => string;
+  @property({ attribute: "tooltip-unit" }) tooltipUnit?: string;
 
   @property({ attribute: "tooltip-mode" }) tooltipMode:
     | "never"
@@ -280,15 +286,35 @@ export class HaControlSlider extends LitElement {
     return Math.max(Math.min(1, (x - offset) / total), 0);
   };
 
-  protected render(): TemplateResult {
-    const steppedValue = this.steppedValue(this.value ?? 0);
+  private _renderTooltip() {
+    if (this.tooltipMode === "never") return nothing;
 
-    const tooltipPosition =
-      this.tooltipPosition ?? (this.vertical ? "left" : "top");
-    const tooltipVisible =
+    const position = this.tooltipPosition ?? (this.vertical ? "left" : "top");
+
+    const visible =
       this.tooltipMode === "always" ||
       (this.tooltipVisible && this.tooltipMode === "interaction");
 
+    const value = formatNumber(this.steppedValue(this.value ?? 0), this.locale);
+
+    const unit = this.tooltipUnit
+      ? `${blankBeforeUnit(this.tooltipUnit, this.locale)}${this.tooltipUnit}`
+      : "";
+
+    return html`
+      <span
+        class="tooltip ${classMap({
+          visible,
+          [position]: true,
+          "handle-offset": this.showHandle || this.mode === "cursor",
+        })}"
+      >
+        ${value}${unit}
+      </span>
+    `;
+  }
+
+  protected render(): TemplateResult {
     return html`
       <div
         class="container"
@@ -319,17 +345,7 @@ export class HaControlSlider extends LitElement {
                 ></div>
               `}
         </div>
-        <span
-          class="tooltip ${classMap({
-            visible: tooltipVisible,
-            [tooltipPosition]: true,
-            "handle-offset": this.showHandle || this.mode === "cursor",
-          })}"
-        >
-          ${this.tooltipFormatter
-            ? this.tooltipFormatter(steppedValue)
-            : steppedValue}
-        </span>
+        ${this._renderTooltip()}
       </div>
     `;
   }
@@ -378,6 +394,7 @@ export class HaControlSlider extends LitElement {
           opacity 180ms ease-in-out,
           left 180ms ease-in-out,
           bottom 180ms ease-in-out;
+        --tooltip-margin: -4px;
         --tooltip-range: 100%;
         --tooltip-offset: calc(
           -1 * (var(--handle-margin) + var(--handle-size) / 2)
@@ -403,23 +420,23 @@ export class HaControlSlider extends LitElement {
       }
       .tooltip.top {
         transform: translate3d(-50%, -100%, 0);
-        top: -2px;
+        top: var(--tooltip-margin);
         left: 50%;
       }
       .tooltip.bottom {
         transform: translate3d(-50%, 100%, 0);
-        bottom: -2px;
+        bottom: var(--tooltip-margin);
         left: 50%;
       }
       .tooltip.left {
         transform: translate3d(-100%, 50%, 0);
         bottom: 50%;
-        left: -2px;
+        left: var(--tooltip-margin);
       }
       .tooltip.right {
         transform: translate3d(100%, 50%, 0);
         bottom: 50%;
-        right: -2px;
+        right: var(--tooltip-margin);
       }
       :host(:not([vertical])) .tooltip.top,
       :host(:not([vertical])) .tooltip.bottom {

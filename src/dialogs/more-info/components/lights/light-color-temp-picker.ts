@@ -26,6 +26,7 @@ import {
   LightEntity,
 } from "../../../../data/light";
 import { HomeAssistant } from "../../../../types";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity_attributes";
 
 declare global {
   interface HASSDomEvents {
@@ -62,13 +63,6 @@ class LightColorTempPicker extends LitElement {
 
   @state() private _ctPickerValue?: number;
 
-  private _tooltipFormatter = (value: number): string =>
-    this.hass.formatEntityAttributeValue(
-      this.stateObj,
-      "color_temp_kelvin",
-      value
-    );
-
   protected render() {
     if (!this.stateObj) {
       return nothing;
@@ -100,7 +94,8 @@ class LightColorTempPicker extends LitElement {
           "--gradient": gradient,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
-        .tooltipFormatter=${this._tooltipFormatter}
+        .tooltipUnit=${DOMAIN_ATTRIBUTES_UNITS.light.color_temp_kelvin}
+        .locale=${this.hass.locale}
       >
       </ha-control-slider>
     `;

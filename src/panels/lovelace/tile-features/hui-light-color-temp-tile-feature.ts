@@ -11,6 +11,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import "../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../data/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
 import { LightColorMode, lightSupportsColorMode } from "../../../data/light";
 import { generateColorTemperatureGradient } from "../../../dialogs/more-info/components/lights/light-color-temp-picker";
 import { HomeAssistant } from "../../../types";
@@ -49,13 +50,6 @@ class HuiLightColorTempTileFeature
     this._config = config;
   }
 
-  private _tooltipFormatter = (value: number): string =>
-    this.hass!.formatEntityAttributeValue(
-      this.stateObj!,
-      "color_temp_kelvin",
-      value
-    );
-
   protected render() {
     if (
       !this._config ||
@@ -92,7 +86,8 @@ class HuiLightColorTempTileFeature
           style=${styleMap({
             "--gradient": gradient,
           })}
-          .tooltipFormatter=${this._tooltipFormatter}
+          .tooltipUnit=${DOMAIN_ATTRIBUTES_UNITS.light.color_temp_kelvin}
+          .locale=${this.hass.locale}
         ></ha-control-slider>
       </div>
     `;
