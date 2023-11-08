@@ -1,5 +1,5 @@
 import { LitElement, TemplateResult, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { getAppKey } from "../data/notify_html5";
 import { showPromptDialog } from "../dialogs/generic/show-dialog-box";
 import { HaSwitch } from "./ha-switch";
@@ -17,18 +17,18 @@ export const pushSupported =
 class HaPushNotificationsToggle extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public disabled: boolean = false;
+  @state() private _disabled: boolean = false;
 
-  @property() public pushChecked: boolean =
+  @state() private _pushChecked: boolean =
     "Notification" in window && Notification.permission === "granted";
 
-  @property() public loading: boolean = true;
+  @state() private _loading: boolean = true;
 
   protected render(): TemplateResult {
     return html`
       <ha-switch
-        .disabled=${this._compDisabled(this.disabled, this.loading)}
-        .checked=${this.pushChecked}
+        .disabled=${this._disabled || this._loading}
+        .checked=${this._pushChecked}
         @change=${this._handlePushChange}
       ></ha-switch>
     `;
@@ -45,8 +45,8 @@ class HaPushNotificationsToggle extends LitElement {
         return;
       }
       reg.pushManager.getSubscription().then((subscription) => {
-        this.loading = false;
-        this.pushChecked = !!subscription;
+        this._loading = false;
+        this._pushChecked = !!subscription;
       });
     } catch (err) {
       // We don't set loading to `false` so we remain disabled
@@ -60,13 +60,13 @@ class HaPushNotificationsToggle extends LitElement {
 
     const pushnotifications = (ev.target as HaSwitch).checked;
     if (pushnotifications) {
-      this.subscribePushNotifications();
+      this._subscribePushNotifications();
     } else {
-      this.unsubscribePushNotifications();
+      this._unsubscribePushNotifications();
     }
   }
 
-  async subscribePushNotifications() {
+  private async _subscribePushNotifications() {
     const reg = await navigator.serviceWorker.ready;
     let sub;
 
@@ -87,7 +87,7 @@ class HaPushNotificationsToggle extends LitElement {
         ),
       });
       if (name == null) {
-        this.pushChecked = false;
+        this._pushChecked = false;
         return;
       }
 
@@ -122,11 +122,11 @@ class HaPushNotificationsToggle extends LitElement {
       console.error(err);
 
       fireEvent(this, "hass-notification", { message });
-      this.pushChecked = false;
+      this._pushChecked = false;
     }
   }
 
-  async unsubscribePushNotifications() {
+  private async _unsubscribePushNotifications() {
     const reg = await navigator.serviceWorker.ready;
 
     try {
@@ -144,12 +144,8 @@ class HaPushNotificationsToggle extends LitElement {
       console.error("Error in unsub push", err);
 
       fireEvent(this, "hass-notification", { message });
-      this.pushChecked = true;
+      this._pushChecked = true;
     }
-  }
-
-  private _compDisabled(disabled: boolean, loading: boolean) {
-    return disabled || loading;
   }
 }
 
