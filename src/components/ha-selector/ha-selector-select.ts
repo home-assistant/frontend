@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import { mdiClose, mdiDrag } from "@mdi/js";
+import { mdiDrag } from "@mdi/js";
 import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -12,9 +12,9 @@ import type { SelectOption, SelectSelector } from "../../data/selector";
 import { sortableStyles } from "../../resources/ha-sortable-style";
 import { SortableInstance } from "../../resources/sortable";
 import type { HomeAssistant } from "../../types";
+import "../chips/ha-chip-set";
+import "../chips/ha-input-chip";
 import "../ha-checkbox";
-import "../ha-chip";
-import "../ha-chip-set";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-formfield";
@@ -65,7 +65,7 @@ export class HaSelectSelector extends LitElement {
       {
         animation: 150,
         fallbackClass: "sortable-fallback",
-        draggable: "ha-chip",
+        draggable: "ha-input-chip",
         onChoose: (evt: SortableEvent) => {
           (evt.item as any).placeholder =
             document.createComment("sort-placeholder");
@@ -199,30 +199,31 @@ export class HaSelectSelector extends LitElement {
                 ${repeat(
                   value,
                   (item) => item,
-                  (item, idx) => html`
-                    <ha-chip
-                      hasTrailingIcon
-                      .hasIcon=${this.selector.select?.reorder}
-                    >
-                      ${this.selector.select?.reorder
-                        ? html`
-                            <ha-svg-icon
-                              slot="icon"
-                              .path=${mdiDrag}
-                              data-handle
-                            ></ha-svg-icon>
-                          `
-                        : nothing}
-                      ${options.find((option) => option.value === item)
-                        ?.label || item}
-                      <ha-svg-icon
-                        slot="trailing-icon"
-                        .path=${mdiClose}
+                  (item, idx) => {
+                    const label =
+                      options.find((option) => option.value === item)?.label ||
+                      item;
+                    return html`
+                      <ha-input-chip
                         .idx=${idx}
-                        @click=${this._removeItem}
-                      ></ha-svg-icon>
-                    </ha-chip>
-                  `
+                        @remove=${this._removeItem}
+                        .label=${label}
+                        selected
+                      >
+                        ${this.selector.select?.reorder
+                          ? html`
+                              <ha-svg-icon
+                                slot="icon"
+                                .path=${mdiDrag}
+                                data-handle
+                              ></ha-svg-icon>
+                            `
+                          : nothing}
+                        ${options.find((option) => option.value === item)
+                          ?.label || item}
+                      </ha-input-chip>
+                    `;
+                  }
                 )}
               </ha-chip-set>
             `
@@ -354,6 +355,7 @@ export class HaSelectSelector extends LitElement {
   }
 
   private async _removeItem(ev) {
+    ev.stopPropagation();
     const value: string[] = [...ensureArray(this.value!)];
     value.splice(ev.target.idx, 1);
 
@@ -430,6 +432,9 @@ export class HaSelectSelector extends LitElement {
       }
       mwc-list-item[disabled] {
         --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+      }
+      ha-chip-set {
+        padding: 8px 0;
       }
     `,
   ];
