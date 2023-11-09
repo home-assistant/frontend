@@ -523,10 +523,9 @@ export class QuickBar extends LitElement {
     const commands = reloadableDomains.map((domain) => ({
       primaryText:
         this.hass.localize(`ui.dialogs.quick-bar.commands.reload.${domain}`) ||
-        this.hass.localize(
-          "ui.dialogs.quick-bar.commands.reload.reload",
-          {domain:domainToName(localize, domain)}
-        ),
+        this.hass.localize("ui.dialogs.quick-bar.commands.reload.reload", {
+          domain: domainToName(localize, domain),
+        }),
       action: () => this.hass.callService(domain, "reload"),
       iconPath: mdiReload,
       categoryText: this.hass.localize(
@@ -587,9 +586,11 @@ export class QuickBar extends LitElement {
       const item = {
         primaryText: this.hass.localize(
           "ui.dialogs.quick-bar.commands.server_control.perform_action",
-          {action:this.hass.localize(
-            `ui.dialogs.quick-bar.commands.server_control.${action}`
-          )}
+          {
+            action: this.hass.localize(
+              `ui.dialogs.quick-bar.commands.server_control.${action}`
+            ),
+          }
         ),
         iconPath: mdiServerNetwork,
         categoryText: this.hass.localize(
