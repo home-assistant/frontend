@@ -460,6 +460,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         bottom: 0;
         right: 0;
         border-radius: var(--ha-card-border-radius, 12px);
+        inset: calc(-1 * var(--ha-card-border-width, 1px));
         overflow: hidden;
       }
       .content {
