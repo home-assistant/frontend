@@ -90,8 +90,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
     if (conditions.length > 1) {
       str += this.hass.localize(
         "ui.panel.config.automation.editor.actions.type.choose.option_description_additional",
-        "numberOfAdditionalConditions",
-        conditions.length - 1
+        { numberOfAdditionalConditions: conditions.length - 1 }
       );
     }
     return str;
@@ -115,8 +114,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
                 <h3 slot="header">
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.actions.type.choose.option",
-                    "number",
-                    idx + 1
+                    { number: idx + 1 }
                   )}:
                   ${option.alias ||
                   (this._expandedStates[idx]

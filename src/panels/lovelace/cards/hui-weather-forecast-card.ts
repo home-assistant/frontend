@@ -212,11 +212,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     if (stateObj.state === UNAVAILABLE) {
       return html`
         <ha-card class="unavailable" @click=${this._handleAction}>
-          ${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_unavailable",
-            "entity",
-            `${computeStateName(stateObj)} (${this._config.entity})`
-          )}
+          ${this.hass.localize("ui.panel.lovelace.warning.entity_unavailable", {
+            entity: `${computeStateName(stateObj)} (${this._config.entity})`,
+          })}
         </ha-card>
       `;
     }
