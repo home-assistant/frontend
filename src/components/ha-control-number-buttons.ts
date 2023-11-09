@@ -1,11 +1,18 @@
 import { mdiMinus, mdiPlus } from "@mdi/js";
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
-import { formatValueAndUnit } from "../common/entity/format_value_and_unit";
 import { conditionalClamp } from "../common/number/clamp";
 import { formatNumber } from "../common/number/format_number";
+import { blankBeforeUnit } from "../common/translations/blank_before_unit";
 import { FrontendLocaleData } from "../data/translation";
 
 const A11Y_KEY_CODES = new Set([
@@ -21,7 +28,7 @@ const A11Y_KEY_CODES = new Set([
 
 @customElement("ha-control-number-buttons")
 export class HaControlNumberButton extends LitElement {
-  @property({ attribute: false }) public locale!: FrontendLocaleData;
+  @property({ attribute: false }) public locale?: FrontendLocaleData;
 
   @property({ type: Boolean, reflect: true }) disabled = false;
 
@@ -117,30 +124,28 @@ export class HaControlNumberButton extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const displayedValue =
+    const value =
       this.value != null
-        ? formatValueAndUnit(
-            this.locale,
-            formatNumber(this.value, this.locale, this.formatOptions),
-            this.unit
-          )
+        ? formatNumber(this.value, this.locale, this.formatOptions)
         : "";
+    const unit = this.unit ? `${blankBeforeUnit(this.unit)}${this.unit}` : "";
 
     return html`
       <div class="container">
         <div
           id="input"
           class="value"
-          role="number-button"
+          role="spinbutton"
           .tabIndex=${this.disabled ? "-1" : "0"}
           aria-valuenow=${this.value}
+          aria-valuetext=${`${value}${unit}`}
           aria-valuemin=${this.min}
           aria-valuemax=${this.max}
           aria-label=${ifDefined(this.label)}
           ?disabled=${this.disabled}
           @keydown=${this._handleKeyDown}
         >
-          ${displayedValue}
+          ${value} ${unit ? html`<span class="unit">${unit}</span>` : nothing}
         </div>
         <button
           class="button minus"
@@ -192,6 +197,8 @@ export class HaControlNumberButton extends LitElement {
         position: relative;
         width: 100%;
         height: 100%;
+        container-type: inline-size;
+        container-name: container;
       }
       .value {
         display: flex;
@@ -255,6 +262,14 @@ export class HaControlNumberButton extends LitElement {
       }
       .button.plus {
         right: 0;
+      }
+      .unit {
+        white-space: pre;
+      }
+      @container container (max-width: 100px) {
+        .container .unit {
+          display: none;
+        }
       }
     `;
   }
