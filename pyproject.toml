@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name         = "home-assistant-frontend"
-version      = "20231030.1"
+version      = "20231030.2"
 license      = {text = "Apache-2.0"}
 description  = "The Home Assistant frontend"
 readme       = "README.md"
