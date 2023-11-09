@@ -11,7 +11,6 @@ import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/chips/ha-chip-set";
-import "../../../components/ha-chip";
 import { haStyleScrollbar } from "../../../resources/styles";
 
 @customElement("hui-buttons-base")

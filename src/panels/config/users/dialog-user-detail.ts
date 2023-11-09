@@ -1,13 +1,13 @@
-import "@material/mwc-button";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import "../../../components/ha-chip";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-help-tooltip";
+import "../../../components/ha-label";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
@@ -78,10 +78,10 @@ class DialogUserDetail extends LitElement {
                 <div class="badge-container">
                   ${badges.map(
                     ([icon, label]) => html`
-                      <ha-chip hasIcon>
+                      <ha-label>
                         <ha-svg-icon slot="icon" .path=${icon}></ha-svg-icon>
                         ${label}
-                      </ha-chip>
+                      </ha-label>
                     `
                   )}
                 </div>

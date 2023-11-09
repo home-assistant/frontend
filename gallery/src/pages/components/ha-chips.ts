@@ -108,9 +108,6 @@ export class DemoHaChips extends LitElement {
         max-width: 600px;
         margin: 24px auto;
       }
-      ha-chip {
-        margin-bottom: 4px;
-      }
       .card-content {
         display: flex;
         flex-direction: column;

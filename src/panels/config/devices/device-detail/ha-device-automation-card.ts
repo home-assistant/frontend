@@ -129,7 +129,10 @@ export abstract class HaDeviceAutomationCard<
         color: var(--primary-text-color);
       }
       .secondary {
-        --ha-chip-background-color: rgba(var(--rgb-primary-text-color), 0.07);
+        --ha-assist-chip-filled-container-color: rgba(
+          var(--rgb-primary-text-color),
+          0.07
+        );
       }
       button.link {
         color: var(--primary-color);

@@ -31,7 +31,6 @@ import { navigate } from "../../../../src/common/navigate";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-chip";
 import "../../../../src/components/chips/ha-chip-set";
 import "../../../../src/components/chips/ha-assist-chip";
 import "../../../../src/components/ha-markdown";
@@ -1323,9 +1322,6 @@ class HassioAddonInfo extends LitElement {
         }
 
         @media (max-width: 720px) {
-          ha-chip {
-            line-height: 36px;
-          }
           .addon-options {
             max-width: 100%;
           }

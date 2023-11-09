@@ -513,11 +513,6 @@ export class RecurrenceRuleEditor extends LitElement {
     .weekdays:last-child {
       margin-bottom: 0;
     }
-
-    .active {
-      --ha-chip-background-color: var(--primary-color);
-      --ha-chip-text-color: var(--text-primary-color);
-    }
   `;
 }
 
