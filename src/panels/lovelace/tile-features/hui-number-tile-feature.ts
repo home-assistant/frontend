@@ -57,7 +57,7 @@ class HuiNumberTileFeature extends LitElement implements LovelaceTileFeature {
     const stateObj = this.stateObj!;
 
     const domain = computeDomain(stateObj.entity_id);
-    
+
     await this.hass!.callService(domain, "set_value", {
       entity_id: stateObj.entity_id,
       value: ev.detail.value,
@@ -94,8 +94,7 @@ class HuiNumberTileFeature extends LitElement implements LovelaceTileFeature {
               step=${stateObj.attributes.step}
               @value-changed=${this._setValue}
               .disabled=${isUnavailableState(stateObj.state)}
-              >
-            </ha-control-slider>`}
+            ></ha-control-slider>`}
       </div>
     `;
   }
