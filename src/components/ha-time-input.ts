@@ -50,7 +50,7 @@ export class HaTimeInput extends LitElement {
         @value-changed=${this._timeChanged}
         .enableSecond=${this.enableSecond}
         .required=${this.required}
-        .clearable=${this.clearable}
+        .clearable=${this.clearable && this.value !== undefined}
         .helper=${this.helper}
       ></ha-base-time-input>
     `;
