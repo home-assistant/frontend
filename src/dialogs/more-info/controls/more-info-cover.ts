@@ -33,34 +33,10 @@ class MoreInfoCover extends LitElement {
 
   @property({ attribute: false }) public stateObj?: CoverEntity;
 
-  @state() private _livePosition?: number;
-
-  @state() private _liveTilt?: number;
-
   @state() private _mode?: Mode;
 
   private _setMode(ev) {
     this._mode = ev.currentTarget.mode;
-  }
-
-  private _positionSliderMoved(ev) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
-    this._livePosition = value;
-  }
-
-  private _positionValueChanged() {
-    this._livePosition = undefined;
-  }
-
-  private _tiltSliderMoved(ev) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
-    this._liveTilt = value;
-  }
-
-  private _tiltValueChanged() {
-    this._liveTilt = undefined;
   }
 
   protected willUpdate(changedProps: PropertyValues): void {
@@ -77,20 +53,11 @@ class MoreInfoCover extends LitElement {
   }
 
   private get _stateOverride() {
-    const liveValue = this._livePosition ?? this._liveTilt;
-
-    const forcedState =
-      liveValue != null ? (liveValue ? "open" : "closed") : undefined;
-
-    const stateDisplay = this.hass.formatEntityState(
-      this.stateObj!,
-      forcedState
-    );
+    const stateDisplay = this.hass.formatEntityState(this.stateObj!);
 
     const positionStateDisplay = computeCoverPositionStateDisplay(
       this.stateObj!,
-      this.hass,
-      liveValue
+      this.hass
     );
 
     if (positionStateDisplay) {
@@ -147,8 +114,6 @@ class MoreInfoCover extends LitElement {
                         <ha-more-info-cover-position
                           .stateObj=${this.stateObj}
                           .hass=${this.hass}
-                          @slider-moved=${this._positionSliderMoved}
-                          @value-changed=${this._positionValueChanged}
                         ></ha-more-info-cover-position>
                       `
                     : nothing}
@@ -157,8 +122,6 @@ class MoreInfoCover extends LitElement {
                         <ha-more-info-cover-tilt-position
                           .stateObj=${this.stateObj}
                           .hass=${this.hass}
-                          @slider-moved=${this._tiltSliderMoved}
-                          @value-changed=${this._tiltValueChanged}
                         ></ha-more-info-cover-tilt-position>
                       `
                     : nothing}
