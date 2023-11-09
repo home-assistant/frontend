@@ -394,6 +394,7 @@ export class HaControlSlider extends LitElement {
         --handle-margin: calc(var(--control-slider-thickness) / 8);
       }
       .tooltip {
+        pointer-events: none;
         user-select: none;
         position: absolute;
         background-color: var(--clear-background-color);
