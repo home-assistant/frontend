@@ -2214,6 +2214,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material/chips@npm:=14.0.0-canary.53b3cad2f.0":
+  version: 14.0.0-canary.53b3cad2f.0
+  resolution: "@material/chips@npm:14.0.0-canary.53b3cad2f.0"
+  dependencies:
+    "@material/animation": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/base": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/checkbox": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/density": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/dom": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/elevation": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/feature-targeting": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/focus-ring": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/ripple": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/rtl": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/shape": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/tokens": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/touch-target": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/typography": "npm:14.0.0-canary.53b3cad2f.0"
+    tslib: "npm:^2.1.0"
+  checksum: 32d6f31acb691f1ef811e356abd09924861200c0429a895b3ee76c2140ca1dedf67a864ebffbf3887db1c555a68de39c41cf8afc3c81dc024665054f9cf093ed
+  languageName: node
+  linkType: hard
+
 "@material/circular-progress@npm:=14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/circular-progress@npm:14.0.0-canary.53b3cad2f.0"
@@ -9616,6 +9640,7 @@ __metadata:
     "@lit-labs/virtualizer": "npm:2.0.10"
     "@lokalise/node-api": "npm:12.0.0"
     "@lrnwebcomponents/simple-tooltip": "npm:7.0.18"
+    "@material/chips": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/data-table": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/mwc-base": "npm:0.27.0"
     "@material/mwc-button": "npm:0.27.0"
