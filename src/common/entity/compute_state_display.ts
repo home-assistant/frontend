@@ -21,8 +21,8 @@ import {
 } from "../number/format_number";
 import { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
-import { formatValueAndUnit } from "./format_value_and_unit";
 import { supportsFeatureFromAttributes } from "./supports-feature";
+import { blankBeforeUnit } from "../translations/blank_before_unit";
 
 export const computeStateDisplaySingleEntity = (
   localize: LocalizeFunc,
@@ -108,15 +108,20 @@ export const computeStateDisplayFromEntityAttributes = (
         // fallback to default
       }
     }
-    return formatValueAndUnit(
+
+    const value = formatNumber(
+      state,
       locale,
-      formatNumber(
-        state,
-        locale,
-        getNumberFormatOptions({ state, attributes } as HassEntity, entity)
-      ),
-      attributes.unit_of_measurement
+      getNumberFormatOptions({ state, attributes } as HassEntity, entity)
     );
+
+    const unit = attributes.unit_of_measurement;
+
+    if (unit) {
+      return `${value}${blankBeforeUnit(unit)}${unit}`;
+    }
+
+    return value;
   }
 
   const domain = computeDomain(entityId);

@@ -18,7 +18,7 @@ import { blankBeforePercent } from "../translations/blank_before_percent";
 import { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
 import { computeStateDomain } from "./compute_state_domain";
-import { formatValueAndUnit } from "./format_value_and_unit";
+import { blankBeforeUnit } from "../translations/blank_before_unit";
 
 export const computeAttributeValueDisplay = (
   localize: LocalizeFunc,
@@ -60,7 +60,11 @@ export const computeAttributeValueDisplay = (
       unit = config.unit_system.temperature;
     }
 
-    return formatValueAndUnit(locale, formattedValue, unit);
+    if (unit) {
+      return `${formattedValue}${blankBeforeUnit(unit, locale)}${unit}`;
+    }
+
+    return formattedValue;
   }
 
   // Special handling in case this is a string with an known format
