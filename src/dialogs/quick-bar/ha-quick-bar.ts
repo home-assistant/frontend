@@ -766,6 +766,7 @@ export class QuickBar extends LitElement {
       haStyleDialog,
       css`
         mwc-list {
+          position: relative;
           --mdc-list-vertical-padding: 0;
         }
         .heading {
