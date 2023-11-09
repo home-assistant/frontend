@@ -142,6 +142,15 @@ export class HaSelectSelector extends LitElement {
       !this.selector.select?.reorder &&
       this._mode === "list"
     ) {
+      if (options.length === 0) {
+        options.push({
+          value: "no_options",
+          label: this.hass.localize(
+            "ui.components.selectors.select.no_options"
+          ),
+          disabled: true,
+        } as SelectOption);
+      }
       if (!this.selector.select?.multiple) {
         return html`
           <div>

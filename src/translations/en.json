@@ -328,6 +328,9 @@
         "file": {
           "upload_failed": "Upload failed",
           "unknown_file": "Unknown file"
+        },
+        "select": {
+          "no_options": "No options available"
         }
       },
       "logbook": {
