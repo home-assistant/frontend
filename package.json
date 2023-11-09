@@ -55,7 +55,6 @@
     "@lit-labs/observers": "2.0.2",
     "@lit-labs/virtualizer": "2.0.10",
     "@lrnwebcomponents/simple-tooltip": "7.0.18",
-    "@material/chips": "=14.0.0-canary.53b3cad2f.0",
     "@material/data-table": "=14.0.0-canary.53b3cad2f.0",
     "@material/mwc-base": "0.27.0",
     "@material/mwc-button": "0.27.0",
