@@ -1,28 +1,29 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { HassEntity } from "home-assistant-js-websocket";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { alarmPanelIcon } from "../../../common/entity/alarm_panel_icon";
 import { stateColorCss } from "../../../common/entity/state_color";
+import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-card";
-import "../../../components/ha-chip";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import {
-  callAlarmAction,
-  FORMAT_NUMBER,
   ALARM_MODES,
   AlarmMode,
+  FORMAT_NUMBER,
+  callAlarmAction,
 } from "../../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
@@ -30,7 +31,6 @@ import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard } from "../types";
 import { AlarmPanelCardConfig, AlarmPanelCardConfigState } from "./types";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 
 const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
 
@@ -190,18 +190,18 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           ${this._config.name ||
           stateObj.attributes.friendly_name ||
           stateLabel}
-          <ha-chip
-            hasIcon
+          <ha-assist-chip
+            filled
             style=${styleMap({
               "--alarm-state-color": stateColorCss(stateObj),
             })}
             class=${classMap({ [stateObj.state]: true })}
             @click=${this._handleMoreInfo}
+            .label=${stateLabel}
           >
             <ha-svg-icon slot="icon" .path=${alarmPanelIcon(stateObj.state)}>
             </ha-svg-icon>
-            ${stateLabel}
-          </ha-chip>
+          </ha-assist-chip>
         </h1>
         <div id="armActions" class="actions">
           ${(stateObj.state === "disarmed"
@@ -312,10 +312,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         --alarm-state-color: var(--state-inactive-color);
       }
 
-      ha-chip {
-        --ha-chip-background-color: var(--alarm-state-color);
+      ha-assist-chip {
+        --ha-assist-chip-filled-container-color: var(--alarm-state-color);
         --primary-text-color: var(--text-primary-color);
-        line-height: initial;
       }
 
       .card-header {
