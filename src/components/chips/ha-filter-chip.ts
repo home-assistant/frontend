@@ -13,6 +13,8 @@ export class HaFilterChip extends MdFilterChip {
       :host {
         --md-sys-color-primary: var(--primary-text-color);
         --md-sys-color-on-surface: var(--primary-text-color);
+        --md-sys-color-on-surface-variant: var(--primary-text-color);
+        --md-sys-color-on-secondary-container: var(--primary-text-color);
         --md-filter-chip-container-shape: 16px;
         --md-filter-chip-outline-color: var(--outline-color);
         --md-filter-chip-selected-container-color: rgba(

@@ -10,12 +10,19 @@ export class HaInputChip extends MdInputChip {
       :host {
         --md-sys-color-primary: var(--primary-text-color);
         --md-sys-color-on-surface: var(--primary-text-color);
+        --md-sys-color-on-surface-variant: var(--primary-text-color);
+        --md-sys-color-on-secondary-container: var(--primary-text-color);
         --md-input-chip-container-shape: 16px;
         --md-input-chip-outline-color: var(--outline-color);
         --md-input-chip-selected-container-color: rgba(
           var(--rgb-primary-text-color),
           0.15
         );
+      }
+      /** Set the size of mdc icons **/
+      ::slotted([slot="icon"]) {
+        display: flex;
+        --mdc-icon-size: var(--md-input-chip-icon-size, 18px);
       }
     `,
   ];
