@@ -678,6 +678,9 @@ class AddIntegrationDialog extends LitElement {
         justify-content: center;
         margin: 24px 0;
       }
+      mwc-list {
+        position: relative;
+      }
       lit-virtualizer {
         contain: size layout !important;
       }
