@@ -267,7 +267,7 @@ export class HaControlNumberButton extends LitElement {
         white-space: pre;
       }
       @container container (max-width: 100px) {
-        .container .unit {
+        .unit {
           display: none;
         }
       }
