@@ -342,7 +342,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   private _duplicateOption(ev) {
     const index = (ev.target as any).idx;
-    this._addOption(deepClone(ensureArray(this.action.choose)[index]));
+    this._createOption(deepClone(ensureArray(this.action.choose)[index]));
   }
 
   protected firstUpdated() {
@@ -399,11 +399,15 @@ export class HaChooseAction extends LitElement implements ActionElement {
     });
   }
 
-  private _addOption(opt?: ChooseActionChoice) {
+  private _addOption() {
+    this._createOption({ conditions: [], sequence: [] });
+  }
+
+  private _createOption(opt: ChooseActionChoice) {
     const choose = this.action.choose
       ? [...ensureArray(this.action.choose)]
       : [];
-    choose.push(opt ?? { conditions: [], sequence: [] });
+    choose.push(opt);
     fireEvent(this, "value-changed", {
       value: { ...this.action, choose },
     });

@@ -134,7 +134,7 @@ _adapters._date.override({
           this.options.config
         );
       case "week":
-        return formatDate(
+        return formatDateVeryShort(
           new Date(time),
           this.options.locale,
           this.options.config

@@ -36,6 +36,7 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditSubElementEvent, SubElementEditorConfig } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-tile-card-features-editor";
+import { getEntityDefaultTileIconAction } from "../../cards/hui-tile-card";
 
 const HIDDEN_ATTRIBUTES = [
   "access_token",
@@ -125,6 +126,7 @@ export class HuiTileCardEditor
     (
       localize: LocalizeFunc,
       formatEntityAttributeName: formatEntityAttributeNameFunc,
+      entityId: string | undefined,
       stateObj: HassEntity | undefined,
       hideState: boolean
     ) =>
@@ -186,11 +188,15 @@ export class HuiTileCardEditor
                         multiple: true,
                         options: [
                           {
-                            label: "State",
+                            label: localize(
+                              `ui.panel.lovelace.editor.card.tile.state_content_options.state`
+                            ),
                             value: "state",
                           },
                           {
-                            label: "Last changed",
+                            label: localize(
+                              `ui.panel.lovelace.editor.card.tile.state_content_options.last-changed`
+                            ),
                             value: "last-changed",
                           },
                           ...Object.keys(stateObj?.attributes ?? {})
@@ -219,13 +225,19 @@ export class HuiTileCardEditor
             {
               name: "tap_action",
               selector: {
-                ui_action: {},
+                ui_action: {
+                  default_action: "more-info",
+                },
               },
             },
             {
               name: "icon_tap_action",
               selector: {
-                ui_action: {},
+                ui_action: {
+                  default_action: entityId
+                    ? getEntityDefaultTileIconAction(entityId)
+                    : "more-info",
+                },
               },
             },
           ],
@@ -242,13 +254,14 @@ export class HuiTileCardEditor
       return nothing;
     }
 
-    const stateObj = this.hass.states[this._config.entity ?? ""] as
-      | HassEntity
-      | undefined;
+    const stateObj = this._config.entity
+      ? this.hass.states[this._config.entity]
+      : undefined;
 
     const schema = this._schema(
       this.hass!.localize,
       this.hass.formatEntityAttributeName,
+      this._config.entity,
       stateObj,
       this._config.hide_state ?? false
     );

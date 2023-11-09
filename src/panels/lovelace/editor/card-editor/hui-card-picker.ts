@@ -1,4 +1,4 @@
-import Fuse from "fuse.js";
+import Fuse, { IFuseOptions } from "fuse.js";
 import {
   css,
   CSSResultGroup,
@@ -80,7 +80,7 @@ export class HuiCardPicker extends LitElement {
       let cards = cardElements.map(
         (cardElement: CardElement) => cardElement.card
       );
-      const options: Fuse.IFuseOptions<Card> = {
+      const options: IFuseOptions<Card> = {
         keys: ["type", "name", "description"],
         isCaseSensitive: false,
         minMatchCharLength: 2,
