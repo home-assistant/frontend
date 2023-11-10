@@ -4426,12 +4426,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/qrcode@npm:1.5.4":
-  version: 1.5.4
-  resolution: "@types/qrcode@npm:1.5.4"
+"@types/qrcode@npm:1.5.5":
+  version: 1.5.5
+  resolution: "@types/qrcode@npm:1.5.5"
   dependencies:
     "@types/node": "npm:*"
-  checksum: 27f6f22612ddc21a110abe07831927c108d75c97186ec460445a4d57ff0ee855b3ac17d5a9cba801519b0744ce40b1edc83951346abc42d0f90d33bc7614a0df
+  checksum: a25686339bd2718e6a93943e7807ed68dd9c74a9da28aa77212086ee0ce9a173c0a232af9e3f6835acd09938dfc8a0f98c6bccf1a6c6a905fb003ab07f9e08f2
   languageName: node
   linkType: hard
 
@@ -9689,7 +9689,7 @@ __metadata:
     "@types/leaflet-draw": "npm:1.0.10"
     "@types/luxon": "npm:3.3.4"
     "@types/mocha": "npm:10.0.4"
-    "@types/qrcode": "npm:1.5.4"
+    "@types/qrcode": "npm:1.5.5"
     "@types/serve-handler": "npm:6.1.4"
     "@types/sortablejs": "npm:1.15.4"
     "@types/tar": "npm:6.1.7"
