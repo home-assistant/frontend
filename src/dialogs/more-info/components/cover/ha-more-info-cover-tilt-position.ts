@@ -97,7 +97,7 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
           "--control-slider-background": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
-        .tooltipUnit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_tilt_position}
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_tilt_position}
         .locale=${this.hass.locale}
       >
         <div slot="background" class="gradient"></div>
