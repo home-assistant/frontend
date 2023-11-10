@@ -4527,10 +4527,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/sortablejs@npm:1.15.4":
-  version: 1.15.4
-  resolution: "@types/sortablejs@npm:1.15.4"
-  checksum: 85ffefe50e4e4ce236fb023141d7a23a42d7f02ca77e9a2e3be95a9d99c068be280f7ca1af7138b93b3b0f1e63d44d597b5e3fd094eb311a1d8917af96db6e9c
+"@types/sortablejs@npm:1.15.5":
+  version: 1.15.5
+  resolution: "@types/sortablejs@npm:1.15.5"
+  checksum: 3586e4508bff72798d2f2302fc3f4fb6f5d66bb3cd5a4dc787d1c1009028afefe7277c8de5f039e805f3ce8f228350a44a9dda4ad695cfa6ea843ee6cdc5f740
   languageName: node
   linkType: hard
 
@@ -9691,7 +9691,7 @@ __metadata:
     "@types/mocha": "npm:10.0.4"
     "@types/qrcode": "npm:1.5.4"
     "@types/serve-handler": "npm:6.1.4"
-    "@types/sortablejs": "npm:1.15.4"
+    "@types/sortablejs": "npm:1.15.5"
     "@types/tar": "npm:6.1.7"
     "@types/ua-parser-js": "npm:0.7.38"
     "@types/webspeechapi": "npm:0.0.29"
