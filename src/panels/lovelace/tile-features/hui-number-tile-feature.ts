@@ -86,6 +86,8 @@ class HuiNumberTileFeature extends LitElement implements LovelaceTileFeature {
               step=${stateObj.attributes.step}
               @value-changed=${this._setValue}
               .disabled=${isUnavailableState(stateObj.state)}
+              .unit=${stateObj.attributes.unit_of_measurement}
+              .locale=${this.hass.locale}
             ></ha-control-number-buttons>`
           : html`<ha-control-slider
               value=${stateObj.state}
@@ -94,6 +96,8 @@ class HuiNumberTileFeature extends LitElement implements LovelaceTileFeature {
               step=${stateObj.attributes.step}
               @value-changed=${this._setValue}
               .disabled=${isUnavailableState(stateObj.state)}
+              .unit=${stateObj.attributes.unit_of_measurement}
+              .locale=${this.hass.locale}
             ></ha-control-slider>`}
       </div>
     `;
