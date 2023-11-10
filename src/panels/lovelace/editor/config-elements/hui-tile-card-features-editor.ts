@@ -38,6 +38,7 @@ import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum
 import { supportsWaterHeaterOperationModesTileFeature } from "../../tile-features/hui-water-heater-operation-modes-tile-feature";
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
 import { supportsClimatePresetModesTileFeature } from "../../tile-features/hui-climate-preset-modes-tile-feature";
+import { supportsNumberTileFeature } from "../../tile-features/hui-number-tile-feature";
 
 type FeatureType = LovelaceTileFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
@@ -58,6 +59,7 @@ const UI_FEATURE_TYPES = [
   "target-temperature",
   "vacuum-commands",
   "water-heater-operation-modes",
+  "number",
 ] as const satisfies readonly FeatureType[];
 
 type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
@@ -69,6 +71,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "water-heater-operation-modes",
   "lawn-mower-commands",
   "climate-preset-modes",
+  "number",
 ]);
 
 const SUPPORTS_FEATURE_TYPES: Record<
@@ -90,6 +93,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "vacuum-commands": supportsVacuumCommandTileFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesTileFeature,
   "select-options": supportsSelectOptionTileFeature,
+  number: supportsNumberTileFeature,
 };
 
 const CUSTOM_FEATURE_ENTRIES: Record<
