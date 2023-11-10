@@ -94,7 +94,7 @@ class HuiCoverPositionTileFeature
             "current_position"
           )}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
-          .tooltipUnit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_position}
+          .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_position}
           .locale=${this.hass.locale}
         ></ha-control-slider>
       </div>

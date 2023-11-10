@@ -131,7 +131,7 @@ export class HaMoreInfoFanSpeed extends LitElement {
           "--control-slider-background": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
-        .tooltipUnit=${DOMAIN_ATTRIBUTES_UNITS.fan.percentage}
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.fan.percentage}
         .locale=${this.hass.locale}
       >
       </ha-control-slider>
