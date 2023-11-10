@@ -4062,12 +4062,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chromecast-caf-sender@npm:1.0.7":
-  version: 1.0.7
-  resolution: "@types/chromecast-caf-sender@npm:1.0.7"
+"@types/chromecast-caf-sender@npm:1.0.8":
+  version: 1.0.8
+  resolution: "@types/chromecast-caf-sender@npm:1.0.8"
   dependencies:
     "@types/chrome": "npm:*"
-  checksum: 7e6f235bebdd65bea8ee4e6d9f433c3befef3c8b6fae5d4b18e2965d5cf696e4e53ea0086eebc4e4e62bfa55a3b96a31b9bcf0b5ed0131b641d4d0fb91b3d878
+  checksum: 68a2d7c7e4668756e7895c81c4edf59bfbd58be30196dd73bac411d56b2fa60c33eac0afdda9b6219ca2512fb7ef93d9cc86c18064465e22e6e3bd0907b09199
   languageName: node
   linkType: hard
 
@@ -9690,7 +9690,7 @@ __metadata:
     "@thomasloven/round-slider": "npm:0.6.0"
     "@types/babel__plugin-transform-runtime": "npm:7.9.5"
     "@types/chromecast-caf-receiver": "npm:6.0.12"
-    "@types/chromecast-caf-sender": "npm:1.0.7"
+    "@types/chromecast-caf-sender": "npm:1.0.8"
     "@types/glob": "npm:8.1.0"
     "@types/html-minifier-terser": "npm:7.0.1"
     "@types/js-yaml": "npm:4.0.8"

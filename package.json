@@ -173,7 +173,7 @@
     "@rollup/plugin-replace": "5.0.5",
     "@types/babel__plugin-transform-runtime": "7.9.5",
     "@types/chromecast-caf-receiver": "6.0.12",
-    "@types/chromecast-caf-sender": "1.0.7",
+    "@types/chromecast-caf-sender": "1.0.8",
     "@types/glob": "8.1.0",
     "@types/html-minifier-terser": "7.0.1",
     "@types/js-yaml": "4.0.8",
