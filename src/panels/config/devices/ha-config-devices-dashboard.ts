@@ -508,7 +508,9 @@ export class HaConfigDeviceDashboard extends LitElement {
             ? html`<mwc-list-item @click=${this._clearFilter}
                 >${this.hass.localize("ui.components.data-table.filtering_by")}
                 ${activeFilters.join(", ")}
-                <span class="clear">Clear</span></mwc-list-item
+                <span class="clear"
+                  >${this.hass.localize("ui.common.clear")}</span
+                ></mwc-list-item
               >`
             : ""}
           <ha-check-list-item
