@@ -328,6 +328,10 @@
         "file": {
           "upload_failed": "Upload failed",
           "unknown_file": "Unknown file"
+        },
+        "text": {
+          "show_password": "Show password",
+          "hide_password": "Hide password"
         }
       },
       "logbook": {
