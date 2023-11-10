@@ -77,7 +77,7 @@ export class HaMoreInfoLightBrightness extends LitElement {
           "--control-slider-background": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
-        .tooltipUnit=${"%"}
+        unit="%"
         .locale=${this.hass.locale}
       >
       </ha-control-slider>
