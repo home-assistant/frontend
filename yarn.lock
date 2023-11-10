@@ -4489,12 +4489,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/serve-handler@npm:6.1.3":
-  version: 6.1.3
-  resolution: "@types/serve-handler@npm:6.1.3"
+"@types/serve-handler@npm:6.1.4":
+  version: 6.1.4
+  resolution: "@types/serve-handler@npm:6.1.4"
   dependencies:
     "@types/node": "npm:*"
-  checksum: 015413536220cc4242deaa8887afb76cd0a7cb34a3a463a441fad48d6113947cb9be76a358ee659d2bf5e630270502a509b85bae376f058faf2d647c0e8b5e3d
+  checksum: c92ae204605659b37202af97cfcc7690be43b9290692c1d6c3c93805b399044fd67573af4eb2e7b1fd975451db6d0d5c6cd2f09b20997209fa3341f345f661e4
   languageName: node
   linkType: hard
 
@@ -9690,7 +9690,7 @@ __metadata:
     "@types/luxon": "npm:3.3.3"
     "@types/mocha": "npm:10.0.4"
     "@types/qrcode": "npm:1.5.4"
-    "@types/serve-handler": "npm:6.1.3"
+    "@types/serve-handler": "npm:6.1.4"
     "@types/sortablejs": "npm:1.15.4"
     "@types/tar": "npm:6.1.7"
     "@types/ua-parser-js": "npm:0.7.38"
