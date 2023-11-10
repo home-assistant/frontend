@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical } from "@mdi/js";
+import { mdiDotsVertical, mdiPencil } from "@mdi/js";
 import {
   addDays,
   addMonths,
@@ -42,6 +42,7 @@ import {
   formatDateYear,
 } from "../../../common/datetime/format_date";
 import { debounce } from "../../../common/util/debounce";
+import { navigate } from "../../../common/navigate";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-date-range-picker";
@@ -60,6 +61,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   @property() public collectionKey?: string;
 
   @property({ type: Boolean, reflect: true }) public narrow?;
+
+  @property({ type: Boolean }) public showConfig = false;
 
   @state() _startDate?: Date;
 
@@ -278,9 +281,25 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
               "ui.panel.lovelace.components.energy_period_selector.compare"
             )}
           </ha-check-list-item>
+          ${this.showConfig && this.hass.user?.is_admin
+            ? html`
+                <mwc-list-item
+                  graphic="icon"
+                  @request-selected=${this._navigateConfig}
+                >
+                  <ha-svg-icon slot="graphic" .path=${mdiPencil}> </ha-svg-icon>
+                  ${this.hass!.localize("ui.panel.lovelace.menu.configure_ui")}
+                </mwc-list-item>
+              `
+            : nothing}
         </ha-button-menu>
       </div>
     `;
+  }
+
+  private _navigateConfig(ev) {
+    ev.stopPropagation();
+    navigate("/config/energy?historyBack=1");
   }
 
   private _simpleRange = memoizeOne(
