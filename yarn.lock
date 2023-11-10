@@ -4304,12 +4304,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/leaflet-draw@npm:1.0.9":
-  version: 1.0.9
-  resolution: "@types/leaflet-draw@npm:1.0.9"
+"@types/leaflet-draw@npm:1.0.10":
+  version: 1.0.10
+  resolution: "@types/leaflet-draw@npm:1.0.10"
   dependencies:
     "@types/leaflet": "npm:*"
-  checksum: dce2f1ce9c946a026c7272f19bd1268e77b1811d283987d7b6a2ea0f194a72569d9794c0ab0f1eea8747f94f0579525a567b96e20a01c8c6b38afff7102bb721
+  checksum: 3758c8cffb992ae01a7805a6c6e376150ed3c1b5f4217d16916576835768ba26f5a305d79a70532e43f5d30523de95cabd391ca321834be3e8a811a4bb7b5cb8
   languageName: node
   linkType: hard
 
@@ -9686,7 +9686,7 @@ __metadata:
     "@types/html-minifier-terser": "npm:7.0.2"
     "@types/js-yaml": "npm:4.0.8"
     "@types/leaflet": "npm:1.9.7"
-    "@types/leaflet-draw": "npm:1.0.9"
+    "@types/leaflet-draw": "npm:1.0.10"
     "@types/luxon": "npm:3.3.3"
     "@types/mocha": "npm:10.0.3"
     "@types/qrcode": "npm:1.5.4"
