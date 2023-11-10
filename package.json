@@ -181,7 +181,7 @@
     "@types/leaflet-draw": "1.0.10",
     "@types/luxon": "3.3.3",
     "@types/mocha": "10.0.4",
-    "@types/qrcode": "1.5.4",
+    "@types/qrcode": "1.5.5",
     "@types/serve-handler": "6.1.4",
     "@types/sortablejs": "1.15.4",
     "@types/tar": "6.1.7",
