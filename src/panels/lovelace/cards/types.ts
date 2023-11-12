@@ -328,6 +328,7 @@ export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   stat_types?: StatisticType | StatisticType[];
   chart_type?: "line" | "bar";
   hide_legend?: boolean;
+  logarithmic_scale?: boolean;
 }
 
 export interface StatisticCardConfig extends LovelaceCardConfig {
