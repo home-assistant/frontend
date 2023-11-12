@@ -27,6 +27,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/map/ha-map";
 import type {
   HaMap,
+  HaMapEntity,
   HaMapPathPoint,
   HaMapPaths,
 } from "../../../components/map/ha-map";
@@ -34,10 +35,7 @@ import {
   HistoryStates,
   subscribeHistoryStatesTimeWindow,
 } from "../../../data/history";
-import {
-  hasConfigChanged,
-  hasConfigOrEntitiesChanged,
-} from "../common/has-changed";
+import { hasConfigChanged } from "../common/has-changed";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -69,6 +67,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _map?: HaMap;
 
   private _configEntities?: MapEntityConfig[];
+
+  private _sourceEntities?: string[];
 
   private _colorDict: Record<string, string> = {};
 
@@ -157,13 +157,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           <ha-map
             .hass=${this.hass}
             .entities=${this._getEntities(
-              this.hass.states,
-              this._config,
-              this._configEntities
+              this._configEntities,
+              this._sourceEntities
             )}
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
-            .autoFit=${this._config.auto_fit}
+            .autoFit=${this._config.auto_fit || false}
             .darkMode=${this._config.dark_mode}
             interactiveZones
             renderPassive
@@ -182,33 +181,48 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues) {
+    if (changedProps.has("hass") || changedProps.has("_config")) {
+      const sourceEntities = this._getSourceEntities(
+        this.hass.states,
+        this._config
+      );
+      if (
+        !this._sourceEntities ||
+        sourceEntities.toString() !== this._sourceEntities.toString()
+      ) {
+        this._sourceEntities = sourceEntities;
+        return true;
+      }
+    }
+
+    // Update if anything other than "hass" has changed.
     if (!changedProps.has("hass") || changedProps.size > 1) {
       return true;
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-
-    if (!oldHass || !this._configEntities) {
+    if (!oldHass) {
       return true;
     }
 
-    if (oldHass.themes.darkMode !== this.hass.themes.darkMode) {
+    if (
+      oldHass.themes.darkMode !== this.hass.themes.darkMode ||
+      hasConfigChanged(this, changedProps)
+    ) {
       return true;
     }
 
-    if (changedProps.has("_stateHistory")) {
-      return true;
-    }
+    const entity_ids = (
+      this._configEntities?.map((entity) => entity.entity) || []
+    ).concat(this._sourceEntities || []);
 
-    if (this._config?.geo_location_sources) {
-      if (oldHass.states !== this.hass.states) {
-        return true;
-      }
-    }
-
-    return this._config?.entities
-      ? hasConfigOrEntitiesChanged(this, changedProps)
-      : hasConfigChanged(this, changedProps);
+    return entity_ids.some(
+      (entity_id) =>
+        oldHass.states[entity_id]?.state !==
+          this.hass.states[entity_id]?.state ||
+        oldHass.entities[entity_id]?.display_precision !==
+          this.hass.entities[entity_id]?.display_precision
+    );
   }
 
   public connectedCallback() {
@@ -308,45 +322,45 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return color;
   }
 
-  private _getEntities = memoizeOne(
-    (
-      states: HassEntities,
-      config: MapCardConfig,
-      configEntities?: MapEntityConfig[]
-    ) => {
-      if (!states || !config) {
-        return undefined;
+  private _getSourceEntities = memoizeOne(
+    (states: HassEntities, config?: MapCardConfig): string[] => {
+      if (!states || !config || !config.geo_location_sources) {
+        return [];
       }
 
-      const geoEntities: string[] = [];
-      if (config.geo_location_sources) {
-        // Calculate visible geo location sources
-        const includesAll = config.geo_location_sources.includes("all");
-        for (const stateObj of Object.values(states)) {
-          if (
-            computeDomain(stateObj.entity_id) === "geo_location" &&
-            (includesAll ||
-              config.geo_location_sources.includes(stateObj.attributes.source))
-          ) {
-            geoEntities.push(stateObj.entity_id);
-          }
+      const entities: string[] = [];
+      // Calculate visible geo location sources
+      const includesAll = config.geo_location_sources.includes("all");
+      for (const stateObj of Object.values(states)) {
+        if (
+          computeDomain(stateObj.entity_id) === "geo_location" &&
+          (includesAll ||
+            config.geo_location_sources.includes(stateObj.attributes.source))
+        ) {
+          entities.push(stateObj.entity_id);
         }
       }
-
-      return [
-        ...(configEntities || []).map((entityConf) => ({
-          entity_id: entityConf.entity,
-          color: this._getColor(entityConf.entity),
-          label_mode: entityConf.label_mode,
-          focus: entityConf.focus,
-          name: entityConf.name,
-        })),
-        ...geoEntities.map((entity) => ({
-          entity_id: entity,
-          color: this._getColor(entity),
-        })),
-      ];
+      return entities;
     }
+  );
+
+  private _getEntities = memoizeOne(
+    (
+      configEntities?: MapEntityConfig[],
+      sourceEntities?: string[]
+    ): HaMapEntity[] => [
+      ...(configEntities || []).map((entityConf) => ({
+        entity_id: entityConf.entity,
+        color: this._getColor(entityConf.entity),
+        label_mode: entityConf.label_mode,
+        focus: entityConf.focus,
+        name: entityConf.name,
+      })),
+      ...(sourceEntities || []).map((entity) => ({
+        entity_id: entity,
+        color: this._getColor(entity),
+      })),
+    ]
   );
 
   private _getHistoryPaths = memoizeOne(
