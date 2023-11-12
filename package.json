@@ -185,7 +185,7 @@
     "@types/serve-handler": "6.1.4",
     "@types/sortablejs": "1.15.5",
     "@types/tar": "6.1.8",
-    "@types/ua-parser-js": "0.7.38",
+    "@types/ua-parser-js": "0.7.39",
     "@types/webspeechapi": "0.0.29",
     "@typescript-eslint/eslint-plugin": "6.10.0",
     "@typescript-eslint/parser": "6.10.0",
