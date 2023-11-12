@@ -4551,10 +4551,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ua-parser-js@npm:0.7.38":
-  version: 0.7.38
-  resolution: "@types/ua-parser-js@npm:0.7.38"
-  checksum: 787e870ec893c7c27c0a617dae1518b6bae334b7d7b731b7ff6cd93f1a533bbf01cef77036df83e0950c236c93062d77eebcf73a06c7d86fd275c24951d66fa5
+"@types/ua-parser-js@npm:0.7.39":
+  version: 0.7.39
+  resolution: "@types/ua-parser-js@npm:0.7.39"
+  checksum: 8d173a79b37f9404cda49e848d82694c4854828ff20d94ddfba53bf9ccd9b4df16bf28f72786cf253a73305e9a54d2f2bb54ebfc144fca2496d3f3f025a79cb5
   languageName: node
   linkType: hard
 
@@ -9693,7 +9693,7 @@ __metadata:
     "@types/serve-handler": "npm:6.1.4"
     "@types/sortablejs": "npm:1.15.5"
     "@types/tar": "npm:6.1.8"
-    "@types/ua-parser-js": "npm:0.7.38"
+    "@types/ua-parser-js": "npm:0.7.39"
     "@types/webspeechapi": "npm:0.0.29"
     "@typescript-eslint/eslint-plugin": "npm:6.10.0"
     "@typescript-eslint/parser": "npm:6.10.0"
