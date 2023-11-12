@@ -9797,7 +9797,7 @@ __metadata:
     unfetch: "npm:5.0.0"
     vinyl-buffer: "npm:1.0.1"
     vinyl-source-stream: "npm:2.0.0"
-    vis-data: "npm:7.1.7"
+    vis-data: "npm:7.1.8"
     vis-network: "npm:9.1.9"
     vue: "npm:2.7.15"
     vue2-daterange-picker: "npm:0.6.8"
@@ -16010,13 +16010,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vis-data@npm:7.1.7":
-  version: 7.1.7
-  resolution: "vis-data@npm:7.1.7"
+"vis-data@npm:7.1.8":
+  version: 7.1.8
+  resolution: "vis-data@npm:7.1.8"
   peerDependencies:
     uuid: ^3.4.0 || ^7.0.0 || ^8.0.0 || ^9.0.0
     vis-util: ^5.0.1
-  checksum: 61f877de93af7295c9ab53d252893d571d7a9605fce38363c559d38a585676db71814ea1184cd4eeac156055ac59a614952a141a0961a324066c49b38315b884
+  checksum: 02deafaeac89d68b7f64b1ec046a760e516f48562853dd80ed5332cafd7fe078b246f283784ec2709518e4b50ed02cf0f425d5901ab6442c2c4686474275fe21
   languageName: node
   linkType: hard
 
