@@ -34,8 +34,6 @@ import { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import type { DialogStatisticsAdjustSumParams } from "./show-dialog-statistics-adjust-sum";
 
-/* eslint-disable lit/no-template-arrow */
-
 @customElement("dialog-statistics-adjust-sum")
 export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -111,7 +109,9 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         scrimClickAction
         escapeKeyAction
         @closed=${this.closeDialog}
-        heading="Adjust a statistic"
+        heading=${this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.title"
+        )}
       >
         ${content}
       </ha-dialog>
@@ -133,7 +133,11 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     if (!this._stats5min || !this._statsHour) {
       stats = html`<ha-circular-progress active></ha-circular-progress>`;
     } else if (this._statsHour.length < 1 && this._stats5min.length < 1) {
-      stats = html`<p>No statistics found for this period.</p>`;
+      stats = html`<p>
+        ${this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.no_statistics_found"
+        )}
+      </p>`;
     } else {
       const data =
         this._stats5min.length >= 1 ? this._stats5min : this._statsHour;
@@ -150,11 +154,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
           <mwc-list-item
             twoline
             hasMeta
-            @click=${() => {
-              this._chosenStat = stat;
-              this._origAmount = growth;
-              this._amount = growth;
-            }}
+            .stat=${stat}
+            @click=${this._setChosenStatistic}
           >
             <span>${growth} ${unit}</span>
             <span slot="secondary">
@@ -173,15 +174,22 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
     return html`
       <div class="text-content">
-        Sometimes the statistics end up being incorrect for a specific point in
-        time. This can mess up your beautiful graphs! Select a time below to
-        find the bad moment and adjust the data.
+        ${this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.info_text_1"
+        )}
       </div>
       <div class="text-content">
-        <b>Statistic:</b> ${this._params!.statistic.statistic_id}
+        <b
+          >${this.hass.localize(
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.statistic"
+          )}</b
+        >
+        ${this._params!.statistic.statistic_id}
       </div>
       <ha-selector-datetime
-        label="Pick a time"
+        label=${this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.pick_a_time"
+        )}
         .hass=${this.hass}
         .selector=${this._dateTimeSelector}
         .value=${this._moment}
@@ -194,6 +202,19 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         .label=${this.hass.localize("ui.common.close")}
       ></mwc-button>
     `;
+  }
+
+  private _clearChosenStatistic() {
+    this._chosenStat = undefined;
+  }
+
+  private _setChosenStatistic(ev) {
+    const stat = ev.currentTarget.stat;
+    const growth = Math.round(stat.change! * 100) / 100;
+
+    this._chosenStat = stat;
+    this._origAmount = growth;
+    this._amount = growth;
   }
 
   private _dateTimeSelectorChanged(ev) {
@@ -209,11 +230,20 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     );
     return html`
       <div class="text-content">
-        <b>Statistic:</b> ${this._params!.statistic.statistic_id}
+        <b
+          >${this.hass.localize(
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.statistic"
+          )}</b
+        >
+        ${this._params!.statistic.statistic_id}
       </div>
 
       <div class="table-row">
-        <span>Start</span>
+        <span
+          >${this.hass.localize(
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.start"
+          )}</span
+        >
         <span
           >${formatDateTime(
             new Date(this._chosenStat!.start),
@@ -224,7 +254,11 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       </div>
 
       <div class="table-row">
-        <span>End</span>
+        <span
+          >${this.hass.localize(
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.end"
+          )}</span
+        >
         <span
           >${formatDateTime(
             new Date(this._chosenStat!.end),
@@ -235,33 +269,35 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       </div>
 
       <ha-selector-number
-        label="New Value"
+        label=${this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.new_value"
+        )}
         .hass=${this.hass}
         .selector=${this._amountSelector(unit || undefined)}
         .value=${this._amount}
         .disabled=${this._busy}
-        @value-changed=${(ev) => {
-          this._amount = ev.detail.value;
-        }}
+        @value-changed=${this._amountChanged}
       ></ha-selector-number>
 
       <mwc-button
         slot="primaryAction"
-        label="Adjust"
+        label=${this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.adjust"
+        )}
         .disabled=${this._busy}
-        @click=${() => {
-          this._fixIssue();
-        }}
+        @click=${this._fixIssue}
       ></mwc-button>
       <mwc-button
         slot="secondaryAction"
         .label=${this.hass.localize("ui.common.back")}
         .disabled=${this._busy}
-        @click=${() => {
-          this._chosenStat = undefined;
-        }}
+        @click=${this._clearChosenStatistic}
       ></mwc-button>
     `;
+  }
+
+  private _amountChanged(ev) {
+    this._amount = ev.detail.value;
   }
 
   private async _fetchStats(): Promise<void> {
@@ -331,12 +367,17 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     } catch (err: any) {
       this._busy = false;
       showAlertDialog(this, {
-        text: `Error adjusting sum: ${err.message || err}`,
+        text: this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.error_sum_adjusted",
+          { message: err.message || err }
+        ),
       });
       return;
     }
     showToast(this, {
-      message: "Statistic sum adjusted",
+      message: this.hass.localize(
+        "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.sum_adjusted"
+      ),
     });
     this.closeDialog();
   }
