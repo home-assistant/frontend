@@ -1,6 +1,7 @@
 import { customElement } from "lit/decorators";
 import { MdSlider } from "@material/web/slider/slider";
 import { CSSResult, css } from "lit";
+import "element-internals-polyfill";
 
 @customElement("ha-slider")
 export class HaSlider extends MdSlider {
