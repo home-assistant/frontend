@@ -24,7 +24,6 @@ import "../../../../src/layouts/hass-loading-screen";
 import { registerServiceWorker } from "../../../../src/util/register-service-worker";
 import "./hc-layout";
 import "../../../../src/components/ha-textfield";
-import type { HaTextField } from "../../../../src/components/ha-textfield";
 
 const seeFAQ = (qid) => html`
   See <a href="./faq.html${qid ? `#${qid}` : ""}">the FAQ</a> for more
