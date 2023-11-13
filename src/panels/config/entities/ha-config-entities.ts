@@ -84,6 +84,7 @@ export interface EntityRow extends StateEntity {
   restored: boolean;
   status: string;
   area?: string;
+  localized_platform: string;
 }
 
 @customElement("ha-config-entities")
@@ -176,12 +177,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   );
 
   private _columns = memoize(
-    (narrow, _language, showDisabled): DataTableColumnContainer<EntityRow> => ({
+    (
+      localize: LocalizeFunc,
+      narrow,
+      _language,
+      showDisabled
+    ): DataTableColumnContainer<EntityRow> => ({
       icon: {
         title: "",
-        label: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.state_icon"
-        ),
+        label: localize("ui.panel.config.entities.picker.headers.state_icon"),
         type: "icon",
         template: (entry) => html`
           <ha-state-icon
@@ -193,9 +197,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       },
       name: {
         main: true,
-        title: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.name"
-        ),
+        title: localize("ui.panel.config.entities.picker.headers.name"),
         sortable: true,
         filterable: true,
         direction: "asc",
@@ -204,47 +206,34 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           ? (entry) => html`
               ${entry.name}<br />
               <div class="secondary">
-                ${entry.entity_id} |
-                ${this.hass.localize(`component.${entry.platform}.title`) ||
-                entry.platform}
+                ${entry.entity_id} | ${entry.localized_platform}
               </div>
             `
           : undefined,
       },
       entity_id: {
-        title: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.entity_id"
-        ),
+        title: localize("ui.panel.config.entities.picker.headers.entity_id"),
         hidden: narrow,
         sortable: true,
         filterable: true,
         width: "25%",
       },
-      platform: {
-        title: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.integration"
-        ),
+      localized_platform: {
+        title: localize("ui.panel.config.entities.picker.headers.integration"),
         hidden: narrow,
         sortable: true,
         filterable: true,
         width: "20%",
-        template: (entry) =>
-          this.hass.localize(`component.${entry.platform}.title`) ||
-          entry.platform,
       },
       area: {
-        title: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.area"
-        ),
+        title: localize("ui.panel.config.entities.picker.headers.area"),
         sortable: true,
         hidden: narrow,
         filterable: true,
         width: "15%",
       },
       disabled_by: {
-        title: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.disabled_by"
-        ),
+        title: localize("ui.panel.config.entities.picker.headers.disabled_by"),
         sortable: true,
         hidden: narrow || !showDisabled,
         filterable: true,
@@ -257,9 +246,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               ),
       },
       status: {
-        title: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.status"
-        ),
+        title: localize("ui.panel.config.entities.picker.headers.status"),
         type: "icon",
         sortable: true,
         filterable: true,
@@ -432,6 +419,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           ),
           unavailable,
           restored,
+          localized_platform:
+            this.hass.localize(`component.${entry.platform}.title`) ||
+            entry.platform,
           area: area ? area.name : "—",
           status: restored
             ? this.hass.localize(
@@ -526,6 +516,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .tabs=${configSections.devices}
         .columns=${this._columns(
+          this.hass.localize,
           this.narrow,
           this.hass.language,
           this._showDisabled
