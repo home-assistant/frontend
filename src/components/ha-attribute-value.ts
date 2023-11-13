@@ -64,7 +64,7 @@ class HaAttributeValue extends LitElement {
     pre {
       font-family: inherit;
       font-size: inherit;
-      margin: 0px;
+      margin: 0;
       overflow-wrap: break-word;
       white-space: pre-line;
     }
