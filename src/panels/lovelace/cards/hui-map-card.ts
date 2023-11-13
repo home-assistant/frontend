@@ -218,8 +218,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
     return entity_ids.some(
       (entity_id) =>
-        oldHass.states[entity_id]?.state !==
-          this.hass.states[entity_id]?.state ||
+        oldHass.states[entity_id] !== this.hass.states[entity_id] ||
         oldHass.entities[entity_id]?.display_precision !==
           this.hass.entities[entity_id]?.display_precision
     );
