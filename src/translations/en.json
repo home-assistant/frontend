@@ -4971,7 +4971,8 @@
             },
             "history-graph": {
               "name": "History graph",
-              "description": "The History graph card allows you to display a graph for each of the entities listed."
+              "description": "The History graph card allows you to display a graph for each of the entities listed.",
+              "logarithmic_scale": "Logarithmic scale"
             },
             "statistics-graph": {
               "name": "Statistics graph",
