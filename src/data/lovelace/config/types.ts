@@ -26,9 +26,9 @@ export type LovelaceRawConfig =
   | LovelaceDashboardStrategyConfig;
 
 export function isStrategyDashboard(
-  view: LovelaceRawConfig
-): view is LovelaceDashboardStrategyConfig {
-  return "strategy" in view;
+  config: LovelaceRawConfig
+): config is LovelaceDashboardStrategyConfig {
+  return "strategy" in config;
 }
 
 export const fetchConfig = (
