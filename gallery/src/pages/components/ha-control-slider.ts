@@ -97,7 +97,7 @@ export class DemoHaBarSlider extends LitElement {
                 @value-changed=${this.handleValueChanged}
                 @slider-moved=${this.handleSliderMoved}
                 aria-labelledby=${id}
-                .tooltipUnit=${config.unit}
+                .unit=${config.unit}
               >
               </ha-control-slider>
             </div>
@@ -119,7 +119,7 @@ export class DemoHaBarSlider extends LitElement {
                   @value-changed=${this.handleValueChanged}
                   @slider-moved=${this.handleSliderMoved}
                   aria-label=${label}
-                  .tooltipUnit=${config.unit}
+                  .unit=${config.unit}
                 >
                 </ha-control-slider>
               `;

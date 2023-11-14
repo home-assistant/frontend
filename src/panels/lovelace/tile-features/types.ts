@@ -50,6 +50,11 @@ export interface SelectOptionsTileFeatureConfig {
   type: "select-options";
 }
 
+export interface NumberTileFeatureConfig {
+  type: "number";
+  style?: "buttons" | "slider";
+}
+
 export interface TargetTemperatureTileFeatureConfig {
   type: "target-temperature";
 }
@@ -98,7 +103,8 @@ export type LovelaceTileFeatureConfig =
   | VacuumCommandsTileFeatureConfig
   | TargetTemperatureTileFeatureConfig
   | WaterHeaterOperationModesTileFeatureConfig
-  | SelectOptionsTileFeatureConfig;
+  | SelectOptionsTileFeatureConfig
+  | NumberTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
   entity_id?: string;
