@@ -579,14 +579,14 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (
-      ["google_assistant", "alexa"].includes(integration.domain) && 
+      ["google_assistant", "alexa"].includes(integration.domain) &&
       isComponentLoaded(this.hass, "cloud")
     ) {
       this.closeDialog();
       navigate("/config/voice-assistants/assistants");
       return;
     }
-    
+
     const manifest = await fetchIntegrationManifest(
       this.hass,
       integration.domain
