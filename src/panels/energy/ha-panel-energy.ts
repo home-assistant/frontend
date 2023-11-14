@@ -10,14 +10,14 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
-import { LovelaceDashboardConfig } from "../../data/lovelace/config/dashboard";
+import { LovelaceConfig } from "../../data/lovelace/config/types";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-energy-period-selector";
 import { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 
-const ENERGY_LOVELACE_CONFIG: LovelaceDashboardConfig = {
+const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {
   views: [
     {
       strategy: {

@@ -23,11 +23,11 @@ import {
   deleteConfig,
   fetchConfig,
   isStrategyDashboard,
-  LovelaceDashboardConfig,
-  LovelaceDashboardRawConfig,
+  LovelaceConfig,
+  LovelaceRawConfig,
   LovelaceDashboardStrategyConfig,
   saveConfig,
-} from "../../data/lovelace/config/dashboard";
+} from "../../data/lovelace/config/types";
 import { fetchResources } from "../../data/lovelace/resource";
 import {
   isStrategyView,
@@ -225,10 +225,10 @@ export class LovelacePanel extends LitElement {
   }
 
   private async _fetchConfig(forceDiskRefresh: boolean) {
-    let conf: LovelaceDashboardConfig;
-    let rawConf: LovelaceDashboardRawConfig | undefined;
+    let conf: LovelaceConfig;
+    let rawConf: LovelaceRawConfig | undefined;
     let confMode: Lovelace["mode"] = this.panel!.config.mode;
-    let confProm: Promise<LovelaceDashboardRawConfig> | undefined;
+    let confProm: Promise<LovelaceRawConfig> | undefined;
     const preloadWindow = window as WindowWithPreloads;
 
     // On first load, we speed up loading page by having LL promise ready
@@ -298,7 +298,7 @@ export class LovelacePanel extends LitElement {
     this._setLovelaceConfig(conf, rawConf, confMode);
   }
 
-  private _checkLovelaceConfig(config: LovelaceDashboardRawConfig) {
+  private _checkLovelaceConfig(config: LovelaceRawConfig) {
     // Somehow there can be badges with value null, we remove those
     if (isStrategyDashboard(config)) {
       return config;
@@ -322,8 +322,8 @@ export class LovelacePanel extends LitElement {
   }
 
   private _setLovelaceConfig(
-    config: LovelaceDashboardConfig,
-    rawConfig: LovelaceDashboardRawConfig,
+    config: LovelaceConfig,
+    rawConfig: LovelaceRawConfig,
     mode: Lovelace["mode"]
   ) {
     config = this._checkLovelaceConfig(config);
@@ -364,16 +364,14 @@ export class LovelacePanel extends LitElement {
           narrow: this.narrow!,
         });
       },
-      saveConfig: async (
-        newConfig: LovelaceDashboardRawConfig
-      ): Promise<void> => {
+      saveConfig: async (newConfig: LovelaceRawConfig): Promise<void> => {
         const {
           config: previousConfig,
           rawConfig: previousRawConfig,
           mode: previousMode,
         } = this.lovelace!;
         newConfig = this._checkLovelaceConfig(newConfig);
-        let conf: LovelaceDashboardConfig;
+        let conf: LovelaceConfig;
         // If strategy defined, apply it here.
         if (isStrategyDashboard(newConfig)) {
           conf = await generateLovelaceDashboardStrategy(

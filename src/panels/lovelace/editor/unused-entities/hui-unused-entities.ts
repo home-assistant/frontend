@@ -21,7 +21,7 @@ import type { Lovelace } from "../../types";
 import "../card-editor/hui-entity-picker-table";
 import { showSuggestCardDialog } from "../card-editor/show-suggest-card-dialog";
 import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
-import { LovelaceDashboardConfig } from "../../../../data/lovelace/config/dashboard";
+import { LovelaceConfig } from "../../../../data/lovelace/config/types";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
@@ -35,7 +35,7 @@ export class HuiUnusedEntities extends LitElement {
 
   @state() private _selectedEntities: string[] = [];
 
-  private get _config(): LovelaceDashboardConfig {
+  private get _config(): LovelaceConfig {
     return this.lovelace.config;
   }
 

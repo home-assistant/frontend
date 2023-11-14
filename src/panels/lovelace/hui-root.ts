@@ -68,7 +68,7 @@ import type { Lovelace } from "./types";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import { LovelaceViewConfig } from "../../data/lovelace/config/view";
-import { LovelaceDashboardConfig } from "../../data/lovelace/config/dashboard";
+import { LovelaceConfig } from "../../data/lovelace/config/types";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -669,7 +669,7 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private get config(): LovelaceDashboardConfig {
+  private get config(): LovelaceConfig {
     return this.lovelace!.config;
   }
 

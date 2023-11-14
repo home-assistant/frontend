@@ -15,7 +15,7 @@ import { hassUrl } from "../data/auth";
 import { isExternal } from "../data/external";
 import { getRecorderInfo } from "../data/recorder";
 import { subscribeFrontendUserData } from "../data/frontend";
-import { fetchConfig } from "../data/lovelace/config/dashboard";
+import { fetchConfig } from "../data/lovelace/config/types";
 import { fetchResources } from "../data/lovelace/resource";
 import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";

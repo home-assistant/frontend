@@ -1,5 +1,5 @@
 import { ActionConfig } from "../../../data/lovelace/config/action";
-import { LovelaceDashboardConfig } from "../../../data/lovelace/config/dashboard";
+import { LovelaceConfig } from "../../../data/lovelace/config/types";
 import { HomeAssistant } from "../../../types";
 
 export const EXCLUDED_DOMAINS = ["zone", "persistent_notification"];
@@ -66,9 +66,7 @@ const addEntities = (entities: Set<string>, obj) => {
   }
 };
 
-export const computeUsedEntities = (
-  config: LovelaceDashboardConfig
-): Set<string> => {
+export const computeUsedEntities = (config: LovelaceConfig): Set<string> => {
   const entities = new Set<string>();
   config.views.forEach((view) => addEntities(entities, view));
   return entities;
@@ -94,7 +92,7 @@ export const calcUnusedEntities = (
 
 export const computeUnusedEntities = (
   hass: HomeAssistant,
-  config: LovelaceDashboardConfig
+  config: LovelaceConfig
 ): Set<string> => {
   const usedEntities = computeUsedEntities(config);
   const unusedEntities = calcUnusedEntities(hass, usedEntities);

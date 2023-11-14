@@ -17,7 +17,7 @@ import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../../components/ha-code-editor";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceDashboardConfig } from "../../../data/lovelace/config/dashboard";
+import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
@@ -62,7 +62,7 @@ export interface UIConfigChangedEvent extends Event {
 export abstract class HuiElementEditor<T, C = any> extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public lovelace?: LovelaceDashboardConfig;
+  @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
   @property({ attribute: false }) public context?: C;
 

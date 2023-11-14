@@ -1,8 +1,8 @@
 import {
-  LovelaceDashboardConfig,
-  LovelaceDashboardRawConfig,
+  LovelaceConfig,
+  LovelaceRawConfig,
   isStrategyDashboard,
-} from "../../../data/lovelace/config/dashboard";
+} from "../../../data/lovelace/config/types";
 import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import {
   LovelaceViewConfig,
@@ -130,7 +130,7 @@ const generateStrategy = async <T extends LovelaceStrategyConfigType>(
 export const generateLovelaceDashboardStrategy = async (
   strategyConfig: LovelaceStrategyConfig,
   hass: HomeAssistant
-): Promise<LovelaceDashboardConfig> =>
+): Promise<LovelaceConfig> =>
   generateStrategy(
     "dashboard",
     (err) => ({
@@ -172,9 +172,9 @@ export const generateLovelaceViewStrategy = async (
  * Find all references to strategies and replaces them with the generated output
  */
 export const expandLovelaceConfigStrategies = async (
-  config: LovelaceDashboardRawConfig,
+  config: LovelaceRawConfig,
   hass: HomeAssistant
-): Promise<LovelaceDashboardConfig> => {
+): Promise<LovelaceConfig> => {
   const newConfig = isStrategyDashboard(config)
     ? await generateLovelaceDashboardStrategy(config.strategy, hass)
     : { ...config };

@@ -1,10 +1,10 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceDashboardConfig } from "../../../../data/lovelace/config/dashboard";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 
 export interface EditCardDialogParams {
-  lovelaceConfig: LovelaceDashboardConfig;
-  saveConfig: (config: LovelaceDashboardConfig) => void;
+  lovelaceConfig: LovelaceConfig;
+  saveConfig: (config: LovelaceConfig) => void;
   path: [number] | [number, number];
   cardConfig?: LovelaceCardConfig;
 }

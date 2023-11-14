@@ -27,7 +27,7 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import { saveConfig } from "../../../data/lovelace/config/dashboard";
+import { saveConfig } from "../../../data/lovelace/config/types";
 import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import {
   showAlertDialog,

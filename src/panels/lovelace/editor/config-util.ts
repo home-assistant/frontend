@@ -1,5 +1,5 @@
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import { LovelaceDashboardConfig } from "../../../data/lovelace/config/dashboard";
+import { LovelaceConfig } from "../../../data/lovelace/config/types";
 import {
   LovelaceViewConfig,
   isStrategyView,
@@ -7,10 +7,10 @@ import {
 import type { HomeAssistant } from "../../../types";
 
 export const addCard = (
-  config: LovelaceDashboardConfig,
+  config: LovelaceConfig,
   path: [number],
   cardConfig: LovelaceCardConfig
-): LovelaceDashboardConfig => {
+): LovelaceConfig => {
   const [viewIndex] = path;
   const views: LovelaceViewConfig[] = [];
 
@@ -41,10 +41,10 @@ export const addCard = (
 };
 
 export const addCards = (
-  config: LovelaceDashboardConfig,
+  config: LovelaceConfig,
   path: [number],
   cardConfigs: LovelaceCardConfig[]
-): LovelaceDashboardConfig => {
+): LovelaceConfig => {
   const [viewIndex] = path;
   const views: LovelaceViewConfig[] = [];
 
@@ -75,10 +75,10 @@ export const addCards = (
 };
 
 export const replaceCard = (
-  config: LovelaceDashboardConfig,
+  config: LovelaceConfig,
   path: [number, number],
   cardConfig: LovelaceCardConfig
-): LovelaceDashboardConfig => {
+): LovelaceConfig => {
   const [viewIndex, cardIndex] = path;
   const views: LovelaceViewConfig[] = [];
 
@@ -107,9 +107,9 @@ export const replaceCard = (
 };
 
 export const deleteCard = (
-  config: LovelaceDashboardConfig,
+  config: LovelaceConfig,
   path: [number, number]
-): LovelaceDashboardConfig => {
+): LovelaceConfig => {
   const [viewIndex, cardIndex] = path;
   const views: LovelaceViewConfig[] = [];
 
@@ -138,7 +138,7 @@ export const deleteCard = (
 };
 
 export const insertCard = (
-  config: LovelaceDashboardConfig,
+  config: LovelaceConfig,
   path: [number, number],
   cardConfig: LovelaceCardConfig
 ) => {
@@ -176,10 +176,10 @@ export const insertCard = (
 };
 
 export const swapCard = (
-  config: LovelaceDashboardConfig,
+  config: LovelaceConfig,
   path1: [number, number],
   path2: [number, number]
-): LovelaceDashboardConfig => {
+): LovelaceConfig => {
   const origView1 = config.views[path1[0]];
   const origView2 = config.views[path2[0]];
 
@@ -214,10 +214,10 @@ export const swapCard = (
 };
 
 export const moveCardToPosition = (
-  config: LovelaceDashboardConfig,
+  config: LovelaceConfig,
   path: [number, number],
   position: number
-): LovelaceDashboardConfig => {
+): LovelaceConfig => {
   const view = config.views[path[0]];
 
   if (isStrategyView(view)) {
@@ -247,10 +247,10 @@ export const moveCardToPosition = (
 };
 
 export const moveCard = (
-  config: LovelaceDashboardConfig,
+  config: LovelaceConfig,
   fromPath: [number, number],
   toPath: [number]
-): LovelaceDashboardConfig => {
+): LovelaceConfig => {
   if (fromPath[0] === toPath[0]) {
     throw new Error("You cannot move a card to the view it is in.");
   }
@@ -295,9 +295,9 @@ export const moveCard = (
 
 export const addView = (
   hass: HomeAssistant,
-  config: LovelaceDashboardConfig,
+  config: LovelaceConfig,
   viewConfig: LovelaceViewConfig
-): LovelaceDashboardConfig => {
+): LovelaceConfig => {
   if (viewConfig.path && config.views.some((v) => v.path === viewConfig.path)) {
     throw new Error(
       hass.localize("ui.panel.lovelace.editor.edit_view.error_same_url")
@@ -311,10 +311,10 @@ export const addView = (
 
 export const replaceView = (
   hass: HomeAssistant,
-  config: LovelaceDashboardConfig,
+  config: LovelaceConfig,
   viewIndex: number,
   viewConfig: LovelaceViewConfig
-): LovelaceDashboardConfig => {
+): LovelaceConfig => {
   if (
     viewConfig.path &&
     config.views.some(
@@ -334,10 +334,10 @@ export const replaceView = (
 };
 
 export const swapView = (
-  config: LovelaceDashboardConfig,
+  config: LovelaceConfig,
   path1: number,
   path2: number
-): LovelaceDashboardConfig => {
+): LovelaceConfig => {
   const view1 = config.views[path1];
   const view2 = config.views[path2];
 
@@ -350,9 +350,9 @@ export const swapView = (
 };
 
 export const deleteView = (
-  config: LovelaceDashboardConfig,
+  config: LovelaceConfig,
   viewIndex: number
-): LovelaceDashboardConfig => ({
+): LovelaceConfig => ({
   ...config,
   views: config.views.filter((_origView, index) => index !== viewIndex),
 });

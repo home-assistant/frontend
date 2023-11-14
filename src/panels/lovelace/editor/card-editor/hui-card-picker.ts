@@ -19,7 +19,7 @@ import "../../../../components/ha-circular-progress";
 import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceDashboardConfig } from "../../../../data/lovelace/config/dashboard";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import {
   CUSTOM_TYPE_PREFIX,
   CustomCardEntry,
@@ -56,7 +56,7 @@ export class HuiCardPicker extends LitElement {
 
   @state() private _cards: CardElement[] = [];
 
-  public lovelace?: LovelaceDashboardConfig;
+  public lovelace?: LovelaceConfig;
 
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 

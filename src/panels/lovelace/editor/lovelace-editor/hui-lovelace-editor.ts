@@ -2,14 +2,14 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-textfield";
-import type { LovelaceDashboardConfig } from "../../../../data/lovelace/config/dashboard";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { HomeAssistant } from "../../../../types";
 import { EditorTarget } from "../types";
 
 declare global {
   interface HASSDomEvents {
     "lovelace-config-changed": {
-      config: LovelaceDashboardConfig;
+      config: LovelaceConfig;
     };
   }
 }
@@ -18,7 +18,7 @@ declare global {
 export class HuiLovelaceEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public config?: LovelaceDashboardConfig;
+  @property() public config?: LovelaceConfig;
 
   get _title(): string {
     if (!this.config) {

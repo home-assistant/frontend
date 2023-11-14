@@ -1,5 +1,5 @@
 import { LocalizeFunc } from "../../../src/common/translations/localize";
-import { LovelaceDashboardConfig } from "../../../src/data/lovelace/config/dashboard";
+import { LovelaceConfig } from "../../../src/data/lovelace/config/types";
 import { Entity } from "../../../src/fake_data/entity";
 
 export interface DemoConfig {
@@ -7,7 +7,7 @@ export interface DemoConfig {
   name: string;
   authorName: string;
   authorUrl: string;
-  lovelace: (localize: LocalizeFunc) => LovelaceDashboardConfig;
+  lovelace: (localize: LocalizeFunc) => LovelaceConfig;
   entities: (localize: LocalizeFunc) => Entity[];
   theme: () => Record<string, string> | null;
 }

@@ -27,7 +27,7 @@ import type { HomeAssistant } from "../../types";
 import { showToast } from "../../util/toast";
 import type { Lovelace } from "./types";
 import "../../components/ha-top-app-bar-fixed";
-import { LovelaceDashboardRawConfig } from "../../data/lovelace/config/dashboard";
+import { LovelaceRawConfig } from "../../data/lovelace/config/types";
 
 const lovelaceStruct = type({
   title: optional(string()),
@@ -247,9 +247,9 @@ class LovelaceFullConfigEditor extends LitElement {
       }
     }
 
-    let config: LovelaceDashboardRawConfig;
+    let config: LovelaceRawConfig;
     try {
-      config = load(value) as LovelaceDashboardRawConfig;
+      config = load(value) as LovelaceRawConfig;
     } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(

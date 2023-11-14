@@ -27,9 +27,9 @@ import {
 import {
   isStrategyDashboard,
   LegacyLovelaceConfig,
-  LovelaceDashboardConfig,
+  LovelaceConfig,
   LovelaceDashboardStrategyConfig,
-} from "../../../../src/data/lovelace/config/dashboard";
+} from "../../../../src/data/lovelace/config/types";
 import { fetchResources } from "../../../../src/data/lovelace/resource";
 import { loadLovelaceResources } from "../../../../src/panels/lovelace/common/load-resources";
 import { HassElement } from "../../../../src/state/hass-element";
@@ -47,7 +47,7 @@ let resourcesLoaded = false;
 export class HcMain extends HassElement {
   @state() private _showDemo = false;
 
-  @state() private _lovelaceConfig?: LovelaceDashboardConfig;
+  @state() private _lovelaceConfig?: LovelaceConfig;
 
   @state() private _lovelacePath: string | number | null = null;
 
@@ -347,7 +347,7 @@ export class HcMain extends HassElement {
     );
   }
 
-  private _handleNewLovelaceConfig(lovelaceConfig: LovelaceDashboardConfig) {
+  private _handleNewLovelaceConfig(lovelaceConfig: LovelaceConfig) {
     castContext.setApplicationState(lovelaceConfig.title || "");
     this._lovelaceConfig = lovelaceConfig;
   }

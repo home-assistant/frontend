@@ -10,8 +10,8 @@ import "../../../../components/ha-icon";
 import "../../../../components/ha-select";
 import {
   fetchConfig,
-  LovelaceDashboardConfig,
-} from "../../../../data/lovelace/config/dashboard";
+  LovelaceConfig,
+} from "../../../../data/lovelace/config/types";
 import {
   fetchDashboards,
   LovelaceDashboard,
@@ -38,7 +38,7 @@ export class HuiDialogSelectView extends LitElement {
 
   @state() private _urlPath?: string | null;
 
-  @state() private _config?: LovelaceDashboardConfig;
+  @state() private _config?: LovelaceConfig;
 
   @state() private _selectedViewIdx = 0;
 
@@ -161,7 +161,7 @@ export class HuiDialogSelectView extends LitElement {
         this.hass.connection,
         urlPath,
         false
-      )) as LovelaceDashboardConfig;
+      )) as LovelaceConfig;
     } catch (err: any) {
       this._config = undefined;
     }

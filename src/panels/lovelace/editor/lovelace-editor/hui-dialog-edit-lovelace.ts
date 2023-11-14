@@ -8,7 +8,7 @@ import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { Lovelace } from "../../types";
 import "./hui-lovelace-editor";
-import { LovelaceDashboardConfig } from "../../../../data/lovelace/config/dashboard";
+import { LovelaceConfig } from "../../../../data/lovelace/config/types";
 
 @customElement("hui-dialog-edit-lovelace")
 export class HuiDialogEditLovelace extends LitElement {
@@ -16,14 +16,14 @@ export class HuiDialogEditLovelace extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
-  @state() private _config?: LovelaceDashboardConfig;
+  @state() private _config?: LovelaceConfig;
 
   private _saving = false;
 
   public showDialog(lovelace: Lovelace): void {
     this._lovelace = lovelace;
     const { views, ...lovelaceConfig } = this._lovelace!.config;
-    this._config = lovelaceConfig as LovelaceDashboardConfig;
+    this._config = lovelaceConfig as LovelaceConfig;
   }
 
   public closeDialog(): void {
@@ -86,7 +86,7 @@ export class HuiDialogEditLovelace extends LitElement {
     this._saving = true;
     const lovelace = this._lovelace!;
 
-    const config: LovelaceDashboardConfig = {
+    const config: LovelaceConfig = {
       ...lovelace.config,
       ...this._config,
     };

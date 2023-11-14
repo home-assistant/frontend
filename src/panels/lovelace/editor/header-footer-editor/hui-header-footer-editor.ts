@@ -3,7 +3,7 @@ import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
-import type { LovelaceDashboardConfig } from "../../../../data/lovelace/config/dashboard";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceHeaderFooterConfig } from "../../header-footer/types";
 import { showCreateHeaderFooterDialog } from "./show-create-headerfooter-dialog";
@@ -12,7 +12,7 @@ import { showCreateHeaderFooterDialog } from "./show-create-headerfooter-dialog"
 export class HuiHeaderFooterEditor extends LitElement {
   public hass!: HomeAssistant;
 
-  public lovelaceConfig!: LovelaceDashboardConfig;
+  public lovelaceConfig!: LovelaceConfig;
 
   @property({ attribute: false }) public config?: LovelaceHeaderFooterConfig;
 

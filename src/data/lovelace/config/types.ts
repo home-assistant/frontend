@@ -6,7 +6,7 @@ import type { LovelaceViewRawConfig } from "./view";
 
 export interface LovelaceDashboardBaseConfig {}
 
-export interface LovelaceDashboardConfig extends LovelaceDashboardBaseConfig {
+export interface LovelaceConfig extends LovelaceDashboardBaseConfig {
   title?: string;
   background?: string;
   views: LovelaceViewRawConfig[];
@@ -17,16 +17,16 @@ export interface LovelaceDashboardStrategyConfig
   strategy: LovelaceStrategyConfig;
 }
 
-export interface LegacyLovelaceConfig extends LovelaceDashboardConfig {
+export interface LegacyLovelaceConfig extends LovelaceConfig {
   resources?: LovelaceResource[];
 }
 
-export type LovelaceDashboardRawConfig =
-  | LovelaceDashboardConfig
+export type LovelaceRawConfig =
+  | LovelaceConfig
   | LovelaceDashboardStrategyConfig;
 
 export function isStrategyDashboard(
-  view: LovelaceDashboardRawConfig
+  view: LovelaceRawConfig
 ): view is LovelaceDashboardStrategyConfig {
   return "strategy" in view;
 }
@@ -35,7 +35,7 @@ export const fetchConfig = (
   conn: Connection,
   urlPath: string | null,
   force: boolean
-): Promise<LovelaceDashboardRawConfig> =>
+): Promise<LovelaceRawConfig> =>
   conn.sendMessagePromise({
     type: "lovelace/config",
     url_path: urlPath,
@@ -45,7 +45,7 @@ export const fetchConfig = (
 export const saveConfig = (
   hass: HomeAssistant,
   urlPath: string | null,
-  config: LovelaceDashboardRawConfig
+  config: LovelaceRawConfig
 ): Promise<void> =>
   hass.callWS({
     type: "lovelace/config/save",

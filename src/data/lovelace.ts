@@ -10,7 +10,7 @@ import {
   LovelaceCard,
 } from "../panels/lovelace/types";
 import { HomeAssistant } from "../types";
-import { fetchConfig, LegacyLovelaceConfig } from "./lovelace/config/dashboard";
+import { fetchConfig, LegacyLovelaceConfig } from "./lovelace/config/types";
 import { LovelaceViewConfig } from "./lovelace/config/view";
 
 export interface LovelacePanelConfig {

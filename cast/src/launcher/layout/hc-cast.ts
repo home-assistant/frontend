@@ -23,7 +23,7 @@ import {
   getLegacyLovelaceCollection,
   getLovelaceCollection,
 } from "../../../../src/data/lovelace";
-import { isStrategyDashboard } from "../../../../src/data/lovelace/config/dashboard";
+import { isStrategyDashboard } from "../../../../src/data/lovelace/config/types";
 import { LovelaceViewConfig } from "../../../../src/data/lovelace/config/view";
 import "../../../../src/layouts/hass-loading-screen";
 import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";

@@ -4,9 +4,9 @@ import { HaFormSchema } from "../../components/ha-form/types";
 import { LovelaceBadgeConfig } from "../../data/lovelace/config/badge";
 import { LovelaceCardConfig } from "../../data/lovelace/config/card";
 import {
-  LovelaceDashboardConfig,
-  LovelaceDashboardRawConfig,
-} from "../../data/lovelace/config/dashboard";
+  LovelaceConfig,
+  LovelaceRawConfig,
+} from "../../data/lovelace/config/types";
 import { FrontendLocaleData } from "../../data/translation";
 import { Constructor, HomeAssistant } from "../../types";
 import { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
@@ -22,15 +22,15 @@ declare global {
 }
 
 export interface Lovelace {
-  config: LovelaceDashboardConfig;
-  rawConfig: LovelaceDashboardRawConfig;
+  config: LovelaceConfig;
+  rawConfig: LovelaceRawConfig;
   editMode: boolean;
   urlPath: string | null;
   mode: "generated" | "yaml" | "storage";
   locale: FrontendLocaleData;
   enableFullEditMode: () => void;
   setEditMode: (editMode: boolean) => void;
-  saveConfig: (newConfig: LovelaceDashboardRawConfig) => Promise<void>;
+  saveConfig: (newConfig: LovelaceRawConfig) => Promise<void>;
   deleteConfig: () => Promise<void>;
 }
 
@@ -106,7 +106,7 @@ export interface LovelaceRowEditor extends LovelaceGenericElementEditor {
 
 export interface LovelaceGenericElementEditor<C = any> extends HTMLElement {
   hass?: HomeAssistant;
-  lovelace?: LovelaceDashboardConfig;
+  lovelace?: LovelaceConfig;
   context?: C;
   setConfig(config: any): void;
   focusYamlEditor?: () => void;

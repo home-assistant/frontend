@@ -12,7 +12,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-svg-icon";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import { LovelaceDashboardConfig } from "../../../../data/lovelace/config/dashboard";
+import { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../../types";
 import type { ConditionalCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
@@ -41,7 +41,7 @@ export class HuiConditionalCardEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public lovelace?: LovelaceDashboardConfig;
+  @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
   @storage({
     key: "lovelaceClipboard",
