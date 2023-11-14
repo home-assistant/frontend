@@ -3,12 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
-import type {
-  LovelaceBadgeConfig,
-  LovelaceCardConfig,
-  LovelaceViewConfig,
-  LovelaceViewElement,
-} from "../../../data/lovelace";
+import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { HomeAssistant } from "../../../types";
 import {
   createErrorBadgeConfig,
@@ -30,6 +25,12 @@ import { deleteCard } from "../editor/config-util";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 import { PANEL_VIEW_LAYOUT, DEFAULT_VIEW_LAYOUT } from "./const";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import {
+  LovelaceViewConfig,
+  isStrategyView,
+} from "../../../data/lovelace/config/view";
 
 declare global {
   // for fire event
@@ -188,7 +189,7 @@ export class HUIView extends ReactiveElement {
     let viewConfig = this.lovelace.config.views[this.index];
     let isStrategy = false;
 
-    if (viewConfig.strategy) {
+    if (isStrategyView(viewConfig)) {
       isStrategy = true;
       viewConfig = await generateLovelaceViewStrategy(
         viewConfig.strategy,

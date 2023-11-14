@@ -1,11 +1,11 @@
 import Fuse, { IFuseOptions } from "fuse.js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -18,14 +18,12 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
-import type {
-  LovelaceCardConfig,
-  LovelaceConfig,
-} from "../../../../data/lovelace";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LovelaceDashboardConfig } from "../../../../data/lovelace/config/dashboard";
 import {
+  CUSTOM_TYPE_PREFIX,
   CustomCardEntry,
   customCards,
-  CUSTOM_TYPE_PREFIX,
   getCustomCardEntry,
 } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
@@ -58,7 +56,7 @@ export class HuiCardPicker extends LitElement {
 
   @state() private _cards: CardElement[] = [];
 
-  public lovelace?: LovelaceConfig;
+  public lovelace?: LovelaceDashboardConfig;
 
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 

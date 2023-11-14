@@ -44,7 +44,7 @@ import {
   themesContext,
 } from "../../../data/context";
 import { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { FrontendLocaleData } from "../../../data/translation";
 import { Themes } from "../../../data/ws-themes";
 import { HomeAssistant } from "../../../types";

@@ -1,7 +1,7 @@
 import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mockHistory } from "../../../../demo/src/stubs/history";
-import { LovelaceConfig } from "../../../../src/data/lovelace";
+import { LovelaceDashboardConfig } from "../../../../src/data/lovelace/config/dashboard";
 import {
   MockHomeAssistant,
   provideHass,
@@ -16,7 +16,7 @@ import "./hc-lovelace";
 class HcDemo extends HassElement {
   @property({ attribute: false }) public lovelacePath!: string;
 
-  @state() private _lovelaceConfig?: LovelaceConfig;
+  @state() private _lovelaceConfig?: LovelaceDashboardConfig;
 
   protected render() {
     if (!this._lovelaceConfig) {

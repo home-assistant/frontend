@@ -4,11 +4,11 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
-import type { LovelaceConfig } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { Lovelace } from "../../types";
 import "./hui-lovelace-editor";
+import { LovelaceDashboardConfig } from "../../../../data/lovelace/config/dashboard";
 
 @customElement("hui-dialog-edit-lovelace")
 export class HuiDialogEditLovelace extends LitElement {
@@ -16,14 +16,14 @@ export class HuiDialogEditLovelace extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
-  @state() private _config?: LovelaceConfig;
+  @state() private _config?: LovelaceDashboardConfig;
 
   private _saving = false;
 
   public showDialog(lovelace: Lovelace): void {
     this._lovelace = lovelace;
     const { views, ...lovelaceConfig } = this._lovelace!.config;
-    this._config = lovelaceConfig as LovelaceConfig;
+    this._config = lovelaceConfig as LovelaceDashboardConfig;
   }
 
   public closeDialog(): void {
@@ -86,7 +86,7 @@ export class HuiDialogEditLovelace extends LitElement {
     this._saving = true;
     const lovelace = this._lovelace!;
 
-    const config: LovelaceConfig = {
+    const config: LovelaceDashboardConfig = {
       ...lovelace.config,
       ...this._config,
     };

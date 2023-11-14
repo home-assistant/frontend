@@ -4,11 +4,11 @@ import type { LovelaceResource } from "../resource";
 import type { LovelaceStrategyConfig } from "./strategy";
 import type { LovelaceViewRawConfig } from "./view";
 
-export interface LovelaceDashboardBaseConfig {
-  title?: string;
-}
+export interface LovelaceDashboardBaseConfig {}
 
 export interface LovelaceDashboardConfig extends LovelaceDashboardBaseConfig {
+  title?: string;
+  background?: string;
   views: LovelaceViewRawConfig[];
 }
 

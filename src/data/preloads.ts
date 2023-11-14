@@ -1,8 +1,9 @@
-import { LovelaceConfig, LovelaceResource } from "./lovelace";
+import { LovelaceDashboardRawConfig } from "./lovelace/config/dashboard";
+import { LovelaceResource } from "./lovelace/resource";
 import { RecorderInfo } from "./recorder";
 
 export interface WindowWithPreloads extends Window {
-  llConfProm?: Promise<LovelaceConfig>;
+  llConfProm?: Promise<LovelaceDashboardRawConfig>;
   llResProm?: Promise<LovelaceResource[]>;
   recorderInfoProm?: Promise<RecorderInfo>;
 }

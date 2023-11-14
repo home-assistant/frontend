@@ -1,8 +1,9 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { LovelaceConfig, LovelaceDashboard } from "../../../../data/lovelace";
+import { LovelaceDashboardConfig } from "../../../../data/lovelace/config/dashboard";
+import { LovelaceDashboard } from "../../../../data/lovelace/dashboard";
 
 export interface SelectViewDialogParams {
-  lovelaceConfig: LovelaceConfig;
+  lovelaceConfig: LovelaceDashboardConfig;
   allowDashboardChange: boolean;
   dashboards?: LovelaceDashboard[];
   urlPath?: string | null;
@@ -10,7 +11,7 @@ export interface SelectViewDialogParams {
   actionLabel?: string;
   viewSelectedCallback: (
     urlPath: string | null,
-    config: LovelaceConfig,
+    config: LovelaceDashboardConfig,
     view: number
   ) => void;
 }

@@ -1,10 +1,8 @@
-import {
-  LovelaceCardConfig,
-  LovelaceConfig,
-} from "../../../../src/data/lovelace";
+import { LovelaceCardConfig } from "../../../../src/data/lovelace/config/card";
+import { LovelaceDashboardConfig } from "../../../../src/data/lovelace/config/dashboard";
 import { castContext } from "../cast_context";
 
-export const castDemoLovelace: () => LovelaceConfig = () => {
+export const castDemoLovelace: () => LovelaceDashboardConfig = () => {
   const touchSupported =
     castContext.getDeviceCapabilities().touch_input_supported;
   return {

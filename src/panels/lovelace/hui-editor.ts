@@ -18,7 +18,6 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../components/ha-code-editor";
 import "../../components/ha-icon-button";
-import type { LovelaceConfig } from "../../data/lovelace";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -28,6 +27,7 @@ import type { HomeAssistant } from "../../types";
 import { showToast } from "../../util/toast";
 import type { Lovelace } from "./types";
 import "../../components/ha-top-app-bar-fixed";
+import { LovelaceDashboardRawConfig } from "../../data/lovelace/config/dashboard";
 
 const lovelaceStruct = type({
   title: optional(string()),
@@ -247,9 +247,9 @@ class LovelaceFullConfigEditor extends LitElement {
       }
     }
 
-    let config: LovelaceConfig;
+    let config: LovelaceDashboardRawConfig;
     try {
-      config = load(value) as LovelaceConfig;
+      config = load(value) as LovelaceDashboardRawConfig;
     } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(

@@ -3,7 +3,10 @@ import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
-import { fetchDashboards, LovelaceDashboard } from "../../data/lovelace";
+import {
+  fetchDashboards,
+  LovelaceDashboard,
+} from "../../data/lovelace/dashboard";
 import { setDefaultPanel } from "../../data/panel";
 import { HomeAssistant } from "../../types";
 

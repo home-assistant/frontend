@@ -51,11 +51,7 @@ import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
 import "../../components/ha-tabs";
-import type {
-  LovelaceConfig,
-  LovelacePanelConfig,
-  LovelaceViewConfig,
-} from "../../data/lovelace";
+import type { LovelacePanelConfig } from "../../data/lovelace";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -71,6 +67,8 @@ import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
+import { LovelaceViewConfig } from "../../data/lovelace/config/view";
+import { LovelaceDashboardConfig } from "../../data/lovelace/config/dashboard";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -671,7 +669,7 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private get config(): LovelaceConfig {
+  private get config(): LovelaceDashboardConfig {
     return this.lovelace!.config;
   }
 

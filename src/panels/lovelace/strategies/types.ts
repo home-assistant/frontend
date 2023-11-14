@@ -1,8 +1,6 @@
-import {
-  LovelaceConfig,
-  LovelaceStrategyConfig,
-  LovelaceViewConfig,
-} from "../../../data/lovelace";
+import { LovelaceDashboardConfig } from "../../../data/lovelace/config/dashboard";
+import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { HomeAssistant } from "../../../types";
 
 export type LovelaceStrategy<T = any> = {
@@ -10,7 +8,7 @@ export type LovelaceStrategy<T = any> = {
 };
 
 export interface LovelaceDashboardStrategy
-  extends LovelaceStrategy<LovelaceConfig> {}
+  extends LovelaceStrategy<LovelaceDashboardConfig> {}
 
 export interface LovelaceViewStrategy
   extends LovelaceStrategy<LovelaceViewConfig> {}

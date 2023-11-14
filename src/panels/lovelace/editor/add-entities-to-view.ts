@@ -1,10 +1,10 @@
+import { LovelacePanelConfig } from "../../../data/lovelace";
 import {
+  LovelaceDashboardConfig,
   fetchConfig,
-  fetchDashboards,
-  LovelaceConfig,
-  LovelacePanelConfig,
   saveConfig,
-} from "../../../data/lovelace";
+} from "../../../data/lovelace/config/dashboard";
+import { fetchDashboards } from "../../../data/lovelace/dashboard";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
 import { showSuggestCardDialog } from "./card-editor/show-suggest-card-dialog";
@@ -93,7 +93,7 @@ export const addEntitiesToLovelaceView = async (
     showSuggestCardDialog(element, {
       cardTitle,
       lovelaceConfig: lovelaceConfig!,
-      saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
+      saveConfig: async (newConfig: LovelaceDashboardConfig): Promise<void> => {
         try {
           await saveConfig(hass!, null, newConfig);
         } catch (err: any) {
@@ -116,7 +116,9 @@ export const addEntitiesToLovelaceView = async (
       showSuggestCardDialog(element, {
         cardTitle,
         lovelaceConfig: selectedDashConfig,
-        saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
+        saveConfig: async (
+          newConfig: LovelaceDashboardConfig
+        ): Promise<void> => {
           try {
             await saveConfig(hass!, newUrlPath, newConfig);
           } catch {

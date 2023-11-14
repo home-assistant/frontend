@@ -15,13 +15,13 @@ import { computeRTL } from "../../../../common/util/compute_rtl";
 import type { DataTableRowData } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-fab";
 import "../../../../components/ha-svg-icon";
-import type { LovelaceConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import { computeUnusedEntities } from "../../common/compute-unused-entities";
 import type { Lovelace } from "../../types";
 import "../card-editor/hui-entity-picker-table";
 import { showSuggestCardDialog } from "../card-editor/show-suggest-card-dialog";
 import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
+import { LovelaceDashboardConfig } from "../../../../data/lovelace/config/dashboard";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
@@ -35,7 +35,7 @@ export class HuiUnusedEntities extends LitElement {
 
   @state() private _selectedEntities: string[] = [];
 
-  private get _config(): LovelaceConfig {
+  private get _config(): LovelaceDashboardConfig {
     return this.lovelace.config;
   }
 

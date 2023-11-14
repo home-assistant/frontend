@@ -1,4 +1,4 @@
-import { ActionConfig } from "../../../data/lovelace";
+import { ActionConfig } from "../../../data/lovelace/config/action";
 import { EntitiesCardEntityConfig } from "../cards/types";
 
 export interface LovelaceHeaderFooterConfig {

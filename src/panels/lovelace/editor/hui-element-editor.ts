@@ -1,12 +1,12 @@
 import "@material/mwc-button";
 import { dump, load } from "js-yaml";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
 } from "lit";
 import { property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -16,10 +16,8 @@ import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../../components/ha-code-editor";
-import type {
-  LovelaceCardConfig,
-  LovelaceConfig,
-} from "../../../data/lovelace";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceDashboardConfig } from "../../../data/lovelace/config/dashboard";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
@@ -64,7 +62,7 @@ export interface UIConfigChangedEvent extends Event {
 export abstract class HuiElementEditor<T, C = any> extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public lovelace?: LovelaceConfig;
+  @property({ attribute: false }) public lovelace?: LovelaceDashboardConfig;
 
   @property({ attribute: false }) public context?: C;
 

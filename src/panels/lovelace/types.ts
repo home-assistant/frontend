@@ -1,11 +1,12 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "../../common/translations/localize";
 import { HaFormSchema } from "../../components/ha-form/types";
+import { LovelaceBadgeConfig } from "../../data/lovelace/config/badge";
+import { LovelaceCardConfig } from "../../data/lovelace/config/card";
 import {
-  LovelaceBadgeConfig,
-  LovelaceCardConfig,
-  LovelaceConfig,
-} from "../../data/lovelace";
+  LovelaceDashboardConfig,
+  LovelaceDashboardRawConfig,
+} from "../../data/lovelace/config/dashboard";
 import { FrontendLocaleData } from "../../data/translation";
 import { Constructor, HomeAssistant } from "../../types";
 import { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
@@ -21,16 +22,16 @@ declare global {
 }
 
 export interface Lovelace {
-  config: LovelaceConfig;
+  config: LovelaceDashboardConfig;
   // If not set, a strategy was used to generate everything
-  rawConfig: LovelaceConfig | undefined;
+  rawConfig: LovelaceDashboardRawConfig | undefined;
   editMode: boolean;
   urlPath: string | null;
   mode: "generated" | "yaml" | "storage";
   locale: FrontendLocaleData;
   enableFullEditMode: () => void;
   setEditMode: (editMode: boolean) => void;
-  saveConfig: (newConfig: LovelaceConfig) => Promise<void>;
+  saveConfig: (newConfig: LovelaceDashboardRawConfig) => Promise<void>;
   deleteConfig: () => Promise<void>;
 }
 
@@ -106,7 +107,7 @@ export interface LovelaceRowEditor extends LovelaceGenericElementEditor {
 
 export interface LovelaceGenericElementEditor<C = any> extends HTMLElement {
   hass?: HomeAssistant;
-  lovelace?: LovelaceConfig;
+  lovelace?: LovelaceDashboardConfig;
   context?: C;
   setConfig(config: any): void;
   focusYamlEditor?: () => void;

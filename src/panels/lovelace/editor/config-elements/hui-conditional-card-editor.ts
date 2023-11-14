@@ -11,10 +11,8 @@ import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-svg-icon";
-import type {
-  LovelaceCardConfig,
-  LovelaceConfig,
-} from "../../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { LovelaceDashboardConfig } from "../../../../data/lovelace/config/dashboard";
 import type { HomeAssistant } from "../../../../types";
 import type { ConditionalCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
@@ -43,7 +41,7 @@ export class HuiConditionalCardEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public lovelace?: LovelaceConfig;
+  @property({ attribute: false }) public lovelace?: LovelaceDashboardConfig;
 
   @storage({
     key: "lovelaceClipboard",

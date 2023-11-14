@@ -1,8 +1,13 @@
 import {
-  LovelaceConfig,
-  LovelaceStrategyConfig,
+  LovelaceDashboardConfig,
+  LovelaceDashboardRawConfig,
+  isStrategyDashboard,
+} from "../../../data/lovelace/config/dashboard";
+import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import {
   LovelaceViewConfig,
-} from "../../../data/lovelace";
+  isStrategyView,
+} from "../../../data/lovelace/config/view";
 import { AsyncReturnType, HomeAssistant } from "../../../types";
 import { isLegacyStrategy } from "./legacy-strategy";
 import {
@@ -125,7 +130,7 @@ const generateStrategy = async <T extends LovelaceStrategyConfigType>(
 export const generateLovelaceDashboardStrategy = async (
   strategyConfig: LovelaceStrategyConfig,
   hass: HomeAssistant
-): Promise<LovelaceConfig> =>
+): Promise<LovelaceDashboardConfig> =>
   generateStrategy(
     "dashboard",
     (err) => ({
@@ -167,16 +172,18 @@ export const generateLovelaceViewStrategy = async (
  * Find all references to strategies and replaces them with the generated output
  */
 export const expandLovelaceConfigStrategies = async (
-  config: LovelaceConfig,
+  config: LovelaceDashboardRawConfig,
   hass: HomeAssistant
-): Promise<LovelaceConfig> => {
-  const newConfig = config.strategy
+): Promise<LovelaceDashboardConfig> => {
+  const newConfig = isStrategyDashboard(config)
     ? await generateLovelaceDashboardStrategy(config.strategy, hass)
     : { ...config };
 
   newConfig.views = await Promise.all(
     newConfig.views.map((view) =>
-      view.strategy ? generateLovelaceViewStrategy(view.strategy, hass) : view
+      isStrategyView(view)
+        ? generateLovelaceViewStrategy(view.strategy, hass)
+        : view
     )
   );
 

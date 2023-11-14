@@ -1,5 +1,5 @@
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { ActionConfig } from "../../../data/lovelace";
+import { ActionConfig } from "../../../data/lovelace/config/action";
 import { HomeAssistant } from "../../../types";
 
 interface Config {

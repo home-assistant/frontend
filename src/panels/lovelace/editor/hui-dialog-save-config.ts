@@ -10,7 +10,7 @@ import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-switch";
 import "../../../components/ha-yaml-editor";
-import type { LovelaceConfig } from "../../../data/lovelace";
+import { LovelaceDashboardConfig } from "../../../data/lovelace/config/dashboard";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -18,7 +18,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { expandLovelaceConfigStrategies } from "../strategies/get-strategy";
 import type { SaveDialogParams } from "./show-save-config-dialog";
 
-const EMPTY_CONFIG: LovelaceConfig = { views: [{ title: "Home" }] };
+const EMPTY_CONFIG: LovelaceDashboardConfig = { views: [{ title: "Home" }] };
 
 @customElement("hui-dialog-save-config")
 export class HuiSaveConfig extends LitElement implements HassDialog {

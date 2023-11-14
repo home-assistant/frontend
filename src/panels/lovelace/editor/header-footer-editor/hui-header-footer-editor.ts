@@ -1,9 +1,9 @@
 import { mdiClose, mdiPencil, mdiPlus } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
-import type { LovelaceConfig } from "../../../../data/lovelace";
+import type { LovelaceDashboardConfig } from "../../../../data/lovelace/config/dashboard";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceHeaderFooterConfig } from "../../header-footer/types";
 import { showCreateHeaderFooterDialog } from "./show-create-headerfooter-dialog";
@@ -12,7 +12,7 @@ import { showCreateHeaderFooterDialog } from "./show-create-headerfooter-dialog"
 export class HuiHeaderFooterEditor extends LitElement {
   public hass!: HomeAssistant;
 
-  public lovelaceConfig!: LovelaceConfig;
+  public lovelaceConfig!: LovelaceDashboardConfig;
 
   @property({ attribute: false }) public config?: LovelaceHeaderFooterConfig;
 

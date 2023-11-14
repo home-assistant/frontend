@@ -25,7 +25,8 @@ import {
 import { storage } from "../../../../common/decorators/storage";
 import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LovelaceDashboardConfig } from "../../../../data/lovelace/config/dashboard";
 import { HomeAssistant } from "../../../../types";
 import { StackCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
@@ -52,7 +53,7 @@ export class HuiStackCardEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public lovelace?: LovelaceConfig;
+  @property({ attribute: false }) public lovelace?: LovelaceDashboardConfig;
 
   @storage({
     key: "lovelaceClipboard",

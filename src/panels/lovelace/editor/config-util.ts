@@ -1,15 +1,16 @@
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceDashboardConfig } from "../../../data/lovelace/config/dashboard";
 import {
-  LovelaceCardConfig,
-  LovelaceConfig,
   LovelaceViewConfig,
-} from "../../../data/lovelace";
+  isStrategyView,
+} from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 
 export const addCard = (
-  config: LovelaceConfig,
+  config: LovelaceDashboardConfig,
   path: [number],
   cardConfig: LovelaceCardConfig
-): LovelaceConfig => {
+): LovelaceDashboardConfig => {
   const [viewIndex] = path;
   const views: LovelaceViewConfig[] = [];
 
@@ -17,6 +18,10 @@ export const addCard = (
     if (index !== viewIndex) {
       views.push(config.views[index]);
       return;
+    }
+
+    if (isStrategyView(viewConf)) {
+      throw new Error("You cannot add a card in a strategy view.");
     }
 
     const cards = viewConf.cards
@@ -36,10 +41,10 @@ export const addCard = (
 };
 
 export const addCards = (
-  config: LovelaceConfig,
+  config: LovelaceDashboardConfig,
   path: [number],
   cardConfigs: LovelaceCardConfig[]
-): LovelaceConfig => {
+): LovelaceDashboardConfig => {
   const [viewIndex] = path;
   const views: LovelaceViewConfig[] = [];
 
@@ -47,6 +52,10 @@ export const addCards = (
     if (index !== viewIndex) {
       views.push(config.views[index]);
       return;
+    }
+
+    if (isStrategyView(viewConf)) {
+      throw new Error("You cannot add cards in a strategy view.");
     }
 
     const cards = viewConf.cards
@@ -66,10 +75,10 @@ export const addCards = (
 };
 
 export const replaceCard = (
-  config: LovelaceConfig,
+  config: LovelaceDashboardConfig,
   path: [number, number],
   cardConfig: LovelaceCardConfig
-): LovelaceConfig => {
+): LovelaceDashboardConfig => {
   const [viewIndex, cardIndex] = path;
   const views: LovelaceViewConfig[] = [];
 
@@ -77,6 +86,10 @@ export const replaceCard = (
     if (index !== viewIndex) {
       views.push(config.views[index]);
       return;
+    }
+
+    if (isStrategyView(viewConf)) {
+      throw new Error("You cannot replace a card in a strategy view.");
     }
 
     views.push({
@@ -94,9 +107,9 @@ export const replaceCard = (
 };
 
 export const deleteCard = (
-  config: LovelaceConfig,
+  config: LovelaceDashboardConfig,
   path: [number, number]
-): LovelaceConfig => {
+): LovelaceDashboardConfig => {
   const [viewIndex, cardIndex] = path;
   const views: LovelaceViewConfig[] = [];
 
@@ -104,6 +117,10 @@ export const deleteCard = (
     if (index !== viewIndex) {
       views.push(config.views[index]);
       return;
+    }
+
+    if (isStrategyView(viewConf)) {
+      throw new Error("You cannot delete a card in a strategy view.");
     }
 
     views.push({
@@ -121,7 +138,7 @@ export const deleteCard = (
 };
 
 export const insertCard = (
-  config: LovelaceConfig,
+  config: LovelaceDashboardConfig,
   path: [number, number],
   cardConfig: LovelaceCardConfig
 ) => {
@@ -132,6 +149,10 @@ export const insertCard = (
     if (index !== viewIndex) {
       views.push(config.views[index]);
       return;
+    }
+
+    if (isStrategyView(viewConf)) {
+      throw new Error("You cannot insert a card in a strategy view.");
     }
 
     const cards = viewConf.cards
@@ -155,14 +176,20 @@ export const insertCard = (
 };
 
 export const swapCard = (
-  config: LovelaceConfig,
+  config: LovelaceDashboardConfig,
   path1: [number, number],
   path2: [number, number]
-): LovelaceConfig => {
-  const card1 = config.views[path1[0]].cards![path1[1]];
-  const card2 = config.views[path2[0]].cards![path2[1]];
-
+): LovelaceDashboardConfig => {
   const origView1 = config.views[path1[0]];
+  const origView2 = config.views[path2[0]];
+
+  if (isStrategyView(origView1) || isStrategyView(origView2)) {
+    throw new Error("You cannot move swap cards in a strategy view.");
+  }
+
+  const card1 = origView1.cards![path1[1]];
+  const card2 = origView2.cards![path2[1]];
+
   const newView1 = {
     ...origView1,
     cards: origView1.cards!.map((origCard, index) =>
@@ -170,10 +197,10 @@ export const swapCard = (
     ),
   };
 
-  const origView2 = path1[0] === path2[0] ? newView1 : config.views[path2[0]];
+  const updatedOrigView2 = path1[0] === path2[0] ? newView1 : origView2;
   const newView2 = {
-    ...origView2,
-    cards: origView2.cards!.map((origCard, index) =>
+    ...updatedOrigView2,
+    cards: updatedOrigView2.cards!.map((origCard, index) =>
       index === path2[1] ? card1 : origCard
     ),
   };
@@ -187,11 +214,15 @@ export const swapCard = (
 };
 
 export const moveCardToPosition = (
-  config: LovelaceConfig,
+  config: LovelaceDashboardConfig,
   path: [number, number],
   position: number
-) => {
+): LovelaceDashboardConfig => {
   const view = config.views[path[0]];
+
+  if (isStrategyView(view)) {
+    throw new Error("You cannot move a card in a strategy view.");
+  }
 
   const oldIndex = path[1];
   const newIndex = Math.max(Math.min(position - 1, view.cards!.length - 1), 0);
@@ -216,14 +247,24 @@ export const moveCardToPosition = (
 };
 
 export const moveCard = (
-  config: LovelaceConfig,
+  config: LovelaceDashboardConfig,
   fromPath: [number, number],
   toPath: [number]
-): LovelaceConfig => {
+): LovelaceDashboardConfig => {
   if (fromPath[0] === toPath[0]) {
     throw new Error("You cannot move a card to the view it is in.");
   }
   const fromView = config.views[fromPath[0]];
+  const toView = config.views[toPath[0]];
+
+  if (isStrategyView(fromView)) {
+    throw new Error("You cannot move a card from a strategy view.");
+  }
+
+  if (isStrategyView(toView)) {
+    throw new Error("You cannot move a card to a strategy view.");
+  }
+
   const card = fromView.cards![fromPath[1]];
 
   const newView1 = {
@@ -233,7 +274,6 @@ export const moveCard = (
     ),
   };
 
-  const toView = config.views[toPath[0]];
   const cards = toView.cards ? [...toView.cards, card] : [card];
 
   const newView2 = {
@@ -255,9 +295,9 @@ export const moveCard = (
 
 export const addView = (
   hass: HomeAssistant,
-  config: LovelaceConfig,
+  config: LovelaceDashboardConfig,
   viewConfig: LovelaceViewConfig
-): LovelaceConfig => {
+): LovelaceDashboardConfig => {
   if (viewConfig.path && config.views.some((v) => v.path === viewConfig.path)) {
     throw new Error(
       hass.localize("ui.panel.lovelace.editor.edit_view.error_same_url")
@@ -271,10 +311,10 @@ export const addView = (
 
 export const replaceView = (
   hass: HomeAssistant,
-  config: LovelaceConfig,
+  config: LovelaceDashboardConfig,
   viewIndex: number,
   viewConfig: LovelaceViewConfig
-): LovelaceConfig => {
+): LovelaceDashboardConfig => {
   if (
     viewConfig.path &&
     config.views.some(
@@ -294,10 +334,10 @@ export const replaceView = (
 };
 
 export const swapView = (
-  config: LovelaceConfig,
+  config: LovelaceDashboardConfig,
   path1: number,
   path2: number
-): LovelaceConfig => {
+): LovelaceDashboardConfig => {
   const view1 = config.views[path1];
   const view2 = config.views[path2];
 
@@ -310,9 +350,9 @@ export const swapView = (
 };
 
 export const deleteView = (
-  config: LovelaceConfig,
+  config: LovelaceDashboardConfig,
   viewIndex: number
-): LovelaceConfig => ({
+): LovelaceDashboardConfig => ({
   ...config,
   views: config.views.filter((_origView, index) => index !== viewIndex),
 });

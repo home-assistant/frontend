@@ -5,11 +5,11 @@ import {
   moveCard,
   swapView,
 } from "../../../../src/panels/lovelace/editor/config-util";
-import { LovelaceConfig } from "../../../../src/data/lovelace";
+import { LovelaceDashboardConfig } from "../../../../src/data/lovelace/config/dashboard";
 
 describe("swapCard", () => {
   it("swaps 2 cards in same view", () => {
-    const config: LovelaceConfig = {
+    const config: LovelaceDashboardConfig = {
       views: [
         {},
         {
@@ -31,7 +31,7 @@ describe("swapCard", () => {
   });
 
   it("swaps 2 cards in different views", () => {
-    const config: LovelaceConfig = {
+    const config: LovelaceDashboardConfig = {
       views: [
         {
           cards: [{ type: "v1-c1" }, { type: "v1-c2" }],
@@ -43,7 +43,7 @@ describe("swapCard", () => {
     };
 
     const result = swapCard(config, [0, 0], [1, 1]);
-    const expected: LovelaceConfig = {
+    const expected: LovelaceDashboardConfig = {
       views: [
         {
           cards: [{ type: "v2-c2" }, { type: "v1-c2" }],
@@ -59,7 +59,7 @@ describe("swapCard", () => {
 
 describe("moveCard", () => {
   it("move a card to an empty view", () => {
-    const config: LovelaceConfig = {
+    const config: LovelaceDashboardConfig = {
       views: [
         {},
         {
@@ -69,7 +69,7 @@ describe("moveCard", () => {
     };
 
     const result = moveCard(config, [1, 0], [0]);
-    const expected: LovelaceConfig = {
+    const expected: LovelaceDashboardConfig = {
       views: [
         {
           cards: [{ type: "card1" }],
@@ -83,7 +83,7 @@ describe("moveCard", () => {
   });
 
   it("move a card to different view", () => {
-    const config: LovelaceConfig = {
+    const config: LovelaceDashboardConfig = {
       views: [
         {
           cards: [{ type: "v1-c1" }, { type: "v1-c2" }],
@@ -95,7 +95,7 @@ describe("moveCard", () => {
     };
 
     const result = moveCard(config, [1, 0], [0]);
-    const expected: LovelaceConfig = {
+    const expected: LovelaceDashboardConfig = {
       views: [
         {
           cards: [{ type: "v1-c1" }, { type: "v1-c2" }, { type: "v2-c1" }],
@@ -109,7 +109,7 @@ describe("moveCard", () => {
   });
 
   it("move a card to the same view", () => {
-    const config: LovelaceConfig = {
+    const config: LovelaceDashboardConfig = {
       views: [
         {
           cards: [{ type: "v1-c1" }, { type: "v1-c2" }],
@@ -133,7 +133,7 @@ describe("moveCard", () => {
 
 describe("swapView", () => {
   it("swaps 2 view", () => {
-    const config: LovelaceConfig = {
+    const config: LovelaceDashboardConfig = {
       views: [
         {
           title: "view1",
@@ -147,7 +147,7 @@ describe("swapView", () => {
     };
 
     const result = swapView(config, 1, 0);
-    const expected: LovelaceConfig = {
+    const expected: LovelaceDashboardConfig = {
       views: [
         {
           title: "view2",
@@ -163,7 +163,7 @@ describe("swapView", () => {
   });
 
   it("swaps the same views", () => {
-    const config: LovelaceConfig = {
+    const config: LovelaceDashboardConfig = {
       views: [
         {
           title: "view1",
@@ -177,7 +177,7 @@ describe("swapView", () => {
     };
 
     const result = swapView(config, 0, 0);
-    const expected: LovelaceConfig = {
+    const expected: LovelaceDashboardConfig = {
       views: [
         {
           title: "view1",
