@@ -23,8 +23,7 @@ declare global {
 
 export interface Lovelace {
   config: LovelaceDashboardConfig;
-  // If not set, a strategy was used to generate everything
-  rawConfig: LovelaceDashboardRawConfig | undefined;
+  rawConfig: LovelaceDashboardRawConfig;
   editMode: boolean;
   urlPath: string | null;
   mode: "generated" | "yaml" | "storage";

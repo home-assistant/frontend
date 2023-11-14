@@ -25,6 +25,7 @@ import {
   isStrategyDashboard,
   LovelaceDashboardConfig,
   LovelaceDashboardRawConfig,
+  LovelaceDashboardStrategyConfig,
   saveConfig,
 } from "../../data/lovelace/config/dashboard";
 import { fetchResources } from "../../data/lovelace/resource";
@@ -35,7 +36,11 @@ import {
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
-const DEFAULT_STRATEGY = "original-states";
+const DEFAULT_CONFIG: LovelaceDashboardStrategyConfig = {
+  strategy: {
+    type: "original-states",
+  },
+};
 
 interface LovelacePanelConfig {
   mode: "yaml" | "storage";
@@ -170,12 +175,10 @@ export class LovelacePanel extends LitElement {
 
   private async _regenerateConfig() {
     const conf = await generateLovelaceDashboardStrategy(
-      {
-        type: DEFAULT_STRATEGY,
-      },
+      DEFAULT_CONFIG.strategy,
       this.hass!
     );
-    this._setLovelaceConfig(conf, undefined, "generated");
+    this._setLovelaceConfig(conf, DEFAULT_CONFIG, "generated");
     this._panelState = "loaded";
   }
 
@@ -276,11 +279,10 @@ export class LovelacePanel extends LitElement {
         return;
       }
       conf = await generateLovelaceDashboardStrategy(
-        {
-          type: DEFAULT_STRATEGY,
-        },
+        DEFAULT_CONFIG.strategy,
         this.hass!
       );
+      rawConf = DEFAULT_CONFIG;
       confMode = "generated";
     } finally {
       // Ignore updates for another 2 seconds.
@@ -321,7 +323,7 @@ export class LovelacePanel extends LitElement {
 
   private _setLovelaceConfig(
     config: LovelaceDashboardConfig,
-    rawConfig: LovelaceDashboardRawConfig | undefined,
+    rawConfig: LovelaceDashboardRawConfig,
     mode: Lovelace["mode"]
   ) {
     config = this._checkLovelaceConfig(config);
@@ -411,14 +413,12 @@ export class LovelacePanel extends LitElement {
         try {
           // Optimistic update
           const generatedConf = await generateLovelaceDashboardStrategy(
-            {
-              type: DEFAULT_STRATEGY,
-            },
+            DEFAULT_CONFIG.strategy,
             this.hass!
           );
           this._updateLovelace({
             config: generatedConf,
-            rawConfig: undefined,
+            rawConfig: DEFAULT_CONFIG,
             mode: "generated",
             editMode: false,
           });

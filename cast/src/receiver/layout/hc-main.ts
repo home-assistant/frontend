@@ -28,6 +28,7 @@ import {
   isStrategyDashboard,
   LegacyLovelaceConfig,
   LovelaceDashboardConfig,
+  LovelaceDashboardStrategyConfig,
 } from "../../../../src/data/lovelace/config/dashboard";
 import { fetchResources } from "../../../../src/data/lovelace/resource";
 import { loadLovelaceResources } from "../../../../src/panels/lovelace/common/load-resources";
@@ -35,7 +36,11 @@ import { HassElement } from "../../../../src/state/hass-element";
 import { castContext } from "../cast_context";
 import "./hc-launch-screen";
 
-const DEFAULT_STRATEGY = "original-states";
+const DEFAULT_CONFIG: LovelaceDashboardStrategyConfig = {
+  strategy: {
+    type: "original-states",
+  },
+};
 
 let resourcesLoaded = false;
 @customElement("hc-main")
@@ -336,9 +341,7 @@ export class HcMain extends HassElement {
     );
     this._handleNewLovelaceConfig(
       await generateLovelaceDashboardStrategy(
-        {
-          type: DEFAULT_STRATEGY,
-        },
+        DEFAULT_CONFIG.strategy,
         this.hass!
       )
     );
