@@ -126,7 +126,7 @@ class DialogAreaDetail extends LitElement {
             ></ha-aliases-editor>
           </div>
         </div>
-        <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
           ${this.hass.localize("ui.common.cancel")}
         </mwc-button>
         <mwc-button
