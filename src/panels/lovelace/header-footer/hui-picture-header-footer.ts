@@ -1,16 +1,16 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/ha-card";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";

@@ -28,15 +28,15 @@ import {
   fetchDashboards,
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
-  LovelacePanelConfig,
   updateDashboard,
-} from "../../../../data/lovelace";
+} from "../../../../data/lovelace/dashboard";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../types";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
+import { LovelacePanelConfig } from "../../../../data/lovelace";
 
 type DataTableItem = Pick<
   LovelaceDashboard,

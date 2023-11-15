@@ -20,7 +20,7 @@ import {
   CallServiceActionConfig,
   NavigateActionConfig,
   UrlActionConfig,
-} from "../../../data/lovelace";
+} from "../../../data/lovelace/config/action";
 import { ServiceAction } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";

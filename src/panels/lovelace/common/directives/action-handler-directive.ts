@@ -13,7 +13,7 @@ import { deepEqual } from "../../../../common/util/deep-equal";
 import {
   ActionHandlerDetail,
   ActionHandlerOptions,
-} from "../../../../data/lovelace";
+} from "../../../../data/lovelace/action_handler";
 
 const isTouch =
   "ontouchstart" in window ||

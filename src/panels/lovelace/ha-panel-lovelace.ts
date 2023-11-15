@@ -8,14 +8,7 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import { domainToName } from "../../data/integration";
-import {
-  deleteConfig,
-  fetchConfig,
-  fetchResources,
-  LovelaceConfig,
-  saveConfig,
-  subscribeLovelaceUpdates,
-} from "../../data/lovelace";
+import { subscribeLovelaceUpdates } from "../../data/lovelace";
 import { WindowWithPreloads } from "../../data/preloads";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
@@ -26,10 +19,28 @@ import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import { generateLovelaceDashboardStrategy } from "./strategies/get-strategy";
 import { Lovelace } from "./types";
+import {
+  deleteConfig,
+  fetchConfig,
+  isStrategyDashboard,
+  LovelaceConfig,
+  LovelaceRawConfig,
+  LovelaceDashboardStrategyConfig,
+  saveConfig,
+} from "../../data/lovelace/config/types";
+import { fetchResources } from "../../data/lovelace/resource";
+import {
+  isStrategyView,
+  LovelaceViewConfig,
+} from "../../data/lovelace/config/view";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
-const DEFAULT_STRATEGY = "original-states";
+const DEFAULT_CONFIG: LovelaceDashboardStrategyConfig = {
+  strategy: {
+    type: "original-states",
+  },
+};
 
 interface LovelacePanelConfig {
   mode: "yaml" | "storage";
@@ -164,12 +175,10 @@ export class LovelacePanel extends LitElement {
 
   private async _regenerateConfig() {
     const conf = await generateLovelaceDashboardStrategy(
-      {
-        type: DEFAULT_STRATEGY,
-      },
+      DEFAULT_CONFIG.strategy,
       this.hass!
     );
-    this._setLovelaceConfig(conf, undefined, "generated");
+    this._setLovelaceConfig(conf, DEFAULT_CONFIG, "generated");
     this._panelState = "loaded";
   }
 
@@ -217,9 +226,9 @@ export class LovelacePanel extends LitElement {
 
   private async _fetchConfig(forceDiskRefresh: boolean) {
     let conf: LovelaceConfig;
-    let rawConf: LovelaceConfig | undefined;
+    let rawConf: LovelaceRawConfig | undefined;
     let confMode: Lovelace["mode"] = this.panel!.config.mode;
-    let confProm: Promise<LovelaceConfig> | undefined;
+    let confProm: Promise<LovelaceRawConfig> | undefined;
     const preloadWindow = window as WindowWithPreloads;
 
     // On first load, we speed up loading page by having LL promise ready
@@ -253,7 +262,7 @@ export class LovelacePanel extends LitElement {
       rawConf = await confProm!;
 
       // If strategy defined, apply it here.
-      if (rawConf.strategy) {
+      if (isStrategyDashboard(rawConf)) {
         conf = await generateLovelaceDashboardStrategy(
           rawConf.strategy,
           this.hass!
@@ -270,11 +279,10 @@ export class LovelacePanel extends LitElement {
         return;
       }
       conf = await generateLovelaceDashboardStrategy(
-        {
-          type: DEFAULT_STRATEGY,
-        },
+        DEFAULT_CONFIG.strategy,
         this.hass!
       );
+      rawConf = DEFAULT_CONFIG;
       confMode = "generated";
     } finally {
       // Ignore updates for another 2 seconds.
@@ -290,17 +298,24 @@ export class LovelacePanel extends LitElement {
     this._setLovelaceConfig(conf, rawConf, confMode);
   }
 
-  private _checkLovelaceConfig(config: LovelaceConfig) {
+  private _checkLovelaceConfig(config: LovelaceRawConfig) {
     // Somehow there can be badges with value null, we remove those
+    if (isStrategyDashboard(config)) {
+      return config;
+    }
     let checkedConfig = !Object.isFrozen(config) ? config : undefined;
     config.views.forEach((view, index) => {
+      if (isStrategyView(view)) {
+        return;
+      }
       if (view.badges && !view.badges.every(Boolean)) {
         checkedConfig = checkedConfig || {
           ...config,
           views: [...config.views],
         };
-        checkedConfig.views[index] = { ...view };
-        checkedConfig.views[index].badges = view.badges.filter(Boolean);
+        const updatedView = { ...view } as LovelaceViewConfig;
+        updatedView.badges = view.badges.filter(Boolean);
+        checkedConfig.views[index] = updatedView;
       }
     });
     return checkedConfig ? deepFreeze(checkedConfig) : config;
@@ -308,7 +323,7 @@ export class LovelacePanel extends LitElement {
 
   private _setLovelaceConfig(
     config: LovelaceConfig,
-    rawConfig: LovelaceConfig | undefined,
+    rawConfig: LovelaceRawConfig,
     mode: Lovelace["mode"]
   ) {
     config = this._checkLovelaceConfig(config);
@@ -349,7 +364,7 @@ export class LovelacePanel extends LitElement {
           narrow: this.narrow!,
         });
       },
-      saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
+      saveConfig: async (newConfig: LovelaceRawConfig): Promise<void> => {
         const {
           config: previousConfig,
           rawConfig: previousRawConfig,
@@ -358,7 +373,7 @@ export class LovelacePanel extends LitElement {
         newConfig = this._checkLovelaceConfig(newConfig);
         let conf: LovelaceConfig;
         // If strategy defined, apply it here.
-        if (newConfig.strategy) {
+        if (isStrategyDashboard(newConfig)) {
           conf = await generateLovelaceDashboardStrategy(
             newConfig.strategy,
             this.hass!
@@ -396,14 +411,12 @@ export class LovelacePanel extends LitElement {
         try {
           // Optimistic update
           const generatedConf = await generateLovelaceDashboardStrategy(
-            {
-              type: DEFAULT_STRATEGY,
-            },
+            DEFAULT_CONFIG.strategy,
             this.hass!
           );
           this._updateLovelace({
             config: generatedConf,
-            rawConfig: undefined,
+            rawConfig: DEFAULT_CONFIG,
             mode: "generated",
             editMode: false,
           });

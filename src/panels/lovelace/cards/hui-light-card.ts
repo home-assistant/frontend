@@ -20,7 +20,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
 import { UNAVAILABLE, isUnavailableState } from "../../../data/entity";
 import { LightEntity, lightSupportsBrightness } from "../../../data/light";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
