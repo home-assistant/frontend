@@ -1,10 +1,15 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { mdiAccountHardHat, mdiClose, mdiDotsVertical } from "@mdi/js";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
-import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-button-menu";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-icon-button";
 import { LovelaceStrategyConfig } from "../../../../data/lovelace/config/strategy";
-import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../editor/dashboard-strategy-editor/hui-dashboard-strategy-element-editor";
@@ -79,46 +84,90 @@ class DialogDashboardStrategyEditor extends LitElement {
 
     const config = cleanLegacyStrategyConfig(this._strategyConfig);
 
+    const title = "Edit dashboard";
+
     return html`
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        .heading=${createCloseHeading(this.hass, "Edit dashboard")}
+        scrimClickAction
+        escapeKeyAction
         @opened=${this._opened}
+        .heading=${title}
       >
-        <hui-dashboard-strategy-element-editor
-          .hass=${this.hass}
-          .lovelace=${this._params.config}
-          .value=${config}
-          @config-changed=${this._handleConfigChanged}
-          @GUImode-changed=${this._handleGUIModeChanged}
-          dialogInitialFocus
-        ></hui-dashboard-strategy-element-editor>
-        ${this._strategyConfig !== undefined
-          ? html`
-              <ha-button
-                slot="secondaryAction"
-                @click=${this._toggleMode}
-                .disabled=${!this._guiModeAvailable}
-                class="gui-mode-button"
-              >
-                ${this.hass!.localize(
-                  !this._strategyEditorEl || this._GUImode
-                    ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                    : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-                )}
-              </ha-button>
-              <ha-button @click=${this._save} slot="primaryAction">
-                ${this.hass!.localize("ui.common.save")}
-              </ha-button>
-            `
-          : nothing}
+        <ha-dialog-header slot="heading">
+          <ha-icon-button
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${mdiClose}
+          ></ha-icon-button>
+          <span slot="title" .title=${title}>${title}</span>
+          <ha-button-menu
+            corner="BOTTOM_END"
+            menuCorner="END"
+            slot="actionItems"
+            @closed=${stopPropagation}
+            fixed
+          >
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
+            ></ha-icon-button>
+            <ha-list-item graphic="icon" @request-selected=${this._takeControl}>
+              Take control
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mdiAccountHardHat}
+              ></ha-svg-icon>
+            </ha-list-item>
+          </ha-button-menu>
+        </ha-dialog-header>
+        <div class="content">
+          <hui-dashboard-strategy-element-editor
+            .hass=${this.hass}
+            .lovelace=${this._params.config}
+            .value=${config}
+            @config-changed=${this._handleConfigChanged}
+            @GUImode-changed=${this._handleGUIModeChanged}
+            dialogInitialFocus
+          ></hui-dashboard-strategy-element-editor>
+        </div>
+
+        <ha-button
+          slot="secondaryAction"
+          @click=${this._toggleMode}
+          .disabled=${!this._guiModeAvailable}
+          class="gui-mode-button"
+        >
+          ${this.hass!.localize(
+            !this._strategyEditorEl || this._GUImode
+              ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+              : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+          )}
+        </ha-button>
+        <ha-button @click=${this._save} slot="primaryAction">
+          ${this.hass!.localize("ui.common.save")}
+        </ha-button>
       </ha-dialog>
     `;
   }
 
+  private _takeControl() {
+    this._params!.takeControl();
+    this.closeDialog();
+  }
+
   static get styles(): CSSResultGroup {
-    return [haStyle, haStyleDialog, css``];
+    return [
+      haStyleDialog,
+      css`
+        ha-dialog {
+          --mdc-dialog-max-width: 800px;
+        }
+      `,
+    ];
   }
 }
 

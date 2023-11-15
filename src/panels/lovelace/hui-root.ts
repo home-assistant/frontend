@@ -73,6 +73,7 @@ import {
   LovelaceConfig,
   isStrategyDashboard,
 } from "../../data/lovelace/config/types";
+import { showSaveDialog } from "./editor/show-save-config-dialog";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -821,6 +822,13 @@ class HUIRoot extends LitElement {
       showDashboardStrategyEditorDialog(this, {
         config: this.lovelace!.rawConfig,
         saveConfig: this.lovelace!.saveConfig,
+        takeControl: () => {
+          showSaveDialog(this, {
+            lovelace: this.lovelace!,
+            mode: "storage",
+            narrow: this.narrow!,
+          });
+        },
       });
       return;
     }

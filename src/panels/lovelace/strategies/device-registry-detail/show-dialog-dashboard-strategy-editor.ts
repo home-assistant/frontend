@@ -4,6 +4,7 @@ import { LovelaceDashboardStrategyConfig } from "../../../../data/lovelace/confi
 export interface DashboardStrategyEditorDialogParams {
   config: LovelaceDashboardStrategyConfig;
   saveConfig: (config: LovelaceDashboardStrategyConfig) => void;
+  takeControl: () => void;
 }
 
 export const loadDashboardStrategyEditorDialog = () =>

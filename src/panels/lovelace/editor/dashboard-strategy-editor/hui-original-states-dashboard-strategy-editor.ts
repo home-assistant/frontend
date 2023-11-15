@@ -12,10 +12,31 @@ import { LovelaceStrategyEditor } from "../../strategies/types";
 
 const SCHEMA = [
   {
-    name: "no_area_group",
+    name: "hidden_areas",
     selector: {
-      boolean: {},
+      area: {
+        multiple: true,
+        entity: {},
+      },
     },
+  },
+  {
+    name: "",
+    type: "grid",
+    schema: [
+      {
+        name: "hide_entities_without_area",
+        selector: {
+          boolean: {},
+        },
+      },
+      {
+        name: "hide_energy",
+        selector: {
+          boolean: {},
+        },
+      },
+    ],
   },
 ] as const satisfies readonly HaFormSchema[];
 
@@ -58,12 +79,14 @@ export class HuiOriginalStatesDashboarStrategyEditor
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     switch (schema.name) {
-      case "no_area_group":
-        return "Do not group by area";
+      case "hidden_areas":
+        return "Hiddens areas";
+      case "hide_energy":
+        return "Hide energy overview";
+      case "hide_entities_without_area":
+        return "Hide entities without area";
       default:
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}`
-        );
+        return "";
     }
   };
 }
