@@ -9765,7 +9765,7 @@ __metadata:
     jszip: "npm:3.10.1"
     leaflet: "npm:1.9.4"
     leaflet-draw: "npm:1.0.4"
-    lint-staged: "npm:15.0.2"
+    lint-staged: "npm:15.1.0"
     lit: "npm:2.8.0"
     lit-analyzer: "npm:2.0.1"
     lodash.template: "npm:4.5.0"
@@ -11363,9 +11363,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:15.0.2":
-  version: 15.0.2
-  resolution: "lint-staged@npm:15.0.2"
+"lint-staged@npm:15.1.0":
+  version: 15.1.0
+  resolution: "lint-staged@npm:15.1.0"
   dependencies:
     chalk: "npm:5.3.0"
     commander: "npm:11.1.0"
@@ -11376,10 +11376,10 @@ __metadata:
     micromatch: "npm:4.0.5"
     pidtree: "npm:0.6.0"
     string-argv: "npm:0.3.2"
-    yaml: "npm:2.3.3"
+    yaml: "npm:2.3.4"
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 79c6487405dff2670bcf7e4721f06705bd33b4fef88d77988565fb9cb2f62608231cbbc706da0ae150b49d0fab447be083c4561164670ec7f407fd183ce27615
+  checksum: 77aacab303ebab8ef6781833d35d82405b73f0e3e8f8c585cdd95b0e1f42a638a12e853d7ef6227a85d77ed2ba233f92b0499124696a6872569c508e04d25ce3
   languageName: node
   linkType: hard
 
@@ -16869,10 +16869,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:2.3.3":
-  version: 2.3.3
-  resolution: "yaml@npm:2.3.3"
-  checksum: 3b1a974b9d3672c671d47099a41c0de77b7ff978d0849aa55a095587486e82cd072321d19f2b4c791a367f766310b5a82dff098839b0f4ddcbbbe477f82dfb07
+"yaml@npm:2.3.4":
+  version: 2.3.4
+  resolution: "yaml@npm:2.3.4"
+  checksum: f8207ce43065a22268a2806ea6a0fa3974c6fde92b4b2fa0082357e487bc333e85dc518910007e7ac001b532c7c84bd3eccb6c7757e94182b564028b0008f44b
   languageName: node
   linkType: hard
 
