@@ -1,5 +1,5 @@
 import { loadCSS, loadJS, loadModule } from "../../../common/dom/load_resource";
-import { LovelaceResource } from "../../../data/lovelace";
+import { LovelaceResource } from "../../../data/lovelace/resource";
 import type { HomeAssistant } from "../../../types";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.

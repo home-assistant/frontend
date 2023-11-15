@@ -12,7 +12,7 @@ import {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
   LovelaceDashboardMutableParams,
-} from "../../../../data/lovelace";
+} from "../../../../data/lovelace/dashboard";
 import { DEFAULT_PANEL, setDefaultPanel } from "../../../../data/panel";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";

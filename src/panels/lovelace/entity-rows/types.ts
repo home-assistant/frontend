@@ -1,4 +1,4 @@
-import { ActionConfig } from "../../../data/lovelace";
+import { ActionConfig } from "../../../data/lovelace/config/action";
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
 import { TimestampRenderingFormat } from "../components/types";
