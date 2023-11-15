@@ -2081,12 +2081,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lezer/highlight@npm:1.1.6, @lezer/highlight@npm:^1.0.0":
-  version: 1.1.6
-  resolution: "@lezer/highlight@npm:1.1.6"
+"@lezer/highlight@npm:1.2.0, @lezer/highlight@npm:^1.0.0":
+  version: 1.2.0
+  resolution: "@lezer/highlight@npm:1.2.0"
   dependencies:
     "@lezer/common": "npm:^1.0.0"
-  checksum: d34f22b07b59ed99566061975b774df40da0f4bcaf0fe3cdeda43329bc1e9be1b03eea57996d5008a0d77fe572d80d50c88d6a0749013356af437203649179bb
+  checksum: 14a80cbfb0cd1ce716decb4f3a045d42e7146f539cfd483b62ce46c4586a26d2f4fbdc35ace1cad81645304be4d30eafb95a2b057c34dfd471d56c7fbd82df3a
   languageName: node
   linkType: hard
 
@@ -9636,7 +9636,7 @@ __metadata:
     "@fullcalendar/luxon3": "npm:6.1.9"
     "@fullcalendar/timegrid": "npm:6.1.9"
     "@koa/cors": "npm:4.0.0"
-    "@lezer/highlight": "npm:1.1.6"
+    "@lezer/highlight": "npm:1.2.0"
     "@lit-labs/context": "npm:0.4.1"
     "@lit-labs/motion": "npm:1.0.6"
     "@lit-labs/observers": "npm:2.0.2"
