@@ -343,26 +343,25 @@ export class LovelacePanel extends LitElement {
         this._panelState = "yaml-editor";
       },
       setEditMode: (editMode: boolean) => {
+        // If the dashboard is generated (default dashboard)
+        // Propose de to take control of it
+        if (this.lovelace!.mode === "generated" && editMode) {
+          showSaveDialog(this, {
+            lovelace: this.lovelace!,
+            mode: this.panel!.config.mode,
+            narrow: this.narrow!,
+          });
+          return;
+        }
+
         // If we use a strategy for dashboard, we cannot show the edit UI
         // So go straight to the YAML editor
-        if (
-          this.lovelace!.rawConfig &&
-          this.lovelace!.rawConfig !== this.lovelace!.config
-        ) {
+        if (isStrategyDashboard(this.lovelace!.rawConfig) && editMode) {
           this.lovelace!.enableFullEditMode();
           return;
         }
 
-        if (!editMode || this.lovelace!.mode !== "generated") {
-          this._updateLovelace({ editMode });
-          return;
-        }
-
-        showSaveDialog(this, {
-          lovelace: this.lovelace!,
-          mode: this.panel!.config.mode,
-          narrow: this.narrow!,
-        });
+        this._updateLovelace({ editMode });
       },
       saveConfig: async (newConfig: LovelaceRawConfig): Promise<void> => {
         const {
