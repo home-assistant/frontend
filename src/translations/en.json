@@ -358,6 +358,10 @@
             "time": "Time",
             "manual": "Manual Entry"
           }
+        },
+        "text": {
+          "show_password": "Show password",
+          "hide_password": "Hide password"
         }
       },
       "logbook": {
@@ -5236,6 +5240,14 @@
                   },
                   "select-options": {
                     "label": "Select options"
+                  },
+                  "number": {
+                    "label": "Number",
+                    "style": "Style",
+                    "style_list": {
+                      "buttons": "Buttons",
+                      "slider": "Slider"
+                    }
                   },
                   "target-temperature": {
                     "label": "Target temperature"
