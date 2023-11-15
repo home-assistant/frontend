@@ -1449,12 +1449,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bundle-stats/plugin-webpack-filter@npm:4.7.8":
-  version: 4.7.8
-  resolution: "@bundle-stats/plugin-webpack-filter@npm:4.7.8"
+"@bundle-stats/plugin-webpack-filter@npm:4.8.0":
+  version: 4.8.0
+  resolution: "@bundle-stats/plugin-webpack-filter@npm:4.8.0"
   peerDependencies:
     core-js: ^3.0.0
-  checksum: 35ccdbbe92464890173467dbcad43e5b0658ea7f167d9ef6daa752d48afa0183453271ac37e77ec98f6acb811fc5b57595bb40c310f11ad29111460cda03c4dc
+  checksum: 34177cfe5717d571445e7366c9017594cf9d62a3b80a491323d9e85e181c0e6480c0c673d55b6e675304084e7e4b78850fd8e9b22a9fef96d70cfe585d511a7d
   languageName: node
   linkType: hard
 
@@ -4546,13 +4546,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/tar@npm:6.1.8":
-  version: 6.1.8
-  resolution: "@types/tar@npm:6.1.8"
+"@types/tar@npm:6.1.9":
+  version: 6.1.9
+  resolution: "@types/tar@npm:6.1.9"
   dependencies:
     "@types/node": "npm:*"
     minipass: "npm:^4.0.0"
-  checksum: 0e831cdc9221240311f276a74140bdb07c2d086c2b1035844a95e9aeae0c572213e10a19be76534f9dc0d58caa15ca3ae9cf0513c7496798ab7429d564b43162
+  checksum: d00e891a14f5551bc703bee9a26ad3b84602de923a9a97499a07d8c0973ca31d9868df98adb33b01e4965da4db3a592c110c1838469ac4baa8123206b037bfdd
   languageName: node
   linkType: hard
 
@@ -9612,7 +9612,7 @@ __metadata:
     "@babel/preset-typescript": "npm:7.23.3"
     "@babel/runtime": "npm:7.23.2"
     "@braintree/sanitize-url": "npm:6.0.4"
-    "@bundle-stats/plugin-webpack-filter": "npm:4.7.8"
+    "@bundle-stats/plugin-webpack-filter": "npm:4.8.0"
     "@codemirror/autocomplete": "npm:6.11.0"
     "@codemirror/commands": "npm:6.3.0"
     "@codemirror/language": "npm:6.9.2"
@@ -9704,7 +9704,7 @@ __metadata:
     "@types/qrcode": "npm:1.5.5"
     "@types/serve-handler": "npm:6.1.4"
     "@types/sortablejs": "npm:1.15.5"
-    "@types/tar": "npm:6.1.8"
+    "@types/tar": "npm:6.1.9"
     "@types/ua-parser-js": "npm:0.7.39"
     "@types/webspeechapi": "npm:0.0.29"
     "@typescript-eslint/eslint-plugin": "npm:6.10.0"
@@ -9765,7 +9765,7 @@ __metadata:
     jszip: "npm:3.10.1"
     leaflet: "npm:1.9.4"
     leaflet-draw: "npm:1.0.4"
-    lint-staged: "npm:15.0.2"
+    lint-staged: "npm:15.1.0"
     lit: "npm:2.8.0"
     lit-analyzer: "npm:2.0.1"
     lodash.template: "npm:4.5.0"
@@ -11363,9 +11363,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:15.0.2":
-  version: 15.0.2
-  resolution: "lint-staged@npm:15.0.2"
+"lint-staged@npm:15.1.0":
+  version: 15.1.0
+  resolution: "lint-staged@npm:15.1.0"
   dependencies:
     chalk: "npm:5.3.0"
     commander: "npm:11.1.0"
@@ -11376,10 +11376,10 @@ __metadata:
     micromatch: "npm:4.0.5"
     pidtree: "npm:0.6.0"
     string-argv: "npm:0.3.2"
-    yaml: "npm:2.3.3"
+    yaml: "npm:2.3.4"
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 79c6487405dff2670bcf7e4721f06705bd33b4fef88d77988565fb9cb2f62608231cbbc706da0ae150b49d0fab447be083c4561164670ec7f407fd183ce27615
+  checksum: 77aacab303ebab8ef6781833d35d82405b73f0e3e8f8c585cdd95b0e1f42a638a12e853d7ef6227a85d77ed2ba233f92b0499124696a6872569c508e04d25ce3
   languageName: node
   linkType: hard
 
@@ -16869,10 +16869,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:2.3.3":
-  version: 2.3.3
-  resolution: "yaml@npm:2.3.3"
-  checksum: 3b1a974b9d3672c671d47099a41c0de77b7ff978d0849aa55a095587486e82cd072321d19f2b4c791a367f766310b5a82dff098839b0f4ddcbbbe477f82dfb07
+"yaml@npm:2.3.4":
+  version: 2.3.4
+  resolution: "yaml@npm:2.3.4"
+  checksum: f8207ce43065a22268a2806ea6a0fa3974c6fde92b4b2fa0082357e487bc333e85dc518910007e7ac001b532c7c84bd3eccb6c7757e94182b564028b0008f44b
   languageName: node
   linkType: hard
 

@@ -23,7 +23,7 @@ import {
   fetchResources,
   LovelaceResource,
   updateResource,
-} from "../../../../data/lovelace";
+} from "../../../../data/lovelace/resource";
 import {
   showAlertDialog,
   showConfirmationDialog,

@@ -1,10 +1,8 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import {
-  LovelaceBadgeConfig,
-  LovelaceCardConfig,
-  LovelaceViewConfig,
-  LovelaceViewElement,
-} from "../../../data/lovelace";
+import { LovelaceViewElement } from "../../../data/lovelace";
+import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import {
   isCustomType,
   stripCustomPrefix,

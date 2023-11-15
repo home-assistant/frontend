@@ -1,5 +1,8 @@
+import { HaDurationData } from "../../../components/ha-duration-input";
+import { ActionConfig } from "../../../data/lovelace/config/action";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { Statistic, StatisticType } from "../../../data/recorder";
-import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
+import { ForecastType } from "../../../data/weather";
 import { FullCalendarView, TranslationDict } from "../../../types";
 import { Condition, LegacyCondition } from "../common/validate-condition";
 import { HuiImage } from "../components/hui-image";
@@ -10,9 +13,7 @@ import {
   LovelaceRowConfig,
 } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { HaDurationData } from "../../../components/ha-duration-input";
 import { LovelaceTileFeatureConfig } from "../tile-features/types";
-import { ForecastType } from "../../../data/weather";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"

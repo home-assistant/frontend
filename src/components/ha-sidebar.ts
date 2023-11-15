@@ -41,7 +41,7 @@ import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
 import { throttle } from "../common/util/throttle";
-import { ActionHandlerDetail } from "../data/lovelace";
+import { ActionHandlerDetail } from "../data/lovelace/action_handler";
 import {
   PersistentNotification,
   subscribeNotifications,

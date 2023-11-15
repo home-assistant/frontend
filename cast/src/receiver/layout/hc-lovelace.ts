@@ -1,7 +1,7 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import { LovelaceConfig } from "../../../../src/data/lovelace";
+import { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
 import { Lovelace } from "../../../../src/panels/lovelace/types";
 import "../../../../src/panels/lovelace/views/hui-view";
 import { HomeAssistant } from "../../../../src/types";
@@ -14,7 +14,8 @@ import "./hc-launch-screen";
 class HcLovelace extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public lovelaceConfig!: LovelaceConfig;
+  @property({ attribute: false })
+  public lovelaceConfig!: LovelaceConfig;
 
   @property() public viewPath?: string | number;
 
