@@ -558,19 +558,26 @@ class HUIRoot extends LitElement {
           view.visible.some((show) => show.user === this.hass!.user?.id))
     );
 
+  private _clearParam(param: string) {
+    window.history.replaceState(
+      null,
+      "",
+      constructUrlCurrentPath(removeSearchParam(param))
+    );
+  }
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     // Check for requested edit mode
     const searchParams = extractSearchParamsObject();
-    if (searchParams.edit === "1" && this.hass!.user?.is_admin) {
-      this.lovelace!.setEditMode(true);
+    if (searchParams.edit === "1") {
+      this._clearParam("edit");
+      if (this.hass!.user?.is_admin) {
+        this.lovelace!.setEditMode(true);
+      }
     } else if (searchParams.conversation === "1") {
+      this._clearParam("conversation");
       this._showVoiceCommandDialog();
-      window.history.replaceState(
-        null,
-        "",
-        constructUrlCurrentPath(removeSearchParam("conversation"))
-      );
     }
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,
