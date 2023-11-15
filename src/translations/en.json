@@ -4870,6 +4870,13 @@
               }
             }
           },
+          "strategy-editor": {
+            "header": "Edit dashboard",
+            "take_control": "Take control",
+            "raw_configuration_editor": "[%key:ui::panel::lovelace::editor::menu::raw_editor%]",
+            "show_code_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_visual_editor%]",
+            "show_visual_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_visual_editor%]"
+          },
           "card": {
             "alarm-panel": {
               "name": "Alarm panel",

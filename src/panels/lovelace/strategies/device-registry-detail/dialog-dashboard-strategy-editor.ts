@@ -1,4 +1,9 @@
-import { mdiAccountHardHat, mdiClose, mdiDotsVertical } from "@mdi/js";
+import {
+  mdiAccountHardHat,
+  mdiClose,
+  mdiCodeBraces,
+  mdiDotsVertical,
+} from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
@@ -84,7 +89,9 @@ class DialogDashboardStrategyEditor extends LitElement {
 
     const config = cleanLegacyStrategyConfig(this._strategyConfig);
 
-    const title = "Edit dashboard";
+    const title = this.hass.localize(
+      "ui.panel.lovelace.editor.strategy-editor.header"
+    );
 
     return html`
       <ha-dialog
@@ -93,7 +100,7 @@ class DialogDashboardStrategyEditor extends LitElement {
         scrimClickAction
         escapeKeyAction
         @opened=${this._opened}
-        .heading=${title}
+        .heading=${title || "-"}
       >
         <ha-dialog-header slot="heading">
           <ha-icon-button
@@ -115,8 +122,19 @@ class DialogDashboardStrategyEditor extends LitElement {
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
+            <ha-list-item
+              graphic="icon"
+              @request-selected=${this._showRawConfigEditor}
+            >
+              ${this.hass.localize(
+                "ui.panel.lovelace.editor.strategy-editor.raw_configuration_editor"
+              )}
+              <ha-svg-icon slot="graphic" .path=${mdiCodeBraces}></ha-svg-icon>
+            </ha-list-item>
             <ha-list-item graphic="icon" @request-selected=${this._takeControl}>
-              Take control
+              ${this.hass.localize(
+                "ui.panel.lovelace.editor.strategy-editor.take_control"
+              )}
               <ha-svg-icon
                 slot="graphic"
                 .path=${mdiAccountHardHat}
@@ -143,8 +161,8 @@ class DialogDashboardStrategyEditor extends LitElement {
         >
           ${this.hass!.localize(
             !this._strategyEditorEl || this._GUImode
-              ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-              : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+              ? "ui.panel.lovelace.editor.strategy-editor.show_code_editor"
+              : "ui.panel.lovelace.editor.strategy-editor.show_visual_editor"
           )}
         </ha-button>
         <ha-button @click=${this._save} slot="primaryAction">
@@ -159,12 +177,18 @@ class DialogDashboardStrategyEditor extends LitElement {
     this.closeDialog();
   }
 
+  private _showRawConfigEditor() {
+    this._params!.showRawConfigEditor();
+    this.closeDialog();
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`
         ha-dialog {
           --mdc-dialog-max-width: 800px;
+          --dialog-content-padding: 0 24px;
         }
       `,
     ];
