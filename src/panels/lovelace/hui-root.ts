@@ -74,6 +74,7 @@ import {
   isStrategyDashboard,
 } from "../../data/lovelace/config/types";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
+import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -818,7 +819,10 @@ class HUIRoot extends LitElement {
       });
       return;
     }
-    if (isStrategyDashboard(this.lovelace!.rawConfig)) {
+    if (
+      isStrategyDashboard(this.lovelace!.rawConfig) &&
+      !isLegacyStrategyConfig(this.lovelace!.rawConfig.strategy)
+    ) {
       showDashboardStrategyEditorDialog(this, {
         config: this.lovelace!.rawConfig,
         saveConfig: this.lovelace!.saveConfig,

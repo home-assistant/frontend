@@ -29,8 +29,14 @@ export interface LovelaceViewStrategy {
   }): Promise<LovelaceViewConfig>;
 }
 
+// We assume that if a strategy config has only "type" and "options" parameters, it's a legacy strategy config
+export const isLegacyStrategyConfig = (config: LovelaceStrategyConfig) =>
+  Object.keys(config).length === 2 &&
+  "options" in config &&
+  typeof config.options === "object";
+
 export const cleanLegacyStrategyConfig = (config: LovelaceStrategyConfig) => {
-  if (!(Object.keys(config).length === 2 && "options" in config)) {
+  if (!isLegacyStrategyConfig(config)) {
     return config;
   }
   const cleanedConfig = {
