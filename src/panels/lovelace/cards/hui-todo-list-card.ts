@@ -475,7 +475,7 @@ export class HuiTodoListCard
     if (!item) {
       return;
     }
-    deleteItems(this.hass!, [this._entityId!], item.uid).finally(() =>
+    deleteItems(this.hass!, this._entityId!, [item.uid]).finally(() =>
       this._fetchData()
     );
   }
