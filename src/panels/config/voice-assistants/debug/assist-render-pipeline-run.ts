@@ -72,14 +72,13 @@ const renderProgress = (
   hass: HomeAssistant,
   pipelineRun: PipelineRun,
   stage: PipelineRun["stage"],
-  start_suffix: string = "-start",
-  end_suffix: string = "-end"
+  start_suffix: string = "-start"
 ) => {
   const startEvent = pipelineRun.events.find(
     (ev) => ev.type === `${stage}` + start_suffix
   );
   const finishEvent = pipelineRun.events.find(
-    (ev) => ev.type === `${stage}` + end_suffix
+    (ev) => ev.type === `${stage}-end`
   );
 
   if (!startEvent) {
