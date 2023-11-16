@@ -5828,10 +5828,58 @@
             },
             "fix_issue": {
               "fix": "Fix issue",
+              "no_support": {
+                "title": "Fix issue",
+                "info_text_1": "Fixing this issue is not supported yet."
+              },
+              "no_state": {
+                "title": "Entity has no state",
+                "info_text_1": "This entity has no state at the moment, if this is an orphaned entity, you may want to delete the long term statistics of it from your database.",
+                "info_text_2": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
+              },
+              "entity_not_recorded": {
+                "title": "Entity not recorded",
+                "info_text_1": "State changes of this entity are not recorded, therefore, we cannot track long term statistics for it.",
+                "info_text_2": "You probably excluded this entity, or have just included some entities.",
+                "info_text_3_link": "See the recorder documentation for more information."
+              },
+              "entity_no_longer_recorded": {
+                "title": "Entity no longer recorded",
+                "info_text_1": "We have generated statistics for this entity in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
+                "info_text_2": "You probably excluded this entity, or have just included some entities.",
+                "info_text_3_link": "See the recorder documentation for more information."
+              },
+              "unsupported_state_class": {
+                "title": "Unsupported state class",
+                "info_text_1": "The state class of this entity, {state_class} is not supported.",
+                "info_text_2": "Statistics cannot be generated until this entity has a supported state class.",
+                "info_text_3": "If this state class was provided by an integration, this is a bug. Please report an issue.",
+                "info_text_4": "If you have set this state class yourself, please correct it.",
+                "info_text_4_link": "The different state classes and when to use which can be found in the developer documentation.",
+                "info_text_5": "If the state class has permanently changed, you may want to delete the long term statistics of it from your database.",
+                "info_text_6": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
+              },
               "units_changed": {
                 "title": "The unit of this entity changed",
                 "update": "Update the unit of the historic statistic values from ''{metadata_unit}'' to ''{state_unit}'', without converting.",
-                "clear": "Delete all old statistic data for this entity"
+                "clear": "Delete all old statistic data for this entity",
+                "how_to_fix": "How do you want to fix this issue?",
+                "info_text_1": "The unit of this entity changed to ''{current_unit}'' which can't be converted to the previously stored unit, ''{previous_unit}''.",
+                "info_text_2": "If the historic statistic values have a wrong unit, you can update the units of the old values. The values will not be updated.",
+                "info_text_3": "Otherwise you can choose to delete all historic statistic values, and start over."
+              },
+              "adjust_sum": {
+                "title": "Adjust a statistic",
+                "no_statistics_found": "No statistics found for this period.",
+                "info_text_1": "Sometimes the statistics end up being incorrect for a specific point in time. This can mess up your beautiful graphs! Select a time below to find the bad moment and adjust the data.",
+                "pick_a_time": "Pick a time",
+                "statistic": "Statistic:",
+                "start": "Start",
+                "end": "End",
+                "new_value": "New value",
+                "adjust": "Adjust",
+                "sum_adjusted": "Statistic sum adjusted",
+                "error_sum_adjusted": "Error adjusting sum: {message}"
               }
             },
             "adjust_sum": "Adjust sum",
