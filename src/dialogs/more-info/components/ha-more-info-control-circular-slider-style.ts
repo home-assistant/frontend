@@ -2,6 +2,9 @@ import { css } from "lit";
 
 export const moreInfoControlCircularSliderStyle = css`
   /* Layout elements */
+  :host {
+    width: 320px;
+  }
   .container {
     position: relative;
   }
@@ -53,7 +56,8 @@ export const moreInfoControlCircularSliderStyle = css`
     left: 0;
     right: 0;
     margin: 0 auto;
-    width: 120px;
+    width: 40%;
+    min-width: 96px;
     display: flex;
     flex-direction: row;
     align-items: center;
