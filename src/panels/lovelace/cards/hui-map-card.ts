@@ -193,6 +193,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return true;
     }
 
+    if (oldHass.themes.darkMode !== this.hass.themes.darkMode) {
+      return true;
+    }
+
     if (this._config?.geo_location_sources) {
       const oldSourceEntities = this._getSourceEntities(
         oldHass.states,
@@ -207,17 +211,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         oldSourceEntities.toString() !== newSourceEntities.toString() ||
         newSourceEntities.some(
           (entity_id) =>
-            oldHass.states[entity_id] !== this.hass.states[entity_id] ||
-            oldHass.entities[entity_id]?.display_precision !==
-              this.hass.entities[entity_id]?.display_precision
+            oldHass.states[entity_id] !== this.hass.states[entity_id]
         )
       ) {
         return true;
       }
-    }
-
-    if (oldHass.themes.darkMode !== this.hass.themes.darkMode) {
-      return true;
     }
 
     return this._config?.entities
