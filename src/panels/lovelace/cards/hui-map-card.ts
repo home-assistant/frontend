@@ -35,7 +35,10 @@ import {
   HistoryStates,
   subscribeHistoryStatesTimeWindow,
 } from "../../../data/history";
-import { hasConfigChanged } from "../common/has-changed";
+import {
+  hasConfigChanged,
+  hasConfigOrEntitiesChanged,
+} from "../common/has-changed";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -67,8 +70,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _map?: HaMap;
 
   private _configEntities?: MapEntityConfig[];
-
-  private _sourceEntities?: string[];
 
   private _colorDict: Record<string, string> = {};
 
@@ -157,8 +158,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           <ha-map
             .hass=${this.hass}
             .entities=${this._getEntities(
-              this._configEntities,
-              this._sourceEntities
+              this.hass.states,
+              this._config,
+              this._configEntities
             )}
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
@@ -181,20 +183,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues) {
-    if (changedProps.has("hass") || changedProps.has("_config")) {
-      const sourceEntities = this._getSourceEntities(
-        this.hass.states,
-        this._config
-      );
-      if (
-        !this._sourceEntities ||
-        sourceEntities.toString() !== this._sourceEntities.toString()
-      ) {
-        this._sourceEntities = sourceEntities;
-        return true;
-      }
-    }
-
     // Update if anything other than "hass" has changed.
     if (!changedProps.has("hass") || changedProps.size > 1) {
       return true;
@@ -205,23 +193,36 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return true;
     }
 
-    if (
-      oldHass.themes.darkMode !== this.hass.themes.darkMode ||
-      hasConfigChanged(this, changedProps)
-    ) {
+    if (this._config?.geo_location_sources) {
+      const oldSourceEntities = this._getSourceEntities(
+        oldHass.states,
+        this._config
+      );
+      const newSourceEntities = this._getSourceEntities(
+        this.hass.states,
+        this._config
+      );
+
+      if (
+        oldSourceEntities.toString() !== newSourceEntities.toString() ||
+        newSourceEntities.some(
+          (entity_id) =>
+            oldHass.states[entity_id] !== this.hass.states[entity_id] ||
+            oldHass.entities[entity_id]?.display_precision !==
+              this.hass.entities[entity_id]?.display_precision
+        )
+      ) {
+        return true;
+      }
+    }
+
+    if (oldHass.themes.darkMode !== this.hass.themes.darkMode) {
       return true;
     }
 
-    const entity_ids = (
-      this._configEntities?.map((entity) => entity.entity) || []
-    ).concat(this._sourceEntities || []);
-
-    return entity_ids.some(
-      (entity_id) =>
-        oldHass.states[entity_id] !== this.hass.states[entity_id] ||
-        oldHass.entities[entity_id]?.display_precision !==
-          this.hass.entities[entity_id]?.display_precision
-    );
+    return this._config?.entities
+      ? hasConfigOrEntitiesChanged(this, changedProps)
+      : hasConfigChanged(this, changedProps);
   }
 
   public connectedCallback() {
@@ -345,8 +346,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _getEntities = memoizeOne(
     (
-      configEntities?: MapEntityConfig[],
-      sourceEntities?: string[]
+      states: HassEntities,
+      config?: MapCardConfig,
+      configEntities?: MapEntityConfig[]
     ): HaMapEntity[] => [
       ...(configEntities || []).map((entityConf) => ({
         entity_id: entityConf.entity,
@@ -355,7 +357,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         focus: entityConf.focus,
         name: entityConf.name,
       })),
-      ...(sourceEntities || []).map((entity) => ({
+      ...this._getSourceEntities(states, config).map((entity) => ({
         entity_id: entity,
         color: this._getColor(entity),
       })),
