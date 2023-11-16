@@ -7633,6 +7633,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"element-internals-polyfill@npm:1.3.9":
+  version: 1.3.9
+  resolution: "element-internals-polyfill@npm:1.3.9"
+  checksum: bd9b63e68ca3462ed7623758398d5b8016736438b02be4527e456711bb91afe93af60028ddb928e12f0f1975c958c7b439d4b31a1ec41f4737969cd0202bcced
+  languageName: node
+  linkType: hard
+
 "emoji-regex@npm:^10.2.1":
   version: 10.3.0
   resolution: "emoji-regex@npm:10.3.0"
@@ -9732,6 +9739,7 @@ __metadata:
     deep-clone-simple: "npm:1.1.1"
     deep-freeze: "npm:0.0.1"
     del: "npm:7.1.0"
+    element-internals-polyfill: "npm:1.3.9"
     eslint: "npm:8.53.0"
     eslint-config-airbnb-base: "npm:15.0.0"
     eslint-config-airbnb-typescript: "npm:17.1.0"
