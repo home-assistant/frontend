@@ -109,7 +109,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         scrimClickAction
         escapeKeyAction
         @closed=${this.closeDialog}
-        heading=${this.hass.localize(
+        .heading=${this.hass.localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.title"
         )}
       >
@@ -187,7 +187,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         ${this._params!.statistic.statistic_id}
       </div>
       <ha-selector-datetime
-        label=${this.hass.localize(
+        .label=${this.hass.localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.pick_a_time"
         )}
         .hass=${this.hass}
@@ -269,7 +269,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       </div>
 
       <ha-selector-number
-        label=${this.hass.localize(
+        .label=${this.hass.localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.new_value"
         )}
         .hass=${this.hass}
@@ -281,7 +281,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
       <mwc-button
         slot="primaryAction"
-        label=${this.hass.localize(
+        .label=${this.hass.localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.adjust"
         )}
         .disabled=${this._busy}
