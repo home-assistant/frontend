@@ -4,6 +4,7 @@ import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-card";
@@ -60,15 +61,20 @@ export class SystemLogCard extends LitElement {
   }
 
   private _getFilteredItems = memoizeOne(
-    (items: LoggedError[], filter: string) =>
+    (localize: LocalizeFunc, items: LoggedError[], filter: string) =>
       items.filter((item: LoggedError) => {
         if (filter) {
+          const integration = getLoggedErrorIntegration(item);
           return (
             item.message.some((message: string) =>
               message.toLowerCase().includes(filter)
             ) ||
             item.source[0].toLowerCase().includes(filter) ||
             item.name.toLowerCase().includes(filter) ||
+            (integration &&
+              domainToName(localize, integration)
+                .toLowerCase()
+                .includes(filter)) ||
             this._timestamp(item).toLowerCase().includes(filter) ||
             this._multipleMessages(item).toLowerCase().includes(filter)
           );
@@ -79,7 +85,11 @@ export class SystemLogCard extends LitElement {
 
   protected render() {
     const filteredItems = this._items
-      ? this._getFilteredItems(this._items, this.filter.toLowerCase())
+      ? this._getFilteredItems(
+          this.hass.localize,
+          this._items,
+          this.filter.toLowerCase()
+        )
       : [];
     const integrations = filteredItems.length
       ? filteredItems.map((item) => getLoggedErrorIntegration(item))
