@@ -1,3 +1,4 @@
+import "element-internals-polyfill";
 import { MdFilterChip } from "@material/web/chips/filter-chip";
 import { css, html } from "lit";
 import { customElement, property } from "lit/decorators";
