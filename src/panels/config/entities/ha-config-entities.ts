@@ -305,6 +305,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   private _filteredEntitiesAndDomains = memoize(
     (
+      localize: LocalizeFunc,
       entities: StateEntity[],
       devices: DeviceRegistryEntry[] | undefined,
       areas: AreaRegistryEntry[] | undefined,
@@ -420,22 +421,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           unavailable,
           restored,
           localized_platform:
-            this.hass.localize(`component.${entry.platform}.title`) ||
-            entry.platform,
+            localize(`component.${entry.platform}.title`) || entry.platform,
           area: area ? area.name : "—",
           status: restored
-            ? this.hass.localize(
-                "ui.panel.config.entities.picker.status.restored"
-              )
+            ? localize("ui.panel.config.entities.picker.status.restored")
             : unavailable
-            ? this.hass.localize(
-                "ui.panel.config.entities.picker.status.unavailable"
-              )
+            ? localize("ui.panel.config.entities.picker.status.unavailable")
             : entry.disabled_by
-            ? this.hass.localize(
-                "ui.panel.config.entities.picker.status.disabled"
-              )
-            : this.hass.localize("ui.panel.config.entities.picker.status.ok"),
+            ? localize("ui.panel.config.entities.picker.status.disabled")
+            : localize("ui.panel.config.entities.picker.status.ok"),
         });
       }
 
@@ -488,6 +482,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
     const { filteredEntities, filteredDomains } =
       this._filteredEntitiesAndDomains(
+        this.hass.localize,
         this._entities,
         this._devices,
         this._areas,
@@ -958,6 +953,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   private _addDevice() {
     const { filteredConfigEntry, filteredDomains } =
       this._filteredEntitiesAndDomains(
+        this.hass.localize,
         this._entities!,
         this._devices,
         this._areas,
