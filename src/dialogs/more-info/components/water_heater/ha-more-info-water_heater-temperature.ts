@@ -99,6 +99,17 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
       `;
     }
 
+    if (
+      !supportsFeature(
+        this.stateObj,
+        WaterHeaterEntityFeature.TARGET_TEMPERATURE
+      )
+    ) {
+      return html`
+        <p class="label">${this.hass.formatEntityState(this.stateObj)}</p>
+      `;
+    }
+
     return html`
       <p class="label">
         ${this.hass.localize(
@@ -202,13 +213,20 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
     }
 
     return html`
-      <div class="container">
+      <div
+        class="container"
+        style=${styleMap({
+          "--state-color": stateColor,
+        })}
+      >
         <ha-control-circular-slider
+          mode="full"
           .current=${this.stateObj.attributes.current_temperature}
           .min=${this._min}
           .max=${this._max}
           .step=${this._step}
-          disabled
+          readonly
+          .disabled=${!active}
         >
         </ha-control-circular-slider>
         <div class="info">
