@@ -344,7 +344,7 @@ export class LovelacePanel extends LitElement {
       },
       setEditMode: (editMode: boolean) => {
         // If the dashboard is generated (default dashboard)
-        // Propose de to take control of it
+        // Propose to take control of it
         if (this.lovelace!.mode === "generated" && editMode) {
           showSaveDialog(this, {
             lovelace: this.lovelace!,
