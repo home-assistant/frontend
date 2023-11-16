@@ -461,6 +461,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           }
         }
         ha-control-circular-slider {
+          width: 100%;
           --control-circular-slider-low-color: var(
             --low-color,
             var(--disabled-color)
