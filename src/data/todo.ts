@@ -82,16 +82,16 @@ export const createItem = (
     { entity_id }
   );
 
-export const deleteItem = (
+export const deleteItems = (
   hass: HomeAssistant,
   entity_id: string,
-  uid: string
+  uids: string[]
 ): Promise<ServiceCallResponse> =>
   hass.callService(
     "todo",
     "remove_item",
     {
-      item: uid,
+      item: uids,
     },
     { entity_id }
   );
