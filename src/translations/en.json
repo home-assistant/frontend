@@ -5528,6 +5528,8 @@
           "last_used": "Last used {date} from {location}",
           "not_used": "Has never been used",
           "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
+          "delete_all_tokens": "Delete all tokens",
+          "confirm_delete_all": "Are you sure you want to delete all refresh tokens? You will be logged out as part of this operation.",
           "delete_failed": "Failed to delete the refresh token.",
           "current_token_tooltip": "Unable to delete current refresh token"
         },
