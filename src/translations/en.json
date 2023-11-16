@@ -2104,8 +2104,8 @@
               "header": "Add dashboard",
               "create_empty": "New dashboard from scratch",
               "create_empty_description": "Start with an empty dashboard from scratch",
-              "default": "Overview dashboard",
-              "default_description": "Display all the devices of your home"
+              "default": "Default dashboard",
+              "default_description": "Display your devices grouped by area"
             },
             "picker": {
               "headers": {
