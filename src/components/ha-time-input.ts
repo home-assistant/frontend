@@ -56,19 +56,20 @@ export class HaTimeInput extends LitElement {
     `;
   }
 
-  private _timeChanged(ev: CustomEvent<{ value: TimeChangedEvent }>) {
+  private _timeChanged(ev: CustomEvent<{ value: TimeChangedEvent | null }>) {
     ev.stopPropagation();
     const eventValue = ev.detail.value;
 
     const useAMPM = useAmPm(this.locale);
     let value;
 
-    if (typeof eventValue === "undefined") {
-      value = undefined;
-    } else if (
-      !isNaN(eventValue.hours) ||
-      !isNaN(eventValue.minutes) ||
-      !isNaN(eventValue.seconds)
+    // An eventValue of null means the value is being cleared,
+    // and value will (intentionally) be left undefined.
+    if (
+      eventValue !== null &&
+      (!isNaN(eventValue.hours) ||
+        !isNaN(eventValue.minutes) ||
+        !isNaN(eventValue.seconds))
     ) {
       let hours = eventValue.hours || 0;
       if (eventValue && useAMPM) {

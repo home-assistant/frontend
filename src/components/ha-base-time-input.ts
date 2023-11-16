@@ -268,10 +268,8 @@ export class HaBaseTimeInput extends LitElement {
   }
 
   private _clearValue(): void {
-    const value = undefined;
-
     fireEvent(this, "value-changed", {
-      value,
+      value: null,
     });
   }
 
