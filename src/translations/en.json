@@ -4055,7 +4055,7 @@
             "zwave_plus": "Z-Wave Plus",
             "zwave_plus_version": "Version {version}",
             "node_statistics": "Statistics",
-            "custom_device_config": "This device is using a custom device config file not provided by Z-Wave JS. Remove the custom device config file to use the default device config provided by Z-Wave JS."
+            "custom_device_config": "This device is using a custom device config file not provided by Z-Wave JS. If you want to use the default device config provided by Z-Wave JS, you must remove the custom device config file from the folder that Z-Wave JS is reading from."
           },
           "hard_reset_controller": {
             "NotStarted": {
