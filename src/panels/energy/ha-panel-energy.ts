@@ -9,7 +9,7 @@ import {
 } from "lit";
 import { mdiPencil } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
-import "../../components/ha-menu-button
+import "../../components/ha-menu-button";
 import "../../components/ha-list-item";
 import "../../components/ha-top-app-bar-fixed";
 import { LovelaceConfig } from "../../data/lovelace/config/types";
