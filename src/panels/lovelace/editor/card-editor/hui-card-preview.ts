@@ -1,7 +1,7 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { property } from "lit/decorators";
 import { computeRTL } from "../../../../common/util/compute_rtl";
-import { LovelaceCardConfig } from "../../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { HomeAssistant } from "../../../../types";
 import { createCardElement } from "../../create-element/create-card-element";
 import { createErrorCardConfig } from "../../create-element/create-element-base";

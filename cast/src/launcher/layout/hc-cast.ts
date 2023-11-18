@@ -3,7 +3,7 @@ import { mdiCast, mdiCastConnected } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { Auth, Connection } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { CastManager } from "../../../../src/cast/cast_manager";
 import {
@@ -22,8 +22,9 @@ import "../../../../src/components/ha-svg-icon";
 import {
   getLegacyLovelaceCollection,
   getLovelaceCollection,
-  LovelaceConfig,
 } from "../../../../src/data/lovelace";
+import { isStrategyDashboard } from "../../../../src/data/lovelace/config/types";
+import { LovelaceViewConfig } from "../../../../src/data/lovelace/config/view";
 import "../../../../src/layouts/hass-loading-screen";
 import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";
 import "./hc-layout";
@@ -38,10 +39,10 @@ class HcCast extends LitElement {
 
   @state() private askWrite = false;
 
-  @state() private lovelaceConfig?: LovelaceConfig | null;
+  @state() private lovelaceViews?: LovelaceViewConfig[] | null;
 
   protected render(): TemplateResult {
-    if (this.lovelaceConfig === undefined) {
+    if (this.lovelaceViews === undefined) {
       return html`<hass-loading-screen no-toolbar></hass-loading-screen>`;
     }
 
@@ -86,9 +87,10 @@ class HcCast extends LitElement {
                 attr-for-selected="data-path"
                 .selected=${this.castManager.status.lovelacePath || ""}
               >
-                ${(this.lovelaceConfig
-                  ? this.lovelaceConfig.views
-                  : [generateDefaultViewConfig({}, {}, {}, {}, () => "")]
+                ${(
+                  this.lovelaceViews ?? [
+                    generateDefaultViewConfig({}, {}, {}, {}, () => ""),
+                  ]
                 ).map(
                   (view, idx) => html`
                     <paper-icon-item
@@ -136,11 +138,15 @@ class HcCast extends LitElement {
     llColl.refresh().then(
       () => {
         llColl.subscribe((config) => {
-          this.lovelaceConfig = config;
+          if (isStrategyDashboard(config)) {
+            this.lovelaceViews = null;
+          } else {
+            this.lovelaceViews = config.views;
+          }
         });
       },
       async () => {
-        this.lovelaceConfig = null;
+        this.lovelaceViews = null;
       }
     );
 
@@ -159,9 +165,7 @@ class HcCast extends LitElement {
     toggleAttribute(
       this,
       "hide-icons",
-      this.lovelaceConfig
-        ? !this.lovelaceConfig.views.some((view) => view.icon)
-        : true
+      this.lovelaceViews ? !this.lovelaceViews.some((view) => view.icon) : true
     );
   }
 

@@ -86,7 +86,7 @@ class HuiLightColorTempTileFeature
           style=${styleMap({
             "--gradient": gradient,
           })}
-          .tooltipUnit=${DOMAIN_ATTRIBUTES_UNITS.light.color_temp_kelvin}
+          .unit=${DOMAIN_ATTRIBUTES_UNITS.light.color_temp_kelvin}
           .locale=${this.hass.locale}
         ></ha-control-slider>
       </div>

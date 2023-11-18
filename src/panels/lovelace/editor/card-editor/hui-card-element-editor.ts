@@ -1,5 +1,5 @@
 import { customElement } from "lit/decorators";
-import type { LovelaceCardConfig } from "../../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { getCardElementClass } from "../../create-element/create-card-element";
 import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";

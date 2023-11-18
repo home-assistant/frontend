@@ -61,8 +61,8 @@ export class HaControlSlider extends LitElement {
   @property({ attribute: "tooltip-position" })
   public tooltipPosition?: TooltipPosition;
 
-  @property({ attribute: "tooltip-unit" })
-  public tooltipUnit?: string;
+  @property()
+  public unit?: string;
 
   @property({ attribute: "tooltip-mode" })
   public tooltipMode: TooltipMode = "interaction";
@@ -292,8 +292,8 @@ export class HaControlSlider extends LitElement {
   private _formatValue(value: number) {
     const formattedValue = formatNumber(value, this.locale);
 
-    const formattedUnit = this.tooltipUnit
-      ? `${blankBeforeUnit(this.tooltipUnit, this.locale)}${this.tooltipUnit}`
+    const formattedUnit = this.unit
+      ? `${blankBeforeUnit(this.unit, this.locale)}${this.unit}`
       : "";
 
     return `${formattedValue}${formattedUnit}`;

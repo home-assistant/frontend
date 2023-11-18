@@ -51,11 +51,7 @@ import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
 import "../../components/ha-tabs";
-import type {
-  LovelaceConfig,
-  LovelacePanelConfig,
-  LovelaceViewConfig,
-} from "../../data/lovelace";
+import type { LovelacePanelConfig } from "../../data/lovelace";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -71,6 +67,8 @@ import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
+import { LovelaceViewConfig } from "../../data/lovelace/config/view";
+import { LovelaceConfig } from "../../data/lovelace/config/types";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -560,19 +558,26 @@ class HUIRoot extends LitElement {
           view.visible.some((show) => show.user === this.hass!.user?.id))
     );
 
+  private _clearParam(param: string) {
+    window.history.replaceState(
+      null,
+      "",
+      constructUrlCurrentPath(removeSearchParam(param))
+    );
+  }
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     // Check for requested edit mode
     const searchParams = extractSearchParamsObject();
-    if (searchParams.edit === "1" && this.hass!.user?.is_admin) {
-      this.lovelace!.setEditMode(true);
+    if (searchParams.edit === "1") {
+      this._clearParam("edit");
+      if (this.hass!.user?.is_admin) {
+        this.lovelace!.setEditMode(true);
+      }
     } else if (searchParams.conversation === "1") {
+      this._clearParam("conversation");
       this._showVoiceCommandDialog();
-      window.history.replaceState(
-        null,
-        "",
-        constructUrlCurrentPath(removeSearchParam("conversation"))
-      );
     }
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,

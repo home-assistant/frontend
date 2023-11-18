@@ -1,23 +1,23 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
   nothing,
 } from "lit";
 import { mdiPencil } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
-import "../../components/ha-menu-button";
+import "../../components/ha-menu-button
 import "../../components/ha-list-item";
-import { LovelaceConfig } from "../../data/lovelace";
+import "../../components/ha-top-app-bar-fixed";
+import { LovelaceConfig } from "../../data/lovelace/config/types";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-energy-period-selector";
 import { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
-import "../../components/ha-top-app-bar-fixed";
 import { navigate } from "../../common/navigate";
 
 const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {

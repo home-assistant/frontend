@@ -1,4 +1,4 @@
-import { LovelaceCardConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { Condition } from "../common/validate-condition";
 import { LovelaceElementConfig } from "../elements/types";
 

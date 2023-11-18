@@ -71,10 +71,11 @@ const maybeRenderError = (
 const renderProgress = (
   hass: HomeAssistant,
   pipelineRun: PipelineRun,
-  stage: PipelineRun["stage"]
+  stage: PipelineRun["stage"],
+  start_suffix: string = "-start"
 ) => {
   const startEvent = pipelineRun.events.find(
-    (ev) => ev.type === `${stage}-start`
+    (ev) => ev.type === `${stage}` + start_suffix
   );
   const finishEvent = pipelineRun.events.find(
     (ev) => ev.type === `${stage}-end`
@@ -244,7 +245,12 @@ export class AssistPipelineDebug extends LitElement {
               <div class="card-content">
                 <div class="row heading">
                   <span>Speech-to-text</span>
-                  ${renderProgress(this.hass, this.pipelineRun, "stt")}
+                  ${renderProgress(
+                    this.hass,
+                    this.pipelineRun,
+                    "stt",
+                    "-vad-end"
+                  )}
                 </div>
                 ${this.pipelineRun.stt
                   ? html`

@@ -8,7 +8,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isUnavailableState } from "../../../data/entity";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import { HomeAssistant } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";

@@ -16,10 +16,6 @@ import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
-import type {
-  LovelaceCardConfig,
-  LovelaceViewConfig,
-} from "../../../../data/lovelace";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -33,6 +29,8 @@ import "./hui-card-element-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
 import "./hui-card-preview";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 
 declare global {
   // for fire event

@@ -19,11 +19,14 @@ import type {
   HaFormStringData,
   HaFormStringSchema,
 } from "./types";
+import { HomeAssistant } from "../../types";
 
 const MASKED_FIELDS = ["password", "secret", "token"];
 
 @customElement("ha-form-string")
 export class HaFormString extends LitElement implements HaFormElement {
+  @property() public hass?: HomeAssistant;
+
   @property() public schema!: HaFormStringSchema;
 
   @property() public data!: HaFormStringData;
@@ -78,7 +81,11 @@ export class HaFormString extends LitElement implements HaFormElement {
     return html`
       <ha-icon-button
         toggles
-        .label=${`${this.unmaskedPassword ? "Hide" : "Show"} password`}
+        .label=${this.hass?.localize(
+          this.unmaskedPassword
+            ? "ui.components.selectors.text.hide_password"
+            : "ui.components.selectors.text.show_password"
+        ) || (this.unmaskedPassword ? "Hide password" : "Show password")}
         @click=${this.toggleUnmaskedPassword}
         .path=${this.unmaskedPassword ? mdiEyeOff : mdiEye}
       ></ha-icon-button>

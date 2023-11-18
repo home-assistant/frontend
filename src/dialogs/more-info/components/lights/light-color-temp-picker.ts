@@ -94,7 +94,7 @@ class LightColorTempPicker extends LitElement {
           "--gradient": gradient,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
-        .tooltipUnit=${DOMAIN_ATTRIBUTES_UNITS.light.color_temp_kelvin}
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.light.color_temp_kelvin}
         .locale=${this.hass.locale}
       >
       </ha-control-slider>
