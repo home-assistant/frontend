@@ -84,9 +84,7 @@ class PanelEnergy extends LitElement {
                   >
                     <ha-svg-icon slot="graphic" .path=${mdiPencil}>
                     </ha-svg-icon>
-                    ${this.hass!.localize(
-                      "ui.panel.lovelace.menu.configure_ui"
-                    )}
+                    ${this.hass!.localize("ui.panel.energy.configure")}
                   </ha-list-item>
                 `
               : nothing}

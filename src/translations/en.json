@@ -5998,6 +5998,7 @@
         }
       },
       "energy": {
+        "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
         "compare": {
           "info": "You are comparing the period {start} with the period {end}"
         },
