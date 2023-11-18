@@ -320,6 +320,7 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   hours_to_show?: number;
   title?: string;
   show_names?: boolean;
+  logarithmic_scale?: boolean;
 }
 
 export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
@@ -331,6 +332,7 @@ export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   stat_types?: StatisticType | StatisticType[];
   chart_type?: "line" | "bar";
   hide_legend?: boolean;
+  logarithmic_scale?: boolean;
 }
 
 export interface StatisticCardConfig extends LovelaceCardConfig {
