@@ -93,6 +93,8 @@ export interface AreaCardConfig extends LovelaceCardConfig {
   area: string;
   navigation_path?: string;
   show_camera?: boolean;
+  camera_view?: HuiImage["cameraView"];
+  aspect_ratio?: string;
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {
