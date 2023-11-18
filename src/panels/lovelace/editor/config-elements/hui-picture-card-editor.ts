@@ -4,12 +4,14 @@ import { assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-theme-picker";
-import { HomeAssistant } from "../../../../types";
+import { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { PictureCardConfig } from "../../cards/types";
 import "../../components/hui-action-editor";
 import { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import "../../../../components/ha-picture-upload";
+import type { HaPictureUpload } from "../../../../components/ha-picture-upload";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -58,6 +60,15 @@ export class HuiPictureCardEditor
     }
 
     return html`
+      <ha-picture-upload
+        .hass=${this.hass}
+        .value=${this._config?.image?.startsWith("/api/")
+          ? this._config.image
+          : null}
+        crop
+        @change=${this._pictureChanged}
+      ></ha-picture-upload>
+
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
@@ -70,6 +81,15 @@ export class HuiPictureCardEditor
 
   private _valueChanged(ev: CustomEvent): void {
     fireEvent(this, "config-changed", { config: ev.detail.value });
+  }
+
+  private _pictureChanged(ev: ValueChangedEvent<string | null>) {
+    const picture = (ev.target as HaPictureUpload).value;
+    if (picture) {
+      fireEvent(this, "config-changed", {
+        config: { ...this._config!, image: picture },
+      });
+    }
   }
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
