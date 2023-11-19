@@ -34,7 +34,7 @@ export const TEMPERATURE_ATTRIBUTES = new Set([
   "max_temp",
 ]);
 
-export const DOMAIN_ATTRIBUTES_UNITS: Record<string, Record<string, string>> = {
+export const DOMAIN_ATTRIBUTES_UNITS = {
   climate: {
     humidity: "%",
     current_humidity: "%",
@@ -74,4 +74,4 @@ export const DOMAIN_ATTRIBUTES_UNITS: Record<string, Record<string, string>> = {
   sensor: {
     battery_level: "%",
   },
-};
+} as const satisfies Record<string, Record<string, string>>;

@@ -21,18 +21,26 @@ import {
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { isNavigationClick } from "../../../../src/common/dom/is-navigation-click";
 import {
-  fetchResources,
   getLegacyLovelaceCollection,
   getLovelaceCollection,
+} from "../../../../src/data/lovelace";
+import {
+  isStrategyDashboard,
   LegacyLovelaceConfig,
   LovelaceConfig,
-} from "../../../../src/data/lovelace";
+  LovelaceDashboardStrategyConfig,
+} from "../../../../src/data/lovelace/config/types";
+import { fetchResources } from "../../../../src/data/lovelace/resource";
 import { loadLovelaceResources } from "../../../../src/panels/lovelace/common/load-resources";
 import { HassElement } from "../../../../src/state/hass-element";
 import { castContext } from "../cast_context";
 import "./hc-launch-screen";
 
-const DEFAULT_STRATEGY = "original-states";
+const DEFAULT_CONFIG: LovelaceDashboardStrategyConfig = {
+  strategy: {
+    type: "original-states",
+  },
+};
 
 let resourcesLoaded = false;
 @customElement("hc-main")
@@ -93,7 +101,7 @@ export class HcMain extends HassElement {
         .lovelaceConfig=${this._lovelaceConfig}
         .viewPath=${this._lovelacePath}
         .urlPath=${this._urlPath}
-        @config-refresh=${this._generateLovelaceConfig}
+        @config-refresh=${this._generateDefaultLovelaceConfig}
       ></hc-lovelace>
     `;
   }
@@ -284,9 +292,20 @@ export class HcMain extends HassElement {
       // configuration.
       try {
         await llColl.refresh();
-        this._unsubLovelace = llColl.subscribe((lovelaceConfig) =>
-          this._handleNewLovelaceConfig(lovelaceConfig)
-        );
+        this._unsubLovelace = llColl.subscribe(async (rawConfig) => {
+          if (isStrategyDashboard(rawConfig)) {
+            const { generateLovelaceDashboardStrategy } = await import(
+              "../../../../src/panels/lovelace/strategies/get-strategy"
+            );
+            const config = await generateLovelaceDashboardStrategy(
+              rawConfig.strategy,
+              this.hass!
+            );
+            this._handleNewLovelaceConfig(config);
+          } else {
+            this._handleNewLovelaceConfig(rawConfig);
+          }
+        });
       } catch (err: any) {
         if (
           atLeastVersion(this.hass.connection.haVersion, 0, 107) &&
@@ -300,7 +319,7 @@ export class HcMain extends HassElement {
         }
         // Generate a Lovelace config.
         this._unsubLovelace = () => undefined;
-        await this._generateLovelaceConfig();
+        await this._generateDefaultLovelaceConfig();
       }
     }
     if (!resourcesLoaded) {
@@ -316,15 +335,13 @@ export class HcMain extends HassElement {
     this._sendStatus();
   }
 
-  private async _generateLovelaceConfig() {
+  private async _generateDefaultLovelaceConfig() {
     const { generateLovelaceDashboardStrategy } = await import(
       "../../../../src/panels/lovelace/strategies/get-strategy"
     );
     this._handleNewLovelaceConfig(
       await generateLovelaceDashboardStrategy(
-        {
-          type: DEFAULT_STRATEGY,
-        },
+        DEFAULT_CONFIG.strategy,
         this.hass!
       )
     );

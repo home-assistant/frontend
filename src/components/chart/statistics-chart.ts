@@ -71,6 +71,8 @@ export class StatisticsChart extends LitElement {
 
   @property({ type: Boolean }) public hideLegend = false;
 
+  @property({ type: Boolean }) public logarithmicScale = false;
+
   @property({ type: Boolean }) public isLoadingData = false;
 
   @property() public period?: string;
@@ -98,7 +100,8 @@ export class StatisticsChart extends LitElement {
       !this.hasUpdated ||
       changedProps.has("unit") ||
       changedProps.has("period") ||
-      changedProps.has("chartType")
+      changedProps.has("chartType") ||
+      changedProps.has("logarithmicScale")
     ) {
       this._createOptions();
     }
@@ -198,6 +201,7 @@ export class StatisticsChart extends LitElement {
             display: unit || this.unit,
             text: unit || this.unit,
           },
+          type: this.logarithmicScale ? "logarithmic" : "linear",
         },
       },
       plugins: {

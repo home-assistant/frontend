@@ -278,6 +278,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
               "ui.panel.lovelace.components.energy_period_selector.compare"
             )}
           </ha-check-list-item>
+          <slot name="overflow-menu"></slot>
         </ha-button-menu>
       </div>
     `;

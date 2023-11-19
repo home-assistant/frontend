@@ -1,5 +1,5 @@
 import { customElement } from "lit/decorators";
-import { LovelaceCardConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiConditionalBase } from "../components/hui-conditional-base";
 import { createCardElement } from "../create-element/create-card-element";

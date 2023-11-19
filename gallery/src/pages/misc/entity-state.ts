@@ -10,7 +10,6 @@ import { computeStateDisplay } from "../../../../src/common/entity/compute_state
 import "../../../../src/components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../../src/components/data-table/ha-data-table";
 import "../../../../src/components/entity/state-badge";
-import "../../../../src/components/ha-chip";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import { HomeAssistant } from "../../../../src/types";
 

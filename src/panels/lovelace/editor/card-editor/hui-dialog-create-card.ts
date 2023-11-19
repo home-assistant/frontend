@@ -12,7 +12,7 @@ import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { DataTableRowData } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
-import type { LovelaceViewConfig } from "../../../../data/lovelace";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";

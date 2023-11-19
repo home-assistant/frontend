@@ -18,6 +18,7 @@ export interface ConfigUpdateValues {
 export interface CheckConfigResult {
   result: "valid" | "invalid";
   errors: string | null;
+  warnings: string | null;
 }
 
 export const saveCoreConfig = (

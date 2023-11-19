@@ -77,6 +77,8 @@ export class HaMoreInfoLightBrightness extends LitElement {
           "--control-slider-background": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
+        unit="%"
+        .locale=${this.hass.locale}
       >
       </ha-control-slider>
     `;
@@ -93,6 +95,7 @@ export class HaMoreInfoLightBrightness extends LitElement {
         --control-slider-color: var(--primary-color);
         --control-slider-background: var(--disabled-color);
         --control-slider-background-opacity: 0.2;
+        --control-slider-tooltip-font-size: 20px;
       }
     `;
   }

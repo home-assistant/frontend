@@ -174,6 +174,9 @@ class DialogExposeEntity extends LitElement {
           --mdc-dialog-min-width: 500px;
           --mdc-dialog-max-width: 600px;
         }
+        mwc-list {
+          position: relative;
+        }
         lit-virtualizer {
           height: 500px;
         }

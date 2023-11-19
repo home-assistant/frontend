@@ -23,6 +23,7 @@ import {
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
 import { FanSpeedTileFeatureConfig } from "./types";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
 
 export const supportsFanSpeedTileFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -126,6 +127,8 @@ class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
             "percentage"
           )}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
+          .unit=${DOMAIN_ATTRIBUTES_UNITS.fan.percentage}
+          .locale=${this.hass.locale}
         ></ha-control-slider>
       </div>
     `;

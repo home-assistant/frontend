@@ -1,3 +1,4 @@
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiCheck,
   mdiCheckCircleOutline,
@@ -5,8 +6,7 @@ import {
   mdiOpenInNew,
   mdiPlus,
 } from "@mdi/js";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { html, LitElement, nothing, PropertyValues } from "lit";
+import { LitElement, PropertyValues, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
@@ -22,19 +22,24 @@ import "../../../../components/ha-fab";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
+import { LovelacePanelConfig } from "../../../../data/lovelace";
 import {
+  LovelaceConfig,
+  saveConfig,
+} from "../../../../data/lovelace/config/types";
+import {
+  LovelaceDashboard,
+  LovelaceDashboardCreateParams,
   createDashboard,
   deleteDashboard,
   fetchDashboards,
-  LovelaceDashboard,
-  LovelaceDashboardCreateParams,
-  LovelacePanelConfig,
   updateDashboard,
-} from "../../../../data/lovelace";
+} from "../../../../data/lovelace/dashboard";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../types";
+import { showNewDashboardDialog } from "../../dashboard/show-dialog-new-dashboard";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 
@@ -329,16 +334,21 @@ export class HaConfigLovelaceDashboards extends LitElement {
       return;
     }
     const dashboard = this._dashboards.find((res) => res.url_path === urlPath);
-    this._openDialog(dashboard, urlPath);
+    this._openDetailDialog(dashboard, urlPath);
   }
 
-  private _addDashboard() {
-    this._openDialog();
+  private async _addDashboard() {
+    showNewDashboardDialog(this, {
+      selectConfig: (config) => {
+        this._openDetailDialog(undefined, undefined, config);
+      },
+    });
   }
 
-  private async _openDialog(
+  private async _openDetailDialog(
     dashboard?: LovelaceDashboard,
-    urlPath?: string
+    urlPath?: string,
+    defaultConfig?: LovelaceConfig
   ): Promise<void> {
     showDashboardDetailDialog(this, {
       dashboard,
@@ -353,6 +363,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
               this.hass.locale.language
             )
         );
+        if (defaultConfig) {
+          await saveConfig(this.hass!, created.url_path, defaultConfig);
+        }
       },
       updateDashboard: async (values) => {
         const updated = await updateDashboard(
