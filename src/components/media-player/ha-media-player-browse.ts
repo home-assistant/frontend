@@ -899,6 +899,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           overflow-y: auto;
           box-sizing: border-box;
           height: 100%;
+          position: relative;
         }
 
         /* HEADER */

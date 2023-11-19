@@ -49,6 +49,7 @@ export type Selector =
   | TemplateSelector
   | ThemeSelector
   | TimeSelector
+  | TriggerSelector
   | TTSSelector
   | TTSVoiceSelector
   | UiActionSelector
@@ -373,6 +374,13 @@ export interface TimeSelector {
   time: {} | null;
 }
 
+export interface TriggerSelector {
+  trigger: {
+    reorder_mode?: boolean;
+    nested?: boolean;
+  } | null;
+}
+
 export interface TTSSelector {
   tts: { language?: string } | null;
 }
@@ -384,6 +392,7 @@ export interface TTSVoiceSelector {
 export interface UiActionSelector {
   ui_action: {
     actions?: UiAction[];
+    default_action?: UiAction;
   } | null;
 }
 

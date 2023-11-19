@@ -67,6 +67,8 @@ class HuiLightBrightnessTileFeature
           .disabled=${this.stateObj!.state === UNAVAILABLE}
           @value-changed=${this._valueChanged}
           .label=${this.hass.localize("ui.card.light.brightness")}
+          unit="%"
+          .locale=${this.hass.locale}
         ></ha-control-slider>
       </div>
     `;

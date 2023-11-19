@@ -302,13 +302,7 @@ export class HaAuthFlow extends LitElement {
   private _computeStepDescription(step: DataEntryFlowStepForm) {
     const resourceKey =
       `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.description` as const;
-    const args: string[] = [];
-    const placeholders = step.description_placeholders || {};
-    Object.keys(placeholders).forEach((key) => {
-      args.push(key);
-      args.push(placeholders[key]);
-    });
-    return this.localize(resourceKey, ...args);
+    return this.localize(resourceKey, step.description_placeholders);
   }
 
   private _computeLabelCallback(step: DataEntryFlowStepForm) {

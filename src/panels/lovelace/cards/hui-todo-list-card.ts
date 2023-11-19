@@ -35,7 +35,7 @@ import {
   TodoItemStatus,
   TodoListEntityFeature,
   createItem,
-  deleteItem,
+  deleteItems,
   fetchItems,
   moveItem,
   updateItem,
@@ -433,7 +433,7 @@ export class HuiTodoListCard
     } else if (
       this.todoListSupportsFeature(TodoListEntityFeature.DELETE_TODO_ITEM)
     ) {
-      deleteItem(this.hass!, this._entityId!, ev.target.itemId).finally(() =>
+      deleteItems(this.hass!, this._entityId!, [ev.target.itemId]).finally(() =>
         this._fetchData()
       );
     }
@@ -445,11 +445,11 @@ export class HuiTodoListCard
     if (!this.hass) {
       return;
     }
-    const deleteActions: Array<Promise<any>> = [];
-    this._getCheckedItems(this._items).forEach((item: TodoItem) => {
-      deleteActions.push(deleteItem(this.hass!, this._entityId!, item.uid));
-    });
-    await Promise.all(deleteActions).finally(() => this._fetchData());
+    const checkedItems = this._getCheckedItems(this._items);
+    const uids = checkedItems.map((item: TodoItem) => item.uid);
+    deleteItems(this.hass!, this._entityId!, uids).finally(() =>
+      this._fetchData()
+    );
   }
 
   private get _newItem(): HaTextField {
@@ -475,7 +475,7 @@ export class HuiTodoListCard
     if (!item) {
       return;
     }
-    deleteItem(this.hass!, this._entityId!, item.uid).finally(() =>
+    deleteItems(this.hass!, this._entityId!, [item.uid]).finally(() =>
       this._fetchData()
     );
   }

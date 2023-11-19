@@ -36,7 +36,7 @@ import "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import { isUnavailableState } from "../../../data/entity";
-import type { ActionHandlerEvent } from "../../../data/lovelace";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -49,6 +49,15 @@ import { computeTileBadge } from "./tile/badges/tile-badge";
 import type { ThermostatCardConfig, TileCardConfig } from "./types";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
+
+export const getEntityDefaultTileIconAction = (entityId: string) => {
+  const domain = computeDomain(entityId);
+  const supportsIconAction =
+    DOMAINS_TOGGLE.has(domain) ||
+    ["button", "input_button", "scene"].includes(domain);
+
+  return supportsIconAction ? "toggle" : "more-info";
+};
 
 @customElement("hui-tile-card")
 export class HuiTileCard extends LitElement implements LovelaceCard {
@@ -87,17 +96,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       throw new Error("Specify an entity");
     }
 
-    const domain = computeDomain(config.entity);
-    const supportsIconAction =
-      DOMAINS_TOGGLE.has(domain) ||
-      ["button", "input_button", "scene"].includes(domain);
-
     this._config = {
       tap_action: {
         action: "more-info",
       },
       icon_tap_action: {
-        action: supportsIconAction ? "toggle" : "more-info",
+        action: getEntityDefaultTileIconAction(config.entity),
       },
       ...config,
     };
@@ -346,7 +350,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
-        ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : nothing}
         <div class="tile">
           <div
             class="background"
@@ -362,7 +365,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             @touchstart=${this.handleRippleActivate}
             @touchend=${this.handleRippleDeactivate}
             @touchcancel=${this.handleRippleDeactivate}
-          ></div>
+          >
+            ${this._shouldRenderRipple
+              ? html`<mwc-ripple></mwc-ripple>`
+              : nothing}
+          </div>
           <div class="content ${classMap(contentClasses)}">
             <div
               class="icon-container"
@@ -433,7 +440,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       ha-card {
         --mdc-ripple-color: var(--tile-color);
         height: 100%;
-        overflow: hidden;
         transition:
           box-shadow 180ms ease-in-out,
           border-color 180ms ease-in-out;
@@ -453,6 +459,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         left: 0;
         bottom: 0;
         right: 0;
+        border-radius: var(--ha-card-border-radius, 12px);
+        inset: calc(-1 * var(--ha-card-border-width, 1px));
+        overflow: hidden;
       }
       .content {
         display: flex;

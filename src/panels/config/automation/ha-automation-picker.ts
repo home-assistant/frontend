@@ -27,7 +27,7 @@ import type {
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button-related-filter-menu";
-import "../../../components/ha-chip";
+import "../../../components/ha-label";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
@@ -202,11 +202,11 @@ class HaAutomationPicker extends LitElement {
             template: (automation) =>
               automation.disabled
                 ? html`
-                    <ha-chip>
+                    <ha-label>
                       ${this.hass.localize(
                         "ui.panel.config.automation.picker.disabled"
                       )}
-                    </ha-chip>
+                    </ha-label>
                   `
                 : "",
           };

@@ -328,6 +328,10 @@
         "file": {
           "upload_failed": "Upload failed",
           "unknown_file": "Unknown file"
+        },
+        "text": {
+          "show_password": "Show password",
+          "hide_password": "Hide password"
         }
       },
       "logbook": {
@@ -2096,6 +2100,13 @@
               "yaml": "YAML file",
               "storage": "UI controlled"
             },
+            "dialog_new": {
+              "header": "Add dashboard",
+              "create_empty": "New dashboard from scratch",
+              "create_empty_description": "Start with an empty dashboard from scratch",
+              "default": "Default dashboard",
+              "default_description": "Display your devices grouped by area"
+            },
             "picker": {
               "headers": {
                 "icon": "Icon",
@@ -2532,7 +2543,7 @@
                   "value_template": "Value template",
                   "for": "For",
                   "description": {
-                    "full": "When a template triggers{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                    "full": "When a template changes from false to true{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
                 "time": {
@@ -2662,7 +2673,10 @@
                 },
                 "template": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::template::label%]",
-                  "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]"
+                  "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]",
+                  "description": {
+                    "full": "Test if template renders a value equal to true"
+                  }
                 },
                 "time": {
                   "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_value%]",
@@ -4964,7 +4978,8 @@
             },
             "history-graph": {
               "name": "History graph",
-              "description": "The History graph card allows you to display a graph for each of the entities listed."
+              "description": "The History graph card allows you to display a graph for each of the entities listed.",
+              "logarithmic_scale": "Logarithmic scale"
             },
             "statistics-graph": {
               "name": "Statistics graph",
@@ -4990,7 +5005,8 @@
               },
               "pick_statistic": "Add a statistic",
               "picked_statistic": "Statistic",
-              "hide_legend": "Hide legend"
+              "hide_legend": "Hide legend",
+              "logarithmic_scale": "Logarithmic scale"
             },
             "statistic": {
               "name": "Statistic",
@@ -5203,6 +5219,14 @@
                   },
                   "select-options": {
                     "label": "Select options"
+                  },
+                  "number": {
+                    "label": "Number",
+                    "style": "Style",
+                    "style_list": {
+                      "buttons": "Buttons",
+                      "slider": "Slider"
+                    }
                   },
                   "target-temperature": {
                     "label": "Target temperature"
@@ -5513,6 +5537,8 @@
           "last_used": "Last used {date} from {location}",
           "not_used": "Has never been used",
           "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
+          "delete_all_tokens": "Delete all tokens",
+          "confirm_delete_all": "Are you sure you want to delete all refresh tokens? You will be logged out as part of this operation.",
           "delete_failed": "Failed to delete the refresh token.",
           "current_token_tooltip": "Unable to delete current refresh token"
         },
@@ -5676,7 +5702,7 @@
               "hdmi_input": "HDMI input",
               "hdmi_switcher": "HDMI switcher",
               "volume": "Volume",
-              "total_tv_time": "Total TV Ttme",
+              "total_tv_time": "Total TV Time",
               "turn_tv_off": "Turn television off",
               "air": "Air"
             },
@@ -5806,10 +5832,58 @@
             },
             "fix_issue": {
               "fix": "Fix issue",
+              "no_support": {
+                "title": "Fix issue",
+                "info_text_1": "Fixing this issue is not supported yet."
+              },
+              "no_state": {
+                "title": "Entity has no state",
+                "info_text_1": "This entity has no state at the moment, if this is an orphaned entity, you may want to delete the long term statistics of it from your database.",
+                "info_text_2": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
+              },
+              "entity_not_recorded": {
+                "title": "Entity not recorded",
+                "info_text_1": "State changes of this entity are not recorded, therefore, we cannot track long term statistics for it.",
+                "info_text_2": "You probably excluded this entity, or have just included some entities.",
+                "info_text_3_link": "See the recorder documentation for more information."
+              },
+              "entity_no_longer_recorded": {
+                "title": "Entity no longer recorded",
+                "info_text_1": "We have generated statistics for this entity in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
+                "info_text_2": "You probably excluded this entity, or have just included some entities.",
+                "info_text_3_link": "See the recorder documentation for more information."
+              },
+              "unsupported_state_class": {
+                "title": "Unsupported state class",
+                "info_text_1": "The state class of this entity, {state_class} is not supported.",
+                "info_text_2": "Statistics cannot be generated until this entity has a supported state class.",
+                "info_text_3": "If this state class was provided by an integration, this is a bug. Please report an issue.",
+                "info_text_4": "If you have set this state class yourself, please correct it.",
+                "info_text_4_link": "The different state classes and when to use which can be found in the developer documentation.",
+                "info_text_5": "If the state class has permanently changed, you may want to delete the long term statistics of it from your database.",
+                "info_text_6": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
+              },
               "units_changed": {
                 "title": "The unit of this entity changed",
                 "update": "Update the unit of the historic statistic values from ''{metadata_unit}'' to ''{state_unit}'', without converting.",
-                "clear": "Delete all old statistic data for this entity"
+                "clear": "Delete all old statistic data for this entity",
+                "how_to_fix": "How do you want to fix this issue?",
+                "info_text_1": "The unit of this entity changed to ''{current_unit}'' which can't be converted to the previously stored unit, ''{previous_unit}''.",
+                "info_text_2": "If the historic statistic values have a wrong unit, you can update the units of the old values. The values will not be updated.",
+                "info_text_3": "Otherwise you can choose to delete all historic statistic values, and start over."
+              },
+              "adjust_sum": {
+                "title": "Adjust a statistic",
+                "no_statistics_found": "No statistics found for this period.",
+                "info_text_1": "Sometimes the statistics end up being incorrect for a specific point in time. This can mess up your beautiful graphs! Select a time below to find the bad moment and adjust the data.",
+                "pick_a_time": "Pick a time",
+                "statistic": "Statistic:",
+                "start": "Start",
+                "end": "End",
+                "new_value": "New value",
+                "adjust": "Adjust",
+                "sum_adjusted": "Statistic sum adjusted",
+                "error_sum_adjusted": "Error adjusting sum: {message}"
               }
             },
             "adjust_sum": "Adjust sum",
@@ -5829,7 +5903,9 @@
                 "introduction": "A basic validation of the configuration is automatically done before restarting. The basic validation ensures the YAML configuration doesn't have errors which will prevent Home Assistant or any integration from starting. It's also possible to only do the basic validation check without restarting.",
                 "check_config": "Check configuration",
                 "valid": "Configuration will not prevent Home Assistant from starting!",
-                "invalid": "Configuration invalid!"
+                "invalid": "Configuration invalid!",
+                "warnings": "Configuration warnings",
+                "errors": "Configuration errors"
               },
               "reloading": {
                 "all": "All YAML configuration",
@@ -5995,6 +6071,7 @@
         }
       },
       "energy": {
+        "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
         "compare": {
           "info": "You are comparing the period {start} with the period {end}"
         },

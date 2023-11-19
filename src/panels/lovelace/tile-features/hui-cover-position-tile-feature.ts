@@ -13,6 +13,7 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
 import { CoverPositionTileFeatureConfig } from "./types";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
 
 export const supportsCoverPositionTileFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -93,6 +94,8 @@ class HuiCoverPositionTileFeature
             "current_position"
           )}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
+          .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_position}
+          .locale=${this.hass.locale}
         ></ha-control-slider>
       </div>
     `;

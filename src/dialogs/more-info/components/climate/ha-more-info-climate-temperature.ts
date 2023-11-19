@@ -159,6 +159,21 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       `;
     }
 
+    if (
+      !supportsFeature(
+        this.stateObj,
+        ClimateEntityFeature.TARGET_TEMPERATURE
+      ) &&
+      !supportsFeature(
+        this.stateObj,
+        ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
+      )
+    ) {
+      return html`
+        <p class="label">${this.hass.formatEntityState(this.stateObj)}</p>
+      `;
+    }
+
     const action = this.stateObj.attributes.hvac_action;
 
     const actionLabel = this.hass.formatEntityAttributeValue(
@@ -383,15 +398,17 @@ export class HaMoreInfoClimateTemperature extends LitElement {
       <div
         class="container"
         style=${styleMap({
-          "--action-color": actionColor,
+          "--state-color": stateColor,
         })}
       >
         <ha-control-circular-slider
+          mode="full"
           .current=${this.stateObj.attributes.current_temperature}
           .min=${this._min}
           .max=${this._max}
           .step=${this._step}
-          disabled
+          readonly
+          .disabled=${!active}
         >
         </ha-control-circular-slider>
         <div class="info">
@@ -415,6 +432,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           line-height: 64px;
           letter-spacing: -0.25px;
           margin: 0;
+          direction: ltr;
         }
         .temperature span {
           display: inline-flex;

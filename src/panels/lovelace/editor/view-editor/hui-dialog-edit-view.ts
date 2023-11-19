@@ -23,11 +23,6 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type {
-  LovelaceBadgeConfig,
-  LovelaceCardConfig,
-  LovelaceViewConfig,
-} from "../../../../data/lovelace";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -51,6 +46,12 @@ import {
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import { EditViewDialogParams } from "./show-edit-view-dialog";
+import {
+  LovelaceViewConfig,
+  isStrategyView,
+} from "../../../../data/lovelace/config/view";
+import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 
 @customElement("hui-dialog-edit-view")
 export class HuiDialogEditView extends LitElement {
@@ -103,13 +104,21 @@ export class HuiDialogEditView extends LitElement {
       this._badges = [];
       this._cards = [];
       this._dirty = false;
-    } else {
-      const { cards, badges, ...viewConfig } =
-        this._params.lovelace!.config.views[this._params.viewIndex];
-      this._config = viewConfig;
-      this._badges = badges ? processEditorEntities(badges) : [];
-      this._cards = cards;
+      return;
     }
+    const view = this._params.lovelace!.config.views[this._params.viewIndex];
+    // Todo : add better support for strategy views
+    if (isStrategyView(view)) {
+      const { strategy, ...viewConfig } = view;
+      this._config = viewConfig;
+      this._badges = [];
+      this._cards = [];
+      return;
+    }
+    const { cards, badges, ...viewConfig } = view;
+    this._config = viewConfig;
+    this._badges = badges ? processEditorEntities(badges) : [];
+    this._cards = cards;
   }
 
   public closeDialog(): void {

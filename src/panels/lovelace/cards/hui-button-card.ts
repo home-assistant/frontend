@@ -44,7 +44,7 @@ import {
   themesContext,
 } from "../../../data/context";
 import { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { FrontendLocaleData } from "../../../data/translation";
 import { Themes } from "../../../data/ws-themes";
 import { HomeAssistant } from "../../../types";
@@ -54,6 +54,11 @@ import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ButtonCardConfig } from "./types";
+
+export const getEntityDefaultButtonAction = (entityId?: string) =>
+  entityId && DOMAINS_TOGGLE.has(computeDomain(entityId))
+    ? "toggle"
+    : "more-info";
 
 @customElement("hui-button-card")
 export class HuiButtonCard extends LitElement implements LovelaceCard {
@@ -149,10 +154,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
     this._config = {
       tap_action: {
-        action:
-          config.entity && DOMAINS_TOGGLE.has(computeDomain(config.entity))
-            ? "toggle"
-            : "more-info",
+        action: getEntityDefaultButtonAction(config.entity),
       },
       hold_action: { action: "more-info" },
       show_icon: true,
