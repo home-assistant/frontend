@@ -9798,7 +9798,7 @@ __metadata:
     rollup-plugin-string: "npm:3.0.0"
     rollup-plugin-terser: "npm:7.0.2"
     rollup-plugin-visualizer: "npm:5.9.2"
-    rrule: "npm:2.7.2"
+    rrule: "npm:2.8.1"
     serve-handler: "npm:6.1.5"
     sinon: "npm:17.0.1"
     sortablejs: "npm:1.15.0"
@@ -14002,12 +14002,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rrule@npm:2.7.2":
-  version: 2.7.2
-  resolution: "rrule@npm:2.7.2"
+"rrule@npm:2.8.1":
+  version: 2.8.1
+  resolution: "rrule@npm:2.8.1"
   dependencies:
     tslib: "npm:^2.4.0"
-  checksum: 3d305e2d8dcca70c60bf31b8960f2e80ba4804ea91ff57a0a0ae67c5edcd5e07806d8a3e6aa0bbd41fdfff9c84cd908821395999fdd11cf30dc9dec61c72c255
+  checksum: 5df8cd2fa08f54ecce704750beb80420a3b15009961c77bd1447c1ccbb3abc1f23929228b13532992c89b813b52430ef0fefb8c9aa0b4ffbc50c51edc514731e
   languageName: node
   linkType: hard
 
