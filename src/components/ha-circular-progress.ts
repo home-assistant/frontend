@@ -1,3 +1,4 @@
+import "element-internals-polyfill";
 import { MdCircularProgress } from "@material/web/progress/circular-progress";
 import { CSSResult, css } from "lit";
 import { customElement, property } from "lit/decorators";
