@@ -45,6 +45,9 @@ import { HomeAssistant } from "../../types";
 import { HuiErrorCard } from "../lovelace/cards/hui-error-card";
 import { createCardElement } from "../lovelace/create-element/create-card-element";
 import { LovelaceCard } from "../lovelace/types";
+import { navigate } from "../../common/navigate";
+import { createSearchParam } from "../../common/url/search-params";
+import { constructUrlCurrentPath } from "../../common/url/construct-url";
 
 @customElement("ha-panel-todo")
 class PanelTodo extends LitElement {
@@ -108,15 +111,14 @@ class PanelTodo extends LitElement {
     if (!this.hasUpdated && !this._entityId) {
       this._entityId = getTodoLists(this.hass)[0]?.entity_id;
     } else if (!this.hasUpdated) {
-      this._createCard();
+      this._setupTodoElement();
     }
   }
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
-
     if (changedProperties.has("_entityId")) {
-      this._createCard();
+      this._setupTodoElement();
     }
 
     if (changedProperties.has("hass") && this._card) {
@@ -124,11 +126,16 @@ class PanelTodo extends LitElement {
     }
   }
 
-  private _createCard(): void {
+  private _setupTodoElement(): void {
     if (!this._entityId) {
       this._card = undefined;
+      navigate(constructUrlCurrentPath(""), { replace: true });
       return;
     }
+    navigate(
+      constructUrlCurrentPath(createSearchParam({ entity_id: this._entityId })),
+      { replace: true }
+    );
     this._card = createCardElement({
       type: "todo-list",
       entity: this._entityId,

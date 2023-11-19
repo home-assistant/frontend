@@ -697,7 +697,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._mode = "yaml";
   }
 
-  private async _promptAutomationAlias(): Promise<void> {
+  private async _promptAutomationAlias(): Promise<boolean> {
     return new Promise((resolve) => {
       showAutomationRenameDialog(this, {
         config: this._config!,
@@ -705,9 +705,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           this._config = config;
           this._dirty = true;
           this.requestUpdate();
-          resolve();
+          resolve(true);
         },
-        onClose: () => resolve(),
+        onClose: () => resolve(false),
       });
     });
   }
@@ -730,7 +730,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   private async _saveAutomation(): Promise<void> {
     const id = this.automationId || String(Date.now());
     if (!this.automationId) {
-      await this._promptAutomationAlias();
+      const saved = await this._promptAutomationAlias();
+      if (!saved) {
+        return;
+      }
     }
 
     this._validationErrors = undefined;

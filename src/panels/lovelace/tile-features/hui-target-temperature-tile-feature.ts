@@ -185,6 +185,7 @@ class HuiTargetTemperatureTileFeature
             .formatOptions=${options}
             .target="value"
             .value=${this.stateObj.attributes.temperature}
+            .unit=${this.hass.config.unit_system.temperature}
             .min=${this._min}
             .max=${this._max}
             .step=${this._step}
@@ -197,6 +198,7 @@ class HuiTargetTemperatureTileFeature
               "--control-number-buttons-focus-color": stateColor,
             })}
             .disabled=${this.stateObj!.state === UNAVAILABLE}
+            .locale=${this.hass.locale}
           >
           </ha-control-number-buttons>
         </ha-control-button-group>
@@ -215,6 +217,7 @@ class HuiTargetTemperatureTileFeature
             .formatOptions=${options}
             .target=${"low"}
             .value=${this._targetTemperature.low}
+            .unit=${this.hass.config.unit_system.temperature}
             .min=${this._min}
             .max=${Math.min(
               this._max,
@@ -230,12 +233,14 @@ class HuiTargetTemperatureTileFeature
               "--control-number-buttons-focus-color": stateColor,
             })}
             .disabled=${this.stateObj!.state === UNAVAILABLE}
+            .locale=${this.hass.locale}
           >
           </ha-control-number-buttons>
           <ha-control-number-buttons
             .formatOptions=${options}
             .target=${"high"}
             .value=${this._targetTemperature.high}
+            .unit=${this.hass.config.unit_system.temperature}
             .min=${Math.max(
               this._min,
               this._targetTemperature.low ?? this._min
@@ -251,6 +256,7 @@ class HuiTargetTemperatureTileFeature
               "--control-number-buttons-focus-color": stateColor,
             })}
             .disabled=${this.stateObj!.state === UNAVAILABLE}
+            .locale=${this.hass.locale}
           >
           </ha-control-number-buttons>
         </ha-control-button-group>
@@ -261,6 +267,7 @@ class HuiTargetTemperatureTileFeature
       <ha-control-button-group>
         <ha-control-number-buttons
           .disabled=${this.stateObj!.state === UNAVAILABLE}
+          .unit=${this.hass.config.unit_system.temperature}
           .label=${this.hass.formatEntityAttributeName(
             this.stateObj,
             "temperature"
@@ -268,6 +275,7 @@ class HuiTargetTemperatureTileFeature
           style=${styleMap({
             "--control-number-buttons-focus-color": stateColor,
           })}
+          .locale=${this.hass.locale}
         >
         </ha-control-number-buttons>
       </ha-control-button-group>

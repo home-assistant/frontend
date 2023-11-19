@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import { mdiCastConnected, mdiCast } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
 import {
   Auth,
   Connection,
@@ -24,6 +23,7 @@ import "../../../../src/components/ha-svg-icon";
 import "../../../../src/layouts/hass-loading-screen";
 import { registerServiceWorker } from "../../../../src/util/register-service-worker";
 import "./hc-layout";
+import "../../../../src/components/ha-textfield";
 
 const seeFAQ = (qid) => html`
   See <a href="./faq.html${qid ? `#${qid}` : ""}">the FAQ</a> for more
@@ -116,13 +116,11 @@ export class HcConnect extends LitElement {
               To get started, enter your Home Assistant URL and click authorize.
               If you want a preview instead, click the show demo button.
             </p>
-            <p>
-              <paper-input
-                label="Home Assistant URL"
-                placeholder="https://abcdefghijklmnop.ui.nabu.casa"
-                @keydown=${this._handleInputKeyDown}
-              ></paper-input>
-            </p>
+            <ha-textfield
+              label="Home Assistant URL"
+              placeholder="https://abcdefghijklmnop.ui.nabu.casa"
+              @keydown=${this._handleInputKeyDown}
+            ></ha-textfield>
             ${this.error ? html` <p class="error">${this.error}</p> ` : ""}
           </div>
           <div class="card-actions">
@@ -196,7 +194,7 @@ export class HcConnect extends LitElement {
   }
 
   private async _handleConnect() {
-    const inputEl = this.shadowRoot!.querySelector("paper-input")!;
+    const inputEl = this.shadowRoot!.querySelector("ha-textfield")!;
     const value = inputEl.value || "";
     this.error = undefined;
 
@@ -314,6 +312,10 @@ export class HcConnect extends LitElement {
 
       .spacer {
         flex: 1;
+      }
+
+      ha-textfield {
+        width: 100%;
       }
     `;
   }

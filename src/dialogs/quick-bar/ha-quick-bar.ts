@@ -27,7 +27,7 @@ import {
   fuzzyFilterSort,
 } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
-import "../../components/ha-chip";
+import "../../components/ha-label";
 import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
@@ -326,19 +326,17 @@ export class QuickBar extends LitElement {
         hasMeta
       >
         <span>
-          <ha-chip
+          <ha-label
             .label=${item.categoryText}
-            hasIcon
             class="command-category ${item.categoryKey}"
           >
             ${item.iconPath
-              ? html`<ha-svg-icon
-                  .path=${item.iconPath}
-                  slot="icon"
-                ></ha-svg-icon>`
-              : ""}
-            ${item.categoryText}</ha-chip
-          >
+              ? html`
+                  <ha-svg-icon .path=${item.iconPath} slot="icon"></ha-svg-icon>
+                `
+              : nothing}
+            ${item.categoryText}
+          </ha-label>
         </span>
 
         <span class="command-text">${item.primaryText}</span>
@@ -766,6 +764,7 @@ export class QuickBar extends LitElement {
       haStyleDialog,
       css`
         mwc-list {
+          position: relative;
           --mdc-list-vertical-padding: 0;
         }
         .heading {
@@ -815,20 +814,20 @@ export class QuickBar extends LitElement {
         }
 
         .command-category {
-          --ha-chip-icon-color: #585858;
-          --ha-chip-text-color: #212121;
+          --ha-label-icon-color: #585858;
+          --ha-label-text-color: #212121;
         }
 
         .command-category.reload {
-          --ha-chip-background-color: #cddc39;
+          --ha-label-background-color: #cddc39;
         }
 
         .command-category.navigation {
-          --ha-chip-background-color: var(--light-primary-color);
+          --ha-label-background-color: var(--light-primary-color);
         }
 
         .command-category.server_control {
-          --ha-chip-background-color: var(--warning-color);
+          --ha-label-background-color: var(--warning-color);
         }
 
         span.command-text {

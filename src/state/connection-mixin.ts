@@ -143,7 +143,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
                       ? "connection lost"
                       : "unknown error")
                   }`;
-              fireEvent(this as any, "hass-notification", { message });
+              fireEvent(this as any, "hass-notification", {
+                message,
+                duration: 10000,
+              });
             }
             throw err;
           }

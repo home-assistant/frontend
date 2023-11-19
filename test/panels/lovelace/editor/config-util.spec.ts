@@ -5,7 +5,7 @@ import {
   moveCard,
   swapView,
 } from "../../../../src/panels/lovelace/editor/config-util";
-import { LovelaceConfig } from "../../../../src/data/lovelace";
+import { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
 
 describe("swapCard", () => {
   it("swaps 2 cards in same view", () => {

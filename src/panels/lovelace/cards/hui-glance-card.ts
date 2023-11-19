@@ -18,24 +18,24 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-relative-time";
 import { isUnavailableState } from "../../../data/entity";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import {
-  ActionHandlerEvent,
   CallServiceActionConfig,
   MoreInfoActionConfig,
-} from "../../../data/lovelace";
+} from "../../../data/lovelace/config/action";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
+import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-timestamp-display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { GlanceCardConfig, GlanceConfigEntity } from "./types";
-import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {

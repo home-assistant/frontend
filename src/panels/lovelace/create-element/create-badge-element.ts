@@ -1,4 +1,4 @@
-import { LovelaceBadgeConfig } from "../../../data/lovelace";
+import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import "../badges/hui-state-label-badge";
 import { createLovelaceElement } from "./create-element-base";
 
