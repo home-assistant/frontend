@@ -38,7 +38,7 @@ export const callProtectedLockService = async (
       title: hass.localize(`ui.dialogs.more_info_control.lock.${service}`),
       submitText: hass.localize(`ui.dialogs.more_info_control.lock.${service}`),
     });
-    if (!response) {
+    if (response == null) {
       throw new Error("Code dialog closed");
     }
     code = response;
