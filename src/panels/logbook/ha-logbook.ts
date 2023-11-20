@@ -343,10 +343,10 @@ export class HaLogbook extends LitElement {
     !this._logbookEntries
       ? []
       : purgeBeforePythonTime
-      ? this._logbookEntries.filter(
-          (entry) => entry.when > purgeBeforePythonTime!
-        )
-      : this._logbookEntries;
+        ? this._logbookEntries.filter(
+            (entry) => entry.when > purgeBeforePythonTime!
+          )
+        : this._logbookEntries;
 
   private _processOrQueueStreamMessage = (
     streamMessage: LogbookStreamMessage

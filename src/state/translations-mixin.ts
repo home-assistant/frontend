@@ -268,7 +268,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private _applyDirection(hass: HomeAssistant) {
       const direction = computeRTLDirection(hass);
-      document.dir = direction;
       setDirectionStyles(direction, this);
     }
 

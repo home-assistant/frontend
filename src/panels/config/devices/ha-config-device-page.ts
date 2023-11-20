@@ -207,10 +207,10 @@ export class HaConfigDevicePage extends LitElement {
         entry.entity_category
           ? entry.entity_category
           : computeDomain(entry.entity_id) === "event"
-          ? "event"
-          : SENSOR_ENTITIES.includes(computeDomain(entry.entity_id))
-          ? "sensor"
-          : "control"
+            ? "event"
+            : SENSOR_ENTITIES.includes(computeDomain(entry.entity_id))
+              ? "sensor"
+              : "control"
       ) as Record<
         | "control"
         | "event"
@@ -353,6 +353,7 @@ export class HaConfigDevicePage extends LitElement {
                 type: "icon",
                 darkOptimized: this.hass.themes?.darkMode,
               })}
+              crossorigin="anonymous"
               referrerpolicy="no-referrer"
             />
 
@@ -741,6 +742,7 @@ export class HaConfigDevicePage extends LitElement {
                               type: "logo",
                               darkOptimized: this.hass.themes?.darkMode,
                             })}
+                            crossorigin="anonymous"
                             referrerpolicy="no-referrer"
                             @load=${this._onImageLoad}
                             @error=${this._onImageError}

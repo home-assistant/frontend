@@ -445,107 +445,109 @@ export class HaMediaPlayerBrowse extends LitElement {
                     </div>
                   `
                 : isTTSMediaSource(currentItem.media_content_id)
-                ? html`
-                    <ha-browse-media-tts
-                      .item=${currentItem}
-                      .hass=${this.hass}
-                      .action=${this.action}
-                      @tts-picked=${this._ttsPicked}
-                    ></ha-browse-media-tts>
-                  `
-                : !children.length && !currentItem.not_shown
-                ? html`
-                    <div class="container no-items">
-                      ${currentItem.media_content_id ===
-                      "media-source://media_source/local/."
-                        ? html`
-                            <div class="highlight-add-button">
-                              <span>
-                                <ha-svg-icon
-                                  .path=${mdiArrowUpRight}
-                                ></ha-svg-icon>
-                              </span>
-                              <span>
-                                ${this.hass.localize(
-                                  "ui.components.media-browser.file_management.highlight_button"
-                                )}
-                              </span>
-                            </div>
-                          `
-                        : this.hass.localize(
-                            "ui.components.media-browser.no_items"
-                          )}
-                    </div>
-                  `
-                : childrenMediaClass.layout === "grid"
-                ? html`
-                    <lit-virtualizer
-                      scroller
-                      .layout=${grid({
-                        itemSize: {
-                          width: "175px",
-                          height:
-                            childrenMediaClass.thumbnail_ratio === "portrait"
-                              ? "312px"
-                              : "225px",
-                        },
-                        gap: "16px",
-                        flex: { preserve: "aspect-ratio" },
-                        justify: "space-evenly",
-                        direction: "vertical",
-                      })}
-                      .items=${children}
-                      .renderItem=${this._renderGridItem}
-                      class="children ${classMap({
-                        portrait:
-                          childrenMediaClass.thumbnail_ratio === "portrait",
-                        not_shown: !!currentItem.not_shown,
-                      })}"
-                    ></lit-virtualizer>
-                    ${currentItem.not_shown
-                      ? html`
-                          <div class="grid not-shown">
-                            <div class="title">
-                              ${this.hass.localize(
-                                "ui.components.media-browser.not_shown",
-                                { count: currentItem.not_shown }
+                  ? html`
+                      <ha-browse-media-tts
+                        .item=${currentItem}
+                        .hass=${this.hass}
+                        .action=${this.action}
+                        @tts-picked=${this._ttsPicked}
+                      ></ha-browse-media-tts>
+                    `
+                  : !children.length && !currentItem.not_shown
+                    ? html`
+                        <div class="container no-items">
+                          ${currentItem.media_content_id ===
+                          "media-source://media_source/local/."
+                            ? html`
+                                <div class="highlight-add-button">
+                                  <span>
+                                    <ha-svg-icon
+                                      .path=${mdiArrowUpRight}
+                                    ></ha-svg-icon>
+                                  </span>
+                                  <span>
+                                    ${this.hass.localize(
+                                      "ui.components.media-browser.file_management.highlight_button"
+                                    )}
+                                  </span>
+                                </div>
+                              `
+                            : this.hass.localize(
+                                "ui.components.media-browser.no_items"
                               )}
-                            </div>
-                          </div>
+                        </div>
+                      `
+                    : childrenMediaClass.layout === "grid"
+                      ? html`
+                          <lit-virtualizer
+                            scroller
+                            .layout=${grid({
+                              itemSize: {
+                                width: "175px",
+                                height:
+                                  childrenMediaClass.thumbnail_ratio ===
+                                  "portrait"
+                                    ? "312px"
+                                    : "225px",
+                              },
+                              gap: "16px",
+                              flex: { preserve: "aspect-ratio" },
+                              justify: "space-evenly",
+                              direction: "vertical",
+                            })}
+                            .items=${children}
+                            .renderItem=${this._renderGridItem}
+                            class="children ${classMap({
+                              portrait:
+                                childrenMediaClass.thumbnail_ratio ===
+                                "portrait",
+                              not_shown: !!currentItem.not_shown,
+                            })}"
+                          ></lit-virtualizer>
+                          ${currentItem.not_shown
+                            ? html`
+                                <div class="grid not-shown">
+                                  <div class="title">
+                                    ${this.hass.localize(
+                                      "ui.components.media-browser.not_shown",
+                                      { count: currentItem.not_shown }
+                                    )}
+                                  </div>
+                                </div>
+                              `
+                            : ""}
                         `
-                      : ""}
-                  `
-                : html`
-                    <mwc-list>
-                      <lit-virtualizer
-                        scroller
-                        .items=${children}
-                        style=${styleMap({
-                          height: `${children.length * 72 + 26}px`,
-                        })}
-                        .renderItem=${this._renderListItem}
-                      ></lit-virtualizer>
-                      ${currentItem.not_shown
-                        ? html`
-                            <mwc-list-item
-                              noninteractive
-                              class="not-shown"
-                              .graphic=${mediaClass.show_list_images
-                                ? "medium"
-                                : "avatar"}
-                              dir=${computeRTLDirection(this.hass)}
-                            >
-                              <span class="title">
-                                ${this.hass.localize(
-                                  "ui.components.media-browser.not_shown",
-                                  { count: currentItem.not_shown }
-                                )}
-                              </span>
-                            </mwc-list-item>
-                          `
-                        : ""}
-                    </mwc-list>
-                  `
+                      : html`
+                          <mwc-list>
+                            <lit-virtualizer
+                              scroller
+                              .items=${children}
+                              style=${styleMap({
+                                height: `${children.length * 72 + 26}px`,
+                              })}
+                              .renderItem=${this._renderListItem}
+                            ></lit-virtualizer>
+                            ${currentItem.not_shown
+                              ? html`
+                                  <mwc-list-item
+                                    noninteractive
+                                    class="not-shown"
+                                    .graphic=${mediaClass.show_list_images
+                                      ? "medium"
+                                      : "avatar"}
+                                    dir=${computeRTLDirection(this.hass)}
+                                  >
+                                    <span class="title">
+                                      ${this.hass.localize(
+                                        "ui.components.media-browser.not_shown",
+                                        { count: currentItem.not_shown }
+                                      )}
+                                    </span>
+                                  </mwc-list-item>
+                                `
+                              : ""}
+                          </mwc-list>
+                        `
             }
           </div>
         </div>
@@ -899,6 +901,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           overflow-y: auto;
           box-sizing: border-box;
           height: 100%;
+          position: relative;
         }
 
         /* HEADER */

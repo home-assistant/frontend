@@ -203,8 +203,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
               alexaManual && key === "cloud.alexa"
                 ? manExposedAlexa
                 : googleManual && key === "cloud.google_assistant"
-                ? manExposedGoogle
-                : this.exposed[key];
+                  ? manExposedGoogle
+                  : this.exposed[key];
 
             const manualConfig =
               (alexaManual && key === "cloud.alexa") ||
@@ -225,6 +225,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                     type: "icon",
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
+                  crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                   slot="prefix"
                 />

@@ -10,10 +10,12 @@ import "../../../../components/ha-icon";
 import "../../../../components/ha-select";
 import {
   fetchConfig,
-  fetchDashboards,
   LovelaceConfig,
+} from "../../../../data/lovelace/config/types";
+import {
+  fetchDashboards,
   LovelaceDashboard,
-} from "../../../../data/lovelace";
+} from "../../../../data/lovelace/dashboard";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import type { SelectViewDialogParams } from "./show-select-view-dialog";
@@ -155,7 +157,11 @@ export class HuiDialogSelectView extends LitElement {
     this._urlPath = urlPath;
     this._selectedViewIdx = 0;
     try {
-      this._config = await fetchConfig(this.hass.connection, urlPath, false);
+      this._config = (await fetchConfig(
+        this.hass.connection,
+        urlPath,
+        false
+      )) as LovelaceConfig;
     } catch (err: any) {
       this._config = undefined;
     }

@@ -1,37 +1,39 @@
-import { addHours } from "date-fns/esm";
-import "@material/mwc-button";
 import {
   mdiClipboardTextMultipleOutline,
   mdiInformationOutline,
   mdiRefresh,
 } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { addHours } from "date-fns/esm";
 import {
   HassEntities,
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
+import { dump } from "js-yaml";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
-import { computeRTL } from "../../../common/util/compute_rtl";
+import { storage } from "../../../common/decorators/storage";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { escapeRegExp } from "../../../common/string/escape_regexp";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/entity/ha-entity-picker";
-import "../../../components/ha-yaml-editor";
+import "../../../components/ha-alert";
+import "../../../components/ha-button";
+import "../../../components/ha-checkbox";
+import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-checkbox";
 import "../../../components/ha-tip";
-import "../../../components/ha-alert";
+import "../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import "../../../components/search-input";
-import "../../../components/ha-expansion-panel";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { toggleAttribute } from "../../../common/dom/toggle_attribute";
-import { storage } from "../../../common/decorators/storage";
 
 @customElement("developer-tools-state")
 class HaPanelDevState extends LitElement {
@@ -68,6 +70,8 @@ class HaPanelDevState extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public rtl = false;
+
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   private _filteredEntities = memoizeOne(
     (
@@ -124,7 +128,7 @@ class HaPanelDevState extends LitElement {
               autofocus
               .hass=${this.hass}
               .value=${this._entityId}
-              @change=${this._entityIdChanged}
+              @value-changed=${this._entityIdChanged}
               allow-custom-entity
               item-label-path="entity_id"
             ></ha-entity-picker>
@@ -150,23 +154,22 @@ class HaPanelDevState extends LitElement {
               )}
             </p>
             <ha-yaml-editor
-              autoUpdate
               .value=${this._stateAttributes}
               .error=${!this._validJSON}
               @value-changed=${this._yamlChanged}
               dir="ltr"
             ></ha-yaml-editor>
             <div class="button-row">
-              <mwc-button
+              <ha-button
                 @click=${this._handleSetState}
                 .disabled=${!this._validJSON}
                 raised
                 >${this.hass.localize(
                   "ui.panel.developer-tools.tabs.states.set_state"
-                )}</mwc-button
+                )}</ha-button
               >
               <ha-icon-button
-                @click=${this._entityIdChanged}
+                @click=${this._updateEntity}
                 .label=${this.hass.localize("ui.common.refresh")}
                 .path=${mdiRefresh}
               ></ha-icon-button>
@@ -342,15 +345,26 @@ class HaPanelDevState extends LitElement {
     this._entity = entityState;
     this._state = entityState.state;
     this._stateAttributes = entityState.attributes;
+    this._updateEditor();
     this._expanded = true;
     ev.preventDefault();
   }
 
-  private _entityIdChanged() {
+  private _updateEditor() {
+    this._yamlEditor?.setValue(this._stateAttributes);
+  }
+
+  private _entityIdChanged(ev: CustomEvent) {
+    this._entityId = ev.detail.value;
+    this._updateEntity();
+  }
+
+  private _updateEntity() {
     if (!this._entityId) {
       this._entity = undefined;
       this._state = "";
       this._stateAttributes = {};
+      this._updateEditor();
       return;
     }
     const entityState = this.hass.states[this._entityId];
@@ -360,6 +374,7 @@ class HaPanelDevState extends LitElement {
     this._entity = entityState;
     this._state = entityState.state;
     this._stateAttributes = entityState.attributes;
+    this._updateEditor();
     this._expanded = true;
   }
 
@@ -413,6 +428,7 @@ class HaPanelDevState extends LitElement {
       });
       return;
     }
+    this._updateEditor();
     try {
       await this.hass.callApi("POST", "states/" + this._entityId, {
         state: this._state,
@@ -513,12 +529,23 @@ class HaPanelDevState extends LitElement {
       });
   }
 
+  private _formatAttributeValue(value) {
+    if (
+      (Array.isArray(value) && value.some((val) => val instanceof Object)) ||
+      (!Array.isArray(value) && value instanceof Object)
+    ) {
+      return `\n${dump(value)}`;
+    }
+    return Array.isArray(value) ? value.join(", ") : value;
+  }
+
   private _attributeString(entity) {
     const output = "";
 
     if (entity && entity.attributes) {
       return Object.keys(entity.attributes).map(
-        (key) => `${key}: ${entity.attributes[key]}\n`
+        (key) =>
+          `${key}: ${this._formatAttributeValue(entity.attributes[key])}\n`
       );
     }
 

@@ -73,9 +73,11 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean }) public isLoadingData = false;
 
-  @state() private _computedStartTime!: Date;
+  @property({ type: Boolean }) public logarithmicScale = false;
 
-  @state() private _computedEndTime!: Date;
+  private _computedStartTime!: Date;
+
+  private _computedEndTime!: Date;
 
   @state() private _maxYWidth = 0;
 
@@ -114,31 +116,6 @@ export class StateHistoryCharts extends LitElement {
         ${this.hass.localize("ui.components.history_charts.no_history_found")}
       </div>`;
     }
-
-    const now = new Date();
-
-    this._computedEndTime =
-      this.upToNow || !this.endTime || this.endTime > now ? now : this.endTime;
-
-    if (this.startTime) {
-      this._computedStartTime = this.startTime;
-    } else if (this.hoursToShow) {
-      this._computedStartTime = new Date(
-        new Date().getTime() - 60 * 60 * this.hoursToShow * 1000
-      );
-    } else {
-      this._computedStartTime = new Date(
-        this.historyData.timeline.reduce(
-          (minTime, stateInfo) =>
-            Math.min(
-              minTime,
-              new Date(stateInfo.data[0].last_changed).getTime()
-            ),
-          new Date().getTime()
-        )
-      );
-    }
-
     const combinedItems = this.historyData.timeline.length
       ? (this.virtualize
           ? chunkData(this.historyData.timeline, CANVAS_TIMELINE_ROWS_CHUNK)
@@ -184,6 +161,7 @@ export class StateHistoryCharts extends LitElement {
           .names=${this.names}
           .chartIndex=${index}
           .clickForMoreInfo=${this.clickForMoreInfo}
+          .logarithmicScale=${this.logarithmicScale}
           @y-width-changed=${this._yWidthChanged}
         ></state-history-chart-line>
       </div> `;
@@ -220,9 +198,44 @@ export class StateHistoryCharts extends LitElement {
     return true;
   }
 
-  protected willUpdate() {
+  protected willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       loadVirtualizer();
+    }
+    if (
+      [...changedProps.keys()].some(
+        (prop) =>
+          !(
+            ["_maxYWidth", "_childYWidths", "_chartCount"] as PropertyKey[]
+          ).includes(prop)
+      )
+    ) {
+      // Don't recompute times when we just want to update layout
+      const now = new Date();
+
+      this._computedEndTime =
+        this.upToNow || !this.endTime || this.endTime > now
+          ? now
+          : this.endTime;
+
+      if (this.startTime) {
+        this._computedStartTime = this.startTime;
+      } else if (this.hoursToShow) {
+        this._computedStartTime = new Date(
+          new Date().getTime() - 60 * 60 * this.hoursToShow * 1000
+        );
+      } else {
+        this._computedStartTime = new Date(
+          (this.historyData?.timeline ?? []).reduce(
+            (minTime, stateInfo) =>
+              Math.min(
+                minTime,
+                new Date(stateInfo.data[0].last_changed).getTime()
+              ),
+            new Date().getTime()
+          )
+        );
+      }
     }
   }
 

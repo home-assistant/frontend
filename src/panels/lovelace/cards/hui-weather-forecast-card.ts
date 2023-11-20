@@ -18,7 +18,7 @@ import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../data/entity";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import {
   ForecastEvent,
   WeatherEntity,
@@ -355,20 +355,20 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                                   </div>
                                 `
                               : hourly
-                              ? html`
-                                  ${formatTime(
-                                    new Date(item.datetime),
-                                    this.hass!.locale,
-                                    this.hass!.config
-                                  )}
-                                `
-                              : html`
-                                  ${formatDateWeekdayShort(
-                                    new Date(item.datetime),
-                                    this.hass!.locale,
-                                    this.hass!.config
-                                  )}
-                                `}
+                                ? html`
+                                    ${formatTime(
+                                      new Date(item.datetime),
+                                      this.hass!.locale,
+                                      this.hass!.config
+                                    )}
+                                  `
+                                : html`
+                                    ${formatDateWeekdayShort(
+                                      new Date(item.datetime),
+                                      this.hass!.locale,
+                                      this.hass!.config
+                                    )}
+                                  `}
                           </div>
                           ${this._showValue(item.condition)
                             ? html`
@@ -399,8 +399,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                                   this.hass!.locale
                                 )}°`
                               : hourly
-                              ? ""
-                              : "—"}
+                                ? ""
+                                : "—"}
                           </div>
                         </div>
                       `

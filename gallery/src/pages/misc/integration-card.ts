@@ -213,6 +213,7 @@ const createDeviceRegistryEntries = (
     name: "Tag Reader",
     sw_version: null,
     hw_version: "1.0.0",
+    serial_number: "00_12_4B_00_22_98_88_7F",
     id: "mock-device-id",
     identifiers: [],
     via_device_id: null,

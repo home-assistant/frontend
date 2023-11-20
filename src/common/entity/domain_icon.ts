@@ -100,8 +100,8 @@ export const domainIconWithoutDefault = (
       return compareState === "unavailable"
         ? mdiRobotConfused
         : compareState === "off"
-        ? mdiRobotOff
-        : mdiRobot;
+          ? mdiRobotOff
+          : mdiRobot;
 
     case "binary_sensor":
       return binarySensorIcon(compareState, stateObj);

@@ -8,7 +8,7 @@
     "logbook": "Logbook",
     "history": "History",
     "mailbox": "Mailbox",
-    "shopping_list": "Shopping list",
+    "todo": "To-do lists",
     "developer_tools": "Developer tools",
     "media_browser": "Media",
     "profile": "Profile"
@@ -311,7 +311,8 @@
       "successfully_deleted": "Successfully deleted",
       "error_required": "Required",
       "copied": "Copied",
-      "copied_clipboard": "Copied to clipboard"
+      "copied_clipboard": "Copied to clipboard",
+      "name": "Name"
     },
     "components": {
       "selectors": {
@@ -327,6 +328,10 @@
         "file": {
           "upload_failed": "Upload failed",
           "unknown_file": "Unknown file"
+        },
+        "text": {
+          "show_password": "Show password",
+          "hide_password": "Hide password"
         }
       },
       "logbook": {
@@ -675,6 +680,7 @@
       "calendar": {
         "label": "Calendar",
         "my_calendars": "My calendars",
+        "create_calendar": "Create calendar",
         "today": "Today",
         "event_retrieval_error": "Could not retrieve events for calendars:",
         "event": {
@@ -789,6 +795,10 @@
       }
     },
     "dialogs": {
+      "safe_mode": {
+        "title": "Safe mode",
+        "text": "Home Assistant is running in safe mode, custom integrations and frontend modules are not available. Restart Home Assistant to exit safe mode."
+      },
       "quick-bar": {
         "commands": {
           "reload": {
@@ -1202,7 +1212,7 @@
         "advanced_options": "Advanced options",
         "reload": {
           "title": "Quick reload",
-          "description": "Load new YAML configurations without a restart.",
+          "description": "Loads new YAML configurations without a restart.",
           "reloading": "Reloading configuration",
           "failed": "Failed to reload configuration"
         },
@@ -1221,7 +1231,7 @@
         },
         "reboot": {
           "title": "Reboot system",
-          "description": "Restart the system running Home Assistant and all Add-ons.",
+          "description": "Restarts the system running Home Assistant and all add-ons.",
           "confirm_title": "Reboot system?",
           "confirm_description": "This will reboot the complete system which includes Home Assistant and all the add-ons.",
           "confirm_action": "Reboot",
@@ -1230,12 +1240,20 @@
         },
         "shutdown": {
           "title": "Shut down system",
-          "description": "Shut down the system running Home Assistant and all add-ons.",
+          "description": "Shuts down the system running Home Assistant and all add-ons.",
           "confirm_title": "Shut down system?",
           "confirm_description": "This will shut down the complete system which includes Home Assistant and all add-ons.",
           "confirm_action": "Shut down",
           "shutting_down": "Shutting down system",
           "failed": "Failed to shut down system"
+        },
+        "restart-safe-mode": {
+          "title": "Restart Home Assistant in safe mode",
+          "description": "Restarts Home Assistant without loading any custom integrations and frontend modules.",
+          "confirm_title": "Restart Home Assistant in safe mode?",
+          "confirm_description": "This will restart Home Assistant without loading any custom integrations and frontend modules.",
+          "confirm_action": "Restart",
+          "failed": "Failed to restart Home Assistant"
         }
       },
       "aliases": {
@@ -2028,7 +2046,7 @@
           "frontend": "frontend-ui",
           "built_using": "Built using",
           "icons_by": "Icons by",
-          "frontend_version": "Frontend {version} - {type}",
+          "frontend_version_label": "Frontend",
           "custom_uis": "Custom UIs:",
           "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
           "documentation": "Documentation",
@@ -2086,6 +2104,13 @@
               "yaml": "YAML file",
               "storage": "UI controlled"
             },
+            "dialog_new": {
+              "header": "Add dashboard",
+              "create_empty": "New dashboard from scratch",
+              "create_empty_description": "Start with an empty dashboard from scratch",
+              "default": "Default dashboard",
+              "default_description": "Display your devices grouped by area"
+            },
             "picker": {
               "headers": {
                 "icon": "Icon",
@@ -2130,6 +2155,8 @@
               "js": "JavaScript file (deprecated)",
               "module": "JavaScript module"
             },
+            "unavailable": "Resources unavailable",
+            "unavailable_safe_mode": "Resources are not available in safe mode",
             "picker": {
               "headers": {
                 "url": "URL",
@@ -2389,6 +2416,7 @@
               "delete_confirm_text": "It will be permanently deleted.",
               "unsupported_platform": "No visual editor support for platform: {platform}",
               "type_select": "Trigger type",
+              "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
               "type": {
                 "calendar": {
                   "label": "Calendar",
@@ -2519,7 +2547,7 @@
                   "value_template": "Value template",
                   "for": "For",
                   "description": {
-                    "full": "When a template triggers{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                    "full": "When a template changes from false to true{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
                 "time": {
@@ -2584,6 +2612,7 @@
               "delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
               "unsupported_condition": "No visual editor support for condition: {condition}",
               "type_select": "Condition type",
+              "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
               "type": {
                 "and": {
                   "label": "And",
@@ -2648,7 +2677,10 @@
                 },
                 "template": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::template::label%]",
-                  "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]"
+                  "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]",
+                  "description": {
+                    "full": "Test if template renders a value equal to true"
+                  }
                 },
                 "time": {
                   "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_value%]",
@@ -2667,12 +2699,18 @@
                     "fri": "Friday",
                     "sat": "Saturday",
                     "sun": "Sunday"
+                  },
+                  "description": {
+                    "full": "Confirm the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
                   }
                 },
                 "trigger": {
                   "label": "Triggered by",
                   "no_triggers": "No triggers have an ID set. You can set an ID using the trigger menu button.",
-                  "id": "Trigger"
+                  "id": "Trigger",
+                  "description": {
+                    "full": "When triggered by {id}"
+                  }
                 },
                 "zone": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
@@ -2994,6 +3032,24 @@
             "unavailable": "Script is unavailable",
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
+            "field": {
+              "name": "[%key:ui::common::name%]",
+              "key": "Field variable key name",
+              "description": "Description",
+              "required": "Required",
+              "default": "Default",
+              "selector": "Selector",
+              "yaml_error": "Field yaml has invalid format.",
+              "key_not_null": "The field key must not be empty.",
+              "key_not_unique": "The field key must not be the same value as another field.",
+              "fields": "Fields",
+              "link_help_fields": "Learn more about fields.",
+              "add_fields": "Add fields",
+              "add_field": "Add field",
+              "field": "field"
+            },
+            "field_delete_confirm_title": "Delete field?",
+            "field_delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
             "header": "Script: {name}",
             "default_name": "New Script",
             "modes": {
@@ -3601,6 +3657,7 @@
             "firmware": "Firmware: {version}",
             "hardware": "Hardware: {version}",
             "version": "Version: {version}",
+            "serial_number": "Serial number: {serial_number}",
             "unnamed_entry": "Unnamed entry",
             "unknown_via_device": "Unknown device",
             "area": "In {area}",
@@ -4018,10 +4075,26 @@
             "remove_failed": "Remove failed",
             "update_firmware": "Update",
             "highest_security": "Highest security",
+            "hard_reset_controller": "Factory reset",
             "unknown": "Unknown",
             "zwave_plus": "Z-Wave Plus",
             "zwave_plus_version": "Version {version}",
             "node_statistics": "Statistics"
+          },
+          "hard_reset_controller": {
+            "NotStarted": {
+              "title": "Reset Controller to Factory Settings",
+              "body": "If you decide to move forward, you will reset your controller to factory settings. As a result, the controller will forget all devices it is paired with and all Z-Wave devices for this network will be removed from Home Assistant. If there are any devices still paired with the controller when it is reset, they will have to go through the exclusion process before they can be re-paired. Would you like to continue?"
+            },
+            "InProgress": {
+              "title": "Resetting Controller",
+              "body": "Your controller is being reset and restarted. Wait until the process is complete before closing this dialog"
+            },
+            "Done": {
+              "title": "Controller Reset Complete",
+              "body": "Your controller has been reset to factory settings and has been restarted! You can now close this dialog."
+            },
+            "confirmation": "This action cannot be undone unless you have an NVM backup from your controller."
           },
           "node_statistics": {
             "title": "Device statistics",
@@ -4471,12 +4544,13 @@
           "entities": {
             "never_triggered": "Never triggered"
           },
-          "shopping-list": {
+          "todo-list": {
             "checked_items": "Checked items",
             "clear_items": "Clear checked items",
             "add_item": "Add item",
             "reorder_items": "Reorder items",
-            "drag_and_drop": "Drag and drop"
+            "drag_and_drop": "Drag and drop",
+            "delete_item": "Delete item"
           },
           "picture-elements": {
             "hold": "Hold:",
@@ -4490,9 +4564,9 @@
           "iframe": {
             "error_secure_context": "Unable to load iframes pointing at websites using {target_protocol} if Home Assistant is served over {context_protocol}."
           },
-          "safe-mode": {
-            "header": "Safe mode activated",
-            "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong."
+          "recovery-mode": {
+            "header": "Recovery mode activated",
+            "description": "Home Assistant ran into trouble while loading your configuration and is now running in recovery mode. Take a look at the error log to see what went wrong."
           },
           "starting": {
             "description": "Home Assistant is starting, please wait…"
@@ -4761,7 +4835,17 @@
           "condition-editor": {
             "explanation": "The card will be shown when ALL conditions below are fulfilled.",
             "add": "Add condition",
+            "test": "[%key:ui::panel::config::automation::editor::conditions::test%]",
+            "testing_pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
+            "testing_error": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
+            "invalid_config_title": "Invalid configuration",
+            "invalid_config_text": "The condition can not be tested because the configuration is not valid.",
             "condition": {
+              "numeric_state": {
+                "label": "Entity numeric state",
+                "above": "Above",
+                "below": "Below"
+              },
               "screen": {
                 "label": "Screen",
                 "breakpoints": "Screen sizes",
@@ -4781,6 +4865,12 @@
               },
               "user": {
                 "label": "User"
+              },
+              "or": {
+                "label": "Or"
+              },
+              "and": {
+                "label": "And"
               }
             }
           },
@@ -4892,7 +4982,8 @@
             },
             "history-graph": {
               "name": "History graph",
-              "description": "The History graph card allows you to display a graph for each of the entities listed."
+              "description": "The History graph card allows you to display a graph for each of the entities listed.",
+              "logarithmic_scale": "Logarithmic scale"
             },
             "statistics-graph": {
               "name": "Statistics graph",
@@ -4918,7 +5009,8 @@
               },
               "pick_statistic": "Add a statistic",
               "picked_statistic": "Statistic",
-              "hide_legend": "Hide legend"
+              "hide_legend": "Hide legend",
+              "logarithmic_scale": "Logarithmic scale"
             },
             "statistic": {
               "name": "Statistic",
@@ -5039,10 +5131,10 @@
               "graph_type": "Graph type",
               "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time."
             },
-            "shopping-list": {
-              "name": "Shopping list",
-              "description": "The Shopping list card allows you to add, edit, check-off, and clear items from your shopping list.",
-              "integration_not_loaded": "This card requires the `shopping_list` integration to be set up."
+            "todo-list": {
+              "name": "To-do list",
+              "description": "The to-do list card allows you to add, edit, check-off, and clear items from your to-do list.",
+              "integration_not_loaded": "This card requires the `todo` integration to be set up."
             },
             "thermostat": {
               "name": "Thermostat",
@@ -5058,6 +5150,12 @@
               "default_color": "Default color (state)",
               "show_entity_picture": "Show entity picture",
               "vertical": "Vertical",
+              "hide_state": "Hide state",
+              "state_content": "State content",
+              "state_content_options": {
+                "state": "State",
+                "last-changed": "Last changed"
+              },
               "features": {
                 "name": "Features",
                 "not_compatible": "Not compatible",
@@ -5125,6 +5223,14 @@
                   },
                   "select-options": {
                     "label": "Select options"
+                  },
+                  "number": {
+                    "label": "Number",
+                    "style": "Style",
+                    "style_list": {
+                      "buttons": "Buttons",
+                      "slider": "Slider"
+                    }
                   },
                   "target-temperature": {
                     "label": "Target temperature"
@@ -5435,6 +5541,8 @@
           "last_used": "Last used {date} from {location}",
           "not_used": "Has never been used",
           "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
+          "delete_all_tokens": "Delete all tokens",
+          "confirm_delete_all": "Are you sure you want to delete all refresh tokens? You will be logged out as part of this operation.",
           "delete_failed": "Failed to delete the refresh token.",
           "current_token_tooltip": "Unable to delete current refresh token"
         },
@@ -5454,8 +5562,14 @@
           "qr_code_image": "QR code for token {name}"
         }
       },
-      "shopping_list": {
-        "start_conversation": "Start conversation"
+      "todo": {
+        "assist": "[%key:ui::panel::lovelace::menu::assist%]",
+        "create_list": "Create list",
+        "delete_list": "Delete list",
+        "information": "Information",
+        "delete_confirm_title": "Remove {name}?",
+        "delete_confirm_text": "Are you sure you want to remove this list and all of its items?",
+        "restart_confirm": "Restart Home Assistant to finish removing this to-do list"
       },
       "page-authorize": {
         "initializing": "Initializing",
@@ -5508,7 +5622,7 @@
                   "data": {
                     "code": "Two-factor authentication code"
                   },
-                  "description": "Open the **{mfa_module_name}** on your device to view your two-factor authentication code and verify your identity:"
+                  "description": "Open the {mfa_module_name} on your device to view your two-factor authentication code."
                 }
               },
               "error": {
@@ -5592,7 +5706,7 @@
               "hdmi_input": "HDMI input",
               "hdmi_switcher": "HDMI switcher",
               "volume": "Volume",
-              "total_tv_time": "Total TV Ttme",
+              "total_tv_time": "Total TV Time",
               "turn_tv_off": "Turn television off",
               "air": "Air"
             },
@@ -5722,10 +5836,58 @@
             },
             "fix_issue": {
               "fix": "Fix issue",
+              "no_support": {
+                "title": "Fix issue",
+                "info_text_1": "Fixing this issue is not supported yet."
+              },
+              "no_state": {
+                "title": "Entity has no state",
+                "info_text_1": "This entity has no state at the moment, if this is an orphaned entity, you may want to delete the long term statistics of it from your database.",
+                "info_text_2": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
+              },
+              "entity_not_recorded": {
+                "title": "Entity not recorded",
+                "info_text_1": "State changes of this entity are not recorded, therefore, we cannot track long term statistics for it.",
+                "info_text_2": "You probably excluded this entity, or have just included some entities.",
+                "info_text_3_link": "See the recorder documentation for more information."
+              },
+              "entity_no_longer_recorded": {
+                "title": "Entity no longer recorded",
+                "info_text_1": "We have generated statistics for this entity in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
+                "info_text_2": "You probably excluded this entity, or have just included some entities.",
+                "info_text_3_link": "See the recorder documentation for more information."
+              },
+              "unsupported_state_class": {
+                "title": "Unsupported state class",
+                "info_text_1": "The state class of this entity, {state_class} is not supported.",
+                "info_text_2": "Statistics cannot be generated until this entity has a supported state class.",
+                "info_text_3": "If this state class was provided by an integration, this is a bug. Please report an issue.",
+                "info_text_4": "If you have set this state class yourself, please correct it.",
+                "info_text_4_link": "The different state classes and when to use which can be found in the developer documentation.",
+                "info_text_5": "If the state class has permanently changed, you may want to delete the long term statistics of it from your database.",
+                "info_text_6": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
+              },
               "units_changed": {
                 "title": "The unit of this entity changed",
                 "update": "Update the unit of the historic statistic values from ''{metadata_unit}'' to ''{state_unit}'', without converting.",
-                "clear": "Delete all old statistic data for this entity"
+                "clear": "Delete all old statistic data for this entity",
+                "how_to_fix": "How do you want to fix this issue?",
+                "info_text_1": "The unit of this entity changed to ''{current_unit}'' which can't be converted to the previously stored unit, ''{previous_unit}''.",
+                "info_text_2": "If the historic statistic values have a wrong unit, you can update the units of the old values. The values will not be updated.",
+                "info_text_3": "Otherwise you can choose to delete all historic statistic values, and start over."
+              },
+              "adjust_sum": {
+                "title": "Adjust a statistic",
+                "no_statistics_found": "No statistics found for this period.",
+                "info_text_1": "Sometimes the statistics end up being incorrect for a specific point in time. This can mess up your beautiful graphs! Select a time below to find the bad moment and adjust the data.",
+                "pick_a_time": "Pick a time",
+                "statistic": "Statistic:",
+                "start": "Start",
+                "end": "End",
+                "new_value": "New value",
+                "adjust": "Adjust",
+                "sum_adjusted": "Statistic sum adjusted",
+                "error_sum_adjusted": "Error adjusting sum: {message}"
               }
             },
             "adjust_sum": "Adjust sum",
@@ -5745,7 +5907,9 @@
                 "introduction": "A basic validation of the configuration is automatically done before restarting. The basic validation ensures the YAML configuration doesn't have errors which will prevent Home Assistant or any integration from starting. It's also possible to only do the basic validation check without restarting.",
                 "check_config": "Check configuration",
                 "valid": "Configuration will not prevent Home Assistant from starting!",
-                "invalid": "Configuration invalid!"
+                "invalid": "Configuration invalid!",
+                "warnings": "Configuration warnings",
+                "errors": "Configuration errors"
               },
               "reloading": {
                 "all": "All YAML configuration",
@@ -5911,6 +6075,7 @@
         }
       },
       "energy": {
+        "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
         "compare": {
           "info": "You are comparing the period {start} with the period {end}"
         },

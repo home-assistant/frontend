@@ -183,18 +183,18 @@ export class HuiEnergyUsageGraphCard
                 dayDifference > 35
                   ? "monthyear"
                   : dayDifference > 7
-                  ? "date"
-                  : dayDifference > 2
-                  ? "weekday"
-                  : dayDifference > 0
-                  ? "datetime"
-                  : "hour",
+                    ? "date"
+                    : dayDifference > 2
+                      ? "weekday"
+                      : dayDifference > 0
+                        ? "datetime"
+                        : "hour",
               minUnit:
                 dayDifference > 35
                   ? "month"
                   : dayDifference > 2
-                  ? "day"
-                  : "hour",
+                    ? "day"
+                    : "hour",
             },
           },
           y: {
@@ -695,8 +695,8 @@ export class HuiEnergyUsageGraphCard
             type === "used_solar"
               ? 1
               : type === "to_battery"
-              ? Object.keys(combinedData).length
-              : idx + 2,
+                ? Object.keys(combinedData).length
+                : idx + 2,
           borderColor: compare ? borderColor + "7F" : borderColor,
           backgroundColor: compare ? borderColor + "32" : borderColor + "7F",
           stack: "stack",

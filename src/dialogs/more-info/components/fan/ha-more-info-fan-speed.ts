@@ -8,6 +8,7 @@ import "../../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../../components/ha-control-select";
 import "../../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../../data/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity_attributes";
 import {
   computeFanSpeedCount,
   computeFanSpeedIcon,
@@ -130,6 +131,8 @@ export class HaMoreInfoFanSpeed extends LitElement {
           "--control-slider-background": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.fan.percentage}
+        .locale=${this.hass.locale}
       >
       </ha-control-slider>
     `;
@@ -146,6 +149,7 @@ export class HaMoreInfoFanSpeed extends LitElement {
         --control-slider-color: var(--primary-color);
         --control-slider-background: var(--disabled-color);
         --control-slider-background-opacity: 0.2;
+        --control-slider-tooltip-font-size: 20px;
       }
       ha-control-select {
         height: 45vh;

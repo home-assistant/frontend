@@ -1,7 +1,6 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { ActionConfig } from "../../data/lovelace";
 import { UiColorSelector } from "../../data/selector";
 import "../../panels/lovelace/components/hui-color-picker";
 import { HomeAssistant } from "../../types";
@@ -12,7 +11,7 @@ export class HaSelectorUiColor extends LitElement {
 
   @property() public selector!: UiColorSelector;
 
-  @property() public value?: ActionConfig;
+  @property() public value?: string;
 
   @property() public label?: string;
 

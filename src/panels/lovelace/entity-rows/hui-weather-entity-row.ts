@@ -12,7 +12,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import { isUnavailableState } from "../../../data/entity";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import {
   ForecastEvent,
   WeatherEntity,
@@ -163,22 +163,22 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
                 ${this._config.secondary_info === "entity-id"
                   ? stateObj.entity_id
                   : this._config.secondary_info === "last-changed"
-                  ? html`
-                      <ha-relative-time
-                        .hass=${this.hass}
-                        .datetime=${stateObj.last_changed}
-                        capitalize
-                      ></ha-relative-time>
-                    `
-                  : this._config.secondary_info === "last-updated"
-                  ? html`
-                      <ha-relative-time
-                        .hass=${this.hass}
-                        .datetime=${stateObj.last_updated}
-                        capitalize
-                      ></ha-relative-time>
-                    `
-                  : ""}
+                    ? html`
+                        <ha-relative-time
+                          .hass=${this.hass}
+                          .datetime=${stateObj.last_changed}
+                          capitalize
+                        ></ha-relative-time>
+                      `
+                    : this._config.secondary_info === "last-updated"
+                      ? html`
+                          <ha-relative-time
+                            .hass=${this.hass}
+                            .datetime=${stateObj.last_updated}
+                            capitalize
+                          ></ha-relative-time>
+                        `
+                      : ""}
               </div>
             `
           : ""}

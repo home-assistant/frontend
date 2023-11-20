@@ -30,8 +30,8 @@ gulp.task(
     env.useWDS()
       ? "wds-watch-app"
       : env.useRollup()
-      ? "rollup-watch-app"
-      : "webpack-watch-app"
+        ? "rollup-watch-app"
+        : "webpack-watch-app"
   )
 );
 
@@ -45,8 +45,8 @@ gulp.task(
     gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-app",
     env.useRollup() ? "rollup-prod-app" : "webpack-prod-app",
+    gulp.parallel("gen-pages-app-prod", "gen-service-worker-app-prod"),
     // Don't compress running tests
-    ...(env.isTestBuild() ? [] : ["compress-app"]),
-    gulp.parallel("gen-pages-app-prod", "gen-service-worker-app-prod")
+    ...(env.isTestBuild() ? [] : ["compress-app"])
   )
 );

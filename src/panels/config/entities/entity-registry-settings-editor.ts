@@ -200,6 +200,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     this._name = this.entry.name || "";
     this._icon = this.entry.icon || "";
+    this._deviceClass =
+      this.entry.device_class || this.entry.original_device_class;
     this._origEntityId = this.entry.entity_id;
     this._areaId = this.entry.area_id;
     this._entityId = this.entry.entity_id;
@@ -426,37 +428,37 @@ export class EntityRegistrySettingsEditor extends LitElement {
             )}
           </ha-select>`
         : this.helperConfigEntry?.domain === "switch_as_x"
-        ? html`<ha-select
-            .label=${this.hass.localize(
-              "ui.dialogs.entity_registry.editor.switch_as_x"
-            )}
-            .value=${this._switchAs}
-            naturalMenuWidth
-            fixedMenuPosition
-            @selected=${this._switchAsChanged}
-            @closed=${stopPropagation}
-          >
-            <ha-list-item value="switch">
-              ${domainToName(this.hass.localize, "switch")}
-            </ha-list-item>
-            <ha-list-item .value=${domain}>
-              ${domainToName(this.hass.localize, domain)}
-            </ha-list-item>
-            <li divider role="separator"></li>
-            ${this._switchAsDomainsSorted(
-              SWITCH_AS_DOMAINS,
-              this.hass.localize
-            ).map((entry) =>
-              domain === entry.domain
-                ? nothing
-                : html`
-                    <ha-list-item .value=${entry.domain}>
-                      ${entry.label}
-                    </ha-list-item>
-                  `
-            )}
-          </ha-select>`
-        : nothing}
+          ? html`<ha-select
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.switch_as_x"
+              )}
+              .value=${this._switchAs}
+              naturalMenuWidth
+              fixedMenuPosition
+              @selected=${this._switchAsChanged}
+              @closed=${stopPropagation}
+            >
+              <ha-list-item value="switch">
+                ${domainToName(this.hass.localize, "switch")}
+              </ha-list-item>
+              <ha-list-item .value=${domain}>
+                ${domainToName(this.hass.localize, domain)}
+              </ha-list-item>
+              <li divider role="separator"></li>
+              ${this._switchAsDomainsSorted(
+                SWITCH_AS_DOMAINS,
+                this.hass.localize
+              ).map((entry) =>
+                domain === entry.domain
+                  ? nothing
+                  : html`
+                      <ha-list-item .value=${entry.domain}>
+                        ${entry.label}
+                      </ha-list-item>
+                    `
+              )}
+            </ha-select>`
+          : nothing}
       ${this._deviceClassOptions
         ? html`
             <ha-select

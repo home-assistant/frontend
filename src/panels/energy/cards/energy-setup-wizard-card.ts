@@ -1,3 +1,4 @@
+import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -7,18 +8,17 @@ import {
   getEnergyInfo,
   saveEnergyPreferences,
 } from "../../../data/energy";
-import { LovelaceCardConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCard, Lovelace } from "../../lovelace/types";
-import "@material/mwc-button/mwc-button";
+import "../../config/energy/components/ha-energy-battery-settings";
+import "../../config/energy/components/ha-energy-device-settings";
+import "../../config/energy/components/ha-energy-gas-settings";
 import "../../config/energy/components/ha-energy-grid-settings";
 import "../../config/energy/components/ha-energy-solar-settings";
-import "../../config/energy/components/ha-energy-battery-settings";
-import "../../config/energy/components/ha-energy-gas-settings";
 import "../../config/energy/components/ha-energy-water-settings";
-import "../../config/energy/components/ha-energy-device-settings";
-import { haStyle } from "../../../resources/styles";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { Lovelace, LovelaceCard } from "../../lovelace/types";
 
 @customElement("energy-setup-wizard-card")
 export class EnergySetupWizard extends LitElement implements LovelaceCard {
@@ -65,35 +65,35 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
             @value-changed=${this._prefsChanged}
           ></ha-energy-grid-settings>`
         : this._step === 1
-        ? html`<ha-energy-solar-settings
-            .hass=${this.hass}
-            .preferences=${this._preferences}
-            .info=${this._info}
-            @value-changed=${this._prefsChanged}
-          ></ha-energy-solar-settings>`
-        : this._step === 2
-        ? html`<ha-energy-battery-settings
-            .hass=${this.hass}
-            .preferences=${this._preferences}
-            @value-changed=${this._prefsChanged}
-          ></ha-energy-battery-settings>`
-        : this._step === 3
-        ? html`<ha-energy-gas-settings
-            .hass=${this.hass}
-            .preferences=${this._preferences}
-            @value-changed=${this._prefsChanged}
-          ></ha-energy-gas-settings>`
-        : this._step === 4
-        ? html`<ha-energy-water-settings
-            .hass=${this.hass}
-            .preferences=${this._preferences}
-            @value-changed=${this._prefsChanged}
-          ></ha-energy-water-settings>`
-        : html`<ha-energy-device-settings
-            .hass=${this.hass}
-            .preferences=${this._preferences}
-            @value-changed=${this._prefsChanged}
-          ></ha-energy-device-settings>`}
+          ? html`<ha-energy-solar-settings
+              .hass=${this.hass}
+              .preferences=${this._preferences}
+              .info=${this._info}
+              @value-changed=${this._prefsChanged}
+            ></ha-energy-solar-settings>`
+          : this._step === 2
+            ? html`<ha-energy-battery-settings
+                .hass=${this.hass}
+                .preferences=${this._preferences}
+                @value-changed=${this._prefsChanged}
+              ></ha-energy-battery-settings>`
+            : this._step === 3
+              ? html`<ha-energy-gas-settings
+                  .hass=${this.hass}
+                  .preferences=${this._preferences}
+                  @value-changed=${this._prefsChanged}
+                ></ha-energy-gas-settings>`
+              : this._step === 4
+                ? html`<ha-energy-water-settings
+                    .hass=${this.hass}
+                    .preferences=${this._preferences}
+                    @value-changed=${this._prefsChanged}
+                  ></ha-energy-water-settings>`
+                : html`<ha-energy-device-settings
+                    .hass=${this.hass}
+                    .preferences=${this._preferences}
+                    @value-changed=${this._prefsChanged}
+                  ></ha-energy-device-settings>`}
       <div class="buttons">
         ${this._step > 0
           ? html`<mwc-button outlined @click=${this._back}

@@ -127,12 +127,12 @@ class HuiEnergySolarGaugeCard
               </div>
             `
           : totalSolarProduction === 0
-          ? this.hass.localize(
-              "ui.panel.lovelace.cards.energy.solar_consumed_gauge.not_produced_solar_energy"
-            )
-          : this.hass.localize(
-              "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_could_not_calc"
-            )}
+            ? this.hass.localize(
+                "ui.panel.lovelace.cards.energy.solar_consumed_gauge.not_produced_solar_energy"
+              )
+            : this.hass.localize(
+                "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_could_not_calc"
+              )}
       </ha-card>
     `;
   }

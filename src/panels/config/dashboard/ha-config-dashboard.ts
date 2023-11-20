@@ -8,16 +8,17 @@ import {
 } from "@mdi/js";
 import { HassEntities, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -34,9 +35,9 @@ import {
   subscribeRepairsIssueRegistry,
 } from "../../../data/repairs";
 import {
+  UpdateEntity,
   checkForEntityUpdates,
   filterUpdateEntitiesWithInstall,
-  UpdateEntity,
 } from "../../../data/update";
 import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
@@ -231,15 +232,17 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                       ></ha-config-repairs>
                       ${totalRepairIssues > repairsIssues.length
                         ? html`
-                            <a class="button" href="/config/repairs">
-                              ${this.hass.localize(
+                            <ha-assist-chip
+                              href="/config/repairs"
+                              .label=${this.hass.localize(
                                 "ui.panel.config.repairs.more_repairs",
                                 {
                                   count:
                                     totalRepairIssues - repairsIssues.length,
                                 }
                               )}
-                            </a>
+                            >
+                            </ha-assist-chip>
                           `
                         : ""}
                     `
@@ -257,15 +260,17 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                       ></ha-config-updates>
                       ${totalUpdates > canInstallUpdates.length
                         ? html`
-                            <a class="button" href="/config/updates">
-                              ${this.hass.localize(
+                            <ha-assist-chip
+                              href="/config/updates"
+                              label=${this.hass.localize(
                                 "ui.panel.config.updates.more_updates",
                                 {
                                   count:
                                     totalUpdates - canInstallUpdates.length,
                                 }
                               )}
-                            </a>
+                            >
+                            </ha-assist-chip>
                           `
                         : ""}
                     `
@@ -349,13 +354,8 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           text-decoration: none;
           color: var(--primary-text-color);
         }
-        a.button {
-          display: inline-block;
-          color: var(--primary-text-color);
-          padding: 6px 16px;
+        ha-assist-chip {
           margin: 8px 16px 16px 16px;
-          border-radius: 32px;
-          border: 1px solid var(--divider-color);
         }
         .title {
           font-size: 16px;

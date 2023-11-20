@@ -51,11 +51,7 @@ import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
 import "../../components/ha-tabs";
-import type {
-  LovelaceConfig,
-  LovelacePanelConfig,
-  LovelaceViewConfig,
-} from "../../data/lovelace";
+import type { LovelacePanelConfig } from "../../data/lovelace";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -71,6 +67,8 @@ import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
+import { LovelaceViewConfig } from "../../data/lovelace/config/view";
+import { LovelaceConfig } from "../../data/lovelace/config/types";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -244,45 +242,47 @@ class HUIRoot extends LitElement {
                   ${curViewConfig?.subview
                     ? html`<div class="main-title">${curViewConfig.title}</div>`
                     : views.filter((view) => !view.subview).length > 1
-                    ? html`
-                        <ha-tabs
-                          slot="title"
-                          scrollable
-                          .selected=${this._curView}
-                          @iron-activate=${this._handleViewSelected}
-                          dir=${computeRTLDirection(this.hass!)}
-                        >
-                          ${views.map(
-                            (view) => html`
-                              <paper-tab
-                                aria-label=${ifDefined(view.title)}
-                                class=${classMap({
-                                  "hide-tab": Boolean(
-                                    view.subview ||
-                                      (view.visible !== undefined &&
-                                        ((Array.isArray(view.visible) &&
-                                          !view.visible.some(
-                                            (e) =>
-                                              e.user === this.hass!.user?.id
-                                          )) ||
-                                          view.visible === false))
-                                  ),
-                                })}
-                              >
-                                ${view.icon
-                                  ? html`
-                                      <ha-icon
-                                        title=${ifDefined(view.title)}
-                                        .icon=${view.icon}
-                                      ></ha-icon>
-                                    `
-                                  : view.title || "Unnamed view"}
-                              </paper-tab>
-                            `
-                          )}
-                        </ha-tabs>
-                      `
-                    : html`<div class="main-title">${this.config.title}</div>`}
+                      ? html`
+                          <ha-tabs
+                            slot="title"
+                            scrollable
+                            .selected=${this._curView}
+                            @iron-activate=${this._handleViewSelected}
+                            dir=${computeRTLDirection(this.hass!)}
+                          >
+                            ${views.map(
+                              (view) => html`
+                                <paper-tab
+                                  aria-label=${ifDefined(view.title)}
+                                  class=${classMap({
+                                    "hide-tab": Boolean(
+                                      view.subview ||
+                                        (view.visible !== undefined &&
+                                          ((Array.isArray(view.visible) &&
+                                            !view.visible.some(
+                                              (e) =>
+                                                e.user === this.hass!.user?.id
+                                            )) ||
+                                            view.visible === false))
+                                    ),
+                                  })}
+                                >
+                                  ${view.icon
+                                    ? html`
+                                        <ha-icon
+                                          title=${ifDefined(view.title)}
+                                          .icon=${view.icon}
+                                        ></ha-icon>
+                                      `
+                                    : view.title || "Unnamed view"}
+                                </paper-tab>
+                              `
+                            )}
+                          </ha-tabs>
+                        `
+                      : html`<div class="main-title">
+                          ${this.config.title}
+                        </div>`}
                   <div class="action-items">
                     ${!this.narrow
                       ? html`
@@ -407,7 +407,7 @@ class HUIRoot extends LitElement {
                                 `
                               : ""}
                             ${this.hass!.user?.is_admin &&
-                            !this.hass!.config.safe_mode
+                            !this.hass!.config.recovery_mode
                               ? html`
                                   <mwc-list-item
                                     graphic="icon"
@@ -560,19 +560,26 @@ class HUIRoot extends LitElement {
           view.visible.some((show) => show.user === this.hass!.user?.id))
     );
 
+  private _clearParam(param: string) {
+    window.history.replaceState(
+      null,
+      "",
+      constructUrlCurrentPath(removeSearchParam(param))
+    );
+  }
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     // Check for requested edit mode
     const searchParams = extractSearchParamsObject();
-    if (searchParams.edit === "1" && this.hass!.user?.is_admin) {
-      this.lovelace!.setEditMode(true);
+    if (searchParams.edit === "1") {
+      this._clearParam("edit");
+      if (this.hass!.user?.is_admin) {
+        this.lovelace!.setEditMode(true);
+      }
     } else if (searchParams.conversation === "1") {
+      this._clearParam("conversation");
       this._showVoiceCommandDialog();
-      window.history.replaceState(
-        null,
-        "",
-        constructUrlCurrentPath(removeSearchParam("conversation"))
-      );
     }
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,
@@ -691,7 +698,7 @@ class HUIRoot extends LitElement {
     return (
       (this.narrow && this._conversation(this.hass.config.components)) ||
       this._editMode ||
-      (this.hass!.user?.is_admin && !this.hass!.config.safe_mode) ||
+      (this.hass!.user?.is_admin && !this.hass!.config.recovery_mode) ||
       (this.hass.panels.lovelace?.config as LovelacePanelConfig)?.mode ===
         "yaml" ||
       this._yamlMode

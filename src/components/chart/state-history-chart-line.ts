@@ -45,6 +45,8 @@ export class StateHistoryChartLine extends LitElement {
 
   @property({ type: Number }) public chartIndex?;
 
+  @property({ type: Boolean }) public logarithmicScale = false;
+
   @state() private _chartData?: ChartData<"line">;
 
   @state() private _entityIds: string[] = [];
@@ -81,7 +83,8 @@ export class StateHistoryChartLine extends LitElement {
       changedProps.has("showNames") ||
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
-      changedProps.has("unit")
+      changedProps.has("unit") ||
+      changedProps.has("logarithmicScale")
     ) {
       this._chartOptions = {
         parsing: false,
@@ -135,6 +138,7 @@ export class StateHistoryChartLine extends LitElement {
               }
             },
             position: computeRTL(this.hass) ? "right" : "left",
+            type: this.logarithmicScale ? "logarithmic" : "linear",
           },
         },
         plugins: {

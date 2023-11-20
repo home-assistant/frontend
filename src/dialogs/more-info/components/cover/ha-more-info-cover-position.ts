@@ -6,6 +6,7 @@ import { stateColorCss } from "../../../../common/entity/state_color";
 import "../../../../components/ha-control-slider";
 import { CoverEntity } from "../../../../data/cover";
 import { UNAVAILABLE } from "../../../../data/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity_attributes";
 import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-more-info-cover-position")
@@ -60,6 +61,8 @@ export class HaMoreInfoCoverPosition extends LitElement {
           "--control-slider-background": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_position}
+        .locale=${this.hass.locale}
       >
       </ha-control-slider>
     `;
@@ -76,6 +79,7 @@ export class HaMoreInfoCoverPosition extends LitElement {
         --control-slider-color: var(--primary-color);
         --control-slider-background: var(--disabled-color);
         --control-slider-background-opacity: 0.2;
+        --control-slider-tooltip-font-size: 20px;
       }
     `;
   }

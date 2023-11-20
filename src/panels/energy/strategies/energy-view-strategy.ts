@@ -5,11 +5,9 @@ import {
   getEnergyPreferences,
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
-import {
-  LovelaceStrategyConfig,
-  LovelaceViewConfig,
-} from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
+import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 
 const setupWizard = async (): Promise<LovelaceViewConfig> => {
   await import("../cards/energy-setup-wizard-card");

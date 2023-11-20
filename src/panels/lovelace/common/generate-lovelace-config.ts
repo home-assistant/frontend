@@ -12,7 +12,8 @@ import {
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
 import { domainToName } from "../../../data/integration";
-import { LovelaceCardConfig, LovelaceViewConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { computeUserInitials } from "../../../data/user";
 import { HomeAssistant } from "../../../types";
 import { HELPER_DOMAINS } from "../../config/helpers/const";
@@ -39,6 +40,7 @@ const HIDE_DOMAIN = new Set([
   "event",
   "tts",
   "stt",
+  "todo",
 ]);
 
 const HIDE_PLATFORM = new Set(["mobile_app"]);

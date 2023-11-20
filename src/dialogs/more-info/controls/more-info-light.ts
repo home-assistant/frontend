@@ -60,29 +60,10 @@ class MoreInfoLight extends LitElement {
 
   @state() private _effect?: string;
 
-  @state() private _selectedBrightness?: number;
-
-  @state() private _colorTempPreview?: number;
-
   @state() private _mainControl: MainControl = "brightness";
-
-  private _brightnessChanged(ev) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
-    this._selectedBrightness = (value * 255) / 100;
-  }
-
-  private _tempColorHovered(ev: CustomEvent<HASSDomEvents["color-hovered"]>) {
-    if (ev.detail && "color_temp_kelvin" in ev.detail) {
-      this._colorTempPreview = ev.detail.color_temp_kelvin;
-    } else {
-      this._colorTempPreview = undefined;
-    }
-  }
 
   protected updated(changedProps: PropertyValues<typeof this>): void {
     if (changedProps.has("stateObj")) {
-      this._selectedBrightness = this.stateObj?.attributes.brightness;
       this._effect = this.stateObj?.attributes.effect;
     }
   }
@@ -98,19 +79,8 @@ class MoreInfoLight extends LitElement {
   }
 
   private get _stateOverride() {
-    if (this._colorTempPreview) {
-      return this.hass.formatEntityAttributeValue(
-        this.stateObj!,
-        "color_temp_kelvin",
-        this._colorTempPreview
-      );
-    }
-    if (this._selectedBrightness) {
-      return this.hass.formatEntityAttributeValue(
-        this.stateObj!,
-        "brightness",
-        this._selectedBrightness
-      );
+    if (this.stateObj?.attributes.brightness) {
+      return this.hass.formatEntityAttributeValue(this.stateObj!, "brightness");
     }
     return undefined;
   }
@@ -168,7 +138,6 @@ class MoreInfoLight extends LitElement {
                     <ha-more-info-light-brightness
                       .stateObj=${this.stateObj}
                       .hass=${this.hass}
-                      @slider-moved=${this._brightnessChanged}
                     >
                     </ha-more-info-light-brightness>
                   `
@@ -187,7 +156,6 @@ class MoreInfoLight extends LitElement {
                     <light-color-temp-picker
                       .hass=${this.hass}
                       .stateObj=${this.stateObj}
-                      @color-hovered=${this._tempColorHovered}
                     >
                     </light-color-temp-picker>
                   `

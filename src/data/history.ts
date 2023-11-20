@@ -378,8 +378,8 @@ const processLineChartEntities = (
       entityId in hassEntities
         ? hassEntities[entityId].attributes
         : "friendly_name" in first.a
-        ? first.a
-        : undefined;
+          ? first.a
+          : undefined;
 
     data.push({
       domain,

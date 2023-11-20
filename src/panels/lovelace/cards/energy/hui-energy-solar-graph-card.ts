@@ -184,18 +184,18 @@ export class HuiEnergySolarGraphCard
                 dayDifference > 35
                   ? "monthyear"
                   : dayDifference > 7
-                  ? "date"
-                  : dayDifference > 2
-                  ? "weekday"
-                  : dayDifference > 0
-                  ? "datetime"
-                  : "hour",
+                    ? "date"
+                    : dayDifference > 2
+                      ? "weekday"
+                      : dayDifference > 0
+                        ? "datetime"
+                        : "hour",
               minUnit:
                 dayDifference > 35
                   ? "month"
                   : dayDifference > 2
-                  ? "day"
-                  : "hour",
+                    ? "day"
+                    : "hour",
             },
           },
           y: {

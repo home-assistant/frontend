@@ -23,6 +23,7 @@ export function computeDirectionStyles(isRTL: boolean, element: LitElement) {
 }
 
 export function setDirectionStyles(direction: string, element: LitElement) {
+  document.dir = direction;
   element.style.direction = direction;
   element.style.setProperty("--direction", direction);
   element.style.setProperty(

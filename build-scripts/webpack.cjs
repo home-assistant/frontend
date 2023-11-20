@@ -51,8 +51,8 @@ const createWebpackConfig = ({
     devtool: isTestBuild
       ? false
       : isProdBuild
-      ? "nosources-source-map"
-      : "eval-cheap-module-source-map",
+        ? "nosources-source-map"
+        : "eval-cheap-module-source-map",
     entry,
     node: false,
     module: {
@@ -182,6 +182,8 @@ const createWebpackConfig = ({
           "@lit-labs/virtualizer/layouts/grid.js",
         "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver":
           "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver.js",
+        "@lit-labs/observers/resize-controller":
+          "@lit-labs/observers/resize-controller.js",
       },
     },
     output: {

@@ -155,6 +155,7 @@ export class DialogEnergySolarSettings
                     >
                       <img
                         alt=""
+                        crossorigin="anonymous"
                         referrerpolicy="no-referrer"
                         style="height: 24px; margin-right: 16px;"
                         src=${brandsUrl({
@@ -203,13 +204,13 @@ export class DialogEnergySolarSettings
       domains.length === 0
         ? []
         : domains.length === 1
-        ? await getConfigEntries(this.hass, {
-            type: ["service"],
-            domain: domains[0],
-          })
-        : (await getConfigEntries(this.hass, { type: ["service"] })).filter(
-            (entry) => domains.includes(entry.domain)
-          );
+          ? await getConfigEntries(this.hass, {
+              type: ["service"],
+              domain: domains[0],
+            })
+          : (await getConfigEntries(this.hass, { type: ["service"] })).filter(
+              (entry) => domains.includes(entry.domain)
+            );
   }
 
   private _handleForecastChanged(ev: CustomEvent) {
