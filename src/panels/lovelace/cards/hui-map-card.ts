@@ -71,6 +71,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _configEntities?: MapEntityConfig[];
 
+  private _mapEntities: HaMapEntity[] = [];
+
   private _colorDict: Record<string, string> = {};
 
   private _colorIndex = 0;
@@ -157,11 +159,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         <div id="root">
           <ha-map
             .hass=${this.hass}
-            .entities=${this._getEntities(
-              this.hass.states,
-              this._config,
-              this._configEntities
-            )}
+            .entities=${this._getMapEntities()}
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit || false}
@@ -183,17 +181,20 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues) {
-    // Update if anything other than "hass" has changed.
     if (!changedProps.has("hass") || changedProps.size > 1) {
       return true;
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass) {
+    if (!oldHass || !this._configEntities) {
       return true;
     }
 
     if (oldHass.themes.darkMode !== this.hass.themes.darkMode) {
+      return true;
+    }
+
+    if (changedProps.has("_stateHistory")) {
       return true;
     }
 
@@ -320,47 +321,50 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return color;
   }
 
-  private _getSourceEntities = memoizeOne(
-    (states: HassEntities, config?: MapCardConfig): string[] => {
-      if (!states || !config || !config.geo_location_sources) {
-        return [];
-      }
-
-      const entities: string[] = [];
-      // Calculate visible geo location sources
-      const includesAll = config.geo_location_sources.includes("all");
-      for (const stateObj of Object.values(states)) {
-        if (
-          computeDomain(stateObj.entity_id) === "geo_location" &&
-          (includesAll ||
-            config.geo_location_sources.includes(stateObj.attributes.source))
-        ) {
-          entities.push(stateObj.entity_id);
-        }
-      }
-      return entities;
+  private _getSourceEntities(
+    states: HassEntities,
+    config?: MapCardConfig
+  ): string[] {
+    if (!states || !config || !config.geo_location_sources) {
+      return [];
     }
-  );
 
-  private _getEntities = memoizeOne(
-    (
-      states: HassEntities,
-      config?: MapCardConfig,
-      configEntities?: MapEntityConfig[]
-    ): HaMapEntity[] => [
-      ...(configEntities || []).map((entityConf) => ({
+    const geoEntities: string[] = [];
+    // Calculate visible geo location sources
+    const includesAll = config.geo_location_sources.includes("all");
+    for (const stateObj of Object.values(states)) {
+      if (
+        computeDomain(stateObj.entity_id) === "geo_location" &&
+        (includesAll ||
+          config.geo_location_sources.includes(stateObj.attributes.source))
+      ) {
+        geoEntities.push(stateObj.entity_id);
+      }
+    }
+    return geoEntities;
+  }
+
+  private _getMapEntities(): HaMapEntity[] {
+    const entities = [
+      ...(this._configEntities || []).map((entityConf) => ({
         entity_id: entityConf.entity,
         color: this._getColor(entityConf.entity),
         label_mode: entityConf.label_mode,
         focus: entityConf.focus,
         name: entityConf.name,
       })),
-      ...this._getSourceEntities(states, config).map((entity) => ({
-        entity_id: entity,
-        color: this._getColor(entity),
-      })),
-    ]
-  );
+      ...this._getSourceEntities(this.hass.states, this._config).map(
+        (entity) => ({
+          entity_id: entity,
+          color: this._getColor(entity),
+        })
+      ),
+    ];
+    if (JSON.stringify(entities) !== JSON.stringify(this._mapEntities)) {
+      this._mapEntities = entities;
+    }
+    return this._mapEntities;
+  }
 
   private _getHistoryPaths = memoizeOne(
     (
