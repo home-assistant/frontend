@@ -109,19 +109,19 @@ class HassioSupervisorInfo extends LitElement {
                     </ha-progress-button>
                   `
                 : this.supervisor.supervisor.channel === "stable"
-                ? html`
-                    <ha-progress-button
-                      @click=${this._toggleBeta}
-                      .title=${this.supervisor.localize(
-                        "system.supervisor.join_beta_description"
-                      )}
-                    >
-                      ${this.supervisor.localize(
-                        "system.supervisor.join_beta_action"
-                      )}
-                    </ha-progress-button>
-                  `
-                : ""}
+                  ? html`
+                      <ha-progress-button
+                        @click=${this._toggleBeta}
+                        .title=${this.supervisor.localize(
+                          "system.supervisor.join_beta_description"
+                        )}
+                      >
+                        ${this.supervisor.localize(
+                          "system.supervisor.join_beta_action"
+                        )}
+                      </ha-progress-button>
+                    `
+                  : ""}
             </ha-settings-row>
 
             ${this.supervisor.supervisor.supported

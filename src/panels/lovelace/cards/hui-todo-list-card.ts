@@ -365,22 +365,22 @@ export class HuiTodoListCard
                   </ha-svg-icon>
                 `
               : this.todoListSupportsFeature(
-                  TodoListEntityFeature.DELETE_TODO_ITEM
-                ) &&
-                !this.todoListSupportsFeature(
-                  TodoListEntityFeature.UPDATE_TODO_ITEM
-                )
-              ? html`<ha-icon-button
-                  .title=${this.hass!.localize(
-                    "ui.panel.lovelace.cards.todo-list.delete_item"
-                  )}
-                  class="deleteItemButton"
-                  .path=${mdiDelete}
-                  .itemId=${item.uid}
-                  @click=${this._deleteItem}
-                >
-                </ha-icon-button>`
-              : nothing}
+                    TodoListEntityFeature.DELETE_TODO_ITEM
+                  ) &&
+                  !this.todoListSupportsFeature(
+                    TodoListEntityFeature.UPDATE_TODO_ITEM
+                  )
+                ? html`<ha-icon-button
+                    .title=${this.hass!.localize(
+                      "ui.panel.lovelace.cards.todo-list.delete_item"
+                    )}
+                    class="deleteItemButton"
+                    .path=${mdiDelete}
+                    .itemId=${item.uid}
+                    @click=${this._deleteItem}
+                  >
+                  </ha-icon-button>`
+                : nothing}
           </div>
         `
       )}

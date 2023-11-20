@@ -51,8 +51,8 @@ const createWebpackConfig = ({
     devtool: isTestBuild
       ? false
       : isProdBuild
-      ? "nosources-source-map"
-      : "eval-cheap-module-source-map",
+        ? "nosources-source-map"
+        : "eval-cheap-module-source-map",
     entry,
     node: false,
     module: {

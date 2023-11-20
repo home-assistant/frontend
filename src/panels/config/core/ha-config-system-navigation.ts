@@ -164,10 +164,10 @@ class HaConfigSystemNavigation extends LitElement {
     const backups: BackupContent[] | HassioBackup[] = isHassioLoaded
       ? await fetchHassioBackups(this.hass)
       : isComponentLoaded(this.hass, "backup")
-      ? await fetchBackupInfo(this.hass).then(
-          (backupData) => backupData.backups
-        )
-      : [];
+        ? await fetchBackupInfo(this.hass).then(
+            (backupData) => backupData.backups
+          )
+        : [];
 
     if (backups.length > 0) {
       this._latestBackupDate = (backups as any[]).reduce((a, b) =>

@@ -128,9 +128,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         // for one update cycle to force it to rerender to the desired value.
         stateObj.attributes.min_temp - 1
       : stateObj.attributes.temperature !== null &&
-        Number.isFinite(Number(stateObj.attributes.temperature))
-      ? stateObj.attributes.temperature
-      : stateObj.attributes.min_temp;
+          Number.isFinite(Number(stateObj.attributes.temperature))
+        ? stateObj.attributes.temperature
+        : stateObj.attributes.min_temp;
 
     const targetLow = this.resyncSetpoint
       ? stateObj.attributes.min_temp - 1
