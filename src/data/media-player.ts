@@ -331,16 +331,16 @@ export const computeMediaControls = (
         state === "on"
           ? mdiPlayPause
           : state !== "playing"
-          ? mdiPlay
-          : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-          ? mdiPause
-          : mdiStop,
+            ? mdiPlay
+            : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
+              ? mdiPause
+              : mdiStop,
       action:
         state !== "playing"
           ? "media_play"
           : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-          ? "media_pause"
-          : "media_stop",
+            ? "media_pause"
+            : "media_stop",
     });
   }
 
@@ -394,8 +394,8 @@ export const computeMediaControls = (
         stateAttr.repeat === "all"
           ? mdiRepeat
           : stateAttr.repeat === "one"
-          ? mdiRepeatOnce
-          : mdiRepeatOff,
+            ? mdiRepeatOnce
+            : mdiRepeatOff,
       action: "repeat_set",
     });
   }
@@ -459,18 +459,18 @@ export const handleMediaControlClick = (
           shuffle: !stateObj!.attributes.shuffle,
         }
       : action === "repeat_set"
-      ? {
-          entity_id: stateObj!.entity_id,
-          repeat:
-            stateObj!.attributes.repeat === "all"
-              ? "one"
-              : stateObj!.attributes.repeat === "off"
-              ? "all"
-              : "off",
-        }
-      : {
-          entity_id: stateObj!.entity_id,
-        }
+        ? {
+            entity_id: stateObj!.entity_id,
+            repeat:
+              stateObj!.attributes.repeat === "all"
+                ? "one"
+                : stateObj!.attributes.repeat === "off"
+                  ? "all"
+                  : "off",
+          }
+        : {
+            entity_id: stateObj!.entity_id,
+          }
   );
 
 export const mediaPlayerPlayMedia = (

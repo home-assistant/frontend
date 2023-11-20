@@ -140,40 +140,40 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                   ></zha-manage-clusters>
                 `
               : this._currTab === "bindings"
-              ? html`
-                  ${this._bindableDevices.length > 0
-                    ? html`
-                        <zha-device-binding-control
-                          .hass=${this.hass}
-                          .device=${this._device}
-                          .bindableDevices=${this._bindableDevices}
-                        ></zha-device-binding-control>
-                      `
-                    : ""}
-                  ${this._device && this._groups.length > 0
-                    ? html`
-                        <zha-group-binding-control
-                          .hass=${this.hass}
-                          .device=${this._device}
-                          .groups=${this._groups}
-                        ></zha-group-binding-control>
-                      `
-                    : ""}
-                `
-              : this._currTab === "signature"
-              ? html`
-                  <zha-device-zigbee-info
-                    .hass=${this.hass}
-                    .device=${this._device}
-                  ></zha-device-zigbee-info>
-                `
-              : html`
-                  <zha-device-neighbors
-                    .hass=${this.hass}
-                    .device=${this._device}
-                    .narrow=${!this.large}
-                  ></zha-device-neighbors>
-                `
+                ? html`
+                    ${this._bindableDevices.length > 0
+                      ? html`
+                          <zha-device-binding-control
+                            .hass=${this.hass}
+                            .device=${this._device}
+                            .bindableDevices=${this._bindableDevices}
+                          ></zha-device-binding-control>
+                        `
+                      : ""}
+                    ${this._device && this._groups.length > 0
+                      ? html`
+                          <zha-group-binding-control
+                            .hass=${this.hass}
+                            .device=${this._device}
+                            .groups=${this._groups}
+                          ></zha-group-binding-control>
+                        `
+                      : ""}
+                  `
+                : this._currTab === "signature"
+                  ? html`
+                      <zha-device-zigbee-info
+                        .hass=${this.hass}
+                        .device=${this._device}
+                      ></zha-device-zigbee-info>
+                    `
+                  : html`
+                      <zha-device-neighbors
+                        .hass=${this.hass}
+                        .device=${this._device}
+                        .narrow=${!this.large}
+                      ></zha-device-neighbors>
+                    `
           )}
         </div>
       </ha-dialog>

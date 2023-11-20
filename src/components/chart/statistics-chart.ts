@@ -400,8 +400,8 @@ export class StatisticsChart extends LitElement {
               ? type === "min" && hasMean
                 ? "+1"
                 : type === "max"
-                ? "-1"
-                : false
+                  ? "-1"
+                  : false
               : false,
             borderColor:
               band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color,

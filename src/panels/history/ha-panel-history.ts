@@ -188,18 +188,18 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                 ></ha-circular-progress>
               </div>`
             : !this._targetPickerValue
-            ? html`<div class="start-search">
-                ${this.hass.localize("ui.panel.history.start_search")}
-              </div>`
-            : html`
-                <state-history-charts
-                  .hass=${this.hass}
-                  .historyData=${this._stateHistory}
-                  .startTime=${this._startDate}
-                  .endTime=${this._endDate}
-                >
-                </state-history-charts>
-              `}
+              ? html`<div class="start-search">
+                  ${this.hass.localize("ui.panel.history.start_search")}
+                </div>`
+              : html`
+                  <state-history-charts
+                    .hass=${this.hass}
+                    .historyData=${this._stateHistory}
+                    .startTime=${this._startDate}
+                    .endTime=${this._endDate}
+                  >
+                  </state-history-charts>
+                `}
         </div>
       </ha-top-app-bar-fixed>
     `;
@@ -345,8 +345,8 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       timespan < 2
         ? 10000
         : timespan < 10
-        ? 60 * 1000
-        : MIN_TIME_BETWEEN_UPDATES
+          ? 60 * 1000
+          : MIN_TIME_BETWEEN_UPDATES
     );
   }
 

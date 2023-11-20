@@ -414,17 +414,17 @@ export class HaServiceControl extends LitElement {
             ></ha-selector
           ></ha-settings-row>`
         : entityId
-        ? html`<ha-entity-picker
-            .hass=${this.hass}
-            .disabled=${this.disabled}
-            .value=${this._value?.data?.entity_id}
-            .label=${this.hass.localize(
-              `component.${domain}.services.${serviceName}.fields.entity_id.description`
-            ) || entityId.description}
-            @value-changed=${this._entityPicked}
-            allow-custom-entity
-          ></ha-entity-picker>`
-        : ""}
+          ? html`<ha-entity-picker
+              .hass=${this.hass}
+              .disabled=${this.disabled}
+              .value=${this._value?.data?.entity_id}
+              .label=${this.hass.localize(
+                `component.${domain}.services.${serviceName}.fields.entity_id.description`
+              ) || entityId.description}
+              @value-changed=${this._entityPicked}
+              allow-custom-entity
+            ></ha-entity-picker>`
+          : ""}
       ${shouldRenderServiceDataYaml
         ? html`<ha-yaml-editor
             .hass=${this.hass}

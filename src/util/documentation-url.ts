@@ -5,6 +5,6 @@ export const documentationUrl = (hass: HomeAssistant, path: string) =>
     hass.config.version.includes("b")
       ? "rc"
       : hass.config.version.includes("dev")
-      ? "next"
-      : "www"
+        ? "next"
+        : "www"
   }.home-assistant.io${path}`;

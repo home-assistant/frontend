@@ -436,8 +436,8 @@ export class HaControlCircularSlider extends LitElement {
       mode === "end"
         ? target <= current
         : mode === "start"
-        ? current <= target
-        : false;
+          ? current <= target
+          : false;
 
     const showTarget = value != null;
 
@@ -453,8 +453,8 @@ export class HaControlCircularSlider extends LitElement {
       mode === "full"
         ? this._strokeDashArc(this.min, this.max)
         : mode === "end"
-        ? this._strokeDashArc(target, limit)
-        : this._strokeDashArc(limit, target);
+          ? this._strokeDashArc(target, limit)
+          : this._strokeDashArc(limit, target);
 
     const targetCircle = showTarget
       ? this._strokeCircleDashArc(target)

@@ -242,45 +242,47 @@ class HUIRoot extends LitElement {
                   ${curViewConfig?.subview
                     ? html`<div class="main-title">${curViewConfig.title}</div>`
                     : views.filter((view) => !view.subview).length > 1
-                    ? html`
-                        <ha-tabs
-                          slot="title"
-                          scrollable
-                          .selected=${this._curView}
-                          @iron-activate=${this._handleViewSelected}
-                          dir=${computeRTLDirection(this.hass!)}
-                        >
-                          ${views.map(
-                            (view) => html`
-                              <paper-tab
-                                aria-label=${ifDefined(view.title)}
-                                class=${classMap({
-                                  "hide-tab": Boolean(
-                                    view.subview ||
-                                      (view.visible !== undefined &&
-                                        ((Array.isArray(view.visible) &&
-                                          !view.visible.some(
-                                            (e) =>
-                                              e.user === this.hass!.user?.id
-                                          )) ||
-                                          view.visible === false))
-                                  ),
-                                })}
-                              >
-                                ${view.icon
-                                  ? html`
-                                      <ha-icon
-                                        title=${ifDefined(view.title)}
-                                        .icon=${view.icon}
-                                      ></ha-icon>
-                                    `
-                                  : view.title || "Unnamed view"}
-                              </paper-tab>
-                            `
-                          )}
-                        </ha-tabs>
-                      `
-                    : html`<div class="main-title">${this.config.title}</div>`}
+                      ? html`
+                          <ha-tabs
+                            slot="title"
+                            scrollable
+                            .selected=${this._curView}
+                            @iron-activate=${this._handleViewSelected}
+                            dir=${computeRTLDirection(this.hass!)}
+                          >
+                            ${views.map(
+                              (view) => html`
+                                <paper-tab
+                                  aria-label=${ifDefined(view.title)}
+                                  class=${classMap({
+                                    "hide-tab": Boolean(
+                                      view.subview ||
+                                        (view.visible !== undefined &&
+                                          ((Array.isArray(view.visible) &&
+                                            !view.visible.some(
+                                              (e) =>
+                                                e.user === this.hass!.user?.id
+                                            )) ||
+                                            view.visible === false))
+                                    ),
+                                  })}
+                                >
+                                  ${view.icon
+                                    ? html`
+                                        <ha-icon
+                                          title=${ifDefined(view.title)}
+                                          .icon=${view.icon}
+                                        ></ha-icon>
+                                      `
+                                    : view.title || "Unnamed view"}
+                                </paper-tab>
+                              `
+                            )}
+                          </ha-tabs>
+                        `
+                      : html`<div class="main-title">
+                          ${this.config.title}
+                        </div>`}
                   <div class="action-items">
                     ${!this.narrow
                       ? html`

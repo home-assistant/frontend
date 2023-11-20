@@ -141,8 +141,8 @@ export class Gauge extends LitElement {
             this._segment_label
               ? ""
               : this.label === "%"
-              ? blankBeforePercent(this.locale) + "%"
-              : ` ${this.label}`
+                ? blankBeforePercent(this.locale) + "%"
+                : ` ${this.label}`
           }
         </text>
       </svg>`;

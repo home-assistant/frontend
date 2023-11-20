@@ -104,10 +104,10 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
               { action: actionLabel }
             )
           : action && action !== "off" && action !== "idle"
-          ? actionLabel
-          : this.hass.localize(
-              "ui.dialogs.more_info_control.humidifier.target"
-            )}
+            ? actionLabel
+            : this.hass.localize(
+                "ui.dialogs.more_info_control.humidifier.target"
+              )}
       </p>
     `;
   }

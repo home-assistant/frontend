@@ -84,24 +84,24 @@ export class MoreInfoHistory extends LitElement {
           ${this._error
             ? html`<div class="errors">${this._error}</div>`
             : this._statistics
-            ? html`<statistics-chart
-                .hass=${this.hass}
-                .isLoadingData=${!this._statistics}
-                .statisticsData=${this._statistics}
-                .metadata=${this._metadata}
-                .statTypes=${statTypes}
-                .names=${this._statNames}
-                hideLegend
-                .showNames=${false}
-              ></statistics-chart>`
-            : html`<state-history-charts
-                up-to-now
-                .hass=${this.hass}
-                .historyData=${this._stateHistory}
-                .isLoadingData=${!this._stateHistory}
-                .showNames=${false}
-                .clickForMoreInfo=${false}
-              ></state-history-charts>`}`
+              ? html`<statistics-chart
+                  .hass=${this.hass}
+                  .isLoadingData=${!this._statistics}
+                  .statisticsData=${this._statistics}
+                  .metadata=${this._metadata}
+                  .statTypes=${statTypes}
+                  .names=${this._statNames}
+                  hideLegend
+                  .showNames=${false}
+                ></statistics-chart>`
+              : html`<state-history-charts
+                  up-to-now
+                  .hass=${this.hass}
+                  .historyData=${this._stateHistory}
+                  .isLoadingData=${!this._stateHistory}
+                  .showNames=${false}
+                  .clickForMoreInfo=${false}
+                ></state-history-charts>`}`
       : ""}`;
   }
 

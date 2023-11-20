@@ -189,8 +189,8 @@ export class HaMoreInfoClimateTemperature extends LitElement {
               { action: actionLabel }
             )
           : action && action !== "off" && action !== "idle"
-          ? actionLabel
-          : this.hass.localize("ui.dialogs.more_info_control.climate.target")}
+            ? actionLabel
+            : this.hass.localize("ui.dialogs.more_info_control.climate.target")}
       </p>
     `;
   }

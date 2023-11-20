@@ -139,13 +139,13 @@ class MoreInfoCover extends LitElement {
                         ></ha-more-info-cover-toggle>
                       `
                     : supportsOpenClose || supportsTilt
-                    ? html`
-                        <ha-more-info-cover-buttons
-                          .stateObj=${this.stateObj}
-                          .hass=${this.hass}
-                        ></ha-more-info-cover-buttons>
-                      `
-                    : nothing}
+                      ? html`
+                          <ha-more-info-cover-buttons
+                            .stateObj=${this.stateObj}
+                            .hass=${this.hass}
+                          ></ha-more-info-cover-buttons>
+                        `
+                      : nothing}
                 `
               : nothing
           }

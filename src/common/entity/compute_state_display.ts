@@ -225,8 +225,8 @@ export const computeStateDisplayFromEntityAttributes = (
           : localize("ui.card.update.installing")
         : attributes.latest_version
       : attributes.skipped_version === attributes.latest_version
-      ? attributes.latest_version ?? localize("state.default.unavailable")
-      : localize("ui.card.update.up_to_date");
+        ? attributes.latest_version ?? localize("state.default.unavailable")
+        : localize("ui.card.update.up_to_date");
   }
 
   return (

@@ -97,21 +97,23 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                       )}
                     </mwc-button>`
                 : this.entry.disabled_by
-                ? html`${this.hass!.localize(
-                    "ui.dialogs.entity_registry.editor.entity_disabled"
-                  )}${["user", "integration"].includes(this.entry.disabled_by!)
-                    ? html`<mwc-button
-                        slot="action"
-                        @click=${this._enableEntry}
-                      >
-                        ${this.hass!.localize(
-                          "ui.dialogs.entity_registry.editor.enable_entity"
-                        )}</mwc-button
-                      >`
-                    : ""}`
-                : this.hass!.localize(
-                    "ui.dialogs.entity_registry.editor.unavailable"
-                  )}
+                  ? html`${this.hass!.localize(
+                      "ui.dialogs.entity_registry.editor.entity_disabled"
+                    )}${["user", "integration"].includes(
+                      this.entry.disabled_by!
+                    )
+                      ? html`<mwc-button
+                          slot="action"
+                          @click=${this._enableEntry}
+                        >
+                          ${this.hass!.localize(
+                            "ui.dialogs.entity_registry.editor.enable_entity"
+                          )}</mwc-button
+                        >`
+                      : ""}`
+                  : this.hass!.localize(
+                      "ui.dialogs.entity_registry.editor.unavailable"
+                    )}
             </ha-alert>
           `
         : ""}
