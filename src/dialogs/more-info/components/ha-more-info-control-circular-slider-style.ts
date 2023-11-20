@@ -34,8 +34,8 @@ export const moreInfoControlCircularSliderStyle = css`
     align-items: center;
     justify-content: center;
     width: 200px;
-    height: 48px;
-    margin-bottom: 6px;
+    line-height: 24px;
+    margin: 8px 0;
   }
   .label {
     font-weight: 500;

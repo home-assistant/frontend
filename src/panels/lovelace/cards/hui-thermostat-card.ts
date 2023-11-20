@@ -78,6 +78,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         <ha-more-info-climate-temperature
+          show-current
           .hass=${this.hass}
           .stateObj=${stateObj}
         ></ha-more-info-climate-temperature>
