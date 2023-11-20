@@ -68,17 +68,6 @@ export const moreInfoControlCircularSliderStyle = css`
     --md-outlined-icon-button-container-height: 48px;
     --md-outlined-icon-button-icon-size: 24px;
   }
-  /* Accessibility */
-  .visually-hidden {
-    position: absolute;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    height: 1px;
-    width: 1px;
-    margin: -1px;
-    padding: 0;
-    border: 0;
-  }
   /* Slider */
   ha-control-circular-slider {
     --control-circular-slider-color: var(--state-color, var(--disabled-color));

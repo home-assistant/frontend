@@ -5,12 +5,11 @@ import { styleMap } from "lit/directives/style-map";
 import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { clamp } from "../../../../common/number/clamp";
-import { formatNumber } from "../../../../common/number/format_number";
-import { blankBeforePercent } from "../../../../common/translations/blank_before_percent";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-control-circular-slider";
 import "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-big-number";
 import { UNAVAILABLE } from "../../../../data/entity";
 import {
   HUMIDIFIER_ACTION_MODE,
@@ -132,19 +131,18 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
   }
 
   private _renderTarget(humidity: number) {
-    const formatted = formatNumber(humidity, this.hass.locale, {
+    const formatOptions = {
       maximumFractionDigits: 0,
-    });
+    };
 
     return html`
-      <div class="target">
-        <p class="value" aria-hidden="true">
-          ${formatted}<span class="unit">%</span>
-        </p>
-        <p class="visually-hidden">
-          ${formatted}${blankBeforePercent(this.hass.locale)}%
-        </p>
-      </div>
+      <ha-big-number
+        .value=${humidity}
+        unit="%"
+        unit-position="bottom"
+        .hass=${this.hass}
+        .formatOptions=${formatOptions}
+      ></ha-big-number>
     `;
   }
 
@@ -230,16 +228,6 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
         /* Elements */
         .target-container {
           margin-bottom: 30px;
-        }
-        .target .value {
-          font-size: 58px;
-          line-height: 1;
-          letter-spacing: -0.25px;
-        }
-        .target .value .unit {
-          font-size: 0.4em;
-          line-height: 1;
-          margin-left: 2px;
         }
       `,
     ];

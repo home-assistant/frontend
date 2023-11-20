@@ -1,12 +1,5 @@
 import { mdiMinus, mdiPlus } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../../../common/const";
@@ -14,11 +7,11 @@ import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { clamp } from "../../../../common/number/clamp";
-import { formatNumber } from "../../../../common/number/format_number";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-control-circular-slider";
 import "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-big-number";
 import { UNAVAILABLE } from "../../../../data/entity";
 import {
   WaterHeaterEntity,
@@ -140,32 +133,17 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
 
   private _renderTargetTemperature(temperature: number) {
     const digits = this._step.toString().split(".")?.[1]?.length ?? 0;
-    const formatted = formatNumber(temperature, this.hass.locale, {
+    const formatOptions: Intl.NumberFormatOptions = {
       maximumFractionDigits: digits,
       minimumFractionDigits: digits,
-    });
-    const [temperatureInteger] = formatted.includes(".")
-      ? formatted.split(".")
-      : formatted.split(",");
-
-    const temperatureDecimal = formatted.replace(temperatureInteger, "");
-
+    };
     return html`
-      <p class="temperature">
-        <span aria-hidden="true">
-          ${temperatureInteger}
-          ${digits !== 0
-            ? html`<span class="decimal">${temperatureDecimal}</span>`
-            : nothing}
-          <span class="unit">
-            ${this.hass.config.unit_system.temperature}
-          </span>
-        </span>
-        <span class="visually-hidden">
-          ${this.stateObj.attributes.temperature}
-          ${this.hass.config.unit_system.temperature}
-        </span>
-      </p>
+      <ha-big-number
+        .value=${temperature}
+        .unit=${this.hass.config.unit_system.temperature}
+        .hass=${this.hass}
+        .formatOptions=${formatOptions}
+      ></ha-big-number>
     `;
   }
 
@@ -243,33 +221,6 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
         /* Elements */
         .temperature-container {
           margin-bottom: 30px;
-        }
-        .temperature {
-          display: inline-flex;
-          font-size: 58px;
-          line-height: 64px;
-          letter-spacing: -0.25px;
-          margin: 0;
-        }
-        .temperature span {
-          display: inline-flex;
-        }
-        .temperature .decimal {
-          font-size: 24px;
-          line-height: 32px;
-          align-self: flex-end;
-          width: 20px;
-          margin-bottom: 4px;
-        }
-        .temperature .unit {
-          font-size: 20px;
-          line-height: 24px;
-          align-self: flex-start;
-          width: 20px;
-          margin-top: 4px;
-        }
-        .decimal + .unit {
-          margin-left: -20px;
         }
       `,
     ];

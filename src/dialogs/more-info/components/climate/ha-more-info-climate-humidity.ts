@@ -7,6 +7,7 @@ import { domainStateColorProperties } from "../../../../common/entity/state_colo
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { clamp } from "../../../../common/number/clamp";
 import { debounce } from "../../../../common/util/debounce";
+import "../../../../components/ha-big-number";
 import "../../../../components/ha-control-circular-slider";
 import "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-svg-icon";
@@ -114,20 +115,18 @@ export class HaMoreInfoClimateHumidity extends LitElement {
   }
 
   private _renderTarget(humidity: number) {
-    const rounded = Math.round(humidity);
-    const formatted = this.hass.formatEntityAttributeValue(
-      this.stateObj,
-      "humidity",
-      rounded
-    );
+    const formatOptions = {
+      maximumFractionDigits: 0,
+    };
 
     return html`
-      <div class="target">
-        <p class="value" aria-hidden="true">
-          ${rounded}<span class="unit">%</span>
-        </p>
-        <p class="visually-hidden">${formatted}</p>
-      </div>
+      <ha-big-number
+        .value=${humidity}
+        unit="%"
+        unit-position="bottom"
+        .hass=${this.hass}
+        .formatOptions=${formatOptions}
+      ></ha-big-number>
     `;
   }
 
@@ -208,16 +207,6 @@ export class HaMoreInfoClimateHumidity extends LitElement {
         /* Elements */
         .target-container {
           margin-bottom: 30px;
-        }
-        .target .value {
-          font-size: 58px;
-          line-height: 1;
-          letter-spacing: -0.25px;
-        }
-        .target .value .unit {
-          font-size: 0.4em;
-          line-height: 1;
-          margin-left: 2px;
         }
       `,
     ];
