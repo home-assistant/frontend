@@ -332,8 +332,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const localizedState = this._config.hide_state
       ? nothing
       : this._config.state_content
-      ? this._renderStateContent(stateObj, this._config.state_content)
-      : this._renderState(stateObj);
+        ? this._renderStateContent(stateObj, this._config.state_content)
+        : this._renderState(stateObj);
 
     const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);

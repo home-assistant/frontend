@@ -33,13 +33,13 @@ const translateErr = (err) =>
   err === ERR_CANNOT_CONNECT
     ? "Unable to connect"
     : err === ERR_HASS_HOST_REQUIRED
-    ? "Please enter a Home Assistant URL."
-    : err === ERR_INVALID_HTTPS_TO_HTTP
-    ? html`
-        Cannot connect to Home Assistant instances over "http://".
-        ${seeFAQ("https")}
-      `
-    : `Unknown error (${err}).`;
+      ? "Please enter a Home Assistant URL."
+      : err === ERR_INVALID_HTTPS_TO_HTTP
+        ? html`
+            Cannot connect to Home Assistant instances over "http://".
+            ${seeFAQ("https")}
+          `
+        : `Unknown error (${err}).`;
 
 const INTRO = html`
   <p>
