@@ -1,8 +1,17 @@
 import { mdiDotsVertical } from "@mdi/js";
 import "@thomasloven/round-slider";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { ClimateEntity } from "../../../data/climate";
@@ -61,6 +70,32 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     });
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+
+    if (
+      !this._config ||
+      !this.hass ||
+      (!changedProps.has("hass") && !changedProps.has("_config"))
+    ) {
+      return;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProps.get("_config") as
+      | ThermostatCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
+  }
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
@@ -75,8 +110,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const name = this._config!.name || computeStateName(stateObj);
+
     return html`
       <ha-card>
+        <p class="title">${name}</p>
         <ha-more-info-climate-temperature
           show-current
           .hass=${this.hass}
@@ -117,10 +155,20 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         align-items: center;
       }
 
+      .title {
+        width: 100%;
+        font-size: 18px;
+        line-height: 24px;
+        padding: 12px 36px 16px 36px;
+        margin: 0;
+        text-align: center;
+        box-sizing: border-box;
+      }
+
       ha-more-info-climate-temperature {
         width: 100%;
         max-width: 344px; /* 12px + 12px + 320px */
-        padding: 12px;
+        padding: 0 12px 12px 12px;
         box-sizing: border-box;
       }
 

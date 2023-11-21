@@ -33,6 +33,7 @@ const cardConfigStruct = assign(
   object({
     entity: optional(string()),
     name: optional(string()),
+    theme: optional(string()),
     features: optional(array(any())),
   })
 );
@@ -42,7 +43,10 @@ const SCHEMA = [
   {
     type: "grid",
     name: "",
-    schema: [{ name: "name", required: false, selector: { text: {} } }],
+    schema: [
+      { name: "name", selector: { text: {} } },
+      { name: "theme", selector: { theme: {} } },
+    ],
   },
 ] as const;
 
