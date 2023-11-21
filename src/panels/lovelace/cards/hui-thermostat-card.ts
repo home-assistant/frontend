@@ -9,9 +9,11 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { ClimateEntity } from "../../../data/climate";
@@ -112,6 +114,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     const name = this._config!.name || computeStateName(stateObj);
 
+    const color = stateColorCss(stateObj);
+
     return html`
       <ha-card>
         <p class="title">${name}</p>
@@ -130,6 +134,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           tabindex="0"
         ></ha-icon-button>
         <hui-tile-features
+          style=${styleMap({
+            "--tile-color": color,
+          })}
           .hass=${this.hass}
           .stateObj=${stateObj}
           .color=${this._config.color}
@@ -185,7 +192,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       }
 
       hui-tile-features {
-        width: 100%;
+        min-width: 120px;
+        width: auto;
+        max-width: 100%;
       }
     `;
   }
