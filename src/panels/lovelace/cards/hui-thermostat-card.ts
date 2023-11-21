@@ -192,7 +192,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       }
 
       hui-tile-features {
-        width: 100%;
+        min-width: 120px;
+        width: auto;
+        max-width: 100%;
       }
     `;
   }
