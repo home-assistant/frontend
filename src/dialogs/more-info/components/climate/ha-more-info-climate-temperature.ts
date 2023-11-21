@@ -1,12 +1,5 @@
 import { mdiMinus, mdiPlus } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -187,13 +180,12 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     return html`
       <p class="label">
         ${action && ["preheating", "heating", "cooling"].includes(action)
-          ? this.hass.localize(
-              "ui.dialogs.more_info_control.climate.target_label",
-              { action: actionLabel }
-            )
+          ? this.hass.localize("ui.card.climate.target_label", {
+              action: actionLabel,
+            })
           : action && action !== "off" && action !== "idle"
             ? actionLabel
-            : this.hass.localize("ui.dialogs.more_info_control.climate.target")}
+            : this.hass.localize("ui.card.climate.target")}
       </p>
     `;
   }
@@ -251,19 +243,21 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     `;
   }
 
-  private _renderCurrentTemperature(temperature: number) {
-    if (!this.showCurrent) {
-      return nothing;
+  private _renderCurrentTemperature(temperature?: number) {
+    if (!this.showCurrent || temperature == null) {
+      return html`<p class="label">&nbsp;</p>`;
     }
 
     return html`
       <p class="label">
-        Currently
-        ${this.hass.formatEntityAttributeValue(
-          this.stateObj,
-          "temperature",
-          temperature
-        )}
+        ${this.hass.localize("ui.card.climate.currently")}
+        <span>
+          ${this.hass.formatEntityAttributeValue(
+            this.stateObj,
+            "current_temperature",
+            temperature
+          )}
+        </span>
       </p>
     `;
   }
@@ -331,15 +325,11 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            <div class="label-container">${this._renderLabel()}</div>
-            <div class="temperature-container">
-              ${this._renderTargetTemperature(this._targetTemperature.value)}
-            </div>
-            <div class="label-container">
-              ${this._renderCurrentTemperature(
-                this.stateObj.attributes.current_temperature
-              )}
-            </div>
+            ${this._renderLabel()}
+            ${this._renderTargetTemperature(this._targetTemperature.value)}
+            ${this._renderCurrentTemperature(
+              this.stateObj.attributes.current_temperature
+            )}
           </div>
           ${this._renderTemperatureButtons("value")}
         </div>
@@ -377,8 +367,8 @@ export class HaMoreInfoClimateTemperature extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            <div class="label-container">${this._renderLabel()}</div>
-            <div class="temperature-container dual">
+            ${this._renderLabel()}
+            <div class="dual">
               <button
                 @click=${this._handleSelectTemp}
                 .target=${"low"}
@@ -398,11 +388,9 @@ export class HaMoreInfoClimateTemperature extends LitElement {
                 ${this._renderTargetTemperature(this._targetTemperature.high)}
               </button>
             </div>
-            <div class="label-container">
-              ${this._renderCurrentTemperature(
-                this.stateObj.attributes.current_temperature
-              )}
-            </div>
+            ${this._renderCurrentTemperature(
+              this.stateObj.attributes.current_temperature
+            )}
           </div>
           ${this._renderTemperatureButtons(this._selectTargetTemperature, true)}
         </div>
@@ -427,12 +415,10 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         >
         </ha-control-circular-slider>
         <div class="info">
-          <div class="label-container">${this._renderLabel()}</div>
-          <div class="label-container">
-            ${this._renderCurrentTemperature(
-              this.stateObj.attributes.current_temperature
-            )}
-          </div>
+          ${this._renderLabel()}
+          ${this._renderCurrentTemperature(
+            this.stateObj.attributes.current_temperature
+          )}
         </div>
       </div>
     `;
@@ -442,7 +428,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     return [
       moreInfoControlCircularSliderStyle,
       css`
-        /* Elements */
+        /* Dual target */
         .dual {
           display: flex;
           flex-direction: row;
@@ -468,7 +454,16 @@ export class HaMoreInfoClimateTemperature extends LitElement {
         .dual button.selected {
           opacity: 1;
         }
-        /* Slider */
+        @container container (max-width: 250px) {
+          .dual {
+            gap: 16px;
+          }
+        }
+        @container container (max-width: 190px) {
+          .dual {
+            gap: 8px;
+          }
+        }
         ha-control-circular-slider {
           width: 100%;
           --control-circular-slider-low-color: var(

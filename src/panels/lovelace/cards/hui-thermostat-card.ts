@@ -119,8 +119,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
       ha-more-info-climate-temperature {
         width: 100%;
-        max-width: 320px;
-        padding: 16px;
+        max-width: 344px; /* 12px + 12px + 320px */
+        padding: 12px;
         box-sizing: border-box;
       }
 

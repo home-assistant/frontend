@@ -106,7 +106,9 @@
         "high": "high",
         "low": "low",
         "mode": "Mode",
-        "preset": "Preset"
+        "preset": "Preset",
+        "target_label": "{action} to target",
+        "target": "Target"
       },
       "counter": {
         "actions": {
@@ -128,6 +130,7 @@
         "reverse": "Reverse"
       },
       "humidifier": {
+        "currently": "[%key:ui::card::climate::currently%]",
         "humidity": "Target humidity",
         "state": "State",
         "mode": "Mode",
@@ -135,7 +138,9 @@
         "current_humidity_entity": "{name} current humidity",
         "humidifying": "{name} humidifying",
         "drying": "{name} drying",
-        "on_entity": "{name} on"
+        "on_entity": "{name} on",
+        "target_label": "[%key:ui::card::climate::target_label%]",
+        "target": "[%key:ui::card::climate::target%]"
       },
       "lawn_mower": {
         "actions": {
@@ -226,11 +231,13 @@
         }
       },
       "water_heater": {
-        "currently": "Currently",
+        "currently": "[%key:ui::card::climate::currently%]",
         "on_off": "On / off",
         "target_temperature": "Target temperature",
         "away_mode": "Away mode",
-        "mode": "Mode"
+        "mode": "Mode",
+        "target_label": "[%key:ui::card::climate::target_label%]",
+        "target": "[%key:ui::card::climate::target%]"
       },
       "weather": {
         "attributes": {
@@ -1041,15 +1048,9 @@
           "unlock": "Unlock"
         },
         "climate": {
-          "target_label": "{action} to target",
-          "target": "Target",
           "humidity_target": "Humidity target",
           "temperature": "Temperature",
           "humidity": "Humidity"
-        },
-        "humidifier": {
-          "target_label": "[%key:ui::dialogs::more_info_control::climate::target_label%]",
-          "target": "[%key:ui::dialogs::more_info_control::climate::target%]"
         },
         "lawn_mower": {
           "activity": "Activity",
@@ -1057,9 +1058,6 @@
           "start_mowing": "Start mowing",
           "pause": "Pause",
           "dock": "Return to dock"
-        },
-        "water_heater": {
-          "target": "[%key:ui::dialogs::more_info_control::climate::target%]"
         }
       },
       "entity_registry": {

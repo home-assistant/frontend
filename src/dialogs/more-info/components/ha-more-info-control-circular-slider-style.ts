@@ -7,6 +7,8 @@ export const moreInfoControlCircularSliderStyle = css`
   }
   .container {
     position: relative;
+    container-type: inline-size;
+    container-name: container;
   }
   .info {
     position: absolute;
@@ -20,24 +22,16 @@ export const moreInfoControlCircularSliderStyle = css`
     justify-content: center;
     pointer-events: none;
     font-size: 16px;
-    line-height: 24px;
+    line-height: 1.5;
     letter-spacing: 0.1px;
+    gap: 8px;
   }
   .info * {
     margin: 0;
     pointer-events: auto;
   }
-  /* Info elements */
-  .label-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 200px;
-    line-height: 24px;
-    margin: 8px 0;
-  }
   .label {
+    width: 60%;
     font-weight: 500;
     text-align: center;
     color: var(--action-color, inherit);
@@ -45,6 +39,9 @@ export const moreInfoControlCircularSliderStyle = css`
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+  .label span {
+    white-space: nowrap;
   }
   .label.disabled {
     color: var(--secondary-text-color);
@@ -56,18 +53,49 @@ export const moreInfoControlCircularSliderStyle = css`
     left: 0;
     right: 0;
     margin: 0 auto;
-    width: 40%;
-    min-width: 96px;
+    gap: 24px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
   }
+
   .buttons ha-outlined-icon-button {
     --md-outlined-icon-button-container-width: 48px;
     --md-outlined-icon-button-container-height: 48px;
     --md-outlined-icon-button-icon-size: 24px;
   }
+
+  @container container (max-width: 250px) {
+    ha-big-number {
+      font-size: 44px;
+    }
+    .buttons {
+      gap: 16px;
+    }
+    .info {
+      font-size: 14px;
+      gap: 6px;
+    }
+    .buttons ha-outlined-icon-button {
+      --md-outlined-icon-button-container-width: 32px;
+      --md-outlined-icon-button-container-height: 32px;
+      --md-outlined-icon-button-icon-size: 16px;
+    }
+  }
+  @container container (max-width: 190px) {
+    ha-big-number {
+      font-size: 32px;
+    }
+    .info {
+      font-size: 12px;
+      gap: 2px;
+    }
+    .buttons {
+      display: none;
+    }
+  }
+
   /* Slider */
   ha-control-circular-slider {
     --control-circular-slider-color: var(--state-color, var(--disabled-color));

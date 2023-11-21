@@ -1,15 +1,15 @@
 import { mdiMinus, mdiPlus } from "@mdi/js";
-import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
+import { CSSResultGroup, LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { clamp } from "../../../../common/number/clamp";
 import { debounce } from "../../../../common/util/debounce";
+import "../../../../components/ha-big-number";
 import "../../../../components/ha-control-circular-slider";
 import "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-big-number";
 import { UNAVAILABLE } from "../../../../data/entity";
 import {
   HUMIDIFIER_ACTION_MODE,
@@ -24,6 +24,9 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: HumidifierEntity;
+
+  @property({ attribute: "show-current", type: Boolean })
+  public showCurrent?: boolean = false;
 
   @state() private _targetHumidity?: number;
 
@@ -98,15 +101,31 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
     return html`
       <p class="label">
         ${action && ["drying", "humidifying"].includes(action)
-          ? this.hass.localize(
-              "ui.dialogs.more_info_control.humidifier.target_label",
-              { action: actionLabel }
-            )
+          ? this.hass.localize("ui.card.humidifier.target_label", {
+              action: actionLabel,
+            })
           : action && action !== "off" && action !== "idle"
             ? actionLabel
-            : this.hass.localize(
-                "ui.dialogs.more_info_control.humidifier.target"
-              )}
+            : this.hass.localize("ui.card.humidifier.target")}
+      </p>
+    `;
+  }
+
+  private _renderCurrentHumidity(humidity?: number) {
+    if (!this.showCurrent || humidity == null) {
+      return html`<p class="label">&nbsp;</p>`;
+    }
+
+    return html`
+      <p class="label">
+        ${this.hass.localize("ui.card.humidifier.currently")}
+        <span>
+          ${this.hass.formatEntityAttributeValue(
+            this.stateObj,
+            "current_humidity",
+            humidity
+          )}
+        </span>
       </p>
     `;
   }
@@ -189,10 +208,10 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            <div class="label-container">${this._renderLabel()}</div>
-            <div class="target-container">
-              ${this._renderTarget(targetHumidity)}
-            </div>
+            ${this._renderLabel()} ${this._renderTarget(targetHumidity)}
+            ${this._renderCurrentHumidity(
+              this.stateObj.attributes.current_humidity
+            )}
           </div>
           ${this._renderButtons()}
         </div>
@@ -215,22 +234,17 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
         >
         </ha-control-circular-slider>
         <div class="info">
-          <div class="label-container">${this._renderLabel()}</div>
+          ${this._renderLabel()}
+          ${this._renderCurrentHumidity(
+            this.stateObj.attributes.current_humidity
+          )}
         </div>
       </div>
     `;
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      moreInfoControlCircularSliderStyle,
-      css`
-        /* Elements */
-        .target-container {
-          margin-bottom: 30px;
-        }
-      `,
-    ];
+    return moreInfoControlCircularSliderStyle;
   }
 }
 
