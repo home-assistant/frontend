@@ -91,9 +91,7 @@ export class HaMoreInfoClimateHumidity extends LitElement {
 
     return html`
       <p class="label">
-        ${this.hass.localize(
-          "ui.dialogs.more_info_control.climate.humidity_target"
-        )}
+        ${this.hass.localize("ui.card.climate.humidity_target")}
       </p>
     `;
   }
@@ -140,7 +138,7 @@ export class HaMoreInfoClimateHumidity extends LitElement {
 
     return html`
       <p class="label">
-        ${this.hass.localize("ui.dialogs.more_info_control.climate.currently")}
+        ${this.hass.localize("ui.card.climate.currently")}
         <span>
           ${this.hass.formatEntityAttributeValue(
             this.stateObj,

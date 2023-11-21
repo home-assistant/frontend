@@ -108,7 +108,8 @@
         "mode": "Mode",
         "preset": "Preset",
         "target_label": "{action} to target",
-        "target": "Target"
+        "target": "Target",
+        "humidity_target": "Humidity target"
       },
       "counter": {
         "actions": {
@@ -1048,7 +1049,6 @@
           "unlock": "Unlock"
         },
         "climate": {
-          "humidity_target": "Humidity target",
           "temperature": "Temperature",
           "humidity": "Humidity"
         },
