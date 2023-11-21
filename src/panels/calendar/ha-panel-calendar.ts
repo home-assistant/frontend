@@ -59,6 +59,12 @@ class PanelCalendar extends LitElement {
   })
   private _deSelectedCalendars: string[] = [];
 
+  @storage({
+    key: "calendarHidePane",
+    state: true,
+  })
+  private _calendarHidePane: boolean = false;
+
   private _start?: Date;
 
   private _end?: Date;
@@ -119,7 +125,7 @@ class PanelCalendar extends LitElement {
         </ha-check-list-item>
       `
     );
-    const showPane = this._showPaneController.value ?? !this.narrow;
+    const showPane = !this._calendarHidePane && (this._showPaneController.value ?? !this.narrow);
     return html`
       <ha-two-pane-top-app-bar-fixed .pane=${showPane} footer>
         <ha-menu-button
@@ -157,6 +163,12 @@ class PanelCalendar extends LitElement {
           : html`<div slot="title">
               ${this.hass.localize("ui.components.calendar.my_calendars")}
             </div>`}
+        <ha-icon-button
+          slot="actionItems"
+          .label=${this.hass!.localize("ui.panel.config")}
+          .path=${mdiPencil}
+          @click=${this._openConfig}
+        ></ha-icon-button>
         <ha-icon-button
           slot="actionItems"
           .path=${mdiRefresh}
@@ -270,6 +282,10 @@ class PanelCalendar extends LitElement {
     );
     this._events = result.events;
     this._handleErrors(result.errors);
+  }
+
+  private async _openConfig(): Promise<void> {
+    // TODO Open dialog to flip switch hide/show pane
   }
 
   private _handleErrors(error_entity_ids: string[]) {
