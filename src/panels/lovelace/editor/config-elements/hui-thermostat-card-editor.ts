@@ -15,7 +15,10 @@ import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { ThermostatCardConfig } from "../../cards/types";
-import { LovelaceTileFeatureContext } from "../../tile-features/types";
+import {
+  LovelaceTileFeatureConfig,
+  LovelaceTileFeatureContext,
+} from "../../tile-features/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
@@ -121,7 +124,7 @@ export class HuiThermostatCardEditor
       return;
     }
 
-    const features = ev.detail.features as ThermostatCardConfig[];
+    const features = ev.detail.features as LovelaceTileFeatureConfig[];
     const config: ThermostatCardConfig = {
       ...this._config,
       features,

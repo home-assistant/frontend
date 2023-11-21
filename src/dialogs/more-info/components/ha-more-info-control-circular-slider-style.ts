@@ -104,6 +104,7 @@ export const moreInfoControlCircularSliderStyle = css`
 
   /* Slider */
   ha-control-circular-slider {
+    width: 100%;
     --control-circular-slider-color: var(--state-color, var(--disabled-color));
   }
   ha-control-circular-slider::after {
