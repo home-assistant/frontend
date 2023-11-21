@@ -87,6 +87,9 @@ export const moreInfoControlCircularSliderStyle = css`
     ha-control-circular-slider {
       margin-bottom: -16px;
     }
+    ha-control-circular-slider {
+      margin-bottom: -8px;
+    }
   }
   @container container (max-width: 190px) {
     ha-big-number {
@@ -97,6 +100,9 @@ export const moreInfoControlCircularSliderStyle = css`
       font-size: 14px;
       gap: 2px;
       --mdc-icon-size: 14px;
+    }
+    ha-control-circular-slider {
+      margin-bottom: -16px;
     }
   }
 
