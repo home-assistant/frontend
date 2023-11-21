@@ -262,6 +262,7 @@ export interface HumidifierCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
   name?: string;
+  features?: LovelaceTileFeatureConfig[];
 }
 
 export interface IframeCardConfig extends LovelaceCardConfig {

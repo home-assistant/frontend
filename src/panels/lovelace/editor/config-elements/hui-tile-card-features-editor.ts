@@ -24,21 +24,22 @@ import { HomeAssistant } from "../../../../types";
 import { getTileFeatureElementClass } from "../../create-element/create-tile-feature-element";
 import { supportsAlarmModesTileFeature } from "../../tile-features/hui-alarm-modes-tile-feature";
 import { supportsClimateHvacModesTileFeature } from "../../tile-features/hui-climate-hvac-modes-tile-feature";
+import { supportsClimatePresetModesTileFeature } from "../../tile-features/hui-climate-preset-modes-tile-feature";
 import { supportsCoverOpenCloseTileFeature } from "../../tile-features/hui-cover-open-close-tile-feature";
 import { supportsCoverPositionTileFeature } from "../../tile-features/hui-cover-position-tile-feature";
 import { supportsCoverTiltPositionTileFeature } from "../../tile-features/hui-cover-tilt-position-tile-feature";
 import { supportsCoverTiltTileFeature } from "../../tile-features/hui-cover-tilt-tile-feature";
 import { supportsFanSpeedTileFeature } from "../../tile-features/hui-fan-speed-tile-feature";
+import { supportsHumidifierToggleTileFeature } from "../../tile-features/hui-humidifier-toggle-tile-feature";
 import { supportsLawnMowerCommandTileFeature } from "../../tile-features/hui-lawn-mower-commands-tile-feature";
 import { supportsLightBrightnessTileFeature } from "../../tile-features/hui-light-brightness-tile-feature";
 import { supportsLightColorTempTileFeature } from "../../tile-features/hui-light-color-temp-tile-feature";
+import { supportsNumberTileFeature } from "../../tile-features/hui-number-tile-feature";
 import { supportsSelectOptionTileFeature } from "../../tile-features/hui-select-options-tile-feature";
 import { supportsTargetTemperatureTileFeature } from "../../tile-features/hui-target-temperature-tile-feature";
 import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
 import { supportsWaterHeaterOperationModesTileFeature } from "../../tile-features/hui-water-heater-operation-modes-tile-feature";
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
-import { supportsClimatePresetModesTileFeature } from "../../tile-features/hui-climate-preset-modes-tile-feature";
-import { supportsNumberTileFeature } from "../../tile-features/hui-number-tile-feature";
 
 export type FeatureType = LovelaceTileFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
@@ -52,6 +53,7 @@ const UI_FEATURE_TYPES = [
   "cover-tilt-position",
   "cover-tilt",
   "fan-speed",
+  "humidifier-toggle",
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
@@ -86,14 +88,15 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "cover-tilt-position": supportsCoverTiltPositionTileFeature,
   "cover-tilt": supportsCoverTiltTileFeature,
   "fan-speed": supportsFanSpeedTileFeature,
+  "humidifier-toggle": supportsHumidifierToggleTileFeature,
   "lawn-mower-commands": supportsLawnMowerCommandTileFeature,
   "light-brightness": supportsLightBrightnessTileFeature,
   "light-color-temp": supportsLightColorTempTileFeature,
+  number: supportsNumberTileFeature,
   "target-temperature": supportsTargetTemperatureTileFeature,
   "vacuum-commands": supportsVacuumCommandTileFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesTileFeature,
   "select-options": supportsSelectOptionTileFeature,
-  number: supportsNumberTileFeature,
 };
 
 const CUSTOM_FEATURE_ENTRIES: Record<

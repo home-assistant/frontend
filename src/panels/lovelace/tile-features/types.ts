@@ -64,6 +64,10 @@ export interface WaterHeaterOperationModesTileFeatureConfig {
   operation_modes?: OperationMode[];
 }
 
+export interface HumidifierToggleTileFeatureConfig {
+  type: "humidifier-toggle";
+}
+
 export const VACUUM_COMMANDS = [
   "start_pause",
   "stop",
@@ -97,6 +101,7 @@ export type LovelaceTileFeatureConfig =
   | CoverTiltPositionTileFeatureConfig
   | CoverTiltTileFeatureConfig
   | FanSpeedTileFeatureConfig
+  | HumidifierToggleTileFeatureConfig
   | LawnMowerCommandsTileFeatureConfig
   | LightBrightnessTileFeatureConfig
   | LightColorTempTileFeatureConfig
