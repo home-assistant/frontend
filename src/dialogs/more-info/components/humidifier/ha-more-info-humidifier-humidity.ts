@@ -1,4 +1,4 @@
-import { mdiMinus, mdiPlus } from "@mdi/js";
+import { mdiMinus, mdiPlus, mdiWaterPercent } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -100,13 +100,9 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
 
     return html`
       <p class="label">
-        ${action && ["drying", "humidifying"].includes(action)
-          ? this.hass.localize("ui.card.humidifier.target_label", {
-              action: actionLabel,
-            })
-          : action && action !== "off" && action !== "idle"
-            ? actionLabel
-            : this.hass.localize("ui.card.humidifier.target")}
+        ${action && action !== "off" && action !== "idle"
+          ? actionLabel
+          : this.hass.localize("ui.card.humidifier.target")}
       </p>
     `;
   }
@@ -118,7 +114,7 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
 
     return html`
       <p class="label">
-        ${this.hass.localize("ui.card.humidifier.currently")}
+        <ha-svg-icon .path=${mdiWaterPercent}></ha-svg-icon>
         <span>
           ${this.hass.formatEntityAttributeValue(
             this.stateObj,

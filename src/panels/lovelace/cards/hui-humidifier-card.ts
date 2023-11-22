@@ -193,9 +193,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       }
 
       hui-tile-features {
-        min-width: 120px;
-        width: auto;
-        max-width: 100%;
+        width: 100%;
       }
     `;
   }
