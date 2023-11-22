@@ -2975,7 +2975,7 @@
             "import_btn": "Preview",
             "saving": "Importing blueprint…",
             "save_btn": "Import blueprint",
-            "save_btn_override": "Update blueprint",
+            "save_btn_override": "Override blueprint",
             "override_title": "This blueprint already exists",
             "override_description": "Importing it will override the existing blueprint. If the updated blueprint is not compatible, it can break your automations. Automations will have to be adjusted manually.",
             "error_no_url": "Please enter the blueprint address.",
