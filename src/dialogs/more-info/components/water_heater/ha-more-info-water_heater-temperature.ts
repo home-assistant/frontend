@@ -1,12 +1,5 @@
 import { mdiMinus, mdiPlus } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import { CSSResultGroup, LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../../../common/const";
@@ -14,8 +7,8 @@ import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { clamp } from "../../../../common/number/clamp";
-import { formatNumber } from "../../../../common/number/format_number";
 import { debounce } from "../../../../common/util/debounce";
+import "../../../../components/ha-big-number";
 import "../../../../components/ha-control-circular-slider";
 import "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-svg-icon";
@@ -32,6 +25,9 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: WaterHeaterEntity;
+
+  @property({ attribute: "show-current", type: Boolean })
+  public showCurrent?: boolean;
 
   @state() private _targetTemperature?: number;
 
@@ -111,11 +107,7 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
     }
 
     return html`
-      <p class="label">
-        ${this.hass.localize(
-          "ui.dialogs.more_info_control.water_heater.target"
-        )}
-      </p>
+      <p class="label">${this.hass.localize("ui.card.water_heater.target")}</p>
     `;
   }
 
@@ -140,30 +132,34 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
 
   private _renderTargetTemperature(temperature: number) {
     const digits = this._step.toString().split(".")?.[1]?.length ?? 0;
-    const formatted = formatNumber(temperature, this.hass.locale, {
+    const formatOptions: Intl.NumberFormatOptions = {
       maximumFractionDigits: digits,
       minimumFractionDigits: digits,
-    });
-    const [temperatureInteger] = formatted.includes(".")
-      ? formatted.split(".")
-      : formatted.split(",");
+    };
+    return html`
+      <ha-big-number
+        .value=${temperature}
+        .unit=${this.hass.config.unit_system.temperature}
+        .hass=${this.hass}
+        .formatOptions=${formatOptions}
+      ></ha-big-number>
+    `;
+  }
 
-    const temperatureDecimal = formatted.replace(temperatureInteger, "");
+  private _renderCurrentTemperature(temperature?: number) {
+    if (!this.showCurrent || temperature == null) {
+      return html`<p class="label">&nbsp;</p>`;
+    }
 
     return html`
-      <p class="temperature">
-        <span aria-hidden="true">
-          ${temperatureInteger}
-          ${digits !== 0
-            ? html`<span class="decimal">${temperatureDecimal}</span>`
-            : nothing}
-          <span class="unit">
-            ${this.hass.config.unit_system.temperature}
-          </span>
-        </span>
-        <span class="visually-hidden">
-          ${this.stateObj.attributes.temperature}
-          ${this.hass.config.unit_system.temperature}
+      <p class="label">
+        ${this.hass.localize("ui.card.water_heater.currently")}
+        <span>
+          ${this.hass.formatEntityAttributeValue(
+            this.stateObj,
+            "current_temperature",
+            temperature
+          )}
         </span>
       </p>
     `;
@@ -202,10 +198,11 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            <div class="label-container">${this._renderLabel()}</div>
-            <div class="temperature-container">
-              ${this._renderTargetTemperature(this._targetTemperature)}
-            </div>
+            ${this._renderLabel()}
+            ${this._renderTargetTemperature(this._targetTemperature)}
+            ${this._renderCurrentTemperature(
+              this.stateObj.attributes.current_temperature
+            )}
           </div>
           ${this._renderButtons()}
         </div>
@@ -230,49 +227,17 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
         >
         </ha-control-circular-slider>
         <div class="info">
-          <div class="label-container">${this._renderLabel()}</div>
+          ${this._renderLabel()}
+          ${this._renderCurrentTemperature(
+            this.stateObj.attributes.current_temperature
+          )}
         </div>
       </div>
     `;
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      moreInfoControlCircularSliderStyle,
-      css`
-        /* Elements */
-        .temperature-container {
-          margin-bottom: 30px;
-        }
-        .temperature {
-          display: inline-flex;
-          font-size: 58px;
-          line-height: 64px;
-          letter-spacing: -0.25px;
-          margin: 0;
-        }
-        .temperature span {
-          display: inline-flex;
-        }
-        .temperature .decimal {
-          font-size: 24px;
-          line-height: 32px;
-          align-self: flex-end;
-          width: 20px;
-          margin-bottom: 4px;
-        }
-        .temperature .unit {
-          font-size: 20px;
-          line-height: 24px;
-          align-self: flex-start;
-          width: 20px;
-          margin-top: 4px;
-        }
-        .decimal + .unit {
-          margin-left: -20px;
-        }
-      `,
-    ];
+    return moreInfoControlCircularSliderStyle;
   }
 }
 

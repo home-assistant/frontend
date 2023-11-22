@@ -262,7 +262,7 @@ export class HaControlSelect extends LitElement {
         position: relative;
         flex: 1;
         height: 100%;
-        width: 100%;
+        width: 40px;
         display: flex;
         align-items: center;
         justify-content: center;

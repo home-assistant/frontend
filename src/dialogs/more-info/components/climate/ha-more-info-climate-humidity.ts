@@ -1,5 +1,6 @@
-import { mdiMinus, mdiPlus } from "@mdi/js";
-import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import { mdiMinus, mdiPlus, mdiWaterPercent } from "@mdi/js";
+import { CSSResultGroup, LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { stateActive } from "../../../../common/entity/state_active";
@@ -7,6 +8,7 @@ import { domainStateColorProperties } from "../../../../common/entity/state_colo
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { clamp } from "../../../../common/number/clamp";
 import { debounce } from "../../../../common/util/debounce";
+import "../../../../components/ha-big-number";
 import "../../../../components/ha-control-circular-slider";
 import "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-svg-icon";
@@ -21,6 +23,9 @@ export class HaMoreInfoClimateHumidity extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: ClimateEntity;
+
+  @property({ attribute: "show-current", type: Boolean })
+  public showCurrent?: boolean;
 
   @state() private _targetHumidity?: number;
 
@@ -87,9 +92,7 @@ export class HaMoreInfoClimateHumidity extends LitElement {
 
     return html`
       <p class="label">
-        ${this.hass.localize(
-          "ui.dialogs.more_info_control.climate.humidity_target"
-        )}
+        ${this.hass.localize("ui.card.climate.humidity_target")}
       </p>
     `;
   }
@@ -114,20 +117,37 @@ export class HaMoreInfoClimateHumidity extends LitElement {
   }
 
   private _renderTarget(humidity: number) {
-    const rounded = Math.round(humidity);
-    const formatted = this.hass.formatEntityAttributeValue(
-      this.stateObj,
-      "humidity",
-      rounded
-    );
+    const formatOptions = {
+      maximumFractionDigits: 0,
+    };
 
     return html`
-      <div class="target">
-        <p class="value" aria-hidden="true">
-          ${rounded}<span class="unit">%</span>
-        </p>
-        <p class="visually-hidden">${formatted}</p>
-      </div>
+      <ha-big-number
+        .value=${humidity}
+        unit="%"
+        unit-position="bottom"
+        .hass=${this.hass}
+        .formatOptions=${formatOptions}
+      ></ha-big-number>
+    `;
+  }
+
+  private _renderCurrentHumidity(humidity?: number) {
+    if (!this.showCurrent || humidity == null) {
+      return html`<p class="label">&nbsp;</p>`;
+    }
+
+    return html`
+      <p class="label">
+        <ha-svg-icon .path=${mdiWaterPercent}></ha-svg-icon>
+        <span>
+          ${this.hass.formatEntityAttributeValue(
+            this.stateObj,
+            "current_humidity",
+            humidity
+          )}
+        </span>
+      </p>
     `;
   }
 
@@ -174,10 +194,10 @@ export class HaMoreInfoClimateHumidity extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            <div class="label-container">${this._renderLabel()}</div>
-            <div class="target-container">
-              ${this._renderTarget(targetHumidity)}
-            </div>
+            ${this._renderLabel()} ${this._renderTarget(targetHumidity)}
+            ${this._renderCurrentHumidity(
+              this.stateObj.attributes.current_humidity
+            )}
           </div>
           ${this._renderButtons()}
         </div>
@@ -195,32 +215,17 @@ export class HaMoreInfoClimateHumidity extends LitElement {
         >
         </ha-control-circular-slider>
         <div class="info">
-          <div class="label-container">${this._renderLabel()}</div>
+          ${this._renderLabel()}
+          ${this._renderCurrentHumidity(
+            this.stateObj.attributes.current_humidity
+          )}
         </div>
       </div>
     `;
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      moreInfoControlCircularSliderStyle,
-      css`
-        /* Elements */
-        .target-container {
-          margin-bottom: 30px;
-        }
-        .target .value {
-          font-size: 58px;
-          line-height: 1;
-          letter-spacing: -0.25px;
-        }
-        .target .value .unit {
-          font-size: 0.4em;
-          line-height: 1;
-          margin-left: 2px;
-        }
-      `,
-    ];
+    return moreInfoControlCircularSliderStyle;
   }
 }
 
