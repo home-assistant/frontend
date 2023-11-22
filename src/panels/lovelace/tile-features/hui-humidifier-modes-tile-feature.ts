@@ -11,15 +11,15 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { HumidifierEntity, HumidifierState } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
-import { HumidifierToggleTileFeatureConfig } from "./types";
+import { HumidifierModesTileFeatureConfig } from "./types";
 
-export const supportsHumidifierToggleTileFeature = (stateObj: HassEntity) => {
+export const supportsHumidifierModesTileFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return domain === "humidifier";
 };
 
-@customElement("hui-humidifier-toggle-tile-feature")
-class HuiHumidifierToggleTileFeature
+@customElement("hui-humidifier-modes-tile-feature")
+class HuiHumidifierModeTileFeature
   extends LitElement
   implements LovelaceTileFeature
 {
@@ -27,17 +27,17 @@ class HuiHumidifierToggleTileFeature
 
   @property({ attribute: false }) public stateObj?: HumidifierEntity;
 
-  @state() private _config?: HumidifierToggleTileFeatureConfig;
+  @state() private _config?: HumidifierModesTileFeatureConfig;
 
   @state() _currentState?: HumidifierState;
 
-  static getStubConfig(): HumidifierToggleTileFeatureConfig {
+  static getStubConfig(): HumidifierModesTileFeatureConfig {
     return {
-      type: "humidifier-toggle",
+      type: "humidifier-modes",
     };
   }
 
-  public setConfig(config: HumidifierToggleTileFeatureConfig): void {
+  public setConfig(config: HumidifierModesTileFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -81,7 +81,7 @@ class HuiHumidifierToggleTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsHumidifierToggleTileFeature(this.stateObj)
+      !supportsHumidifierModesTileFeature(this.stateObj)
     ) {
       return null;
     }
@@ -131,6 +131,6 @@ class HuiHumidifierToggleTileFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-humidifier-toggle-tile-feature": HuiHumidifierToggleTileFeature;
+    "hui-humidifier-modes-tile-feature": HuiHumidifierModeTileFeature;
   }
 }

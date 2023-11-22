@@ -30,7 +30,7 @@ import { supportsCoverPositionTileFeature } from "../../tile-features/hui-cover-
 import { supportsCoverTiltPositionTileFeature } from "../../tile-features/hui-cover-tilt-position-tile-feature";
 import { supportsCoverTiltTileFeature } from "../../tile-features/hui-cover-tilt-tile-feature";
 import { supportsFanSpeedTileFeature } from "../../tile-features/hui-fan-speed-tile-feature";
-import { supportsHumidifierToggleTileFeature } from "../../tile-features/hui-humidifier-toggle-tile-feature";
+import { supportsHumidifierModesTileFeature } from "../../tile-features/hui-humidifier-modes-tile-feature";
 import { supportsLawnMowerCommandTileFeature } from "../../tile-features/hui-lawn-mower-commands-tile-feature";
 import { supportsLightBrightnessTileFeature } from "../../tile-features/hui-light-brightness-tile-feature";
 import { supportsLightColorTempTileFeature } from "../../tile-features/hui-light-color-temp-tile-feature";
@@ -53,7 +53,7 @@ const UI_FEATURE_TYPES = [
   "cover-tilt-position",
   "cover-tilt",
   "fan-speed",
-  "humidifier-toggle",
+  "humidifier-modes",
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
@@ -88,7 +88,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "cover-tilt-position": supportsCoverTiltPositionTileFeature,
   "cover-tilt": supportsCoverTiltTileFeature,
   "fan-speed": supportsFanSpeedTileFeature,
-  "humidifier-toggle": supportsHumidifierToggleTileFeature,
+  "humidifier-modes": supportsHumidifierModesTileFeature,
   "lawn-mower-commands": supportsLawnMowerCommandTileFeature,
   "light-brightness": supportsLightBrightnessTileFeature,
   "light-color-temp": supportsLightColorTempTileFeature,
