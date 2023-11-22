@@ -314,8 +314,8 @@ class HuiEnergyDistrubutionCard
                       </div>
                     </div>`
                   : hasGas || hasWater
-                  ? html`<div class="spacer"></div>`
-                  : ""}
+                    ? html`<div class="spacer"></div>`
+                    : ""}
                 ${hasGas
                   ? html`<div class="circle-container gas">
                       <span class="label"
@@ -354,23 +354,23 @@ class HuiEnergyDistrubutionCard
                       </svg>
                     </div>`
                   : hasWater
-                  ? html`<div class="circle-container water">
-                      <span class="label"
-                        >${this.hass.localize(
-                          "ui.panel.lovelace.cards.energy.energy_distribution.water"
-                        )}</span
-                      >
-                      <div class="circle">
-                        <ha-svg-icon .path=${mdiWater}></ha-svg-icon>
-                        ${formatNumber(waterUsage || 0, this.hass.locale, {
-                          maximumFractionDigits: 1,
-                        })}
-                        ${getEnergyWaterUnit(this.hass) || "m³"}
-                      </div>
-                      <svg width="80" height="30">
-                        <path d="M40 0 v30" id="water" />
-                        ${waterUsage
-                          ? svg`<circle
+                    ? html`<div class="circle-container water">
+                        <span class="label"
+                          >${this.hass.localize(
+                            "ui.panel.lovelace.cards.energy.energy_distribution.water"
+                          )}</span
+                        >
+                        <div class="circle">
+                          <ha-svg-icon .path=${mdiWater}></ha-svg-icon>
+                          ${formatNumber(waterUsage || 0, this.hass.locale, {
+                            maximumFractionDigits: 1,
+                          })}
+                          ${getEnergyWaterUnit(this.hass) || "m³"}
+                        </div>
+                        <svg width="80" height="30">
+                          <path d="M40 0 v30" id="water" />
+                          ${waterUsage
+                            ? svg`<circle
                 r="1"
                 class="water"
                 vector-effect="non-scaling-stroke"
@@ -383,10 +383,10 @@ class HuiEnergyDistrubutionCard
                   <mpath xlink:href="#water" />
                 </animateMotion>
               </circle>`
-                          : ""}
-                      </svg>
-                    </div>`
-                  : html`<div class="spacer"></div>`}
+                            : ""}
+                        </svg>
+                      </div>`
+                    : html`<div class="spacer"></div>`}
               </div>`
             : ""}
           <div class="row">

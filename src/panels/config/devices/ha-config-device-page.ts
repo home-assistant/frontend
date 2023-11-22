@@ -207,10 +207,10 @@ export class HaConfigDevicePage extends LitElement {
         entry.entity_category
           ? entry.entity_category
           : computeDomain(entry.entity_id) === "event"
-          ? "event"
-          : SENSOR_ENTITIES.includes(computeDomain(entry.entity_id))
-          ? "sensor"
-          : "control"
+            ? "event"
+            : SENSOR_ENTITIES.includes(computeDomain(entry.entity_id))
+              ? "sensor"
+              : "control"
       ) as Record<
         | "control"
         | "event"

@@ -363,11 +363,11 @@ export class HuiCardPicker extends LitElement {
           ${element && element.tagName !== "HUI-ERROR-CARD"
             ? element
             : customCard
-            ? customCard.description ||
-              this.hass!.localize(
-                `ui.panel.lovelace.editor.cardpicker.no_description`
-              )
-            : description}
+              ? customCard.description ||
+                this.hass!.localize(
+                  `ui.panel.lovelace.editor.cardpicker.no_description`
+                )
+              : description}
         </div>
       </div>
     `;

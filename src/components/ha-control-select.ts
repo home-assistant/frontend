@@ -184,8 +184,8 @@ export class HaControlSelect extends LitElement {
           ${option.path
             ? html`<ha-svg-icon .path=${option.path}></ha-svg-icon>`
             : option.icon
-            ? html`<ha-icon .icon=${option.icon}></ha-icon> `
-            : nothing}
+              ? html`<ha-icon .icon=${option.icon}></ha-icon> `
+              : nothing}
           ${option.label && !this.hideLabel
             ? html`<span>${option.label}</span>`
             : nothing}
@@ -262,7 +262,7 @@ export class HaControlSelect extends LitElement {
         position: relative;
         flex: 1;
         height: 100%;
-        width: 100%;
+        width: 40px;
         display: flex;
         align-items: center;
         justify-content: center;

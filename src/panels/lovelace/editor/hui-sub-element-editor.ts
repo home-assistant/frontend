@@ -74,28 +74,28 @@ export class HuiSubElementEditor extends LitElement {
             ></hui-row-element-editor>
           `
         : this.config.type === "header" || this.config.type === "footer"
-        ? html`
-            <hui-headerfooter-element-editor
-              class="editor"
-              .hass=${this.hass}
-              .value=${this.config.elementConfig}
-              .context=${this.context}
-              @config-changed=${this._handleConfigChanged}
-              @GUImode-changed=${this._handleGUIModeChanged}
-            ></hui-headerfooter-element-editor>
-          `
-        : this.config.type === "tile-feature"
-        ? html`
-            <hui-tile-feature-element-editor
-              class="editor"
-              .hass=${this.hass}
-              .value=${this.config.elementConfig}
-              .context=${this.context}
-              @config-changed=${this._handleConfigChanged}
-              @GUImode-changed=${this._handleGUIModeChanged}
-            ></hui-tile-feature-element-editor>
-          `
-        : ""}
+          ? html`
+              <hui-headerfooter-element-editor
+                class="editor"
+                .hass=${this.hass}
+                .value=${this.config.elementConfig}
+                .context=${this.context}
+                @config-changed=${this._handleConfigChanged}
+                @GUImode-changed=${this._handleGUIModeChanged}
+              ></hui-headerfooter-element-editor>
+            `
+          : this.config.type === "tile-feature"
+            ? html`
+                <hui-tile-feature-element-editor
+                  class="editor"
+                  .hass=${this.hass}
+                  .value=${this.config.elementConfig}
+                  .context=${this.context}
+                  @config-changed=${this._handleConfigChanged}
+                  @GUImode-changed=${this._handleGUIModeChanged}
+                ></hui-tile-feature-element-editor>
+              `
+            : ""}
     `;
   }
 

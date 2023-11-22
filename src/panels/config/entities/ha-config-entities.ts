@@ -268,12 +268,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                     .path=${entry.restored
                       ? mdiRestoreAlert
                       : entry.unavailable
-                      ? mdiAlertCircle
-                      : entry.disabled_by
-                      ? mdiCancel
-                      : entry.hidden_by
-                      ? mdiEyeOff
-                      : mdiPencilOff}
+                        ? mdiAlertCircle
+                        : entry.disabled_by
+                          ? mdiCancel
+                          : entry.hidden_by
+                            ? mdiEyeOff
+                            : mdiPencilOff}
                   ></ha-svg-icon>
                   <simple-tooltip animation-delay="0" position="left">
                     ${entry.restored
@@ -281,20 +281,20 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                           "ui.panel.config.entities.picker.status.restored"
                         )
                       : entry.unavailable
-                      ? this.hass.localize(
-                          "ui.panel.config.entities.picker.status.unavailable"
-                        )
-                      : entry.disabled_by
-                      ? this.hass.localize(
-                          "ui.panel.config.entities.picker.status.disabled"
-                        )
-                      : entry.hidden_by
-                      ? this.hass.localize(
-                          "ui.panel.config.entities.picker.status.hidden"
-                        )
-                      : this.hass.localize(
-                          "ui.panel.config.entities.picker.status.readonly"
-                        )}
+                        ? this.hass.localize(
+                            "ui.panel.config.entities.picker.status.unavailable"
+                          )
+                        : entry.disabled_by
+                          ? this.hass.localize(
+                              "ui.panel.config.entities.picker.status.disabled"
+                            )
+                          : entry.hidden_by
+                            ? this.hass.localize(
+                                "ui.panel.config.entities.picker.status.hidden"
+                              )
+                            : this.hass.localize(
+                                "ui.panel.config.entities.picker.status.readonly"
+                              )}
                   </simple-tooltip>
                 </div>
               `
@@ -426,10 +426,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           status: restored
             ? localize("ui.panel.config.entities.picker.status.restored")
             : unavailable
-            ? localize("ui.panel.config.entities.picker.status.unavailable")
-            : entry.disabled_by
-            ? localize("ui.panel.config.entities.picker.status.disabled")
-            : localize("ui.panel.config.entities.picker.status.ok"),
+              ? localize("ui.panel.config.entities.picker.status.unavailable")
+              : entry.disabled_by
+                ? localize("ui.panel.config.entities.picker.status.disabled")
+                : localize("ui.panel.config.entities.picker.status.ok"),
         });
       }
 

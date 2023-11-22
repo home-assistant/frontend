@@ -269,20 +269,20 @@ class MoreInfoWeather extends LitElement {
                               : this.hass!.localize("ui.card.weather.night")})
                           `
                         : hourly
-                        ? html`
-                            ${formatTimeWeekday(
-                              new Date(item.datetime),
-                              this.hass!.locale,
-                              this.hass!.config
-                            )}
-                          `
-                        : html`
-                            ${formatDateWeekdayDay(
-                              new Date(item.datetime),
-                              this.hass!.locale,
-                              this.hass!.config
-                            )}
-                          `}
+                          ? html`
+                              ${formatTimeWeekday(
+                                new Date(item.datetime),
+                                this.hass!.locale,
+                                this.hass!.config
+                              )}
+                            `
+                          : html`
+                              ${formatDateWeekdayDay(
+                                new Date(item.datetime),
+                                this.hass!.locale,
+                                this.hass!.config
+                              )}
+                            `}
                     </div>
                     <div class="templow">
                       ${this._showValue(item.templow)
@@ -292,8 +292,8 @@ class MoreInfoWeather extends LitElement {
                             item.templow
                           )
                         : hourly
-                        ? ""
-                        : "—"}
+                          ? ""
+                          : "—"}
                     </div>
                     <div class="temp">
                       ${this._showValue(item.temperature)

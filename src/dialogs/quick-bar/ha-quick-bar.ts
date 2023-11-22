@@ -217,35 +217,36 @@ export class QuickBar extends LitElement {
               active
             ></ha-circular-progress>`
           : items.length === 0
-          ? html`
-              <div class="nothing-found">
-                ${this.hass.localize("ui.dialogs.quick-bar.nothing_found")}
-              </div>
-            `
-          : html`
-              <mwc-list>
-                ${this._opened
-                  ? html`<lit-virtualizer
-                      scroller
-                      @keydown=${this._handleListItemKeyDown}
-                      @rangechange=${this._handleRangeChanged}
-                      @click=${this._handleItemClick}
-                      class="ha-scrollbar"
-                      style=${styleMap({
-                        height: this._narrow
-                          ? "calc(100vh - 56px)"
-                          : `${Math.min(
-                              items.length * (this._commandMode ? 56 : 72) + 26,
-                              500
-                            )}px`,
-                      })}
-                      .items=${items}
-                      .renderItem=${this._renderItem}
-                    >
-                    </lit-virtualizer>`
-                  : ""}
-              </mwc-list>
-            `}
+            ? html`
+                <div class="nothing-found">
+                  ${this.hass.localize("ui.dialogs.quick-bar.nothing_found")}
+                </div>
+              `
+            : html`
+                <mwc-list>
+                  ${this._opened
+                    ? html`<lit-virtualizer
+                        scroller
+                        @keydown=${this._handleListItemKeyDown}
+                        @rangechange=${this._handleRangeChanged}
+                        @click=${this._handleItemClick}
+                        class="ha-scrollbar"
+                        style=${styleMap({
+                          height: this._narrow
+                            ? "calc(100vh - 56px)"
+                            : `${Math.min(
+                                items.length * (this._commandMode ? 56 : 72) +
+                                  26,
+                                500
+                              )}px`,
+                        })}
+                        .items=${items}
+                        .renderItem=${this._renderItem}
+                      >
+                      </lit-virtualizer>`
+                    : ""}
+                </mwc-list>
+              `}
         ${this._hint
           ? html`<ha-tip .hass=${this.hass}>${this._hint}</ha-tip>`
           : ""}
