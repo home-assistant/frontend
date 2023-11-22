@@ -25,6 +25,7 @@ export const moreInfoControlCircularSliderStyle = css`
     line-height: 1.5;
     letter-spacing: 0.1px;
     gap: 8px;
+    --mdc-icon-size: 16px;
   }
   .info * {
     margin: 0;
@@ -42,6 +43,9 @@ export const moreInfoControlCircularSliderStyle = css`
   }
   .label span {
     white-space: nowrap;
+  }
+  .label ha-svg-icon {
+    bottom: 5%;
   }
   .label.disabled {
     color: var(--secondary-text-color);
@@ -74,16 +78,14 @@ export const moreInfoControlCircularSliderStyle = css`
       gap: 16px;
     }
     .info {
-      font-size: 14px;
+      margin-top: 12px;
       gap: 6px;
     }
-    .buttons ha-outlined-icon-button {
-      --md-outlined-icon-button-container-width: 32px;
-      --md-outlined-icon-button-container-height: 32px;
-      --md-outlined-icon-button-icon-size: 16px;
+    .buttons {
+      display: none;
     }
     ha-control-circular-slider {
-      margin-bottom: -8px;
+      margin-bottom: -16px;
     }
   }
   @container container (max-width: 190px) {
@@ -91,14 +93,10 @@ export const moreInfoControlCircularSliderStyle = css`
       font-size: 32px;
     }
     .info {
-      font-size: 12px;
+      margin-top: 12px;
+      font-size: 14px;
       gap: 2px;
-    }
-    .buttons {
-      display: none;
-    }
-    ha-control-circular-slider {
-      margin-bottom: -16px;
+      --mdc-icon-size: 14px;
     }
   }
 

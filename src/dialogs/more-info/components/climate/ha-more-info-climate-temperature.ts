@@ -1,4 +1,4 @@
-import { mdiMinus, mdiPlus } from "@mdi/js";
+import { mdiMinus, mdiPlus, mdiThermometer } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -179,13 +179,9 @@ export class HaMoreInfoClimateTemperature extends LitElement {
 
     return html`
       <p class="label">
-        ${action && ["preheating", "heating", "cooling"].includes(action)
-          ? this.hass.localize("ui.card.climate.target_label", {
-              action: actionLabel,
-            })
-          : action && action !== "off" && action !== "idle"
-            ? actionLabel
-            : this.hass.localize("ui.card.climate.target")}
+        ${action && action !== "off" && action !== "idle"
+          ? actionLabel
+          : this.hass.localize("ui.card.climate.target")}
       </p>
     `;
   }
@@ -249,8 +245,8 @@ export class HaMoreInfoClimateTemperature extends LitElement {
     }
 
     return html`
-      <p class="label">
-        ${this.hass.localize("ui.card.climate.currently")}
+      <p class="label current">
+        <ha-svg-icon .path=${mdiThermometer}></ha-svg-icon>
         <span>
           ${this.hass.formatEntityAttributeValue(
             this.stateObj,

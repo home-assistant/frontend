@@ -1,4 +1,5 @@
-import { mdiMinus, mdiPlus } from "@mdi/js";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import { mdiMinus, mdiPlus, mdiWaterPercent } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -24,7 +25,7 @@ export class HaMoreInfoClimateHumidity extends LitElement {
   @property({ attribute: false }) public stateObj!: ClimateEntity;
 
   @property({ attribute: "show-current", type: Boolean })
-  public showCurrent?: boolean = true;
+  public showCurrent?: boolean;
 
   @state() private _targetHumidity?: number;
 
@@ -138,7 +139,7 @@ export class HaMoreInfoClimateHumidity extends LitElement {
 
     return html`
       <p class="label">
-        ${this.hass.localize("ui.card.climate.currently")}
+        <ha-svg-icon .path=${mdiWaterPercent}></ha-svg-icon>
         <span>
           ${this.hass.formatEntityAttributeValue(
             this.stateObj,
