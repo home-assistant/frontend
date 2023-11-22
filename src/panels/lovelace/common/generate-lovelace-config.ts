@@ -446,7 +446,12 @@ export const generateDefaultViewConfig = (
   entityEntries: HomeAssistant["entities"],
   entities: HassEntities,
   localize: LocalizeFunc,
-  energyPrefs?: EnergyPreferences
+  energyPrefs?: EnergyPreferences,
+  areasPrefs?: {
+    hidden?: string[];
+  },
+  hideEntitiesWithoutAreas?: boolean,
+  hideEnergy?: boolean
 ): LovelaceViewConfig => {
   const states = computeDefaultViewStates(entities, entityEntries);
   const path = "default_view";
@@ -468,6 +473,17 @@ export const generateDefaultViewConfig = (
     entityEntries,
     states
   );
+
+  if (areasPrefs?.hidden) {
+    for (const area of areasPrefs.hidden) {
+      splittedByAreaDevice.areasWithEntities[area] = [];
+    }
+  }
+
+  if (hideEntitiesWithoutAreas) {
+    splittedByAreaDevice.devicesWithEntities = {};
+    splittedByAreaDevice.otherEntities = {};
+  }
 
   const splittedByGroups = splitByGroups(splittedByAreaDevice.otherEntities);
   splittedByGroups.groups.sort(
@@ -553,7 +569,7 @@ export const generateDefaultViewConfig = (
 
   let energyCard: LovelaceCardConfig | undefined;
 
-  if (energyPrefs) {
+  if (energyPrefs && !hideEnergy) {
     // Distribution card requires the grid to be configured
     const grid = energyPrefs.energy_sources.find(
       (source) => source.type === "grid"
