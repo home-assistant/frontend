@@ -47,6 +47,7 @@ import "../tile-features/hui-tile-features";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import { computeTileBadge } from "./tile/badges/tile-badge";
 import type { ThermostatCardConfig, TileCardConfig } from "./types";
+import { UpdateEntity, computeUpdateStateDisplay } from "../../../data/update";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
@@ -258,6 +259,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         "state",
         "current_temperature",
       ]);
+    }
+
+    if (domain === "update") {
+      return html`${computeUpdateStateDisplay(
+        stateObj as UpdateEntity,
+        this.hass!
+      )}`;
     }
 
     return this._renderStateContent(stateObj, "state");
