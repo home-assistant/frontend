@@ -99,6 +99,11 @@ export class DialogEnterCode
             id="code"
             .label=${this.hass.localize("ui.dialogs.enter_code.input_label")}
             type="password"
+            autoValidate
+            validateOnInitialRender
+            .validationMessage=${this.hass.localize(
+              "ui.dialogs.enter_code.no_match_code_format"
+            )}
             pattern=${ifDefined(this._dialogParams.codePattern)}
             inputmode="text"
           ></ha-textfield>
