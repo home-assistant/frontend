@@ -40,7 +40,7 @@ import { LovelaceTileFeatureConfig } from "../../tile-features/types";
 import { supportsClimatePresetModesTileFeature } from "../../tile-features/hui-climate-preset-modes-tile-feature";
 import { supportsNumberTileFeature } from "../../tile-features/hui-number-tile-feature";
 
-type FeatureType = LovelaceTileFeatureConfig["type"];
+export type FeatureType = LovelaceTileFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
 
 const UI_FEATURE_TYPES = [
@@ -121,7 +121,11 @@ export class HuiTileCardFeaturesEditor extends LitElement {
   @property({ attribute: false })
   public features?: LovelaceTileFeatureConfig[];
 
-  @property() public label?: string;
+  @property({ attribute: false })
+  public featuresTypes?: FeatureType[];
+
+  @property()
+  public label?: string;
 
   private _featuresKeys = new WeakMap<LovelaceTileFeatureConfig, string>();
 
@@ -186,7 +190,9 @@ export class HuiTileCardFeaturesEditor extends LitElement {
   }
 
   private _getSupportedFeaturesType() {
-    const featuresTypes = UI_FEATURE_TYPES as readonly string[];
+    const featuresTypes = UI_FEATURE_TYPES.filter(
+      (type) => !this.featuresTypes || this.featuresTypes.includes(type)
+    ) as readonly string[];
     const customFeaturesTypes = customTileFeatures.map(
       (feature) => `${CUSTOM_TYPE_PREFIX}${feature.type}`
     );

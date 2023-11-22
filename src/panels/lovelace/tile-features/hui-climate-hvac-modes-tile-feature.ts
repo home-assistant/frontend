@@ -23,7 +23,7 @@ export const supportsClimateHvacModesTileFeature = (stateObj: HassEntity) => {
 };
 
 @customElement("hui-climate-hvac-modes-tile-feature")
-class HuiClimateHvacModeTileFeature
+class HuiClimateHvacModesTileFeature
   extends LitElement
   implements LovelaceTileFeature
 {
@@ -148,6 +148,6 @@ class HuiClimateHvacModeTileFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-climate-modes-hvac-modes-feature": HuiClimateHvacModeTileFeature;
+    "hui-climate-modes-hvac-modes-feature": HuiClimateHvacModesTileFeature;
   }
 }
