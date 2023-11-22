@@ -153,6 +153,11 @@ export const computeCards = (
       const cardConfig: HumidifierCardConfig = {
         type: "humidifier",
         entity: entityId,
+        features: [
+          {
+            type: "humidifier-modes",
+          },
+        ],
       };
       cards.push(cardConfig);
     } else if (domain === "media_player") {
