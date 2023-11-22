@@ -536,6 +536,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
               .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.default_code"
               )}
+              type="password"
               .invalid=${invalidDefaultCode}
               .disabled=${this.disabled}
               @input=${this._defaultcodeChanged}
