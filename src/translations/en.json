@@ -5271,6 +5271,13 @@
               "twice_daily": "Twice daily"
             }
           },
+          "strategy": {
+            "original-states": {
+              "hidden_areas": "Hidden Areas",
+              "hide_entities_without_area": "Hide entities without area",
+              "hide_energy": "Hide energy"
+            }
+          },
           "view": {
             "panel_mode": {
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."

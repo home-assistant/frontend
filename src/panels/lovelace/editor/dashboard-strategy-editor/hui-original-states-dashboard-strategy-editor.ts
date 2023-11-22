@@ -114,11 +114,11 @@ export class HuiOriginalStatesDashboarStrategyEditor
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     switch (schema.name) {
       case "hidden_areas":
-        return "Hidden areas";
       case "hide_energy":
-        return "Hide energy overview";
       case "hide_entities_without_area":
-        return "Hide entities without area";
+        return this.hass?.localize(
+          `ui.panel.lovelace.editor.strategy.original-states.${schema.name}`
+        );
       default:
         return "";
     }
