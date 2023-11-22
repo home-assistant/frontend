@@ -33,6 +33,7 @@ export type Selector =
   | LegacyEntitySelector
   | FileSelector
   | IconSelector
+  | ImageSelector
   | LanguageSelector
   | LocationSelector
   | MediaSelector
@@ -231,6 +232,11 @@ export interface IconSelector {
     placeholder?: string;
     fallbackPath?: string;
   } | null;
+}
+
+export interface ImageSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  image: {} | null;
 }
 
 export interface LanguageSelector {

@@ -29,6 +29,7 @@ const LOAD_ELEMENTS = {
   entity: () => import("./ha-selector-entity"),
   statistic: () => import("./ha-selector-statistic"),
   file: () => import("./ha-selector-file"),
+  image: () => import("./ha-selector-image"),
   language: () => import("./ha-selector-language"),
   navigation: () => import("./ha-selector-navigation"),
   number: () => import("./ha-selector-number"),
