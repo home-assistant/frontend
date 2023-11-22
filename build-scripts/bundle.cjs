@@ -87,8 +87,6 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
     setSpreadProperties: true,
   },
   browserslistEnv: latestBuild ? "modern" : "legacy",
-  // Must be unambiguous because some dependencies are CommonJS only
-  sourceType: "unambiguous",
   presets: [
     [
       "@babel/preset-env",
@@ -143,6 +141,18 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
     /node_modules[\\/]webpack[\\/]buildin/,
   ],
   sourceMaps: !isTestBuild,
+  overrides: [
+    {
+      // Use unambiguous for dependencies so that require() is correctly injected into CommonJS files
+      // Exclusions are needed in some cases where ES modules have no static imports or exports, such as polyfills
+      sourceType: "unambiguous",
+      include: /\/node_modules\//,
+      exclude: [
+        "element-internals-polyfill",
+        "@?lit(?:-labs|-element|-html)?",
+      ].map((p) => new RegExp(`/node_modules/${p}/`)),
+    },
+  ],
 });
 
 const nameSuffix = (latestBuild) => (latestBuild ? "-modern" : "-legacy");
