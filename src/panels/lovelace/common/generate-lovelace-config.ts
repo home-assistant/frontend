@@ -447,7 +447,7 @@ export const generateDefaultViewConfig = (
   entities: HassEntities,
   localize: LocalizeFunc,
   energyPrefs?: EnergyPreferences,
-  areasFilter?: {
+  areasPrefs?: {
     hidden?: string[];
   },
   hideEntitiesWithoutAreas?: boolean,
@@ -474,8 +474,8 @@ export const generateDefaultViewConfig = (
     states
   );
 
-  if (areasFilter?.hidden) {
-    for (const area of areasFilter.hidden) {
+  if (areasPrefs?.hidden) {
+    for (const area of areasPrefs.hidden) {
       splittedByAreaDevice.areasWithEntities[area] = [];
     }
   }

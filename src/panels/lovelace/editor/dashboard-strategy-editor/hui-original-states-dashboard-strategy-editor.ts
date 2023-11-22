@@ -62,10 +62,10 @@ export class HuiOriginalStatesDashboarStrategyEditor
 
   private _configToFormData = memoizeOne(
     (config: OriginalStatesDashboardStrategyConfig): FormData => {
-      const { areas_filter, ...rest } = config;
+      const { areas, ...rest } = config;
       return {
         ...rest,
-        hidden_areas: areas_filter?.hidden || [],
+        hidden_areas: areas?.hidden || [],
       };
     }
   );
@@ -73,13 +73,16 @@ export class HuiOriginalStatesDashboarStrategyEditor
   private _formDataToConfig = memoizeOne(
     (data: FormData): OriginalStatesDashboardStrategyConfig => {
       const { hidden_areas, ...rest } = data;
-      const areaFilter = {
-        hidden: hidden_areas,
-      };
+      const areas =
+        hidden_areas.length > 0
+          ? {
+              hidden: hidden_areas,
+            }
+          : undefined;
       return {
         type: "original-states",
         ...rest,
-        areas_filter: areaFilter,
+        areas,
       };
     }
   );

@@ -9,7 +9,7 @@ import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
 
 export type OriginalStatesViewStrategyConfig = {
   type: "original-states";
-  areas_filter?: {
+  areas?: {
     hidden?: string[];
   };
   hide_entities_without_area?: boolean;
@@ -51,7 +51,7 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
       hass.states,
       localize,
       energyPrefs,
-      config.areas_filter,
+      config.areas,
       config.hide_entities_without_area,
       config.hide_energy
     );
