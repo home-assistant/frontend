@@ -52,8 +52,14 @@ export class DialogEnterCode
   }
 
   private _submit(): void {
-    this._dialogParams?.submit?.(this._input?.value ?? "");
-    this.closeDialog();
+    if (
+      this._dialogParams &&
+      this._dialogParams.codePattern &&
+      RegExp(this._dialogParams.codePattern).test(this._input?.value ?? "")
+    ) {
+      this._dialogParams?.submit?.(this._input?.value ?? "");
+      this.closeDialog();
+    }
   }
 
   private _cancel(): void {
