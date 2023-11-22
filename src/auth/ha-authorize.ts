@@ -13,6 +13,7 @@ import {
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./ha-auth-flow";
+import "./ha-local-auth-flow";
 
 import("./ha-pick-auth-provider");
 
@@ -38,6 +39,8 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
   @state() private _ownInstance = false;
 
   @state() private _error?: string;
+
+  @state() private _forceDefaultLogin = false;
 
   constructor() {
     super();
@@ -121,32 +124,43 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
                 })}
           </ha-alert>`
         : html`<p>${this.localize("ui.panel.page-authorize.authorizing")}</p>`}
-      ${inactiveProviders.length > 0
-        ? html`<p>
-            ${this.localize("ui.panel.page-authorize.logging_in_with", {
-              authProviderName: html`<b>${this._authProvider!.name}</b>`,
-            })}
-          </p>`
-        : nothing}
-
-      <ha-auth-flow
-        .clientId=${this.clientId}
-        .redirectUri=${this.redirectUri}
-        .oauth2State=${this.oauth2State}
-        .authProvider=${this._authProvider}
-        .localize=${this.localize}
-      ></ha-auth-flow>
-
-      ${inactiveProviders.length > 0
-        ? html`
-            <ha-pick-auth-provider
-              .localize=${this.localize}
+      ${!this._forceDefaultLogin &&
+      this._authProvider!.users &&
+      this.clientId != null &&
+      this.redirectUri != null
+        ? html`<ha-local-auth-flow
+            .clientId=${this.clientId}
+            .redirectUri=${this.redirectUri}
+            .oauth2State=${this.oauth2State}
+            .authProvider=${this._authProvider}
+            .authProviders=${this._authProviders}
+            .localize=${this.localize}
+            @default-login-flow=${this._handleDefaultLoginFlow}
+          ></ha-local-auth-flow>`
+        : html`${inactiveProviders.length > 0
+              ? html`<p>
+                  ${this.localize("ui.panel.page-authorize.logging_in_with", {
+                    authProviderName: html`<b>${this._authProvider!.name}</b>`,
+                  })}
+                </p>`
+              : nothing}
+            <ha-auth-flow
               .clientId=${this.clientId}
-              .authProviders=${inactiveProviders}
-              @pick-auth-provider=${this._handleAuthProviderPick}
-            ></ha-pick-auth-provider>
-          `
-        : ""}
+              .redirectUri=${this.redirectUri}
+              .oauth2State=${this.oauth2State}
+              .authProvider=${this._authProvider}
+              .localize=${this.localize}
+            ></ha-auth-flow>
+            ${inactiveProviders.length > 0
+              ? html`
+                  <ha-pick-auth-provider
+                    .localize=${this.localize}
+                    .clientId=${this.clientId}
+                    .authProviders=${inactiveProviders}
+                    @pick-auth-provider=${this._handleAuthProviderPick}
+                  ></ha-pick-auth-provider>
+                `
+              : ""}`}
     `;
   }
 
@@ -243,6 +257,10 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
       // eslint-disable-next-line
       console.error("Error loading auth providers", err);
     }
+  }
+
+  private _handleDefaultLoginFlow() {
+    this._forceDefaultLogin = true;
   }
 
   private async _handleAuthProviderPick(ev) {

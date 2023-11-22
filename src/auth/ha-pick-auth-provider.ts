@@ -35,8 +35,8 @@ export class HaPickAuthProvider extends LitElement {
               <ha-icon-next slot="meta"></ha-icon-next>
             </ha-list-item>
           `
-        )}</mwc-list
-      >
+        )}
+      </mwc-list>
     `;
   }
 
