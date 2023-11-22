@@ -4870,6 +4870,13 @@
               }
             }
           },
+          "strategy-editor": {
+            "header": "Edit dashboard",
+            "take_control": "Take control",
+            "raw_configuration_editor": "[%key:ui::panel::lovelace::editor::menu::raw_editor%]",
+            "show_code_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_code_editor%]",
+            "show_visual_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_visual_editor%]"
+          },
           "card": {
             "alarm-panel": {
               "name": "Alarm panel",
@@ -5262,6 +5269,13 @@
               "daily": "Daily",
               "hourly": "Hourly",
               "twice_daily": "Twice daily"
+            }
+          },
+          "strategy": {
+            "original-states": {
+              "hidden_areas": "Hidden Areas",
+              "hide_entities_without_area": "Hide entities without area",
+              "hide_energy": "Hide energy"
             }
           },
           "view": {
