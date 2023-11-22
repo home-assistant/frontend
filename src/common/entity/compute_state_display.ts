@@ -2,10 +2,6 @@ import { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { FrontendLocaleData, TimeZone } from "../../data/translation";
-import {
-  UPDATE_SUPPORT_PROGRESS,
-  updateIsInstallingFromAttributes,
-} from "../../data/update";
 import { HomeAssistant } from "../../types";
 import {
   UNIT_TO_MILLISECOND_CONVERT,
@@ -19,10 +15,9 @@ import {
   getNumberFormatOptions,
   isNumericFromAttributes,
 } from "../number/format_number";
+import { blankBeforeUnit } from "../translations/blank_before_unit";
 import { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
-import { supportsFeatureFromAttributes } from "./supports-feature";
-import { blankBeforeUnit } from "../translations/blank_before_unit";
 
 export const computeStateDisplaySingleEntity = (
   localize: LocalizeFunc,
@@ -206,27 +201,6 @@ export const computeStateDisplayFromEntityAttributes = (
     } catch (_err) {
       return state;
     }
-  }
-
-  if (domain === "update") {
-    // When updating, and entity does not support % show "Installing"
-    // When updating, and entity does support % show "Installing (xx%)"
-    // When update available, show the version
-    // When the latest version is skipped, show the latest version
-    // When update is not available, show "Up-to-date"
-    // When update is not available and there is no latest_version show "Unavailable"
-    return state === "on"
-      ? updateIsInstallingFromAttributes(attributes)
-        ? supportsFeatureFromAttributes(attributes, UPDATE_SUPPORT_PROGRESS) &&
-          typeof attributes.in_progress === "number"
-          ? localize("ui.card.update.installing_with_progress", {
-              progress: attributes.in_progress,
-            })
-          : localize("ui.card.update.installing")
-        : attributes.latest_version
-      : attributes.skipped_version === attributes.latest_version
-      ? attributes.latest_version ?? localize("state.default.unavailable")
-      : localize("ui.card.update.up_to_date");
   }
 
   return (

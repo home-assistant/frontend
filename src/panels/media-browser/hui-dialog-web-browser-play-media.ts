@@ -54,35 +54,35 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
               </audio>
             `
           : mediaType === "video"
-          ? html`
-              <video controls autoplay playsinline>
-                <source
-                  src=${this._params.sourceUrl}
-                  type=${this._params.sourceType}
-                />
-                ${this.hass.localize(
-                  "ui.components.media-browser.video_not_supported"
-                )}
-              </video>
-            `
-          : this._params.sourceType === "application/x-mpegURL"
-          ? html`
-              <ha-hls-player
-                controls
-                autoplay
-                playsinline
-                .hass=${this.hass}
-                .url=${this._params.sourceUrl}
-              ></ha-hls-player>
-            `
-          : mediaType === "image"
-          ? html`<img
-              alt=${this._params.title || nothing}
-              src=${this._params.sourceUrl}
-            />`
-          : html`${this.hass.localize(
-              "ui.components.media-browser.media_not_supported"
-            )}`}
+            ? html`
+                <video controls autoplay playsinline>
+                  <source
+                    src=${this._params.sourceUrl}
+                    type=${this._params.sourceType}
+                  />
+                  ${this.hass.localize(
+                    "ui.components.media-browser.video_not_supported"
+                  )}
+                </video>
+              `
+            : this._params.sourceType === "application/x-mpegURL"
+              ? html`
+                  <ha-hls-player
+                    controls
+                    autoplay
+                    playsinline
+                    .hass=${this.hass}
+                    .url=${this._params.sourceUrl}
+                  ></ha-hls-player>
+                `
+              : mediaType === "image"
+                ? html`<img
+                    alt=${this._params.title || nothing}
+                    src=${this._params.sourceUrl}
+                  />`
+                : html`${this.hass.localize(
+                    "ui.components.media-browser.media_not_supported"
+                  )}`}
       </ha-dialog>
     `;
   }

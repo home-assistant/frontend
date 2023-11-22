@@ -9,7 +9,7 @@ import {
   isStrategyView,
 } from "../../../data/lovelace/config/view";
 import { AsyncReturnType, HomeAssistant } from "../../../types";
-import { isLegacyStrategy } from "./legacy-strategy";
+import { cleanLegacyStrategyConfig, isLegacyStrategy } from "./legacy-strategy";
 import {
   LovelaceDashboardStrategy,
   LovelaceStrategy,
@@ -40,7 +40,7 @@ type StrategyConfig<T extends LovelaceStrategyConfigType> = AsyncReturnType<
   Strategies[T]["generate"]
 >;
 
-const getLovelaceStrategy = async <T extends LovelaceStrategyConfigType>(
+export const getLovelaceStrategy = async <T extends LovelaceStrategyConfigType>(
   configType: T,
   strategyType: string
 ): Promise<LovelaceStrategy> => {
@@ -109,12 +109,7 @@ const generateStrategy = async <T extends LovelaceStrategyConfigType>(
       }
     }
 
-    const config = {
-      ...strategyConfig,
-      ...strategyConfig.options,
-    };
-
-    delete config.options;
+    const config = cleanLegacyStrategyConfig(strategyConfig);
 
     return await strategy.generate(config, hass);
   } catch (err: any) {

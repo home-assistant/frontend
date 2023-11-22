@@ -40,15 +40,15 @@ export class HaProgressButton extends LitElement {
               ${this._result === "success"
                 ? html`<ha-svg-icon .path=${mdiCheckBold}></ha-svg-icon>`
                 : this._result === "error"
-                ? html`<ha-svg-icon .path=${mdiAlertOctagram}></ha-svg-icon>`
-                : this.progress
-                ? html`
-                    <ha-circular-progress
-                      size="small"
-                      active
-                    ></ha-circular-progress>
-                  `
-                : ""}
+                  ? html`<ha-svg-icon .path=${mdiAlertOctagram}></ha-svg-icon>`
+                  : this.progress
+                    ? html`
+                        <ha-circular-progress
+                          size="small"
+                          active
+                        ></ha-circular-progress>
+                      `
+                    : ""}
             </div>
           `}
     `;

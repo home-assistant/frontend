@@ -47,6 +47,7 @@ import "../tile-features/hui-tile-features";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import { computeTileBadge } from "./tile/badges/tile-badge";
 import type { ThermostatCardConfig, TileCardConfig } from "./types";
+import { UpdateEntity, computeUpdateStateDisplay } from "../../../data/update";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
@@ -260,6 +261,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       ]);
     }
 
+    if (domain === "update") {
+      return html`${computeUpdateStateDisplay(
+        stateObj as UpdateEntity,
+        this.hass!
+      )}`;
+    }
+
     return this._renderStateContent(stateObj, "state");
   }
 
@@ -332,8 +340,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const localizedState = this._config.hide_state
       ? nothing
       : this._config.state_content
-      ? this._renderStateContent(stateObj, this._config.state_content)
-      : this._renderState(stateObj);
+        ? this._renderStateContent(stateObj, this._config.state_content)
+        : this._renderState(stateObj);
 
     const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);

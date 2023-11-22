@@ -203,11 +203,11 @@ export class VoiceAssistantsExpose extends LitElement {
           entry.aliases.length === 0
             ? "-"
             : entry.aliases.length === 1
-            ? entry.aliases[0]
-            : this.hass.localize(
-                "ui.panel.config.voice_assistants.expose.aliases",
-                { count: entry.aliases.length }
-              ),
+              ? entry.aliases[0]
+              : this.hass.localize(
+                  "ui.panel.config.voice_assistants.expose.aliases",
+                  { count: entry.aliases.length }
+                ),
       },
       remove: {
         title: "",
