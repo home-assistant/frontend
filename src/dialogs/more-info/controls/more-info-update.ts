@@ -63,8 +63,9 @@ class MoreInfoUpdate extends LitElement {
         : ""}
       <div class="row">
         <div class="key">
-          ${this.hass.localize(
-            "ui.dialogs.more_info_control.update.installed_version"
+          ${this.hass.formatEntityAttributeName(
+            this.stateObj,
+            "installed_version"
           )}
         </div>
         <div class="value">
@@ -74,8 +75,9 @@ class MoreInfoUpdate extends LitElement {
       </div>
       <div class="row">
         <div class="key">
-          ${this.hass.localize(
-            "ui.dialogs.more_info_control.update.latest_version"
+          ${this.hass.formatEntityAttributeName(
+            this.stateObj,
+            "latest_version"
           )}
         </div>
         <div class="value">

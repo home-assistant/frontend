@@ -24,6 +24,7 @@ import "./state-card-select";
 import "./state-card-text";
 import "./state-card-timer";
 import "./state-card-toggle";
+import "./state-card-update";
 import "./state-card-vacuum";
 import "./state-card-water_heater";
 

@@ -936,8 +936,6 @@
           "setting": "Setting"
         },
         "update": {
-          "installed_version": "Installed version",
-          "latest_version": "Latest version",
           "release_announcement": "Read release announcement",
           "skip": "Skip",
           "clear_skipped": "Clear skipped",
