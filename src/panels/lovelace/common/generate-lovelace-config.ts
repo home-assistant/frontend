@@ -447,7 +447,9 @@ export const generateDefaultViewConfig = (
   entities: HassEntities,
   localize: LocalizeFunc,
   energyPrefs?: EnergyPreferences,
-  hiddenAreas?: string[],
+  areasFilter?: {
+    hidden?: string[];
+  },
   hideEntitiesWithoutAreas?: boolean,
   hideEnergy?: boolean
 ): LovelaceViewConfig => {
@@ -472,8 +474,8 @@ export const generateDefaultViewConfig = (
     states
   );
 
-  if (hiddenAreas) {
-    for (const area of hiddenAreas) {
+  if (areasFilter?.hidden) {
+    for (const area of areasFilter.hidden) {
       splittedByAreaDevice.areasWithEntities[area] = [];
     }
   }

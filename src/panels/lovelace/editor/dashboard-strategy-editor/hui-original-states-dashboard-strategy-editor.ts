@@ -1,5 +1,6 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -16,7 +17,6 @@ const SCHEMA = [
     selector: {
       area: {
         multiple: true,
-        entity: {},
       },
     },
   },
@@ -40,6 +40,12 @@ const SCHEMA = [
   },
 ] as const satisfies readonly HaFormSchema[];
 
+type FormData = {
+  hidden_areas: string[];
+  hide_energy?: boolean;
+  hide_entities_without_area?: boolean;
+};
+
 @customElement("hui-original-states-dashboard-strategy-editor")
 export class HuiOriginalStatesDashboarStrategyEditor
   extends LitElement
@@ -54,12 +60,36 @@ export class HuiOriginalStatesDashboarStrategyEditor
     this._config = config;
   }
 
+  private _configToFormData = memoizeOne(
+    (config: OriginalStatesDashboardStrategyConfig): FormData => {
+      const { areas_filter, ...rest } = config;
+      return {
+        ...rest,
+        hidden_areas: areas_filter?.hidden || [],
+      };
+    }
+  );
+
+  private _formDataToConfig = memoizeOne(
+    (data: FormData): OriginalStatesDashboardStrategyConfig => {
+      const { hidden_areas, ...rest } = data;
+      const areaFilter = {
+        hidden: hidden_areas,
+      };
+      return {
+        type: "original-states",
+        ...rest,
+        areas_filter: areaFilter,
+      };
+    }
+  );
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
-    const data = this._config;
+    const data = this._configToFormData(this._config);
 
     return html`
       <ha-form
@@ -73,14 +103,15 @@ export class HuiOriginalStatesDashboarStrategyEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const config = ev.detail.value;
+    const data = ev.detail.value as FormData;
+    const config = this._formDataToConfig(data);
     fireEvent(this, "config-changed", { config });
   }
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     switch (schema.name) {
       case "hidden_areas":
-        return "Hiddens areas";
+        return "Hidden areas";
       case "hide_energy":
         return "Hide energy overview";
       case "hide_entities_without_area":
