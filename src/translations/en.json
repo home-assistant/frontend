@@ -329,6 +329,10 @@
           "upload_failed": "Upload failed",
           "unknown_file": "Unknown file"
         },
+        "image": {
+          "upload_on": "Show Upload Form",
+          "upload_off": "Hide Upload Form"
+        },
         "text": {
           "show_password": "Show password",
           "hide_password": "Hide password"

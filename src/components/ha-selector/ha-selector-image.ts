@@ -49,7 +49,11 @@ export class HaImageSelector extends LitElement {
         <ha-icon-button
           @click=${this._handleUploadToggle}
           .path=${this.showUpload ? mdiUploadOff : mdiUpload}
-          .label=${this.hass.localize(`ui.common.upload`) || "Upload"}
+          .label=${this.hass.localize(
+            this.showUpload
+              ? "ui.components.selectors.image.upload_off"
+              : "ui.components.selectors.image.upload_on"
+          )}
         >
         </ha-icon-button>
       </div>
