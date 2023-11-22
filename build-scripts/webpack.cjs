@@ -191,11 +191,11 @@ const createWebpackConfig = ({
       filename: ({ chunk }) =>
         !isProdBuild || isStatsBuild || dontHash.has(chunk.name)
           ? "[name].js"
-          : "[name]-[contenthash].js",
+          : "[name].[contenthash].js",
       chunkFilename:
-        isProdBuild && !isStatsBuild ? "[id]-[contenthash].js" : "[name].js",
+        isProdBuild && !isStatsBuild ? "[name].[contenthash].js" : "[name].js",
       assetModuleFilename:
-        isProdBuild && !isStatsBuild ? "[id]-[contenthash][ext]" : "[id][ext]",
+        isProdBuild && !isStatsBuild ? "[id].[contenthash][ext]" : "[id][ext]",
       crossOriginLoading: "use-credentials",
       hashFunction: "xxhash64",
       hashDigest: "base64url",
