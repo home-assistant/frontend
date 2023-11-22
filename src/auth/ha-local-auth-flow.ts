@@ -103,7 +103,7 @@ export class HaLocalAuthFlow extends LitElement {
             .localize=${this.localize}
           ></ha-auth-flow>`
         : this._selectedUser
-        ? html`<div class="login-form"><div class="person">
+          ? html`<div class="login-form"><div class="person">
               <ha-person-badge
                 .person=${this._persons![this._selectedUser]}
               ></ha-person-badge>
@@ -131,23 +131,23 @@ export class HaLocalAuthFlow extends LitElement {
                 </mwc-button>
               </div>
             </form>`
-        : html`<div class="persons">
-              ${Object.keys(this.authProvider.users).map((userId) => {
-                const person = this._persons![userId];
-                return html`<div
-                  class="person"
-                  .userId=${userId}
-                  @click=${this._personSelected}
-                >
-                  <ha-person-badge .person=${person}></ha-person-badge>
-                  <p>${person.name}</p>
-                </div>`;
-              })}
-            </div>
-            <ha-list-item hasMeta role="button" @click=${this._otherLogin}>
-              Other options
-              <ha-icon-next slot="meta"></ha-icon-next>
-            </ha-list-item>`}
+          : html`<div class="persons">
+                ${Object.keys(this.authProvider.users).map((userId) => {
+                  const person = this._persons![userId];
+                  return html`<div
+                    class="person"
+                    .userId=${userId}
+                    @click=${this._personSelected}
+                  >
+                    <ha-person-badge .person=${person}></ha-person-badge>
+                    <p>${person.name}</p>
+                  </div>`;
+                })}
+              </div>
+              <ha-list-item hasMeta role="button" @click=${this._otherLogin}>
+                Other options
+                <ha-icon-next slot="meta"></ha-icon-next>
+              </ha-list-item>`}
     `;
   }
 
