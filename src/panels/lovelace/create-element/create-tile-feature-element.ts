@@ -6,14 +6,15 @@ import "../tile-features/hui-cover-position-tile-feature";
 import "../tile-features/hui-cover-tilt-position-tile-feature";
 import "../tile-features/hui-cover-tilt-tile-feature";
 import "../tile-features/hui-fan-speed-tile-feature";
+import "../tile-features/hui-humidifier-modes-tile-feature";
 import "../tile-features/hui-lawn-mower-commands-tile-feature";
 import "../tile-features/hui-light-brightness-tile-feature";
 import "../tile-features/hui-light-color-temp-tile-feature";
+import "../tile-features/hui-number-tile-feature";
 import "../tile-features/hui-select-options-tile-feature";
 import "../tile-features/hui-target-temperature-tile-feature";
 import "../tile-features/hui-vacuum-commands-tile-feature";
 import "../tile-features/hui-water-heater-operation-modes-tile-feature";
-import "../tile-features/hui-number-tile-feature";
 import { LovelaceTileFeatureConfig } from "../tile-features/types";
 import {
   createLovelaceElement,
@@ -29,6 +30,7 @@ const TYPES: Set<LovelaceTileFeatureConfig["type"]> = new Set([
   "cover-tilt-position",
   "cover-tilt",
   "fan-speed",
+  "humidifier-modes",
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",

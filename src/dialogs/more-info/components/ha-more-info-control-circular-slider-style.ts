@@ -93,7 +93,6 @@ export const moreInfoControlCircularSliderStyle = css`
       font-size: 32px;
     }
     .info {
-      margin-top: 12px;
       font-size: 14px;
       gap: 2px;
       --mdc-icon-size: 14px;

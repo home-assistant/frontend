@@ -1,5 +1,4 @@
 import { mdiDotsVertical } from "@mdi/js";
-import "@thomasloven/round-slider";
 import {
   CSSResultGroup,
   LitElement,
