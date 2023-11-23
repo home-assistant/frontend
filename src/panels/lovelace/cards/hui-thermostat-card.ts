@@ -149,6 +149,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     return css`
       :host {
         display: block;
+        height: 100%;
       }
 
       ha-card {
@@ -159,6 +160,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
       }
 
       .title {
