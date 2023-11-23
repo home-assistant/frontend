@@ -5340,7 +5340,7 @@
               "header": "Header editor",
               "footer": "Footer editor",
               "row": "Entity row editor",
-              "tile-feature": "Tile feature editor"
+              "feature": "Feature editor"
             }
           }
         },
