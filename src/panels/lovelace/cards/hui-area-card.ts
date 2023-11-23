@@ -77,12 +77,24 @@ const DOMAIN_ICONS = {
   switch: { on: mdiToggleSwitch, off: mdiToggleSwitchOff },
   fan: { on: domainIcon("fan"), off: domainIcon("fan") },
   sensor: {
+    carbon_dioxide: mdiMoleculeCo2,
+    carbon_monoxide: mdiMoleculeCo,
+    illuminance: mdiBrightness5,
+    pm1: mdiMolecule,
+    pm25: mdiMolecule,
+    pm10: mdiMolecule,
     temperature: mdiThermometer,
     humidity: mdiWaterPercent,
+    volatile_organic_compounds: mdiMolecule,
+    volatile_organic_compounds_parts: mdiMolecule,
   },
   binary_sensor: {
+    cold: mdiSnowflake,
+    gas: mdiAlertCircle,
+    heat: mdiFire,
     motion: mdiRun,
     moisture: mdiWaterAlert,
+    smoke: mdiSmokeDetectorVariantAlert,
   },
 };
 
