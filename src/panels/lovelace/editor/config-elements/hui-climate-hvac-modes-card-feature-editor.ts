@@ -82,7 +82,7 @@ export class HuiClimateHvacModesCardFeatureEditor
     switch (schema.name) {
       case "hvac_modes":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.features.types.climate-hvac-modes.${schema.name}`
+          `ui.panel.lovelace.editor.features.types.climate-hvac-modes.${schema.name}`
         );
       default:
         return this.hass!.localize(

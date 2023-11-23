@@ -82,7 +82,7 @@ export class HuiWaterHeaterOperationModesCardFeatureEditor
     switch (schema.name) {
       case "operation_modes":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.features.types.water-heater-modes.${schema.name}`
+          `ui.panel.lovelace.editor.features.types.water-heater-modes.${schema.name}`
         );
       default:
         return this.hass!.localize(

@@ -177,7 +177,7 @@ export class HuiCardFeaturesEditor extends LitElement {
     }
     return (
       this.hass!.localize(
-        `ui.panel.lovelace.editor.card.tile.features.types.${type}.label`
+        `ui.panel.lovelace.editor.features.types.${type}.label`
       ) || type
     );
   }
@@ -222,16 +222,14 @@ export class HuiCardFeaturesEditor extends LitElement {
       <ha-expansion-panel outlined>
         <h3 slot="header">
           <ha-svg-icon .path=${mdiListBox}></ha-svg-icon>
-          ${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.tile.features.name"
-          )}
+          ${this.hass!.localize("ui.panel.lovelace.editor.features.name")}
         </h3>
         <div class="content">
           ${supportedFeaturesType.length === 0 && this.features.length === 0
             ? html`
                 <ha-alert type="info">
                   ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.card.tile.features.no_compatible_available"
+                    "ui.panel.lovelace.editor.features.no_compatible_available"
                   )}
                 </ha-alert>
               `
@@ -256,7 +254,7 @@ export class HuiCardFeaturesEditor extends LitElement {
                           ? html`
                               <span class="secondary">
                                 ${this.hass!.localize(
-                                  "ui.panel.lovelace.editor.card.tile.features.not_compatible"
+                                  "ui.panel.lovelace.editor.features.not_compatible"
                                 )}
                               </span>
                             `
@@ -267,7 +265,7 @@ export class HuiCardFeaturesEditor extends LitElement {
                       ? html`
                           <ha-icon-button
                             .label=${this.hass!.localize(
-                              `ui.panel.lovelace.editor.card.tile.features.edit`
+                              `ui.panel.lovelace.editor.features.edit`
                             )}
                             .path=${mdiPencil}
                             class="edit-icon"
@@ -279,7 +277,7 @@ export class HuiCardFeaturesEditor extends LitElement {
                       : nothing}
                     <ha-icon-button
                       .label=${this.hass!.localize(
-                        `ui.panel.lovelace.editor.card.tile.features.remove`
+                        `ui.panel.lovelace.editor.features.remove`
                       )}
                       .path=${mdiDelete}
                       class="remove-icon"
@@ -302,7 +300,7 @@ export class HuiCardFeaturesEditor extends LitElement {
                     slot="trigger"
                     outlined
                     .label=${this.hass!.localize(
-                      `ui.panel.lovelace.editor.card.tile.features.add`
+                      `ui.panel.lovelace.editor.features.add`
                     )}
                   >
                     <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>

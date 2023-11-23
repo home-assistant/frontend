@@ -39,7 +39,7 @@ export class HuiNumberCardFeatureEditor
               options: ["slider", "buttons"].map((mode) => ({
                 value: mode,
                 label: localize(
-                  `ui.panel.lovelace.editor.card.tile.features.types.number.style_list.${mode}`
+                  `ui.panel.lovelace.editor.features.types.number.style_list.${mode}`
                 ),
               })),
             },
@@ -79,7 +79,7 @@ export class HuiNumberCardFeatureEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) =>
     this.hass!.localize(
-      `ui.panel.lovelace.editor.card.tile.features.types.number.${schema.name}`
+      `ui.panel.lovelace.editor.features.types.number.${schema.name}`
     );
 }
 

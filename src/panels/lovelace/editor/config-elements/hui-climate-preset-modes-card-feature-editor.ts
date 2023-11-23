@@ -48,7 +48,7 @@ export class HuiClimatePresetModesCardFeatureEditor
               options: ["dropdown", "icons"].map((mode) => ({
                 value: mode,
                 label: localize(
-                  `ui.panel.lovelace.editor.card.tile.features.types.climate-preset-modes.style_list.${mode}`
+                  `ui.panel.lovelace.editor.features.types.climate-preset-modes.style_list.${mode}`
                 ),
               })),
             },
@@ -118,7 +118,7 @@ export class HuiClimatePresetModesCardFeatureEditor
       case "style":
       case "preset_modes":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.features.types.climate-preset-modes.${schema.name}`
+          `ui.panel.lovelace.editor.features.types.climate-preset-modes.${schema.name}`
         );
       default:
         return "";

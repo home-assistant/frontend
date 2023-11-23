@@ -49,7 +49,7 @@ export class HuiAlarmModesCardFeatureEditor
                 .map((mode) => ({
                   value: mode,
                   label: `${localize(
-                    `ui.panel.lovelace.editor.card.tile.features.types.alarm-modes.modes_list.${mode}`
+                    `ui.panel.lovelace.editor.features.types.alarm-modes.modes_list.${mode}`
                   )}`,
                 })),
             },
@@ -90,7 +90,7 @@ export class HuiAlarmModesCardFeatureEditor
     switch (schema.name) {
       case "modes":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.features.types.alarm-modes.${schema.name}`
+          `ui.panel.lovelace.editor.features.types.alarm-modes.${schema.name}`
         );
       default:
         return this.hass!.localize(

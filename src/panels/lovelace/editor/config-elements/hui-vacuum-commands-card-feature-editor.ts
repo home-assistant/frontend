@@ -44,7 +44,7 @@ export class HuiVacuumCommandsCardFeatureEditor
               ).map((command) => ({
                 value: command,
                 label: `${localize(
-                  `ui.panel.lovelace.editor.card.tile.features.types.vacuum-commands.commands_list.${command}`
+                  `ui.panel.lovelace.editor.features.types.vacuum-commands.commands_list.${command}`
                 )}`,
               })),
             },
@@ -85,7 +85,7 @@ export class HuiVacuumCommandsCardFeatureEditor
     switch (schema.name) {
       case "commands":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.features.types.vacuum-commands.${schema.name}`
+          `ui.panel.lovelace.editor.features.types.vacuum-commands.${schema.name}`
         );
       default:
         return this.hass!.localize(
