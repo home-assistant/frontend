@@ -3,30 +3,29 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { supportsFeature } from "../../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import { AlarmMode, ALARM_MODES } from "../../../../data/alarm_control_panel";
 import type { HomeAssistant } from "../../../../types";
+import { supportsLawnMowerCommand } from "../../card-features/hui-lawn-mower-commands-card-feature";
 import {
-  LovelaceTileFeatureContext,
-  AlarmModesTileFeatureConfig,
-} from "../../tile-features/types";
-import type { LovelaceTileFeatureEditor } from "../../types";
-import "../../../../components/ha-form/ha-form";
+  LAWN_MOWER_COMMANDS,
+  LawnMowerCommandsCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "../../card-features/types";
+import type { LovelaceCardFeatureEditor } from "../../types";
 
-@customElement("hui-alarm-modes-tile-feature-editor")
-export class HuiAlarmModesTileFeatureEditor
+@customElement("hui-lawn-mower-commands-card-feature-editor")
+export class HuiLawnMowerCommandsCardFeatureEditor
   extends LitElement
-  implements LovelaceTileFeatureEditor
+  implements LovelaceCardFeatureEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context?: LovelaceTileFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: AlarmModesTileFeatureConfig;
+  @state() private _config?: LawnMowerCommandsCardFeatureConfig;
 
-  public setConfig(config: AlarmModesTileFeatureConfig): void {
+  public setConfig(config: LawnMowerCommandsCardFeatureConfig): void {
     this._config = config;
   }
 
@@ -34,24 +33,20 @@ export class HuiAlarmModesTileFeatureEditor
     (localize: LocalizeFunc, stateObj?: HassEntity) =>
       [
         {
-          name: "modes",
+          name: "commands",
           selector: {
             select: {
               multiple: true,
               mode: "list",
-              options: Object.keys(ALARM_MODES)
-                .filter((mode) => {
-                  const feature = ALARM_MODES[mode as AlarmMode].feature;
-                  return (
-                    stateObj && (!feature || supportsFeature(stateObj, feature))
-                  );
-                })
-                .map((mode) => ({
-                  value: mode,
-                  label: `${localize(
-                    `ui.panel.lovelace.editor.card.tile.features.types.alarm-modes.modes_list.${mode}`
-                  )}`,
-                })),
+              options: LAWN_MOWER_COMMANDS.filter(
+                (command) =>
+                  stateObj && supportsLawnMowerCommand(stateObj, command)
+              ).map((command) => ({
+                value: command,
+                label: `${localize(
+                  `ui.panel.lovelace.editor.card.tile.features.types.lawn-mower-commands.commands_list.${command}`
+                )}`,
+              })),
             },
           },
         },
@@ -88,9 +83,9 @@ export class HuiAlarmModesTileFeatureEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
-      case "modes":
+      case "commands":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.features.types.alarm-modes.${schema.name}`
+          `ui.panel.lovelace.editor.card.tile.features.types.lawn-mower-commands.${schema.name}`
         );
       default:
         return this.hass!.localize(
@@ -102,6 +97,6 @@ export class HuiAlarmModesTileFeatureEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-alarm-modes-tile-feature-editor": HuiAlarmModesTileFeatureEditor;
+    "hui-lawn-mower-commands-card-feature-editor": HuiLawnMowerCommandsCardFeatureEditor;
   }
 }

@@ -3,46 +3,49 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { FormatEntityStateFunc } from "../../../../common/translations/entity-state";
-import "../../../../components/ha-form/ha-form";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
+import { supportsVacuumCommand } from "../../card-features/hui-vacuum-commands-card-feature";
 import {
-  WaterHeaterOperationModesTileFeatureConfig,
-  LovelaceTileFeatureContext,
-} from "../../tile-features/types";
-import type { LovelaceTileFeatureEditor } from "../../types";
-import { OPERATION_MODES } from "../../../../data/water_heater";
+  LovelaceCardFeatureContext,
+  VacuumCommandsCardFeatureConfig,
+  VACUUM_COMMANDS,
+} from "../../card-features/types";
+import type { LovelaceCardFeatureEditor } from "../../types";
 
-@customElement("hui-water-heater-operation-modes-tile-feature-editor")
-export class HuiWaterHeaterOperationModesTileFeatureEditor
+@customElement("hui-vacuum-commands-card-feature-editor")
+export class HuiVacuumCommandsCardFeatureEditor
   extends LitElement
-  implements LovelaceTileFeatureEditor
+  implements LovelaceCardFeatureEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context?: LovelaceTileFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: WaterHeaterOperationModesTileFeatureConfig;
+  @state() private _config?: VacuumCommandsCardFeatureConfig;
 
-  public setConfig(config: WaterHeaterOperationModesTileFeatureConfig): void {
+  public setConfig(config: VacuumCommandsCardFeatureConfig): void {
     this._config = config;
   }
 
   private _schema = memoizeOne(
-    (formatEntityState: FormatEntityStateFunc, stateObj?: HassEntity) =>
+    (localize: LocalizeFunc, stateObj?: HassEntity) =>
       [
         {
-          name: "operation_modes",
+          name: "commands",
           selector: {
             select: {
               multiple: true,
               mode: "list",
-              options: OPERATION_MODES.filter(
-                (mode) => stateObj?.attributes.operation_list?.includes(mode)
-              ).map((mode) => ({
-                value: mode,
-                label: stateObj ? formatEntityState(stateObj, mode) : mode,
+              options: VACUUM_COMMANDS.filter(
+                (command) =>
+                  stateObj && supportsVacuumCommand(stateObj, command)
+              ).map((command) => ({
+                value: command,
+                label: `${localize(
+                  `ui.panel.lovelace.editor.card.tile.features.types.vacuum-commands.commands_list.${command}`
+                )}`,
               })),
             },
           },
@@ -59,7 +62,7 @@ export class HuiWaterHeaterOperationModesTileFeatureEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const schema = this._schema(this.hass.formatEntityState, stateObj);
+    const schema = this._schema(this.hass.localize, stateObj);
 
     return html`
       <ha-form
@@ -80,9 +83,9 @@ export class HuiWaterHeaterOperationModesTileFeatureEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
-      case "operation_modes":
+      case "commands":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.features.types.water-heater-modes.${schema.name}`
+          `ui.panel.lovelace.editor.card.tile.features.types.vacuum-commands.${schema.name}`
         );
       default:
         return this.hass!.localize(
@@ -94,6 +97,6 @@ export class HuiWaterHeaterOperationModesTileFeatureEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-water-heater-operation-modes-tile-feature-editor": HuiWaterHeaterOperationModesTileFeatureEditor;
+    "hui-vacuum-commands-card-feature-editor": HuiVacuumCommandsCardFeatureEditor;
   }
 }

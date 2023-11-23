@@ -9,18 +9,18 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { InputSelectEntity } from "../../../data/input_select";
 import { SelectEntity } from "../../../data/select";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature } from "../types";
-import { SelectOptionsTileFeatureConfig } from "./types";
+import { LovelaceCardFeature } from "../types";
+import { SelectOptionsCardFeatureConfig } from "./types";
 
-export const supportsSelectOptionTileFeature = (stateObj: HassEntity) => {
+export const supportsSelectOptionsCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return domain === "select" || domain === "input_select";
 };
 
-@customElement("hui-select-options-tile-feature")
-class HuiSelectOptionsTileFeature
+@customElement("hui-select-options-card-feature")
+class HuiSelectOptionsCardFeature
   extends LitElement
-  implements LovelaceTileFeature
+  implements LovelaceCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -28,20 +28,20 @@ class HuiSelectOptionsTileFeature
     | SelectEntity
     | InputSelectEntity;
 
-  @state() private _config?: SelectOptionsTileFeatureConfig;
+  @state() private _config?: SelectOptionsCardFeatureConfig;
 
   @state() _currentOption?: string;
 
   @query("ha-control-select-menu", true)
   private _haSelect!: HaControlSelectMenu;
 
-  static getStubConfig(): SelectOptionsTileFeatureConfig {
+  static getStubConfig(): SelectOptionsCardFeatureConfig {
     return {
       type: "select-options",
     };
   }
 
-  public setConfig(config: SelectOptionsTileFeatureConfig): void {
+  public setConfig(config: SelectOptionsCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -98,7 +98,7 @@ class HuiSelectOptionsTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsSelectOptionTileFeature(this.stateObj)
+      !supportsSelectOptionsCardFeature(this.stateObj)
     ) {
       return nothing;
     }
@@ -150,6 +150,6 @@ class HuiSelectOptionsTileFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-select-options-tile-feature": HuiSelectOptionsTileFeature;
+    "hui-select-options-card-feature": HuiSelectOptionsCardFeature;
   }
 }

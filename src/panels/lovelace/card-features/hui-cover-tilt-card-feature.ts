@@ -13,10 +13,10 @@ import {
   CoverEntityFeature,
 } from "../../../data/cover";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature } from "../types";
-import { CoverTiltTileFeatureConfig } from "./types";
+import { LovelaceCardFeature } from "../types";
+import { CoverTiltCardFeatureConfig } from "./types";
 
-export const supportsCoverTiltTileFeature = (stateObj: HassEntity) => {
+export const supportsCoverTiltCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "cover" &&
@@ -25,24 +25,24 @@ export const supportsCoverTiltTileFeature = (stateObj: HassEntity) => {
   );
 };
 
-@customElement("hui-cover-tilt-tile-feature")
-class HuiCoverTiltTileFeature
+@customElement("hui-cover-tilt-card-feature")
+class HuiCoverTiltCardFeature
   extends LitElement
-  implements LovelaceTileFeature
+  implements LovelaceCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: CoverTiltTileFeatureConfig;
+  @state() private _config?: CoverTiltCardFeatureConfig;
 
-  static getStubConfig(): CoverTiltTileFeatureConfig {
+  static getStubConfig(): CoverTiltCardFeatureConfig {
     return {
       type: "cover-tilt",
     };
   }
 
-  public setConfig(config: CoverTiltTileFeatureConfig): void {
+  public setConfig(config: CoverTiltCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -75,7 +75,7 @@ class HuiCoverTiltTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsCoverTiltTileFeature
+      !supportsCoverTiltCardFeature
     ) {
       return nothing;
     }
@@ -137,6 +137,6 @@ class HuiCoverTiltTileFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-cover-tilt-tile-feature": HuiCoverTiltTileFeature;
+    "hui-cover-tilt-card-feature": HuiCoverTiltCardFeature;
   }
 }

@@ -6,24 +6,24 @@ import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import {
-  NumberTileFeatureConfig,
-  LovelaceTileFeatureContext,
-} from "../../tile-features/types";
-import type { LovelaceTileFeatureEditor } from "../../types";
+  NumberCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "../../card-features/types";
+import type { LovelaceCardFeatureEditor } from "../../types";
 import { LocalizeFunc } from "../../../../common/translations/localize";
 
-@customElement("hui-number-tile-feature-editor")
-export class HuiNumberTileFeatureEditor
+@customElement("hui-number-card-feature-editor")
+export class HuiNumberCardFeatureEditor
   extends LitElement
-  implements LovelaceTileFeatureEditor
+  implements LovelaceCardFeatureEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context?: LovelaceTileFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: NumberTileFeatureConfig;
+  @state() private _config?: NumberCardFeatureConfig;
 
-  public setConfig(config: NumberTileFeatureConfig): void {
+  public setConfig(config: NumberCardFeatureConfig): void {
     this._config = config;
   }
 
@@ -53,7 +53,7 @@ export class HuiNumberTileFeatureEditor
       return nothing;
     }
 
-    const data: NumberTileFeatureConfig = {
+    const data: NumberCardFeatureConfig = {
       style: "buttons",
       ...this._config,
     };
@@ -85,6 +85,6 @@ export class HuiNumberTileFeatureEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-number-tile-feature-editor": HuiNumberTileFeatureEditor;
+    "hui-number-card-feature-editor": HuiNumberCardFeatureEditor;
   }
 }

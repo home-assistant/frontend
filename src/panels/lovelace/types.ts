@@ -11,7 +11,7 @@ import { FrontendLocaleData } from "../../data/translation";
 import { Constructor, HomeAssistant } from "../../types";
 import { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
-import { LovelaceTileFeatureConfig } from "./tile-features/types";
+import { LovelaceCardFeatureConfig } from "./card-features/types";
 
 declare global {
   // eslint-disable-next-line
@@ -112,20 +112,20 @@ export interface LovelaceGenericElementEditor<C = any> extends HTMLElement {
   focusYamlEditor?: () => void;
 }
 
-export interface LovelaceTileFeature extends HTMLElement {
+export interface LovelaceCardFeature extends HTMLElement {
   hass?: HomeAssistant;
   stateObj?: HassEntity;
-  setConfig(config: LovelaceTileFeatureConfig);
+  setConfig(config: LovelaceCardFeatureConfig);
   color?: string;
 }
 
-export interface LovelaceTileFeatureConstructor
-  extends Constructor<LovelaceTileFeature> {
+export interface LovelaceCardFeatureConstructor
+  extends Constructor<LovelaceCardFeature> {
   getStubConfig?: (
     hass: HomeAssistant,
     stateObj?: HassEntity
-  ) => LovelaceTileFeatureConfig;
-  getConfigElement?: () => LovelaceTileFeatureEditor;
+  ) => LovelaceCardFeatureConfig;
+  getConfigElement?: () => LovelaceCardFeatureEditor;
   getConfigForm?: () => {
     schema: HaFormSchema[];
     assertConfig?: (config: LovelaceCardConfig) => void;
@@ -133,7 +133,7 @@ export interface LovelaceTileFeatureConstructor
   isSupported?: (stateObj?: HassEntity) => boolean;
 }
 
-export interface LovelaceTileFeatureEditor
+export interface LovelaceCardFeatureEditor
   extends LovelaceGenericElementEditor {
-  setConfig(config: LovelaceTileFeatureConfig): void;
+  setConfig(config: LovelaceCardFeatureConfig): void;
 }

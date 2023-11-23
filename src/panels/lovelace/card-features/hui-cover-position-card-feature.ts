@@ -5,46 +5,44 @@ import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { CoverEntity, CoverEntityFeature } from "../../../data/cover";
+import { CoverEntityFeature } from "../../../data/cover";
 import { UNAVAILABLE } from "../../../data/entity";
-import { generateTiltSliderTrackBackgroundGradient } from "../../../dialogs/more-info/components/cover/ha-more-info-cover-tilt-position";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature } from "../types";
-import { CoverTiltPositionTileFeatureConfig } from "./types";
+import { LovelaceCardFeature } from "../types";
+import { CoverPositionCardFeatureConfig } from "./types";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
 
-const GRADIENT = generateTiltSliderTrackBackgroundGradient();
-
-export const supportsCoverTiltPositionTileFeature = (stateObj: HassEntity) => {
+export const supportsCoverPositionCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "cover" &&
-    supportsFeature(stateObj, CoverEntityFeature.SET_TILT_POSITION)
+    supportsFeature(stateObj, CoverEntityFeature.SET_POSITION)
   );
 };
 
-@customElement("hui-cover-tilt-position-tile-feature")
-class HuiCoverTiltPositionTileFeature
+@customElement("hui-cover-position-card-feature")
+class HuiCoverPositionCardFeature
   extends LitElement
-  implements LovelaceTileFeature
+  implements LovelaceCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: CoverEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property({ attribute: false }) public color?: string;
 
-  @state() private _config?: CoverTiltPositionTileFeatureConfig;
+  @state() private _config?: CoverPositionCardFeatureConfig;
 
-  static getStubConfig(): CoverTiltPositionTileFeatureConfig {
+  static getStubConfig(): CoverPositionCardFeatureConfig {
     return {
-      type: "cover-tilt-position",
+      type: "cover-position",
     };
   }
 
-  public setConfig(config: CoverTiltPositionTileFeatureConfig): void {
+  public setConfig(config: CoverPositionCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -56,12 +54,14 @@ class HuiCoverTiltPositionTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsCoverTiltPositionTileFeature(this.stateObj)
+      !supportsCoverPositionCardFeature(this.stateObj)
     ) {
       return nothing;
     }
 
-    const percentage = this.stateObj.attributes.current_tilt_position ?? 0;
+    const percentage = stateActive(this.stateObj)
+      ? this.stateObj.attributes.current_position ?? 0
+      : 0;
 
     const value = Math.max(Math.round(percentage), 0);
 
@@ -83,20 +83,19 @@ class HuiCoverTiltPositionTileFeature
           .value=${value}
           min="0"
           max="100"
-          mode="cursor"
+          step="1"
           inverted
+          show-handle
           @value-changed=${this._valueChanged}
           .ariaLabel=${computeAttributeNameDisplay(
             this.hass.localize,
             this.stateObj,
             this.hass.entities,
-            "current_tilt_position"
+            "current_position"
           )}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
-          .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_tilt_position}
+          .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_position}
           .locale=${this.hass.locale}
-        >
-          <div slot="background" class="gradient"></div
         ></ha-control-slider>
       </div>
     `;
@@ -106,16 +105,15 @@ class HuiCoverTiltPositionTileFeature
     const value = (ev.detail as any).value;
     if (isNaN(value)) return;
 
-    this.hass!.callService("cover", "set_cover_tilt_position", {
+    this.hass!.callService("cover", "set_cover_position", {
       entity_id: this.stateObj!.entity_id,
-      tilt_position: value,
+      position: value,
     });
   }
 
   static get styles() {
     return css`
       ha-control-slider {
-        /* Force inactive state to be colored for the slider */
         --control-slider-color: var(--color);
         --control-slider-background: var(--color);
         --control-slider-background-opacity: 0.2;
@@ -126,16 +124,12 @@ class HuiCoverTiltPositionTileFeature
         padding: 0 12px 12px 12px;
         width: auto;
       }
-      .gradient {
-        background: -webkit-linear-gradient(left, ${GRADIENT});
-        opacity: 0.6;
-      }
     `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-cover-tilt-position-tile-feature": HuiCoverTiltPositionTileFeature;
+    "hui-cover-position-card-feature": HuiCoverPositionCardFeature;
   }
 }

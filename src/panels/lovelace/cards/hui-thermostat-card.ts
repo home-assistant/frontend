@@ -20,7 +20,7 @@ import "../../../dialogs/more-info/components/climate/ha-more-info-climate-tempe
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import "../tile-features/hui-tile-features";
+import "../card-features/hui-card-features";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ThermostatCardConfig } from "./types";
 
@@ -132,15 +132,14 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           @click=${this._handleMoreInfo}
           tabindex="0"
         ></ha-icon-button>
-        <hui-tile-features
+        <hui-card-features
           style=${styleMap({
-            "--tile-color": color,
+            "--feature-color": color,
           })}
           .hass=${this.hass}
           .stateObj=${stateObj}
-          .color=${this._config.color}
           .features=${this._config.features}
-        ></hui-tile-features>
+        ></hui-card-features>
       </ha-card>
     `;
   }
@@ -190,7 +189,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         direction: var(--direction);
       }
 
-      hui-tile-features {
+      hui-card-features {
         width: 100%;
       }
     `;

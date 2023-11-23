@@ -17,12 +17,12 @@ import {
   WaterHeaterEntityFeature,
 } from "../../../data/water_heater";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature } from "../types";
-import { TargetTemperatureTileFeatureConfig } from "./types";
+import { LovelaceCardFeature } from "../types";
+import { TargetTemperatureCardFeatureConfig } from "./types";
 
 type Target = "value" | "low" | "high";
 
-export const supportsTargetTemperatureTileFeature = (stateObj: HassEntity) => {
+export const supportsTargetTemperatureCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return (
     (domain === "climate" &&
@@ -36,10 +36,10 @@ export const supportsTargetTemperatureTileFeature = (stateObj: HassEntity) => {
   );
 };
 
-@customElement("hui-target-temperature-tile-feature")
-class HuiTargetTemperatureTileFeature
+@customElement("hui-target-temperature-card-feature")
+class HuiTargetTemperatureCardFeature
   extends LitElement
-  implements LovelaceTileFeature
+  implements LovelaceCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -47,17 +47,17 @@ class HuiTargetTemperatureTileFeature
     | ClimateEntity
     | WaterHeaterEntity;
 
-  @state() private _config?: TargetTemperatureTileFeatureConfig;
+  @state() private _config?: TargetTemperatureCardFeatureConfig;
 
   @state() private _targetTemperature: Partial<Record<Target, number>> = {};
 
-  static getStubConfig(): TargetTemperatureTileFeatureConfig {
+  static getStubConfig(): TargetTemperatureCardFeatureConfig {
     return {
       type: "target-temperature",
     };
   }
 
-  public setConfig(config: TargetTemperatureTileFeatureConfig): void {
+  public setConfig(config: TargetTemperatureCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -161,7 +161,7 @@ class HuiTargetTemperatureTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsTargetTemperatureTileFeature(this.stateObj)
+      !supportsTargetTemperatureCardFeature(this.stateObj)
     ) {
       return nothing;
     }
@@ -294,6 +294,6 @@ class HuiTargetTemperatureTileFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-target-temperature-tile-feature": HuiTargetTemperatureTileFeature;
+    "hui-target-temperature-card-feature": HuiTargetTemperatureCardFeature;
   }
 }

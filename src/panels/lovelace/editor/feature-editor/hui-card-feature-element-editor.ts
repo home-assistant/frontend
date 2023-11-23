@@ -1,24 +1,24 @@
 import { customElement } from "lit/decorators";
-import { getTileFeatureElementClass } from "../../create-element/create-tile-feature-element";
+import { getCardFeatureElementClass } from "../../create-element/create-card-feature-element";
 import {
-  LovelaceTileFeatureConfig,
-  LovelaceTileFeatureContext,
-} from "../../tile-features/types";
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "../../card-features/types";
 import type {
   LovelaceConfigForm,
-  LovelaceTileFeatureEditor,
+  LovelaceCardFeatureEditor,
 } from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
 
-@customElement("hui-tile-feature-element-editor")
-export class HuiTileFeatureElementEditor extends HuiElementEditor<
-  LovelaceTileFeatureConfig,
-  LovelaceTileFeatureContext
+@customElement("hui-card-feature-element-editor")
+export class HuiCardFeatureElementEditor extends HuiElementEditor<
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext
 > {
   protected async getConfigElement(): Promise<
-    LovelaceTileFeatureEditor | undefined
+    LovelaceCardFeatureEditor | undefined
   > {
-    const elClass = await getTileFeatureElementClass(this.configElementType!);
+    const elClass = await getCardFeatureElementClass(this.configElementType!);
 
     // Check if a GUI editor exists
     if (elClass && elClass.getConfigElement) {
@@ -29,7 +29,7 @@ export class HuiTileFeatureElementEditor extends HuiElementEditor<
   }
 
   protected async getConfigForm(): Promise<LovelaceConfigForm | undefined> {
-    const elClass = await getTileFeatureElementClass(this.configElementType!);
+    const elClass = await getCardFeatureElementClass(this.configElementType!);
 
     // Check if a schema exists
     if (elClass && elClass.getConfigForm) {
@@ -42,6 +42,6 @@ export class HuiTileFeatureElementEditor extends HuiElementEditor<
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-tile-feature-element-editor": HuiTileFeatureElementEditor;
+    "hui-card-feature-element-editor": HuiCardFeatureElementEditor;
   }
 }

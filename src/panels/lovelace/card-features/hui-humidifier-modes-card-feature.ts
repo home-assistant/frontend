@@ -10,34 +10,34 @@ import type { ControlSelectOption } from "../../../components/ha-control-select"
 import { UNAVAILABLE } from "../../../data/entity";
 import { HumidifierEntity, HumidifierState } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature } from "../types";
-import { HumidifierModesTileFeatureConfig } from "./types";
+import { LovelaceCardFeature } from "../types";
+import { HumidifierModesCardFeatureConfig } from "./types";
 
-export const supportsHumidifierModesTileFeature = (stateObj: HassEntity) => {
+export const supportsHumidifierModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return domain === "humidifier";
 };
 
-@customElement("hui-humidifier-modes-tile-feature")
-class HuiHumidifierModeTileFeature
+@customElement("hui-humidifier-modes-card-feature")
+class HuiHumidifierModeCardFeature
   extends LitElement
-  implements LovelaceTileFeature
+  implements LovelaceCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HumidifierEntity;
 
-  @state() private _config?: HumidifierModesTileFeatureConfig;
+  @state() private _config?: HumidifierModesCardFeatureConfig;
 
   @state() _currentState?: HumidifierState;
 
-  static getStubConfig(): HumidifierModesTileFeatureConfig {
+  static getStubConfig(): HumidifierModesCardFeatureConfig {
     return {
       type: "humidifier-modes",
     };
   }
 
-  public setConfig(config: HumidifierModesTileFeatureConfig): void {
+  public setConfig(config: HumidifierModesCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -81,7 +81,7 @@ class HuiHumidifierModeTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsHumidifierModesTileFeature(this.stateObj)
+      !supportsHumidifierModesCardFeature(this.stateObj)
     ) {
       return null;
     }
@@ -115,7 +115,7 @@ class HuiHumidifierModeTileFeature
   static get styles() {
     return css`
       ha-control-select {
-        --control-select-color: var(--tile-color);
+        --control-select-color: var(--feature-color);
         --control-select-padding: 0;
         --control-select-thickness: 40px;
         --control-select-border-radius: 10px;
@@ -131,6 +131,6 @@ class HuiHumidifierModeTileFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-humidifier-modes-tile-feature": HuiHumidifierModeTileFeature;
+    "hui-humidifier-modes-card-feature": HuiHumidifierModeCardFeature;
   }
 }

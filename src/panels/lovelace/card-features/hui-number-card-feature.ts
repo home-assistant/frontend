@@ -4,42 +4,42 @@ import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { isUnavailableState } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature, LovelaceTileFeatureEditor } from "../types";
-import { NumberTileFeatureConfig } from "./types";
+import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import { NumberCardFeatureConfig } from "./types";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
 import "../../../components/ha-control-slider";
 import "../../../components/ha-icon";
 
-export const supportsNumberTileFeature = (stateObj: HassEntity) => {
+export const supportsNumberCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return domain === "input_number" || domain === "number";
 };
 
-@customElement("hui-number-tile-feature")
-class HuiNumberTileFeature extends LitElement implements LovelaceTileFeature {
+@customElement("hui-number-card-feature")
+class HuiNumberCardFeature extends LitElement implements LovelaceCardFeature {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: NumberTileFeatureConfig;
+  @state() private _config?: NumberCardFeatureConfig;
 
   @state() _currentState?: string;
 
-  static getStubConfig(): NumberTileFeatureConfig {
+  static getStubConfig(): NumberCardFeatureConfig {
     return {
       type: "number",
       style: "buttons",
     };
   }
 
-  public static async getConfigElement(): Promise<LovelaceTileFeatureEditor> {
-    await import("../editor/config-elements/hui-number-tile-feature-editor");
-    return document.createElement("hui-number-tile-feature-editor");
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-number-card-feature-editor");
+    return document.createElement("hui-number-card-feature-editor");
   }
 
-  public setConfig(config: NumberTileFeatureConfig): void {
+  public setConfig(config: NumberCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -69,7 +69,7 @@ class HuiNumberTileFeature extends LitElement implements LovelaceTileFeature {
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsNumberTileFeature(this.stateObj)
+      !supportsNumberCardFeature(this.stateObj)
     ) {
       return nothing;
     }
@@ -109,7 +109,7 @@ class HuiNumberTileFeature extends LitElement implements LovelaceTileFeature {
         width: auto;
       }
       ha-control-slider {
-        --control-slider-color: var(--tile-color);
+        --control-slider-color: var(--feature-color);
       }
       .container {
         padding: 0 12px 12px 12px;
@@ -121,6 +121,6 @@ class HuiNumberTileFeature extends LitElement implements LovelaceTileFeature {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-number-tile-feature": HuiNumberTileFeature;
+    "hui-number-card-feature": HuiNumberCardFeature;
   }
 }
