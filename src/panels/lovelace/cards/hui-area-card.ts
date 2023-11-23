@@ -1,8 +1,16 @@
 import "@material/mwc-ripple";
 import {
+  mdiAlertCircle,
+  mdiBrightness5,
+  mdiFire,
   mdiLightbulbMultiple,
   mdiLightbulbMultipleOff,
+  mdiMolecule,
+  mdiMoleculeCo,
+  mdiMoleculeCo2,
   mdiRun,
+  mdiSmokeDetectorVariantAlert,
+  mdiSnowflake,
   mdiThermometer,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
