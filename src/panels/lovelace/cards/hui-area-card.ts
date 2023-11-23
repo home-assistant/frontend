@@ -68,8 +68,8 @@ const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 const OTHER_DOMAINS = ["camera"];
 
 const DEVICE_CLASSES = {
-  sensor: ["temperature", "humidity"],
-  binary_sensor: ["motion", "moisture"],
+  sensor: ["carbon_dioxide", "carbon_monoxide", "illuminance", "pm1", "pm25", "pm10", "temperature", "humidity", "volatile_organic_compounds", "volatile_organic_compounds_parts"],
+  binary_sensor: ["cold", "gas", "heat", "motion", "moisture", "smoke"],
 };
 
 const DOMAIN_ICONS = {
