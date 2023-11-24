@@ -10,7 +10,6 @@ import {
   html,
   nothing,
 } from "lit";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
 
@@ -22,7 +21,6 @@ class StateCardConfigurator extends LitElement {
 
   @property({ type: Boolean }) public inDialog = false;
 
-  // pre load the image so the dialog is rendered the proper size
   protected render(): TemplateResult {
     return html`
       <div class="horizontal justified layout">
@@ -32,27 +30,12 @@ class StateCardConfigurator extends LitElement {
           .inDialog=${this.inDialog}
         ></state-info>
         ${this.inDialog
-          ? html`<mwc-button>${this._localizeState(this.stateObj)}</mwc-button>`
+          ? html`<mwc-button
+              >${this.hass.formatEntityState(this.stateObj)}</mwc-button
+            >`
           : nothing}
       </div>
-      ${this.stateObj.attributes.description_image
-        ? html`<img
-            hidden=""
-            alt=""
-            .src=${this.stateObj.attributes.description_image}
-          />`
-        : nothing}
     `;
-  }
-
-  private _localizeState(stateObj) {
-    return computeStateDisplay(
-      this.hass.localize,
-      stateObj,
-      this.hass.locale,
-      this.hass.config,
-      this.hass.entities
-    );
   }
 
   static get styles(): CSSResultGroup {

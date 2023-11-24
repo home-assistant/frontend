@@ -89,7 +89,6 @@ class StateCardTimer extends LitElement {
       haStyle,
       css`
         .state {
-          @apply --paper-font-body1;
           color: var(--primary-text-color);
 
           margin-left: 16px;

@@ -44,7 +44,7 @@ class StateCardContent extends ReactiveElement {
     return this;
   }
 
-  // This is not a lit element, but an updating element, so we implement update
+  // This is not a lit element, but an reactive element, so we implement update
   protected update(changedProps: PropertyValues): void {
     super.update(changedProps);
     const stateObj = this.stateObj;

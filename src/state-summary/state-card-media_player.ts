@@ -1,7 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import "../components/entity/state-info";
 import HassMediaPlayerEntity from "../util/hass-media-player-model";
@@ -16,13 +15,8 @@ class StateCardMediaPlayer extends LitElement {
 
   @property({ type: Boolean }) public inDialog = false;
 
-  private _computePlayerObj = memoizeOne(
-    (hass: HomeAssistant, stateObj: HassEntity) =>
-      new HassMediaPlayerEntity(hass, stateObj)
-  );
-
   protected render(): TemplateResult {
-    const _playerObj = this._computePlayerObj(this.hass, this.stateObj);
+    const playerObj = new HassMediaPlayerEntity(this.hass, this.stateObj);
     return html`
       <div class="horizontal justified layout">
         <state-info
@@ -31,10 +25,10 @@ class StateCardMediaPlayer extends LitElement {
           .inDialog=${this.inDialog}
         ></state-info>
         <div class="state">
-          <div class="main-text" take-height=${!_playerObj.secondaryTitle}>
-            ${this._computePrimaryText(this.hass.localize, _playerObj)}
+          <div class="main-text" take-height=${!playerObj.secondaryTitle}>
+            ${this._computePrimaryText(this.hass.localize, playerObj)}
           </div>
-          <div class="secondary-text">${_playerObj.secondaryTitle}</div>
+          <div class="secondary-text">${playerObj.secondaryTitle}</div>
         </div>
       </div>
     `;
@@ -62,14 +56,11 @@ class StateCardMediaPlayer extends LitElement {
         }
 
         .state {
-          @apply --paper-font-common-nowrap;
-          @apply --paper-font-body1;
           margin-left: 16px;
           text-align: right;
         }
 
         .main-text {
-          @apply --paper-font-common-nowrap;
           color: var(--primary-text-color);
         }
 
@@ -78,7 +69,6 @@ class StateCardMediaPlayer extends LitElement {
         }
 
         .secondary-text {
-          @apply --paper-font-common-nowrap;
           color: var(--secondary-text-color);
         }
       `,

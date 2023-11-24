@@ -49,22 +49,25 @@ export class HaVacuumState extends LitElement {
   @property({ attribute: false }) public stateObj!: HassEntity;
 
   protected render(): TemplateResult {
-    const _interceptable = this._computeInterceptable(
+    const interceptable = this._computeInterceptable(
       this.stateObj.state,
       this.stateObj.attributes.supported_features
     );
     return html`
-      <mwc-button @click=${this._callService} .disabled=${!_interceptable}>
-        ${this._computeLabel(this.stateObj.state, _interceptable)}
+      <mwc-button @click=${this._callService} .disabled=${!interceptable}>
+        ${this._computeLabel(this.stateObj.state, interceptable)}
       </mwc-button>
     `;
   }
 
-  private _computeInterceptable(state, supportedFeatures) {
+  private _computeInterceptable(
+    state: string,
+    supportedFeatures: number | undefined
+  ) {
     return state in STATES_INTERCEPTABLE && supportedFeatures !== 0;
   }
 
-  private _computeLabel(state, interceptable) {
+  private _computeLabel(state: string, interceptable: boolean) {
     return interceptable
       ? this.hass.localize(
           `ui.card.vacuum.actions.${STATES_INTERCEPTABLE[state].action}`
@@ -74,11 +77,13 @@ export class HaVacuumState extends LitElement {
         );
   }
 
-  private _callService(ev) {
+  private async _callService(ev) {
     ev.stopPropagation();
     const stateObj = this.stateObj;
     const service = STATES_INTERCEPTABLE[stateObj.state].service;
-    this.hass.callService("vacuum", service, { entity_id: stateObj.entity_id });
+    await this.hass.callService("vacuum", service, {
+      entity_id: stateObj.entity_id,
+    });
   }
 
   static get styles(): CSSResultGroup {

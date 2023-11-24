@@ -15,16 +15,16 @@ export class HaWaterHeaterState extends LitElement {
     return html`
       <div class="target">
         <span class="state-label label">
-          ${this._localizeState(this.stateObj)}
+          ${this.hass.formatEntityState(this.stateObj)}
         </span>
         <span class="label"
-          >${this.computeTarget(this.hass, this.stateObj)}</span
+          >${this._computeTarget(this.hass, this.stateObj)}</span
         >
       </div>
     `;
   }
 
-  computeTarget(hass, stateObj) {
+  private _computeTarget(hass: HomeAssistant, stateObj: HassEntity) {
     if (!hass || !stateObj) return null;
     // We're using "!= null" on purpose so that we match both null and undefined.
 

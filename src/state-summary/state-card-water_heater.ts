@@ -36,7 +36,6 @@ class StateCardWaterHeater extends LitElement {
       haStyle,
       css`
         :host {
-          @apply --paper-font-body1;
           line-height: 1.5;
         }
 

@@ -6,10 +6,9 @@ import {
   html,
   LitElement,
   nothing,
-  PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { supportsFeature } from "../common/entity/supports-feature";
 import "../components/entity/state-info";
 import { LockEntityFeature } from "../data/lock";
@@ -24,11 +23,10 @@ class StateCardLock extends LitElement {
 
   @property({ type: Boolean }) public inDialog = false;
 
-  @state() private _isLocked: boolean = false;
-
-  @state() private _supportsOpen: boolean = false;
-
   protected render(): TemplateResult {
+    const isLocked = this.stateObj.state === "locked";
+    const supportsOpen = supportsFeature(this.stateObj, LockEntityFeature.OPEN);
+
     return html`
       <div class="horizontal justified layout">
         <state-info
@@ -36,37 +34,23 @@ class StateCardLock extends LitElement {
           .stateObj=${this.stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
-        ${!this._supportsOpen
+        ${!supportsOpen
           ? html`<mwc-button @click=${this._callService} data-service="open"
               >${this.hass.localize("ui.card.lock.open")}</mwc-button
             >`
           : nothing}
-        ${this._isLocked
+        ${isLocked
           ? html` <mwc-button @click=${this._callService} data-service="unlock"
               >${this.hass.localize("ui.card.lock.unlock")}</mwc-button
             >`
           : nothing}
-        ${!this._isLocked
+        ${!isLocked
           ? html`<mwc-button @click=${this._callService} data-service="lock"
               >${this.hass.localize("ui.card.lock.lock")}</mwc-button
             >`
           : nothing}
       </div>
     `;
-  }
-
-  protected willUpdate(changedProp: PropertyValues): void {
-    super.willUpdate(changedProp);
-    if (changedProp.has("stateObj")) {
-      this._stateObjChanged(this.stateObj);
-    }
-  }
-
-  private _stateObjChanged(newVal) {
-    if (newVal) {
-      this._isLocked = newVal.state === "locked";
-      this._supportsOpen = supportsFeature(newVal, LockEntityFeature.OPEN);
-    }
   }
 
   private async _callService(ev) {

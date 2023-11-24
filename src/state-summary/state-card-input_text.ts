@@ -12,6 +12,7 @@ import "../components/entity/state-info";
 import "../components/ha-textfield";
 import { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
+import { stopPropagation } from "../common/dom/stop_propagation";
 
 @customElement("state-card-input_text")
 class StateCardInputText extends LitElement {
@@ -40,7 +41,7 @@ class StateCardInputText extends LitElement {
           .type=${this.stateObj.attributes.mode}
           @input=${this._onInput}
           @change=${this._selectedValueChanged}
-          @click=${this._stopPropagation}
+          @click=${stopPropagation}
           placeholder="(empty value)"
         >
         </ha-textfield>
@@ -51,12 +52,8 @@ class StateCardInputText extends LitElement {
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
     if (changedProp.has("stateObj")) {
-      this._stateObjectChanged(this.stateObj);
+      this.value = this.stateObj.state;
     }
-  }
-
-  private _stateObjectChanged(newVal) {
-    this.value = newVal.state;
   }
 
   private _onInput(ev) {
@@ -71,10 +68,6 @@ class StateCardInputText extends LitElement {
       value: this.value,
       entity_id: this.stateObj.entity_id,
     });
-  }
-
-  private _stopPropagation(ev) {
-    ev.stopPropagation();
   }
 
   static get styles(): CSSResultGroup {
