@@ -72,15 +72,30 @@
       "upload_backup": "Upload backup"
     },
     "card": {
+      "common": {
+        "turn_on": "Turn on",
+        "turn_off": "Turn off",
+        "toggle": "Toggle"
+      },
       "alarm_control_panel": {
         "code": "Code",
         "clear_code": "Clear",
         "disarm": "Disarm",
+        "arm": "Arm",
         "arm_home": "Arm home",
         "arm_away": "Arm away",
         "arm_night": "Arm night",
         "arm_vacation": "Arm vacation",
-        "arm_custom_bypass": "Custom bypass"
+        "arm_custom_bypass": "Custom bypass",
+        "modes_label": "Modes",
+        "modes": {
+          "armed_away": "Away",
+          "armed_home": "Home",
+          "armed_night": "Night",
+          "armed_vacation": "Vacation",
+          "armed_custom_bypass": "Custom",
+          "disarmed": "Disarmed"
+        }
       },
       "area": {
         "area_not_found": "Area not found."
@@ -120,15 +135,24 @@
       },
       "cover": {
         "position": "Position",
-        "tilt_position": "Tilt position"
+        "tilt_position": "Tilt position",
+        "open_cover": "Open cover",
+        "close_cover": "Close cover",
+        "open_tilt_cover": "Open cover tilt",
+        "close_tilt_cover": "Close cover tilt",
+        "stop_cover": "Stop cover"
       },
       "fan": {
-        "speed": "Speed",
         "preset_mode": "Preset mode",
         "oscillate": "Oscillate",
         "direction": "Direction",
         "forward": "Forward",
-        "reverse": "Reverse"
+        "reverse": "Reverse",
+        "speed": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High"
+        }
       },
       "humidifier": {
         "currently": "[%key:ui::card::climate::currently%]",
@@ -930,9 +954,6 @@
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "show_more": "Show more",
-        "turn_on": "Turn on",
-        "turn_off": "Turn off",
-        "toggle": "Toggle",
         "exit_edit_mode": "Exit edit mode",
         "script": {
           "last_action": "Last action",
@@ -975,11 +996,6 @@
           "create_zone": "Create zone from current location"
         },
         "cover": {
-          "open_cover": "Open cover",
-          "close_cover": "Close cover",
-          "open_tilt_cover": "Open cover tilt",
-          "close_tilt_cover": "Close cover tilt",
-          "stop_cover": "Stop cover",
           "switch_mode": {
             "button": "Switch to button mode",
             "position": "Switch to position mode"
@@ -995,7 +1011,6 @@
           "color_temp": "Temperature",
           "set_white": "Set white",
           "select_effect": "Select effect",
-          "brightness": "Brightness",
           "color_picker": {
             "title": "Change color",
             "mode": {
@@ -1019,32 +1034,7 @@
           "set_forward_direction": "Set forward direction",
           "set_reverse_direction": "Set reverse direction",
           "turn_on_oscillating": "Turn on oscillating",
-          "turn_off_oscillating": "Turn off oscillating",
-          "speed": {
-            "low": "Low",
-            "medium": "Medium",
-            "high": "High"
-          }
-        },
-        "alarm_control_panel": {
-          "modes_label": "Modes",
-          "modes": {
-            "armed_away": "Away",
-            "armed_home": "Home",
-            "armed_night": "Night",
-            "armed_vacation": "Vacation",
-            "armed_custom_bypass": "Custom",
-            "disarmed": "Disarmed"
-          },
-          "disarm_title": "Disarm",
-          "disarm_action": "Disarm",
-          "arm_title": "Arm",
-          "arm_action": "Arm"
-        },
-        "lock": {
-          "open": "Open",
-          "lock": "Lock",
-          "unlock": "Unlock"
+          "turn_off_oscillating": "Turn off oscillating"
         },
         "climate": {
           "temperature": "Temperature",
@@ -5199,14 +5189,14 @@
               },
               "alarm-modes": {
                 "label": "Alarm modes",
-                "modes": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes_label%]",
+                "modes": "[%key:ui::card::alarm_control_panel::modes_label%]",
                 "modes_list": {
-                  "armed_away": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_away%]",
-                  "armed_home": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_home%]",
-                  "armed_night": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_night%]",
-                  "armed_vacation": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_vacation%]",
-                  "armed_custom_bypass": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_custom_bypass%]",
-                  "disarmed": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::disarmed%]"
+                  "armed_away": "[%key:ui::card::alarm_control_panel::modes::armed_away%]",
+                  "armed_home": "[%key:ui::card::alarm_control_panel::modes::armed_home%]",
+                  "armed_night": "[%key:ui::card::alarm_control_panel::modes::armed_night%]",
+                  "armed_vacation": "[%key:ui::card::alarm_control_panel::modes::armed_vacation%]",
+                  "armed_custom_bypass": "[%key:ui::card::alarm_control_panel::modes::armed_custom_bypass%]",
+                  "disarmed": "[%key:ui::card::alarm_control_panel::modes::disarmed%]"
                 }
               },
               "light-brightness": {

@@ -3,26 +3,26 @@ import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { UNIT_F } from "../../../../common/const";
-import { stateActive } from "../../../../common/entity/state_active";
-import { stateColorCss } from "../../../../common/entity/state_color";
-import { supportsFeature } from "../../../../common/entity/supports-feature";
-import { clamp } from "../../../../common/number/clamp";
-import { debounce } from "../../../../common/util/debounce";
-import "../../../../components/ha-big-number";
-import "../../../../components/ha-control-circular-slider";
-import type { ControlCircularSliderMode } from "../../../../components/ha-control-circular-slider";
-import "../../../../components/ha-outlined-icon-button";
-import "../../../../components/ha-svg-icon";
+import { UNIT_F } from "../../common/const";
+import { stateActive } from "../../common/entity/state_active";
+import { stateColorCss } from "../../common/entity/state_color";
+import { supportsFeature } from "../../common/entity/supports-feature";
+import { clamp } from "../../common/number/clamp";
+import { debounce } from "../../common/util/debounce";
+import "../../components/ha-big-number";
+import "../../components/ha-control-circular-slider";
+import type { ControlCircularSliderMode } from "../../components/ha-control-circular-slider";
+import "../../components/ha-outlined-icon-button";
+import "../../components/ha-svg-icon";
 import {
   CLIMATE_HVAC_ACTION_TO_MODE,
   ClimateEntity,
   ClimateEntityFeature,
   HvacMode,
-} from "../../../../data/climate";
-import { UNAVAILABLE } from "../../../../data/entity";
-import { HomeAssistant } from "../../../../types";
-import { moreInfoControlCircularSliderStyle } from "../ha-more-info-control-circular-slider-style";
+} from "../../data/climate";
+import { UNAVAILABLE } from "../../data/entity";
+import { HomeAssistant } from "../../types";
+import { stateControlCircularSliderStyle } from "../state-control-circular-slider-style";
 
 type Target = "value" | "low" | "high";
 
@@ -36,8 +36,8 @@ const SLIDER_MODES: Record<HvacMode, ControlCircularSliderMode> = {
   off: "full",
 };
 
-@customElement("ha-more-info-climate-temperature")
-export class HaMoreInfoClimateTemperature extends LitElement {
+@customElement("ha-state-control-climate-temperature")
+export class HaStateControlClimateTemperature extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: ClimateEntity;
@@ -422,7 +422,7 @@ export class HaMoreInfoClimateTemperature extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      moreInfoControlCircularSliderStyle,
+      stateControlCircularSliderStyle,
       css`
         /* Dual target */
         .dual {
@@ -477,6 +477,6 @@ export class HaMoreInfoClimateTemperature extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-climate-temperature": HaMoreInfoClimateTemperature;
+    "ha-state-control-climate-temperature": HaStateControlClimateTemperature;
   }
 }

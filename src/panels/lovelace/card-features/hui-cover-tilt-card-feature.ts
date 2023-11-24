@@ -85,9 +85,7 @@ class HuiCoverTiltCardFeature
         ${supportsFeature(this.stateObj, CoverEntityFeature.OPEN_TILT)
           ? html`
               <ha-control-button
-                .label=${this.hass.localize(
-                  "ui.dialogs.more_info_control.cover.open_tilt_cover"
-                )}
+                .label=${this.hass.localize("ui.card.cover.open_tilt_cover")}
                 @click=${this._onOpenTap}
                 .disabled=${!canOpenTilt(this.stateObj)}
               >
@@ -98,9 +96,7 @@ class HuiCoverTiltCardFeature
         ${supportsFeature(this.stateObj, CoverEntityFeature.STOP_TILT)
           ? html`
               <ha-control-button
-                .label=${this.hass.localize(
-                  "ui.dialogs.more_info_control.cover.stop_cover"
-                )}
+                .label=${this.hass.localize("ui.card.cover.stop_cover")}
                 @click=${this._onStopTap}
                 .disabled=${!canStopTilt(this.stateObj)}
               >
@@ -111,9 +107,7 @@ class HuiCoverTiltCardFeature
         ${supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT)
           ? html`
               <ha-control-button
-                .label=${this.hass.localize(
-                  "ui.dialogs.more_info_control.cover.close_tilt_cover"
-                )}
+                .label=${this.hass.localize("ui.card.cover.close_tilt_cover")}
                 @click=${this._onCloseTap}
                 .disabled=${!canCloseTilt(this.stateObj)}
               >

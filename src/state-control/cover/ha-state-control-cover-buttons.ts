@@ -1,11 +1,11 @@
 import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -13,23 +13,23 @@ import memoizeOne from "memoize-one";
 import {
   computeCloseIcon,
   computeOpenIcon,
-} from "../../../../common/entity/cover_icon";
-import { supportsFeature } from "../../../../common/entity/supports-feature";
-import "../../../../components/ha-control-button";
-import "../../../../components/ha-control-button-group";
-import "../../../../components/ha-control-slider";
-import "../../../../components/ha-svg-icon";
+} from "../../common/entity/cover_icon";
+import { supportsFeature } from "../../common/entity/supports-feature";
+import "../../components/ha-control-button";
+import "../../components/ha-control-button-group";
+import "../../components/ha-control-slider";
+import "../../components/ha-svg-icon";
 import {
+  CoverEntity,
+  CoverEntityFeature,
   canClose,
   canCloseTilt,
   canOpen,
   canOpenTilt,
   canStop,
   canStopTilt,
-  CoverEntity,
-  CoverEntityFeature,
-} from "../../../../data/cover";
-import { HomeAssistant } from "../../../../types";
+} from "../../data/cover";
+import { HomeAssistant } from "../../types";
 
 type CoverButton =
   | "open"
@@ -107,8 +107,8 @@ export const getCoverLayout = memoizeOne(
   }
 );
 
-@customElement("ha-more-info-cover-buttons")
-export class HaMoreInfoCoverButtons extends LitElement {
+@customElement("ha-state-control-cover-buttons")
+export class HaStateControlCoverButtons extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: CoverEntity;
@@ -159,9 +159,7 @@ export class HaMoreInfoCoverButtons extends LitElement {
     if (button === "open") {
       return html`
         <ha-control-button
-          .label=${this.hass.localize(
-            "ui.dialogs.more_info_control.cover.open_cover"
-          )}
+          .label=${this.hass.localize("ui.card.cover.open_cover")}
           @click=${this._onOpenTap}
           .disabled=${!canOpen(this.stateObj)}
           data-button="open"
@@ -173,9 +171,7 @@ export class HaMoreInfoCoverButtons extends LitElement {
     if (button === "close") {
       return html`
         <ha-control-button
-          .label=${this.hass.localize(
-            "ui.dialogs.more_info_control.cover.close_cover"
-          )}
+          .label=${this.hass.localize("ui.card.cover.close_cover")}
           @click=${this._onCloseTap}
           .disabled=${!canClose(this.stateObj)}
           data-button="close"
@@ -187,9 +183,7 @@ export class HaMoreInfoCoverButtons extends LitElement {
     if (button === "stop") {
       return html`
         <ha-control-button
-          .label=${this.hass.localize(
-            "ui.dialogs.more_info_control.cover.stop_cover"
-          )}
+          .label=${this.hass.localize("ui.card.cover.stop_cover")}
           @click=${this._onStopTap}
           .disabled=${!canStop(this.stateObj) && !canStopTilt(this.stateObj)}
           data-button="stop"
@@ -201,9 +195,7 @@ export class HaMoreInfoCoverButtons extends LitElement {
     if (button === "open-tilt") {
       return html`
         <ha-control-button
-          .label=${this.hass.localize(
-            "ui.dialogs.more_info_control.cover.open_tilt_cover"
-          )}
+          .label=${this.hass.localize("ui.card.cover.open_tilt_cover")}
           @click=${this._onOpenTiltTap}
           .disabled=${!canOpenTilt(this.stateObj)}
           data-button="open-tilt"
@@ -215,9 +207,7 @@ export class HaMoreInfoCoverButtons extends LitElement {
     if (button === "close-tilt") {
       return html`
         <ha-control-button
-          .label=${this.hass.localize(
-            "ui.dialogs.more_info_control.cover.close_tilt_cover"
-          )}
+          .label=${this.hass.localize("ui.card.cover.close_tilt_cover")}
           @click=${this._onCloseTiltTap}
           .disabled=${!canCloseTilt(this.stateObj)}
           data-button="close-tilt"
@@ -306,6 +296,6 @@ export class HaMoreInfoCoverButtons extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-cover-buttons": HaMoreInfoCoverButtons;
+    "ha-state-control-cover-buttons": HaStateControlCoverButtons;
   }
 }

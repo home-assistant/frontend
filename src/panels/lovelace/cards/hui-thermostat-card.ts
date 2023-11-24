@@ -16,7 +16,7 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { ClimateEntity } from "../../../data/climate";
-import "../../../dialogs/more-info/components/climate/ha-more-info-climate-temperature";
+import "../../../state-control/climate/ha-state-control-climate-temperature";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -118,11 +118,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         <p class="title">${name}</p>
-        <ha-more-info-climate-temperature
+        <ha-state-control-climate-temperature
           show-current
           .hass=${this.hass}
           .stateObj=${stateObj}
-        ></ha-more-info-climate-temperature>
+        ></ha-state-control-climate-temperature>
         <ha-icon-button
           class="more-info"
           .label=${this.hass!.localize(
@@ -172,7 +172,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         box-sizing: border-box;
       }
 
-      ha-more-info-climate-temperature {
+      ha-state-control-climate-temperature {
         width: 100%;
         max-width: 344px; /* 12px + 12px + 320px */
         padding: 0 12px 12px 12px;

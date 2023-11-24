@@ -57,10 +57,7 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
     if (speed === "on" || speed === "off") {
       return this.hass!.formatEntityState(this.stateObj!, speed);
     }
-    return (
-      this.hass!.localize(`ui.dialogs.more_info_control.fan.speed.${speed}`) ||
-      speed
-    );
+    return this.hass!.localize(`ui.card.fan.speed.${speed}`) || speed;
   }
 
   protected render() {

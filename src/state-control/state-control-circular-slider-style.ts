@@ -1,6 +1,6 @@
 import { css } from "lit";
 
-export const moreInfoControlCircularSliderStyle = css`
+export const stateControlCircularSliderStyle = css`
   /* Layout elements */
   :host {
     width: 320px;
