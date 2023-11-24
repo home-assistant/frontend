@@ -3,46 +3,49 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { FormatEntityStateFunc } from "../../../../common/translations/entity-state";
-import "../../../../components/ha-form/ha-form";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import { HVAC_MODES } from "../../../../data/climate";
 import type { HomeAssistant } from "../../../../types";
+import { supportsLawnMowerCommand } from "../../card-features/hui-lawn-mower-commands-card-feature";
 import {
-  ClimateHvacModesTileFeatureConfig,
-  LovelaceTileFeatureContext,
-} from "../../tile-features/types";
-import type { LovelaceTileFeatureEditor } from "../../types";
+  LAWN_MOWER_COMMANDS,
+  LawnMowerCommandsCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "../../card-features/types";
+import type { LovelaceCardFeatureEditor } from "../../types";
 
-@customElement("hui-climate-hvac-modes-tile-feature-editor")
-export class HuiClimateHvacModesTileFeatureEditor
+@customElement("hui-lawn-mower-commands-card-feature-editor")
+export class HuiLawnMowerCommandsCardFeatureEditor
   extends LitElement
-  implements LovelaceTileFeatureEditor
+  implements LovelaceCardFeatureEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context?: LovelaceTileFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: ClimateHvacModesTileFeatureConfig;
+  @state() private _config?: LawnMowerCommandsCardFeatureConfig;
 
-  public setConfig(config: ClimateHvacModesTileFeatureConfig): void {
+  public setConfig(config: LawnMowerCommandsCardFeatureConfig): void {
     this._config = config;
   }
 
   private _schema = memoizeOne(
-    (formatEntityState: FormatEntityStateFunc, stateObj?: HassEntity) =>
+    (localize: LocalizeFunc, stateObj?: HassEntity) =>
       [
         {
-          name: "hvac_modes",
+          name: "commands",
           selector: {
             select: {
               multiple: true,
               mode: "list",
-              options: HVAC_MODES.filter(
-                (mode) => stateObj?.attributes.hvac_modes?.includes(mode)
-              ).map((mode) => ({
-                value: mode,
-                label: stateObj ? formatEntityState(stateObj, mode) : mode,
+              options: LAWN_MOWER_COMMANDS.filter(
+                (command) =>
+                  stateObj && supportsLawnMowerCommand(stateObj, command)
+              ).map((command) => ({
+                value: command,
+                label: `${localize(
+                  `ui.panel.lovelace.editor.features.types.lawn-mower-commands.commands_list.${command}`
+                )}`,
               })),
             },
           },
@@ -59,7 +62,7 @@ export class HuiClimateHvacModesTileFeatureEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const schema = this._schema(this.hass.formatEntityState, stateObj);
+    const schema = this._schema(this.hass.localize, stateObj);
 
     return html`
       <ha-form
@@ -80,9 +83,9 @@ export class HuiClimateHvacModesTileFeatureEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
-      case "hvac_modes":
+      case "commands":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.features.types.climate-hvac-modes.${schema.name}`
+          `ui.panel.lovelace.editor.features.types.lawn-mower-commands.${schema.name}`
         );
       default:
         return this.hass!.localize(
@@ -94,6 +97,6 @@ export class HuiClimateHvacModesTileFeatureEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-climate-hvac-modes-tile-feature-editor": HuiClimateHvacModesTileFeatureEditor;
+    "hui-lawn-mower-commands-card-feature-editor": HuiLawnMowerCommandsCardFeatureEditor;
   }
 }

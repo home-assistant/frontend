@@ -8,17 +8,19 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { HumidifierEntity } from "../../../data/humidifier";
 import "../../../dialogs/more-info/components/humidifier/ha-more-info-humidifier-humidity";
 import { HomeAssistant } from "../../../types";
+import "../card-features/hui-card-features";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import "../tile-features/hui-tile-features";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { HumidifierCardConfig } from "./types";
 
@@ -119,6 +121,8 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
     const name = this._config!.name || computeStateName(stateObj);
 
+    const color = stateColorCss(stateObj);
+
     return html`
       <ha-card>
         <p class="title">${name}</p>
@@ -136,12 +140,14 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
           @click=${this._handleMoreInfo}
           tabindex="0"
         ></ha-icon-button>
-        <hui-tile-features
+        <hui-card-features
+          style=${styleMap({
+            "--feature-color": color,
+          })}
           .hass=${this.hass}
           .stateObj=${stateObj}
-          .color=${this._config.color}
           .features=${this._config.features}
-        ></hui-tile-features>
+        ></hui-card-features>
       </ha-card>
     `;
   }
@@ -191,7 +197,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         direction: var(--direction);
       }
 
-      hui-tile-features {
+      hui-card-features {
         width: 100%;
       }
     `;

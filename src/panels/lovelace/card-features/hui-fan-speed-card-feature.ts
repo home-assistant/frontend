@@ -21,32 +21,32 @@ import {
   fanSpeedToPercentage,
 } from "../../../data/fan";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature } from "../types";
-import { FanSpeedTileFeatureConfig } from "./types";
+import { LovelaceCardFeature } from "../types";
+import { FanSpeedCardFeatureConfig } from "./types";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
 
-export const supportsFanSpeedTileFeature = (stateObj: HassEntity) => {
+export const supportsFanSpeedCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "fan" && supportsFeature(stateObj, FanEntityFeature.SET_SPEED)
   );
 };
 
-@customElement("hui-fan-speed-tile-feature")
-class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
+@customElement("hui-fan-speed-card-feature")
+class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: FanEntity;
 
-  @state() private _config?: FanSpeedTileFeatureConfig;
+  @state() private _config?: FanSpeedCardFeatureConfig;
 
-  static getStubConfig(): FanSpeedTileFeatureConfig {
+  static getStubConfig(): FanSpeedCardFeatureConfig {
     return {
       type: "fan-speed",
     };
   }
 
-  public setConfig(config: FanSpeedTileFeatureConfig): void {
+  public setConfig(config: FanSpeedCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -68,7 +68,7 @@ class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsFanSpeedTileFeature(this.stateObj)
+      !supportsFanSpeedCardFeature(this.stateObj)
     ) {
       return nothing;
     }
@@ -158,15 +158,15 @@ class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
   static get styles() {
     return css`
       ha-control-slider {
-        --control-slider-color: var(--tile-color);
-        --control-slider-background: var(--tile-color);
+        --control-slider-color: var(--feature-color);
+        --control-slider-background: var(--feature-color);
         --control-slider-background-opacity: 0.2;
         --control-slider-thickness: 40px;
         --control-slider-border-radius: 10px;
       }
       ha-control-select {
-        --control-select-color: var(--tile-color);
-        --control-select-background: var(--tile-color);
+        --control-select-color: var(--feature-color);
+        --control-select-background: var(--feature-color);
         --control-select-background-opacity: 0.2;
         --control-select-padding: 0;
         --control-select-thickness: 40px;
@@ -183,6 +183,6 @@ class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-fan-speed-tile-feature": HuiFanSpeedTileFeature;
+    "hui-fan-speed-card-feature": HuiFanSpeedCardFeature;
   }
 }

@@ -19,29 +19,29 @@ import {
 } from "../../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature, LovelaceTileFeatureEditor } from "../types";
-import { AlarmModesTileFeatureConfig } from "./types";
+import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import { AlarmModesCardFeatureConfig } from "./types";
 import { showEnterCodeDialogDialog } from "../../../dialogs/enter-code/show-enter-code-dialog";
 
-export const supportsAlarmModesTileFeature = (stateObj: HassEntity) => {
+export const supportsAlarmModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return domain === "alarm_control_panel";
 };
 
-@customElement("hui-alarm-modes-tile-feature")
-class HuiAlarmModeTileFeature
+@customElement("hui-alarm-modes-card-feature")
+class HuiAlarmModeCardFeature
   extends LitElement
-  implements LovelaceTileFeature
+  implements LovelaceCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: AlarmControlPanelEntity;
 
-  @state() private _config?: AlarmModesTileFeatureConfig;
+  @state() private _config?: AlarmModesCardFeatureConfig;
 
   @state() _currentMode?: AlarmMode;
 
-  static getStubConfig(_, stateObj?: HassEntity): AlarmModesTileFeatureConfig {
+  static getStubConfig(_, stateObj?: HassEntity): AlarmModesCardFeatureConfig {
     return {
       type: "alarm-modes",
       modes: stateObj
@@ -53,14 +53,14 @@ class HuiAlarmModeTileFeature
     };
   }
 
-  public static async getConfigElement(): Promise<LovelaceTileFeatureEditor> {
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
     await import(
-      "../editor/config-elements/hui-alarm-modes-tile-feature-editor"
+      "../editor/config-elements/hui-alarm-modes-card-feature-editor"
     );
-    return document.createElement("hui-alarm-modes-tile-feature-editor");
+    return document.createElement("hui-alarm-modes-card-feature-editor");
   }
 
-  public setConfig(config: AlarmModesTileFeatureConfig): void {
+  public setConfig(config: AlarmModesCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -161,7 +161,7 @@ class HuiAlarmModeTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsAlarmModesTileFeature(this.stateObj)
+      !supportsAlarmModesCardFeature(this.stateObj)
     ) {
       return null;
     }
@@ -216,7 +216,7 @@ class HuiAlarmModeTileFeature
   static get styles() {
     return css`
       ha-control-select {
-        --control-select-color: var(--tile-color);
+        --control-select-color: var(--feature-color);
         --control-select-padding: 0;
         --control-select-thickness: 40px;
         --control-select-border-radius: 10px;
@@ -236,6 +236,6 @@ class HuiAlarmModeTileFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-alarm-modes-tile-feature": HuiAlarmModeTileFeature;
+    "hui-alarm-modes-card-feature": HuiAlarmModeCardFeature;
   }
 }

@@ -15,10 +15,10 @@ import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
 import { LightColorMode, lightSupportsColorMode } from "../../../data/light";
 import { generateColorTemperatureGradient } from "../../../dialogs/more-info/components/lights/light-color-temp-picker";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature } from "../types";
-import { LightColorTempTileFeatureConfig } from "./types";
+import { LovelaceCardFeature } from "../types";
+import { LightColorTempCardFeatureConfig } from "./types";
 
-export const supportsLightColorTempTileFeature = (stateObj: HassEntity) => {
+export const supportsLightColorTempCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "light" &&
@@ -26,24 +26,24 @@ export const supportsLightColorTempTileFeature = (stateObj: HassEntity) => {
   );
 };
 
-@customElement("hui-light-color-temp-tile-feature")
-class HuiLightColorTempTileFeature
+@customElement("hui-light-color-temp-card-feature")
+class HuiLightColorTempCardFeature
   extends LitElement
-  implements LovelaceTileFeature
+  implements LovelaceCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: LightColorTempTileFeatureConfig;
+  @state() private _config?: LightColorTempCardFeatureConfig;
 
-  static getStubConfig(): LightColorTempTileFeatureConfig {
+  static getStubConfig(): LightColorTempCardFeatureConfig {
     return {
       type: "light-color-temp",
     };
   }
 
-  public setConfig(config: LightColorTempTileFeatureConfig): void {
+  public setConfig(config: LightColorTempCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -55,7 +55,7 @@ class HuiLightColorTempTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsLightColorTempTileFeature(this.stateObj)
+      !supportsLightColorTempCardFeature(this.stateObj)
     ) {
       return nothing;
     }
@@ -110,7 +110,7 @@ class HuiLightColorTempTileFeature
   static get styles() {
     return css`
       ha-control-slider {
-        --control-slider-color: var(--tile-color);
+        --control-slider-color: var(--feature-color);
         --control-slider-background: -webkit-linear-gradient(
           left,
           var(--gradient)
@@ -129,6 +129,6 @@ class HuiLightColorTempTileFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-light-color-temp-tile-feature": HuiLightColorTempTileFeature;
+    "hui-light-color-temp-card-feature": HuiLightColorTempCardFeature;
   }
 }

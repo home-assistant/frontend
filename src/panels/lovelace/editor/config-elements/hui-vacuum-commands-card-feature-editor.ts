@@ -6,26 +6,26 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import { supportsLawnMowerCommand } from "../../tile-features/hui-lawn-mower-commands-tile-feature";
+import { supportsVacuumCommand } from "../../card-features/hui-vacuum-commands-card-feature";
 import {
-  LAWN_MOWER_COMMANDS,
-  LawnMowerCommandsTileFeatureConfig,
-  LovelaceTileFeatureContext,
-} from "../../tile-features/types";
-import type { LovelaceTileFeatureEditor } from "../../types";
+  LovelaceCardFeatureContext,
+  VacuumCommandsCardFeatureConfig,
+  VACUUM_COMMANDS,
+} from "../../card-features/types";
+import type { LovelaceCardFeatureEditor } from "../../types";
 
-@customElement("hui-lawn-mower-commands-tile-feature-editor")
-export class HuiLawnMowerCommandsTileFeatureEditor
+@customElement("hui-vacuum-commands-card-feature-editor")
+export class HuiVacuumCommandsCardFeatureEditor
   extends LitElement
-  implements LovelaceTileFeatureEditor
+  implements LovelaceCardFeatureEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context?: LovelaceTileFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: LawnMowerCommandsTileFeatureConfig;
+  @state() private _config?: VacuumCommandsCardFeatureConfig;
 
-  public setConfig(config: LawnMowerCommandsTileFeatureConfig): void {
+  public setConfig(config: VacuumCommandsCardFeatureConfig): void {
     this._config = config;
   }
 
@@ -38,13 +38,13 @@ export class HuiLawnMowerCommandsTileFeatureEditor
             select: {
               multiple: true,
               mode: "list",
-              options: LAWN_MOWER_COMMANDS.filter(
+              options: VACUUM_COMMANDS.filter(
                 (command) =>
-                  stateObj && supportsLawnMowerCommand(stateObj, command)
+                  stateObj && supportsVacuumCommand(stateObj, command)
               ).map((command) => ({
                 value: command,
                 label: `${localize(
-                  `ui.panel.lovelace.editor.card.tile.features.types.lawn-mower-commands.commands_list.${command}`
+                  `ui.panel.lovelace.editor.features.types.vacuum-commands.commands_list.${command}`
                 )}`,
               })),
             },
@@ -85,7 +85,7 @@ export class HuiLawnMowerCommandsTileFeatureEditor
     switch (schema.name) {
       case "commands":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.features.types.lawn-mower-commands.${schema.name}`
+          `ui.panel.lovelace.editor.features.types.vacuum-commands.${schema.name}`
         );
       default:
         return this.hass!.localize(
@@ -97,6 +97,6 @@ export class HuiLawnMowerCommandsTileFeatureEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-lawn-mower-commands-tile-feature-editor": HuiLawnMowerCommandsTileFeatureEditor;
+    "hui-vacuum-commands-card-feature-editor": HuiVacuumCommandsCardFeatureEditor;
   }
 }

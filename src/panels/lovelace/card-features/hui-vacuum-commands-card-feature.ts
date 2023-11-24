@@ -24,11 +24,11 @@ import {
   isCleaning,
 } from "../../../data/vacuum";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature, LovelaceTileFeatureEditor } from "../types";
+import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import {
   VACUUM_COMMANDS,
   VacuumCommand,
-  VacuumCommandsTileFeatureConfig,
+  VacuumCommandsCardFeatureConfig,
 } from "./types";
 
 interface VacuumButton {
@@ -116,7 +116,7 @@ export const VACUUM_COMMANDS_BUTTONS: Record<
   }),
 };
 
-export const supportsVacuumCommandTileFeature = (stateObj: HassEntity) => {
+export const supportsVacuumCommandsCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "vacuum" &&
@@ -124,21 +124,21 @@ export const supportsVacuumCommandTileFeature = (stateObj: HassEntity) => {
   );
 };
 
-@customElement("hui-vacuum-commands-tile-feature")
-class HuiVacuumCommandTileFeature
+@customElement("hui-vacuum-commands-card-feature")
+class HuiVacuumCommandCardFeature
   extends LitElement
-  implements LovelaceTileFeature
+  implements LovelaceCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: VacuumCommandsTileFeatureConfig;
+  @state() private _config?: VacuumCommandsCardFeatureConfig;
 
   static getStubConfig(
     _,
     stateObj?: HassEntity
-  ): VacuumCommandsTileFeatureConfig {
+  ): VacuumCommandsCardFeatureConfig {
     return {
       type: "vacuum-commands",
       commands: stateObj
@@ -149,14 +149,14 @@ class HuiVacuumCommandTileFeature
     };
   }
 
-  public static async getConfigElement(): Promise<LovelaceTileFeatureEditor> {
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
     await import(
-      "../editor/config-elements/hui-vacuum-commands-tile-feature-editor"
+      "../editor/config-elements/hui-vacuum-commands-card-feature-editor"
     );
-    return document.createElement("hui-vacuum-commands-tile-feature-editor");
+    return document.createElement("hui-vacuum-commands-card-feature-editor");
   }
 
-  public setConfig(config: VacuumCommandsTileFeatureConfig): void {
+  public setConfig(config: VacuumCommandsCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -176,7 +176,7 @@ class HuiVacuumCommandTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsVacuumCommandTileFeature(this.stateObj)
+      !supportsVacuumCommandsCardFeature(this.stateObj)
     ) {
       return nothing;
     }
@@ -221,6 +221,6 @@ class HuiVacuumCommandTileFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-vacuum-commands-tile-feature": HuiVacuumCommandTileFeature;
+    "hui-vacuum-commands-card-feature": HuiVacuumCommandCardFeature;
   }
 }

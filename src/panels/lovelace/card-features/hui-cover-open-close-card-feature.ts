@@ -17,10 +17,10 @@ import {
   CoverEntityFeature,
 } from "../../../data/cover";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature } from "../types";
-import { CoverOpenCloseTileFeatureConfig } from "./types";
+import { LovelaceCardFeature } from "../types";
+import { CoverOpenCloseCardFeatureConfig } from "./types";
 
-export const supportsCoverOpenCloseTileFeature = (stateObj: HassEntity) => {
+export const supportsCoverOpenCloseCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "cover" &&
@@ -29,24 +29,24 @@ export const supportsCoverOpenCloseTileFeature = (stateObj: HassEntity) => {
   );
 };
 
-@customElement("hui-cover-open-close-tile-feature")
-class HuiCoverOpenCloseTileFeature
+@customElement("hui-cover-open-close-card-feature")
+class HuiCoverOpenCloseCardFeature
   extends LitElement
-  implements LovelaceTileFeature
+  implements LovelaceCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: CoverOpenCloseTileFeatureConfig;
+  @state() private _config?: CoverOpenCloseCardFeatureConfig;
 
-  static getStubConfig(): CoverOpenCloseTileFeatureConfig {
+  static getStubConfig(): CoverOpenCloseCardFeatureConfig {
     return {
       type: "cover-open-close",
     };
   }
 
-  public setConfig(config: CoverOpenCloseTileFeatureConfig): void {
+  public setConfig(config: CoverOpenCloseCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -79,7 +79,7 @@ class HuiCoverOpenCloseTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsCoverOpenCloseTileFeature(this.stateObj)
+      !supportsCoverOpenCloseCardFeature(this.stateObj)
     ) {
       return nothing;
     }
@@ -145,6 +145,6 @@ class HuiCoverOpenCloseTileFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-cover-open-close-tile-feature": HuiCoverOpenCloseTileFeature;
+    "hui-cover-open-close-card-feature": HuiCoverOpenCloseCardFeature;
   }
 }
