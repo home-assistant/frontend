@@ -161,7 +161,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         const options: IFuseOptions<ConfigEntryExtended> = {
           keys: ["domain", "localized_domain_name", "title"],
           isCaseSensitive: false,
-          minMatchCharLength: filter.length === 1 ? 1 : 2,
+          minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
         };
         const fuse = new Fuse(configEntries, options);
@@ -205,7 +205,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         const options: IFuseOptions<DataEntryFlowProgressExtended> = {
           keys: ["handler", "localized_title"],
           isCaseSensitive: false,
-          minMatchCharLength: filter.length === 1 ? 1 : 2,
+          minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
         };
         const fuse = new Fuse(configEntriesInProgress, options);
