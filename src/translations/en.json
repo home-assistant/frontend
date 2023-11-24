@@ -5239,6 +5239,9 @@
                 },
                 "preset_modes": "Preset modes"
               },
+              "humidifier-modes": {
+                "label": "Humidifier modes"
+              },
               "select-options": {
                 "label": "Select options"
               },
