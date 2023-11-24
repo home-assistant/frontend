@@ -18,28 +18,26 @@ class MoreInfoContent extends LitElement {
   @property({ attribute: false }) public editMode?: boolean;
 
   protected render() {
-    const stateObj = this.stateObj;
-    const entry = this.entry;
-    const hass = this.hass;
-    const editMode = this.editMode;
-
     let moreInfoType: string | undefined;
 
-    if (!stateObj || !hass) return nothing;
-    if (stateObj.attributes && "custom_ui_more_info" in stateObj.attributes) {
-      moreInfoType = stateObj.attributes.custom_ui_more_info;
+    if (!this.stateObj || !this.hass) return nothing;
+    if (
+      this.stateObj.attributes &&
+      "custom_ui_more_info" in this.stateObj.attributes
+    ) {
+      moreInfoType = this.stateObj.attributes.custom_ui_more_info;
     } else {
-      const type = stateMoreInfoType(stateObj);
+      const type = stateMoreInfoType(this.stateObj);
       importMoreInfoControl(type);
       moreInfoType = type === "hidden" ? undefined : `more-info-${type}`;
     }
 
     if (!moreInfoType) return nothing;
     return dynamicElement(moreInfoType, {
-      hass,
-      stateObj,
-      entry,
-      editMode,
+      hass: this.hass,
+      stateObj: this.stateObj,
+      entry: this.entry,
+      editMode: this.editMode,
     });
   }
 }

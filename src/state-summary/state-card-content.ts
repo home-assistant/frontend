@@ -39,22 +39,21 @@ class StateCardContent extends LitElement {
   @property({ type: Boolean }) public inDialog = false;
 
   protected render() {
-    const stateObj = this.stateObj;
-    const inDialog = this.inDialog;
-    const hass = this.hass;
-
     let stateCard: string;
-    if (!stateObj || !hass) return nothing;
-    if (stateObj.attributes && "custom_ui_state_card" in stateObj.attributes) {
-      stateCard = stateObj.attributes.custom_ui_state_card;
+    if (!this.stateObj || !this.hass) return nothing;
+    if (
+      this.stateObj.attributes &&
+      "custom_ui_state_card" in this.stateObj.attributes
+    ) {
+      stateCard = this.stateObj.attributes.custom_ui_state_card;
     } else {
-      stateCard = "state-card-" + stateCardType(hass, stateObj);
+      stateCard = "state-card-" + stateCardType(this.hass, this.stateObj);
     }
 
     return dynamicElement(stateCard, {
-      hass: hass,
-      stateObj: stateObj,
-      inDialog: inDialog,
+      hass: this.hass,
+      stateObj: this.stateObj,
+      inDialog: this.inDialog,
     });
   }
 }
