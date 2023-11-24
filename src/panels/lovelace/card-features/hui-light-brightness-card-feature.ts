@@ -7,32 +7,32 @@ import "../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../data/entity";
 import { lightSupportsBrightness } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature } from "../types";
-import { LightBrightnessTileFeatureConfig } from "./types";
+import { LovelaceCardFeature } from "../types";
+import { LightBrightnessCardFeatureConfig } from "./types";
 
-export const supportsLightBrightnessTileFeature = (stateObj: HassEntity) => {
+export const supportsLightBrightnessCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return domain === "light" && lightSupportsBrightness(stateObj);
 };
 
-@customElement("hui-light-brightness-tile-feature")
-class HuiLightBrightnessTileFeature
+@customElement("hui-light-brightness-card-feature")
+class HuiLightBrightnessCardFeature
   extends LitElement
-  implements LovelaceTileFeature
+  implements LovelaceCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: LightBrightnessTileFeatureConfig;
+  @state() private _config?: LightBrightnessCardFeatureConfig;
 
-  static getStubConfig(): LightBrightnessTileFeatureConfig {
+  static getStubConfig(): LightBrightnessCardFeatureConfig {
     return {
       type: "light-brightness",
     };
   }
 
-  public setConfig(config: LightBrightnessTileFeatureConfig): void {
+  public setConfig(config: LightBrightnessCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -44,7 +44,7 @@ class HuiLightBrightnessTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsLightBrightnessTileFeature(this.stateObj)
+      !supportsLightBrightnessCardFeature(this.stateObj)
     ) {
       return nothing;
     }
@@ -87,8 +87,8 @@ class HuiLightBrightnessTileFeature
   static get styles() {
     return css`
       ha-control-slider {
-        --control-slider-color: var(--tile-color);
-        --control-slider-background: var(--tile-color);
+        --control-slider-color: var(--feature-color);
+        --control-slider-background: var(--feature-color);
         --control-slider-background-opacity: 0.2;
         --control-slider-thickness: 40px;
         --control-slider-border-radius: 10px;
@@ -103,6 +103,6 @@ class HuiLightBrightnessTileFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-light-brightness-tile-feature": HuiLightBrightnessTileFeature;
+    "hui-light-brightness-card-feature": HuiLightBrightnessCardFeature;
   }
 }

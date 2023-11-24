@@ -3,47 +3,55 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { FormatEntityStateFunc } from "../../../../common/translations/entity-state";
-import "../../../../components/ha-form/ha-form";
+import { supportsFeature } from "../../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
+import { AlarmMode, ALARM_MODES } from "../../../../data/alarm_control_panel";
 import type { HomeAssistant } from "../../../../types";
 import {
-  WaterHeaterOperationModesTileFeatureConfig,
-  LovelaceTileFeatureContext,
-} from "../../tile-features/types";
-import type { LovelaceTileFeatureEditor } from "../../types";
-import { OPERATION_MODES } from "../../../../data/water_heater";
+  LovelaceCardFeatureContext,
+  AlarmModesCardFeatureConfig,
+} from "../../card-features/types";
+import type { LovelaceCardFeatureEditor } from "../../types";
+import "../../../../components/ha-form/ha-form";
 
-@customElement("hui-water-heater-operation-modes-tile-feature-editor")
-export class HuiWaterHeaterOperationModesTileFeatureEditor
+@customElement("hui-alarm-modes-card-feature-editor")
+export class HuiAlarmModesCardFeatureEditor
   extends LitElement
-  implements LovelaceTileFeatureEditor
+  implements LovelaceCardFeatureEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context?: LovelaceTileFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: WaterHeaterOperationModesTileFeatureConfig;
+  @state() private _config?: AlarmModesCardFeatureConfig;
 
-  public setConfig(config: WaterHeaterOperationModesTileFeatureConfig): void {
+  public setConfig(config: AlarmModesCardFeatureConfig): void {
     this._config = config;
   }
 
   private _schema = memoizeOne(
-    (formatEntityState: FormatEntityStateFunc, stateObj?: HassEntity) =>
+    (localize: LocalizeFunc, stateObj?: HassEntity) =>
       [
         {
-          name: "operation_modes",
+          name: "modes",
           selector: {
             select: {
               multiple: true,
               mode: "list",
-              options: OPERATION_MODES.filter(
-                (mode) => stateObj?.attributes.operation_list?.includes(mode)
-              ).map((mode) => ({
-                value: mode,
-                label: stateObj ? formatEntityState(stateObj, mode) : mode,
-              })),
+              options: Object.keys(ALARM_MODES)
+                .filter((mode) => {
+                  const feature = ALARM_MODES[mode as AlarmMode].feature;
+                  return (
+                    stateObj && (!feature || supportsFeature(stateObj, feature))
+                  );
+                })
+                .map((mode) => ({
+                  value: mode,
+                  label: `${localize(
+                    `ui.panel.lovelace.editor.features.types.alarm-modes.modes_list.${mode}`
+                  )}`,
+                })),
             },
           },
         },
@@ -59,7 +67,7 @@ export class HuiWaterHeaterOperationModesTileFeatureEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const schema = this._schema(this.hass.formatEntityState, stateObj);
+    const schema = this._schema(this.hass.localize, stateObj);
 
     return html`
       <ha-form
@@ -80,9 +88,9 @@ export class HuiWaterHeaterOperationModesTileFeatureEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
-      case "operation_modes":
+      case "modes":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.features.types.water-heater-modes.${schema.name}`
+          `ui.panel.lovelace.editor.features.types.alarm-modes.${schema.name}`
         );
       default:
         return this.hass!.localize(
@@ -94,6 +102,6 @@ export class HuiWaterHeaterOperationModesTileFeatureEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-water-heater-operation-modes-tile-feature-editor": HuiWaterHeaterOperationModesTileFeatureEditor;
+    "hui-alarm-modes-card-feature-editor": HuiAlarmModesCardFeatureEditor;
   }
 }

@@ -5154,99 +5154,6 @@
               "state_content_options": {
                 "state": "State",
                 "last-changed": "Last changed"
-              },
-              "features": {
-                "name": "Features",
-                "not_compatible": "Not compatible",
-                "no_compatible_available": "No compatible features available for this entity",
-                "add": "Add feature",
-                "edit": "Edit feature",
-                "remove": "Remove feature",
-                "types": {
-                  "cover-open-close": {
-                    "label": "Cover open/close"
-                  },
-                  "cover-position": {
-                    "label": "Cover position"
-                  },
-                  "cover-tilt": {
-                    "label": "Cover tilt"
-                  },
-                  "cover-tilt-position": {
-                    "label": "Cover tilt position"
-                  },
-                  "fan-speed": {
-                    "label": "Fan speed"
-                  },
-                  "alarm-modes": {
-                    "label": "Alarm modes",
-                    "modes": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes_label%]",
-                    "modes_list": {
-                      "armed_away": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_away%]",
-                      "armed_home": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_home%]",
-                      "armed_night": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_night%]",
-                      "armed_vacation": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_vacation%]",
-                      "armed_custom_bypass": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_custom_bypass%]",
-                      "disarmed": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::disarmed%]"
-                    }
-                  },
-                  "light-brightness": {
-                    "label": "Light brightness"
-                  },
-                  "light-color-temp": {
-                    "label": "Light color temperature"
-                  },
-                  "vacuum-commands": {
-                    "label": "Vacuum commands",
-                    "commands": "Commands",
-                    "commands_list": {
-                      "start_pause": "[%key:ui::dialogs::more_info_control::vacuum::start_pause%]",
-                      "stop": "[%key:ui::dialogs::more_info_control::vacuum::stop%]",
-                      "clean_spot": "[%key:ui::dialogs::more_info_control::vacuum::clean_spot%]",
-                      "locate": "[%key:ui::dialogs::more_info_control::vacuum::locate%]",
-                      "return_home": "[%key:ui::dialogs::more_info_control::vacuum::return_home%]"
-                    }
-                  },
-                  "climate-hvac-modes": {
-                    "label": "Climate HVAC modes",
-                    "hvac_modes": "HVAC modes"
-                  },
-                  "climate-preset-modes": {
-                    "label": "Climate preset modes",
-                    "style": "Style",
-                    "style_list": {
-                      "dropdown": "Dropdown",
-                      "icons": "Icons"
-                    },
-                    "preset_modes": "Preset modes"
-                  },
-                  "select-options": {
-                    "label": "Select options"
-                  },
-                  "number": {
-                    "label": "Number",
-                    "style": "Style",
-                    "style_list": {
-                      "buttons": "Buttons",
-                      "slider": "Slider"
-                    }
-                  },
-                  "target-temperature": {
-                    "label": "Target temperature"
-                  },
-                  "water-heater-operation-modes": {
-                    "label": "Water heater operation modes",
-                    "operation_modes": "Operation modes"
-                  },
-                  "lawn-mower-commands": {
-                    "label": "Lawn mower commands",
-                    "commands": "Commands",
-                    "commands_list": {
-                      "start_pause": "Start Pause",
-                      "dock": "[%key:ui::dialogs::more_info_control::lawn_mower::dock%]"
-                    }
-                  }
-                }
               }
             },
             "vertical-stack": {
@@ -5265,6 +5172,102 @@
               "daily": "Daily",
               "hourly": "Hourly",
               "twice_daily": "Twice daily"
+            }
+          },
+          "features": {
+            "name": "Features",
+            "not_compatible": "Not compatible",
+            "no_compatible_available": "No compatible features available for this entity",
+            "add": "Add feature",
+            "edit": "Edit feature",
+            "remove": "Remove feature",
+            "types": {
+              "cover-open-close": {
+                "label": "Cover open/close"
+              },
+              "cover-position": {
+                "label": "Cover position"
+              },
+              "cover-tilt": {
+                "label": "Cover tilt"
+              },
+              "cover-tilt-position": {
+                "label": "Cover tilt position"
+              },
+              "fan-speed": {
+                "label": "Fan speed"
+              },
+              "alarm-modes": {
+                "label": "Alarm modes",
+                "modes": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes_label%]",
+                "modes_list": {
+                  "armed_away": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_away%]",
+                  "armed_home": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_home%]",
+                  "armed_night": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_night%]",
+                  "armed_vacation": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_vacation%]",
+                  "armed_custom_bypass": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_custom_bypass%]",
+                  "disarmed": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::disarmed%]"
+                }
+              },
+              "light-brightness": {
+                "label": "Light brightness"
+              },
+              "light-color-temp": {
+                "label": "Light color temperature"
+              },
+              "vacuum-commands": {
+                "label": "Vacuum commands",
+                "commands": "Commands",
+                "commands_list": {
+                  "start_pause": "[%key:ui::dialogs::more_info_control::vacuum::start_pause%]",
+                  "stop": "[%key:ui::dialogs::more_info_control::vacuum::stop%]",
+                  "clean_spot": "[%key:ui::dialogs::more_info_control::vacuum::clean_spot%]",
+                  "locate": "[%key:ui::dialogs::more_info_control::vacuum::locate%]",
+                  "return_home": "[%key:ui::dialogs::more_info_control::vacuum::return_home%]"
+                }
+              },
+              "climate-hvac-modes": {
+                "label": "Climate HVAC modes",
+                "hvac_modes": "HVAC modes"
+              },
+              "climate-preset-modes": {
+                "label": "Climate preset modes",
+                "style": "Style",
+                "style_list": {
+                  "dropdown": "Dropdown",
+                  "icons": "Icons"
+                },
+                "preset_modes": "Preset modes"
+              },
+              "humidifier-modes": {
+                "label": "Humidifier modes"
+              },
+              "select-options": {
+                "label": "Select options"
+              },
+              "number": {
+                "label": "Number",
+                "style": "Style",
+                "style_list": {
+                  "buttons": "Buttons",
+                  "slider": "Slider"
+                }
+              },
+              "target-temperature": {
+                "label": "Target temperature"
+              },
+              "water-heater-operation-modes": {
+                "label": "Water heater operation modes",
+                "operation_modes": "Operation modes"
+              },
+              "lawn-mower-commands": {
+                "label": "Lawn mower commands",
+                "commands": "Commands",
+                "commands_list": {
+                  "start_pause": "Start Pause",
+                  "dock": "[%key:ui::dialogs::more_info_control::lawn_mower::dock%]"
+                }
+              }
             }
           },
           "strategy": {
@@ -5340,7 +5343,7 @@
               "header": "Header editor",
               "footer": "Footer editor",
               "row": "Entity row editor",
-              "tile-feature": "Tile feature editor"
+              "feature": "Feature editor"
             }
           }
         },

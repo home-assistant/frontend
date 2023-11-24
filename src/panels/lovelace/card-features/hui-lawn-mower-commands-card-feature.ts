@@ -13,11 +13,11 @@ import {
   canDock,
 } from "../../../data/lawn_mower";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature, LovelaceTileFeatureEditor } from "../types";
+import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import {
   LAWN_MOWER_COMMANDS,
   LawnMowerCommand,
-  LawnMowerCommandsTileFeatureConfig,
+  LawnMowerCommandsCardFeatureConfig,
 } from "./types";
 
 interface LawnMowerButton {
@@ -75,7 +75,7 @@ export const LAWN_MOWER_COMMANDS_BUTTONS: Record<
   }),
 };
 
-export const supportsLawnMowerCommandTileFeature = (stateObj: HassEntity) => {
+export const supportsLawnMowerCommandCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "lawn_mower" &&
@@ -83,21 +83,21 @@ export const supportsLawnMowerCommandTileFeature = (stateObj: HassEntity) => {
   );
 };
 
-@customElement("hui-lawn-mower-commands-tile-feature")
-class HuiLawnMowerCommandTileFeature
+@customElement("hui-lawn-mower-commands-card-feature")
+class HuiLawnMowerCommandCardFeature
   extends LitElement
-  implements LovelaceTileFeature
+  implements LovelaceCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: LawnMowerCommandsTileFeatureConfig;
+  @state() private _config?: LawnMowerCommandsCardFeatureConfig;
 
   static getStubConfig(
     _,
     stateObj?: HassEntity
-  ): LawnMowerCommandsTileFeatureConfig {
+  ): LawnMowerCommandsCardFeatureConfig {
     return {
       type: "lawn-mower-commands",
       commands: stateObj
@@ -108,16 +108,16 @@ class HuiLawnMowerCommandTileFeature
     };
   }
 
-  public static async getConfigElement(): Promise<LovelaceTileFeatureEditor> {
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
     await import(
-      "../editor/config-elements/hui-lawn-mower-commands-tile-feature-editor"
+      "../editor/config-elements/hui-lawn-mower-commands-card-feature-editor"
     );
     return document.createElement(
-      "hui-lawn-mower-commands-tile-feature-editor"
+      "hui-lawn-mower-commands-card-feature-editor"
     );
   }
 
-  public setConfig(config: LawnMowerCommandsTileFeatureConfig): void {
+  public setConfig(config: LawnMowerCommandsCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -137,7 +137,7 @@ class HuiLawnMowerCommandTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsLawnMowerCommandTileFeature(this.stateObj)
+      !supportsLawnMowerCommandCardFeature(this.stateObj)
     ) {
       return nothing;
     }
@@ -182,6 +182,6 @@ class HuiLawnMowerCommandTileFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-lawn-mower-commands-tile-feature": HuiLawnMowerCommandTileFeature;
+    "hui-lawn-mower-commands-card-feature": HuiLawnMowerCommandCardFeature;
   }
 }

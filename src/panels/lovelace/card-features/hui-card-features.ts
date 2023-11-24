@@ -10,28 +10,28 @@ import {
 import { customElement, property } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
-import { createTileFeatureElement } from "../create-element/create-tile-feature-element";
-import type { LovelaceTileFeature } from "../types";
-import type { LovelaceTileFeatureConfig } from "./types";
+import { createCardFeatureElement } from "../create-element/create-card-feature-element";
+import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeatureConfig } from "./types";
 
-@customElement("hui-tile-features")
-export class HuiTileFeatures extends LitElement {
+@customElement("hui-card-features")
+export class HuiCardFeatures extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ attribute: false }) public features?: LovelaceTileFeatureConfig[];
+  @property({ attribute: false }) public features?: LovelaceCardFeatureConfig[];
 
   @property({ attribute: false }) public color?: string;
 
   private _featuresElements = new WeakMap<
-    LovelaceTileFeatureConfig,
-    LovelaceTileFeature | HuiErrorCard
+    LovelaceCardFeatureConfig,
+    LovelaceCardFeature | HuiErrorCard
   >();
 
-  private _getFeatureElement(feature: LovelaceTileFeatureConfig) {
+  private _getFeatureElement(feature: LovelaceCardFeatureConfig) {
     if (!this._featuresElements.has(feature)) {
-      const element = createTileFeatureElement(feature);
+      const element = createCardFeatureElement(feature);
       this._featuresElements.set(feature, element);
       return element;
     }
@@ -40,15 +40,15 @@ export class HuiTileFeatures extends LitElement {
   }
 
   private renderFeature(
-    featureConf: LovelaceTileFeatureConfig,
+    featureConf: LovelaceCardFeatureConfig,
     stateObj: HassEntity
   ): TemplateResult {
     const element = this._getFeatureElement(featureConf);
 
     if (this.hass) {
       element.hass = this.hass;
-      (element as LovelaceTileFeature).stateObj = stateObj;
-      (element as LovelaceTileFeature).color = this.color;
+      (element as LovelaceCardFeature).stateObj = stateObj;
+      (element as LovelaceCardFeature).color = this.color;
     }
 
     return html`${element}`;
@@ -77,6 +77,6 @@ export class HuiTileFeatures extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-tile-features": HuiTileFeatures;
+    "hui-card-features": HuiCardFeatures;
   }
 }

@@ -13,35 +13,35 @@ import "../../../../components/ha-list-item";
 import "../../../../components/ha-svg-icon";
 import {
   CUSTOM_TYPE_PREFIX,
-  CustomTileFeatureEntry,
-  customTileFeatures,
+  CustomCardFeatureEntry,
+  getCustomCardFeatures,
   isCustomType,
   stripCustomPrefix,
 } from "../../../../data/lovelace_custom_cards";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import type { SortableInstance } from "../../../../resources/sortable";
 import { HomeAssistant } from "../../../../types";
-import { getTileFeatureElementClass } from "../../create-element/create-tile-feature-element";
-import { supportsAlarmModesTileFeature } from "../../tile-features/hui-alarm-modes-tile-feature";
-import { supportsClimateHvacModesTileFeature } from "../../tile-features/hui-climate-hvac-modes-tile-feature";
-import { supportsClimatePresetModesTileFeature } from "../../tile-features/hui-climate-preset-modes-tile-feature";
-import { supportsCoverOpenCloseTileFeature } from "../../tile-features/hui-cover-open-close-tile-feature";
-import { supportsCoverPositionTileFeature } from "../../tile-features/hui-cover-position-tile-feature";
-import { supportsCoverTiltPositionTileFeature } from "../../tile-features/hui-cover-tilt-position-tile-feature";
-import { supportsCoverTiltTileFeature } from "../../tile-features/hui-cover-tilt-tile-feature";
-import { supportsFanSpeedTileFeature } from "../../tile-features/hui-fan-speed-tile-feature";
-import { supportsHumidifierModesTileFeature } from "../../tile-features/hui-humidifier-modes-tile-feature";
-import { supportsLawnMowerCommandTileFeature } from "../../tile-features/hui-lawn-mower-commands-tile-feature";
-import { supportsLightBrightnessTileFeature } from "../../tile-features/hui-light-brightness-tile-feature";
-import { supportsLightColorTempTileFeature } from "../../tile-features/hui-light-color-temp-tile-feature";
-import { supportsNumberTileFeature } from "../../tile-features/hui-number-tile-feature";
-import { supportsSelectOptionTileFeature } from "../../tile-features/hui-select-options-tile-feature";
-import { supportsTargetTemperatureTileFeature } from "../../tile-features/hui-target-temperature-tile-feature";
-import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
-import { supportsWaterHeaterOperationModesTileFeature } from "../../tile-features/hui-water-heater-operation-modes-tile-feature";
-import { LovelaceTileFeatureConfig } from "../../tile-features/types";
+import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
+import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
+import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
+import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
+import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
+import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
+import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
+import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
+import { supportsHumidifierModesCardFeature } from "../../card-features/hui-humidifier-modes-card-feature";
+import { supportsLawnMowerCommandCardFeature } from "../../card-features/hui-lawn-mower-commands-card-feature";
+import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
+import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
+import { supportsNumberCardFeature } from "../../card-features/hui-number-card-feature";
+import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
+import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
+import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
+import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
+import { LovelaceCardFeatureConfig } from "../../card-features/types";
+import { getCardFeatureElementClass } from "../../create-element/create-card-feature-element";
 
-export type FeatureType = LovelaceTileFeatureConfig["type"];
+export type FeatureType = LovelaceCardFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
 
 const UI_FEATURE_TYPES = [
@@ -80,49 +80,51 @@ const SUPPORTS_FEATURE_TYPES: Record<
   UiFeatureTypes,
   SupportsFeature | undefined
 > = {
-  "alarm-modes": supportsAlarmModesTileFeature,
-  "climate-hvac-modes": supportsClimateHvacModesTileFeature,
-  "climate-preset-modes": supportsClimatePresetModesTileFeature,
-  "cover-open-close": supportsCoverOpenCloseTileFeature,
-  "cover-position": supportsCoverPositionTileFeature,
-  "cover-tilt-position": supportsCoverTiltPositionTileFeature,
-  "cover-tilt": supportsCoverTiltTileFeature,
-  "fan-speed": supportsFanSpeedTileFeature,
-  "humidifier-modes": supportsHumidifierModesTileFeature,
-  "lawn-mower-commands": supportsLawnMowerCommandTileFeature,
-  "light-brightness": supportsLightBrightnessTileFeature,
-  "light-color-temp": supportsLightColorTempTileFeature,
-  number: supportsNumberTileFeature,
-  "target-temperature": supportsTargetTemperatureTileFeature,
-  "vacuum-commands": supportsVacuumCommandTileFeature,
-  "water-heater-operation-modes": supportsWaterHeaterOperationModesTileFeature,
-  "select-options": supportsSelectOptionTileFeature,
+  "alarm-modes": supportsAlarmModesCardFeature,
+  "climate-hvac-modes": supportsClimateHvacModesCardFeature,
+  "climate-preset-modes": supportsClimatePresetModesCardFeature,
+  "cover-open-close": supportsCoverOpenCloseCardFeature,
+  "cover-position": supportsCoverPositionCardFeature,
+  "cover-tilt-position": supportsCoverTiltPositionCardFeature,
+  "cover-tilt": supportsCoverTiltCardFeature,
+  "fan-speed": supportsFanSpeedCardFeature,
+  "humidifier-modes": supportsHumidifierModesCardFeature,
+  "lawn-mower-commands": supportsLawnMowerCommandCardFeature,
+  "light-brightness": supportsLightBrightnessCardFeature,
+  "light-color-temp": supportsLightColorTempCardFeature,
+  number: supportsNumberCardFeature,
+  "target-temperature": supportsTargetTemperatureCardFeature,
+  "vacuum-commands": supportsVacuumCommandsCardFeature,
+  "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
+  "select-options": supportsSelectOptionsCardFeature,
 };
+
+const customCardFeatures = getCustomCardFeatures();
 
 const CUSTOM_FEATURE_ENTRIES: Record<
   string,
-  CustomTileFeatureEntry | undefined
+  CustomCardFeatureEntry | undefined
 > = {};
-customTileFeatures.forEach((feature) => {
+customCardFeatures.forEach((feature) => {
   CUSTOM_FEATURE_ENTRIES[feature.type] = feature;
 });
 
 declare global {
   interface HASSDomEvents {
     "features-changed": {
-      features: LovelaceTileFeatureConfig[];
+      features: LovelaceCardFeatureConfig[];
     };
   }
 }
 
-@customElement("hui-tile-card-features-editor")
-export class HuiTileCardFeaturesEditor extends LitElement {
+@customElement("hui-card-features-editor")
+export class HuiCardFeaturesEditor extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property({ attribute: false })
-  public features?: LovelaceTileFeatureConfig[];
+  public features?: LovelaceCardFeatureConfig[];
 
   @property({ attribute: false })
   public featuresTypes?: FeatureType[];
@@ -130,7 +132,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
   @property()
   public label?: string;
 
-  private _featuresKeys = new WeakMap<LovelaceTileFeatureConfig, string>();
+  private _featuresKeys = new WeakMap<LovelaceCardFeatureConfig, string>();
 
   private _sortable?: SortableInstance;
 
@@ -175,12 +177,12 @@ export class HuiTileCardFeaturesEditor extends LitElement {
     }
     return (
       this.hass!.localize(
-        `ui.panel.lovelace.editor.card.tile.features.types.${type}.label`
+        `ui.panel.lovelace.editor.features.types.${type}.label`
       ) || type
     );
   }
 
-  private _getKey(feature: LovelaceTileFeatureConfig) {
+  private _getKey(feature: LovelaceCardFeatureConfig) {
     if (!this._featuresKeys.has(feature)) {
       this._featuresKeys.set(feature, Math.random().toString());
     }
@@ -196,7 +198,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
     const featuresTypes = UI_FEATURE_TYPES.filter(
       (type) => !this.featuresTypes || this.featuresTypes.includes(type)
     ) as readonly string[];
-    const customFeaturesTypes = customTileFeatures.map(
+    const customFeaturesTypes = customCardFeatures.map(
       (feature) => `${CUSTOM_TYPE_PREFIX}${feature.type}`
     );
     return featuresTypes
@@ -220,16 +222,14 @@ export class HuiTileCardFeaturesEditor extends LitElement {
       <ha-expansion-panel outlined>
         <h3 slot="header">
           <ha-svg-icon .path=${mdiListBox}></ha-svg-icon>
-          ${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.tile.features.name"
-          )}
+          ${this.hass!.localize("ui.panel.lovelace.editor.features.name")}
         </h3>
         <div class="content">
           ${supportedFeaturesType.length === 0 && this.features.length === 0
             ? html`
                 <ha-alert type="info">
                   ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.card.tile.features.no_compatible_available"
+                    "ui.panel.lovelace.editor.features.no_compatible_available"
                   )}
                 </ha-alert>
               `
@@ -254,7 +254,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                           ? html`
                               <span class="secondary">
                                 ${this.hass!.localize(
-                                  "ui.panel.lovelace.editor.card.tile.features.not_compatible"
+                                  "ui.panel.lovelace.editor.features.not_compatible"
                                 )}
                               </span>
                             `
@@ -265,7 +265,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                       ? html`
                           <ha-icon-button
                             .label=${this.hass!.localize(
-                              `ui.panel.lovelace.editor.card.tile.features.edit`
+                              `ui.panel.lovelace.editor.features.edit`
                             )}
                             .path=${mdiPencil}
                             class="edit-icon"
@@ -277,7 +277,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                       : nothing}
                     <ha-icon-button
                       .label=${this.hass!.localize(
-                        `ui.panel.lovelace.editor.card.tile.features.remove`
+                        `ui.panel.lovelace.editor.features.remove`
                       )}
                       .path=${mdiDelete}
                       class="remove-icon"
@@ -300,7 +300,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                     slot="trigger"
                     outlined
                     .label=${this.hass!.localize(
-                      `ui.panel.lovelace.editor.card.tile.features.add`
+                      `ui.panel.lovelace.editor.features.add`
                     )}
                   >
                     <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
@@ -368,13 +368,13 @@ export class HuiTileCardFeaturesEditor extends LitElement {
     const value = this._getSupportedFeaturesType()[index];
     if (!value) return;
 
-    const elClass = await getTileFeatureElementClass(value);
+    const elClass = await getCardFeatureElementClass(value);
 
-    let newFeature: LovelaceTileFeatureConfig;
+    let newFeature: LovelaceCardFeatureConfig;
     if (elClass && elClass.getStubConfig) {
       newFeature = await elClass.getStubConfig(this.hass!, this.stateObj);
     } else {
-      newFeature = { type: value } as LovelaceTileFeatureConfig;
+      newFeature = { type: value } as LovelaceCardFeatureConfig;
     }
     const newConfigFeature = this.features!.concat(newFeature);
     fireEvent(this, "features-changed", { features: newConfigFeature });
@@ -406,7 +406,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
     fireEvent(this, "edit-detail-element", {
       subElementConfig: {
         index,
-        type: "tile-feature",
+        type: "feature",
         elementConfig: this.features![index],
       },
     });
@@ -490,6 +490,6 @@ export class HuiTileCardFeaturesEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-tile-card-features-editor": HuiTileCardFeaturesEditor;
+    "hui-card-features-editor": HuiCardFeaturesEditor;
   }
 }

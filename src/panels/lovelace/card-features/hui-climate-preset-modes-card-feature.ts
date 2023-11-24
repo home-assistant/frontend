@@ -16,10 +16,10 @@ import {
 } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature, LovelaceTileFeatureEditor } from "../types";
-import { ClimatePresetModesTileFeatureConfig } from "./types";
+import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import { ClimatePresetModesCardFeatureConfig } from "./types";
 
-export const supportsClimatePresetModesTileFeature = (stateObj: HassEntity) => {
+export const supportsClimatePresetModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "climate" &&
@@ -27,16 +27,16 @@ export const supportsClimatePresetModesTileFeature = (stateObj: HassEntity) => {
   );
 };
 
-@customElement("hui-climate-preset-modes-tile-feature")
-class HuiClimatePresetModeTileFeature
+@customElement("hui-climate-preset-modes-card-feature")
+class HuiClimatePresetModesCardFeature
   extends LitElement
-  implements LovelaceTileFeature
+  implements LovelaceCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: ClimateEntity;
 
-  @state() private _config?: ClimatePresetModesTileFeatureConfig;
+  @state() private _config?: ClimatePresetModesCardFeatureConfig;
 
   @state() _currentPresetMode?: string;
 
@@ -46,7 +46,7 @@ class HuiClimatePresetModeTileFeature
   static getStubConfig(
     _,
     stateObj?: HassEntity
-  ): ClimatePresetModesTileFeatureConfig {
+  ): ClimatePresetModesCardFeatureConfig {
     return {
       type: "climate-preset-modes",
       style: "dropdown",
@@ -54,16 +54,16 @@ class HuiClimatePresetModeTileFeature
     };
   }
 
-  public static async getConfigElement(): Promise<LovelaceTileFeatureEditor> {
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
     await import(
-      "../editor/config-elements/hui-climate-preset-modes-tile-feature-editor"
+      "../editor/config-elements/hui-climate-preset-modes-card-feature-editor"
     );
     return document.createElement(
-      "hui-climate-preset-modes-tile-feature-editor"
+      "hui-climate-preset-modes-card-feature-editor"
     );
   }
 
-  public setConfig(config: ClimatePresetModesTileFeatureConfig): void {
+  public setConfig(config: ClimatePresetModesCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -120,7 +120,7 @@ class HuiClimatePresetModeTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsClimatePresetModesTileFeature(this.stateObj)
+      !supportsClimatePresetModesCardFeature(this.stateObj)
     ) {
       return null;
     }
@@ -201,7 +201,7 @@ class HuiClimatePresetModeTileFeature
         width: 100%;
       }
       ha-control-select {
-        --control-select-color: var(--tile-color);
+        --control-select-color: var(--feature-color);
         --control-select-padding: 0;
         --control-select-thickness: 40px;
         --control-select-border-radius: 10px;
@@ -217,6 +217,6 @@ class HuiClimatePresetModeTileFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-climate-modes-preset-modes-feature": HuiClimatePresetModeTileFeature;
+    "hui-climate-preset-modes-card-feature": HuiClimatePresetModesCardFeature;
   }
 }
