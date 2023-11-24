@@ -1,35 +1,27 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import {
-  hsv2rgb,
-  rgb2hex,
-  rgb2hsv,
-} from "../../../../common/color/convert-color";
-import { stateActive } from "../../../../common/entity/state_active";
-import { stateColorCss } from "../../../../common/entity/state_color";
-import "../../../../components/ha-control-slider";
-import { UNAVAILABLE } from "../../../../data/entity";
-import { LightEntity } from "../../../../data/light";
-import { HomeAssistant } from "../../../../types";
+import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
+import { stateColorCss } from "../../common/entity/state_color";
+import "../../components/ha-control-slider";
+import { CoverEntity } from "../../data/cover";
+import { UNAVAILABLE } from "../../data/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity_attributes";
+import { HomeAssistant } from "../../types";
 
-@customElement("ha-more-info-light-brightness")
-export class HaMoreInfoLightBrightness extends LitElement {
+@customElement("ha-state-control-cover-position")
+export class HaStateControlCoverPosition extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj!: LightEntity;
+  @property({ attribute: false }) public stateObj!: CoverEntity;
 
   @state() value?: number;
 
   protected updated(changedProp: Map<string | number | symbol, unknown>): void {
     if (changedProp.has("stateObj")) {
+      const currentPosition = this.stateObj?.attributes.current_position;
       this.value =
-        this.stateObj.attributes.brightness != null
-          ? Math.max(
-              Math.round((this.stateObj.attributes.brightness * 100) / 255),
-              1
-            )
-          : undefined;
+        currentPosition != null ? Math.round(currentPosition) : undefined;
     }
   }
 
@@ -37,47 +29,39 @@ export class HaMoreInfoLightBrightness extends LitElement {
     const value = (ev.detail as any).value;
     if (isNaN(value)) return;
 
-    this.hass.callService("light", "turn_on", {
+    this.hass.callService("cover", "set_cover_position", {
       entity_id: this.stateObj!.entity_id,
-      brightness_pct: value,
+      position: value,
     });
   }
 
   protected render(): TemplateResult {
-    let color = stateColorCss(this.stateObj);
-
-    if (this.stateObj.attributes.rgb_color) {
-      const hsvColor = rgb2hsv(this.stateObj.attributes.rgb_color);
-
-      // Modify the real rgb color for better contrast
-      if (hsvColor[1] < 0.4) {
-        // Special case for very light color (e.g: white)
-        if (hsvColor[1] < 0.1) {
-          hsvColor[2] = 225;
-        } else {
-          hsvColor[1] = 0.4;
-        }
-      }
-      color = rgb2hex(hsv2rgb(hsvColor));
-    }
+    const openColor = stateColorCss(this.stateObj, "open");
+    const color = stateColorCss(this.stateObj);
 
     return html`
       <ha-control-slider
         vertical
         .value=${this.value}
-        min="1"
+        min="0"
         max="100"
-        .showHandle=${stateActive(this.stateObj)}
+        show-handle
+        mode="end"
         @value-changed=${this._valueChanged}
-        .ariaLabel=${this.hass.localize(
-          "ui.dialogs.more_info_control.light.brightness"
+        .ariaLabel=${computeAttributeNameDisplay(
+          this.hass.localize,
+          this.stateObj,
+          this.hass.entities,
+          "current_position"
         )}
         style=${styleMap({
+          // Use open color for inactive state to avoid grey slider that looks disabled
+          "--state-cover-inactive-color": openColor,
           "--control-slider-color": color,
           "--control-slider-background": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
-        unit="%"
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_position}
         .locale=${this.hass.locale}
       >
       </ha-control-slider>
@@ -103,6 +87,6 @@ export class HaMoreInfoLightBrightness extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-light-brightness": HaMoreInfoLightBrightness;
+    "ha-state-control-cover-position": HaStateControlCoverPosition;
   }
 }

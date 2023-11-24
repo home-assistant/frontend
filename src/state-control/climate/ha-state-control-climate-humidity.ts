@@ -2,23 +2,23 @@ import { mdiMinus, mdiPlus, mdiWaterPercent } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { stateActive } from "../../../../common/entity/state_active";
-import { domainStateColorProperties } from "../../../../common/entity/state_color";
-import { supportsFeature } from "../../../../common/entity/supports-feature";
-import { clamp } from "../../../../common/number/clamp";
-import { debounce } from "../../../../common/util/debounce";
-import "../../../../components/ha-big-number";
-import "../../../../components/ha-control-circular-slider";
-import "../../../../components/ha-outlined-icon-button";
-import "../../../../components/ha-svg-icon";
-import { ClimateEntity, ClimateEntityFeature } from "../../../../data/climate";
-import { UNAVAILABLE } from "../../../../data/entity";
-import { computeCssVariable } from "../../../../resources/css-variables";
-import { HomeAssistant } from "../../../../types";
-import { moreInfoControlCircularSliderStyle } from "../ha-more-info-control-circular-slider-style";
+import { stateActive } from "../../common/entity/state_active";
+import { domainStateColorProperties } from "../../common/entity/state_color";
+import { supportsFeature } from "../../common/entity/supports-feature";
+import { clamp } from "../../common/number/clamp";
+import { debounce } from "../../common/util/debounce";
+import "../../components/ha-big-number";
+import "../../components/ha-control-circular-slider";
+import "../../components/ha-outlined-icon-button";
+import "../../components/ha-svg-icon";
+import { ClimateEntity, ClimateEntityFeature } from "../../data/climate";
+import { UNAVAILABLE } from "../../data/entity";
+import { computeCssVariable } from "../../resources/css-variables";
+import { HomeAssistant } from "../../types";
+import { stateControlCircularSliderStyle } from "../state-control-circular-slider-style";
 
-@customElement("ha-more-info-climate-humidity")
-export class HaMoreInfoClimateHumidity extends LitElement {
+@customElement("ha-state-control-climate-humidity")
+export class HaStateControlClimateHumidity extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: ClimateEntity;
@@ -224,12 +224,12 @@ export class HaMoreInfoClimateHumidity extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return moreInfoControlCircularSliderStyle;
+    return stateControlCircularSliderStyle;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-climate-humidity": HaMoreInfoClimateHumidity;
+    "ha-state-control-climate-humidity": HaStateControlClimateHumidity;
   }
 }

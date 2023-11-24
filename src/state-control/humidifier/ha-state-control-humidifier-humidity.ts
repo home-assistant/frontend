@@ -2,25 +2,25 @@ import { mdiMinus, mdiPlus, mdiWaterPercent } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { stateActive } from "../../../../common/entity/state_active";
-import { stateColorCss } from "../../../../common/entity/state_color";
-import { clamp } from "../../../../common/number/clamp";
-import { debounce } from "../../../../common/util/debounce";
-import "../../../../components/ha-big-number";
-import "../../../../components/ha-control-circular-slider";
-import "../../../../components/ha-outlined-icon-button";
-import "../../../../components/ha-svg-icon";
-import { UNAVAILABLE } from "../../../../data/entity";
+import { stateActive } from "../../common/entity/state_active";
+import { stateColorCss } from "../../common/entity/state_color";
+import { clamp } from "../../common/number/clamp";
+import { debounce } from "../../common/util/debounce";
+import "../../components/ha-big-number";
+import "../../components/ha-control-circular-slider";
+import "../../components/ha-outlined-icon-button";
+import "../../components/ha-svg-icon";
+import { UNAVAILABLE } from "../../data/entity";
 import {
   HUMIDIFIER_ACTION_MODE,
   HumidifierEntity,
   HumidifierEntityDeviceClass,
-} from "../../../../data/humidifier";
-import { HomeAssistant } from "../../../../types";
-import { moreInfoControlCircularSliderStyle } from "../ha-more-info-control-circular-slider-style";
+} from "../../data/humidifier";
+import { HomeAssistant } from "../../types";
+import { stateControlCircularSliderStyle } from "../state-control-circular-slider-style";
 
-@customElement("ha-more-info-humidifier-humidity")
-export class HaMoreInfoHumidifierHumidity extends LitElement {
+@customElement("ha-state-control-humidifier-humidity")
+export class HaStateControlHumidifierHumidity extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: HumidifierEntity;
@@ -240,12 +240,12 @@ export class HaMoreInfoHumidifierHumidity extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return moreInfoControlCircularSliderStyle;
+    return stateControlCircularSliderStyle;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-humidifier-humidity": HaMoreInfoHumidifierHumidity;
+    "ha-state-control-humidifier-humidity": HaStateControlHumidifierHumidity;
   }
 }

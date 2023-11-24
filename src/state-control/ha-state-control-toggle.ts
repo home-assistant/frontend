@@ -1,20 +1,20 @@
 import { mdiFlash, mdiFlashOff } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateActive } from "../../../common/entity/state_active";
-import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-control-button";
-import "../../../components/ha-control-switch";
-import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
-import { forwardHaptic } from "../../../data/haptics";
-import { HomeAssistant } from "../../../types";
+import { computeDomain } from "../common/entity/compute_domain";
+import { stateActive } from "../common/entity/state_active";
+import { stateColorCss } from "../common/entity/state_color";
+import "../components/ha-control-button";
+import "../components/ha-control-switch";
+import { UNAVAILABLE, UNKNOWN } from "../data/entity";
+import { forwardHaptic } from "../data/haptics";
+import { HomeAssistant } from "../types";
 
-@customElement("ha-more-info-toggle")
-export class HaMoreInfoToggle extends LitElement {
+@customElement("ha-state-control-toggle")
+export class HaStateControlToggle extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
@@ -77,7 +77,7 @@ export class HaMoreInfoToggle extends LitElement {
       return html`
         <div class="buttons">
           <ha-control-button
-            .label=${this.hass.localize("ui.dialogs.more_info_control.turn_on")}
+            .label=${this.hass.localize("ui.card.common.turn_on")}
             @click=${this._turnOn}
             .disabled=${this.stateObj.state === UNAVAILABLE}
             class=${classMap({
@@ -90,9 +90,7 @@ export class HaMoreInfoToggle extends LitElement {
             <ha-svg-icon .path=${this.iconPathOn || mdiFlash}></ha-svg-icon>
           </ha-control-button>
           <ha-control-button
-            .label=${this.hass.localize(
-              "ui.dialogs.more_info_control.turn_off"
-            )}
+            .label=${this.hass.localize("ui.card.common.turn_off")}
             @click=${this._turnOff}
             .disabled=${this.stateObj.state === UNAVAILABLE}
             class=${classMap({
@@ -117,7 +115,7 @@ export class HaMoreInfoToggle extends LitElement {
         .checked=${isOn}
         .showHandle=${stateActive(this.stateObj)}
         @change=${this._valueChanged}
-        .ariaLabel=${this.hass.localize("ui.dialogs.more_info_control.toggle")}
+        .ariaLabel=${this.hass.localize("ui.card.common.toggle")}
         style=${styleMap({
           "--control-switch-on-color": onColor,
           "--control-switch-off-color": offColor,
@@ -169,6 +167,6 @@ export class HaMoreInfoToggle extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-toggle": HaMoreInfoToggle;
+    "ha-state-control-toggle": HaStateControlToggle;
   }
 }

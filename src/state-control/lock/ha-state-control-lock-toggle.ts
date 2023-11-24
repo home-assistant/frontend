@@ -9,17 +9,17 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { domainIcon } from "../../../../common/entity/domain_icon";
-import { stateColorCss } from "../../../../common/entity/state_color";
-import "../../../../components/ha-control-button";
-import "../../../../components/ha-control-switch";
-import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity";
-import { forwardHaptic } from "../../../../data/haptics";
-import { callProtectedLockService, LockEntity } from "../../../../data/lock";
-import { HomeAssistant } from "../../../../types";
+import { domainIcon } from "../../common/entity/domain_icon";
+import { stateColorCss } from "../../common/entity/state_color";
+import "../../components/ha-control-button";
+import "../../components/ha-control-switch";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { forwardHaptic } from "../../data/haptics";
+import { callProtectedLockService, LockEntity } from "../../data/lock";
+import { HomeAssistant } from "../../types";
 
-@customElement("ha-more-info-lock-toggle")
-export class HaMoreInfoLockToggle extends LitElement {
+@customElement("ha-state-control-lock-toggle")
+export class HaStateControlLockToggle extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: LockEntity;
@@ -97,17 +97,13 @@ export class HaMoreInfoLockToggle extends LitElement {
       return html`
         <div class="buttons">
           <ha-control-button
-            .label=${this.hass.localize(
-              "ui.dialogs.more_info_control.lock.lock"
-            )}
+            .label=${this.hass.localize("ui.card.lock.lock")}
             @click=${this._turnOn}
           >
             <ha-svg-icon .path=${onIcon}></ha-svg-icon>
           </ha-control-button>
           <ha-control-button
-            .label=${this.hass.localize(
-              "ui.dialogs.more_info_control.lock.unlock"
-            )}
+            .label=${this.hass.localize("ui.card.lock.unlock")}
             @click=${this._turnOff}
           >
             <ha-svg-icon .path=${offIcon}></ha-svg-icon>
@@ -122,7 +118,9 @@ export class HaMoreInfoLockToggle extends LitElement {
         reversed
         .checked=${this._isOn}
         @change=${this._valueChanged}
-        .ariaLabel=${this.hass.localize("ui.dialogs.more_info_control.toggle")}
+        .ariaLabel=${this._isOn
+          ? this.hass.localize("ui.card.lock.unlock")
+          : this.hass.localize("ui.card.lock.lock")}
         style=${styleMap({
           "--control-switch-on-color": color,
           "--control-switch-off-color": color,
@@ -198,6 +196,6 @@ export class HaMoreInfoLockToggle extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-lock-toggle": HaMoreInfoLockToggle;
+    "ha-state-control-lock-toggle": HaStateControlLockToggle;
   }
 }

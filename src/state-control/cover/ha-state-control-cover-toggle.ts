@@ -3,16 +3,16 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { domainIcon } from "../../../../common/entity/domain_icon";
-import { stateColorCss } from "../../../../common/entity/state_color";
-import "../../../../components/ha-control-button";
-import "../../../../components/ha-control-switch";
-import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity";
-import { forwardHaptic } from "../../../../data/haptics";
-import { HomeAssistant } from "../../../../types";
+import { domainIcon } from "../../common/entity/domain_icon";
+import { stateColorCss } from "../../common/entity/state_color";
+import "../../components/ha-control-button";
+import "../../components/ha-control-switch";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { forwardHaptic } from "../../data/haptics";
+import { HomeAssistant } from "../../types";
 
-@customElement("ha-more-info-cover-toggle")
-export class HaMoreInfoCoverToggle extends LitElement {
+@customElement("ha-state-control-cover-toggle")
+export class HaStateControlCoverToggle extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
@@ -67,9 +67,7 @@ export class HaMoreInfoCoverToggle extends LitElement {
       return html`
         <div class="buttons">
           <ha-control-button
-            .label=${this.hass.localize(
-              "ui.dialogs.more_info_control.cover.open_cover"
-            )}
+            .label=${this.hass.localize("ui.card.cover.open_cover")}
             @click=${this._turnOn}
             .disabled=${this.stateObj.state === UNAVAILABLE}
             class=${classMap({
@@ -84,9 +82,7 @@ export class HaMoreInfoCoverToggle extends LitElement {
             ></ha-svg-icon>
           </ha-control-button>
           <ha-control-button
-            .label=${this.hass.localize(
-              "ui.dialogs.more_info_control.cover.close_cover"
-            )}
+            .label=${this.hass.localize("ui.card.cover.close_cover")}
             @click=${this._turnOff}
             .disabled=${this.stateObj.state === UNAVAILABLE}
             class=${classMap({
@@ -112,7 +108,9 @@ export class HaMoreInfoCoverToggle extends LitElement {
         reversed
         .checked=${isOn}
         @change=${this._valueChanged}
-        .ariaLabel=${this.hass.localize("ui.dialogs.more_info_control.toggle")}
+        .ariaLabel=${isOn
+          ? this.hass.localize("ui.card.cover.close_cover")
+          : this.hass.localize("ui.card.cover.open_cover")}
         style=${styleMap({
           "--control-switch-on-color": onColor,
           "--control-switch-off-color": offColor,
@@ -164,6 +162,6 @@ export class HaMoreInfoCoverToggle extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-cover-toggle": HaMoreInfoCoverToggle;
+    "ha-state-control-cover-toggle": HaStateControlCoverToggle;
   }
 }
