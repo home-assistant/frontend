@@ -1,16 +1,16 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { computeAttributeNameDisplay } from "../../../../common/entity/compute_attribute_display";
-import { stateColorCss } from "../../../../common/entity/state_color";
-import "../../../../components/ha-control-slider";
-import { CoverEntity } from "../../../../data/cover";
-import { UNAVAILABLE } from "../../../../data/entity";
-import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity_attributes";
-import { HomeAssistant } from "../../../../types";
+import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
+import { stateColorCss } from "../../common/entity/state_color";
+import "../../components/ha-control-slider";
+import { CoverEntity } from "../../data/cover";
+import { UNAVAILABLE } from "../../data/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity_attributes";
+import { HomeAssistant } from "../../types";
 
-@customElement("ha-more-info-cover-position")
-export class HaMoreInfoCoverPosition extends LitElement {
+@customElement("ha-state-control-cover-position")
+export class HaStateControlCoverPosition extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: CoverEntity;
@@ -87,6 +87,6 @@ export class HaMoreInfoCoverPosition extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-cover-position": HaMoreInfoCoverPosition;
+    "ha-state-control-cover-position": HaStateControlCoverPosition;
   }
 }

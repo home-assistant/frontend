@@ -6,11 +6,11 @@ import { domainIcon } from "../../../common/entity/domain_icon";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-outlined-button";
 import { AlarmControlPanelEntity } from "../../../data/alarm_control_panel";
+import "../../../state-control/alarm_control_panel/ha-state-control-alarm_control_panel-modes";
 import type { HomeAssistant } from "../../../types";
 import { showEnterCodeDialogDialog } from "../../enter-code/show-enter-code-dialog";
-import "../components/alarm_control_panel/ha-more-info-alarm_control_panel-modes";
-import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 @customElement("more-info-alarm_control_panel")
 class MoreInfoAlarmControlPanel extends LitElement {
@@ -76,11 +76,11 @@ class MoreInfoAlarmControlPanel extends LitElement {
               </div>
             `
           : html`
-              <ha-more-info-alarm_control_panel-modes
+              <ha-state-control-alarm_control_panel-modes
                 .stateObj=${this.stateObj}
                 .hass=${this.hass}
               >
-              </ha-more-info-alarm_control_panel-modes>
+              </ha-state-control-alarm_control_panel-modes>
             `}
       </div>
       <span></span>

@@ -2,22 +2,22 @@ import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { stateColorCss } from "../../../../common/entity/state_color";
-import { supportsFeature } from "../../../../common/entity/supports-feature";
-import "../../../../components/ha-control-select";
-import type { ControlSelectOption } from "../../../../components/ha-control-select";
-import "../../../../components/ha-control-slider";
+import { stateColorCss } from "../../common/entity/state_color";
+import { supportsFeature } from "../../common/entity/supports-feature";
+import "../../components/ha-control-select";
+import type { ControlSelectOption } from "../../components/ha-control-select";
+import "../../components/ha-control-slider";
 import {
+  ALARM_MODES,
   AlarmControlPanelEntity,
   AlarmMode,
-  ALARM_MODES,
-} from "../../../../data/alarm_control_panel";
-import { UNAVAILABLE } from "../../../../data/entity";
-import { HomeAssistant } from "../../../../types";
-import { showEnterCodeDialogDialog } from "../../../enter-code/show-enter-code-dialog";
+} from "../../data/alarm_control_panel";
+import { UNAVAILABLE } from "../../data/entity";
+import { showEnterCodeDialogDialog } from "../../dialogs/enter-code/show-enter-code-dialog";
+import { HomeAssistant } from "../../types";
 
-@customElement("ha-more-info-alarm_control_panel-modes")
-export class HaMoreInfoAlarmControlPanelModes extends LitElement {
+@customElement("ha-state-control-alarm_control_panel-modes")
+export class HaStateControlAlarmControlPanelModes extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: AlarmControlPanelEntity;
@@ -146,6 +146,6 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-alarm_control_panel-modes": HaMoreInfoAlarmControlPanelModes;
+    "ha-state-control-alarm_control_panel-modes": HaStateControlAlarmControlPanelModes;
   }
 }

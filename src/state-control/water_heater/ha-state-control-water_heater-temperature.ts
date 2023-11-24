@@ -2,26 +2,26 @@ import { mdiMinus, mdiPlus } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { UNIT_F } from "../../../../common/const";
-import { stateActive } from "../../../../common/entity/state_active";
-import { stateColorCss } from "../../../../common/entity/state_color";
-import { supportsFeature } from "../../../../common/entity/supports-feature";
-import { clamp } from "../../../../common/number/clamp";
-import { debounce } from "../../../../common/util/debounce";
-import "../../../../components/ha-big-number";
-import "../../../../components/ha-control-circular-slider";
-import "../../../../components/ha-outlined-icon-button";
-import "../../../../components/ha-svg-icon";
-import { UNAVAILABLE } from "../../../../data/entity";
+import { UNIT_F } from "../../common/const";
+import { stateActive } from "../../common/entity/state_active";
+import { stateColorCss } from "../../common/entity/state_color";
+import { supportsFeature } from "../../common/entity/supports-feature";
+import { clamp } from "../../common/number/clamp";
+import { debounce } from "../../common/util/debounce";
+import "../../components/ha-big-number";
+import "../../components/ha-control-circular-slider";
+import "../../components/ha-outlined-icon-button";
+import "../../components/ha-svg-icon";
+import { UNAVAILABLE } from "../../data/entity";
 import {
   WaterHeaterEntity,
   WaterHeaterEntityFeature,
-} from "../../../../data/water_heater";
-import { HomeAssistant } from "../../../../types";
-import { moreInfoControlCircularSliderStyle } from "../ha-more-info-control-circular-slider-style";
+} from "../../data/water_heater";
+import { HomeAssistant } from "../../types";
+import { stateControlCircularSliderStyle } from "../state-control-circular-slider-style";
 
-@customElement("ha-more-info-water_heater-temperature")
-export class HaMoreInfoWaterHeaterTemperature extends LitElement {
+@customElement("ha-state-control-water_heater-temperature")
+export class HaStateControlWaterHeaterTemperature extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: WaterHeaterEntity;
@@ -237,12 +237,12 @@ export class HaMoreInfoWaterHeaterTemperature extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return moreInfoControlCircularSliderStyle;
+    return stateControlCircularSliderStyle;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-water_heater-temperature": HaMoreInfoWaterHeaterTemperature;
+    "ha-state-control-water_heater-temperature": HaStateControlWaterHeaterTemperature;
   }
 }

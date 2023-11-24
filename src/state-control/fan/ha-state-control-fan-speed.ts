@@ -1,14 +1,14 @@
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { computeAttributeNameDisplay } from "../../../../common/entity/compute_attribute_display";
-import { stateActive } from "../../../../common/entity/state_active";
-import { stateColorCss } from "../../../../common/entity/state_color";
-import "../../../../components/ha-control-select";
-import type { ControlSelectOption } from "../../../../components/ha-control-select";
-import "../../../../components/ha-control-slider";
-import { UNAVAILABLE } from "../../../../data/entity";
-import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity_attributes";
+import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
+import { stateActive } from "../../common/entity/state_active";
+import { stateColorCss } from "../../common/entity/state_color";
+import "../../components/ha-control-select";
+import type { ControlSelectOption } from "../../components/ha-control-select";
+import "../../components/ha-control-slider";
+import { UNAVAILABLE } from "../../data/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity_attributes";
 import {
   computeFanSpeedCount,
   computeFanSpeedIcon,
@@ -18,11 +18,11 @@ import {
   fanPercentageToSpeed,
   FanSpeed,
   fanSpeedToPercentage,
-} from "../../../../data/fan";
-import { HomeAssistant } from "../../../../types";
+} from "../../data/fan";
+import { HomeAssistant } from "../../types";
 
-@customElement("ha-more-info-fan-speed")
-export class HaMoreInfoFanSpeed extends LitElement {
+@customElement("ha-state-control-fan-speed")
+export class HaStateControlFanSpeed extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: FanEntity;
@@ -167,6 +167,6 @@ export class HaMoreInfoFanSpeed extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-fan-speed": HaMoreInfoFanSpeed;
+    "ha-state-control-fan-speed": HaStateControlFanSpeed;
   }
 }

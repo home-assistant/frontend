@@ -3,16 +3,16 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { domainIcon } from "../../../../common/entity/domain_icon";
-import { stateColorCss } from "../../../../common/entity/state_color";
-import "../../../../components/ha-control-button";
-import "../../../../components/ha-control-switch";
-import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity";
-import { forwardHaptic } from "../../../../data/haptics";
-import { HomeAssistant } from "../../../../types";
+import { domainIcon } from "../../common/entity/domain_icon";
+import { stateColorCss } from "../../common/entity/state_color";
+import "../../components/ha-control-button";
+import "../../components/ha-control-switch";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { forwardHaptic } from "../../data/haptics";
+import { HomeAssistant } from "../../types";
 
-@customElement("ha-more-info-cover-toggle")
-export class HaMoreInfoCoverToggle extends LitElement {
+@customElement("ha-state-control-cover-toggle")
+export class HaStateControlCoverToggle extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
@@ -164,6 +164,6 @@ export class HaMoreInfoCoverToggle extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-cover-toggle": HaMoreInfoCoverToggle;
+    "ha-state-control-cover-toggle": HaStateControlCoverToggle;
   }
 }

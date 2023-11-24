@@ -1,11 +1,11 @@
 import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -13,23 +13,23 @@ import memoizeOne from "memoize-one";
 import {
   computeCloseIcon,
   computeOpenIcon,
-} from "../../../../common/entity/cover_icon";
-import { supportsFeature } from "../../../../common/entity/supports-feature";
-import "../../../../components/ha-control-button";
-import "../../../../components/ha-control-button-group";
-import "../../../../components/ha-control-slider";
-import "../../../../components/ha-svg-icon";
+} from "../../common/entity/cover_icon";
+import { supportsFeature } from "../../common/entity/supports-feature";
+import "../../components/ha-control-button";
+import "../../components/ha-control-button-group";
+import "../../components/ha-control-slider";
+import "../../components/ha-svg-icon";
 import {
+  CoverEntity,
+  CoverEntityFeature,
   canClose,
   canCloseTilt,
   canOpen,
   canOpenTilt,
   canStop,
   canStopTilt,
-  CoverEntity,
-  CoverEntityFeature,
-} from "../../../../data/cover";
-import { HomeAssistant } from "../../../../types";
+} from "../../data/cover";
+import { HomeAssistant } from "../../types";
 
 type CoverButton =
   | "open"
@@ -107,8 +107,8 @@ export const getCoverLayout = memoizeOne(
   }
 );
 
-@customElement("ha-more-info-cover-buttons")
-export class HaMoreInfoCoverButtons extends LitElement {
+@customElement("ha-state-control-cover-buttons")
+export class HaStateControlCoverButtons extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: CoverEntity;
@@ -306,6 +306,6 @@ export class HaMoreInfoCoverButtons extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-cover-buttons": HaMoreInfoCoverButtons;
+    "ha-state-control-cover-buttons": HaStateControlCoverButtons;
   }
 }

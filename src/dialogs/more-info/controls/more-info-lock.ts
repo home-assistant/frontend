@@ -13,10 +13,10 @@ import {
   LockEntityFeature,
   callProtectedLockService,
 } from "../../../data/lock";
+import "../../../state-control/lock/ha-state-control-lock-toggle";
 import type { HomeAssistant } from "../../../types";
-import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
-import "../components/lock/ha-more-info-lock-toggle";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 @customElement("more-info-lock")
 class MoreInfoLock extends LitElement {
@@ -69,11 +69,11 @@ class MoreInfoLock extends LitElement {
                 </div>
               `
             : html`
-                <ha-more-info-lock-toggle
+                <ha-state-control-lock-toggle
                   .stateObj=${this.stateObj}
                   .hass=${this.hass}
                 >
-                </ha-more-info-lock-toggle>
+                </ha-state-control-lock-toggle>
               `
         }
         ${

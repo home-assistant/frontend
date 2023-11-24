@@ -1,20 +1,16 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import {
-  hsv2rgb,
-  rgb2hex,
-  rgb2hsv,
-} from "../../../../common/color/convert-color";
-import { stateActive } from "../../../../common/entity/state_active";
-import { stateColorCss } from "../../../../common/entity/state_color";
-import "../../../../components/ha-control-slider";
-import { UNAVAILABLE } from "../../../../data/entity";
-import { LightEntity } from "../../../../data/light";
-import { HomeAssistant } from "../../../../types";
+import { hsv2rgb, rgb2hex, rgb2hsv } from "../../common/color/convert-color";
+import { stateActive } from "../../common/entity/state_active";
+import { stateColorCss } from "../../common/entity/state_color";
+import "../../components/ha-control-slider";
+import { UNAVAILABLE } from "../../data/entity";
+import { LightEntity } from "../../data/light";
+import { HomeAssistant } from "../../types";
 
-@customElement("ha-more-info-light-brightness")
-export class HaMoreInfoLightBrightness extends LitElement {
+@customElement("ha-state-control-light-brightness")
+export class HaStateControlLightBrightness extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: LightEntity;
@@ -103,6 +99,6 @@ export class HaMoreInfoLightBrightness extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-light-brightness": HaMoreInfoLightBrightness;
+    "ha-state-control-light-brightness": HaStateControlLightBrightness;
   }
 }

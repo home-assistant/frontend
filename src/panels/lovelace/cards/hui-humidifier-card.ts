@@ -16,7 +16,7 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { HumidifierEntity } from "../../../data/humidifier";
-import "../../../dialogs/more-info/components/humidifier/ha-more-info-humidifier-humidity";
+import "../../../state-control/humidifier/ha-state-control-humidifier-humidity";
 import { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import { findEntities } from "../common/find-entities";
@@ -126,11 +126,11 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         <p class="title">${name}</p>
-        <ha-more-info-humidifier-humidity
+        <ha-state-control-humidifier-humidity
           show-current
           .hass=${this.hass}
           .stateObj=${stateObj}
-        ></ha-more-info-humidifier-humidity>
+        ></ha-state-control-humidifier-humidity>
         <ha-icon-button
           class="more-info"
           .label=${this.hass!.localize(
@@ -180,7 +180,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         box-sizing: border-box;
       }
 
-      ha-more-info-humidifier-humidity {
+      ha-state-control-humidifier-humidity {
         width: 100%;
         max-width: 344px; /* 12px + 12px + 320px */
         padding: 0 12px 12px 12px;

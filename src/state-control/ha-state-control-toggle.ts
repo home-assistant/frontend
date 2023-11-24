@@ -1,20 +1,20 @@
 import { mdiFlash, mdiFlashOff } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateActive } from "../../../common/entity/state_active";
-import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-control-button";
-import "../../../components/ha-control-switch";
-import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
-import { forwardHaptic } from "../../../data/haptics";
-import { HomeAssistant } from "../../../types";
+import { computeDomain } from "../common/entity/compute_domain";
+import { stateActive } from "../common/entity/state_active";
+import { stateColorCss } from "../common/entity/state_color";
+import "../components/ha-control-button";
+import "../components/ha-control-switch";
+import { UNAVAILABLE, UNKNOWN } from "../data/entity";
+import { forwardHaptic } from "../data/haptics";
+import { HomeAssistant } from "../types";
 
-@customElement("ha-more-info-toggle")
-export class HaMoreInfoToggle extends LitElement {
+@customElement("ha-state-control-toggle")
+export class HaStateControlToggle extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
@@ -169,6 +169,6 @@ export class HaMoreInfoToggle extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-toggle": HaMoreInfoToggle;
+    "ha-state-control-toggle": HaStateControlToggle;
   }
 }

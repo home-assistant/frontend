@@ -9,11 +9,11 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { CoverEntity, CoverEntityFeature } from "../../../data/cover";
 import { UNAVAILABLE } from "../../../data/entity";
-import { generateTiltSliderTrackBackgroundGradient } from "../../../dialogs/more-info/components/cover/ha-more-info-cover-tilt-position";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
+import { generateTiltSliderTrackBackgroundGradient } from "../../../state-control/cover/ha-state-control-cover-tilt-position";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature } from "../types";
 import { CoverTiltPositionCardFeatureConfig } from "./types";
-import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
 
 const GRADIENT = generateTiltSliderTrackBackgroundGradient();
 
