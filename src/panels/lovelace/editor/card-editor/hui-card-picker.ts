@@ -81,7 +81,7 @@ export class HuiCardPicker extends LitElement {
       const options: IFuseOptions<Card> = {
         keys: ["type", "name", "description"],
         isCaseSensitive: false,
-        minMatchCharLength: 2,
+        minMatchCharLength: filter.length === 1 ? 1 : 2,
         threshold: 0.2,
       };
       const fuse = new Fuse(cards, options);
