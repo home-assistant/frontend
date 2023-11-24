@@ -141,12 +141,6 @@ export const computeCards = (
       const cardConfig: ThermostatCardConfig = {
         type: "thermostat",
         entity: entityId,
-        features: [
-          {
-            type: "climate-hvac-modes",
-            hvac_modes: states[entityId]?.attributes?.hvac_modes,
-          },
-        ],
       };
       cards.push(cardConfig);
     } else if (domain === "humidifier") {

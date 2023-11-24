@@ -29,17 +29,17 @@ export class HaAuthFlow extends LitElement {
 
   @property() public localize!: LocalizeFunc;
 
+  @property({ attribute: false }) public step?: DataEntryFlowStep;
+
+  @property({ type: Boolean }) private storeToken = false;
+
   @state() private _state: State = "loading";
 
   @state() private _stepData?: Record<string, any>;
 
-  @state() private _step?: DataEntryFlowStep;
-
   @state() private _errorMessage?: string;
 
   @state() private _submitting = false;
-
-  @state() private _storeToken = false;
 
   createRenderRoot() {
     return this;
@@ -48,27 +48,29 @@ export class HaAuthFlow extends LitElement {
   willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (!changedProps.has("_step")) {
+    if (!changedProps.has("step")) {
       return;
     }
 
-    if (!this._step) {
+    if (!this.step) {
       this._stepData = undefined;
       return;
     }
 
-    const oldStep = changedProps.get("_step") as HaAuthFlow["_step"];
+    this._state = "step";
+
+    const oldStep = changedProps.get("step") as HaAuthFlow["step"];
 
     if (
       !oldStep ||
-      this._step.flow_id !== oldStep.flow_id ||
-      (this._step.type === "form" &&
+      this.step.flow_id !== oldStep.flow_id ||
+      (this.step.type === "form" &&
         oldStep.type === "form" &&
-        this._step.step_id !== oldStep.step_id)
+        this.step.step_id !== oldStep.step_id)
     ) {
       this._stepData =
-        this._step.type === "form"
-          ? computeInitialHaFormData(this._step.data_schema)
+        this.step.type === "form"
+          ? computeInitialHaFormData(this.step.data_schema)
           : undefined;
     }
   }
@@ -117,7 +119,7 @@ export class HaAuthFlow extends LitElement {
       this._providerChanged(this.authProvider);
     }
 
-    if (!changedProps.has("_step") || this._step?.type !== "form") {
+    if (!changedProps.has("step") || this.step?.type !== "form") {
       return;
     }
 
@@ -133,18 +135,18 @@ export class HaAuthFlow extends LitElement {
   private _renderForm() {
     switch (this._state) {
       case "step":
-        if (this._step == null) {
+        if (this.step == null) {
           return nothing;
         }
         return html`
-          ${this._renderStep(this._step)}
+          ${this._renderStep(this.step)}
           <div class="action">
             <mwc-button
               raised
               @click=${this._handleSubmit}
               .disabled=${this._submitting}
             >
-              ${this._step.type === "form"
+              ${this.step.type === "form"
                 ? this.localize("ui.panel.page-authorize.form.next")
                 : this.localize("ui.panel.page-authorize.form.start_over")}
             </mwc-button>
@@ -205,7 +207,7 @@ export class HaAuthFlow extends LitElement {
                   .label=${this.localize("ui.panel.page-authorize.store_token")}
                 >
                   <ha-checkbox
-                    .checked=${this._storeToken}
+                    .checked=${this.storeToken}
                     @change=${this._storeTokenChanged}
                   ></ha-checkbox>
                 </ha-formfield>
@@ -218,12 +220,12 @@ export class HaAuthFlow extends LitElement {
   }
 
   private _storeTokenChanged(e: CustomEvent<HTMLInputElement>) {
-    this._storeToken = (e.currentTarget as HTMLInputElement).checked;
+    this.storeToken = (e.currentTarget as HTMLInputElement).checked;
   }
 
   private async _providerChanged(newProvider?: AuthProvider) {
-    if (this._step && this._step.type === "form") {
-      fetch(`/auth/login_flow/${this._step.flow_id}`, {
+    if (this.step && this.step.type === "form") {
+      fetch(`/auth/login_flow/${this.step.flow_id}`, {
         method: "DELETE",
         credentials: "same-origin",
       }).catch((err) => {
@@ -260,7 +262,7 @@ export class HaAuthFlow extends LitElement {
           return;
         }
 
-        this._step = data;
+        this.step = data;
         this._state = "step";
       } else {
         this._state = "error";
@@ -288,7 +290,7 @@ export class HaAuthFlow extends LitElement {
     if (this.oauth2State) {
       url += `&state=${encodeURIComponent(this.oauth2State)}`;
     }
-    if (this._storeToken) {
+    if (this.storeToken) {
       url += `&storeToken=true`;
     }
 
@@ -331,10 +333,10 @@ export class HaAuthFlow extends LitElement {
 
   private async _handleSubmit(ev: Event) {
     ev.preventDefault();
-    if (this._step == null) {
+    if (this.step == null) {
       return;
     }
-    if (this._step.type !== "form") {
+    if (this.step.type !== "form") {
       this._providerChanged(this.authProvider);
       return;
     }
@@ -343,7 +345,7 @@ export class HaAuthFlow extends LitElement {
     const postData = { ...this._stepData, client_id: this.clientId };
 
     try {
-      const response = await fetch(`/auth/login_flow/${this._step.flow_id}`, {
+      const response = await fetch(`/auth/login_flow/${this.step.flow_id}`, {
         method: "POST",
         credentials: "same-origin",
         body: JSON.stringify(postData),
@@ -361,7 +363,7 @@ export class HaAuthFlow extends LitElement {
         this._redirect(newStep.result);
         return;
       }
-      this._step = newStep;
+      this.step = newStep;
       this._state = "step";
     } catch (err: any) {
       // eslint-disable-next-line no-console

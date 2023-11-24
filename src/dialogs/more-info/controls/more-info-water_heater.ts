@@ -12,10 +12,10 @@ import {
   compareWaterHeaterOperationMode,
   computeOperationModeIcon,
 } from "../../../data/water_heater";
+import "../../../state-control/water_heater/ha-state-control-water_heater-temperature";
 import { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
-import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
-import "../components/water_heater/ha-more-info-water_heater-temperature";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 @customElement("more-info-water_heater")
 class MoreInfoWaterHeater extends LitElement {
@@ -64,10 +64,10 @@ class MoreInfoWaterHeater extends LitElement {
           : nothing}
       </div>
       <div class="controls">
-        <ha-more-info-water_heater-temperature
+        <ha-state-control-water_heater-temperature
           .hass=${this.hass}
           .stateObj=${this.stateObj}
-        ></ha-more-info-water_heater-temperature>
+        ></ha-state-control-water_heater-temperature>
       </div>
       <ha-more-info-control-select-container>
         ${supportOperationMode && stateObj.attributes.operation_list
