@@ -11,6 +11,7 @@ export interface AuthProvider {
   name: string;
   id: string;
   type: string;
+  users?: Record<string, string>;
 }
 
 export interface Credential {
