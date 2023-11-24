@@ -180,8 +180,9 @@ class MoreInfoLight extends LitElement {
                       <ha-icon-button-toggle
                         .selected=${this._mainControl === "brightness"}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .label=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.brightness"
+                        .label=${this.hass.formatEntityAttributeName(
+                          this.stateObj,
+                          "brightness"
                         )}
                         .control=${"brightness"}
                         @click=${this._setMainControl}
