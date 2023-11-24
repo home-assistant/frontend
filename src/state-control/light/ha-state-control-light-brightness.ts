@@ -65,8 +65,9 @@ export class HaStateControlLightBrightness extends LitElement {
         max="100"
         .showHandle=${stateActive(this.stateObj)}
         @value-changed=${this._valueChanged}
-        .ariaLabel=${this.hass.localize(
-          "ui.dialogs.more_info_control.light.brightness"
+        .ariaLabel=${this.hass.formatEntityAttributeName(
+          this.stateObj,
+          "brightness"
         )}
         style=${styleMap({
           "--control-slider-color": color,

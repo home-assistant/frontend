@@ -24,12 +24,8 @@ class MoreInfoAlarmControlPanel extends LitElement {
     if (this.stateObj!.attributes.code_format) {
       const response = await showEnterCodeDialogDialog(this, {
         codeFormat: this.stateObj!.attributes.code_format,
-        title: this.hass.localize(
-          "ui.dialogs.more_info_control.alarm_control_panel.disarm_title"
-        ),
-        submitText: this.hass.localize(
-          "ui.dialogs.more_info_control.alarm_control_panel.disarm_action"
-        ),
+        title: this.hass.localize("ui.card.alarm_control_panel.disarm"),
+        submitText: this.hass.localize("ui.card.alarm_control_panel.disarm"),
       });
       if (response == null) {
         return;
@@ -68,9 +64,7 @@ class MoreInfoAlarmControlPanel extends LitElement {
                   ></ha-svg-icon>
                 </div>
                 <ha-outlined-button @click=${this._disarm}>
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.alarm_control_panel.disarm_action"
-                  )}
+                  ${this.hass.localize("ui.card.alarm_control_panel.disarm")}
                   <ha-svg-icon slot="icon" .path=${mdiShieldOff}></ha-svg-icon>
                 </ha-outlined-button>
               </div>

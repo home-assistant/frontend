@@ -77,7 +77,7 @@ export class HaStateControlToggle extends LitElement {
       return html`
         <div class="buttons">
           <ha-control-button
-            .label=${this.hass.localize("ui.dialogs.more_info_control.turn_on")}
+            .label=${this.hass.localize("ui.card.common.turn_on")}
             @click=${this._turnOn}
             .disabled=${this.stateObj.state === UNAVAILABLE}
             class=${classMap({
@@ -90,9 +90,7 @@ export class HaStateControlToggle extends LitElement {
             <ha-svg-icon .path=${this.iconPathOn || mdiFlash}></ha-svg-icon>
           </ha-control-button>
           <ha-control-button
-            .label=${this.hass.localize(
-              "ui.dialogs.more_info_control.turn_off"
-            )}
+            .label=${this.hass.localize("ui.card.common.turn_off")}
             @click=${this._turnOff}
             .disabled=${this.stateObj.state === UNAVAILABLE}
             class=${classMap({
@@ -117,7 +115,7 @@ export class HaStateControlToggle extends LitElement {
         .checked=${isOn}
         .showHandle=${stateActive(this.stateObj)}
         @change=${this._valueChanged}
-        .ariaLabel=${this.hass.localize("ui.dialogs.more_info_control.toggle")}
+        .ariaLabel=${this.hass.localize("ui.card.common.toggle")}
         style=${styleMap({
           "--control-switch-on-color": onColor,
           "--control-switch-off-color": offColor,

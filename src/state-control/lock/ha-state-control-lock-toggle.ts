@@ -97,17 +97,13 @@ export class HaStateControlLockToggle extends LitElement {
       return html`
         <div class="buttons">
           <ha-control-button
-            .label=${this.hass.localize(
-              "ui.dialogs.more_info_control.lock.lock"
-            )}
+            .label=${this.hass.localize("ui.card.lock.lock")}
             @click=${this._turnOn}
           >
             <ha-svg-icon .path=${onIcon}></ha-svg-icon>
           </ha-control-button>
           <ha-control-button
-            .label=${this.hass.localize(
-              "ui.dialogs.more_info_control.lock.unlock"
-            )}
+            .label=${this.hass.localize("ui.card.lock.unlock")}
             @click=${this._turnOff}
           >
             <ha-svg-icon .path=${offIcon}></ha-svg-icon>
@@ -122,7 +118,9 @@ export class HaStateControlLockToggle extends LitElement {
         reversed
         .checked=${this._isOn}
         @change=${this._valueChanged}
-        .ariaLabel=${this.hass.localize("ui.dialogs.more_info_control.toggle")}
+        .ariaLabel=${this._isOn
+          ? this.hass.localize("ui.card.lock.unlock")
+          : this.hass.localize("ui.card.lock.lock")}
         style=${styleMap({
           "--control-switch-on-color": color,
           "--control-switch-off-color": color,

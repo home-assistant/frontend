@@ -67,9 +67,7 @@ export class HaStateControlCoverToggle extends LitElement {
       return html`
         <div class="buttons">
           <ha-control-button
-            .label=${this.hass.localize(
-              "ui.dialogs.more_info_control.cover.open_cover"
-            )}
+            .label=${this.hass.localize("ui.card.cover.open_cover")}
             @click=${this._turnOn}
             .disabled=${this.stateObj.state === UNAVAILABLE}
             class=${classMap({
@@ -84,9 +82,7 @@ export class HaStateControlCoverToggle extends LitElement {
             ></ha-svg-icon>
           </ha-control-button>
           <ha-control-button
-            .label=${this.hass.localize(
-              "ui.dialogs.more_info_control.cover.close_cover"
-            )}
+            .label=${this.hass.localize("ui.card.cover.close_cover")}
             @click=${this._turnOff}
             .disabled=${this.stateObj.state === UNAVAILABLE}
             class=${classMap({
@@ -112,7 +108,9 @@ export class HaStateControlCoverToggle extends LitElement {
         reversed
         .checked=${isOn}
         @change=${this._valueChanged}
-        .ariaLabel=${this.hass.localize("ui.dialogs.more_info_control.toggle")}
+        .ariaLabel=${isOn
+          ? this.hass.localize("ui.card.cover.close_cover")
+          : this.hass.localize("ui.card.cover.open_cover")}
         style=${styleMap({
           "--control-switch-on-color": onColor,
           "--control-switch-off-color": offColor,

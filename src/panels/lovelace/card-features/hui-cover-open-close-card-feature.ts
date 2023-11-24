@@ -89,9 +89,7 @@ class HuiCoverOpenCloseCardFeature
         ${supportsFeature(this.stateObj, CoverEntityFeature.OPEN)
           ? html`
               <ha-control-button
-                .label=${this.hass.localize(
-                  "ui.dialogs.more_info_control.cover.open_cover"
-                )}
+                .label=${this.hass.localize("ui.card.cover.open_cover")}
                 @click=${this._onOpenTap}
                 .disabled=${!canOpen(this.stateObj)}
               >
@@ -104,9 +102,7 @@ class HuiCoverOpenCloseCardFeature
         ${supportsFeature(this.stateObj, CoverEntityFeature.STOP)
           ? html`
               <ha-control-button
-                .label=${this.hass.localize(
-                  "ui.dialogs.more_info_control.cover.stop_cover"
-                )}
+                .label=${this.hass.localize("ui.card.cover.stop_cover")}
                 @click=${this._onStopTap}
                 .disabled=${!canStop(this.stateObj)}
               >
@@ -117,9 +113,7 @@ class HuiCoverOpenCloseCardFeature
         ${supportsFeature(this.stateObj, CoverEntityFeature.CLOSE)
           ? html`
               <ha-control-button
-                .label=${this.hass.localize(
-                  "ui.dialogs.more_info_control.cover.close_cover"
-                )}
+                .label=${this.hass.localize("ui.card.cover.close_cover")}
                 @click=${this._onCloseTap}
                 .disabled=${!canClose(this.stateObj)}
               >

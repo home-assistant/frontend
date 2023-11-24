@@ -59,14 +59,10 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
       const response = await showEnterCodeDialogDialog(this, {
         codeFormat: this.stateObj!.attributes.code_format,
         title: this.hass!.localize(
-          `ui.dialogs.more_info_control.alarm_control_panel.${
-            disarm ? "disarm_title" : "arm_title"
-          }`
+          `ui.card.alarm_control_panel.${disarm ? "disarm" : "arm"}`
         ),
         submitText: this.hass!.localize(
-          `ui.dialogs.more_info_control.alarm_control_panel.${
-            disarm ? "disarm_action" : "arm_action"
-          }`
+          `ui.card.alarm_control_panel.${disarm ? "disarmn" : "arm"}`
         ),
       });
       if (response == null) {
@@ -103,9 +99,7 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
 
     const options = modes.map<ControlSelectOption>((mode) => ({
       value: mode,
-      label: this.hass.localize(
-        `ui.dialogs.more_info_control.alarm_control_panel.modes.${mode}`
-      ),
+      label: this.hass.localize(`ui.card.alarm_control_panel.modes.${mode}`),
       path: ALARM_MODES[mode].path,
     }));
 
@@ -116,7 +110,7 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
         .value=${this._currentMode}
         @value-changed=${this._valueChanged}
         .ariaLabel=${this.hass.localize(
-          "ui.dialogs.more_info_control.alarm_control_panel.modes_label"
+          "ui.card.alarm_control_panel.modes_label"
         )}
         style=${styleMap({
           "--control-select-color": color,
