@@ -2656,7 +2656,11 @@
                 },
                 "state": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
-                  "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]"
+                  "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
+                  "description": {
+                    "no_entity": "Confirm state",
+                    "full": "Confirm{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n zero {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n zero {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                  }
                 },
                 "sun": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::sun::label%]",
