@@ -1,5 +1,3 @@
-// Compat needs to be first import
-import "../resources/compatibility";
 import {
   Auth,
   Connection,

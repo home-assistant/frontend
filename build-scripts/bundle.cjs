@@ -31,8 +31,6 @@ module.exports.emptyPackages = ({ latestBuild, isHassioBuild }) =>
       require.resolve(
         path.resolve(paths.polymer_dir, "src/resources/compatibility.ts")
       ),
-    // This polyfill is loaded in workers to support ES5, filter it out.
-    latestBuild && require.resolve("proxy-polyfill/src/index.js"),
     // Icons in supervisor conflict with icons in HA so we don't load.
     isHassioBuild &&
       require.resolve(
@@ -91,8 +89,8 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
     [
       "@babel/preset-env",
       {
-        useBuiltIns: latestBuild ? false : "entry",
-        corejs: latestBuild ? false : { version: "3.33", proposals: true },
+        useBuiltIns: latestBuild ? false : "usage",
+        corejs: latestBuild ? false : "3.33",
         bugfixes: true,
         shippedProposals: true,
       },
@@ -109,6 +107,13 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
         modules: ["@mdi/js"],
         ignoreModuleNotFound: true,
       },
+    ],
+    [
+      path.resolve(
+        paths.polymer_dir,
+        "build-scripts/babel-plugins/custom-polyfill-plugin.js"
+      ),
+      { method: "usage-global" },
     ],
     // Minify template literals for production
     isProdBuild && [

@@ -160,7 +160,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-define-polyfill-provider@npm:^0.4.3":
+"@babel/helper-define-polyfill-provider@npm:0.4.3, @babel/helper-define-polyfill-provider@npm:^0.4.3":
   version: 0.4.3
   resolution: "@babel/helper-define-polyfill-provider@npm:0.4.3"
   dependencies:
@@ -9556,6 +9556,7 @@ __metadata:
   resolution: "home-assistant-frontend@workspace:."
   dependencies:
     "@babel/core": "npm:7.23.3"
+    "@babel/helper-define-polyfill-provider": "npm:0.4.3"
     "@babel/plugin-proposal-decorators": "npm:7.23.3"
     "@babel/plugin-transform-runtime": "npm:7.23.3"
     "@babel/preset-env": "npm:7.23.3"
