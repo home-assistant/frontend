@@ -1468,8 +1468,7 @@
       },
       "enter_code": {
         "title": "Enter code",
-        "input_label": "Code",
-        "no_match_code_format": "Code does not match code format"
+        "input_label": "Code"
       },
       "tts-try": {
         "header": "Try text-to-speech",
