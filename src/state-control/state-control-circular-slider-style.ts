@@ -99,6 +99,12 @@ export const stateControlCircularSliderStyle = css`
     }
   }
 
+  @container container (max-width: 130px) {
+    .label {
+      display: none;
+    }
+  }
+
   /* Slider */
   ha-control-circular-slider {
     width: 100%;
