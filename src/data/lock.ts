@@ -34,8 +34,8 @@ export const callProtectedLockService = async (
   const lockRegistryEntry = await getExtendedEntityRegistryEntry(
     hass,
     stateObj.entity_id
-  );
-  const defaultCode = lockRegistryEntry.options?.lock?.default_code;
+  ).catch(() => undefined);
+  const defaultCode = lockRegistryEntry?.options?.lock?.default_code;
 
   if (stateObj!.attributes.code_format && !defaultCode) {
     const response = await showEnterCodeDialogDialog(element, {
