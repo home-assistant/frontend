@@ -5189,14 +5189,14 @@
               },
               "alarm-modes": {
                 "label": "Alarm modes",
-                "modes": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes_label%]",
+                "modes": "[%key:ui::card::alarm_control_panel::modes_label%]",
                 "modes_list": {
-                  "armed_away": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_away%]",
-                  "armed_home": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_home%]",
-                  "armed_night": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_night%]",
-                  "armed_vacation": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_vacation%]",
-                  "armed_custom_bypass": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_custom_bypass%]",
-                  "disarmed": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::disarmed%]"
+                  "armed_away": "[%key:ui::card::alarm_control_panel::modes::armed_away%]",
+                  "armed_home": "[%key:ui::card::alarm_control_panel::modes::armed_home%]",
+                  "armed_night": "[%key:ui::card::alarm_control_panel::modes::armed_night%]",
+                  "armed_vacation": "[%key:ui::card::alarm_control_panel::modes::armed_vacation%]",
+                  "armed_custom_bypass": "[%key:ui::card::alarm_control_panel::modes::armed_custom_bypass%]",
+                  "disarmed": "[%key:ui::card::alarm_control_panel::modes::disarmed%]"
                 }
               },
               "light-brightness": {
