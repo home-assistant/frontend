@@ -1135,9 +1135,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-runtime@npm:7.23.3":
-  version: 7.23.3
-  resolution: "@babel/plugin-transform-runtime@npm:7.23.3"
+"@babel/plugin-transform-runtime@npm:7.23.4":
+  version: 7.23.4
+  resolution: "@babel/plugin-transform-runtime@npm:7.23.4"
   dependencies:
     "@babel/helper-module-imports": "npm:^7.22.15"
     "@babel/helper-plugin-utils": "npm:^7.22.5"
@@ -1147,7 +1147,7 @@ __metadata:
     semver: "npm:^6.3.1"
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: f513306d560765077aae618e2931ad445ad9648a86cf18f4169d3a7b5bc8c9b66399109f6a8612eb5dd7a09b45f8b56bf86e0e1abd1978a92dad0a97eb89cf8e
+  checksum: d962002d4cdeae91866fb7e9fb8ae5e5d568bd9ea866cfd03e8e564120f6f7db99d8f142f9b044819b975c0d0ca76418d8673bf46ea48feeba7779ae4f3bc46f
   languageName: node
   linkType: hard
 
@@ -1393,12 +1393,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.23.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
-  version: 7.23.2
-  resolution: "@babel/runtime@npm:7.23.2"
+"@babel/runtime@npm:7.23.4, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
+  version: 7.23.4
+  resolution: "@babel/runtime@npm:7.23.4"
   dependencies:
     regenerator-runtime: "npm:^0.14.0"
-  checksum: abdcbdd590c7e31762e1bdab94dd466823c8bcedd3ff2fde85eeb94dac7cccaef151ac37c428bda7018ededd27c9a82b4dfeb621f978ad934232475a902f8e3a
+  checksum: 6ef4f6dcc4ec4d74cb9f6c26a26e92d016b36debd167be48cae293fbd990b3157fb1d8d21c531285da15a5bda9ccb23e651b56234941e03d91c8af69d4c593a9
   languageName: node
   linkType: hard
 
@@ -9558,10 +9558,10 @@ __metadata:
     "@babel/core": "npm:7.23.3"
     "@babel/helper-define-polyfill-provider": "npm:0.4.3"
     "@babel/plugin-proposal-decorators": "npm:7.23.3"
-    "@babel/plugin-transform-runtime": "npm:7.23.3"
+    "@babel/plugin-transform-runtime": "npm:7.23.4"
     "@babel/preset-env": "npm:7.23.3"
     "@babel/preset-typescript": "npm:7.23.3"
-    "@babel/runtime": "npm:7.23.2"
+    "@babel/runtime": "npm:7.23.4"
     "@braintree/sanitize-url": "npm:6.0.4"
     "@bundle-stats/plugin-webpack-filter": "npm:4.8.1"
     "@codemirror/autocomplete": "npm:6.11.0"
