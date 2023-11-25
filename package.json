@@ -185,7 +185,7 @@
     "@types/mocha": "10.0.6",
     "@types/qrcode": "1.5.5",
     "@types/serve-handler": "6.1.4",
-    "@types/sortablejs": "1.15.6",
+    "@types/sortablejs": "1.15.7",
     "@types/tar": "6.1.10",
     "@types/ua-parser-js": "0.7.39",
     "@types/webspeechapi": "0.0.29",
