@@ -180,7 +180,7 @@
     "@types/html-minifier-terser": "7.0.2",
     "@types/js-yaml": "4.0.9",
     "@types/leaflet": "1.9.8",
-    "@types/leaflet-draw": "1.0.10",
+    "@types/leaflet-draw": "1.0.11",
     "@types/luxon": "3.3.5",
     "@types/mocha": "10.0.5",
     "@types/qrcode": "1.5.5",
