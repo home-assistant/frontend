@@ -13,7 +13,7 @@ import {
   mdiWater,
 } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, html, LitElement, svg, nothing } from "lit";
+import { css, html, LitElement, svg, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatNumber } from "../../../../common/number/format_number";
@@ -31,6 +31,7 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyDistributionCardConfig } from "../types";
+import { hasConfigChanged } from "../../common/has-changed";
 
 const CIRCLE_CIRCUMFERENCE = 238.76104;
 
@@ -63,6 +64,16 @@ class HuiEnergyDistrubutionCard
 
   public getCardSize(): Promise<number> | number {
     return 3;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return (
+      hasConfigChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      (!!this._data?.co2SignalEntity &&
+        this.hass.states[this._data.co2SignalEntity] !==
+          changedProps.get("hass").states[this._data.co2SignalEntity])
+    );
   }
 
   protected render() {

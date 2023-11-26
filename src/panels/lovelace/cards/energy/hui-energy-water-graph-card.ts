@@ -13,7 +13,14 @@ import {
   startOfToday,
 } from "date-fns";
 import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -48,6 +55,7 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyWaterGraphCardConfig } from "../types";
+import { hasConfigChanged } from "../../common/has-changed";
 
 @customElement("hui-energy-water-graph-card")
 export class HuiEnergyWaterGraphCard
@@ -88,6 +96,10 @@ export class HuiEnergyWaterGraphCard
 
   public setConfig(config: EnergyWaterGraphCardConfig): void {
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigChanged(this, changedProps) || changedProps.size > 1;
   }
 
   protected render() {
