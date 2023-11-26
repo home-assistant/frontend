@@ -2,6 +2,7 @@ import { mdiArrowLeft, mdiArrowRight } from "@mdi/js";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../types";
+import { computeRTLDirection } from "../common/util/compute_rtl";
 import "./ha-icon-button";
 
 @customElement("ha-icon-button-arrow-next")
@@ -13,7 +14,17 @@ export class HaIconButtonArrowNext extends LitElement {
   @property() public label?: string;
 
   @state() private _icon =
-    document.dir === "ltr" ? mdiArrowRight : mdiArrowLeft;
+    document.dir === "rtl" ? mdiArrowLeft : mdiArrowRight;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (!document.dir) {
+      const dir = this.hass ? computeRTLDirection(this.hass) : undefined;
+      if (dir === "rtl") {
+        this._icon = mdiArrowLeft;
+      }
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
