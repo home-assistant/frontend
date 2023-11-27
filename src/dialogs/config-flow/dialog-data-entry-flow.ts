@@ -2,15 +2,15 @@ import "@material/mwc-button";
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, state } from "lit/decorators";
-import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
+import { HASSDomEvent, fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-icon-button";
@@ -410,7 +410,7 @@ class DataEntryFlowDialog extends LitElement {
     this._step = step;
   }
 
-  private _subscribeDataEntryFlowProgressed() {
+  private async _subscribeDataEntryFlowProgressed() {
     if (this._unsubDataEntryFlowProgressed) {
       return;
     }
@@ -421,10 +421,17 @@ class DataEntryFlowDialog extends LitElement {
           return;
         }
         this._processStep(
-          this._params!.flowConfig.fetchFlow(this.hass, this._step?.flow_id)
+          this._params!.flowConfig.fetchFlow(this.hass, this._step.flow_id)
         );
       }
     );
+    if (this._step?.flow_id) {
+      await this._unsubDataEntryFlowProgressed;
+      // fetch flow after we subscribe to the event, so we don't miss the first event
+      this._processStep(
+        this._params!.flowConfig.fetchFlow(this.hass, this._step.flow_id)
+      );
+    }
   }
 
   static get styles(): CSSResultGroup {
