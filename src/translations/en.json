@@ -512,6 +512,11 @@
           "failed_create_area": "Failed to create area."
         }
       },
+      "area-filter": {
+        "no_areas": "No areas",
+        "area_count": "{count} {count, plural,\n one {area}\n other {areas}\n}",
+        "all_areas": "All areas"
+      },
       "statistic-picker": {
         "statistic": "Statistic",
         "no_statistics": "You don't have any statistics",
@@ -5266,7 +5271,7 @@
           },
           "strategy": {
             "original-states": {
-              "hidden_areas": "Hidden Areas",
+              "areas": "Displayed areas",
               "hide_entities_without_area": "Hide entities without area",
               "hide_energy": "Hide energy"
             }
