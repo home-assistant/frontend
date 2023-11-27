@@ -1,9 +1,17 @@
-import { html, LitElement, nothing, css, CSSResultGroup } from "lit";
+import {
+  html,
+  LitElement,
+  nothing,
+  css,
+  CSSResultGroup,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../../../../types";
 import "../../components/hui-energy-period-selector";
 import { LovelaceCard } from "../../types";
 import { EnergyCardBaseConfig } from "../types";
+import { hasConfigChanged } from "../../common/has-changed";
 
 @customElement("hui-energy-date-selection-card")
 export class HuiEnergyDateSelectionCard
@@ -20,6 +28,14 @@ export class HuiEnergyDateSelectionCard
 
   public setConfig(config: EnergyCardBaseConfig): void {
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return (
+      hasConfigChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
   }
 
   protected render() {
