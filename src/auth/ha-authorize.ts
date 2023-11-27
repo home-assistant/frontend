@@ -98,7 +98,6 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         p {
           font-size: 14px;
           line-height: 20px;
-          text-align: center;
         }
         .card-content {
           background: var(
@@ -166,6 +165,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
                 })}
           </ha-alert>`
         : nothing}
+
       <div class="card-content">
         ${!this._authProvider
           ? html`<p>
@@ -184,19 +184,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
                 .localize=${this.localize}
                 @default-login-flow=${this._handleDefaultLoginFlow}
               ></ha-local-auth-flow>`
-            : html`${inactiveProviders!.length > 0
-                  ? html`<p>
-                      ${this.localize(
-                        "ui.panel.page-authorize.logging_in_with",
-                        {
-                          authProviderName: html`<b
-                            >${this._authProvider!.name}</b
-                          >`,
-                        }
-                      )}
-                    </p>`
-                  : nothing}
-                <ha-auth-flow
+            : html` <ha-auth-flow
                   .clientId=${this.clientId}
                   .redirectUri=${this.redirectUri}
                   .oauth2State=${this.oauth2State}
@@ -204,14 +192,22 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
                   .localize=${this.localize}
                 ></ha-auth-flow>
                 ${inactiveProviders!.length > 0
-                  ? html`
+                  ? html`<p>
+                        ${this.localize(
+                          "ui.panel.page-authorize.logging_in_with",
+                          {
+                            authProviderName: html`<b
+                              >${this._authProvider!.name}</b
+                            >`,
+                          }
+                        )}
+                      </p>
                       <ha-pick-auth-provider
                         .localize=${this.localize}
                         .clientId=${this.clientId}
                         .authProviders=${inactiveProviders}
                         @pick-auth-provider=${this._handleAuthProviderPick}
-                      ></ha-pick-auth-provider>
-                    `
+                      ></ha-pick-auth-provider> `
                   : ""}`}
       </div>
       <div class="footer">

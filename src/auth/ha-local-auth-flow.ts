@@ -9,7 +9,13 @@ import "../components/ha-alert";
 import "../components/ha-button";
 import "../components/ha-icon-button";
 import "../components/user/ha-person-badge";
-import { AuthProvider } from "../data/auth";
+import {
+  AuthProvider,
+  createLoginFlow,
+  deleteLoginFlow,
+  redirectWithAuthCode,
+  submitLoginFlow,
+} from "../data/auth";
 import { DataEntryFlowStep } from "../data/data_entry_flow";
 import { listPersons } from "../data/person";
 import "./ha-auth-textfield";
@@ -117,11 +123,13 @@ export class HaLocalAuthFlow extends LitElement {
         }
         .login-form .person {
           cursor: default;
+          width: auto;
         }
         .login-form .person p {
           font-size: 28px;
           margin-top: 24px;
           margin-bottom: 32px;
+          line-height: normal;
         }
         .login-form ha-person-badge {
           width: 120px;
@@ -307,20 +315,20 @@ export class HaLocalAuthFlow extends LitElement {
     const userId = ev.currentTarget.userId;
     if (this.authProviders?.find((prv) => prv.type === "trusted_networks")) {
       try {
-        const flowResponse = await fetch("/auth/login_flow", {
-          method: "POST",
-          credentials: "same-origin",
-          body: JSON.stringify({
-            client_id: this.clientId,
-            handler: ["trusted_networks", null],
-            redirect_uri: this.redirectUri,
-          }),
-        });
+        const flowResponse = await createLoginFlow(
+          this.clientId,
+          this.redirectUri,
+          ["trusted_networks", null]
+        );
 
         const data = await flowResponse.json();
 
         if (data.type === "create_entry") {
-          this._redirect(data.result);
+          redirectWithAuthCode(
+            this.redirectUri!,
+            data.result,
+            this.oauth2State
+          );
           return;
         }
 
@@ -331,27 +339,24 @@ export class HaLocalAuthFlow extends LitElement {
 
           const postData = { user: userId, client_id: this.clientId };
 
-          const response = await fetch(`/auth/login_flow/${data.flow_id}`, {
-            method: "POST",
-            credentials: "same-origin",
-            body: JSON.stringify(postData),
-          });
+          const response = await submitLoginFlow(data.flow_id, postData);
 
           if (response.ok) {
             const result = await response.json();
 
             if (result.type === "create_entry") {
-              this._redirect(result.result);
+              redirectWithAuthCode(
+                this.redirectUri!,
+                result.result,
+                this.oauth2State
+              );
               return;
             }
           } else {
             throw new Error("Invalid response");
           }
         } catch {
-          fetch(`/auth/login_flow/${data.flow_id}`, {
-            method: "DELETE",
-            credentials: "same-origin",
-          }).catch((err) => {
+          deleteLoginFlow(data.flow_id).catch((err) => {
             // eslint-disable-next-line no-console
             console.error("Error delete obsoleted auth flow", err);
           });
@@ -373,15 +378,11 @@ export class HaLocalAuthFlow extends LitElement {
     this._error = undefined;
     this._submitting = true;
 
-    const flowResponse = await fetch("/auth/login_flow", {
-      method: "POST",
-      credentials: "same-origin",
-      body: JSON.stringify({
-        client_id: this.clientId,
-        handler: ["homeassistant", null],
-        redirect_uri: this.redirectUri,
-      }),
-    });
+    const flowResponse = await createLoginFlow(
+      this.clientId,
+      this.redirectUri,
+      ["homeassistant", null]
+    );
 
     const data = await flowResponse.json();
 
@@ -393,11 +394,7 @@ export class HaLocalAuthFlow extends LitElement {
     };
 
     try {
-      const response = await fetch(`/auth/login_flow/${data.flow_id}`, {
-        method: "POST",
-        credentials: "same-origin",
-        body: JSON.stringify(postData),
-      });
+      const response = await submitLoginFlow(data.flow_id, postData);
 
       const newStep = await response.json();
 
@@ -407,7 +404,11 @@ export class HaLocalAuthFlow extends LitElement {
       }
 
       if (newStep.type === "create_entry") {
-        this._redirect(newStep.result);
+        redirectWithAuthCode(
+          this.redirectUri!,
+          newStep.result,
+          this.oauth2State
+        );
         return;
       }
 
@@ -420,10 +421,7 @@ export class HaLocalAuthFlow extends LitElement {
 
       this._step = newStep;
     } catch {
-      fetch(`/auth/login_flow/${data.flow_id}`, {
-        method: "DELETE",
-        credentials: "same-origin",
-      }).catch((err) => {
+      deleteLoginFlow(data.flow_id).catch((err) => {
         // eslint-disable-next-line no-console
         console.error("Error delete obsoleted auth flow", err);
       });
@@ -435,25 +433,6 @@ export class HaLocalAuthFlow extends LitElement {
     } finally {
       this._submitting = false;
     }
-  }
-
-  private _redirect(authCode: string) {
-    // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
-    let url = this.redirectUri!;
-    if (!url.includes("?")) {
-      url += "?";
-    } else if (!url.endsWith("&")) {
-      url += "&";
-    }
-
-    url += `code=${encodeURIComponent(authCode)}`;
-
-    if (this.oauth2State) {
-      url += `&state=${encodeURIComponent(this.oauth2State)}`;
-    }
-    url += `&storeToken=true`;
-
-    document.location.assign(url);
   }
 
   private _otherLogin() {

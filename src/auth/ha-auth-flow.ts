@@ -8,7 +8,14 @@ import "../components/ha-alert";
 import "../components/ha-checkbox";
 import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
 import "../components/ha-formfield";
-import { AuthProvider, autocompleteLoginFields } from "../data/auth";
+import {
+  AuthProvider,
+  autocompleteLoginFields,
+  createLoginFlow,
+  deleteLoginFlow,
+  redirectWithAuthCode,
+  submitLoginFlow,
+} from "../data/auth";
 import {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
@@ -262,10 +269,7 @@ export class HaAuthFlow extends LitElement {
 
   private async _providerChanged(newProvider?: AuthProvider) {
     if (this.step && this.step.type === "form") {
-      fetch(`/auth/login_flow/${this.step.flow_id}`, {
-        method: "DELETE",
-        credentials: "same-origin",
-      }).catch((err) => {
+      deleteLoginFlow(this.step.flow_id).catch((err) => {
         // eslint-disable-next-line no-console
         console.error("Error delete obsoleted auth flow", err);
       });
@@ -280,22 +284,20 @@ export class HaAuthFlow extends LitElement {
     }
 
     try {
-      const response = await fetch("/auth/login_flow", {
-        method: "POST",
-        credentials: "same-origin",
-        body: JSON.stringify({
-          client_id: this.clientId,
-          handler: [newProvider.type, newProvider.id],
-          redirect_uri: this.redirectUri,
-        }),
-      });
+      const response = await createLoginFlow(this.clientId, this.redirectUri, [
+        (newProvider.type, newProvider.id),
+      ]);
 
       const data = await response.json();
 
       if (response.ok) {
         // allow auth provider bypass the login form
         if (data.type === "create_entry") {
-          this._redirect(data.result);
+          redirectWithAuthCode(
+            this.redirectUri!,
+            data.result,
+            this.oauth2State
+          );
           return;
         }
 
@@ -311,27 +313,6 @@ export class HaAuthFlow extends LitElement {
       this._state = "error";
       this._errorMessage = this._unknownError();
     }
-  }
-
-  private _redirect(authCode: string) {
-    // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
-    let url = this.redirectUri!;
-    if (!url.includes("?")) {
-      url += "?";
-    } else if (!url.endsWith("&")) {
-      url += "&";
-    }
-
-    url += `code=${encodeURIComponent(authCode)}`;
-
-    if (this.oauth2State) {
-      url += `&state=${encodeURIComponent(this.oauth2State)}`;
-    }
-    if (this.storeToken) {
-      url += `&storeToken=true`;
-    }
-
-    document.location.assign(url);
   }
 
   private _stepDataChanged(ev: CustomEvent) {
@@ -382,11 +363,7 @@ export class HaAuthFlow extends LitElement {
     const postData = { ...this._stepData, client_id: this.clientId };
 
     try {
-      const response = await fetch(`/auth/login_flow/${this.step.flow_id}`, {
-        method: "POST",
-        credentials: "same-origin",
-        body: JSON.stringify(postData),
-      });
+      const response = await submitLoginFlow(this.step.flow_id, postData);
 
       const newStep = await response.json();
 
@@ -397,7 +374,11 @@ export class HaAuthFlow extends LitElement {
       }
 
       if (newStep.type === "create_entry") {
-        this._redirect(newStep.result);
+        redirectWithAuthCode(
+          this.redirectUri!,
+          newStep.result,
+          this.oauth2State
+        );
         return;
       }
       this.step = newStep;
