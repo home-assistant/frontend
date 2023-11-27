@@ -33,6 +33,8 @@ export class HaLocalAuthFlow extends LitElement {
 
   @property() public oauth2State?: string;
 
+  @property({ type: Boolean }) public ownInstance = false;
+
   @property() public localize!: LocalizeFunc;
 
   @state() private _error?: string;
@@ -313,7 +315,10 @@ export class HaLocalAuthFlow extends LitElement {
 
   private async _personSelected(ev) {
     const userId = ev.currentTarget.userId;
-    if (this.authProviders?.find((prv) => prv.type === "trusted_networks")) {
+    if (
+      this.ownInstance &&
+      this.authProviders?.find((prv) => prv.type === "trusted_networks")
+    ) {
       try {
         const flowResponse = await createLoginFlow(
           this.clientId,
