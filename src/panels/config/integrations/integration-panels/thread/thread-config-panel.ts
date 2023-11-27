@@ -7,7 +7,14 @@ import {
   mdiInformationOutline,
   mdiCellphoneKey,
 } from "@mdi/js";
-import { LitElement, PropertyValues, TemplateResult, css, html } from "lit";
+import {
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
@@ -132,6 +139,15 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                 )}`
             : ""}
         </div>
+        ${this.hass.auth.external?.config.canImportThreadCredentials
+          ? html`<ha-fab
+              slot="fab"
+              @click=${this._importExternalThreadCredentials}
+              extended
+              label="Import credentials"
+              ><ha-svg-icon slot="icon" .path=${mdiCellphoneKey}></ha-svg-icon
+            ></ha-fab>`
+          : nothing}
       </hass-subpage>
     `;
   }
@@ -310,6 +326,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         Dataset id: ${dataset.dataset_id}<br />
         Pan id: ${dataset.pan_id}<br />
         Extended Pan id: ${dataset.extended_pan_id}`,
+    });
+  }
+
+  private _importExternalThreadCredentials() {
+    this.hass.auth.external!.fireMessage({
+      type: "thread/import_credentials",
     });
   }
 
