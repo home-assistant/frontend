@@ -86,6 +86,25 @@ export class HaAuthFlow extends LitElement {
           margin-top: 10px;
           margin-left: -16px;
         }
+        a.forgot-password {
+          color: var(--primary-color);
+          text-decoration: none;
+          font-size: 0.875rem;
+        }
+        .space-between {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        form {
+          text-align: center;
+          max-width: 336px;
+          width: 100%;
+        }
+        ha-auth-form {
+          display: block;
+          margin-top: 16px;
+        }
       </style>
       <form>${this._renderForm()}</form>
     `;
@@ -189,6 +208,11 @@ export class HaAuthFlow extends LitElement {
         `;
       case "form":
         return html`
+          <h1>
+            ${!["select_mfa_module", "mfa"].includes(step.step_id)
+              ? this.localize("ui.panel.page-authorize.welcome_home")
+              : this.localize("ui.panel.page-authorize.just_checking")}
+          </h1>
           ${this._computeStepDescription(step)}
           <ha-auth-form
             .data=${this._stepData}
@@ -202,15 +226,28 @@ export class HaAuthFlow extends LitElement {
           ${this.clientId === genClientId() &&
           !["select_mfa_module", "mfa"].includes(step.step_id)
             ? html`
-                <ha-formfield
-                  class="store-token"
-                  .label=${this.localize("ui.panel.page-authorize.store_token")}
-                >
-                  <ha-checkbox
-                    .checked=${this.storeToken}
-                    @change=${this._storeTokenChanged}
-                  ></ha-checkbox>
-                </ha-formfield>
+                <div class="space-between">
+                  <ha-formfield
+                    class="store-token"
+                    .label=${this.localize(
+                      "ui.panel.page-authorize.store_token"
+                    )}
+                  >
+                    <ha-checkbox
+                      .checked=${this.storeToken}
+                      @change=${this._storeTokenChanged}
+                    ></ha-checkbox>
+                  </ha-formfield>
+                  <a
+                    class="forgot-password"
+                    href="https://www.home-assistant.io/docs/locked_out/#forgot-password"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    >${this.localize(
+                      "ui.panel.page-authorize.forgot_password"
+                    )}</a
+                  >
+                </div>
               `
             : ""}
         `;

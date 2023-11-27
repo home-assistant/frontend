@@ -5583,12 +5583,21 @@
         "pick_auth_provider": "Or log in with",
         "abort_intro": "Login aborted",
         "store_token": "Keep me logged in",
+        "help": "Help",
+        "welcome_home": "Welcome home!",
+        "just_checking": "Just checking",
+        "who_is_logging_in": "Who is logging in?",
+        "other_options": "Other login options",
+        "forgot_password": "Forgot password?",
         "form": {
           "working": "Please wait",
           "unknown_error": "Something went wrong",
           "next": "Log in",
+          "previous": "Previous",
           "start_over": "Start over",
           "error": "Error: {error}",
+          "hide_password": "Hide password",
+          "show_password": "Show password",
           "providers": {
             "command_line": {
               "step": {
