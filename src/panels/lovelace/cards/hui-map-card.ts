@@ -20,6 +20,7 @@ import {
   formatTimeWeekday,
 } from "../../../common/datetime/format_time";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { deepEqual } from "../../../common/util/deep-equal";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
 import "../../../components/ha-alert";
@@ -71,7 +72,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _configEntities?: MapEntityConfig[];
 
-  private _mapEntities: HaMapEntity[] = [];
+  @state() private _mapEntities: HaMapEntity[] = [];
 
   private _colorDict: Record<string, string> = {};
 
@@ -105,6 +106,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._configEntities = config.entities
       ? processConfigEntities<MapEntityConfig>(config.entities)
       : [];
+    this._updateMapEntities();
   }
 
   public getCardSize(): number {
@@ -159,7 +161,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         <div id="root">
           <ha-map
             .hass=${this.hass}
-            .entities=${this._getMapEntities()}
+            .entities=${this._mapEntities}
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit || false}
@@ -181,6 +183,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues) {
+    if (
+      changedProps.has("hass") &&
+      this._config?.geo_location_sources &&
+      this._updateMapEntities()
+    ) {
+      return true;
+    }
+
     if (!changedProps.has("hass") || changedProps.size > 1) {
       return true;
     }
@@ -209,7 +219,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       );
 
       if (
-        oldSourceEntities.toString() !== newSourceEntities.toString() ||
+        !deepEqual(oldSourceEntities, newSourceEntities) ||
         newSourceEntities.some(
           (entity_id) =>
             oldHass.states[entity_id] !== this.hass.states[entity_id]
@@ -322,7 +332,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private _getSourceEntities(
-    states: HassEntities,
+    states?: HassEntities,
     config?: MapCardConfig
   ): string[] {
     if (!states || !config || !config.geo_location_sources) {
@@ -344,7 +354,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return geoEntities;
   }
 
-  private _getMapEntities(): HaMapEntity[] {
+  private _updateMapEntities(): boolean {
     const entities = [
       ...(this._configEntities || []).map((entityConf) => ({
         entity_id: entityConf.entity,
@@ -353,17 +363,18 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         focus: entityConf.focus,
         name: entityConf.name,
       })),
-      ...this._getSourceEntities(this.hass.states, this._config).map(
+      ...this._getSourceEntities(this.hass?.states, this._config).map(
         (entity) => ({
           entity_id: entity,
           color: this._getColor(entity),
         })
       ),
     ];
-    if (JSON.stringify(entities) !== JSON.stringify(this._mapEntities)) {
+    if (!deepEqual(entities, this._mapEntities)) {
       this._mapEntities = entities;
+      return true;
     }
-    return this._mapEntities;
+    return false;
   }
 
   private _getHistoryPaths = memoizeOne(
