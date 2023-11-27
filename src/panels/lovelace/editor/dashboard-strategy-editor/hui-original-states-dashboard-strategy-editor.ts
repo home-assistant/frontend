@@ -1,7 +1,6 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { AreaFilterValue } from "../../../../components/ha-area-filter";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -38,12 +37,6 @@ const SCHEMA = [
   },
 ] as const satisfies readonly HaFormSchema[];
 
-type FormData = {
-  areas?: AreaFilterValue;
-  hide_energy?: boolean;
-  hide_entities_without_area?: boolean;
-};
-
 @customElement("hui-original-states-dashboard-strategy-editor")
 export class HuiOriginalStatesDashboarStrategyEditor
   extends LitElement
@@ -75,12 +68,8 @@ export class HuiOriginalStatesDashboarStrategyEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const data = ev.detail.value as FormData;
-    const config = {
-      type: "original-states",
-      ...data,
-    };
-    fireEvent(this, "config-changed", { config });
+    const data = ev.detail.value;
+    fireEvent(this, "config-changed", { config: data });
   }
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
