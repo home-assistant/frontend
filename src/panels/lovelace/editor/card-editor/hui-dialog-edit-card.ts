@@ -157,8 +157,7 @@ export class HuiDialogEditCard
         // Trim names that end in " Card" so as not to redundantly duplicate it
         if (
           cardName
-            ?.substring(cardName.length - 5, cardName.length)
-            .toLowerCase() === " card"
+            ?.toLowerCase().endsWith(" card")
         ) {
           cardName = cardName.substring(0, cardName.length - 5);
         }
