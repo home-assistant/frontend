@@ -75,7 +75,7 @@ export class HaLocalAuthFlow extends LitElement {
           margin-top: 32px;
           display: flex;
           flex-wrap: wrap;
-          gap: 32px;
+          gap: 16px;
           justify-content: center;
         }
         .persons.force-small {
@@ -89,6 +89,14 @@ export class HaLocalAuthFlow extends LitElement {
           text-align: center;
           cursor: pointer;
           width: 80px;
+        }
+        .person[role="button"] {
+          outline: none;
+          padding: 8px;
+          border-radius: 4px;
+        }
+        .person[role="button"]:focus-visible {
+          background: rgba(var(--rgb-primary-color), 0.1);
         }
         .person p {
           margin-bottom: 0;
@@ -168,6 +176,10 @@ export class HaLocalAuthFlow extends LitElement {
           text-align: left;
           cursor: pointer;
           outline: none;
+          border-radius: 4px;
+        }
+        button:focus-visible {
+          background: rgba(var(--rgb-primary-color), 0.1);
         }
       </style>
       ${this._error
@@ -266,6 +278,9 @@ export class HaLocalAuthFlow extends LitElement {
                     class="person"
                     .userId=${userId}
                     @click=${this._personSelected}
+                    @keyup=${this._handleKeyUp}
+                    role="button"
+                    tabindex="0"
                   >
                     <ha-person-badge .person=${person}></ha-person-badge>
                     <p>${person.name}</p>
@@ -273,7 +288,7 @@ export class HaLocalAuthFlow extends LitElement {
                 })}
               </div>
               <div class="action">
-                <button @click=${this._otherLogin}>
+                <button @click=${this._otherLogin} tabindex="0">
                   ${this.localize("ui.panel.page-authorize.other_options")}
                 </button>
               </div>`}
@@ -311,6 +326,12 @@ export class HaLocalAuthFlow extends LitElement {
 
   private _toggleUnmaskedPassword() {
     this._unmaskedPassword = !this._unmaskedPassword;
+  }
+
+  private _handleKeyUp(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      this._personSelected(ev);
+    }
   }
 
   private async _personSelected(ev) {
