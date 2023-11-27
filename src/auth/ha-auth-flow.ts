@@ -285,7 +285,8 @@ export class HaAuthFlow extends LitElement {
 
     try {
       const response = await createLoginFlow(this.clientId, this.redirectUri, [
-        (newProvider.type, newProvider.id),
+        newProvider.type,
+        newProvider.id,
       ]);
 
       const data = await response.json();
