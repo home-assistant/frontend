@@ -1,4 +1,5 @@
 import "@material/mwc-list/mwc-list";
+import type { ActionDetail } from "@material/mwc-list/mwc-list";
 import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -116,7 +117,7 @@ export class DialogAreaFilter
         @closed=${this._cancel}
         .heading=${this._dialogParams.title ?? "Areas"}
       >
-        <mwc-list class="areas">
+        <mwc-list class="areas" @action=${this._action}>
           ${repeat(
             allAreas,
             (area) => area,
@@ -127,9 +128,6 @@ export class DialogAreaFilter
                   class=${classMap({ hidden: !isVisible })}
                   hasMeta
                   graphic="icon"
-                  .area=${area}
-                  @click=${this._toggle}
-                  noninteractive
                 >
                   <ha-svg-icon
                     class="handle"
@@ -157,8 +155,8 @@ export class DialogAreaFilter
     `;
   }
 
-  _toggle(event) {
-    const area = event!.currentTarget.area;
+  _action(ev: CustomEvent<ActionDetail>) {
+    const area = this._areas[ev.detail.index];
     const hidden = [...(this._hidden ?? [])];
     if (hidden.includes(area)) {
       hidden.splice(hidden.indexOf(area), 1);
@@ -180,6 +178,10 @@ export class DialogAreaFilter
         }
         ha-list-item {
           cursor: pointer;
+          --mdc-ripple-color: transparant;
+        }
+        ha-list-item:focus-visible {
+          background-color: rgba(var(--rgb-primary-text-color), 0.1);
         }
         .hidden {
           opacity: 0.3;
