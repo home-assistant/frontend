@@ -155,10 +155,7 @@ export class HuiDialogEditCard
         cardName = getCustomCardEntry(stripCustomPrefix(this._cardConfig.type))
           ?.name;
         // Trim names that end in " Card" so as not to redundantly duplicate it
-        if (
-          cardName
-            ?.toLowerCase().endsWith(" card")
-        ) {
+        if (cardName?.toLowerCase().endsWith(" card")) {
           cardName = cardName.substring(0, cardName.length - 5);
         }
       } else {
