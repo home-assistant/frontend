@@ -37,7 +37,10 @@ export const callProtectedLockService = async (
   ).catch(() => undefined);
   const defaultCode = lockRegistryEntry?.options?.lock?.default_code;
 
-  if (stateObj!.attributes.code_format && !defaultCode) {
+  if (
+    stateObj!.attributes.code_format &&
+    (defaultCode == null || defaultCode === "")
+  ) {
     const response = await showEnterCodeDialogDialog(element, {
       codeFormat: "text",
       codePattern: stateObj!.attributes.code_format,
@@ -48,6 +51,12 @@ export const callProtectedLockService = async (
       throw new Error("Code dialog closed");
     }
     code = response;
+  } else if (
+    stateObj!.attributes.code_format &&
+    defaultCode &&
+    defaultCode.length >= 0
+  ) {
+    code = defaultCode;
   }
 
   await hass.callService("lock", service, {
