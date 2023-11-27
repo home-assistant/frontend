@@ -1,16 +1,25 @@
 /* eslint-disable lit/prefer-static-styles */
 import "@material/mwc-button";
+import { mdiEye, mdiEyeOff } from "@mdi/js";
 import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
 import { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
+import "../components/ha-button";
+import "../components/ha-icon-button";
 import "../components/user/ha-person-badge";
-import { AuthProvider } from "../data/auth";
+import {
+  AuthProvider,
+  createLoginFlow,
+  deleteLoginFlow,
+  redirectWithAuthCode,
+  submitLoginFlow,
+} from "../data/auth";
+import { DataEntryFlowStep } from "../data/data_entry_flow";
 import { listPersons } from "../data/person";
 import "./ha-auth-textfield";
 import type { HaAuthTextField } from "./ha-auth-textfield";
-import { DataEntryFlowStep } from "../data/data_entry_flow";
-import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("ha-local-auth-flow")
 export class HaLocalAuthFlow extends LitElement {
@@ -24,6 +33,8 @@ export class HaLocalAuthFlow extends LitElement {
 
   @property() public oauth2State?: string;
 
+  @property({ type: Boolean }) public ownInstance = false;
+
   @property() public localize!: LocalizeFunc;
 
   @state() private _error?: string;
@@ -35,6 +46,8 @@ export class HaLocalAuthFlow extends LitElement {
   @state() private _persons?: Promise<Record<string, string>>;
 
   @state() private _selectedUser?: string;
+
+  @state() private _unmaskedPassword = false;
 
   createRenderRoot() {
     return this;
@@ -52,42 +65,121 @@ export class HaLocalAuthFlow extends LitElement {
     if (!this.authProvider?.users || !this._persons) {
       return nothing;
     }
+    const userIds = Object.keys(this.authProvider.users);
     return html`
       <style>
+        .content {
+          max-width: 560px;
+        }
         .persons {
+          margin-top: 32px;
           display: flex;
+          flex-wrap: wrap;
           gap: 16px;
+          justify-content: center;
+        }
+        .persons.force-small {
+          max-width: 350px;
         }
         .person {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
           flex-shrink: 0;
           text-align: center;
           cursor: pointer;
+          width: 80px;
+        }
+        .person[role="button"] {
+          outline: none;
+          padding: 8px;
+          border-radius: 4px;
+        }
+        .person[role="button"]:focus-visible {
+          background: rgba(var(--rgb-primary-color), 0.1);
         }
         .person p {
           margin-bottom: 0;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          width: 100%;
         }
         ha-person-badge {
-          width: 120px;
-          height: 120px;
-          --person-badge-font-size: 3em;
+          width: 80px;
+          height: 80px;
+          --person-badge-font-size: 2em;
+        }
+        form {
+          width: 100%;
+        }
+        ha-auth-textfield {
+          display: block !important;
+          position: relative;
+        }
+        ha-auth-textfield ha-icon-button {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          z-index: 9;
         }
         .login-form {
           display: flex;
           flex-direction: column;
           align-items: center;
+          width: 100%;
+          max-width: 336px;
+          margin-top: 24px;
         }
         .login-form .person {
           cursor: default;
+          width: auto;
         }
-        .login-form ha-auth-textfield {
-          margin-top: 16px;
+        .login-form .person p {
+          font-size: 28px;
+          margin-top: 24px;
+          margin-bottom: 32px;
+          line-height: normal;
+        }
+        .login-form ha-person-badge {
+          width: 120px;
+          height: 120px;
+          --person-badge-font-size: 3em;
         }
         .action {
-          margin: 24px 0 8px;
-          text-align: center;
+          margin: 16px 0 8px;
+          display: flex;
+          width: 100%;
+          max-width: 336px;
+          justify-content: center;
+        }
+        .space-between {
+          justify-content: space-between;
         }
         ha-list-item {
           margin-top: 16px;
+        }
+        ha-button {
+          --mdc-typography-button-text-transform: none;
+        }
+        a.forgot-password {
+          color: var(--primary-color);
+          text-decoration: none;
+          font-size: 0.875rem;
+        }
+        button {
+          color: var(--primary-color);
+          background: none;
+          border: none;
+          padding: 8px;
+          font: inherit;
+          text-align: left;
+          cursor: pointer;
+          outline: none;
+          border-radius: 4px;
+        }
+        button:focus-visible {
+          background: rgba(var(--rgb-primary-color), 0.1);
         }
       </style>
       ${this._error
@@ -117,12 +209,40 @@ export class HaLocalAuthFlow extends LitElement {
                 .value=${this.authProvider.users[this._selectedUser]}
               />
               <ha-auth-textfield
-                type="password"
+              .type=${this._unmaskedPassword ? "text" : "password"}
                 id="password"
-              ></ha-auth-textfield>
+                name="password"
+        .label=${this.localize(
+          "ui.panel.page-authorize.form.providers.homeassistant.step.init.data.password"
+        )}
+        required
+        autoValidate
+        autocomplete
+        iconTrailing
+        validationMessage="Required"
+              >
+              <ha-icon-button
+        toggles
+        .label=${
+          this.localize(
+            this._unmaskedPassword
+              ? "ui.panel.page-authorize.form.hide_password"
+              : "ui.panel.page-authorize.form.show_password"
+          ) || (this._unmaskedPassword ? "Hide password" : "Show password")
+        }
+        @click=${this._toggleUnmaskedPassword}
+        .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
+      ></ha-icon-button>
+    </ha-auth-textfield>
       </div>
-              <div class="action">
-                <mwc-button
+              <div class="action space-between">
+              <mwc-button
+                  @click=${this._restart}
+                  .disabled=${this._submitting}
+                >
+                  ${this.localize("ui.panel.page-authorize.form.previous")}
+                </mwc-button>
+              <mwc-button
                   raised
                   @click=${this._handleSubmit}
                   .disabled=${this._submitting}
@@ -130,24 +250,48 @@ export class HaLocalAuthFlow extends LitElement {
                   ${this.localize("ui.panel.page-authorize.form.next")}
                 </mwc-button>
               </div>
+              <div class="action">
+              <a class="forgot-password"
+                  href="https://www.home-assistant.io/docs/locked_out/#forgot-password"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  >${this.localize(
+                    "ui.panel.page-authorize.forgot_password"
+                  )}</a
+                >
+                </div>
             </form>`
-          : html`<div class="persons">
-                ${Object.keys(this.authProvider.users).map((userId) => {
+          : html`<h1>
+                ${this.localize("ui.panel.page-authorize.welcome_home")}
+              </h1>
+              <p>
+                ${this.localize("ui.panel.page-authorize.who_is_logging_in")}
+              </p>
+              <div
+                class="persons ${userIds.length < 10 && userIds.length % 4 === 1
+                  ? "force-small"
+                  : ""}"
+              >
+                ${userIds.map((userId) => {
                   const person = this._persons![userId];
                   return html`<div
                     class="person"
                     .userId=${userId}
                     @click=${this._personSelected}
+                    @keyup=${this._handleKeyUp}
+                    role="button"
+                    tabindex="0"
                   >
                     <ha-person-badge .person=${person}></ha-person-badge>
                     <p>${person.name}</p>
                   </div>`;
                 })}
               </div>
-              <ha-list-item hasMeta role="button" @click=${this._otherLogin}>
-                Other options
-                <ha-icon-next slot="meta"></ha-icon-next>
-              </ha-list-item>`}
+              <div class="action">
+                <button @click=${this._otherLogin} tabindex="0">
+                  ${this.localize("ui.panel.page-authorize.other_options")}
+                </button>
+              </div>`}
     `;
   }
 
@@ -176,24 +320,41 @@ export class HaLocalAuthFlow extends LitElement {
     this._persons = await (await listPersons()).json();
   }
 
+  private _restart() {
+    this._selectedUser = undefined;
+  }
+
+  private _toggleUnmaskedPassword() {
+    this._unmaskedPassword = !this._unmaskedPassword;
+  }
+
+  private _handleKeyUp(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      this._personSelected(ev);
+    }
+  }
+
   private async _personSelected(ev) {
     const userId = ev.currentTarget.userId;
-    if (this.authProviders?.find((prv) => prv.type === "trusted_networks")) {
+    if (
+      this.ownInstance &&
+      this.authProviders?.find((prv) => prv.type === "trusted_networks")
+    ) {
       try {
-        const flowResponse = await fetch("/auth/login_flow", {
-          method: "POST",
-          credentials: "same-origin",
-          body: JSON.stringify({
-            client_id: this.clientId,
-            handler: ["trusted_networks", null],
-            redirect_uri: this.redirectUri,
-          }),
-        });
+        const flowResponse = await createLoginFlow(
+          this.clientId,
+          this.redirectUri,
+          ["trusted_networks", null]
+        );
 
         const data = await flowResponse.json();
 
         if (data.type === "create_entry") {
-          this._redirect(data.result);
+          redirectWithAuthCode(
+            this.redirectUri!,
+            data.result,
+            this.oauth2State
+          );
           return;
         }
 
@@ -204,27 +365,24 @@ export class HaLocalAuthFlow extends LitElement {
 
           const postData = { user: userId, client_id: this.clientId };
 
-          const response = await fetch(`/auth/login_flow/${data.flow_id}`, {
-            method: "POST",
-            credentials: "same-origin",
-            body: JSON.stringify(postData),
-          });
+          const response = await submitLoginFlow(data.flow_id, postData);
 
           if (response.ok) {
             const result = await response.json();
 
             if (result.type === "create_entry") {
-              this._redirect(result.result);
+              redirectWithAuthCode(
+                this.redirectUri!,
+                result.result,
+                this.oauth2State
+              );
               return;
             }
           } else {
             throw new Error("Invalid response");
           }
         } catch {
-          fetch(`/auth/login_flow/${data.flow_id}`, {
-            method: "DELETE",
-            credentials: "same-origin",
-          }).catch((err) => {
+          deleteLoginFlow(data.flow_id).catch((err) => {
             // eslint-disable-next-line no-console
             console.error("Error delete obsoleted auth flow", err);
           });
@@ -243,17 +401,14 @@ export class HaLocalAuthFlow extends LitElement {
       return;
     }
 
+    this._error = undefined;
     this._submitting = true;
 
-    const flowResponse = await fetch("/auth/login_flow", {
-      method: "POST",
-      credentials: "same-origin",
-      body: JSON.stringify({
-        client_id: this.clientId,
-        handler: ["homeassistant", null],
-        redirect_uri: this.redirectUri,
-      }),
-    });
+    const flowResponse = await createLoginFlow(
+      this.clientId,
+      this.redirectUri,
+      ["homeassistant", null]
+    );
 
     const data = await flowResponse.json();
 
@@ -265,11 +420,7 @@ export class HaLocalAuthFlow extends LitElement {
     };
 
     try {
-      const response = await fetch(`/auth/login_flow/${data.flow_id}`, {
-        method: "POST",
-        credentials: "same-origin",
-        body: JSON.stringify(postData),
-      });
+      const response = await submitLoginFlow(data.flow_id, postData);
 
       const newStep = await response.json();
 
@@ -279,7 +430,11 @@ export class HaLocalAuthFlow extends LitElement {
       }
 
       if (newStep.type === "create_entry") {
-        this._redirect(newStep.result);
+        redirectWithAuthCode(
+          this.redirectUri!,
+          newStep.result,
+          this.oauth2State
+        );
         return;
       }
 
@@ -287,36 +442,23 @@ export class HaLocalAuthFlow extends LitElement {
         this._error = this.localize(
           `ui.panel.page-authorize.form.providers.homeassistant.error.${newStep.errors.base}`
         );
-        return;
+        throw new Error(this._error);
       }
 
       this._step = newStep;
-    } catch (err: any) {
-      // eslint-disable-next-line no-console
-      console.error("Error submitting step", err);
-      this._error = this.localize("ui.panel.page-authorize.form.unknown_error");
+    } catch {
+      deleteLoginFlow(data.flow_id).catch((err) => {
+        // eslint-disable-next-line no-console
+        console.error("Error delete obsoleted auth flow", err);
+      });
+      if (!this._error) {
+        this._error = this.localize(
+          "ui.panel.page-authorize.form.unknown_error"
+        );
+      }
     } finally {
       this._submitting = false;
     }
-  }
-
-  private _redirect(authCode: string) {
-    // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
-    let url = this.redirectUri!;
-    if (!url.includes("?")) {
-      url += "?";
-    } else if (!url.endsWith("&")) {
-      url += "&";
-    }
-
-    url += `code=${encodeURIComponent(authCode)}`;
-
-    if (this.oauth2State) {
-      url += `&state=${encodeURIComponent(this.oauth2State)}`;
-    }
-    url += `&storeToken=true`;
-
-    document.location.assign(url);
   }
 
   private _otherLogin() {
