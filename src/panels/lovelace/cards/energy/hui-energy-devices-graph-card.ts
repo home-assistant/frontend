@@ -80,7 +80,11 @@ export class HuiEnergyDevicesGraphCard
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return hasConfigChanged(this, changedProps) || changedProps.size > 1;
+    return (
+      hasConfigChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
   }
 
   protected render() {

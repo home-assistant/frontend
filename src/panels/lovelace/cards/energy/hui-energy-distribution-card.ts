@@ -70,6 +70,7 @@ class HuiEnergyDistrubutionCard
     return (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
+      !changedProps.has("hass") ||
       (!!this._data?.co2SignalEntity &&
         this.hass.states[this._data.co2SignalEntity] !==
           changedProps.get("hass").states[this._data.co2SignalEntity])
