@@ -109,6 +109,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     if (this._progressInterval) {
       clearInterval(this._progressInterval);
       this._progressInterval = undefined;
