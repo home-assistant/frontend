@@ -18,6 +18,7 @@ import { HomeAssistant } from "../../types";
 import "../ha-formfield";
 import "../ha-icon-button";
 import "../ha-switch";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined &&
@@ -81,9 +82,14 @@ export class HaEntityToggle extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    this.addEventListener("click", (ev) => ev.stopPropagation());
+  public connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener("click", stopPropagation);
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this.addEventListener("click", stopPropagation);
   }
 
   public willUpdate(changedProps: PropertyValues): void {

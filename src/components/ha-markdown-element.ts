@@ -66,7 +66,7 @@ class HaMarkdownElement extends ReactiveElement {
         if (this.lazyImages) {
           node.loading = "lazy";
         }
-        node.addEventListener("load", this._resize);
+        node.addEventListener("load", this._resize, { once: true });
       } else if (node instanceof HTMLQuoteElement) {
         // Map GitHub blockquote elements to our ha-alert element
         const firstElementChild = node.firstElementChild;

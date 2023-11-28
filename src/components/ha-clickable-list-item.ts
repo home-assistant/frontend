@@ -23,14 +23,21 @@ export class HaClickableListItem extends HaListItem {
         >`}`;
   }
 
-  firstUpdated() {
-    super.firstUpdated();
-    this.addEventListener("keydown", (ev) => {
-      if (ev.key === "Enter" || ev.key === " ") {
-        this._anchor.click();
-      }
-    });
+  connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener("keydown", this._handleKeydown);
   }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removeEventListener("keydown", this._handleKeydown);
+  }
+
+  private _handleKeydown = (ev: KeyboardEvent) => {
+    if (ev.key === "Enter" || ev.key === " ") {
+      this._anchor.click();
+    }
+  };
 
   static get styles(): CSSResultGroup {
     return [

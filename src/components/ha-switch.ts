@@ -11,14 +11,21 @@ export class HaSwitch extends SwitchBase {
   // Do not add haptic when a user is required to press save.
   @property({ type: Boolean }) public haptic = false;
 
-  protected firstUpdated() {
-    super.firstUpdated();
-    this.addEventListener("change", () => {
-      if (this.haptic) {
-        forwardHaptic("light");
-      }
-    });
+  public connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener("change", this._forwardHaptic);
   }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener("change", this._forwardHaptic);
+  }
+
+  private _forwardHaptic = () => {
+    if (this.haptic) {
+      forwardHaptic("light");
+    }
+  };
 
   static override styles = [
     styles,

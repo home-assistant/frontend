@@ -284,22 +284,28 @@ class HaHLSPlayer extends LitElement {
 
   private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
     videoEl.src = url;
-    videoEl.addEventListener("loadedmetadata", () => {
-      videoEl.play();
-    });
+    videoEl.addEventListener("loadedmetadata", this._handleLoadedMetadata);
   }
+
+  private _handleLoadedMetadata = (ev) => {
+    ev.target.play();
+  };
 
   private _cleanUp() {
     if (this._hlsPolyfillInstance) {
       this._hlsPolyfillInstance.destroy();
       this._hlsPolyfillInstance = undefined;
     }
+    window.removeEventListener("resize", this._resizeExoPlayer);
     if (this._exoPlayer) {
-      window.removeEventListener("resize", this._resizeExoPlayer);
       this.hass!.auth.external!.fireMessage({ type: "exoplayer/stop" });
       this._exoPlayer = false;
     }
     if (this._videoEl) {
+      this._videoEl.removeEventListener(
+        "loadedmetadata",
+        this._handleLoadedMetadata
+      );
       this._videoEl.removeAttribute("src");
       this._videoEl.load();
     }

@@ -5,6 +5,7 @@ import DateRangePicker from "vue2-daterange-picker";
 // @ts-ignore
 import dateRangePickerStyles from "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import { fireEvent } from "../common/dom/fire_event";
+import { stopPropagation } from "../common/dom/stop_propagation";
 
 // Set the current date to the left picker instead of the right picker because the right is hidden
 const CustomDateRangePicker = Vue.extend({
@@ -264,7 +265,12 @@ class DateRangePickerElement extends WrappedElement {
     const shadowRoot = this.shadowRoot!;
     shadowRoot.appendChild(style);
     // Stop click events from reaching the document, otherwise it will close the picker immediately.
-    shadowRoot.addEventListener("click", (ev) => ev.stopPropagation());
+    shadowRoot.addEventListener("click", stopPropagation);
+  }
+
+  disconnectedCallback() {
+    const shadowRoot = this.shadowRoot!;
+    shadowRoot.removeEventListener("click", stopPropagation);
   }
 }
 

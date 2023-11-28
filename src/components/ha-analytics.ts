@@ -33,12 +33,16 @@ export class HaAnalytics extends LitElement {
 
     return html`
       <ha-settings-row>
-        <span slot="heading" data-for="base">
+        <span slot="heading" @click=${this._handleLabelClick} data-for="base">
           ${this.localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
           )}
         </span>
-        <span slot="description" data-for="base">
+        <span
+          slot="description"
+          @click=${this._handleLabelClick}
+          data-for="base"
+        >
           ${this.localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.description`
           )}
@@ -55,12 +59,20 @@ export class HaAnalytics extends LitElement {
       ${ADDITIONAL_PREFERENCES.map(
         (preference) => html`
           <ha-settings-row>
-            <span slot="heading" data-for=${preference}>
+            <span
+              slot="heading"
+              @click=${this._handleLabelClick}
+              data-for=${preference}
+            >
               ${this.localize(
                 `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
               )}
             </span>
-            <span slot="description" data-for=${preference}>
+            <span
+              slot="description"
+              @click=${this._handleLabelClick}
+              data-for=${preference}
+            >
               ${this.localize(
                 `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.description`
               )}
@@ -87,12 +99,20 @@ export class HaAnalytics extends LitElement {
         `
       )}
       <ha-settings-row>
-        <span slot="heading" data-for="diagnostics">
+        <span
+          slot="heading"
+          @click=${this._handleLabelClick}
+          data-for="diagnostics"
+        >
           ${this.localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
           )}
         </span>
-        <span slot="description" data-for="diagnostics">
+        <span
+          slot="description"
+          @click=${this._handleLabelClick}
+          data-for="diagnostics"
+        >
           ${this.localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.description`
           )}
@@ -109,24 +129,16 @@ export class HaAnalytics extends LitElement {
     `;
   }
 
-  protected updated(changedProps) {
-    super.updated(changedProps);
+  private _handleLabelClick(ev: Event) {
+    const forName = (ev.currentTarget as HTMLElement).dataset.for;
+    const toFocus = this.shadowRoot!.querySelector(
+      `*[name=${forName}]`
+    ) as HTMLElement | null;
 
-    this.shadowRoot!.querySelectorAll("*[data-for]").forEach((el) => {
-      const forEl = (el as HTMLElement).dataset.for;
-      delete (el as HTMLElement).dataset.for;
-
-      el.addEventListener("click", () => {
-        const toFocus = this.shadowRoot!.querySelector(
-          `*[name=${forEl}]`
-        ) as HTMLElement | null;
-
-        if (toFocus) {
-          toFocus.focus();
-          toFocus.click();
-        }
-      });
-    });
+    if (toFocus) {
+      toFocus.focus();
+      toFocus.click();
+    }
   }
 
   private _handleRowClick(ev: Event) {

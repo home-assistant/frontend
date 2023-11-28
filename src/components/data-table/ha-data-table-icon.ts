@@ -1,4 +1,4 @@
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../ha-svg-icon";
 
@@ -17,20 +17,31 @@ class HaDataTableIcon extends LitElement {
     `;
   }
 
-  protected override firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    const show = () => {
-      this._hovered = true;
-    };
-    const hide = () => {
-      this._hovered = false;
-    };
-    this.addEventListener("mouseenter", show);
-    this.addEventListener("focus", show);
-    this.addEventListener("mouseleave", hide);
-    this.addEventListener("blur", hide);
-    this.addEventListener("tap", hide);
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener("mouseenter", this._show);
+    this.addEventListener("focus", this._show);
+    this.addEventListener("mouseleave", this._hide);
+    this.addEventListener("blur", this._hide);
+    this.addEventListener("tap", this._hide);
   }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removeEventListener("mouseenter", this._show);
+    this.removeEventListener("focus", this._show);
+    this.removeEventListener("mouseleave", this._hide);
+    this.removeEventListener("blur", this._hide);
+    this.removeEventListener("tap", this._hide);
+  }
+
+  private _show = () => {
+    this._hovered = true;
+  };
+
+  private _hide = () => {
+    this._hovered = false;
+  };
 
   static get styles() {
     return css`
