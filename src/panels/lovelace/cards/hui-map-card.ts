@@ -138,7 +138,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
-    return { type: "map", entities: foundEntities };
+    return { type: "map", entities: foundEntities, theme_mode: "auto" };
   }
 
   protected render() {
@@ -151,6 +151,20 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         (${this._error.code})
       </ha-alert>`;
     }
+
+    let isDarkMode =
+      this._config.dark_mode !== null || this._config.dark_mode !== undefined
+        ? this._config.dark_mode
+        : this.hass.themes.darkMode;
+
+    if (this._config.theme_mode === "auto") {
+      isDarkMode = this.hass.themes.darkMode;
+    } else if (this._config.theme_mode === "light") {
+      isDarkMode = false;
+    } else if (this._config.theme_mode === "dark") {
+      isDarkMode = true;
+    }
+
     return html`
       <ha-card id="card" .header=${this._config.title}>
         <div id="root">
@@ -164,7 +178,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit}
-            .darkMode=${this._config.dark_mode}
+            .darkMode=${isDarkMode}
             interactiveZones
             renderPassive
           ></ha-map>
@@ -173,6 +187,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               "ui.panel.lovelace.cards.map.reset_focus"
             )}
             .path=${mdiImageFilterCenterFocus}
+            style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
             @click=${this._fitMap}
             tabindex="0"
           ></ha-icon-button>

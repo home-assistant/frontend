@@ -140,6 +140,8 @@ export type FullCalendarView =
   | "dayGridDay"
   | "listWeek";
 
+export type ThemeMode = "auto" | "light" | "dark";
+
 export interface ToggleButton {
   label: string;
   iconPath?: string;
