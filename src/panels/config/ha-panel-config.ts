@@ -559,6 +559,7 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
         this._wideSidebar = matches;
       })
     );
+    this.addEventListener("ha-refresh-cloud-status", this._updateCloudStatus);
   }
 
   public disconnectedCallback() {
@@ -568,24 +569,16 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
     }
     entityRegistryByEntityId.clear();
     entityRegistryById.clear();
+    this.removeEventListener(
+      "ha-refresh-cloud-status",
+      this._updateCloudStatus
+    );
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
     this.hass.loadBackendTranslation("services");
-    if (isComponentLoaded(this.hass, "cloud")) {
-      this._updateCloudStatus();
-      this.addEventListener("connection-status", (ev) => {
-        if (ev.detail === "connected") {
-          this._updateCloudStatus();
-        }
-      });
-    }
-
-    this.addEventListener("ha-refresh-cloud-status", () =>
-      this._updateCloudStatus()
-    );
     this.style.setProperty(
       "--app-header-background-color",
       "var(--sidebar-background-color)"
@@ -600,6 +593,17 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
     );
   }
 
+  protected willUpdate(changedProps: PropertyValues) {
+    if (
+      isComponentLoaded(this.hass, "cloud") &&
+      changedProps.has("hass") &&
+      changedProps.get("hass")?.connected !== this.hass.connected &&
+      this.hass.connected
+    ) {
+      this._updateCloudStatus();
+    }
+  }
+
   protected updatePageEl(el) {
     const isWide =
       this.hass.dockedSidebar === "docked" ? this._wideSidebar : this._wide;
@@ -612,7 +616,7 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
     el.cloudStatus = this._cloudStatus;
   }
 
-  private async _updateCloudStatus() {
+  private _updateCloudStatus = async () => {
     this._cloudStatus = await fetchCloudStatus(this.hass);
 
     if (
@@ -625,7 +629,7 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
     ) {
       setTimeout(() => this._updateCloudStatus(), 5000);
     }
-  }
+  };
 }
 
 declare global {

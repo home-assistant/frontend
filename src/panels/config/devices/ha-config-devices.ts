@@ -70,6 +70,7 @@ class HaConfigDevices extends HassRouterPage {
       return;
     }
     this._loadData();
+    this.addEventListener("hass-reload-entries", this._loadData);
   }
 
   public disconnectedCallback() {
@@ -80,13 +81,7 @@ class HaConfigDevices extends HassRouterPage {
       }
       this._unsubs = undefined;
     }
-  }
-
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    this.addEventListener("hass-reload-entries", () => {
-      this._loadData();
-    });
+    this.removeEventListener("hass-reload-entries", this._loadData);
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -114,7 +109,7 @@ class HaConfigDevices extends HassRouterPage {
     pageEl.route = this.routeTail;
   }
 
-  private _loadData() {
+  private _loadData = () => {
     getConfigEntries(this.hass).then((configEntries) => {
       this._configEntries = configEntries;
     });
@@ -136,7 +131,7 @@ class HaConfigDevices extends HassRouterPage {
         this._deviceRegistryEntries = entries;
       }),
     ];
-  }
+  };
 }
 
 declare global {

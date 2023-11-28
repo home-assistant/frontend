@@ -17,18 +17,33 @@ class HuiMarquee extends LitElement {
   @property({ reflect: true, type: Boolean, attribute: "animating" })
   private _animating = false;
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
+  public connectedCallback() {
+    super.connectedCallback();
 
     // eslint-disable-next-line wc/no-self-class
-    this.addEventListener("mouseover", () => this.classList.add("hovering"), {
+    this.addEventListener("mouseover", this._handleMouseOver, {
       // Capture because we need to run before a parent sets active on us.
       // Hovering will disable the overflow, allowing us to calc if we overflow.
       capture: true,
     });
     // eslint-disable-next-line wc/no-self-class
-    this.addEventListener("mouseout", () => this.classList.remove("hovering"));
+    this.addEventListener("mouseout", this._handleMouseOut);
   }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+
+    // eslint-disable-next-line wc/no-self-class
+    this.removeEventListener("mouseover", this._handleMouseOver, {
+      capture: true,
+    });
+    // eslint-disable-next-line wc/no-self-class
+    this.removeEventListener("mouseout", this._handleMouseOut);
+  }
+
+  private _handleMouseOver = () => this.classList.add("hovering");
+
+  private _handleMouseOut = () => this.classList.remove("hovering");
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);

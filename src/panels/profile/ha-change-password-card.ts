@@ -1,25 +1,18 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../components/ha-alert";
 import "../../components/ha-card";
 import "../../components/ha-circular-progress";
 import "../../components/ha-textfield";
-import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
-import "../../components/ha-alert";
+import { changePassword, deleteAllRefreshTokens } from "../../data/auth";
+import { RefreshToken } from "../../data/refresh_token";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
-import { RefreshToken } from "../../data/refresh_token";
-import { changePassword, deleteAllRefreshTokens } from "../../data/auth";
+import { haStyle } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
 
 @customElement("ha-change-password-card")
 class HaChangePasswordCard extends LitElement {
@@ -122,14 +115,21 @@ class HaChangePasswordCard extends LitElement {
     this._passwordConfirm = ev.target.value;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-    this.addEventListener("keypress", (ev) => {
-      this._statusMsg = undefined;
-      if (ev.key === "Enter") {
-        this._changePassword();
-      }
-    });
+  public connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener("keypress", this._handleKeyPress);
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener("keypress", this._handleKeyPress);
+  }
+
+  private _handleKeyPress(ev: KeyboardEvent) {
+    this._statusMsg = undefined;
+    if (ev.key === "Enter") {
+      this._changePassword();
+    }
   }
 
   private async _changePassword() {

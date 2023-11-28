@@ -27,6 +27,16 @@ class HaConfigBlueprint extends HassRouterPage {
 
   @property() public blueprints: Record<string, Blueprints> = {};
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener("reload-blueprints", this._getBlueprints);
+  }
+
+  public disconnectedCallback(): void {
+    super.connectedCallback();
+    this.removeEventListener("reload-blueprints", this._getBlueprints);
+  }
+
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
     routes: {
@@ -40,19 +50,16 @@ class HaConfigBlueprint extends HassRouterPage {
     },
   };
 
-  private async _getBlueprints() {
+  private _getBlueprints = async () => {
     const [automation, script] = await Promise.all([
       fetchBlueprints(this.hass, "automation"),
       fetchBlueprints(this.hass, "script"),
     ]);
     this.blueprints = { automation, script };
-  }
+  };
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this.addEventListener("reload-blueprints", () => {
-      this._getBlueprints();
-    });
     this._getBlueprints();
   }
 
