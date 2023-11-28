@@ -495,6 +495,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       z-index: 10;
     }
     .footer {
+      padding-top: 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -502,7 +503,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     ha-language-picker {
       display: block;
       width: 200px;
-      margin-top: 8px;
       border-radius: 4px;
       overflow: hidden;
       --ha-select-height: 40px;

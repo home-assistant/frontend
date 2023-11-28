@@ -119,13 +119,13 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           padding: 16px;
         }
         .footer {
+          padding-top: 8px;
           display: flex;
           justify-content: space-between;
           align-items: center;
         }
         ha-language-picker {
           width: 200px;
-          margin-top: 8px;
           border-radius: 4px;
           overflow: hidden;
           --ha-select-height: 40px;
