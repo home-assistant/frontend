@@ -347,6 +347,7 @@ export interface StringSelector {
     prefix?: string;
     suffix?: string;
     autocomplete?: string;
+    multiple: true;
   } | null;
 }
 
