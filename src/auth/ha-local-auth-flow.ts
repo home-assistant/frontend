@@ -72,7 +72,7 @@ export class HaLocalAuthFlow extends LitElement {
           max-width: 560px;
         }
         .persons {
-          margin-top: 32px;
+          margin-top: 24px;
           display: flex;
           flex-wrap: wrap;
           gap: 16px;
@@ -173,6 +173,7 @@ export class HaLocalAuthFlow extends LitElement {
           border: none;
           padding: 8px;
           font: inherit;
+          font-size: 0.875rem;
           text-align: left;
           cursor: pointer;
           outline: none;
@@ -264,9 +265,7 @@ export class HaLocalAuthFlow extends LitElement {
           : html`<h1>
                 ${this.localize("ui.panel.page-authorize.welcome_home")}
               </h1>
-              <p>
-                ${this.localize("ui.panel.page-authorize.who_is_logging_in")}
-              </p>
+              ${this.localize("ui.panel.page-authorize.who_is_logging_in")}
               <div
                 class="persons ${userIds.length < 10 && userIds.length % 4 === 1
                   ? "force-small"
@@ -322,6 +321,7 @@ export class HaLocalAuthFlow extends LitElement {
 
   private _restart() {
     this._selectedUser = undefined;
+    this._error = undefined;
   }
 
   private _toggleUnmaskedPassword() {

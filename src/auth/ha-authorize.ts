@@ -114,18 +114,17 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
             var(--divider-color, #e0e0e0)
           );
           color: var(--primary-text-color);
-          transition: all 0.3s ease-out;
           position: relative;
           padding: 16px;
         }
         .footer {
+          padding-top: 8px;
           display: flex;
           justify-content: space-between;
           align-items: center;
         }
         ha-language-picker {
           width: 200px;
-          margin-top: 8px;
           border-radius: 4px;
           overflow: hidden;
           --ha-select-height: 40px;
