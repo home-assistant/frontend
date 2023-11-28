@@ -1240,10 +1240,10 @@
       },
       "aliases": {
         "heading": "{name} aliases",
-        "remove_alias": "Remove alias {number}",
-        "input_label": "Alias {number}",
+        "label": "Alias",
+        "remove": "Remove alias",
         "save": "Save",
-        "add_alias": "Add alias",
+        "add": "Add alias",
         "no_aliases": "No aliases have been added yet",
         "update": "Update",
         "unknown_error": "Unknown error"
