@@ -4,7 +4,6 @@ import { load } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { none } from "@lit-labs/motion";
 import { storage } from "../../../common/decorators/storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
@@ -428,14 +427,14 @@ class HaPanelDevService extends LitElement {
 
       let localizedErrorMessage: string | undefined;
       if (err.translation_domain && err.translation_key) {
-	      const lokalize = await this.hass.loadBackendTranslation(
-	        "exceptions",
-	        err.translation_domain
-	      );
-	      localizedErrorMessage = lokalize(
-	        `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
-	        err.translation_placeholders
-	      )
+        const lokalize = await this.hass.loadBackendTranslation(
+          "exceptions",
+          err.translation_domain
+        );
+        localizedErrorMessage = lokalize(
+          `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
+          err.translation_placeholders
+        );
       }
       this._error =
         localizedErrorMessage ||
