@@ -106,7 +106,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._configEntities = config.entities
       ? processConfigEntities<MapEntityConfig>(config.entities)
       : [];
-    this._updateMapEntities();
+    this._mapEntities = this._getMapEntities();
   }
 
   public getCardSize(): number {
@@ -202,24 +202,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     if (this._config?.geo_location_sources) {
-      const oldSourceEntities = this._getSourceEntities(
-        oldHass.states,
-        this._config
-      );
-      const newSourceEntities = this._getSourceEntities(
-        this.hass.states,
-        this._config
-      );
-
-      if (
-        !deepEqual(oldSourceEntities, newSourceEntities) ||
-        newSourceEntities.some(
-          (entity_id) =>
-            oldHass.states[entity_id] !== this.hass.states[entity_id]
-        )
-      ) {
-        return true;
-      }
+      return true;
     }
 
     return this._config?.entities
@@ -230,7 +213,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     if (changedProps.has("hass") && this._config?.geo_location_sources) {
-      this._updateMapEntities();
+      if (
+        !deepEqual(
+          this._getSourceEntities(changedProps.get("hass")?.states),
+          this._getSourceEntities(this.hass.states)
+        )
+      ) {
+        this._mapEntities = this._getMapEntities();
+      }
     }
   }
 
@@ -331,22 +321,21 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return color;
   }
 
-  private _getSourceEntities(
-    states?: HassEntities,
-    config?: MapCardConfig
-  ): string[] {
-    if (!states || !config || !config.geo_location_sources) {
+  private _getSourceEntities(states?: HassEntities): string[] {
+    if (!states || !this._config?.geo_location_sources) {
       return [];
     }
 
     const geoEntities: string[] = [];
     // Calculate visible geo location sources
-    const includesAll = config.geo_location_sources.includes("all");
+    const includesAll = this._config.geo_location_sources.includes("all");
     for (const stateObj of Object.values(states)) {
       if (
         computeDomain(stateObj.entity_id) === "geo_location" &&
         (includesAll ||
-          config.geo_location_sources.includes(stateObj.attributes.source))
+          this._config.geo_location_sources.includes(
+            stateObj.attributes.source
+          ))
       ) {
         geoEntities.push(stateObj.entity_id);
       }
@@ -354,8 +343,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return geoEntities;
   }
 
-  private _updateMapEntities(): void {
-    const entities = [
+  private _getMapEntities(): HaMapEntity[] {
+    return [
       ...(this._configEntities || []).map((entityConf) => ({
         entity_id: entityConf.entity,
         color: this._getColor(entityConf.entity),
@@ -363,16 +352,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         focus: entityConf.focus,
         name: entityConf.name,
       })),
-      ...this._getSourceEntities(this.hass?.states, this._config).map(
-        (entity) => ({
-          entity_id: entity,
-          color: this._getColor(entity),
-        })
-      ),
+      ...this._getSourceEntities(this.hass?.states).map((entity) => ({
+        entity_id: entity,
+        color: this._getColor(entity),
+      })),
     ];
-    if (!deepEqual(entities, this._mapEntities)) {
-      this._mapEntities = entities;
-    }
   }
 
   private _getHistoryPaths = memoizeOne(
