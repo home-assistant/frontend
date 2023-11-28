@@ -117,6 +117,12 @@ class PanelMediaBrowser extends LitElement {
               )
             : this._currentItem.title}
         </div>
+        <ha-media-manage-button
+          slot="actionItems"
+          .hass=${this.hass}
+          .currentItem=${this._currentItem}
+          @media-refresh=${this._refreshMedia}
+        ></ha-media-manage-button>
         <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
@@ -154,12 +160,6 @@ class PanelMediaBrowser extends LitElement {
             ></ha-svg-icon>
           </mwc-list-item>
         </ha-button-menu>
-        <ha-media-manage-button
-          slot="actionItems"
-          .hass=${this.hass}
-          .currentItem=${this._currentItem}
-          @media-refresh=${this._refreshMedia}
-        ></ha-media-manage-button>
         <ha-media-player-browse
           .hass=${this.hass}
           .entityId=${this._entityId}
