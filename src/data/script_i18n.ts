@@ -259,9 +259,15 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(
       `${actionTranslationBaseKey}.play_media.description.full`,
       {
-        hasMedia: config.metadata.title || config.data.media_content_id,
-        media: config.metadata.title || config.data.media_content_id,
-        hasMediaPlayer: mediaStateObj ? true : entityId !== undefined,
+        hasMedia:
+          config.metadata.title || config.data.media_content_id
+            ? "true"
+            : "false",
+        media:
+          (config.metadata.title as string | undefined) ||
+          config.data.media_content_id,
+        hasMediaPlayer:
+          mediaStateObj || entityId !== undefined ? "true" : "false",
         mediaPlayer: mediaStateObj ? computeStateName(mediaStateObj) : entityId,
       }
     );
@@ -317,7 +323,7 @@ const tryDescribeAction = <T extends ActionType>(
   if (actionType === "stop") {
     const config = action as StopAction;
     return hass.localize(`${actionTranslationBaseKey}.stop.description.full`, {
-      hasReason: config.stop !== undefined,
+      hasReason: config.stop !== undefined ? "true" : "false",
       reason: config.stop,
     });
   }

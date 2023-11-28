@@ -374,7 +374,7 @@ const tryDescribeTrigger = (
       trigger.event === "sunset"
         ? `${triggerTranslationBaseKey}.sun.description.sets`
         : `${triggerTranslationBaseKey}.sun.description.rises`,
-      { hasDuration: duration !== "", duration: duration }
+      { hasDuration: duration !== "" ? "true" : "false", duration: duration }
     );
   }
 
@@ -604,7 +604,7 @@ const tryDescribeTrigger = (
 
     return hass.localize(
       `${triggerTranslationBaseKey}.template.description.full`,
-      { hasDuration: duration !== "", duration: duration }
+      { hasDuration: duration !== "" ? "true" : "false", duration: duration }
     );
   }
 
@@ -959,8 +959,8 @@ const tryDescribeCondition = (
         `${conditionsTranslationBaseKey}.time.description.full`,
         {
           hasTime: hasTime,
-          hasTimeAndDay: (after || before) && validWeekdays,
-          hasDay: validWeekdays,
+          hasTimeAndDay: (after || before) && validWeekdays ? "true" : "false",
+          hasDay: validWeekdays ? "true" : "false",
           time_before: before,
           time_after: after,
           day: formatListWithOrs(hass.locale, localizedDays),

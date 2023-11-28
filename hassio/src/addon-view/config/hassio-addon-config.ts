@@ -340,11 +340,9 @@ class HassioAddonConfig extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err: any) {
-      this._error = this.supervisor.localize(
-        "addon.failed_to_reset",
-        "error",
-        extractApiErrorMessage(err)
-      );
+      this._error = this.supervisor.localize("addon.failed_to_reset", {
+        error: extractApiErrorMessage(err),
+      });
     }
     button.progress = false;
   }
@@ -381,11 +379,9 @@ class HassioAddonConfig extends LitElement {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
     } catch (err: any) {
-      this._error = this.supervisor.localize(
-        "addon.failed_to_save",
-        "error",
-        extractApiErrorMessage(err)
-      );
+      this._error = this.supervisor.localize("addon.failed_to_save", {
+        error: extractApiErrorMessage(err),
+      });
       eventdata.success = false;
     }
     button.progress = false;

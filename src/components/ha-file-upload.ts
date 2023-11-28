@@ -64,7 +64,7 @@ export class HaFileUpload extends LitElement {
                 >${this.value
                   ? this.hass?.localize(
                       "ui.components.file-upload.uploading_name",
-                      { name: this.value }
+                      { name: this.value.toString() }
                     )
                   : this.hass?.localize(
                       "ui.components.file-upload.uploading"

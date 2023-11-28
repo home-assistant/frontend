@@ -1,9 +1,10 @@
 import { mdiHelpCircle, mdiPlus } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { formatListWithAnds } from "../../../common/string/format-list";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -135,36 +136,26 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
                       <h1 class="card-header">${area.name}</h1>
                       <div class="card-content">
                         <div>
-                          ${area.devices
-                            ? html`
-                                ${this.hass.localize(
+                          ${formatListWithAnds(
+                            this.hass.locale,
+                            [
+                              area.devices &&
+                                this.hass.localize(
                                   "ui.panel.config.integrations.config_entry.devices",
-                                  "count",
-                                  area.devices
-                                )}${area.services ? "," : ""}
-                              `
-                            : ""}
-                          ${area.services
-                            ? html`
-                                ${this.hass.localize(
+                                  { count: area.devices }
+                                ),
+                              area.services &&
+                                this.hass.localize(
                                   "ui.panel.config.integrations.config_entry.services",
-                                  "count",
-                                  area.services
-                                )}
-                              `
-                            : ""}
-                          ${(area.devices || area.services) && area.entities
-                            ? this.hass.localize("ui.common.and")
-                            : ""}
-                          ${area.entities
-                            ? html`
-                                ${this.hass.localize(
+                                  { count: area.services }
+                                ),
+                              area.entities &&
+                                this.hass.localize(
                                   "ui.panel.config.integrations.config_entry.entities",
-                                  "count",
-                                  area.entities
-                                )}
-                              `
-                            : ""}
+                                  { count: area.entities }
+                                ),
+                            ].filter((v): v is string => Boolean(v))
+                          )}
                         </div>
                       </div>
                     </ha-card></a

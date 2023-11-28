@@ -800,10 +800,8 @@ export class HaMediaPlayerBrowse extends LitElement {
         <p>
           ${this.hass.localize("ui.components.media-browser.no_media_folder")}
           <br />
-          ${this.hass.localize(
-            "ui.components.media-browser.setup_local_help",
-            "documentation",
-            html`<a
+          ${this.hass.localize("ui.components.media-browser.setup_local_help", {
+            documentation: html`<a
               href=${documentationUrl(
                 this.hass,
                 "/more-info/local-media/setup-media"
@@ -813,8 +811,8 @@ export class HaMediaPlayerBrowse extends LitElement {
               >${this.hass.localize(
                 "ui.components.media-browser.documentation"
               )}</a
-            >`
-          )}
+            >`,
+          })}
           <br />
           ${this.hass.localize("ui.components.media-browser.local_media_files")}
         </p>

@@ -54,11 +54,9 @@ class ZHADevicePairingStatusCard extends LitElement {
             ? html`
                 <div class="model">${this.device.model}</div>
                 <div class="manuf">
-                  ${this.hass.localize(
-                    "ui.dialogs.zha_device_info.manuf",
-                    "manufacturer",
-                    this.device.manufacturer
-                  )}
+                  ${this.hass.localize("ui.dialogs.zha_device_info.manuf", {
+                    manufacturer: this.device.manufacturer,
+                  })}
                 </div>
               `
             : nothing}

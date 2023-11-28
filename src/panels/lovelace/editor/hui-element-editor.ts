@@ -234,11 +234,9 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
         ${this._guiSupported === false && this.configElementType
           ? html`
               <div class="info">
-                ${this.hass.localize(
-                  "ui.errors.config.editor_not_available",
-                  "type",
-                  this.configElementType
-                )}
+                ${this.hass.localize("ui.errors.config.editor_not_available", {
+                  type: this.configElementType,
+                })}
               </div>
             `
           : ""}

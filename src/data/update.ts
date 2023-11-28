@@ -177,10 +177,10 @@ export const computeUpdateStateDisplay = (
     if (updateIsInstalling(stateObj)) {
       const supportsProgress =
         supportsFeature(stateObj, UPDATE_SUPPORT_PROGRESS) &&
-        typeof typeof attributes.in_progress === "number";
+        typeof attributes.in_progress === "number";
       if (supportsProgress) {
         return hass.localize("ui.card.update.installing_with_progress", {
-          progress: attributes.in_progress,
+          progress: attributes.in_progress as number,
         });
       }
       return hass.localize("ui.card.update.installing");
