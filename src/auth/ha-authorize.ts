@@ -114,7 +114,6 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
             var(--divider-color, #e0e0e0)
           );
           color: var(--primary-text-color);
-          transition: all 0.3s ease-out;
           position: relative;
           padding: 16px;
         }
