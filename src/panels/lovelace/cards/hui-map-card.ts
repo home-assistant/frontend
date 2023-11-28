@@ -216,12 +216,13 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     if (
-      changedProps.has("hass") &&
-      this._config?.geo_location_sources &&
-      !deepEqual(
-        this._getSourceEntities(changedProps.get("hass")?.states),
-        this._getSourceEntities(this.hass.states)
-      )
+      (changedProps.has("hass") &&
+        this._config?.geo_location_sources &&
+        !deepEqual(
+          this._getSourceEntities(changedProps.get("hass")?.states),
+          this._getSourceEntities(this.hass.states)
+        )) ||
+      (this._config?.entities && hasConfigOrEntitiesChanged(this, changedProps))
     ) {
       this._mapEntities = this._getMapEntities();
     }
