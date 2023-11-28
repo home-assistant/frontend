@@ -703,7 +703,10 @@
           "url": "URL",
           "video": "Video"
         },
-        "media_player_unavailable": "The selected media player is unavailable."
+        "media_player_unavailable": "The selected media player is unavailable.",
+        "auto": "Auto",
+        "grid": "Grid",
+        "list": "List"
       },
       "calendar": {
         "label": "Calendar",
