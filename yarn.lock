@@ -3503,7 +3503,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-flex-layout@npm:3.0.1, @polymer/iron-flex-layout@npm:^3.0.0-pre.26":
+"@polymer/iron-flex-layout@npm:^3.0.0-pre.26":
   version: 3.0.1
   resolution: "@polymer/iron-flex-layout@npm:3.0.1"
   dependencies:
@@ -3542,7 +3542,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-input@npm:3.0.1, @polymer/iron-input@npm:^3.0.0-pre.26":
+"@polymer/iron-input@npm:^3.0.0-pre.26":
   version: 3.0.1
   resolution: "@polymer/iron-input@npm:3.0.1"
   dependencies:
@@ -3586,7 +3586,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-resizable-behavior@npm:3.0.1, @polymer/iron-resizable-behavior@npm:^3.0.0-pre.26":
+"@polymer/iron-resizable-behavior@npm:^3.0.0-pre.26":
   version: 3.0.1
   resolution: "@polymer/iron-resizable-behavior@npm:3.0.1"
   dependencies:
@@ -9627,9 +9627,6 @@ __metadata:
     "@octokit/plugin-retry": "npm:6.0.1"
     "@octokit/rest": "npm:20.0.2"
     "@open-wc/dev-server-hmr": "npm:0.1.4"
-    "@polymer/iron-flex-layout": "npm:3.0.1"
-    "@polymer/iron-input": "npm:3.0.1"
-    "@polymer/iron-resizable-behavior": "npm:3.0.1"
     "@polymer/paper-input": "npm:3.2.1"
     "@polymer/paper-item": "npm:3.0.1"
     "@polymer/paper-listbox": "npm:3.0.1"
