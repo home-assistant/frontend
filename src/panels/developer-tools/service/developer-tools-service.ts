@@ -426,18 +426,17 @@ class HaPanelDevService extends LitElement {
       forwardHaptic("failure");
       button.actionError();
 
-      const lokalize = (await this.hass.loadBackendTranslation(
-        "exceptions",
-        err.translation_domain
-      ))
-        ? err.translation_domain
-        : none;
-      const localizedErrorMessage = lokalize(
-        `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
-        err.translation_placeholders
-      )
-        ? lokalize
-        : none;
+      let localizedErrorMessage: string | undefined;
+      if (err.translation_domain && err.translation_key) {
+	      const lokalize = await this.hass.loadBackendTranslation(
+	        "exceptions",
+	        err.translation_domain
+	      );
+	      localizedErrorMessage = lokalize(
+	        `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
+	        err.translation_placeholders
+	      )
+      }
       this._error =
         localizedErrorMessage ||
         this.hass.localize("ui.notification_toast.service_call_failed", {
