@@ -125,7 +125,6 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
             { name: "svg", encapsulation: "svg" },
             { name: "css", encapsulation: "style" },
           ],
-          "@polymer/polymer/lib/utils/html-tag": ["html"],
         },
         strictCSS: true,
         htmlMinifier: module.exports.htmlMinifierOptions,
