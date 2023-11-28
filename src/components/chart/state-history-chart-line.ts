@@ -191,6 +191,19 @@ export class StateHistoryChartLine extends LitElement {
             hitRadius: 50,
           },
         },
+        segment: {
+          borderColor: (context) => {
+            // render stat data with a slightly transparent line
+            const dataIndex = this._datasetToDataIndex[context.datasetIndex];
+            const data = this.data[dataIndex];
+            return data.statistics &&
+              data.statistics.length > 0 &&
+              (data.states.length === 0 ||
+                context.p0.parsed.x < data.states[0].last_changed)
+              ? this._chartData!.datasets[dataIndex].borderColor + "7F"
+              : undefined;
+          },
+        },
         // @ts-expect-error
         locale: numberFormatToLocale(this.hass.locale),
         onClick: (e: any) => {
