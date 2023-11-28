@@ -22,9 +22,9 @@ export class HaAreaPicker extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   protected render(): TemplateResult {
     const allAreasCount = Object.keys(this.hass.areas).length;
@@ -48,8 +48,8 @@ export class HaAreaPicker extends LitElement {
         readOnly
         icon
         iconTrailing
-        .disabled=${Boolean(this.disabled)}
-        .required=${Boolean(this.required)}
+        .disabled=${this.disabled}
+        .required=${this.required}
         @click=${this._edit}
       >
         <ha-svg-icon slot="leadingIcon" .path=${mdiSofa}></ha-svg-icon>
