@@ -68,6 +68,7 @@ export class HuiCardFeatures extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
+        --feature-color: var(--state-icon-color);
         display: flex;
         flex-direction: column;
       }
