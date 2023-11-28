@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list";
-import type { ActionDetail } from "@material/mwc-list/mwc-list";
 import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,6 +8,7 @@ import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { AreaFilterValue } from "../../components/ha-area-filter";
 import "../../components/ha-button";
+import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
 import { areaCompare } from "../../data/area_registry";
 import { sortableStyles } from "../../resources/ha-sortable-style";
@@ -72,6 +72,7 @@ export class DialogAreaFilter
     this._sortable = new Sortable(this.shadowRoot!.querySelector(".areas")!, {
       animation: 150,
       fallbackClass: "sortable-fallback",
+      handle: ".handle",
       onChoose: (evt: SortableEvent) => {
         (evt.item as any).placeholder =
           document.createComment("sort-placeholder");
@@ -115,31 +116,43 @@ export class DialogAreaFilter
       <ha-dialog
         open
         @closed=${this._cancel}
-        .heading=${this._dialogParams.title ?? "Areas"}
+        .heading=${this._dialogParams.title ??
+        this.hass.localize("ui.components.area-filter.title")}
       >
-        <mwc-list class="areas" @action=${this._action}>
+        <mwc-list class="areas">
           ${repeat(
             allAreas,
             (area) => area,
             (area, _idx) => {
               const isVisible = !this._hidden.includes(area);
+              const name = this.hass!.areas[area]?.name || area;
               return html`
                 <ha-list-item
                   class=${classMap({ hidden: !isVisible })}
                   hasMeta
                   graphic="icon"
+                  noninteractive
                 >
                   <ha-svg-icon
                     class="handle"
                     .path=${mdiDrag}
                     slot="graphic"
                   ></ha-svg-icon>
-                  ${this.hass!.areas[area]?.name || area}
-                  <ha-svg-icon
+                  ${name}
+                  <ha-icon-button
+                    tabindex="0"
                     class="action"
                     .path=${isVisible ? mdiEye : mdiEyeOff}
                     slot="meta"
-                  ></ha-svg-icon>
+                    .label=${this.hass!.localize(
+                      `ui.components.area-filter.${
+                        isVisible ? "hide" : "show"
+                      }`,
+                      { area: name }
+                    )}
+                    .area=${area}
+                    @click=${this._toggle}
+                  ></ha-icon-button>
                 </ha-list-item>
               `;
             }
@@ -155,8 +168,8 @@ export class DialogAreaFilter
     `;
   }
 
-  _action(ev: CustomEvent<ActionDetail>) {
-    const area = this._areas[ev.detail.index];
+  _toggle(ev) {
+    const area = ev.target.area;
     const hidden = [...(this._hidden ?? [])];
     if (hidden.includes(area)) {
       hidden.splice(hidden.indexOf(area), 1);
@@ -177,11 +190,7 @@ export class DialogAreaFilter
           --dialog-content-padding: 0;
         }
         ha-list-item {
-          cursor: pointer;
-          --mdc-ripple-color: transparant;
-        }
-        ha-list-item:focus-visible {
-          background-color: rgba(var(--rgb-primary-text-color), 0.1);
+          overflow: visible;
         }
         .hidden {
           opacity: 0.3;
@@ -193,8 +202,9 @@ export class DialogAreaFilter
           display: flex;
           flex-direction: row;
         }
-        .action {
-          cursor: pointer;
+        ha-icon-button {
+          display: block;
+          margin: -12px;
         }
       `,
     ];

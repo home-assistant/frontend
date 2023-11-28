@@ -1,11 +1,11 @@
-import { mdiPencil, mdiSofa } from "@mdi/js";
+import { mdiChevronRight, mdiSofa } from "@mdi/js";
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import { HomeAssistant } from "../types";
-import "./ha-textfield";
-import "./ha-svg-icon";
-import { showAreaFilterDialog } from "../dialogs/area-filter/show-area-filter-dialog";
 import { fireEvent } from "../common/dom/fire_event";
+import { showAreaFilterDialog } from "../dialogs/area-filter/show-area-filter-dialog";
+import { HomeAssistant } from "../types";
+import "./ha-svg-icon";
+import "./ha-textfield";
 
 export type AreaFilterValue = {
   hidden?: string[];
@@ -40,31 +40,37 @@ export class HaAreaPicker extends LitElement {
             });
 
     return html`
-      <ha-textfield
-        .label=${this.label}
-        .value=${description}
-        helperPersistent
-        .helper=${this.helper}
-        readOnly
-        icon
-        iconTrailing
-        .disabled=${this.disabled}
-        .required=${this.required}
+      <ha-list-item
+        tabindex="0"
+        role="button"
+        hasMeta
+        twoline
+        graphic="icon"
         @click=${this._edit}
+        @keydown=${this._edit}
+        .disabled=${this.disabled}
       >
-        <ha-svg-icon slot="leadingIcon" .path=${mdiSofa}></ha-svg-icon>
-        <ha-icon-button
-          slot="trailingIcon"
+        <ha-svg-icon slot="graphic" .path=${mdiSofa}></ha-svg-icon>
+        <span>${this.label}</span>
+        <span slot="secondary">${description}</span>
+        <ha-svg-icon
+          slot="meta"
           .label=${this.hass.localize("ui.common.edit")}
-          .path=${mdiPencil}
-          @click=${this._edit}
-        ></ha-icon-button>
-      </ha-textfield>
+          .path=${mdiChevronRight}
+        ></ha-svg-icon>
+      </ha-list-item>
     `;
   }
 
-  private async _edit(event: Event) {
-    event.stopPropagation();
+  private async _edit(ev) {
+    if (ev.defaultPrevented) {
+      return;
+    }
+    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
+      return;
+    }
+    ev.preventDefault();
+    ev.stopPropagation();
     const value = await showAreaFilterDialog(this, {
       title: this.label,
       initialValue: this.value,
@@ -75,9 +81,9 @@ export class HaAreaPicker extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-textfield {
-        width: 100%;
-        user-select: none;
+      ha-list-item {
+        --mdc-list-side-padding-left: 8px;
+        --mdc-list-side-padding-right: 8px;
       }
     `;
   }

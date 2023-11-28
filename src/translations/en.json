@@ -513,9 +513,12 @@
         }
       },
       "area-filter": {
+        "title": "Areas",
         "no_areas": "No areas",
         "area_count": "{count} {count, plural,\n one {area}\n other {areas}\n}",
-        "all_areas": "All areas"
+        "all_areas": "All areas",
+        "show": "Show {area}",
+        "hide": "Hide {area}"
       },
       "statistic-picker": {
         "statistic": "Statistic",
