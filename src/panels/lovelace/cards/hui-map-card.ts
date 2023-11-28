@@ -189,6 +189,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
     if (!oldHass || !this._configEntities) {
       return true;
     }
@@ -202,7 +203,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     if (this._config?.geo_location_sources) {
-      return true;
+      if (oldHass.states !== this.hass.states) {
+        return true;
+      }
     }
 
     return this._config?.entities
