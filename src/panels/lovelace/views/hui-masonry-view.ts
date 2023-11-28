@@ -66,7 +66,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   public constructor() {
     super();
-    this.addEventListener("iron-resize", (ev: Event) => ev.stopPropagation());
   }
 
   public connectedCallback() {

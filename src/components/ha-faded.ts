@@ -16,12 +16,7 @@ class HaFaded extends LitElement {
         style=${!this._contentShown ? `max-height: ${this.fadedHeight}px` : ""}
         @click=${this._showContent}
       >
-        <slot
-          @iron-resize=${
-            // ha-markdown-element fire this when render is complete
-            this._setShowContent
-          }
-        ></slot>
+        <slot></slot>
       </div>
     `;
   }
