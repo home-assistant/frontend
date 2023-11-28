@@ -120,8 +120,7 @@ export class HaConfigApplicationCredentials extends LitElement {
                 <p class="selected-txt">
                   ${this.hass.localize(
                     "ui.panel.config.application_credentials.picker.selected",
-                    "number",
-                    this._selected.length
+                    { number: this._selected.length }
                   )}
                 </p>
                 <div class="header-btns">
@@ -178,8 +177,7 @@ export class HaConfigApplicationCredentials extends LitElement {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         `ui.panel.config.application_credentials.picker.remove_selected.confirm_title`,
-        "number",
-        this._selected.length
+        { number: this._selected.length }
       ),
       text: this.hass.localize(
         "ui.panel.config.application_credentials.picker.remove_selected.confirm_text"

@@ -67,11 +67,12 @@ class HaLongLivedTokens extends LitElement {
                     <div slot="description">
                       ${this.hass.localize(
                         "ui.panel.profile.long_lived_access_tokens.created",
-                        "date",
-                        relativeTime(
-                          new Date(token.created_at),
-                          this.hass.locale
-                        )
+                        {
+                          date: relativeTime(
+                            new Date(token.created_at),
+                            this.hass.locale
+                          ),
+                        }
                       )}
                     </div>
                     <ha-icon-button
@@ -136,8 +137,7 @@ class HaLongLivedTokens extends LitElement {
       !(await showConfirmationDialog(this, {
         text: this.hass.localize(
           "ui.panel.profile.long_lived_access_tokens.confirm_delete",
-          "name",
-          token.client_name
+          { name: token.client_name }
         ),
       }))
     ) {
