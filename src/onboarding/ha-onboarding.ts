@@ -114,7 +114,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   }
 
   disconnectedCallback() {
-    super.connectedCallback();
+    super.disconnectedCallback();
     mainWindow.removeEventListener("location-changed", this._updatePage);
     mainWindow.removeEventListener("popstate", this._updatePage);
   }
