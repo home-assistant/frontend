@@ -2,6 +2,7 @@ import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import type { AreaFilterValue } from "../../../components/ha-area-filter";
 import { getEnergyPreferences } from "../../../data/energy";
 import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { HomeAssistant } from "../../../types";
@@ -9,9 +10,7 @@ import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
 
 export type OriginalStatesViewStrategyConfig = {
   type: "original-states";
-  areas?: {
-    hidden?: string[];
-  };
+  areas?: AreaFilterValue;
   hide_entities_without_area?: boolean;
   hide_energy?: boolean;
 };

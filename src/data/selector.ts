@@ -15,6 +15,7 @@ export type Selector =
   | ActionSelector
   | AddonSelector
   | AreaSelector
+  | AreaFilterSelector
   | AttributeSelector
   | BooleanSelector
   | ColorRGBSelector
@@ -75,6 +76,11 @@ export interface AreaSelector {
     device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
     multiple?: boolean;
   } | null;
+}
+
+export interface AreaFilterSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  area_filter: {} | null;
 }
 
 export interface AttributeSelector {

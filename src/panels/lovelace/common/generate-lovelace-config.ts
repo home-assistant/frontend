@@ -7,6 +7,7 @@ import { splitByGroups } from "../../../common/entity/split_by_groups";
 import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_from_entity_name";
 import { stringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import type { AreaFilterValue } from "../../../components/ha-area-filter";
 import {
   EnergyPreferences,
   GridSourceTypeEnergyPreference,
@@ -27,6 +28,7 @@ import {
 } from "../cards/types";
 import { EntityConfig } from "../entity-rows/types";
 import { ButtonsHeaderFooterConfig } from "../header-footer/types";
+import { areaCompare } from "../../../data/area_registry";
 
 const HIDE_DOMAIN = new Set([
   "automation",
@@ -447,9 +449,7 @@ export const generateDefaultViewConfig = (
   entities: HassEntities,
   localize: LocalizeFunc,
   energyPrefs?: EnergyPreferences,
-  areasPrefs?: {
-    hidden?: string[];
-  },
+  areasPrefs?: AreaFilterValue,
   hideEntitiesWithoutAreas?: boolean,
   hideEnergy?: boolean
 ): LovelaceViewConfig => {
@@ -511,15 +511,12 @@ export const generateDefaultViewConfig = (
 
   const areaCards: LovelaceCardConfig[] = [];
 
-  const sortedAreas = Object.entries(
-    splittedByAreaDevice.areasWithEntities
-  ).sort((a, b) => {
-    const areaA = areaEntries[a[0]];
-    const areaB = areaEntries[b[0]];
-    return stringCompare(areaA.name, areaB.name);
-  });
+  const sortedAreas = Object.keys(splittedByAreaDevice.areasWithEntities).sort(
+    areaCompare(areaEntries, areasPrefs?.order)
+  );
 
-  for (const [areaId, areaEntities] of sortedAreas) {
+  for (const areaId of sortedAreas) {
+    const areaEntities = splittedByAreaDevice.areasWithEntities[areaId];
     const area = areaEntries[areaId];
     areaCards.push(
       ...computeCards(
