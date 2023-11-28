@@ -76,10 +76,10 @@ class MoreInfoHumidifier extends LitElement {
       </div>
 
       <div class="controls">
-        <ha-state-control-water_heater-temperature
+        <ha-state-control-humidifier-humidity
           .hass=${this.hass}
           .stateObj=${this.stateObj}
-        ></ha-state-control-water_heater-temperature>
+        ></ha-state-control-humidifier-humidity>
       </div>
 
       <ha-more-info-control-select-container>
