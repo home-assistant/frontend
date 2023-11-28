@@ -90,7 +90,6 @@ export class HaAuthFlow extends LitElement {
           text-align: center;
         }
         ha-auth-flow .store-token {
-          margin-top: 10px;
           margin-left: -16px;
         }
         a.forgot-password {
