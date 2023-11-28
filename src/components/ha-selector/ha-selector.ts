@@ -13,6 +13,7 @@ const LOAD_ELEMENTS = {
   action: () => import("./ha-selector-action"),
   addon: () => import("./ha-selector-addon"),
   area: () => import("./ha-selector-area"),
+  area_filter: () => import("./ha-selector-area-filter"),
   attribute: () => import("./ha-selector-attribute"),
   assist_pipeline: () => import("./ha-selector-assist-pipeline"),
   boolean: () => import("./ha-selector-boolean"),

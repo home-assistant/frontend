@@ -1,6 +1,5 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -13,11 +12,9 @@ import { LovelaceStrategyEditor } from "../../strategies/types";
 
 const SCHEMA = [
   {
-    name: "hidden_areas",
+    name: "areas",
     selector: {
-      area: {
-        multiple: true,
-      },
+      area_filter: {},
     },
   },
   {
@@ -40,12 +37,6 @@ const SCHEMA = [
   },
 ] as const satisfies readonly HaFormSchema[];
 
-type FormData = {
-  hidden_areas: string[];
-  hide_energy?: boolean;
-  hide_entities_without_area?: boolean;
-};
-
 @customElement("hui-original-states-dashboard-strategy-editor")
 export class HuiOriginalStatesDashboarStrategyEditor
   extends LitElement
@@ -60,44 +51,15 @@ export class HuiOriginalStatesDashboarStrategyEditor
     this._config = config;
   }
 
-  private _configToFormData = memoizeOne(
-    (config: OriginalStatesDashboardStrategyConfig): FormData => {
-      const { areas, ...rest } = config;
-      return {
-        ...rest,
-        hidden_areas: areas?.hidden || [],
-      };
-    }
-  );
-
-  private _formDataToConfig = memoizeOne(
-    (data: FormData): OriginalStatesDashboardStrategyConfig => {
-      const { hidden_areas, ...rest } = data;
-      const areas =
-        hidden_areas.length > 0
-          ? {
-              hidden: hidden_areas,
-            }
-          : undefined;
-      return {
-        type: "original-states",
-        ...rest,
-        areas,
-      };
-    }
-  );
-
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
-    const data = this._configToFormData(this._config);
-
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${data}
+        .data=${this._config}
         .schema=${SCHEMA}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
@@ -106,14 +68,13 @@ export class HuiOriginalStatesDashboarStrategyEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const data = ev.detail.value as FormData;
-    const config = this._formDataToConfig(data);
-    fireEvent(this, "config-changed", { config });
+    const data = ev.detail.value;
+    fireEvent(this, "config-changed", { config: data });
   }
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     switch (schema.name) {
-      case "hidden_areas":
+      case "areas":
       case "hide_energy":
       case "hide_entities_without_area":
         return this.hass?.localize(
