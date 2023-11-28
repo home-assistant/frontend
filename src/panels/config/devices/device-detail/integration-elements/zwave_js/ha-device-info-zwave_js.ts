@@ -113,12 +113,12 @@ export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
                         }.title`
                       )
                     : this._node.is_secure === false
-                    ? this.hass.localize(
-                        "ui.panel.config.zwave_js.security_classes.none.title"
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.zwave_js.device_info.unknown"
-                      )}
+                      ? this.hass.localize(
+                          "ui.panel.config.zwave_js.security_classes.none.title"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.zwave_js.device_info.unknown"
+                        )}
                 </div>
                 <div>
                   ${this.hass.localize(
@@ -127,8 +127,7 @@ export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
                   ${this._node.zwave_plus_version
                     ? this.hass.localize(
                         "ui.panel.config.zwave_js.device_info.zwave_plus_version",
-                        "version",
-                        this._node.zwave_plus_version
+                        { version: this._node.zwave_plus_version }
                       )
                     : this.hass.localize("ui.common.no")}
                 </div>

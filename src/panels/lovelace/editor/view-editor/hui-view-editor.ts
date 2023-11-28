@@ -6,13 +6,13 @@ import { slugify } from "../../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { LovelaceViewConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import {
   DEFAULT_VIEW_LAYOUT,
   PANEL_VIEW_LAYOUT,
   SIDEBAR_VIEW_LAYOUT,
 } from "../../views/const";
+import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 
 declare global {
   interface HASSDomEvents {

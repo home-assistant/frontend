@@ -767,8 +767,8 @@ export const getEnergyGasUnit = (
   return unitClass === "energy"
     ? "kWh"
     : hass.config.unit_system.length === "km"
-    ? "m³"
-    : "ft³";
+      ? "m³"
+      : "ft³";
 };
 
 export const getEnergyWaterUnit = (hass: HomeAssistant): string | undefined =>

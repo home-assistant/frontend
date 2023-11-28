@@ -24,36 +24,32 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-card";
 import "../../../components/ha-checkbox";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-icon-button";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
+import { isUnavailableState } from "../../../data/entity";
 import {
   TodoItem,
   TodoItemStatus,
   TodoListEntityFeature,
   createItem,
-  deleteItem,
-  fetchItems,
+  deleteItems,
   moveItem,
+  subscribeItems,
   updateItem,
 } from "../../../data/todo";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { SortableInstance } from "../../../resources/sortable";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { TodoListCardConfig } from "./types";
-import { isUnavailableState } from "../../../data/entity";
 
 @customElement("hui-todo-list-card")
-export class HuiTodoListCard
-  extends SubscribeMixin(LitElement)
-  implements LovelaceCard
-{
+export class HuiTodoListCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-todo-list-editor");
     return document.createElement("hui-todo-list-card-editor");
@@ -87,9 +83,23 @@ export class HuiTodoListCard
 
   @state() private _reordering = false;
 
+  private _unsubItems?: Promise<UnsubscribeFunc>;
+
   private _sortable?: SortableInstance;
 
   @query("#unchecked") private _uncheckedContainer?: HTMLElement;
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._subscribeItems();
+    }
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._unsubItems?.then((unsub) => unsub());
+  }
 
   public getCardSize(): number {
     return (this._config ? (this._config.title ? 2 : 0) : 0) + 3;
@@ -132,24 +142,11 @@ export class HuiTodoListCard
       if (!this._entityId) {
         this._entityId = this.getEntityId();
       }
-      this._fetchData();
+      this._subscribeItems();
     } else if (changedProperties.has("_entityId") || !this._items) {
       this._items = undefined;
-      this._fetchData();
+      this._subscribeItems();
     }
-  }
-
-  public hassSubscribe(): Promise<UnsubscribeFunc>[] {
-    return [
-      this.hass!.connection.subscribeEvents(() => {
-        if (
-          this._entityId &&
-          this.hass!.entities[this._entityId]?.platform === "shopping_list"
-        ) {
-          this._fetchData();
-        }
-      }, "shopping_list_updated"),
-    ];
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -168,15 +165,6 @@ export class HuiTodoListCard
       (changedProps.has("_config") && oldConfig?.theme !== this._config.theme)
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
-    }
-
-    if (
-      this._entityId &&
-      oldHass &&
-      oldHass.states[this._entityId] !== this.hass.states[this._entityId] &&
-      this.hass.entities[this._entityId]?.platform !== "shopping_list"
-    ) {
-      this._fetchData();
     }
   }
 
@@ -365,22 +353,22 @@ export class HuiTodoListCard
                   </ha-svg-icon>
                 `
               : this.todoListSupportsFeature(
-                  TodoListEntityFeature.DELETE_TODO_ITEM
-                ) &&
-                !this.todoListSupportsFeature(
-                  TodoListEntityFeature.UPDATE_TODO_ITEM
-                )
-              ? html`<ha-icon-button
-                  .title=${this.hass!.localize(
-                    "ui.panel.lovelace.cards.todo-list.delete_item"
-                  )}
-                  class="deleteItemButton"
-                  .path=${mdiDelete}
-                  .itemId=${item.uid}
-                  @click=${this._deleteItem}
-                >
-                </ha-icon-button>`
-              : nothing}
+                    TodoListEntityFeature.DELETE_TODO_ITEM
+                  ) &&
+                  !this.todoListSupportsFeature(
+                    TodoListEntityFeature.UPDATE_TODO_ITEM
+                  )
+                ? html`<ha-icon-button
+                    .title=${this.hass!.localize(
+                      "ui.panel.lovelace.cards.todo-list.delete_item"
+                    )}
+                    class="deleteItemButton"
+                    .path=${mdiDelete}
+                    .itemId=${item.uid}
+                    @click=${this._deleteItem}
+                  >
+                  </ha-icon-button>`
+                : nothing}
           </div>
         `
       )}
@@ -392,14 +380,20 @@ export class HuiTodoListCard
     return entityStateObj && supportsFeature(entityStateObj, feature);
   }
 
-  private async _fetchData(): Promise<void> {
+  private async _subscribeItems(): Promise<void> {
+    if (this._unsubItems) {
+      this._unsubItems.then((unsub) => unsub());
+      this._unsubItems = undefined;
+    }
     if (!this.hass || !this._entityId) {
       return;
     }
     if (!(this._entityId in this.hass.states)) {
       return;
     }
-    this._items = await fetchItems(this.hass!, this._entityId!);
+    this._unsubItems = subscribeItems(this.hass!, this._entityId, (update) => {
+      this._items = update.items;
+    });
   }
 
   private _getItem(itemId: string) {
@@ -416,7 +410,7 @@ export class HuiTodoListCard
       status: ev.target.checked
         ? TodoItemStatus.Completed
         : TodoItemStatus.NeedsAction,
-    }).finally(() => this._fetchData());
+    });
   }
 
   private _saveEdit(ev): void {
@@ -429,13 +423,11 @@ export class HuiTodoListCard
       updateItem(this.hass!, this._entityId!, {
         ...item,
         summary: ev.target.value,
-      }).finally(() => this._fetchData());
+      });
     } else if (
       this.todoListSupportsFeature(TodoListEntityFeature.DELETE_TODO_ITEM)
     ) {
-      deleteItem(this.hass!, this._entityId!, ev.target.itemId).finally(() =>
-        this._fetchData()
-      );
+      deleteItems(this.hass!, this._entityId!, [ev.target.itemId]);
     }
 
     ev.target.blur();
@@ -445,11 +437,9 @@ export class HuiTodoListCard
     if (!this.hass) {
       return;
     }
-    const deleteActions: Array<Promise<any>> = [];
-    this._getCheckedItems(this._items).forEach((item: TodoItem) => {
-      deleteActions.push(deleteItem(this.hass!, this._entityId!, item.uid));
-    });
-    await Promise.all(deleteActions).finally(() => this._fetchData());
+    const checkedItems = this._getCheckedItems(this._items);
+    const uids = checkedItems.map((item: TodoItem) => item.uid);
+    deleteItems(this.hass!, this._entityId!, uids);
   }
 
   private get _newItem(): HaTextField {
@@ -459,9 +449,7 @@ export class HuiTodoListCard
   private _addItem(ev): void {
     const newItem = this._newItem;
     if (newItem.value!.length > 0) {
-      createItem(this.hass!, this._entityId!, newItem.value!).finally(() =>
-        this._fetchData()
-      );
+      createItem(this.hass!, this._entityId!, newItem.value!);
     }
 
     newItem.value = "";
@@ -475,9 +463,7 @@ export class HuiTodoListCard
     if (!item) {
       return;
     }
-    deleteItem(this.hass!, this._entityId!, item.uid).finally(() =>
-      this._fetchData()
-    );
+    deleteItems(this.hass!, this._entityId!, [item.uid]);
   }
 
   private _addKeyPress(ev): void {
@@ -552,12 +538,7 @@ export class HuiTodoListCard
     }
     this._items = [...this._items!];
 
-    await moveItem(
-      this.hass!,
-      this._entityId!,
-      item.uid,
-      prevItem?.uid
-    ).finally(() => this._fetchData());
+    await moveItem(this.hass!, this._entityId!, item.uid, prevItem?.uid);
   }
 
   static get styles(): CSSResultGroup {

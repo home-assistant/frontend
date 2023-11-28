@@ -216,6 +216,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                   .showNames=${this._config.show_names !== undefined
                     ? this._config.show_names
                     : true}
+                  .logarithmicScale=${this._config.logarithmic_scale || false}
                 ></state-history-charts>
               `}
         </div>

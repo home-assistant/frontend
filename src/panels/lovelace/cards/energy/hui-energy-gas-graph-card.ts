@@ -13,7 +13,14 @@ import {
   startOfToday,
 } from "date-fns";
 import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -48,6 +55,7 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyGasGraphCardConfig } from "../types";
+import { hasConfigChanged } from "../../common/has-changed";
 
 @customElement("hui-energy-gas-graph-card")
 export class HuiEnergyGasGraphCard
@@ -88,6 +96,14 @@ export class HuiEnergyGasGraphCard
 
   public setConfig(config: EnergyGasGraphCardConfig): void {
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return (
+      hasConfigChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
   }
 
   protected render() {
@@ -187,18 +203,18 @@ export class HuiEnergyGasGraphCard
                 dayDifference > 35
                   ? "monthyear"
                   : dayDifference > 7
-                  ? "date"
-                  : dayDifference > 2
-                  ? "weekday"
-                  : dayDifference > 0
-                  ? "datetime"
-                  : "hour",
+                    ? "date"
+                    : dayDifference > 2
+                      ? "weekday"
+                      : dayDifference > 0
+                        ? "datetime"
+                        : "hour",
               minUnit:
                 dayDifference > 35
                   ? "month"
                   : dayDifference > 2
-                  ? "day"
-                  : "hour",
+                    ? "day"
+                    : "hour",
             },
             offset: true,
           },

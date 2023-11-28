@@ -125,7 +125,7 @@ class StateInfo extends LitElement {
         text-overflow: ellipsis;
       }
 
-      .name[in-dialog],
+      .name[inDialog],
       :host([secondary-line]) .name {
         line-height: 20px;
       }

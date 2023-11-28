@@ -52,16 +52,16 @@ export class CloudRemotePref extends LitElement {
                   "ui.panel.config.cloud.account.remote.cerificate_error"
                 )
               : remote_certificate_status === "loading"
-              ? this.hass.localize(
-                  "ui.panel.config.cloud.account.remote.cerificate_loading"
-                )
-              : remote_certificate_status === "loaded"
-              ? this.hass.localize(
-                  "ui.panel.config.cloud.account.remote.cerificate_loaded"
-                )
-              : this.hass.localize(
-                  "ui.panel.config.cloud.account.remote.access_is_being_prepared"
-                )}
+                ? this.hass.localize(
+                    "ui.panel.config.cloud.account.remote.cerificate_loading"
+                  )
+                : remote_certificate_status === "loaded"
+                  ? this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.cerificate_loaded"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.access_is_being_prepared"
+                    )}
           </div>
         </ha-card>
       `;

@@ -44,7 +44,7 @@ export class HaControlNumberButton extends LitElement {
 
   @property() public unit?: string;
 
-  @property({ attribute: "false" })
+  @property({ attribute: false })
   public formatOptions: Intl.NumberFormatOptions = {};
 
   @query("#input") _input!: HTMLDivElement;

@@ -84,6 +84,7 @@ export interface EntityRow extends StateEntity {
   restored: boolean;
   status: string;
   area?: string;
+  localized_platform: string;
 }
 
 @customElement("ha-config-entities")
@@ -176,12 +177,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   );
 
   private _columns = memoize(
-    (narrow, _language, showDisabled): DataTableColumnContainer<EntityRow> => ({
+    (
+      localize: LocalizeFunc,
+      narrow,
+      _language,
+      showDisabled
+    ): DataTableColumnContainer<EntityRow> => ({
       icon: {
         title: "",
-        label: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.state_icon"
-        ),
+        label: localize("ui.panel.config.entities.picker.headers.state_icon"),
         type: "icon",
         template: (entry) => html`
           <ha-state-icon
@@ -193,9 +197,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       },
       name: {
         main: true,
-        title: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.name"
-        ),
+        title: localize("ui.panel.config.entities.picker.headers.name"),
         sortable: true,
         filterable: true,
         direction: "asc",
@@ -204,47 +206,34 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           ? (entry) => html`
               ${entry.name}<br />
               <div class="secondary">
-                ${entry.entity_id} |
-                ${this.hass.localize(`component.${entry.platform}.title`) ||
-                entry.platform}
+                ${entry.entity_id} | ${entry.localized_platform}
               </div>
             `
           : undefined,
       },
       entity_id: {
-        title: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.entity_id"
-        ),
+        title: localize("ui.panel.config.entities.picker.headers.entity_id"),
         hidden: narrow,
         sortable: true,
         filterable: true,
         width: "25%",
       },
-      platform: {
-        title: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.integration"
-        ),
+      localized_platform: {
+        title: localize("ui.panel.config.entities.picker.headers.integration"),
         hidden: narrow,
         sortable: true,
         filterable: true,
         width: "20%",
-        template: (entry) =>
-          this.hass.localize(`component.${entry.platform}.title`) ||
-          entry.platform,
       },
       area: {
-        title: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.area"
-        ),
+        title: localize("ui.panel.config.entities.picker.headers.area"),
         sortable: true,
         hidden: narrow,
         filterable: true,
         width: "15%",
       },
       disabled_by: {
-        title: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.disabled_by"
-        ),
+        title: localize("ui.panel.config.entities.picker.headers.disabled_by"),
         sortable: true,
         hidden: narrow || !showDisabled,
         filterable: true,
@@ -257,9 +246,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               ),
       },
       status: {
-        title: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.status"
-        ),
+        title: localize("ui.panel.config.entities.picker.headers.status"),
         type: "icon",
         sortable: true,
         filterable: true,
@@ -281,12 +268,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                     .path=${entry.restored
                       ? mdiRestoreAlert
                       : entry.unavailable
-                      ? mdiAlertCircle
-                      : entry.disabled_by
-                      ? mdiCancel
-                      : entry.hidden_by
-                      ? mdiEyeOff
-                      : mdiPencilOff}
+                        ? mdiAlertCircle
+                        : entry.disabled_by
+                          ? mdiCancel
+                          : entry.hidden_by
+                            ? mdiEyeOff
+                            : mdiPencilOff}
                   ></ha-svg-icon>
                   <simple-tooltip animation-delay="0" position="left">
                     ${entry.restored
@@ -294,20 +281,20 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                           "ui.panel.config.entities.picker.status.restored"
                         )
                       : entry.unavailable
-                      ? this.hass.localize(
-                          "ui.panel.config.entities.picker.status.unavailable"
-                        )
-                      : entry.disabled_by
-                      ? this.hass.localize(
-                          "ui.panel.config.entities.picker.status.disabled"
-                        )
-                      : entry.hidden_by
-                      ? this.hass.localize(
-                          "ui.panel.config.entities.picker.status.hidden"
-                        )
-                      : this.hass.localize(
-                          "ui.panel.config.entities.picker.status.readonly"
-                        )}
+                        ? this.hass.localize(
+                            "ui.panel.config.entities.picker.status.unavailable"
+                          )
+                        : entry.disabled_by
+                          ? this.hass.localize(
+                              "ui.panel.config.entities.picker.status.disabled"
+                            )
+                          : entry.hidden_by
+                            ? this.hass.localize(
+                                "ui.panel.config.entities.picker.status.hidden"
+                              )
+                            : this.hass.localize(
+                                "ui.panel.config.entities.picker.status.readonly"
+                              )}
                   </simple-tooltip>
                 </div>
               `
@@ -318,6 +305,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   private _filteredEntitiesAndDomains = memoize(
     (
+      localize: LocalizeFunc,
       entities: StateEntity[],
       devices: DeviceRegistryEntry[] | undefined,
       areas: AreaRegistryEntry[] | undefined,
@@ -432,20 +420,16 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           ),
           unavailable,
           restored,
+          localized_platform:
+            localize(`component.${entry.platform}.title`) || entry.platform,
           area: area ? area.name : "—",
           status: restored
-            ? this.hass.localize(
-                "ui.panel.config.entities.picker.status.restored"
-              )
+            ? localize("ui.panel.config.entities.picker.status.restored")
             : unavailable
-            ? this.hass.localize(
-                "ui.panel.config.entities.picker.status.unavailable"
-              )
-            : entry.disabled_by
-            ? this.hass.localize(
-                "ui.panel.config.entities.picker.status.disabled"
-              )
-            : this.hass.localize("ui.panel.config.entities.picker.status.ok"),
+              ? localize("ui.panel.config.entities.picker.status.unavailable")
+              : entry.disabled_by
+                ? localize("ui.panel.config.entities.picker.status.disabled")
+                : localize("ui.panel.config.entities.picker.status.ok"),
         });
       }
 
@@ -498,6 +482,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
     const { filteredEntities, filteredDomains } =
       this._filteredEntitiesAndDomains(
+        this.hass.localize,
         this._entities,
         this._devices,
         this._areas,
@@ -526,6 +511,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .tabs=${configSections.devices}
         .columns=${this._columns(
+          this.hass.localize,
           this.narrow,
           this.hass.language,
           this._showDisabled
@@ -539,8 +525,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         )}
         .hiddenLabel=${this.hass.localize(
           "ui.panel.config.entities.picker.filter.hidden_entities",
-          "number",
-          this._numHiddenEntities
+          { number: this._numHiddenEntities }
         )}
         .filter=${this._filter}
         selectable
@@ -568,8 +553,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 <p class="selected-txt">
                   ${this.hass.localize(
                     "ui.panel.config.entities.picker.selected",
-                    "number",
-                    this._selectedEntities.length
+                    { number: this._selectedEntities.length }
                   )}
                 </p>
                 <div class="header-btns">
@@ -811,8 +795,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entities.picker.enable_selected.confirm_title",
-        "number",
-        this._selectedEntities.length
+        { number: this._selectedEntities.length }
       ),
       text: this.hass.localize(
         "ui.panel.config.entities.picker.enable_selected.confirm_text"
@@ -848,8 +831,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           showAlertDialog(this, {
             text: this.hass.localize(
               "ui.dialogs.entity_registry.editor.enabled_delay_confirm",
-              "delay",
-              reload_delay
+              { delay: reload_delay }
             ),
           });
         }
@@ -861,8 +843,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entities.picker.disable_selected.confirm_title",
-        "number",
-        this._selectedEntities.length
+        { number: this._selectedEntities.length }
       ),
       text: this.hass.localize(
         "ui.panel.config.entities.picker.disable_selected.confirm_text"
@@ -884,8 +865,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entities.picker.hide_selected.confirm_title",
-        "number",
-        this._selectedEntities.length
+        { number: this._selectedEntities.length }
       ),
       text: this.hass.localize(
         "ui.panel.config.entities.picker.hide_selected.confirm_text"
@@ -915,8 +895,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             ? "partly_"
             : ""
         }title`,
-        "number",
-        removeableEntities.length
+        { number: removeableEntities.length }
       ),
       text:
         removeableEntities.length === this._selectedEntities.length
@@ -925,10 +904,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             )
           : this.hass.localize(
               "ui.panel.config.entities.picker.remove_selected.confirm_partly_text",
-              "removable",
-              removeableEntities.length,
-              "selected",
-              this._selectedEntities.length
+              {
+                removable: removeableEntities.length,
+                selected: this._selectedEntities.length,
+              }
             ),
       confirmText: this.hass.localize("ui.common.remove"),
       dismissText: this.hass.localize("ui.common.cancel"),
@@ -969,6 +948,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   private _addDevice() {
     const { filteredConfigEntry, filteredDomains } =
       this._filteredEntitiesAndDomains(
+        this.hass.localize,
         this._entities!,
         this._devices,
         this._areas,

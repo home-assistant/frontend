@@ -13,7 +13,14 @@ import {
   startOfToday,
 } from "date-fns/esm";
 import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -43,6 +50,7 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyUsageGraphCardConfig } from "../types";
+import { hasConfigChanged } from "../../common/has-changed";
 
 interface ColorSet {
   base: string;
@@ -86,6 +94,14 @@ export class HuiEnergyUsageGraphCard
 
   public setConfig(config: EnergyUsageGraphCardConfig): void {
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return (
+      hasConfigChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
   }
 
   protected render() {
@@ -183,18 +199,18 @@ export class HuiEnergyUsageGraphCard
                 dayDifference > 35
                   ? "monthyear"
                   : dayDifference > 7
-                  ? "date"
-                  : dayDifference > 2
-                  ? "weekday"
-                  : dayDifference > 0
-                  ? "datetime"
-                  : "hour",
+                    ? "date"
+                    : dayDifference > 2
+                      ? "weekday"
+                      : dayDifference > 0
+                        ? "datetime"
+                        : "hour",
               minUnit:
                 dayDifference > 35
                   ? "month"
                   : dayDifference > 2
-                  ? "day"
-                  : "hour",
+                    ? "day"
+                    : "hour",
             },
           },
           y: {
@@ -695,8 +711,8 @@ export class HuiEnergyUsageGraphCard
             type === "used_solar"
               ? 1
               : type === "to_battery"
-              ? Object.keys(combinedData).length
-              : idx + 2,
+                ? Object.keys(combinedData).length
+                : idx + 2,
           borderColor: compare ? borderColor + "7F" : borderColor,
           backgroundColor: compare ? borderColor + "32" : borderColor + "7F",
           stack: "stack",

@@ -103,8 +103,7 @@ export class HaDeviceEntitiesCard extends LitElement {
                 <button class="show-more" @click=${this._toggleShowHidden}>
                   ${this.hass.localize(
                     "ui.panel.config.devices.entities.hidden_entities",
-                    "count",
-                    hiddenEntities.length
+                    { count: hiddenEntities.length }
                   )}
                 </button>
               `
@@ -167,11 +166,11 @@ export class HaDeviceEntitiesCard extends LitElement {
       let name = entry.name
         ? stripPrefixFromEntityName(entry.name, this.deviceName.toLowerCase())
         : entry.has_entity_name
-        ? entry.original_name || this.deviceName
-        : stripPrefixFromEntityName(
-            computeStateName(stateObj),
-            this.deviceName.toLowerCase()
-          );
+          ? entry.original_name || this.deviceName
+          : stripPrefixFromEntityName(
+              computeStateName(stateObj),
+              this.deviceName.toLowerCase()
+            );
 
       if (!name) {
         name = computeStateName(stateObj);

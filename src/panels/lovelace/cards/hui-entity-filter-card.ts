@@ -1,6 +1,6 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { property, state } from "lit/decorators";
-import { LovelaceCardConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { evaluateFilter } from "../common/evaluate-filter";
