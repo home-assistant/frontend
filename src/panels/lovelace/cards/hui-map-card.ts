@@ -183,14 +183,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues) {
-    if (
-      changedProps.has("hass") &&
-      this._config?.geo_location_sources &&
-      this._updateMapEntities()
-    ) {
-      return true;
-    }
-
     if (!changedProps.has("hass") || changedProps.size > 1) {
       return true;
     }
@@ -232,6 +224,13 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return this._config?.entities
       ? hasConfigOrEntitiesChanged(this, changedProps)
       : hasConfigChanged(this, changedProps);
+  }
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (changedProps.has("hass") && this._config?.geo_location_sources) {
+      this._updateMapEntities();
+    }
   }
 
   public connectedCallback() {
@@ -354,7 +353,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return geoEntities;
   }
 
-  private _updateMapEntities(): boolean {
+  private _updateMapEntities(): void {
     const entities = [
       ...(this._configEntities || []).map((entityConf) => ({
         entity_id: entityConf.entity,
@@ -372,9 +371,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     ];
     if (!deepEqual(entities, this._mapEntities)) {
       this._mapEntities = entities;
-      return true;
     }
-    return false;
   }
 
   private _getHistoryPaths = memoizeOne(
