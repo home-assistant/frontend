@@ -88,17 +88,17 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    window.addEventListener("location-changed", this._locationChnaged);
+    window.addEventListener("location-changed", this._locationChanged);
     window.addEventListener("popstate", this._popState);
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    window.removeEventListener("location-changed", this._locationChnaged);
+    window.removeEventListener("location-changed", this._locationChanged);
     window.removeEventListener("popstate", this._popState);
   }
 
-  private _locationChnaged = () => {
+  private _locationChanged = () => {
     if (this._ignoreLocationChange) {
       this._ignoreLocationChange = false;
       return;
