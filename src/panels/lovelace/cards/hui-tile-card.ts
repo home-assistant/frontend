@@ -523,8 +523,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         box-sizing: border-box;
         pointer-events: none;
       }
-      .features {
-        position: relative;
+      hui-card-features {
+        --feature-color: var(--tile-color);
       }
 
       ha-tile-icon[data-domain="alarm_control_panel"][data-state="pending"],
