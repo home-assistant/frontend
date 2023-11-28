@@ -182,6 +182,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
                 .authProvider=${this._authProvider}
                 .authProviders=${this._authProviders}
                 .localize=${this.localize}
+                .ownInstance=${this._ownInstance}
                 @default-login-flow=${this._handleDefaultLoginFlow}
               ></ha-local-auth-flow>`
             : html`<ha-auth-flow
