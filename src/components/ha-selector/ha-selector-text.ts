@@ -110,7 +110,7 @@ export class HaTextSelector extends LitElement {
   }
 
   private _handleChange(ev) {
-    let value = ev.detail?.value && ev.target.value;
+    let value = ev.detail?.value ?? ev.target.value;
     if (this.value === value) {
       return;
     }
