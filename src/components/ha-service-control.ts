@@ -17,11 +17,14 @@ import {
   IntegrationManifest,
 } from "../data/integration";
 import {
+  areaMeetsTargetSelector,
+  deviceMeetsTargetSelector,
+  entityMeetsTargetSelector,
   expandAreaTarget,
   expandDeviceTarget,
   Selector,
 } from "../data/selector";
-import { ValueChangedEvent, HomeAssistant } from "../types";
+import { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
 import "./ha-icon-button";
@@ -546,8 +549,68 @@ export class HaServiceControl extends LitElement {
     if (ev.detail.value === this._value?.service) {
       return;
     }
+
+    const newService = ev.detail.value || "";
+    let target: HassServiceTarget | undefined;
+
+    if (newService) {
+      const serviceData = this._getServiceInfo(newService, this.hass.services);
+      const currentTarget = this._value?.target;
+      if (currentTarget && serviceData?.target) {
+        const targetSelector = { target: { ...serviceData.target } };
+        let targetEntities =
+          ensureArray(
+            currentTarget.entity_id || this._value!.data?.entity_id
+          )?.slice() || [];
+        let targetDevices =
+          ensureArray(
+            currentTarget.device_id || this._value!.data?.device_id
+          )?.slice() || [];
+        let targetAreas =
+          ensureArray(
+            currentTarget.area_id || this._value!.data?.area_id
+          )?.slice() || [];
+        if (targetAreas.length) {
+          targetAreas = targetAreas.filter((area) =>
+            areaMeetsTargetSelector(
+              this.hass,
+              this.hass.entities,
+              this.hass.devices,
+              area,
+              targetSelector
+            )
+          );
+        }
+        if (targetDevices.length) {
+          targetDevices = targetDevices.filter((device) =>
+            deviceMeetsTargetSelector(
+              this.hass,
+              Object.values(this.hass.entities),
+              this.hass.devices[device],
+              targetSelector
+            )
+          );
+        }
+        if (targetEntities.length) {
+          targetEntities = targetEntities.filter((entity) =>
+            entityMeetsTargetSelector(this.hass.states[entity], targetSelector)
+          );
+        }
+        target = {
+          entity_id: targetEntities,
+          device_id: targetDevices,
+          area_id: targetAreas,
+        };
+      }
+    }
+
+    const value = {
+      service: newService,
+      target,
+    };
+
     fireEvent(this, "value-changed", {
-      value: { service: ev.detail.value || "" },
+      value,
     });
   }
 
