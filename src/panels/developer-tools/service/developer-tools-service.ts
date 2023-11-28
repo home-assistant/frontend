@@ -4,6 +4,7 @@ import { load } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { none } from "@lit-labs/motion";
 import { storage } from "../../../common/decorators/storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
@@ -425,14 +426,18 @@ class HaPanelDevService extends LitElement {
       forwardHaptic("failure");
       button.actionError();
 
-      const lokalize = await this.hass.loadBackendTranslation(
+      const lokalize = (await this.hass.loadBackendTranslation(
         "exceptions",
         err.translation_domain
-      );
+      ))
+        ? err.translation_domain
+        : none;
       const localizedErrorMessage = lokalize(
         `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
         err.translation_placeholders
-      );
+      )
+        ? lokalize
+        : none;
       this._error =
         localizedErrorMessage ||
         this.hass.localize("ui.notification_toast.service_call_failed", {
