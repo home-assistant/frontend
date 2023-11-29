@@ -33,7 +33,7 @@ class HaConfigBlueprint extends HassRouterPage {
   }
 
   public disconnectedCallback(): void {
-    super.connectedCallback();
+    super.disconnectedCallback();
     this.removeEventListener("reload-blueprints", this._getBlueprints);
   }
 
