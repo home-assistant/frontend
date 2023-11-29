@@ -172,7 +172,7 @@ export class ZHAGroupPage extends LitElement {
                     ${this._processingRemove
                       ? html`<ha-circular-progress
                           indeterminate
-                          aria-label=${this.hass.localize(
+                          .ariaLabel=${this.hass.localize(
                             "ui.panel.config.zha.groups.removing_members"
                           )}
                         ></ha-circular-progress>`
@@ -210,7 +210,7 @@ export class ZHAGroupPage extends LitElement {
                 ? html`<ha-circular-progress
                     active
                     size="small"
-                    title="Saving"
+                    aria-label="Saving"
                   ></ha-circular-progress>`
                 : ""}
               ${this.hass!.localize(

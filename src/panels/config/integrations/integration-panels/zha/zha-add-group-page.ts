@@ -100,7 +100,7 @@ export class ZHAAddGroupPage extends LitElement {
                 ? html`<ha-circular-progress
                     indeterminate
                     size="small"
-                    aria-label=${this.hass!.localize(
+                    .ariaLabel=${this.hass!.localize(
                       "ui.panel.config.zha.groups.creating_group"
                     )}
                   ></ha-circular-progress>`

@@ -1,6 +1,6 @@
 import "element-internals-polyfill";
 import { MdCircularProgress } from "@material/web/progress/circular-progress";
-import { CSSResult, css } from "lit";
+import { CSSResult, PropertyValues, css } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-circular-progress")
@@ -10,20 +10,25 @@ export class HaCircularProgress extends MdCircularProgress {
 
   @property() public size: "tiny" | "small" | "medium" | "large" = "medium";
 
-  public firstUpdated(changedProperties) {
-    super.firstUpdated(changedProperties);
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
 
-    switch (this.size) {
-      case "tiny":
-        this.style.setProperty("--md-circular-progress-size", "16px");
-        break;
-      case "small":
-        this.style.setProperty("--md-circular-progress-size", "28px");
-        break;
-      // medium is default size
-      case "large":
-        this.style.setProperty("--md-circular-progress-size", "68px");
-        break;
+    if (changedProps.has("size")) {
+      switch (this.size) {
+        case "tiny":
+          this.style.setProperty("--md-circular-progress-size", "16px");
+          break;
+        case "small":
+          this.style.setProperty("--md-circular-progress-size", "28px");
+          break;
+        // medium is default size
+        case "medium":
+          this.style.setProperty("--md-circular-progress-size", "48px");
+          break;
+        case "large":
+          this.style.setProperty("--md-circular-progress-size", "68px");
+          break;
+      }
     }
   }
 

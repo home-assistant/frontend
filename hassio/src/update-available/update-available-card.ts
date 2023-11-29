@@ -175,7 +175,7 @@ class UpdateAvailableCard extends LitElement {
                     : ""}
                 `
               : html`<ha-circular-progress
-                    alt="Updating"
+                    aria-label="Updating"
                     size="large"
                     indeterminate
                   >
