@@ -1,5 +1,12 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -13,10 +20,11 @@ import {
   CallServiceActionConfig,
   NavigateActionConfig,
   UrlActionConfig,
-} from "../../../data/lovelace";
+} from "../../../data/lovelace/config/action";
 import { ServiceAction } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
+import { HaSelect } from "../../../components/ha-select";
 
 export type UiAction = Exclude<ActionConfig["action"], "fire-dom-event">;
 
@@ -70,9 +78,13 @@ export class HuiActionEditor extends LitElement {
 
   @property() public actions?: UiAction[];
 
+  @property() public defaultAction?: UiAction;
+
   @property() public tooltipText?: string;
 
   @property() protected hass?: HomeAssistant;
+
+  @query("ha-select") private _select!: HaSelect;
 
   get _navigation_path(): string {
     const config = this.config as NavigateActionConfig | undefined;
@@ -99,6 +111,15 @@ export class HuiActionEditor extends LitElement {
     })
   );
 
+  protected updated(changedProperties: PropertyValues<typeof this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has("defaultAction")) {
+      if (changedProperties.get("defaultAction") !== this.defaultAction) {
+        this._select.layoutOptions();
+      }
+    }
+  }
+
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -121,6 +142,11 @@ export class HuiActionEditor extends LitElement {
             ${this.hass!.localize(
               "ui.panel.lovelace.editor.action-editor.actions.default_action"
             )}
+            ${this.defaultAction
+              ? ` (${this.hass!.localize(
+                  `ui.panel.lovelace.editor.action-editor.actions.${this.defaultAction}`
+                ).toLowerCase()})`
+              : nothing}
           </mwc-list-item>
           ${actions.map(
             (action) => html`

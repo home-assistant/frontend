@@ -107,10 +107,12 @@ export class HaMap extends ReactiveElement {
     if (!this._loaded) {
       return;
     }
+    let autoFitRequired = false;
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
     if (changedProps.has("_loaded") || changedProps.has("entities")) {
       this._drawEntities();
+      autoFitRequired = true;
     } else if (this._loaded && oldHass && this.entities) {
       // Check if any state has changed
       for (const entity of this.entities) {
@@ -119,6 +121,7 @@ export class HaMap extends ReactiveElement {
           this.hass!.states[getEntityId(entity)]
         ) {
           this._drawEntities();
+          autoFitRequired = true;
           break;
         }
       }
@@ -130,13 +133,10 @@ export class HaMap extends ReactiveElement {
 
     if (changedProps.has("_loaded") || changedProps.has("layers")) {
       this._drawLayers(changedProps.get("layers") as Layer[] | undefined);
+      autoFitRequired = true;
     }
 
-    if (
-      changedProps.has("_loaded") ||
-      ((changedProps.has("entities") || changedProps.has("layers")) &&
-        this.autoFit)
-    ) {
+    if (this.autoFit && autoFitRequired) {
       this.fitMap();
     }
 
@@ -151,8 +151,14 @@ export class HaMap extends ReactiveElement {
     ) {
       return;
     }
-    const darkMode = this.darkMode ?? this.hass.themes?.darkMode;
-    this.shadowRoot!.getElementById("map")!.classList.toggle("dark", darkMode);
+    this._updateMapStyle();
+  }
+
+  private _updateMapStyle(): void {
+    const darkMode = this.darkMode ?? this.hass.themes.darkMode;
+    const map = this.shadowRoot!.getElementById("map");
+    map!.classList.toggle("dark", darkMode);
+    map!.classList.toggle("forced-dark", this.darkMode);
   }
 
   private async _loadMap(): Promise<void> {
@@ -162,9 +168,8 @@ export class HaMap extends ReactiveElement {
       map.id = "map";
       this.shadowRoot!.append(map);
     }
-    const darkMode = this.darkMode ?? this.hass.themes.darkMode;
     [this.leafletMap, this.Leaflet] = await setupLeafletMap(map);
-    this.shadowRoot!.getElementById("map")!.classList.toggle("dark", darkMode);
+    this._updateMapStyle();
     this._loaded = true;
   }
 
@@ -496,7 +501,10 @@ export class HaMap extends ReactiveElement {
       }
       #map.dark {
         background: #090909;
-        --map-filter: invert(0.9) hue-rotate(170deg) grayscale(0.7);
+      }
+      #map.forced-dark {
+        --map-filter: invert(0.9) hue-rotate(170deg) brightness(1.5)
+          contrast(1.2) saturate(0.3);
       }
       #map:active {
         cursor: grabbing;

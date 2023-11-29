@@ -219,8 +219,9 @@ export interface ZwaveJSNodeMetadata {
   device_database_url: string;
 }
 
-export interface ZwaveJSNodeComments {
+export interface ZwaveJSNodeAlerts {
   comments: ZWaveJSNodeComment[];
+  is_embedded: boolean | null;
 }
 
 export interface ZWaveJSNodeConfigParams {
@@ -601,12 +602,12 @@ export const fetchZwaveNodeMetadata = (
     device_id,
   });
 
-export const fetchZwaveNodeComments = (
+export const fetchZwaveNodeAlerts = (
   hass: HomeAssistant,
   device_id: string
-): Promise<ZwaveJSNodeComments> =>
+): Promise<ZwaveJSNodeAlerts> =>
   hass.callWS({
-    type: "zwave_js/node_comments",
+    type: "zwave_js/node_alerts",
     device_id,
   });
 
@@ -755,6 +756,15 @@ export const fetchZwaveNodeFirmwareUpdateCapabilities = (
   hass.callWS({
     type: "zwave_js/get_node_firmware_update_capabilities",
     device_id,
+  });
+
+export const hardResetController = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<string> =>
+  hass.callWS({
+    type: "zwave_js/hard_reset_controller",
+    entry_id,
   });
 
 export const uploadFirmwareAndBeginUpdate = async (

@@ -35,16 +35,16 @@ import {
   lightSupportsColorMode,
   lightSupportsFavoriteColors,
 } from "../../../data/light";
+import "../../../state-control/ha-state-control-toggle";
+import "../../../state-control/light/ha-state-control-light-brightness";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
-import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
-import "../components/ha-more-info-toggle";
 import "../components/lights/ha-favorite-color-button";
-import "../components/lights/ha-more-info-light-brightness";
 import "../components/lights/ha-more-info-light-favorite-colors";
 import "../components/lights/light-color-rgb-picker";
 import "../components/lights/light-color-temp-picker";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 type MainControl = "brightness" | "color_temp" | "color";
 
@@ -60,29 +60,10 @@ class MoreInfoLight extends LitElement {
 
   @state() private _effect?: string;
 
-  @state() private _selectedBrightness?: number;
-
-  @state() private _colorTempPreview?: number;
-
   @state() private _mainControl: MainControl = "brightness";
-
-  private _brightnessChanged(ev) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
-    this._selectedBrightness = (value * 255) / 100;
-  }
-
-  private _tempColorHovered(ev: CustomEvent<HASSDomEvents["color-hovered"]>) {
-    if (ev.detail && "color_temp_kelvin" in ev.detail) {
-      this._colorTempPreview = ev.detail.color_temp_kelvin;
-    } else {
-      this._colorTempPreview = undefined;
-    }
-  }
 
   protected updated(changedProps: PropertyValues<typeof this>): void {
     if (changedProps.has("stateObj")) {
-      this._selectedBrightness = this.stateObj?.attributes.brightness;
       this._effect = this.stateObj?.attributes.effect;
     }
   }
@@ -98,19 +79,8 @@ class MoreInfoLight extends LitElement {
   }
 
   private get _stateOverride() {
-    if (this._colorTempPreview) {
-      return this.hass.formatEntityAttributeValue(
-        this.stateObj!,
-        "color_temp_kelvin",
-        this._colorTempPreview
-      );
-    }
-    if (this._selectedBrightness) {
-      return this.hass.formatEntityAttributeValue(
-        this.stateObj!,
-        "brightness",
-        this._selectedBrightness
-      );
+    if (this.stateObj?.attributes.brightness) {
+      return this.hass.formatEntityAttributeValue(this.stateObj!, "brightness");
     }
     return undefined;
   }
@@ -153,24 +123,23 @@ class MoreInfoLight extends LitElement {
       <div class="controls">
         ${!supportsBrightness
           ? html`
-              <ha-more-info-toggle
+              <ha-state-control-toggle
                 .stateObj=${this.stateObj}
                 .hass=${this.hass}
                 .iconPathOn=${mdiLightbulb}
                 .iconPathOff=${mdiLightbulbOff}
-              ></ha-more-info-toggle>
+              ></ha-state-control-toggle>
             `
           : nothing}
         ${supportsColorTemp || supportsColor || supportsBrightness
           ? html`
               ${supportsBrightness && this._mainControl === "brightness"
                 ? html`
-                    <ha-more-info-light-brightness
+                    <ha-state-control-light-brightness
                       .stateObj=${this.stateObj}
                       .hass=${this.hass}
-                      @slider-moved=${this._brightnessChanged}
                     >
-                    </ha-more-info-light-brightness>
+                    </ha-state-control-light-brightness>
                   `
                 : nothing}
               ${supportsColor && this._mainControl === "color"
@@ -187,7 +156,6 @@ class MoreInfoLight extends LitElement {
                     <light-color-temp-picker
                       .hass=${this.hass}
                       .stateObj=${this.stateObj}
-                      @color-hovered=${this._tempColorHovered}
                     >
                     </light-color-temp-picker>
                   `
@@ -212,8 +180,9 @@ class MoreInfoLight extends LitElement {
                       <ha-icon-button-toggle
                         .selected=${this._mainControl === "brightness"}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .label=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.brightness"
+                        .label=${this.hass.formatEntityAttributeName(
+                          this.stateObj,
+                          "brightness"
                         )}
                         .control=${"brightness"}
                         @click=${this._setMainControl}

@@ -61,6 +61,7 @@ class HaDomainIntegrations extends LitElement {
                       useFallback: true,
                       darkOptimized: this.hass.themes?.darkMode,
                     })}
+                    crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                   />
                   <span
@@ -106,6 +107,7 @@ class HaDomainIntegrations extends LitElement {
                     useFallback: true,
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
+                  crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                 />
                 <span
@@ -168,6 +170,7 @@ class HaDomainIntegrations extends LitElement {
                 useFallback: true,
                 darkOptimized: this.hass.themes?.darkMode,
               })}
+              crossorigin="anonymous"
               referrerpolicy="no-referrer"
             />
             <span

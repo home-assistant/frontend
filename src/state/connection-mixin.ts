@@ -122,19 +122,31 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             }
             if (notifyOnError) {
               forwardHaptic("failure");
+              const lokalize = await this.hass!.loadBackendTranslation(
+                "exceptions",
+                err.translation_domain
+              );
+              const localizedErrorMessage = lokalize(
+                `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
+                err.translation_placeholders
+              );
               const message =
+                localizedErrorMessage ||
                 (this as any).hass.localize(
                   "ui.notification_toast.service_call_failed",
                   "service",
                   `${domain}/${service}`
                 ) +
-                ` ${
-                  err.message ||
-                  (err.error?.code === ERR_CONNECTION_LOST
-                    ? "connection lost"
-                    : "unknown error")
-                }`;
-              fireEvent(this as any, "hass-notification", { message });
+                  ` ${
+                    err.message ||
+                    (err.error?.code === ERR_CONNECTION_LOST
+                      ? "connection lost"
+                      : "unknown error")
+                  }`;
+              fireEvent(this as any, "hass-notification", {
+                message,
+                duration: 10000,
+              });
             }
             throw err;
           }
@@ -274,6 +286,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       // on reconnect always fetch config as we might miss an update while we were disconnected
       // @ts-ignore
       this.hass!.callWS({ type: "get_config" }).then((config: HassConfig) => {
+        if (config.safe_mode) {
+          // @ts-ignore Firefox supports forceGet
+          location.reload(true);
+        }
         this._updateHass({ config });
         this.checkDataBaseMigration();
       });

@@ -1,7 +1,7 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@material/mwc-list";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiChevronDown, mdiRefresh } from "@mdi/js";
+import { mdiChevronDown, mdiPlus, mdiRefresh } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -32,6 +32,8 @@ import {
   fetchCalendarEvents,
   getCalendars,
 } from "../../data/calendar";
+import { fetchIntegrationManifest } from "../../data/integration";
+import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import "./ha-full-calendar";
@@ -119,7 +121,7 @@ class PanelCalendar extends LitElement {
     );
     const showPane = this._showPaneController.value ?? !this.narrow;
     return html`
-      <ha-two-pane-top-app-bar-fixed .pane=${showPane}>
+      <ha-two-pane-top-app-bar-fixed .pane=${showPane} footer>
         <ha-menu-button
           slot="navigationIcon"
           .hass=${this.hass}
@@ -146,6 +148,11 @@ class PanelCalendar extends LitElement {
                 ></ha-svg-icon>
               </ha-button>
               ${calendarItems}
+              <li divider role="separator"></li>
+              <ha-list-item graphic="icon" @click=${this._addCalendar}>
+                <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
+                ${this.hass.localize("ui.components.calendar.create_calendar")}
+              </ha-list-item>
             </ha-button-menu>`
           : html`<div slot="title">
               ${this.hass.localize("ui.components.calendar.my_calendars")}
@@ -157,12 +164,21 @@ class PanelCalendar extends LitElement {
           @click=${this._handleRefresh}
         ></ha-icon-button>
         ${showPane
-          ? html`<mwc-list slot="pane" multi}>${calendarItems}</mwc-list>`
+          ? html`<mwc-list slot="pane" multi}>${calendarItems}</mwc-list>
+              <ha-list-item
+                graphic="icon"
+                slot="pane-footer"
+                @click=${this._addCalendar}
+              >
+                <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
+                ${this.hass.localize("ui.components.calendar.create_calendar")}
+              </ha-list-item>`
           : nothing}
         <ha-full-calendar
           .events=${this._events}
           .calendars=${this._calendars}
           .narrow=${this.narrow}
+          .initialView=${this.narrow ? "listWeek" : "dayGridMonth"}
           .hass=${this.hass}
           .error=${this._error}
           @view-changed=${this._handleViewChanged}
@@ -217,6 +233,19 @@ class PanelCalendar extends LitElement {
         (event) => event.calendar !== entityId
       );
     }
+  }
+
+  private async _addCalendar(): Promise<void> {
+    showConfigFlowDialog(this, {
+      startFlowHandler: "local_calendar",
+      showAdvanced: this.hass.userData?.showAdvanced,
+      manifest: await fetchIntegrationManifest(this.hass, "local_calendar"),
+      dialogClosedCallback: ({ flowFinished }) => {
+        if (flowFinished) {
+          this._calendars = getCalendars(this.hass);
+        }
+      },
+    });
   }
 
   private async _handleViewChanged(

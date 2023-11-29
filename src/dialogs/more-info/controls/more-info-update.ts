@@ -63,8 +63,9 @@ class MoreInfoUpdate extends LitElement {
         : ""}
       <div class="row">
         <div class="key">
-          ${this.hass.localize(
-            "ui.dialogs.more_info_control.update.installed_version"
+          ${this.hass.formatEntityAttributeName(
+            this.stateObj,
+            "installed_version"
           )}
         </div>
         <div class="value">
@@ -74,8 +75,9 @@ class MoreInfoUpdate extends LitElement {
       </div>
       <div class="row">
         <div class="key">
-          ${this.hass.localize(
-            "ui.dialogs.more_info_control.update.latest_version"
+          ${this.hass.formatEntityAttributeName(
+            this.stateObj,
+            "latest_version"
           )}
         </div>
         <div class="value">
@@ -108,11 +110,11 @@ class MoreInfoUpdate extends LitElement {
                 <ha-markdown .content=${this._releaseNotes}></ha-markdown>
               </ha-faded> `
         : this.stateObj.attributes.release_summary
-        ? html`<hr />
-            <ha-markdown
-              .content=${this.stateObj.attributes.release_summary}
-            ></ha-markdown>`
-        : ""}
+          ? html`<hr />
+              <ha-markdown
+                .content=${this.stateObj.attributes.release_summary}
+              ></ha-markdown>`
+          : ""}
       ${supportsFeature(this.stateObj, UPDATE_SUPPORT_BACKUP)
         ? html`<hr />
             <ha-formfield
@@ -131,26 +133,26 @@ class MoreInfoUpdate extends LitElement {
         ${this.stateObj.attributes.auto_update
           ? ""
           : this.stateObj.state === BINARY_STATE_OFF &&
-            this.stateObj.attributes.skipped_version
-          ? html`
-              <mwc-button @click=${this._handleClearSkipped}>
-                ${this.hass.localize(
-                  "ui.dialogs.more_info_control.update.clear_skipped"
-                )}
-              </mwc-button>
-            `
-          : html`
-              <mwc-button
-                @click=${this._handleSkip}
-                .disabled=${skippedVersion ||
-                this.stateObj.state === BINARY_STATE_OFF ||
-                updateIsInstalling(this.stateObj)}
-              >
-                ${this.hass.localize(
-                  "ui.dialogs.more_info_control.update.skip"
-                )}
-              </mwc-button>
-            `}
+              this.stateObj.attributes.skipped_version
+            ? html`
+                <mwc-button @click=${this._handleClearSkipped}>
+                  ${this.hass.localize(
+                    "ui.dialogs.more_info_control.update.clear_skipped"
+                  )}
+                </mwc-button>
+              `
+            : html`
+                <mwc-button
+                  @click=${this._handleSkip}
+                  .disabled=${skippedVersion ||
+                  this.stateObj.state === BINARY_STATE_OFF ||
+                  updateIsInstalling(this.stateObj)}
+                >
+                  ${this.hass.localize(
+                    "ui.dialogs.more_info_control.update.skip"
+                  )}
+                </mwc-button>
+              `}
         ${supportsFeature(this.stateObj, UPDATE_SUPPORT_INSTALL)
           ? html`
               <mwc-button

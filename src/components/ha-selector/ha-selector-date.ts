@@ -26,7 +26,7 @@ export class HaDateSelector extends LitElement {
         .label=${this.label}
         .locale=${this.hass.locale}
         .disabled=${this.disabled}
-        .value=${this.value}
+        .value=${typeof this.value === "string" ? this.value : undefined}
         .required=${this.required}
         .helper=${this.helper}
       >

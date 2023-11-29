@@ -57,6 +57,7 @@ const DEVICES = [
     sw_version: null,
     hw_version: null,
     via_device_id: null,
+    serial_number: null,
   },
   {
     area_id: "backyard",
@@ -74,6 +75,7 @@ const DEVICES = [
     sw_version: null,
     hw_version: null,
     via_device_id: null,
+    serial_number: null,
   },
   {
     area_id: null,
@@ -91,6 +93,7 @@ const DEVICES = [
     sw_version: null,
     hw_version: null,
     via_device_id: null,
+    serial_number: null,
   },
 ];
 

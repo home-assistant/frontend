@@ -26,6 +26,7 @@ import {
   LightEntity,
 } from "../../../../data/light";
 import { HomeAssistant } from "../../../../types";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity_attributes";
 
 declare global {
   interface HASSDomEvents {
@@ -93,6 +94,8 @@ class LightColorTempPicker extends LitElement {
           "--gradient": gradient,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.light.color_temp_kelvin}
+        .locale=${this.hass.locale}
       >
       </ha-control-slider>
     `;
@@ -193,6 +196,7 @@ class LightColorTempPicker extends LitElement {
             top,
             var(--gradient)
           );
+          --control-slider-tooltip-font-size: 20px;
           --control-slider-background-opacity: 1;
         }
       `,

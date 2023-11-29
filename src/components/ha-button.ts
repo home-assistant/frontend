@@ -20,6 +20,9 @@ export class HaButton extends Button {
       .trailing-icon {
         display: flex;
       }
+      .slot-container {
+        overflow: var(--button-slot-container-overflow, visible);
+      }
     `,
   ];
 }

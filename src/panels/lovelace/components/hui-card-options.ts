@@ -26,7 +26,9 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
-import { LovelaceCardConfig, saveConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { saveConfig } from "../../../data/lovelace/config/types";
+import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import {
   showAlertDialog,
   showPromptDialog,
@@ -80,6 +82,10 @@ export class HuiCardOptions extends LitElement {
     );
   }
 
+  private get _currentView() {
+    return this.lovelace!.config.views[this.path![0]] as LovelaceViewConfig;
+  }
+
   protected render(): TemplateResult {
     return html`
       <div class="card"><slot></slot></div>
@@ -118,8 +124,7 @@ export class HuiCardOptions extends LitElement {
                     .path=${mdiPlus}
                     class="move-arrow"
                     @click=${this._increaseCardPosition}
-                    .disabled=${this.lovelace!.config.views[this.path![0]]
-                      .cards!.length ===
+                    .disabled=${this._currentView.cards!.length ===
                     this.path![1] + 1}
                   ></ha-icon-button>
                 `
@@ -267,7 +272,7 @@ export class HuiCardOptions extends LitElement {
 
   private _duplicateCard(): void {
     const path = this.path!;
-    const cardConfig = this.lovelace!.config.views[path[0]].cards![path[1]];
+    const cardConfig = this._currentView.cards![path[1]];
     showEditCardDialog(this, {
       lovelaceConfig: this.lovelace!.config,
       cardConfig,
@@ -286,8 +291,7 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _copyCard(): void {
-    const cardConfig =
-      this.lovelace!.config.views[this.path![0]].cards![this.path![1]];
+    const cardConfig = this._currentView.cards![this.path![1]];
     this._clipboard = deepClone(cardConfig);
   }
 
@@ -353,7 +357,7 @@ export class HuiCardOptions extends LitElement {
             addCard(
               selectedDashConfig,
               [viewIndex],
-              this.lovelace!.config.views[this.path![0]].cards![this.path![1]]
+              this._currentView.cards![this.path![1]]
             )
           );
           this.lovelace!.saveConfig(

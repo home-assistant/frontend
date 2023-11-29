@@ -114,12 +114,12 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                         "ui.panel.config.cloud.account.connected"
                       )
                     : this.cloudStatus.cloud === "disconnected"
-                    ? this.hass.localize(
-                        "ui.panel.config.cloud.account.not_connected"
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.cloud.account.connecting"
-                      )}
+                      ? this.hass.localize(
+                          "ui.panel.config.cloud.account.not_connected"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.cloud.account.connecting"
+                        )}
                 </div>
               </div>
 

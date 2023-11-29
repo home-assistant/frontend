@@ -2,6 +2,7 @@ import { HomeAssistant, ServiceCallResponse } from "../types";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isUnavailableState } from "./entity";
+import { stringCompare } from "../common/string/compare";
 
 export interface TodoList {
   entity_id: string;
@@ -14,7 +15,7 @@ export const enum TodoItemStatus {
 }
 
 export interface TodoItem {
-  uid?: string;
+  uid: string;
   summary: string;
   status: TodoItemStatus;
 }
@@ -33,12 +34,12 @@ export const getTodoLists = (hass: HomeAssistant): TodoList[] =>
         computeDomain(entityId) === "todo" &&
         !isUnavailableState(hass.states[entityId].state)
     )
-    .sort()
     .map((entityId) => ({
       ...hass.states[entityId],
       entity_id: entityId,
       name: computeStateName(hass.states[entityId]),
-    }));
+    }))
+    .sort((a, b) => stringCompare(a.name, b.name, hass.locale.language));
 
 export interface TodoItems {
   items: TodoItem[];
@@ -46,21 +47,36 @@ export interface TodoItems {
 
 export const fetchItems = async (
   hass: HomeAssistant,
-  entityId: string
+  entity_id: string
 ): Promise<TodoItem[]> => {
   const result = await hass.callWS<TodoItems>({
     type: "todo/item/list",
-    entity_id: entityId,
+    entity_id,
   });
   return result.items;
 };
+
+export const subscribeItems = (
+  hass: HomeAssistant,
+  entity_id: string,
+  callback: (item) => void
+) =>
+  hass.connection.subscribeMessage<any>(callback, {
+    type: "todo/item/subscribe",
+    entity_id,
+  });
 
 export const updateItem = (
   hass: HomeAssistant,
   entity_id: string,
   item: TodoItem
 ): Promise<ServiceCallResponse> =>
-  hass.callService("todo", "update_item", item, { entity_id });
+  hass.callService(
+    "todo",
+    "update_item",
+    { item: item.uid, rename: item.summary, status: item.status },
+    { entity_id }
+  );
 
 export const createItem = (
   hass: HomeAssistant,
@@ -69,23 +85,23 @@ export const createItem = (
 ): Promise<ServiceCallResponse> =>
   hass.callService(
     "todo",
-    "create_item",
+    "add_item",
     {
-      summary,
+      item: summary,
     },
     { entity_id }
   );
 
-export const deleteItem = (
+export const deleteItems = (
   hass: HomeAssistant,
   entity_id: string,
-  uid: string
+  uids: string[]
 ): Promise<ServiceCallResponse> =>
   hass.callService(
     "todo",
-    "delete_item",
+    "remove_item",
     {
-      uid,
+      item: uids,
     },
     { entity_id }
   );
@@ -94,11 +110,11 @@ export const moveItem = (
   hass: HomeAssistant,
   entity_id: string,
   uid: string,
-  pos: number
+  previous_uid: string | undefined
 ): Promise<void> =>
   hass.callWS({
     type: "todo/item/move",
     entity_id,
     uid,
-    pos,
+    previous_uid,
   });

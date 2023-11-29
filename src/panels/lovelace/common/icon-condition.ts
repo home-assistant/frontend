@@ -1,5 +1,7 @@
 import {
   mdiAccount,
+  mdiAmpersand,
+  mdiGateOr,
   mdiNumeric,
   mdiResponsive,
   mdiStateMachine,
@@ -11,4 +13,6 @@ export const ICON_CONDITION: Record<Condition["condition"], string> = {
   state: mdiStateMachine,
   screen: mdiResponsive,
   user: mdiAccount,
+  and: mdiAmpersand,
+  or: mdiGateOr,
 };

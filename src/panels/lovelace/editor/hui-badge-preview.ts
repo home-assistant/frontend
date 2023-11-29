@@ -1,6 +1,6 @@
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/entity/ha-state-label-badge";
-import { LovelaceBadgeConfig } from "../../../data/lovelace";
+import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import { HomeAssistant } from "../../../types";
 import { createErrorBadgeConfig } from "../badges/hui-error-badge";
 import { createBadgeElement } from "../create-element/create-badge-element";

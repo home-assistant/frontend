@@ -35,11 +35,11 @@ import {
 } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
 import { haOscillating } from "../../../data/icons/haOscillating";
+import "../../../state-control/climate/ha-state-control-climate-humidity";
+import "../../../state-control/climate/ha-state-control-climate-temperature";
 import { HomeAssistant } from "../../../types";
-import "../components/climate/ha-more-info-climate-humidity";
-import "../components/climate/ha-more-info-climate-temperature";
 import "../components/ha-more-info-control-select-container";
-import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 type MainControl = "temperature" | "humidity";
 
@@ -121,18 +121,18 @@ class MoreInfoClimate extends LitElement {
       <div class="controls">
         ${this._mainControl === "temperature"
           ? html`
-              <ha-more-info-climate-temperature
+              <ha-state-control-climate-temperature
                 .hass=${this.hass}
                 .stateObj=${this.stateObj}
-              ></ha-more-info-climate-temperature>
+              ></ha-state-control-climate-temperature>
             `
           : nothing}
         ${this._mainControl === "humidity"
           ? html`
-              <ha-more-info-climate-humidity
+              <ha-state-control-climate-humidity
                 .hass=${this.hass}
                 .stateObj=${this.stateObj}
-              ></ha-more-info-climate-humidity>
+              ></ha-state-control-climate-humidity>
             `
           : nothing}
         ${supportTargetHumidity
@@ -434,6 +434,7 @@ class MoreInfoClimate extends LitElement {
           font-size: 22px;
           font-weight: 500;
           line-height: 28px;
+          direction: ltr;
         }
         ha-select {
           width: 100%;

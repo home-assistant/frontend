@@ -28,7 +28,6 @@ import {
   serviceCallWillDisconnect,
 } from "../../../data/service";
 import { haStyle } from "../../../resources/styles";
-import "../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 
@@ -332,8 +331,7 @@ class HaPanelDevService extends LitElement {
       ) {
         return localize(
           `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.missing_required_field`,
-          "key",
-          field.key
+          { key: field.key }
         );
       }
     }
@@ -426,11 +424,9 @@ class HaPanelDevService extends LitElement {
       forwardHaptic("failure");
       button.actionError();
       this._error =
-        this.hass.localize(
-          "ui.notification_toast.service_call_failed",
-          "service",
-          this._serviceData!.service!
-        ) + ` ${err.message}`;
+        this.hass.localize("ui.notification_toast.service_call_failed", {
+          service: this._serviceData!.service!,
+        }) + ` ${err.message}`;
       return;
     }
     button.actionSuccess();

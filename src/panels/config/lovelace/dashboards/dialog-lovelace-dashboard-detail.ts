@@ -12,7 +12,7 @@ import {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
   LovelaceDashboardMutableParams,
-} from "../../../../data/lovelace";
+} from "../../../../data/lovelace/dashboard";
 import { DEFAULT_PANEL, setDefaultPanel } from "../../../../data/panel";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
@@ -86,19 +86,19 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                 "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
               )
             : this._params.urlPath === "lovelace"
-            ? this.hass.localize(
-                "ui.panel.config.lovelace.dashboards.cant_edit_default"
-              )
-            : html`
-                <ha-form
-                  .schema=${this._schema(this._params, this.hass.userData)}
-                  .data=${this._data}
-                  .hass=${this.hass}
-                  .error=${this._error}
-                  .computeLabel=${this._computeLabel}
-                  @value-changed=${this._valueChanged}
-                ></ha-form>
-              `}
+              ? this.hass.localize(
+                  "ui.panel.config.lovelace.dashboards.cant_edit_default"
+                )
+              : html`
+                  <ha-form
+                    .schema=${this._schema(this._params, this.hass.userData)}
+                    .data=${this._data}
+                    .hass=${this.hass}
+                    .error=${this._error}
+                    .computeLabel=${this._computeLabel}
+                    @value-changed=${this._valueChanged}
+                  ></ha-form>
+                `}
         </div>
         ${this._params.urlPath
           ? html`
@@ -208,8 +208,8 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         entry.name === "show_in_sidebar"
           ? "show_sidebar"
           : entry.name === "url_path"
-          ? "url"
-          : entry.name
+            ? "url"
+            : entry.name
       }`
     );
 

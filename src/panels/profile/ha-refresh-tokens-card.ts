@@ -9,6 +9,7 @@ import "../../components/ha-card";
 import "../../components/ha-settings-row";
 import "../../components/ha-icon-button";
 import { RefreshToken } from "../../data/refresh_token";
+import { deleteAllRefreshTokens } from "../../data/auth";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -108,6 +109,13 @@ class HaRefreshTokens extends LitElement {
             )
           : ""}
       </div>
+      <div class="card-actions">
+        <mwc-button class="warning" @click=${this._deleteAllTokens}>
+          ${this.hass.localize(
+            "ui.panel.profile.refresh_tokens.delete_all_tokens"
+          )}
+        </mwc-button>
+      </div>
     </ha-card>`;
   }
 
@@ -129,6 +137,29 @@ class HaRefreshTokens extends LitElement {
         refresh_token_id: token.id,
       });
       fireEvent(this, "hass-refresh-tokens");
+    } catch (err: any) {
+      await showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.profile.refresh_tokens.delete_failed"
+        ),
+        text: err.message,
+      });
+    }
+  }
+
+  private async _deleteAllTokens(): Promise<void> {
+    if (
+      !(await showConfirmationDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.profile.refresh_tokens.confirm_delete_all"
+        ),
+        destructive: true,
+      }))
+    ) {
+      return;
+    }
+    try {
+      await deleteAllRefreshTokens(this.hass);
     } catch (err: any) {
       await showAlertDialog(this, {
         title: this.hass.localize(

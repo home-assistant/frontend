@@ -44,6 +44,7 @@ export interface LineChartEntity {
   name: string;
   entity_id: string;
   states: LineChartState[];
+  statistics?: LineChartState[];
 }
 
 export interface LineChartUnit {
@@ -377,8 +378,8 @@ const processLineChartEntities = (
       entityId in hassEntities
         ? hassEntities[entityId].attributes
         : "friendly_name" in first.a
-        ? first.a
-        : undefined;
+          ? first.a
+          : undefined;
 
     data.push({
       domain,

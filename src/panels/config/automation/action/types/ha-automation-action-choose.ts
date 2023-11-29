@@ -90,8 +90,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
     if (conditions.length > 1) {
       str += this.hass.localize(
         "ui.panel.config.automation.editor.actions.type.choose.option_description_additional",
-        "numberOfAdditionalConditions",
-        conditions.length - 1
+        { numberOfAdditionalConditions: conditions.length - 1 }
       );
     }
     return str;
@@ -115,8 +114,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
                 <h3 slot="header">
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.actions.type.choose.option",
-                    "number",
-                    idx + 1
+                    { number: idx + 1 }
                   )}:
                   ${option.alias ||
                   (this._expandedStates[idx]
@@ -342,7 +340,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   private _duplicateOption(ev) {
     const index = (ev.target as any).idx;
-    this._addOption(deepClone(ensureArray(this.action.choose)[index]));
+    this._createOption(deepClone(ensureArray(this.action.choose)[index]));
   }
 
   protected firstUpdated() {
@@ -399,11 +397,15 @@ export class HaChooseAction extends LitElement implements ActionElement {
     });
   }
 
-  private _addOption(opt?: ChooseActionChoice) {
+  private _addOption() {
+    this._createOption({ conditions: [], sequence: [] });
+  }
+
+  private _createOption(opt: ChooseActionChoice) {
     const choose = this.action.choose
       ? [...ensureArray(this.action.choose)]
       : [];
-    choose.push(opt ?? { conditions: [], sequence: [] });
+    choose.push(opt);
     fireEvent(this, "value-changed", {
       value: { ...this.action, choose },
     });

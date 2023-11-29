@@ -71,7 +71,11 @@ export class StatisticsChart extends LitElement {
 
   @property({ type: Boolean }) public hideLegend = false;
 
+  @property({ type: Boolean }) public logarithmicScale = false;
+
   @property({ type: Boolean }) public isLoadingData = false;
+
+  @property() public period?: string;
 
   @state() private _chartData: ChartData = { datasets: [] };
 
@@ -92,7 +96,13 @@ export class StatisticsChart extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues) {
-    if (!this.hasUpdated || changedProps.has("unit")) {
+    if (
+      !this.hasUpdated ||
+      changedProps.has("unit") ||
+      changedProps.has("period") ||
+      changedProps.has("chartType") ||
+      changedProps.has("logarithmicScale")
+    ) {
       this._createOptions();
     }
     if (
@@ -160,6 +170,7 @@ export class StatisticsChart extends LitElement {
             },
           },
           ticks: {
+            source: this.chartType === "bar" ? "data" : undefined,
             maxRotation: 0,
             sampleSize: 5,
             autoSkipPadding: 20,
@@ -173,6 +184,12 @@ export class StatisticsChart extends LitElement {
           },
           time: {
             tooltipFormat: "datetime",
+            unit:
+              this.chartType === "bar" &&
+              this.period &&
+              ["hour", "day", "week", "month"].includes(this.period)
+                ? this.period
+                : undefined,
           },
         },
         y: {
@@ -184,6 +201,7 @@ export class StatisticsChart extends LitElement {
             display: unit || this.unit,
             text: unit || this.unit,
           },
+          type: this.logarithmicScale ? "logarithmic" : "linear",
         },
       },
       plugins: {
@@ -382,8 +400,8 @@ export class StatisticsChart extends LitElement {
               ? type === "min" && hasMean
                 ? "+1"
                 : type === "max"
-                ? "-1"
-                : false
+                  ? "-1"
+                  : false
               : false,
             borderColor:
               band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color,

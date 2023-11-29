@@ -67,6 +67,7 @@ export class CloudAlexaPref extends LitElement {
               type: "icon",
               darkOptimized: this.hass.themes?.darkMode,
             })}
+            crossorigin="anonymous"
             referrerpolicy="no-referrer"
           />${this.hass.localize("ui.panel.config.cloud.account.alexa.title")}
         </h1>
@@ -233,12 +234,13 @@ export class CloudAlexaPref extends LitElement {
       alert(
         `${this.hass!.localize(
           "ui.panel.config.cloud.account.alexa.state_reporting_error",
-          "enable_disable",
-          this.hass!.localize(
-            toggle.checked
-              ? "ui.panel.config.cloud.account.alexa.enable"
-              : "ui.panel.config.cloud.account.alexa.disable"
-          )
+          {
+            enable_disable: this.hass!.localize(
+              toggle.checked
+                ? "ui.panel.config.cloud.account.alexa.enable"
+                : "ui.panel.config.cloud.account.alexa.disable"
+            ),
+          }
         )} ${err.message}`
       );
       toggle.checked = !toggle.checked;

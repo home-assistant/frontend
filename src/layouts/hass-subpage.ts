@@ -57,19 +57,19 @@ class HassSubpage extends LitElement {
               ></ha-menu-button>
             `
           : this.backPath
-          ? html`
-              <a href=${this.backPath}>
+            ? html`
+                <a href=${this.backPath}>
+                  <ha-icon-button-arrow-prev
+                    .hass=${this.hass}
+                  ></ha-icon-button-arrow-prev>
+                </a>
+              `
+            : html`
                 <ha-icon-button-arrow-prev
                   .hass=${this.hass}
+                  @click=${this._backTapped}
                 ></ha-icon-button-arrow-prev>
-              </a>
-            `
-          : html`
-              <ha-icon-button-arrow-prev
-                .hass=${this.hass}
-                @click=${this._backTapped}
-              ></ha-icon-button-arrow-prev>
-            `}
+              `}
 
         <div class="main-title"><slot name="header">${this.header}</slot></div>
         <slot name="toolbar-icon"></slot>

@@ -8,7 +8,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { HomeAssistant } from "../../../types";
 import { computeTooltip } from "../common/compute-tooltip";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -60,10 +60,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
         <hui-warning-element
           label=${this.hass.localize(
             "ui.panel.lovelace.warning.attribute_not_found",
-            "attribute",
-            this._config.attribute,
-            "entity",
-            this._config.entity
+            { attribute: this._config.attribute, entity: this._config.entity }
           )}
         ></hui-warning-element>
       `;

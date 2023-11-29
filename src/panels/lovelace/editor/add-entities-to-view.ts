@@ -1,10 +1,10 @@
+import { LovelacePanelConfig } from "../../../data/lovelace";
 import {
-  fetchConfig,
-  fetchDashboards,
   LovelaceConfig,
-  LovelacePanelConfig,
+  fetchConfig,
   saveConfig,
-} from "../../../data/lovelace";
+} from "../../../data/lovelace/config/types";
+import { fetchDashboards } from "../../../data/lovelace/dashboard";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
 import { showSuggestCardDialog } from "./card-editor/show-suggest-card-dialog";

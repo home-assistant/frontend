@@ -8,7 +8,7 @@ export interface ZWaveJSUpdateFirmwareNodeDialogParams {
 export const loadUpdateFirmwareNodeDialog = () =>
   import("./dialog-zwave_js-update-firmware-node");
 
-export const showZWaveJUpdateFirmwareNodeDialog = (
+export const showZWaveJSUpdateFirmwareNodeDialog = (
   element: HTMLElement,
   updateFirmwareNodeDialogParams: ZWaveJSUpdateFirmwareNodeDialogParams
 ): void => {

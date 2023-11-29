@@ -120,11 +120,11 @@ export class HaIconPicker extends LitElement {
               </ha-icon>
             `
           : this.fallbackPath
-          ? html`<ha-svg-icon
-              .path=${this.fallbackPath}
-              slot="icon"
-            ></ha-svg-icon>`
-          : ""}
+            ? html`<ha-svg-icon
+                .path=${this.fallbackPath}
+                slot="icon"
+              ></ha-svg-icon>`
+            : ""}
       </ha-combo-box>
     `;
   }
