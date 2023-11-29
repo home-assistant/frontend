@@ -1,8 +1,8 @@
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { LocalizeFunc, LocalizeKeys } from "../../common/translations/localize";
 import { fireEvent } from "../../common/dom/fire_event";
+import { LocalizeFunc, LocalizeKeys } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
 import "../ha-alert";
 import "../ha-form/ha-form";
@@ -31,11 +31,15 @@ const SELECTOR_SCHEMAS = {
   boolean: [] as const,
   color_temp: [
     {
-      name: "min_mireds",
+      name: "unit",
+      selector: { select: { options: ["kelvin", "mired"] } },
+    },
+    {
+      name: "min",
       selector: { number: { mode: "box" } },
     },
     {
-      name: "max_mireds",
+      name: "max",
       selector: { number: { mode: "box" } },
     },
   ] as const,
@@ -98,6 +102,10 @@ const SELECTOR_SCHEMAS = {
   target: [] as const,
   template: [] as const,
   text: [
+    {
+      name: "multiple",
+      selector: { boolean: {} },
+    },
     {
       name: "multiline",
       selector: { boolean: {} },
@@ -251,6 +259,9 @@ export class HaSelectorSelector extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      :host {
+        --expansion-panel-summary-padding: 0 16px;
+      }
       ha-alert {
         display: block;
         margin-bottom: 16px;
