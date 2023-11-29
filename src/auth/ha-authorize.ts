@@ -5,7 +5,6 @@ import punycode from "punycode";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import "../components/ha-alert";
-import "../components/ha-language-picker";
 import {
   AuthProvider,
   AuthUrlSearchParams,
@@ -274,6 +273,8 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
       this._ownInstance = true;
       registerServiceWorker(this, false);
     }
+
+    import("../components/ha-language-picker");
   }
 
   protected updated(changedProps: PropertyValues) {
