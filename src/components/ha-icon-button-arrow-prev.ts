@@ -1,6 +1,7 @@
 import { mdiArrowLeft, mdiArrowRight } from "@mdi/js";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mainWindow } from "../common/dom/get_main_window";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
 
@@ -13,7 +14,7 @@ export class HaIconButtonArrowPrev extends LitElement {
   @property() public label?: string;
 
   @state() private _icon =
-    document.dir === "ltr" ? mdiArrowLeft : mdiArrowRight;
+    mainWindow.document.dir === "rtl" ? mdiArrowRight : mdiArrowLeft;
 
   protected render(): TemplateResult {
     return html`

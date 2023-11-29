@@ -158,19 +158,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           width: "25%",
         };
       }
-      columns.type = {
+      columns.localized_type = {
         title: localize("ui.panel.config.helpers.picker.headers.type"),
         sortable: true,
         width: "25%",
         filterable: true,
-        template: (helper) =>
-          helper.configEntry
-            ? domainToName(localize, helper.type)
-            : html`
-                ${localize(
-                  `ui.panel.config.helpers.types.${helper.type}` as LocalizeKeys
-                ) || helper.type}
-              `,
       };
       columns.editable = {
         title: "",
@@ -202,6 +194,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private _getItems = memoizeOne(
     (
+      localize: LocalizeFunc,
       stateItems: HassEntity[],
       entityEntries: Record<string, EntityRegistryEntry>,
       configEntries: Record<string, ConfigEntry>
@@ -248,7 +241,14 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         entity: undefined,
       }));
 
-      return [...states, ...entries];
+      return [...states, ...entries].map((item) => ({
+        ...item,
+        localized_type: item.configEntry
+          ? domainToName(localize, item.type)
+          : localize(
+              `ui.panel.config.helpers.types.${item.type}` as LocalizeKeys
+            ) || item.type,
+      }));
     }
   );
 
@@ -271,6 +271,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         .tabs=${configSections.devices}
         .columns=${this._columns(this.narrow, this.hass.localize)}
         .data=${this._getItems(
+          this.hass.localize,
           this._stateItems,
           this._entityEntries,
           this._configEntries

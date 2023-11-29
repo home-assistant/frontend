@@ -125,8 +125,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
                   <p>
                     ${this.hass.localize(
                       "ui.panel.config.zwave_js.remove_node.exclusion_finished",
-                      "id",
-                      this._node!.node_id
+                      { id: this._node!.node_id }
                     )}
                   </p>
                 </div>

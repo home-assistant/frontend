@@ -1,3 +1,4 @@
+import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiCancel, mdiFilterVariant, mdiPlus } from "@mdi/js";
@@ -29,8 +30,8 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
-import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry, sortConfigEntries } from "../../../data/config_entries";
+import { fullEntitiesContext } from "../../../data/context";
 import {
   DeviceEntityLookup,
   DeviceRegistryEntry,
@@ -65,13 +66,11 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @property() public isWide = false;
 
-  @property() public devices!: DeviceRegistryEntry[];
-
   @property() public entries!: ConfigEntry[];
 
-  @property() public entities!: EntityRegistryEntry[];
-
-  @property() public areas!: AreaRegistryEntry[];
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  entities!: EntityRegistryEntry[];
 
   @property() public manifests!: IntegrationManifest[];
 
@@ -87,27 +86,33 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   private _ignoreLocationChange = false;
 
-  public constructor() {
-    super();
-    window.addEventListener("location-changed", () => {
-      if (this._ignoreLocationChange) {
-        this._ignoreLocationChange = false;
-        return;
-      }
-      if (
-        window.location.search.substring(1) !== this._searchParms.toString()
-      ) {
-        this._searchParms = new URLSearchParams(window.location.search);
-      }
-    });
-    window.addEventListener("popstate", () => {
-      if (
-        window.location.search.substring(1) !== this._searchParms.toString()
-      ) {
-        this._searchParms = new URLSearchParams(window.location.search);
-      }
-    });
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("location-changed", this._locationChanged);
+    window.addEventListener("popstate", this._popState);
   }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("location-changed", this._locationChanged);
+    window.removeEventListener("popstate", this._popState);
+  }
+
+  private _locationChanged = () => {
+    if (this._ignoreLocationChange) {
+      this._ignoreLocationChange = false;
+      return;
+    }
+    if (window.location.search.substring(1) !== this._searchParms.toString()) {
+      this._searchParms = new URLSearchParams(window.location.search);
+    }
+  };
+
+  private _popState = () => {
+    if (window.location.search.substring(1) !== this._searchParms.toString()) {
+      this._searchParms = new URLSearchParams(window.location.search);
+    }
+  };
 
   private _activeFilters = memoizeOne(
     (
@@ -152,10 +157,10 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   private _devicesAndFilterDomains = memoizeOne(
     (
-      devices: DeviceRegistryEntry[],
+      devices: HomeAssistant["devices"],
       entries: ConfigEntry[],
       entities: EntityRegistryEntry[],
-      areas: AreaRegistryEntry[],
+      areas: HomeAssistant["areas"],
       manifests: IntegrationManifest[],
       filters: URLSearchParams,
       showDisabled: boolean,
@@ -163,12 +168,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     ) => {
       // Some older installations might have devices pointing at invalid entryIDs
       // So we guard for that.
-      let outputDevices: DeviceRowData[] = devices;
-
-      const deviceLookup: { [deviceId: string]: DeviceRegistryEntry } = {};
-      for (const device of devices) {
-        deviceLookup[device.id] = device;
-      }
+      let outputDevices: DeviceRowData[] = Object.values(devices);
 
       // If nothing gets filtered, this is our correct count of devices
       let startLength = outputDevices.length;
@@ -187,11 +187,6 @@ export class HaConfigDeviceDashboard extends LitElement {
       const entryLookup: { [entryId: string]: ConfigEntry } = {};
       for (const entry of entries) {
         entryLookup[entry.entry_id] = entry;
-      }
-
-      const areaLookup: { [areaId: string]: AreaRegistryEntry } = {};
-      for (const area of areas) {
-        areaLookup[area.area_id] = area;
       }
 
       const manifestLookup: { [domain: string]: IntegrationManifest } = {};
@@ -251,8 +246,8 @@ export class HaConfigDeviceDashboard extends LitElement {
             device.manufacturer ||
             `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
           area:
-            device.area_id && areaLookup[device.area_id]
-              ? areaLookup[device.area_id].name
+            device.area_id && areas[device.area_id]
+              ? areas[device.area_id].name
               : "—",
           integration: deviceEntries.length
             ? deviceEntries
@@ -285,145 +280,143 @@ export class HaConfigDeviceDashboard extends LitElement {
     }
   );
 
-  private _columns = memoizeOne((narrow: boolean, showDisabled: boolean) => {
-    type DeviceItem = ReturnType<
-      typeof this._devicesAndFilterDomains
-    >["devicesOutput"][number];
+  private _columns = memoizeOne(
+    (localize: LocalizeFunc, narrow: boolean, showDisabled: boolean) => {
+      type DeviceItem = ReturnType<
+        typeof this._devicesAndFilterDomains
+      >["devicesOutput"][number];
 
-    const columns: DataTableColumnContainer<DeviceItem> = {
-      icon: {
-        title: "",
-        type: "icon",
-        template: (device) =>
-          device.domains.length
-            ? html`<img
-                alt=""
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"
-                src=${brandsUrl({
-                  domain: device.domains[0],
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                })}
-              />`
-            : "",
-      },
-    };
+      const columns: DataTableColumnContainer<DeviceItem> = {
+        icon: {
+          title: "",
+          type: "icon",
+          template: (device) =>
+            device.domains.length
+              ? html`<img
+                  alt=""
+                  crossorigin="anonymous"
+                  referrerpolicy="no-referrer"
+                  src=${brandsUrl({
+                    domain: device.domains[0],
+                    type: "icon",
+                    darkOptimized: this.hass.themes?.darkMode,
+                  })}
+                />`
+              : "",
+        },
+      };
 
-    if (narrow) {
-      columns.name = {
-        title: this.hass.localize("ui.panel.config.devices.data_table.device"),
-        main: true,
+      if (narrow) {
+        columns.name = {
+          title: localize("ui.panel.config.devices.data_table.device"),
+          main: true,
+          sortable: true,
+          filterable: true,
+          direction: "asc",
+          grows: true,
+          template: (device) => html`
+            ${device.name}
+            <div class="secondary">${device.area} | ${device.integration}</div>
+          `,
+        };
+      } else {
+        columns.name = {
+          title: localize("ui.panel.config.devices.data_table.device"),
+          main: true,
+          sortable: true,
+          filterable: true,
+          grows: true,
+          direction: "asc",
+        };
+      }
+
+      columns.manufacturer = {
+        title: localize("ui.panel.config.devices.data_table.manufacturer"),
+        sortable: true,
+        hidden: narrow,
+        filterable: true,
+        width: "15%",
+      };
+      columns.model = {
+        title: localize("ui.panel.config.devices.data_table.model"),
+        sortable: true,
+        hidden: narrow,
+        filterable: true,
+        width: "15%",
+      };
+      columns.area = {
+        title: localize("ui.panel.config.devices.data_table.area"),
+        sortable: true,
+        hidden: narrow,
+        filterable: true,
+        width: "15%",
+      };
+      columns.integration = {
+        title: localize("ui.panel.config.devices.data_table.integration"),
+        sortable: true,
+        hidden: narrow,
+        filterable: true,
+        width: "15%",
+      };
+      columns.battery_entity = {
+        title: localize("ui.panel.config.devices.data_table.battery"),
         sortable: true,
         filterable: true,
-        direction: "asc",
-        grows: true,
-        template: (device) => html`
-          ${device.name}
-          <div class="secondary">${device.area} | ${device.integration}</div>
-        `,
-      };
-    } else {
-      columns.name = {
-        title: this.hass.localize("ui.panel.config.devices.data_table.device"),
-        main: true,
-        sortable: true,
-        filterable: true,
-        grows: true,
-        direction: "asc",
-      };
-    }
-
-    columns.manufacturer = {
-      title: this.hass.localize(
-        "ui.panel.config.devices.data_table.manufacturer"
-      ),
-      sortable: true,
-      hidden: narrow,
-      filterable: true,
-      width: "15%",
-    };
-    columns.model = {
-      title: this.hass.localize("ui.panel.config.devices.data_table.model"),
-      sortable: true,
-      hidden: narrow,
-      filterable: true,
-      width: "15%",
-    };
-    columns.area = {
-      title: this.hass.localize("ui.panel.config.devices.data_table.area"),
-      sortable: true,
-      hidden: narrow,
-      filterable: true,
-      width: "15%",
-    };
-    columns.integration = {
-      title: this.hass.localize(
-        "ui.panel.config.devices.data_table.integration"
-      ),
-      sortable: true,
-      hidden: narrow,
-      filterable: true,
-      width: "15%",
-    };
-    columns.battery_entity = {
-      title: this.hass.localize("ui.panel.config.devices.data_table.battery"),
-      sortable: true,
-      filterable: true,
-      type: "numeric",
-      width: narrow ? "95px" : "15%",
-      maxWidth: "95px",
-      valueColumn: "battery_level",
-      template: (device) => {
-        const batteryEntityPair = device.battery_entity;
-        const battery =
-          batteryEntityPair && batteryEntityPair[0]
-            ? this.hass.states[batteryEntityPair[0]]
+        type: "numeric",
+        width: narrow ? "95px" : "15%",
+        maxWidth: "95px",
+        valueColumn: "battery_level",
+        template: (device) => {
+          const batteryEntityPair = device.battery_entity;
+          const battery =
+            batteryEntityPair && batteryEntityPair[0]
+              ? this.hass.states[batteryEntityPair[0]]
+              : undefined;
+          const batteryDomain = battery
+            ? computeStateDomain(battery)
             : undefined;
-        const batteryDomain = battery ? computeStateDomain(battery) : undefined;
-        const batteryCharging =
-          batteryEntityPair && batteryEntityPair[1]
-            ? this.hass.states[batteryEntityPair[1]]
-            : undefined;
+          const batteryCharging =
+            batteryEntityPair && batteryEntityPair[1]
+              ? this.hass.states[batteryEntityPair[1]]
+              : undefined;
 
-        return battery &&
-          (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
-          ? html`
-              ${batteryDomain === "sensor"
-                ? this.hass.formatEntityState(battery)
-                : nothing}
-              <ha-battery-icon
-                .hass=${this.hass}
-                .batteryStateObj=${battery}
-                .batteryChargingStateObj=${batteryCharging}
-              ></ha-battery-icon>
-            `
-          : html`—`;
-      },
-    };
-    if (showDisabled) {
-      columns.disabled_by = {
-        title: "",
-        label: this.hass.localize(
-          "ui.panel.config.devices.data_table.disabled_by"
-        ),
-        type: "icon",
-        template: (device) =>
-          device.disabled_by
-            ? html`<div
-                tabindex="0"
-                style="display:inline-block; position: relative;"
-              >
-                <ha-svg-icon .path=${mdiCancel}></ha-svg-icon>
-                <simple-tooltip animation-delay="0" position="left">
-                  ${this.hass.localize("ui.panel.config.devices.disabled")}
-                </simple-tooltip>
-              </div>`
-            : "—",
+          return battery &&
+            (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
+            ? html`
+                ${batteryDomain === "sensor"
+                  ? this.hass.formatEntityState(battery)
+                  : nothing}
+                <ha-battery-icon
+                  .hass=${this.hass}
+                  .batteryStateObj=${battery}
+                  .batteryChargingStateObj=${batteryCharging}
+                ></ha-battery-icon>
+              `
+            : html`—`;
+        },
       };
+      if (showDisabled) {
+        columns.disabled_by = {
+          title: "",
+          label: localize("ui.panel.config.devices.data_table.disabled_by"),
+          type: "icon",
+          template: (device) =>
+            device.disabled_by
+              ? html`<div
+                  tabindex="0"
+                  style="display:inline-block; position: relative;"
+                >
+                  <ha-svg-icon .path=${mdiCancel}></ha-svg-icon>
+                  <simple-tooltip animation-delay="0" position="left">
+                    ${this.hass.localize("ui.panel.config.devices.disabled")}
+                  </simple-tooltip>
+                </div>`
+              : "—",
+        };
+      }
+      return columns;
     }
-    return columns;
-  });
+  );
 
   public willUpdate(changedProps) {
     if (changedProps.has("_searchParms")) {
@@ -440,10 +433,10 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   protected render(): TemplateResult {
     const { devicesOutput } = this._devicesAndFilterDomains(
-      this.devices,
+      this.hass.devices,
       this.entries,
       this.entities,
-      this.areas,
+      this.hass.areas,
       this.manifests,
       this._searchParms,
       this._showDisabled,
@@ -471,10 +464,13 @@ export class HaConfigDeviceDashboard extends LitElement {
         )}
         .hiddenLabel=${this.hass.localize(
           "ui.panel.config.devices.picker.filter.hidden_devices",
-          "number",
-          this._numHiddenDevices
+          { number: this._numHiddenDevices }
         )}
-        .columns=${this._columns(this.narrow, this._showDisabled)}
+        .columns=${this._columns(
+          this.hass.localize,
+          this.narrow,
+          this._showDisabled
+        )}
         .data=${devicesOutput}
         .filter=${this._filter}
         @clear-filter=${this._clearFilter}
@@ -579,10 +575,10 @@ export class HaConfigDeviceDashboard extends LitElement {
   private _addDevice() {
     const { filteredConfigEntry, filteredDomains } =
       this._devicesAndFilterDomains(
-        this.devices,
+        this.hass.devices,
         this.entries,
         this.entities,
-        this.areas,
+        this.hass.areas,
         this.manifests,
         this._searchParms,
         this._showDisabled,

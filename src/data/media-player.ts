@@ -106,6 +106,8 @@ export type MediaPlayerBrowseAction = "pick" | "play";
 
 export const BROWSER_PLAYER = "browser";
 
+export type MediaPlayerLayoutType = "grid" | "list" | "auto";
+
 export type MediaClassBrowserSetting = {
   icon: string;
   thumbnail_ratio?: string;
@@ -117,12 +119,13 @@ export const MediaClassBrowserSettings: {
   [type: string]: MediaClassBrowserSetting;
 } = {
   album: { icon: mdiAlbum, layout: "grid" },
-  app: { icon: mdiApplication, layout: "grid" },
+  app: { icon: mdiApplication, layout: "grid", show_list_images: true },
   artist: { icon: mdiAccountMusic, layout: "grid", show_list_images: true },
   channel: {
     icon: mdiTelevisionClassic,
     thumbnail_ratio: "portrait",
     layout: "grid",
+    show_list_images: true,
   },
   composer: {
     icon: mdiAccountMusicOutline,
@@ -139,6 +142,7 @@ export const MediaClassBrowserSettings: {
     icon: mdiTelevisionClassic,
     layout: "grid",
     thumbnail_ratio: "portrait",
+    show_list_images: true,
   },
   game: {
     icon: mdiGamepadVariant,
@@ -146,15 +150,21 @@ export const MediaClassBrowserSettings: {
     thumbnail_ratio: "portrait",
   },
   genre: { icon: mdiDramaMasks, layout: "grid", show_list_images: true },
-  image: { icon: mdiImage, layout: "grid" },
-  movie: { icon: mdiMovie, thumbnail_ratio: "portrait", layout: "grid" },
-  music: { icon: mdiMusic },
+  image: { icon: mdiImage, layout: "grid", show_list_images: true },
+  movie: {
+    icon: mdiMovie,
+    thumbnail_ratio: "portrait",
+    layout: "grid",
+    show_list_images: true,
+  },
+  music: { icon: mdiMusic, show_list_images: true },
   playlist: { icon: mdiPlaylistMusic, layout: "grid", show_list_images: true },
   podcast: { icon: mdiPodcast, layout: "grid" },
   season: {
     icon: mdiTelevisionClassic,
     layout: "grid",
     thumbnail_ratio: "portrait",
+    show_list_images: true,
   },
   track: { icon: mdiFileMusic },
   tv_show: {
@@ -163,7 +173,7 @@ export const MediaClassBrowserSettings: {
     thumbnail_ratio: "portrait",
   },
   url: { icon: mdiWeb },
-  video: { icon: mdiVideo, layout: "grid" },
+  video: { icon: mdiVideo, layout: "grid", show_list_images: true },
 };
 
 export interface MediaPickedEvent {
@@ -331,16 +341,16 @@ export const computeMediaControls = (
         state === "on"
           ? mdiPlayPause
           : state !== "playing"
-          ? mdiPlay
-          : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-          ? mdiPause
-          : mdiStop,
+            ? mdiPlay
+            : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
+              ? mdiPause
+              : mdiStop,
       action:
         state !== "playing"
           ? "media_play"
           : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-          ? "media_pause"
-          : "media_stop",
+            ? "media_pause"
+            : "media_stop",
     });
   }
 
@@ -394,8 +404,8 @@ export const computeMediaControls = (
         stateAttr.repeat === "all"
           ? mdiRepeat
           : stateAttr.repeat === "one"
-          ? mdiRepeatOnce
-          : mdiRepeatOff,
+            ? mdiRepeatOnce
+            : mdiRepeatOff,
       action: "repeat_set",
     });
   }
@@ -459,18 +469,18 @@ export const handleMediaControlClick = (
           shuffle: !stateObj!.attributes.shuffle,
         }
       : action === "repeat_set"
-      ? {
-          entity_id: stateObj!.entity_id,
-          repeat:
-            stateObj!.attributes.repeat === "all"
-              ? "one"
-              : stateObj!.attributes.repeat === "off"
-              ? "all"
-              : "off",
-        }
-      : {
-          entity_id: stateObj!.entity_id,
-        }
+        ? {
+            entity_id: stateObj!.entity_id,
+            repeat:
+              stateObj!.attributes.repeat === "all"
+                ? "one"
+                : stateObj!.attributes.repeat === "off"
+                  ? "all"
+                  : "off",
+          }
+        : {
+            entity_id: stateObj!.entity_id,
+          }
   );
 
 export const mediaPlayerPlayMedia = (

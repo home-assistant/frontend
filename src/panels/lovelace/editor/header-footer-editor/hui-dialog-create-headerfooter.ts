@@ -45,10 +45,11 @@ export class HuiCreateDialogHeaderFooter
           this.hass,
           this.hass!.localize(
             `ui.panel.lovelace.editor.header-footer.choose_header_footer`,
-            "type",
-            this.hass!.localize(
-              `ui.panel.lovelace.editor.header-footer.${this._params.type}`
-            )
+            {
+              type: this.hass!.localize(
+                `ui.panel.lovelace.editor.header-footer.${this._params.type}`
+              ),
+            }
           )
         )}
         @keydown=${this._ignoreKeydown}

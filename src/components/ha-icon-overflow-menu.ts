@@ -1,6 +1,5 @@
-import "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import { mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -8,6 +7,7 @@ import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 import "./ha-button-menu";
 import "./ha-icon-button";
+import "./ha-list-item";
 import "./ha-svg-icon";
 
 export interface IconOverflowMenuItem {
@@ -49,7 +49,7 @@ export class HaIconOverflowMenu extends LitElement {
               ${this.items.map((item) =>
                 item.divider
                   ? html`<li divider role="separator"></li>`
-                  : html`<mwc-list-item
+                  : html`<ha-list-item
                       graphic="icon"
                       ?disabled=${item.disabled}
                       @click=${item.action}
@@ -62,7 +62,7 @@ export class HaIconOverflowMenu extends LitElement {
                         ></ha-svg-icon>
                       </div>
                       ${item.label}
-                    </mwc-list-item> `
+                    </ha-list-item> `
               )}
             </ha-button-menu>`
         : html`
@@ -71,23 +71,23 @@ export class HaIconOverflowMenu extends LitElement {
               item.narrowOnly
                 ? ""
                 : item.divider
-                ? html`<div role="separator"></div>`
-                : html`<div>
-                    ${item.tooltip
-                      ? html`<simple-tooltip
-                          animation-delay="0"
-                          position="left"
-                        >
-                          ${item.tooltip}
-                        </simple-tooltip>`
-                      : ""}
-                    <ha-icon-button
-                      @click=${item.action}
-                      .label=${item.label}
-                      .path=${item.path}
-                      ?disabled=${item.disabled}
-                    ></ha-icon-button>
-                  </div> `
+                  ? html`<div role="separator"></div>`
+                  : html`<div>
+                      ${item.tooltip
+                        ? html`<simple-tooltip
+                            animation-delay="0"
+                            position="left"
+                          >
+                            ${item.tooltip}
+                          </simple-tooltip>`
+                        : ""}
+                      <ha-icon-button
+                        @click=${item.action}
+                        .label=${item.label}
+                        .path=${item.path}
+                        ?disabled=${item.disabled}
+                      ></ha-icon-button>
+                    </div> `
             )}
           `}
     `;
@@ -125,6 +125,9 @@ export class HaIconOverflowMenu extends LitElement {
         div[role="separator"] {
           border-right: 1px solid var(--divider-color);
           width: 1px;
+        }
+        ha-list-item[disabled] ha-svg-icon {
+          color: var(--disabled-text-color);
         }
       `,
     ];

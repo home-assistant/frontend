@@ -21,6 +21,11 @@ export const fetchPersons = (hass: HomeAssistant) =>
     config: Person[];
   }>({ type: "person/list" });
 
+export const listPersons = () =>
+  fetch("/api/person/list", {
+    credentials: "same-origin",
+  });
+
 export const createPerson = (
   hass: HomeAssistant,
   values: PersonMutableParams
