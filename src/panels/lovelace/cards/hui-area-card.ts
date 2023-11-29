@@ -1,12 +1,10 @@
 import "@material/mwc-ripple";
 import {
   mdiAlertCircle,
-  mdiBrightness5,
   mdiFire,
   mdiLightbulbMultiple,
   mdiLightbulbMultipleOff,
   mdiMolecule,
-  mdiMoleculeCo,
   mdiMoleculeCo2,
   mdiRun,
   mdiSmokeDetectorVariantAlert,
@@ -76,7 +74,7 @@ const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 const OTHER_DOMAINS = ["camera"];
 
 const DEVICE_CLASSES = {
-  sensor: ["carbon_dioxide", "carbon_monoxide", "illuminance", "pm1", "pm25", "pm10", "temperature", "humidity", "volatile_organic_compounds", "volatile_organic_compounds_parts"],
+  sensor: ["carbon_dioxide","pm25", "temperature", "humidity"],
   binary_sensor: ["cold", "gas", "heat", "motion", "moisture", "smoke"],
 };
 
@@ -86,15 +84,9 @@ const DOMAIN_ICONS = {
   fan: { on: domainIcon("fan"), off: domainIcon("fan") },
   sensor: {
     carbon_dioxide: mdiMoleculeCo2,
-    carbon_monoxide: mdiMoleculeCo,
-    illuminance: mdiBrightness5,
-    pm1: mdiMolecule,
     pm25: mdiMolecule,
-    pm10: mdiMolecule,
     temperature: mdiThermometer,
-    humidity: mdiWaterPercent,
-    volatile_organic_compounds: mdiMolecule,
-    volatile_organic_compounds_parts: mdiMolecule,
+    humidity: mdiWaterPercent
   },
   binary_sensor: {
     cold: mdiSnowflake,
