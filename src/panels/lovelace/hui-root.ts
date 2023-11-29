@@ -655,8 +655,6 @@ class HUIRoot extends LitElement {
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
         const views = this.config && this.config.views;
 
-        fireEvent(this, "iron-resize");
-
         // Leave unused entities when leaving edit mode
         if (
           this.lovelace!.mode === "storage" &&
@@ -980,8 +978,6 @@ class HUIRoot extends LitElement {
     }
 
     root.appendChild(view);
-    // Recalculate to see if we need to adjust content area for tab bar
-    fireEvent(this, "iron-resize");
   }
 
   static get styles(): CSSResultGroup {
