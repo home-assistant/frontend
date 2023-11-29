@@ -151,54 +151,54 @@ class DialogMediaManage extends LitElement {
               </div>
             `
           : !children.length
-          ? html`<div class="no-items">
-              <p>
-                ${this.hass.localize(
-                  "ui.components.media-browser.file_management.no_items"
-                )}
-              </p>
-              ${this._currentItem?.children?.length
-                ? html`<span class="folders"
-                    >${this.hass.localize(
-                      "ui.components.media-browser.file_management.folders_not_supported"
-                    )}</span
-                  >`
-                : ""}
-            </div>`
-          : html`
-              <mwc-list multi @selected=${this._handleSelected}>
-                ${repeat(
-                  children,
-                  (item) => item.media_content_id,
-                  (item) => {
-                    const icon = html`
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${MediaClassBrowserSettings[
-                          item.media_class === "directory"
-                            ? item.children_media_class || item.media_class
-                            : item.media_class
-                        ].icon}
-                      ></ha-svg-icon>
-                    `;
-                    return html`
-                      <ha-check-list-item
-                        ${animate({
-                          id: item.media_content_id,
-                          skipInitial: true,
-                        })}
-                        graphic="icon"
-                        .disabled=${this._uploading || this._deleting}
-                        .selected=${this._selected.has(fileIndex++)}
-                        .item=${item}
-                      >
-                        ${icon} ${item.title}
-                      </ha-check-list-item>
-                    `;
-                  }
-                )}
-              </mwc-list>
-            `}
+            ? html`<div class="no-items">
+                <p>
+                  ${this.hass.localize(
+                    "ui.components.media-browser.file_management.no_items"
+                  )}
+                </p>
+                ${this._currentItem?.children?.length
+                  ? html`<span class="folders"
+                      >${this.hass.localize(
+                        "ui.components.media-browser.file_management.folders_not_supported"
+                      )}</span
+                    >`
+                  : ""}
+              </div>`
+            : html`
+                <mwc-list multi @selected=${this._handleSelected}>
+                  ${repeat(
+                    children,
+                    (item) => item.media_content_id,
+                    (item) => {
+                      const icon = html`
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${MediaClassBrowserSettings[
+                            item.media_class === "directory"
+                              ? item.children_media_class || item.media_class
+                              : item.media_class
+                          ].icon}
+                        ></ha-svg-icon>
+                      `;
+                      return html`
+                        <ha-check-list-item
+                          ${animate({
+                            id: item.media_content_id,
+                            skipInitial: true,
+                          })}
+                          graphic="icon"
+                          .disabled=${this._uploading || this._deleting}
+                          .selected=${this._selected.has(fileIndex++)}
+                          .item=${item}
+                        >
+                          ${icon} ${item.title}
+                        </ha-check-list-item>
+                      `;
+                    }
+                  )}
+                </mwc-list>
+              `}
         ${isComponentLoaded(this.hass, "hassio")
           ? html`<ha-tip .hass=${this.hass}>
               ${this.hass.localize(

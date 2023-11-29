@@ -150,7 +150,7 @@ export default class HaAutomationCondition extends LitElement {
         : null}
       <div class="conditions">
         ${repeat(
-          this.conditions,
+          this.conditions.filter((c) => typeof c === "object"),
           (condition) => this._getKey(condition),
           (cond, idx) => html`
             <ha-automation-condition-row
@@ -347,6 +347,8 @@ export default class HaAutomationCondition extends LitElement {
 
       conditions[index] = newValue;
     }
+
+    this.conditions = conditions;
 
     fireEvent(this, "value-changed", { value: conditions });
   }

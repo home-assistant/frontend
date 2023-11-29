@@ -19,10 +19,10 @@ import {
   HumidifierEntityFeature,
   computeHumidiferModeIcon,
 } from "../../../data/humidifier";
+import "../../../state-control/humidifier/ha-state-control-humidifier-humidity";
 import { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
-import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
-import "../components/humidifier/ha-more-info-humidifier-humidity";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 class MoreInfoHumidifier extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -76,10 +76,10 @@ class MoreInfoHumidifier extends LitElement {
       </div>
 
       <div class="controls">
-        <ha-more-info-humidifier-humidity
+        <ha-state-control-humidifier-humidity
           .hass=${this.hass}
           .stateObj=${this.stateObj}
-        ></ha-more-info-humidifier-humidity>
+        ></ha-state-control-humidifier-humidity>
       </div>
 
       <ha-more-info-control-select-container>

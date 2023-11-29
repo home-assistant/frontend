@@ -47,17 +47,14 @@ export class SystemLogCard extends LitElement {
   }
 
   private _multipleMessages(item: LoggedError): string {
-    return this.hass.localize(
-      "ui.panel.config.logs.multiple_messages",
-      "time",
-      formatSystemLogTime(
+    return this.hass.localize("ui.panel.config.logs.multiple_messages", {
+      time: formatSystemLogTime(
         item.first_occurred,
         this.hass.locale,
         this.hass.config
       ),
-      "counter",
-      item.count
-    );
+      counter: item.count,
+    });
   }
 
   private _getFilteredItems = memoizeOne(
@@ -119,45 +116,44 @@ export class SystemLogCard extends LitElement {
                       </div>
                     `
                   : filteredItems.length === 0 && this.filter
-                  ? html`<div class="card-content">
-                      ${this.hass.localize(
-                        "ui.panel.config.logs.no_issues_search",
-                        "term",
-                        this.filter
+                    ? html`<div class="card-content">
+                        ${this.hass.localize(
+                          "ui.panel.config.logs.no_issues_search",
+                          { term: this.filter }
+                        )}
+                      </div>`
+                    : filteredItems.map(
+                        (item, idx) => html`
+                          <paper-item @click=${this._openLog} .logItem=${item}>
+                            <paper-item-body two-line>
+                              <div class="row">${item.message[0]}</div>
+                              <div class="row-secondary" secondary>
+                                ${this._timestamp(item)} –
+                                ${html`(<span class=${item.level}
+                                    >${this.hass.localize(
+                                      `ui.panel.config.logs.level.${item.level}`
+                                    )}</span
+                                  >) `}
+                                ${integrations[idx]
+                                  ? `${domainToName(
+                                      this.hass!.localize,
+                                      integrations[idx]!
+                                    )}${
+                                      isCustomIntegrationError(item)
+                                        ? ` (${this.hass.localize(
+                                            "ui.panel.config.logs.custom_integration"
+                                          )})`
+                                        : ""
+                                    }`
+                                  : item.source[0]}
+                                ${item.count > 1
+                                  ? html` - ${this._multipleMessages(item)} `
+                                  : nothing}
+                              </div>
+                            </paper-item-body>
+                          </paper-item>
+                        `
                       )}
-                    </div>`
-                  : filteredItems.map(
-                      (item, idx) => html`
-                        <paper-item @click=${this._openLog} .logItem=${item}>
-                          <paper-item-body two-line>
-                            <div class="row">${item.message[0]}</div>
-                            <div class="row-secondary" secondary>
-                              ${this._timestamp(item)} –
-                              ${html`(<span class=${item.level}
-                                  >${this.hass.localize(
-                                    `ui.panel.config.logs.level.${item.level}`
-                                  )}</span
-                                >) `}
-                              ${integrations[idx]
-                                ? `${domainToName(
-                                    this.hass!.localize,
-                                    integrations[idx]!
-                                  )}${
-                                    isCustomIntegrationError(item)
-                                      ? ` (${this.hass.localize(
-                                          "ui.panel.config.logs.custom_integration"
-                                        )})`
-                                      : ""
-                                  }`
-                                : item.source[0]}
-                              ${item.count > 1
-                                ? html` - ${this._multipleMessages(item)} `
-                                : nothing}
-                            </div>
-                          </paper-item-body>
-                        </paper-item>
-                      `
-                    )}
 
                 <div class="card-actions">
                   <ha-call-service-button

@@ -151,10 +151,11 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_stateHistory")) {
-      return true;
-    }
-    return hasConfigOrEntitiesChanged(this, changedProps);
+    return (
+      hasConfigOrEntitiesChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
   }
 
   protected updated(changedProps: PropertyValues) {

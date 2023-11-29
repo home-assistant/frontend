@@ -94,34 +94,37 @@ class HaMfaModuleSetupFlow extends LitElement {
                     )}
                   ></ha-markdown>`
                 : this._step.type === "create_entry"
-                ? html`<p>
-                    ${this.hass.localize(
-                      "ui.panel.profile.mfa_setup.step_done",
-                      "step",
-                      this._step.title
-                    )}
-                  </p>`
-                : this._step.type === "form"
-                ? html`<ha-markdown
-                      allowsvg
-                      breaks
-                      .content=${this.hass.localize(
-                        `component.auth.mfa_setup.${this._step!.handler}.step.${
-                          (this._step! as DataEntryFlowStepForm).step_id
-                        }.description`,
-                        this._step!.description_placeholders
+                  ? html`<p>
+                      ${this.hass.localize(
+                        "ui.panel.profile.mfa_setup.step_done",
+                        { step: this._step.title }
                       )}
-                    ></ha-markdown>
-                    <ha-form
-                      .hass=${this.hass}
-                      .data=${this._stepData}
-                      .schema=${autocompleteLoginFields(this._step.data_schema)}
-                      .error=${this._step.errors}
-                      .computeLabel=${this._computeLabel}
-                      .computeError=${this._computeError}
-                      @value-changed=${this._stepDataChanged}
-                    ></ha-form>`
-                : ""}`}
+                    </p>`
+                  : this._step.type === "form"
+                    ? html`<ha-markdown
+                          allowsvg
+                          breaks
+                          .content=${this.hass.localize(
+                            `component.auth.mfa_setup.${
+                              this._step!.handler
+                            }.step.${
+                              (this._step! as DataEntryFlowStepForm).step_id
+                            }.description`,
+                            this._step!.description_placeholders
+                          )}
+                        ></ha-markdown>
+                        <ha-form
+                          .hass=${this.hass}
+                          .data=${this._stepData}
+                          .schema=${autocompleteLoginFields(
+                            this._step.data_schema
+                          )}
+                          .error=${this._step.errors}
+                          .computeLabel=${this._computeLabel}
+                          .computeError=${this._computeError}
+                          @value-changed=${this._stepDataChanged}
+                        ></ha-form>`
+                    : ""}`}
         </div>
         ${["abort", "create_entry"].includes(this._step?.type || "")
           ? html`<mwc-button slot="primaryAction" @click=${this.closeDialog}
@@ -246,12 +249,12 @@ class HaMfaModuleSetupFlow extends LitElement {
     return this._step?.type === "abort"
       ? this.hass.localize("ui.panel.profile.mfa_setup.title_aborted")
       : this._step?.type === "create_entry"
-      ? this.hass.localize("ui.panel.profile.mfa_setup.title_success")
-      : this._step?.type === "form"
-      ? this.hass.localize(
-          `component.auth.mfa_setup.${this._step.handler}.step.${this._step.step_id}.title`
-        )
-      : "";
+        ? this.hass.localize("ui.panel.profile.mfa_setup.title_success")
+        : this._step?.type === "form"
+          ? this.hass.localize(
+              `component.auth.mfa_setup.${this._step.handler}.step.${this._step.step_id}.title`
+            )
+          : "";
   }
 
   private _computeLabel = (schema) =>

@@ -116,8 +116,7 @@ export class HassioNetwork extends LitElement {
                   ? html`<p>
                       ${this.hass.localize(
                         "ui.panel.config.network.supervisor.connected_to",
-                        "ssid",
-                        this._interface?.wifi?.ssid
+                        { ssid: this._interface?.wifi?.ssid }
                       )}
                     </p>`
                   : ""}

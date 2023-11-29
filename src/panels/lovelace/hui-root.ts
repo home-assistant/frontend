@@ -19,12 +19,12 @@ import {
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -64,11 +64,17 @@ import { documentationUrl } from "../../util/documentation-url";
 import { swapView } from "./editor/config-util";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
+import { showDashboardStrategyEditorDialog } from "./strategies/device-registry-detail/show-dialog-dashboard-strategy-editor";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import { LovelaceViewConfig } from "../../data/lovelace/config/view";
-import { LovelaceConfig } from "../../data/lovelace/config/types";
+import {
+  LovelaceConfig,
+  isStrategyDashboard,
+} from "../../data/lovelace/config/types";
+import { showSaveDialog } from "./editor/show-save-config-dialog";
+import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -242,45 +248,47 @@ class HUIRoot extends LitElement {
                   ${curViewConfig?.subview
                     ? html`<div class="main-title">${curViewConfig.title}</div>`
                     : views.filter((view) => !view.subview).length > 1
-                    ? html`
-                        <ha-tabs
-                          slot="title"
-                          scrollable
-                          .selected=${this._curView}
-                          @iron-activate=${this._handleViewSelected}
-                          dir=${computeRTLDirection(this.hass!)}
-                        >
-                          ${views.map(
-                            (view) => html`
-                              <paper-tab
-                                aria-label=${ifDefined(view.title)}
-                                class=${classMap({
-                                  "hide-tab": Boolean(
-                                    view.subview ||
-                                      (view.visible !== undefined &&
-                                        ((Array.isArray(view.visible) &&
-                                          !view.visible.some(
-                                            (e) =>
-                                              e.user === this.hass!.user?.id
-                                          )) ||
-                                          view.visible === false))
-                                  ),
-                                })}
-                              >
-                                ${view.icon
-                                  ? html`
-                                      <ha-icon
-                                        title=${ifDefined(view.title)}
-                                        .icon=${view.icon}
-                                      ></ha-icon>
-                                    `
-                                  : view.title || "Unnamed view"}
-                              </paper-tab>
-                            `
-                          )}
-                        </ha-tabs>
-                      `
-                    : html`<div class="main-title">${this.config.title}</div>`}
+                      ? html`
+                          <ha-tabs
+                            slot="title"
+                            scrollable
+                            .selected=${this._curView}
+                            @iron-activate=${this._handleViewSelected}
+                            dir=${computeRTLDirection(this.hass!)}
+                          >
+                            ${views.map(
+                              (view) => html`
+                                <paper-tab
+                                  aria-label=${ifDefined(view.title)}
+                                  class=${classMap({
+                                    "hide-tab": Boolean(
+                                      view.subview ||
+                                        (view.visible !== undefined &&
+                                          ((Array.isArray(view.visible) &&
+                                            !view.visible.some(
+                                              (e) =>
+                                                e.user === this.hass!.user?.id
+                                            )) ||
+                                            view.visible === false))
+                                    ),
+                                  })}
+                                >
+                                  ${view.icon
+                                    ? html`
+                                        <ha-icon
+                                          title=${ifDefined(view.title)}
+                                          .icon=${view.icon}
+                                        ></ha-icon>
+                                      `
+                                    : view.title || "Unnamed view"}
+                                </paper-tab>
+                              `
+                            )}
+                          </ha-tabs>
+                        `
+                      : html`<div class="main-title">
+                          ${this.config.title}
+                        </div>`}
                   <div class="action-items">
                     ${!this.narrow
                       ? html`
@@ -808,6 +816,26 @@ class HUIRoot extends LitElement {
     if (this._yamlMode) {
       showAlertDialog(this, {
         text: this.hass!.localize("ui.panel.lovelace.editor.yaml_unsupported"),
+      });
+      return;
+    }
+    if (
+      isStrategyDashboard(this.lovelace!.rawConfig) &&
+      !isLegacyStrategyConfig(this.lovelace!.rawConfig.strategy)
+    ) {
+      showDashboardStrategyEditorDialog(this, {
+        config: this.lovelace!.rawConfig,
+        saveConfig: this.lovelace!.saveConfig,
+        takeControl: () => {
+          showSaveDialog(this, {
+            lovelace: this.lovelace!,
+            mode: "storage",
+            narrow: this.narrow!,
+          });
+        },
+        showRawConfigEditor: () => {
+          this.lovelace!.enableFullEditMode();
+        },
       });
       return;
     }

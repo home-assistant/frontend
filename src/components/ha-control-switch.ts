@@ -147,8 +147,8 @@ export class HaControlSwitch extends LitElement {
               ? html`<ha-svg-icon .path=${this.pathOn}></ha-svg-icon>`
               : html`<slot name="icon-on"></slot>`
             : this.pathOff
-            ? html`<ha-svg-icon .path=${this.pathOff}></ha-svg-icon>`
-            : html`<slot name="icon-off"></slot>`}
+              ? html`<ha-svg-icon .path=${this.pathOff}></ha-svg-icon>`
+              : html`<slot name="icon-off"></slot>`}
         </div>
       </div>
     `;

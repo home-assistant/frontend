@@ -303,10 +303,12 @@ class HaScriptPicker extends LitElement {
     this._activeFilters = [
       this.hass.localize(
         "ui.panel.config.script.picker.filtered_by_blueprint",
-        "name",
-        !blueprintMeta || "error" in blueprintMeta
-          ? blueprint
-          : blueprintMeta.metadata.name || blueprint
+        {
+          name:
+            !blueprintMeta || "error" in blueprintMeta
+              ? blueprint
+              : blueprintMeta.metadata.name || blueprint,
+        }
       ),
     ];
   }
@@ -353,11 +355,9 @@ class HaScriptPicker extends LitElement {
     }
     await triggerScript(this.hass, entry.unique_id);
     showToast(this, {
-      message: this.hass.localize(
-        "ui.notification_toast.triggered",
-        "name",
-        computeStateName(script)
-      ),
+      message: this.hass.localize("ui.notification_toast.triggered", {
+        name: computeStateName(script),
+      }),
     });
   };
 
@@ -419,8 +419,7 @@ class HaScriptPicker extends LitElement {
       await showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.script.editor.load_error_unknown",
-          "err_no",
-          err.status_code
+          { err_no: err.status_code }
         ),
       });
     }
@@ -459,8 +458,7 @@ class HaScriptPicker extends LitElement {
               )
             : this.hass.localize(
                 "ui.panel.config.script.editor.load_error_unknown",
-                "err_no",
-                err.status_code
+                { err_no: err.status_code }
               ),
       });
     }

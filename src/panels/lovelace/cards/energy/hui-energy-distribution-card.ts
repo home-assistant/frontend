@@ -13,7 +13,7 @@ import {
   mdiWater,
 } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, html, LitElement, svg, nothing } from "lit";
+import { css, html, LitElement, svg, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatNumber } from "../../../../common/number/format_number";
@@ -31,6 +31,7 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyDistributionCardConfig } from "../types";
+import { hasConfigChanged } from "../../common/has-changed";
 
 const CIRCLE_CIRCUMFERENCE = 238.76104;
 
@@ -63,6 +64,17 @@ class HuiEnergyDistrubutionCard
 
   public getCardSize(): Promise<number> | number {
     return 3;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return (
+      hasConfigChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass") ||
+      (!!this._data?.co2SignalEntity &&
+        this.hass.states[this._data.co2SignalEntity] !==
+          changedProps.get("hass").states[this._data.co2SignalEntity])
+    );
   }
 
   protected render() {
@@ -314,8 +326,8 @@ class HuiEnergyDistrubutionCard
                       </div>
                     </div>`
                   : hasGas || hasWater
-                  ? html`<div class="spacer"></div>`
-                  : ""}
+                    ? html`<div class="spacer"></div>`
+                    : ""}
                 ${hasGas
                   ? html`<div class="circle-container gas">
                       <span class="label"
@@ -354,23 +366,23 @@ class HuiEnergyDistrubutionCard
                       </svg>
                     </div>`
                   : hasWater
-                  ? html`<div class="circle-container water">
-                      <span class="label"
-                        >${this.hass.localize(
-                          "ui.panel.lovelace.cards.energy.energy_distribution.water"
-                        )}</span
-                      >
-                      <div class="circle">
-                        <ha-svg-icon .path=${mdiWater}></ha-svg-icon>
-                        ${formatNumber(waterUsage || 0, this.hass.locale, {
-                          maximumFractionDigits: 1,
-                        })}
-                        ${getEnergyWaterUnit(this.hass) || "m³"}
-                      </div>
-                      <svg width="80" height="30">
-                        <path d="M40 0 v30" id="water" />
-                        ${waterUsage
-                          ? svg`<circle
+                    ? html`<div class="circle-container water">
+                        <span class="label"
+                          >${this.hass.localize(
+                            "ui.panel.lovelace.cards.energy.energy_distribution.water"
+                          )}</span
+                        >
+                        <div class="circle">
+                          <ha-svg-icon .path=${mdiWater}></ha-svg-icon>
+                          ${formatNumber(waterUsage || 0, this.hass.locale, {
+                            maximumFractionDigits: 1,
+                          })}
+                          ${getEnergyWaterUnit(this.hass) || "m³"}
+                        </div>
+                        <svg width="80" height="30">
+                          <path d="M40 0 v30" id="water" />
+                          ${waterUsage
+                            ? svg`<circle
                 r="1"
                 class="water"
                 vector-effect="non-scaling-stroke"
@@ -383,10 +395,10 @@ class HuiEnergyDistrubutionCard
                   <mpath xlink:href="#water" />
                 </animateMotion>
               </circle>`
-                          : ""}
-                      </svg>
-                    </div>`
-                  : html`<div class="spacer"></div>`}
+                            : ""}
+                        </svg>
+                      </div>`
+                    : html`<div class="spacer"></div>`}
               </div>`
             : ""}
           <div class="row">

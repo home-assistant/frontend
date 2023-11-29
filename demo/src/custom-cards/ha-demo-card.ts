@@ -50,8 +50,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
                         <a target="_blank" href=${conf.authorUrl}>
                           ${this.hass.localize(
                             "ui.panel.page-demo.cards.demo.demo_by",
-                            "name",
-                            conf.authorName
+                            { name: conf.authorName }
                           )}
                         </a>
                       </small>

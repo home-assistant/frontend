@@ -22,7 +22,6 @@ import {
 } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
 import "../components/ha-card";
-import "../components/ha-language-picker";
 import { AuthUrlSearchParams, hassUrl } from "../data/auth";
 import {
   OnboardingResponses,
@@ -114,7 +113,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   }
 
   disconnectedCallback() {
-    super.connectedCallback();
+    super.disconnectedCallback();
     mainWindow.removeEventListener("location-changed", this._updatePage);
     mainWindow.removeEventListener("popstate", this._updatePage);
   }
@@ -222,6 +221,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       import("./particles");
     }
     makeDialogManager(this, this.shadowRoot!);
+    import("../components/ha-language-picker");
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -495,6 +495,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       z-index: 10;
     }
     .footer {
+      padding-top: 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -502,7 +503,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     ha-language-picker {
       display: block;
       width: 200px;
-      margin-top: 8px;
       border-radius: 4px;
       overflow: hidden;
       --ha-select-height: 40px;

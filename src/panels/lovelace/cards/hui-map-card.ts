@@ -20,6 +20,7 @@ import {
   formatTimeWeekday,
 } from "../../../common/datetime/format_time";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { deepEqual } from "../../../common/util/deep-equal";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
 import "../../../components/ha-alert";
@@ -27,6 +28,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/map/ha-map";
 import type {
   HaMap,
+  HaMapEntity,
   HaMapPathPoint,
   HaMapPaths,
 } from "../../../components/map/ha-map";
@@ -70,6 +72,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _configEntities?: MapEntityConfig[];
 
+  @state() private _mapEntities: HaMapEntity[] = [];
+
   private _colorDict: Record<string, string> = {};
 
   private _colorIndex = 0;
@@ -102,6 +106,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._configEntities = config.entities
       ? processConfigEntities<MapEntityConfig>(config.entities)
       : [];
+    this._mapEntities = this._getMapEntities();
   }
 
   public getCardSize(): number {
@@ -156,14 +161,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         <div id="root">
           <ha-map
             .hass=${this.hass}
-            .entities=${this._getEntities(
-              this.hass.states,
-              this._config,
-              this._configEntities
-            )}
+            .entities=${this._mapEntities}
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
-            .autoFit=${this._config.auto_fit}
+            .autoFit=${this._config.auto_fit || false}
+            .fitZones=${this._config.fit_zones}
             .darkMode=${this._config.dark_mode}
             interactiveZones
             renderPassive
@@ -209,6 +211,20 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return this._config?.entities
       ? hasConfigOrEntitiesChanged(this, changedProps)
       : hasConfigChanged(this, changedProps);
+  }
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (
+      changedProps.has("hass") &&
+      this._config?.geo_location_sources &&
+      !deepEqual(
+        this._getSourceEntities(changedProps.get("hass")?.states),
+        this._getSourceEntities(this.hass.states)
+      )
+    ) {
+      this._mapEntities = this._getMapEntities();
+    }
   }
 
   public connectedCallback() {
@@ -308,46 +324,43 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return color;
   }
 
-  private _getEntities = memoizeOne(
-    (
-      states: HassEntities,
-      config: MapCardConfig,
-      configEntities?: MapEntityConfig[]
-    ) => {
-      if (!states || !config) {
-        return undefined;
-      }
-
-      const geoEntities: string[] = [];
-      if (config.geo_location_sources) {
-        // Calculate visible geo location sources
-        const includesAll = config.geo_location_sources.includes("all");
-        for (const stateObj of Object.values(states)) {
-          if (
-            computeDomain(stateObj.entity_id) === "geo_location" &&
-            (includesAll ||
-              config.geo_location_sources.includes(stateObj.attributes.source))
-          ) {
-            geoEntities.push(stateObj.entity_id);
-          }
-        }
-      }
-
-      return [
-        ...(configEntities || []).map((entityConf) => ({
-          entity_id: entityConf.entity,
-          color: this._getColor(entityConf.entity),
-          label_mode: entityConf.label_mode,
-          focus: entityConf.focus,
-          name: entityConf.name,
-        })),
-        ...geoEntities.map((entity) => ({
-          entity_id: entity,
-          color: this._getColor(entity),
-        })),
-      ];
+  private _getSourceEntities(states?: HassEntities): string[] {
+    if (!states || !this._config?.geo_location_sources) {
+      return [];
     }
-  );
+
+    const geoEntities: string[] = [];
+    // Calculate visible geo location sources
+    const includesAll = this._config.geo_location_sources.includes("all");
+    for (const stateObj of Object.values(states)) {
+      if (
+        computeDomain(stateObj.entity_id) === "geo_location" &&
+        (includesAll ||
+          this._config.geo_location_sources.includes(
+            stateObj.attributes.source
+          ))
+      ) {
+        geoEntities.push(stateObj.entity_id);
+      }
+    }
+    return geoEntities;
+  }
+
+  private _getMapEntities(): HaMapEntity[] {
+    return [
+      ...(this._configEntities || []).map((entityConf) => ({
+        entity_id: entityConf.entity,
+        color: this._getColor(entityConf.entity),
+        label_mode: entityConf.label_mode,
+        focus: entityConf.focus,
+        name: entityConf.name,
+      })),
+      ...this._getSourceEntities(this.hass?.states).map((entity) => ({
+        entity_id: entity,
+        color: this._getColor(entity),
+      })),
+    ];
+  }
 
   private _getHistoryPaths = memoizeOne(
     (

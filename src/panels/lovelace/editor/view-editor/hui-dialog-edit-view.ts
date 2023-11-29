@@ -138,8 +138,7 @@ export class HuiDialogEditView extends LitElement {
 
     return this.hass!.localize(
       "ui.panel.lovelace.editor.edit_view.header_name",
-      "name",
-      this._config.title
+      { name: this._config.title }
     );
   }
 
@@ -376,10 +375,10 @@ export class HuiDialogEditView extends LitElement {
         `ui.panel.lovelace.views.confirm_delete${
           this._cards?.length ? "_existing_cards" : ""
         }_text`,
-        "name",
-        this._config?.title || "Unnamed view",
-        "number",
-        this._cards?.length || 0
+        {
+          name: this._config?.title || "Unnamed view",
+          number: this._cards?.length || 0,
+        }
       ),
       confirm: () => this._delete(),
     });

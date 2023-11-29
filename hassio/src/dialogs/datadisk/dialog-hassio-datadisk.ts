@@ -109,12 +109,12 @@ class HassioDatadiskDialog extends LitElement {
                     </ha-select>
                   `
                 : this.devices === undefined
-                ? this.dialogParams.supervisor.localize(
-                    "dialog.datadisk_move.loading_devices"
-                  )
-                : this.dialogParams.supervisor.localize(
-                    "dialog.datadisk_move.no_devices"
-                  )}
+                  ? this.dialogParams.supervisor.localize(
+                      "dialog.datadisk_move.loading_devices"
+                    )
+                  : this.dialogParams.supervisor.localize(
+                      "dialog.datadisk_move.no_devices"
+                    )}
 
               <mwc-button
                 slot="secondaryAction"

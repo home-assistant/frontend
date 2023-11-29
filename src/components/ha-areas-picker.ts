@@ -102,6 +102,7 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
           .placeholder=${this.placeholder}
           .required=${this.required && !currentAreas.length}
           @value-changed=${this._addArea}
+          .excludeAreas=${currentAreas}
         ></ha-area-picker>
       </div>
     `;

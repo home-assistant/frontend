@@ -45,7 +45,7 @@ export interface DeviceRegistryEntryMutableParams {
 
 export const fallbackDeviceName = (
   hass: HomeAssistant,
-  entities: EntityRegistryEntry[] | string[]
+  entities: EntityRegistryEntry[] | EntityRegistryDisplayEntry[] | string[]
 ) => {
   for (const entity of entities || []) {
     const entityId = typeof entity === "string" ? entity : entity.entity_id;
@@ -60,18 +60,16 @@ export const fallbackDeviceName = (
 export const computeDeviceName = (
   device: DeviceRegistryEntry,
   hass: HomeAssistant,
-  entities?: EntityRegistryEntry[] | string[]
+  entities?: EntityRegistryEntry[] | EntityRegistryDisplayEntry[] | string[]
 ) =>
   device.name_by_user ||
   device.name ||
   (entities && fallbackDeviceName(hass, entities)) ||
-  hass.localize(
-    "ui.panel.config.devices.unnamed_device",
-    "type",
-    hass.localize(
+  hass.localize("ui.panel.config.devices.unnamed_device", {
+    type: hass.localize(
       `ui.panel.config.devices.type.${device.entry_type || "device"}`
-    )
-  );
+    ),
+  });
 
 export const devicesInArea = (devices: DeviceRegistryEntry[], areaId: string) =>
   devices.filter((device) => device.area_id === areaId);
