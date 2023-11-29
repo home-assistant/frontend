@@ -75,7 +75,7 @@ class EventSubscribeCard extends LitElement {
                 <div class="event">
                   ${this.hass!.localize(
                     "ui.panel.developer-tools.tabs.events.event_fired",
-                    {name: event.id}
+                    { name: event.id }
                   )}
                   ${formatTime(
                     new Date(event.event.time_fired),
