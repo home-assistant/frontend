@@ -8,7 +8,6 @@ import {
   nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select-menu";
@@ -37,8 +36,6 @@ class MoreInfoHumidifier extends LitElement {
       this._mode = this.stateObj?.attributes.mode;
     }
   }
-
-  private _resizeDebounce?: number;
 
   protected render() {
     if (!this.stateObj) {
@@ -133,21 +130,6 @@ class MoreInfoHumidifier extends LitElement {
           : nothing}
       </ha-more-info-control-select-container>
     `;
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (!changedProps.has("stateObj") || !this.stateObj) {
-      return;
-    }
-
-    if (this._resizeDebounce) {
-      clearTimeout(this._resizeDebounce);
-    }
-    this._resizeDebounce = window.setTimeout(() => {
-      fireEvent(this, "iron-resize");
-      this._resizeDebounce = undefined;
-    }, 500);
   }
 
   private _handleStateChanged(ev) {

@@ -49,7 +49,6 @@ declare global {
     };
     change: undefined;
     "hass-logout": undefined;
-    "iron-resize": undefined;
     "config-refresh": undefined;
     "hass-api-called": {
       success: boolean;
