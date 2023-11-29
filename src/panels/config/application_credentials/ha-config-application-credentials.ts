@@ -16,7 +16,6 @@ import {
   DataTableColumnContainer,
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/data-table/ha-data-table-icon";
 import "../../../components/ha-fab";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
