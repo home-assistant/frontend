@@ -1,5 +1,6 @@
 import "@material/mwc-button";
 import deepFreeze from "deep-freeze";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
@@ -9,6 +10,20 @@ import {
 } from "../../common/url/search-params";
 import { domainToName } from "../../data/integration";
 import { subscribeLovelaceUpdates } from "../../data/lovelace";
+import {
+  deleteConfig,
+  fetchConfig,
+  isStrategyDashboard,
+  LovelaceConfig,
+  LovelaceDashboardStrategyConfig,
+  LovelaceRawConfig,
+  saveConfig,
+} from "../../data/lovelace/config/types";
+import {
+  isStrategyView,
+  LovelaceViewConfig,
+} from "../../data/lovelace/config/view";
+import { fetchResources } from "../../data/lovelace/resource";
 import { WindowWithPreloads } from "../../data/preloads";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
@@ -19,20 +34,6 @@ import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import { generateLovelaceDashboardStrategy } from "./strategies/get-strategy";
 import { Lovelace } from "./types";
-import {
-  deleteConfig,
-  fetchConfig,
-  isStrategyDashboard,
-  LovelaceConfig,
-  LovelaceRawConfig,
-  LovelaceDashboardStrategyConfig,
-  saveConfig,
-} from "../../data/lovelace/config/types";
-import { fetchResources } from "../../data/lovelace/resource";
-import {
-  isStrategyView,
-  LovelaceViewConfig,
-} from "../../data/lovelace/config/view";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
@@ -71,12 +72,7 @@ export class LovelacePanel extends LitElement {
 
   private _fetchConfigOnConnect = false;
 
-  private _unsubUpdates?;
-
-  constructor() {
-    super();
-    this._closeEditor = this._closeEditor.bind(this);
-  }
+  private _unsubUpdates?: Promise<UnsubscribeFunc>;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -100,14 +96,21 @@ export class LovelacePanel extends LitElement {
       // Config was changed when we were not at the lovelace panel
       this._fetchConfig(false);
     }
+    window.addEventListener("connection-status", this._handleConnectionStatus);
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     // On the main dashboard we want to stay subscribed as that one is cached.
     if (this.urlPath !== null && this._unsubUpdates) {
-      this._unsubUpdates();
+      this._unsubUpdates.then((unsub) => unsub());
+      this._unsubUpdates = undefined;
     }
+    // reload lovelace on reconnect so we are sure we have the latest config
+    window.removeEventListener(
+      "connection-status",
+      this._handleConnectionStatus
+    );
   }
 
   protected render(): TemplateResult | void {
@@ -165,13 +168,14 @@ export class LovelacePanel extends LitElement {
     if (!this._unsubUpdates) {
       this._subscribeUpdates();
     }
-    // reload lovelace on reconnect so we are sure we have the latest config
-    window.addEventListener("connection-status", (ev) => {
-      if (ev.detail === "connected") {
-        this._fetchConfig(false);
-      }
-    });
   }
+
+  private _handleConnectionStatus = (ev) => {
+    // reload lovelace on reconnect so we are sure we have the latest config
+    if (ev.detail === "connected") {
+      this._fetchConfig(false);
+    }
+  };
 
   private async _regenerateConfig() {
     const conf = await generateLovelaceDashboardStrategy(
@@ -183,16 +187,16 @@ export class LovelacePanel extends LitElement {
   }
 
   private async _subscribeUpdates() {
-    this._unsubUpdates = await subscribeLovelaceUpdates(
+    this._unsubUpdates = subscribeLovelaceUpdates(
       this.hass!.connection,
       this.urlPath,
       () => this._lovelaceChanged()
     );
   }
 
-  private _closeEditor() {
+  private _closeEditor = () => {
     this._panelState = "loaded";
-  }
+  };
 
   private _lovelaceChanged() {
     if (this._ignoreNextUpdateEvent) {
