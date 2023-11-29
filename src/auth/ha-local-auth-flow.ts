@@ -65,7 +65,9 @@ export class HaLocalAuthFlow extends LitElement {
     if (!this.authProvider?.users || !this._persons) {
       return nothing;
     }
-    const userIds = Object.keys(this.authProvider.users);
+    const userIds = Object.keys(this.authProvider.users).filter(
+      (userId) => userId in this._persons!
+    );
     return html`
       <style>
         .content {
@@ -273,9 +275,7 @@ export class HaLocalAuthFlow extends LitElement {
               >
                 ${userIds.map((userId) => {
                   const person = this._persons![userId];
-                  if (!person) {
-                    return nothing;
-                  }
+
                   return html`<div
                     class="person"
                     .userId=${userId}
