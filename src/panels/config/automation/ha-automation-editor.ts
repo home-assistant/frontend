@@ -558,10 +558,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {
     ev.stopPropagation();
+    this._config = ev.detail.value;
     if (this._readOnly) {
       return;
     }
-    this._config = ev.detail.value;
     this._dirty = true;
     this._errors = undefined;
   }
