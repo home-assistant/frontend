@@ -22,7 +22,6 @@ import {
 } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
 import "../components/ha-card";
-import "../components/ha-language-picker";
 import { AuthUrlSearchParams, hassUrl } from "../data/auth";
 import {
   OnboardingResponses,
@@ -222,6 +221,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       import("./particles");
     }
     makeDialogManager(this, this.shadowRoot!);
+    import("../components/ha-language-picker");
   }
 
   protected updated(changedProps: PropertyValues) {
