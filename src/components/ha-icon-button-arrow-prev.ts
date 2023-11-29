@@ -1,8 +1,8 @@
 import { mdiArrowLeft, mdiArrowRight } from "@mdi/js";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mainWindow } from "../common/dom/get_main_window";
 import { HomeAssistant } from "../types";
-import { computeRTLDirection } from "../common/util/compute_rtl";
 import "./ha-icon-button";
 
 @customElement("ha-icon-button-arrow-prev")
@@ -14,17 +14,7 @@ export class HaIconButtonArrowPrev extends LitElement {
   @property() public label?: string;
 
   @state() private _icon =
-    document.dir === "rtl" ? mdiArrowRight : mdiArrowLeft;
-
-  public connectedCallback() {
-    super.connectedCallback();
-    if (!document.dir) {
-      const dir = this.hass ? computeRTLDirection(this.hass) : undefined;
-      if (dir === "rtl") {
-        this._icon = mdiArrowRight;
-      }
-    }
-  }
+    mainWindow.document.dir === "rtl" ? mdiArrowRight : mdiArrowLeft;
 
   protected render(): TemplateResult {
     return html`
