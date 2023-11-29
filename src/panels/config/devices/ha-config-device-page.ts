@@ -35,7 +35,6 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
-import { AreaRegistryEntry } from "../../../data/area_registry";
 import { getSignedPath } from "../../../data/auth";
 import {
   ConfigEntry,
@@ -109,13 +108,7 @@ export interface DeviceAlert {
 export class HaConfigDevicePage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
-
   @property({ attribute: false }) public entries!: ConfigEntry[];
-
-  @property({ attribute: false }) public entities!: EntityRegistryEntry[];
-
-  @property({ attribute: false }) public areas!: AreaRegistryEntry[];
 
   @property({ attribute: false }) public manifests!: IntegrationManifest[];
 
@@ -143,14 +136,6 @@ export class HaConfigDevicePage extends LitElement {
   _entityReg!: EntityRegistryEntry[];
 
   private _logbookTime = { recent: 86400 };
-
-  private _device = memoizeOne(
-    (
-      deviceId: string,
-      devices: DeviceRegistryEntry[]
-    ): DeviceRegistryEntry | undefined =>
-      devices ? devices.find((device) => device.id === deviceId) : undefined
-  );
 
   private _integrations = memoizeOne(
     (
@@ -234,15 +219,6 @@ export class HaConfigDevicePage extends LitElement {
     }
   );
 
-  private _computeArea = memoizeOne(
-    (areas, device): AreaRegistryEntry | undefined => {
-      if (!areas || !device || !device.area_id) {
-        return undefined;
-      }
-      return areas.find((area) => area.area_id === device.area_id);
-    }
-  );
-
   private _batteryEntity = memoizeOne(
     (entities: EntityRegistryEntry[]): EntityRegistryEntry | undefined =>
       findBatteryEntity(this.hass, entities)
@@ -272,7 +248,6 @@ export class HaConfigDevicePage extends LitElement {
         this._deleteButtons &&
         this._deviceActions &&
         this._deviceAlerts) ||
-      !this.devices ||
       !this.deviceId ||
       !this.entries
     ) {
@@ -302,10 +277,10 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   protected render() {
-    if (!this.devices || !this.deviceId) {
+    if (!this.hass || !this.deviceId) {
       return nothing;
     }
-    const device = this._device(this.deviceId, this.devices);
+    const device = this.hass.devices[this.deviceId];
 
     if (!device) {
       return html`
@@ -324,7 +299,7 @@ export class HaConfigDevicePage extends LitElement {
       this.entries,
       this.manifests
     );
-    const entities = this._entities(this.deviceId, this.entities);
+    const entities = this._entities(this.deviceId, this._entityReg);
     const entitiesByCategory = this._entitiesByCategory(entities);
     const batteryEntity = this._batteryEntity(entities);
     const batteryChargingEntity = this._batteryChargingEntity(entities);
@@ -336,7 +311,7 @@ export class HaConfigDevicePage extends LitElement {
     const batteryChargingState = batteryChargingEntity
       ? this.hass.states[batteryChargingEntity.entity_id]
       : undefined;
-    const area = this._computeArea(this.areas, device);
+    const area = device.area_id ? this.hass.areas[device.area_id] : undefined;
 
     const deviceInfo: TemplateResult[] = integrations.map(
       (integration) =>
@@ -636,7 +611,7 @@ export class HaConfigDevicePage extends LitElement {
                   <div class="items">
                     ${this._related.script.map((script) => {
                       const entityState = this.hass.states[script];
-                      const entry = this.entities.find(
+                      const entry = this._entityReg.find(
                         (e) => e.entity_id === script
                       );
                       let url = `/config/script/show/${entityState.entity_id}`;
@@ -766,8 +741,6 @@ export class HaConfigDevicePage extends LitElement {
               }
               <ha-device-info-card
                 .hass=${this.hass}
-                .areas=${this.areas}
-                .devices=${this.devices}
                 .device=${device}
               >
                 ${deviceInfo}
@@ -940,7 +913,7 @@ export class HaConfigDevicePage extends LitElement {
       return;
     }
 
-    const device = this._device(this.deviceId, this.devices);
+    const device = this.hass.devices[this.deviceId];
 
     if (!device) {
       return;
@@ -1003,7 +976,7 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private _getDeleteActions() {
-    const device = this._device(this.deviceId, this.devices);
+    const device = this.hass.devices[this.deviceId];
 
     if (!device) {
       return;
@@ -1066,7 +1039,7 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _getDeviceActions() {
-    const device = this._device(this.deviceId, this.devices);
+    const device = this.hass.devices[this.deviceId];
 
     if (!device) {
       return;
@@ -1129,7 +1102,7 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _getDeviceAlerts() {
-    const device = this._device(this.deviceId, this.devices);
+    const device = this.hass.devices[this.deviceId];
 
     if (!device) {
       return;
@@ -1179,7 +1152,7 @@ export class HaConfigDevicePage extends LitElement {
 
   private _createScene() {
     const entities: SceneEntities = {};
-    this._entities(this.deviceId, this.entities).forEach((entity) => {
+    this._entities(this.deviceId, this._entityReg).forEach((entity) => {
       entities[entity.entity_id] = "";
     });
     showSceneEditor({
@@ -1189,7 +1162,7 @@ export class HaConfigDevicePage extends LitElement {
 
   private _showScriptDialog() {
     showDeviceAutomationDialog(this, {
-      device: this._device(this.deviceId, this.devices)!,
+      device: this.hass.devices[this.deviceId],
       entityReg: this._entityReg,
       script: true,
     });
@@ -1197,7 +1170,7 @@ export class HaConfigDevicePage extends LitElement {
 
   private _showAutomationDialog() {
     showDeviceAutomationDialog(this, {
-      device: this._device(this.deviceId, this.devices)!,
+      device: this.hass.devices[this.deviceId],
       entityReg: this._entityReg,
       script: false,
     });
@@ -1232,7 +1205,7 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _showSettings() {
-    const device = this._device(this.deviceId, this.devices)!;
+    const device = this.hass.devices[this.deviceId];
     showDeviceRegistryDetailDialog(this, {
       device,
       updateEntry: async (updates) => {
@@ -1244,7 +1217,7 @@ export class HaConfigDevicePage extends LitElement {
         if (disabled) {
           for (const cnfg_entry of device.config_entries) {
             if (
-              !this.devices.some(
+              !Object.values(this.hass.devices).some(
                 (dvc) =>
                   dvc.id !== device.id &&
                   dvc.config_entries.includes(cnfg_entry)
@@ -1315,7 +1288,7 @@ export class HaConfigDevicePage extends LitElement {
         ) {
           return;
         }
-        const entities = this._entities(this.deviceId, this.entities);
+        const entities = this._entities(this.deviceId, this._entityReg);
 
         const renameEntityid =
           this.showAdvanced &&
