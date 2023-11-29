@@ -1,25 +1,19 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { titleCase } from "../../../../common/string/title-case";
 import "../../../../components/ha-card";
-import { AreaRegistryEntry } from "../../../../data/area_registry";
 import {
   computeDeviceName,
   DeviceRegistryEntry,
 } from "../../../../data/device_registry";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
-import { loadDeviceRegistryDetailDialog } from "../device-registry-detail/show-dialog-device-registry-detail";
-import { titleCase } from "../../../../common/string/title-case";
 
 @customElement("ha-device-info-card")
 export class HaDeviceCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public device!: DeviceRegistryEntry;
-
-  @property() public devices!: DeviceRegistryEntry[];
-
-  @property() public areas!: AreaRegistryEntry[];
 
   @property() public narrow!: boolean;
 
@@ -37,7 +31,7 @@ export class HaDeviceCard extends LitElement {
       >
         <div class="card-content">
           ${this.device.model
-            ? html` <div class="model">${this.device.model}</div> `
+            ? html`<div class="model">${this.device.model}</div>`
             : ""}
           ${this.device.manufacturer
             ? html`
@@ -58,10 +52,7 @@ export class HaDeviceCard extends LitElement {
                   <span class="hub"
                     ><a
                       href="/config/devices/device/${this.device.via_device_id}"
-                      >${this._computeDeviceName(
-                        this.devices,
-                        this.device.via_device_id
-                      )}</a
+                      >${this._computeDeviceName(this.device.via_device_id)}</a
                     ></span
                   >
                 </div>
@@ -123,13 +114,8 @@ export class HaDeviceCard extends LitElement {
     );
   }
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    loadDeviceRegistryDetailDialog();
-  }
-
-  private _computeDeviceName(devices, deviceId) {
-    const device = devices.find((dev) => dev.id === deviceId);
+  private _computeDeviceName(deviceId) {
+    const device = this.hass.devices[deviceId];
     return device
       ? computeDeviceName(device, this.hass)
       : `<${this.hass.localize(
@@ -150,9 +136,6 @@ export class HaDeviceCard extends LitElement {
         }
         .device {
           width: 30%;
-        }
-        .area {
-          color: var(--primary-text-color);
         }
         .extra-info {
           margin-top: 8px;

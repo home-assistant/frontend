@@ -1,3 +1,4 @@
+import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiCancel, mdiFilterVariant, mdiPlus } from "@mdi/js";
@@ -29,8 +30,8 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
-import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry, sortConfigEntries } from "../../../data/config_entries";
+import { fullEntitiesContext } from "../../../data/context";
 import {
   DeviceEntityLookup,
   DeviceRegistryEntry,
@@ -65,13 +66,11 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @property() public isWide = false;
 
-  @property() public devices!: DeviceRegistryEntry[];
-
   @property() public entries!: ConfigEntry[];
 
-  @property() public entities!: EntityRegistryEntry[];
-
-  @property() public areas!: AreaRegistryEntry[];
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  entities!: EntityRegistryEntry[];
 
   @property() public manifests!: IntegrationManifest[];
 
@@ -87,27 +86,33 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   private _ignoreLocationChange = false;
 
-  public constructor() {
-    super();
-    window.addEventListener("location-changed", () => {
-      if (this._ignoreLocationChange) {
-        this._ignoreLocationChange = false;
-        return;
-      }
-      if (
-        window.location.search.substring(1) !== this._searchParms.toString()
-      ) {
-        this._searchParms = new URLSearchParams(window.location.search);
-      }
-    });
-    window.addEventListener("popstate", () => {
-      if (
-        window.location.search.substring(1) !== this._searchParms.toString()
-      ) {
-        this._searchParms = new URLSearchParams(window.location.search);
-      }
-    });
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("location-changed", this._locationChanged);
+    window.addEventListener("popstate", this._popState);
   }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("location-changed", this._locationChanged);
+    window.removeEventListener("popstate", this._popState);
+  }
+
+  private _locationChanged = () => {
+    if (this._ignoreLocationChange) {
+      this._ignoreLocationChange = false;
+      return;
+    }
+    if (window.location.search.substring(1) !== this._searchParms.toString()) {
+      this._searchParms = new URLSearchParams(window.location.search);
+    }
+  };
+
+  private _popState = () => {
+    if (window.location.search.substring(1) !== this._searchParms.toString()) {
+      this._searchParms = new URLSearchParams(window.location.search);
+    }
+  };
 
   private _activeFilters = memoizeOne(
     (
@@ -152,10 +157,10 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   private _devicesAndFilterDomains = memoizeOne(
     (
-      devices: DeviceRegistryEntry[],
+      devices: HomeAssistant["devices"],
       entries: ConfigEntry[],
       entities: EntityRegistryEntry[],
-      areas: AreaRegistryEntry[],
+      areas: HomeAssistant["areas"],
       manifests: IntegrationManifest[],
       filters: URLSearchParams,
       showDisabled: boolean,
@@ -163,12 +168,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     ) => {
       // Some older installations might have devices pointing at invalid entryIDs
       // So we guard for that.
-      let outputDevices: DeviceRowData[] = devices;
-
-      const deviceLookup: { [deviceId: string]: DeviceRegistryEntry } = {};
-      for (const device of devices) {
-        deviceLookup[device.id] = device;
-      }
+      let outputDevices: DeviceRowData[] = Object.values(devices);
 
       // If nothing gets filtered, this is our correct count of devices
       let startLength = outputDevices.length;
@@ -187,11 +187,6 @@ export class HaConfigDeviceDashboard extends LitElement {
       const entryLookup: { [entryId: string]: ConfigEntry } = {};
       for (const entry of entries) {
         entryLookup[entry.entry_id] = entry;
-      }
-
-      const areaLookup: { [areaId: string]: AreaRegistryEntry } = {};
-      for (const area of areas) {
-        areaLookup[area.area_id] = area;
       }
 
       const manifestLookup: { [domain: string]: IntegrationManifest } = {};
@@ -251,8 +246,8 @@ export class HaConfigDeviceDashboard extends LitElement {
             device.manufacturer ||
             `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
           area:
-            device.area_id && areaLookup[device.area_id]
-              ? areaLookup[device.area_id].name
+            device.area_id && areas[device.area_id]
+              ? areas[device.area_id].name
               : "—",
           integration: deviceEntries.length
             ? deviceEntries
@@ -438,10 +433,10 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   protected render(): TemplateResult {
     const { devicesOutput } = this._devicesAndFilterDomains(
-      this.devices,
+      this.hass.devices,
       this.entries,
       this.entities,
-      this.areas,
+      this.hass.areas,
       this.manifests,
       this._searchParms,
       this._showDisabled,
@@ -580,10 +575,10 @@ export class HaConfigDeviceDashboard extends LitElement {
   private _addDevice() {
     const { filteredConfigEntry, filteredDomains } =
       this._devicesAndFilterDomains(
-        this.devices,
+        this.hass.devices,
         this.entries,
         this.entities,
-        this.areas,
+        this.hass.areas,
         this.manifests,
         this._searchParms,
         this._showDisabled,
