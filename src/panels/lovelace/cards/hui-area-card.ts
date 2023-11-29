@@ -86,7 +86,7 @@ const DOMAIN_ICONS = {
     carbon_dioxide: mdiMoleculeCo2,
     pm25: mdiMolecule,
     temperature: mdiThermometer,
-    humidity: mdiWaterPercent
+    humidity: mdiWaterPercent,
   },
   binary_sensor: {
     cold: mdiSnowflake,
