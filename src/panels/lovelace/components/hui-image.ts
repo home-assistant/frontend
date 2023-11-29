@@ -200,8 +200,8 @@ export class HuiImage extends LitElement {
           paddingBottom: useRatio
             ? `${((100 * this._ratio!.h) / this._ratio!.w).toFixed(2)}%`
             : this._lastImageHeight === undefined
-            ? "56.25%"
-            : undefined,
+              ? "56.25%"
+              : undefined,
           backgroundImage:
             useRatio && this._loadedImageSrc
               ? `url("${this._loadedImageSrc}")`
@@ -227,21 +227,21 @@ export class HuiImage extends LitElement {
               ></ha-camera-stream>
             `
           : imageSrc === undefined
-          ? nothing
-          : html`
-              <img
-                id="image"
-                src=${imageSrc}
-                @error=${this._onImageError}
-                @load=${this._onImageLoad}
-                style=${styleMap({
-                  display:
-                    useRatio || this._loadState === LoadState.Loaded
-                      ? "block"
-                      : "none",
-                })}
-              />
-            `}
+            ? nothing
+            : html`
+                <img
+                  id="image"
+                  src=${imageSrc}
+                  @error=${this._onImageError}
+                  @load=${this._onImageLoad}
+                  style=${styleMap({
+                    display:
+                      useRatio || this._loadState === LoadState.Loaded
+                        ? "block"
+                        : "none",
+                  })}
+                />
+              `}
         ${this._loadState === LoadState.Error
           ? html`<div
               id="brokenImage"
@@ -252,22 +252,22 @@ export class HuiImage extends LitElement {
               })}
             ></div>`
           : this.cameraView !== "live" &&
-            (imageSrc === undefined || this._loadState === LoadState.Loading)
-          ? html`<div
-              class="progress-container"
-              style=${styleMap({
-                height: !useRatio
-                  ? `${this._lastImageHeight}px` || "100%"
-                  : undefined,
-              })}
-            >
-              <ha-circular-progress
-                class="render-spinner"
-                active
-                size="small"
-              ></ha-circular-progress>
-            </div>`
-          : ""}
+              (imageSrc === undefined || this._loadState === LoadState.Loading)
+            ? html`<div
+                class="progress-container"
+                style=${styleMap({
+                  height: !useRatio
+                    ? `${this._lastImageHeight}px` || "100%"
+                    : undefined,
+                })}
+              >
+                <ha-circular-progress
+                  class="render-spinner"
+                  active
+                  size="small"
+                ></ha-circular-progress>
+              </div>`
+            : ""}
       </div>
     `;
   }

@@ -34,8 +34,8 @@ class ConfigAnalytics extends LitElement {
     const error = this._error
       ? this._error
       : !isComponentLoaded(this.hass, "analytics")
-      ? "Analytics integration not loaded"
-      : undefined;
+        ? "Analytics integration not loaded"
+        : undefined;
 
     return html`
       <ha-card outlined>

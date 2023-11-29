@@ -2,14 +2,15 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state, property } from "lit/decorators";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
-import type { ActionHandlerEvent } from "../../../data/lovelace";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
 import { computeTooltip } from "../common/compute-tooltip";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import "../../../components/ha-chip";
+import "../../../components/chips/ha-assist-chip";
+import "../../../components/chips/ha-chip-set";
 import { haStyleScrollbar } from "../../../resources/styles";
 
 @customElement("hui-buttons-base")
@@ -20,7 +21,7 @@ export class HuiButtonsBase extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="ha-scrollbar">
+      <ha-chip-set class="ha-scrollbar">
         ${(this.configEntities || []).map((entityConf) => {
           const stateObj = this.hass.states[entityConf.entity];
 
@@ -31,7 +32,8 @@ export class HuiButtonsBase extends LitElement {
               : "";
 
           return html`
-            <ha-chip
+            <ha-assist-chip
+              filled
               @action=${this._handleAction}
               .actionHandler=${actionHandler({
                 hasHold: hasAction(entityConf.hold_action),
@@ -39,8 +41,7 @@ export class HuiButtonsBase extends LitElement {
               })}
               .config=${entityConf}
               tabindex="0"
-              .hasIcon=${entityConf.show_icon !== false}
-              .noText=${!name}
+              .label=${name}
             >
               ${entityConf.show_icon !== false
                 ? html`
@@ -56,11 +57,10 @@ export class HuiButtonsBase extends LitElement {
                     ></state-badge>
                   `
                 : ""}
-              ${name}
-            </ha-chip>
+            </ha-assist-chip>
           `;
         })}
-      </div>
+      </ha-chip-set>
     `;
   }
 
@@ -74,7 +74,7 @@ export class HuiButtonsBase extends LitElement {
       haStyleScrollbar,
       css`
         .ha-scrollbar {
-          padding: 8px;
+          padding: 12px;
           padding-top: var(--padding-top, 8px);
           padding-bottom: var(--padding-bottom, 8px);
           width: 100%;
@@ -102,8 +102,9 @@ export class HuiButtonsBase extends LitElement {
           margin-left: -3px;
           margin-top: -3px;
         }
-        ha-chip {
-          padding: 4px;
+        ha-assist-chip state-badge {
+          margin-right: -4px;
+          --mdc-icon-size: 18px;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           .ha-scrollbar {

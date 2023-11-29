@@ -6,7 +6,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
 import { SchemaUnion } from "../../../../components/ha-form/types";
-import { LovelaceResourcesMutableParams } from "../../../../data/lovelace";
+import { LovelaceResourcesMutableParams } from "../../../../data/lovelace/resource";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";

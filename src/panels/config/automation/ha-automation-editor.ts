@@ -342,50 +342,56 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                         ></manual-automation-editor>
                       `
                   : this._mode === "yaml"
-                  ? html`
-                      ${this._readOnly
-                        ? html`<ha-alert alert-type="warning">
-                            ${this.hass.localize(
-                              "ui.panel.config.automation.editor.read_only"
-                            )}
-                            <mwc-button slot="action" @click=${this._duplicate}>
+                    ? html`
+                        ${this._readOnly
+                          ? html`<ha-alert alert-type="warning">
                               ${this.hass.localize(
-                                "ui.panel.config.automation.editor.migrate"
+                                "ui.panel.config.automation.editor.read_only"
                               )}
-                            </mwc-button>
-                          </ha-alert>`
-                        : ""}
-                      ${stateObj?.state === "off"
-                        ? html`
-                            <ha-alert alert-type="info">
-                              ${this.hass.localize(
-                                "ui.panel.config.automation.editor.disabled"
-                              )}
-                              <mwc-button slot="action" @click=${this._toggle}>
+                              <mwc-button
+                                slot="action"
+                                @click=${this._duplicate}
+                              >
                                 ${this.hass.localize(
-                                  "ui.panel.config.automation.editor.enable"
+                                  "ui.panel.config.automation.editor.migrate"
                                 )}
                               </mwc-button>
-                            </ha-alert>
-                          `
-                        : ""}
-                      <ha-yaml-editor
-                        .hass=${this.hass}
-                        .defaultValue=${this._preprocessYaml()}
-                        .readOnly=${this._readOnly}
-                        @value-changed=${this._yamlChanged}
-                      ></ha-yaml-editor>
-                      <ha-card outlined>
-                        <div class="card-actions">
-                          <mwc-button @click=${this._copyYaml}>
-                            ${this.hass.localize(
-                              "ui.panel.config.automation.editor.copy_to_clipboard"
-                            )}
-                          </mwc-button>
-                        </div>
-                      </ha-card>
-                    `
-                  : ``}
+                            </ha-alert>`
+                          : ""}
+                        ${stateObj?.state === "off"
+                          ? html`
+                              <ha-alert alert-type="info">
+                                ${this.hass.localize(
+                                  "ui.panel.config.automation.editor.disabled"
+                                )}
+                                <mwc-button
+                                  slot="action"
+                                  @click=${this._toggle}
+                                >
+                                  ${this.hass.localize(
+                                    "ui.panel.config.automation.editor.enable"
+                                  )}
+                                </mwc-button>
+                              </ha-alert>
+                            `
+                          : ""}
+                        <ha-yaml-editor
+                          .hass=${this.hass}
+                          .defaultValue=${this._preprocessYaml()}
+                          .readOnly=${this._readOnly}
+                          @value-changed=${this._yamlChanged}
+                        ></ha-yaml-editor>
+                        <ha-card outlined>
+                          <div class="card-actions">
+                            <mwc-button @click=${this._copyYaml}>
+                              ${this.hass.localize(
+                                "ui.panel.config.automation.editor.copy_to_clipboard"
+                              )}
+                            </mwc-button>
+                          </div>
+                        </ha-card>
+                      `
+                    : ``}
               </div>
             `
           : ""}
@@ -543,8 +549,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               )
             : this.hass.localize(
                 "ui.panel.config.automation.editor.load_error_unknown",
-                "err_no",
-                err.status_code
+                { err_no: err.status_code }
               ),
       });
       history.back();
@@ -553,10 +558,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {
     ev.stopPropagation();
+    this._config = ev.detail.value;
     if (this._readOnly) {
       return;
     }
-    this._config = ev.detail.value;
     this._dirty = true;
     this._errors = undefined;
   }
@@ -697,7 +702,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._mode = "yaml";
   }
 
-  private async _promptAutomationAlias(): Promise<void> {
+  private async _promptAutomationAlias(): Promise<boolean> {
     return new Promise((resolve) => {
       showAutomationRenameDialog(this, {
         config: this._config!,
@@ -705,9 +710,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           this._config = config;
           this._dirty = true;
           this.requestUpdate();
-          resolve();
+          resolve(true);
         },
-        onClose: () => resolve(),
+        onClose: () => resolve(false),
       });
     });
   }
@@ -730,7 +735,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   private async _saveAutomation(): Promise<void> {
     const id = this.automationId || String(Date.now());
     if (!this.automationId) {
-      await this._promptAutomationAlias();
+      const saved = await this._promptAutomationAlias();
+      if (!saved) {
+        return;
+      }
     }
 
     this._validationErrors = undefined;

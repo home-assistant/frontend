@@ -1,16 +1,31 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { listenMediaQuery } from "../../../common/dom/media_query";
+import { deepEqual } from "../../../common/util/deep-equal";
 import { HomeAssistant } from "../../../types";
 import { ConditionalCardConfig } from "../cards/types";
 import {
-  ScreenCondition,
+  Condition,
+  LegacyCondition,
   checkConditionsMet,
   validateConditionalConfig,
 } from "../common/validate-condition";
 import { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
-import { listenMediaQuery } from "../../../common/dom/media_query";
-import { deepEqual } from "../../../common/util/deep-equal";
+
+function extractMediaQueries(
+  conditions: (Condition | LegacyCondition)[]
+): string[] {
+  return conditions.reduce<string[]>((array, c) => {
+    if ("conditions" in c && c.conditions) {
+      array.push(...extractMediaQueries(c.conditions));
+    }
+    if ("condition" in c && c.condition === "screen" && c.media_query) {
+      array.push(c.media_query);
+    }
+    return array;
+  }, []);
+}
 
 @customElement("hui-conditional-base")
 export class HuiConditionalBase extends ReactiveElement {
@@ -77,13 +92,7 @@ export class HuiConditionalBase extends ReactiveElement {
       return;
     }
 
-    const conditions = this._config.conditions.filter(
-      (c) => "condition" in c && c.condition === "screen"
-    ) as ScreenCondition[];
-
-    const mediaQueries = conditions
-      .filter((c) => c.media_query)
-      .map((c) => c.media_query as string);
+    const mediaQueries = extractMediaQueries(this._config.conditions);
 
     if (deepEqual(mediaQueries, this._mediaQueries)) return;
 
@@ -91,10 +100,15 @@ export class HuiConditionalBase extends ReactiveElement {
     while (this._mediaQueriesListeners.length) {
       this._mediaQueriesListeners.pop()!();
     }
+
     mediaQueries.forEach((query) => {
       const listener = listenMediaQuery(query, (matches) => {
-        // For performance, if there is only one condition, set the visibility directly
-        if (this._config!.conditions.length === 1) {
+        // For performance, if there is only one condition and it's a screen condition, set the visibility directly
+        if (
+          this._config!.conditions.length === 1 &&
+          "condition" in this._config!.conditions[0] &&
+          this._config!.conditions[0].condition === "screen"
+        ) {
           this._setVisibility(matches);
           return;
         }
@@ -128,6 +142,7 @@ export class HuiConditionalBase extends ReactiveElement {
       this._config!.conditions,
       this.hass!
     );
+
     this._setVisibility(conditionMet);
   }
 

@@ -204,12 +204,12 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                 ></ha-icon-button>
               `
             : !supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET) &&
-              !supportsFeature(
-                stateObj,
-                MediaPlayerEntityFeature.VOLUME_BUTTONS
-              )
-            ? buttons
-            : ""}
+                !supportsFeature(
+                  stateObj,
+                  MediaPlayerEntityFeature.VOLUME_BUTTONS
+                )
+              ? buttons
+              : ""}
           ${supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF) &&
           stateActive(stateObj)
             ? html`
@@ -260,27 +260,27 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                       ></ha-slider>
                     `
                   : !this._veryNarrow &&
-                    supportsFeature(
-                      stateObj,
-                      MediaPlayerEntityFeature.VOLUME_BUTTONS
-                    )
-                  ? html`
-                      <ha-icon-button
-                        .path=${mdiVolumeMinus}
-                        .label=${this.hass.localize(
-                          "ui.card.media_player.media_volume_down"
-                        )}
-                        @click=${this._volumeDown}
-                      ></ha-icon-button>
-                      <ha-icon-button
-                        .path=${mdiVolumePlus}
-                        .label=${this.hass.localize(
-                          "ui.card.media_player.media_volume_up"
-                        )}
-                        @click=${this._volumeUp}
-                      ></ha-icon-button>
-                    `
-                  : ""}
+                      supportsFeature(
+                        stateObj,
+                        MediaPlayerEntityFeature.VOLUME_BUTTONS
+                      )
+                    ? html`
+                        <ha-icon-button
+                          .path=${mdiVolumeMinus}
+                          .label=${this.hass.localize(
+                            "ui.card.media_player.media_volume_down"
+                          )}
+                          @click=${this._volumeDown}
+                        ></ha-icon-button>
+                        <ha-icon-button
+                          .path=${mdiVolumePlus}
+                          .label=${this.hass.localize(
+                            "ui.card.media_player.media_volume_up"
+                          )}
+                          @click=${this._volumeUp}
+                        ></ha-icon-button>
+                      `
+                    : ""}
               </div>
 
               <div class="controls">${buttons}</div>
@@ -312,10 +312,10 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     return stateObj.state === "on"
       ? { icon: mdiPlayPause, action: "media_play_pause" }
       : stateObj.state !== "playing"
-      ? { icon: mdiPlay, action: "media_play" }
-      : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-      ? { icon: mdiPause, action: "media_pause" }
-      : { icon: mdiStop, action: "media_stop" };
+        ? { icon: mdiPlay, action: "media_play" }
+        : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
+          ? { icon: mdiPause, action: "media_pause" }
+          : { icon: mdiStop, action: "media_stop" };
   }
 
   private _togglePower(): void {
@@ -337,8 +337,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       stateObj.state !== "playing"
         ? "media_play"
         : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-        ? "media_pause"
-        : "media_stop";
+          ? "media_pause"
+          : "media_stop";
 
     this.hass!.callService("media_player", service, {
       entity_id: this._config!.entity,

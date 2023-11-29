@@ -58,10 +58,10 @@ const matchMaxScale = (
   return outputColors.map((value) => Math.round(value * factor));
 };
 
-const mired2kelvin = (miredTemperature: number) =>
+export const mired2kelvin = (miredTemperature: number) =>
   Math.floor(1000000 / miredTemperature);
 
-const kelvin2mired = (kelvintTemperature: number) =>
+export const kelvin2mired = (kelvintTemperature: number) =>
   Math.floor(1000000 / kelvintTemperature);
 
 export const rgbww2rgb = (

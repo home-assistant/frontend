@@ -2,18 +2,23 @@ import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import type { AreaFilterValue } from "../../../components/ha-area-filter";
 import { getEnergyPreferences } from "../../../data/energy";
-import {
-  LovelaceStrategyConfig,
-  LovelaceViewConfig,
-} from "../../../data/lovelace";
+import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { HomeAssistant } from "../../../types";
 import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
+
+export type OriginalStatesViewStrategyConfig = {
+  type: "original-states";
+  areas?: AreaFilterValue;
+  hide_entities_without_area?: boolean;
+  hide_energy?: boolean;
+};
 
 @customElement("original-states-view-strategy")
 export class OriginalStatesViewStrategy extends ReactiveElement {
   static async generate(
-    _config: LovelaceStrategyConfig,
+    config: OriginalStatesViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     if (hass.config.state === STATE_NOT_RUNNING) {
@@ -44,7 +49,10 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
       hass.entities,
       hass.states,
       localize,
-      energyPrefs
+      energyPrefs,
+      config.areas,
+      config.hide_entities_without_area,
+      config.hide_energy
     );
 
     // Add map of geo locations to default view if loaded

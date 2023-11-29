@@ -16,10 +16,6 @@ import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
-import type {
-  LovelaceCardConfig,
-  LovelaceViewConfig,
-} from "../../../../data/lovelace";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -33,6 +29,13 @@ import "./hui-card-element-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
 import "./hui-card-preview";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import {
+  getCustomCardEntry,
+  isCustomType,
+  stripCustomPrefix,
+} from "../../../../data/lovelace_custom_cards";
 
 declare global {
   // for fire event
@@ -147,19 +150,28 @@ export class HuiDialogEditCard
 
     let heading: string;
     if (this._cardConfig && this._cardConfig.type) {
+      let cardName: string | undefined;
+      if (isCustomType(this._cardConfig.type)) {
+        cardName = getCustomCardEntry(stripCustomPrefix(this._cardConfig.type))
+          ?.name;
+        // Trim names that end in " Card" so as not to redundantly duplicate it
+        if (cardName?.toLowerCase().endsWith(" card")) {
+          cardName = cardName.substring(0, cardName.length - 5);
+        }
+      } else {
+        cardName = this.hass!.localize(
+          `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
+        );
+      }
       heading = this.hass!.localize(
         "ui.panel.lovelace.editor.edit_card.typed_header",
-        "type",
-        this.hass!.localize(
-          `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
-        )
+        { type: cardName }
       );
     } else if (!this._cardConfig) {
       heading = this._viewConfig.title
         ? this.hass!.localize(
             "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
-            "name",
-            `"${this._viewConfig.title}"`
+            { name: this._viewConfig.title }
           )
         : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
     } else {

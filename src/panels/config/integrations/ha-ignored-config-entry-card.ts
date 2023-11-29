@@ -47,8 +47,7 @@ export class HaIgnoredConfigEntryCard extends LitElement {
     showConfirmationDialog(this, {
       title: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_delete_ignore_title",
-        "name",
-        this.hass.localize(`component.${this.entry.domain}.title`)
+        { name: this.hass.localize(`component.${this.entry.domain}.title`) }
       ),
       text: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_delete_ignore"

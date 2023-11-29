@@ -6,7 +6,9 @@ export type Condition =
   | NumericStateCondition
   | ScreenCondition
   | StateCondition
-  | UserCondition;
+  | UserCondition
+  | OrCondition
+  | AndCondition;
 
 export type LegacyCondition = {
   entity?: string;
@@ -36,6 +38,16 @@ export type ScreenCondition = {
 export type UserCondition = {
   condition: "user";
   users?: string[];
+};
+
+export type OrCondition = {
+  condition: "or";
+  conditions?: Condition[];
+};
+
+export type AndCondition = {
+  condition: "and";
+  conditions?: Condition[];
 };
 
 function checkStateCondition(
@@ -87,6 +99,16 @@ function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
     : false;
 }
 
+function checkAndCondition(condition: AndCondition, hass: HomeAssistant) {
+  if (!condition.conditions) return true;
+  return checkConditionsMet(condition.conditions, hass);
+}
+
+function checkOrCondition(condition: OrCondition, hass: HomeAssistant) {
+  if (!condition.conditions) return true;
+  return condition.conditions.some((c) => checkConditionsMet([c], hass));
+}
+
 export function checkConditionsMet(
   conditions: (Condition | LegacyCondition)[],
   hass: HomeAssistant
@@ -100,6 +122,10 @@ export function checkConditionsMet(
           return checkUserCondition(c, hass);
         case "numeric_state":
           return checkStateNumericCondition(c, hass);
+        case "and":
+          return checkAndCondition(c, hass);
+        case "or":
+          return checkOrCondition(c, hass);
         default:
           return checkStateCondition(c, hass);
       }
@@ -123,6 +149,14 @@ function validateUserCondition(condition: UserCondition) {
   return condition.users != null;
 }
 
+function validateAndCondition(condition: AndCondition) {
+  return condition.conditions != null;
+}
+
+function validateOrCondition(condition: OrCondition) {
+  return condition.conditions != null;
+}
+
 function validateNumericStateCondition(condition: NumericStateCondition) {
   return (
     condition.entity != null &&
@@ -142,6 +176,10 @@ export function validateConditionalConfig(
           return validateUserCondition(c);
         case "numeric_state":
           return validateNumericStateCondition(c);
+        case "and":
+          return validateAndCondition(c);
+        case "or":
+          return validateOrCondition(c);
         default:
           return validateStateCondition(c);
       }

@@ -180,11 +180,9 @@ class HassioAddonNetwork extends LitElement {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
     } catch (err: any) {
-      this._error = this.supervisor.localize(
-        "addon.failed_to_reset",
-        "error",
-        extractApiErrorMessage(err)
-      );
+      this._error = this.supervisor.localize("addon.failed_to_reset", {
+        error: extractApiErrorMessage(err),
+      });
       button.actionError();
     }
   }
@@ -220,11 +218,9 @@ class HassioAddonNetwork extends LitElement {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
     } catch (err: any) {
-      this._error = this.supervisor.localize(
-        "addon.failed_to_save",
-        "error",
-        extractApiErrorMessage(err)
-      );
+      this._error = this.supervisor.localize("addon.failed_to_save", {
+        error: extractApiErrorMessage(err),
+      });
       button.actionError();
     }
   }
