@@ -78,15 +78,10 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
     this._config = config;
 
-    this._elements = this._config.elements.map(
-      (elementConfig: LovelaceElementConfig) => {
-        const element = createStyledHuiElement(elementConfig);
-        if (this.hass) {
-          element.hass = this.hass;
-        }
-        return element as LovelaceElement;
-      }
-    );
+    this._elements = config.elements.map((element) => {
+      const cardElement = this._createElement(element);
+      return cardElement;
+    });
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -164,6 +159,37 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
         box-sizing: border-box;
       }
     `;
+  }
+
+  private _createElement(
+    elementConfig: LovelaceElementConfig
+  ): LovelaceElement {
+    const element = createStyledHuiElement(elementConfig) as LovelaceCard;
+    if (this.hass) {
+      element.hass = this.hass;
+    }
+    element.addEventListener(
+      "ll-rebuild",
+      (ev) => {
+        ev.stopPropagation();
+        this._rebuildElement(element, elementConfig);
+      },
+      { once: true }
+    );
+    return element;
+  }
+
+  private _rebuildElement(
+    elToReplace: LovelaceElement,
+    config: LovelaceElementConfig
+  ): void {
+    const newCardEl = this._createElement(config);
+    if (elToReplace.parentElement) {
+      elToReplace.parentElement.replaceChild(newCardEl, elToReplace);
+    }
+    this._elements = this._elements!.map((curCardEl) =>
+      curCardEl === elToReplace ? newCardEl : curCardEl
+    );
   }
 }
 

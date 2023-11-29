@@ -1,5 +1,3 @@
-// Compat needs to be first import
-import "../resources/compatibility";
 import {
   Auth,
   Connection,
@@ -15,7 +13,8 @@ import { hassUrl } from "../data/auth";
 import { isExternal } from "../data/external";
 import { getRecorderInfo } from "../data/recorder";
 import { subscribeFrontendUserData } from "../data/frontend";
-import { fetchConfig, fetchResources } from "../data/lovelace";
+import { fetchConfig } from "../data/lovelace/config/types";
+import { fetchResources } from "../data/lovelace/resource";
 import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";

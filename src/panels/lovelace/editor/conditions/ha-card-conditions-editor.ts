@@ -1,5 +1,12 @@
 import { mdiPlus } from "@mdi/js";
-import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -18,12 +25,16 @@ import "./types/ha-card-condition-numeric_state";
 import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
 import "./types/ha-card-condition-user";
+import "./types/ha-card-condition-or";
+import "./types/ha-card-condition-and";
 
 const UI_CONDITION = [
   "numeric_state",
   "state",
   "screen",
   "user",
+  "and",
+  "or",
 ] as const satisfies readonly Condition["condition"][];
 
 @customElement("ha-card-conditions-editor")
@@ -34,6 +45,8 @@ export class HaCardConditionsEditor extends LitElement {
     | Condition
     | LegacyCondition
   )[];
+
+  @property({ attribute: true, type: Boolean }) public nested?: boolean;
 
   private _focusLastConditionOnChange = false;
 
@@ -70,11 +83,15 @@ export class HaCardConditionsEditor extends LitElement {
   protected render() {
     return html`
       <div class="conditions">
-        <ha-alert alert-type="info">
-          ${this.hass!.localize(
-            "ui.panel.lovelace.editor.condition-editor.explanation"
-          )}
-        </ha-alert>
+        ${!this.nested
+          ? html`
+              <ha-alert alert-type="info">
+                ${this.hass!.localize(
+                  "ui.panel.lovelace.editor.condition-editor.explanation"
+                )}
+              </ha-alert>
+            `
+          : nothing}
         ${this.conditions.map(
           (cond, idx) => html`
             <ha-card-condition-editor

@@ -349,8 +349,8 @@ class ClimateEntity extends Entity {
         lowTarget >= current
           ? "heating"
           : highTarget <= current
-          ? "cooling"
-          : "idle";
+            ? "cooling"
+            : "idle";
     }
     return state;
   }

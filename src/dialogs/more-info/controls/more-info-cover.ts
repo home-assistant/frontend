@@ -17,13 +17,13 @@ import {
   CoverEntityFeature,
   computeCoverPositionStateDisplay,
 } from "../../../data/cover";
+import "../../../state-control/cover/ha-state-control-cover-buttons";
+import "../../../state-control/cover/ha-state-control-cover-position";
+import "../../../state-control/cover/ha-state-control-cover-tilt-position";
+import "../../../state-control/cover/ha-state-control-cover-toggle";
 import type { HomeAssistant } from "../../../types";
-import "../components/cover/ha-more-info-cover-buttons";
-import "../components/cover/ha-more-info-cover-position";
-import "../components/cover/ha-more-info-cover-tilt-position";
-import "../components/cover/ha-more-info-cover-toggle";
-import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 type Mode = "position" | "button";
 
@@ -33,34 +33,10 @@ class MoreInfoCover extends LitElement {
 
   @property({ attribute: false }) public stateObj?: CoverEntity;
 
-  @state() private _livePosition?: number;
-
-  @state() private _liveTilt?: number;
-
   @state() private _mode?: Mode;
 
   private _setMode(ev) {
     this._mode = ev.currentTarget.mode;
-  }
-
-  private _positionSliderMoved(ev) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
-    this._livePosition = value;
-  }
-
-  private _positionValueChanged() {
-    this._livePosition = undefined;
-  }
-
-  private _tiltSliderMoved(ev) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
-    this._liveTilt = value;
-  }
-
-  private _tiltValueChanged() {
-    this._liveTilt = undefined;
   }
 
   protected willUpdate(changedProps: PropertyValues): void {
@@ -77,20 +53,11 @@ class MoreInfoCover extends LitElement {
   }
 
   private get _stateOverride() {
-    const liveValue = this._livePosition ?? this._liveTilt;
-
-    const forcedState =
-      liveValue != null ? (liveValue ? "open" : "closed") : undefined;
-
-    const stateDisplay = this.hass.formatEntityState(
-      this.stateObj!,
-      forcedState
-    );
+    const stateDisplay = this.hass.formatEntityState(this.stateObj!);
 
     const positionStateDisplay = computeCoverPositionStateDisplay(
       this.stateObj!,
-      this.hass,
-      liveValue
+      this.hass
     );
 
     if (positionStateDisplay) {
@@ -144,22 +111,18 @@ class MoreInfoCover extends LitElement {
               ? html`
                   ${supportsPosition
                     ? html`
-                        <ha-more-info-cover-position
+                        <ha-state-control-cover-position
                           .stateObj=${this.stateObj}
                           .hass=${this.hass}
-                          @slider-moved=${this._positionSliderMoved}
-                          @value-changed=${this._positionValueChanged}
-                        ></ha-more-info-cover-position>
+                        ></ha-state-control-cover-position>
                       `
                     : nothing}
                   ${supportsTiltPosition
                     ? html`
-                        <ha-more-info-cover-tilt-position
+                        <ha-state-control-cover-tilt-position
                           .stateObj=${this.stateObj}
                           .hass=${this.hass}
-                          @slider-moved=${this._tiltSliderMoved}
-                          @value-changed=${this._tiltValueChanged}
-                        ></ha-more-info-cover-tilt-position>
+                        ></ha-state-control-cover-tilt-position>
                       `
                     : nothing}
                 `
@@ -170,19 +133,19 @@ class MoreInfoCover extends LitElement {
               ? html`
                   ${supportsOpenCloseWithoutStop
                     ? html`
-                        <ha-more-info-cover-toggle
+                        <ha-state-control-cover-toggle
                           .stateObj=${this.stateObj}
                           .hass=${this.hass}
-                        ></ha-more-info-cover-toggle>
+                        ></ha-state-control-cover-toggle>
                       `
                     : supportsOpenClose || supportsTilt
-                    ? html`
-                        <ha-more-info-cover-buttons
-                          .stateObj=${this.stateObj}
-                          .hass=${this.hass}
-                        ></ha-more-info-cover-buttons>
-                      `
-                    : nothing}
+                      ? html`
+                          <ha-state-control-cover-buttons
+                            .stateObj=${this.stateObj}
+                            .hass=${this.hass}
+                          ></ha-state-control-cover-buttons>
+                        `
+                      : nothing}
                 `
               : nothing
           }

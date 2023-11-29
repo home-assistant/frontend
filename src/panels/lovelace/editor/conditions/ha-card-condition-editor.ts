@@ -1,23 +1,30 @@
 import { preventDefault } from "@fullcalendar/core/internal";
 import { ActionDetail } from "@material/mwc-list";
-import { mdiCheck, mdiDelete, mdiDotsVertical } from "@mdi/js";
+import { mdiCheck, mdiDelete, mdiDotsVertical, mdiFlask } from "@mdi/js";
 import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { handleStructError } from "../../../../common/structs/handle-errors";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-yaml-editor";
-import "../../../../components/ha-alert";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
-import { Condition, LegacyCondition } from "../../common/validate-condition";
+import {
+  Condition,
+  LegacyCondition,
+  checkConditionsMet,
+  validateConditionalConfig,
+} from "../../common/validate-condition";
 import type { LovelaceConditionEditorConstructor } from "./types";
 
 @customElement("ha-card-condition-editor")
@@ -33,6 +40,8 @@ export class HaCardConditionEditor extends LitElement {
   @state() public _uiWarnings: string[] = [];
 
   @state() _condition?: Condition;
+
+  @state() private _testingResult?: boolean;
 
   private get _editor() {
     if (!this._condition) return undefined;
@@ -111,6 +120,13 @@ export class HaCardConditionEditor extends LitElement {
                 .path=${mdiDotsVertical}
               >
               </ha-icon-button>
+
+              <ha-list-item graphic="icon">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.condition-editor.test"
+                )}
+                <ha-svg-icon slot="graphic" .path=${mdiFlask}></ha-svg-icon>
+              </ha-list-item>
 
               <ha-list-item graphic="icon" .disabled=${!this._uiAvailable}>
                 ${this.hass.localize(
@@ -206,22 +222,73 @@ export class HaCardConditionEditor extends LitElement {
             }
           </div>
         </ha-expansion-panel>
+        <div
+          class="testing ${classMap({
+            active: this._testingResult !== undefined,
+            pass: this._testingResult === true,
+            error: this._testingResult === false,
+          })}"
+        >
+          ${
+            this._testingResult
+              ? this.hass.localize(
+                  "ui.panel.lovelace.editor.condition-editor.testing_pass"
+                )
+              : this.hass.localize(
+                  "ui.panel.lovelace.editor.condition-editor.testing_error"
+                )
+          }
+        </div>
       </ha-card>
     `;
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
+  private async _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this._yamlMode = false;
+        await this._testCondition();
         break;
       case 1:
-        this._yamlMode = true;
+        this._yamlMode = false;
         break;
       case 2:
+        this._yamlMode = true;
+        break;
+      case 3:
         this._delete();
         break;
     }
+  }
+
+  private _timeout?: number;
+
+  private async _testCondition() {
+    if (this._timeout) {
+      window.clearTimeout(this._timeout);
+      this._timeout = undefined;
+    }
+    this._testingResult = undefined;
+    const condition = this.condition;
+
+    const validateResult = validateConditionalConfig([this.condition]);
+
+    if (!validateResult) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.lovelace.editor.condition-editor.invalid_config_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.lovelace.editor.condition-editor.invalid_config_text"
+        ),
+      });
+      return;
+    }
+
+    this._testingResult = checkConditionsMet([condition], this.hass);
+
+    this._timeout = window.setTimeout(() => {
+      this._testingResult = undefined;
+    }, 2500);
   }
 
   private _delete() {
@@ -273,6 +340,32 @@ export class HaCardConditionEditor extends LitElement {
       .disabled {
         opacity: 0.5;
         pointer-events: none;
+      }
+      .testing {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        left: 0px;
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 14px;
+        background-color: var(--divider-color, #e0e0e0);
+        color: var(--text-primary-color);
+        max-height: 0px;
+        overflow: hidden;
+        transition: max-height 0.3s;
+        text-align: center;
+        border-top-right-radius: var(--ha-card-border-radius, 12px);
+        border-top-left-radius: var(--ha-card-border-radius, 12px);
+      }
+      .testing.active {
+        max-height: 100px;
+      }
+      .testing.error {
+        background-color: var(--accent-color);
+      }
+      .testing.pass {
+        background-color: var(--success-color);
       }
     `,
   ];

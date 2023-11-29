@@ -92,8 +92,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
             entityState.entity_id === "zone.home"
               ? homeRadiusColor
               : entityState.attributes.passive
-              ? passiveRadiusColor
-              : zoneRadiusColor,
+                ? passiveRadiusColor
+                : zoneRadiusColor,
           location_editable:
             entityState.entity_id === "zone.home" && this._canEditCore,
           radius_editable: false,

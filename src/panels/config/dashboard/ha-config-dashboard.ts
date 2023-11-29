@@ -8,16 +8,17 @@ import {
 } from "@mdi/js";
 import { HassEntities, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -34,9 +35,9 @@ import {
   subscribeRepairsIssueRegistry,
 } from "../../../data/repairs";
 import {
+  UpdateEntity,
   checkForEntityUpdates,
   filterUpdateEntitiesWithInstall,
-  UpdateEntity,
 } from "../../../data/update";
 import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
@@ -55,46 +56,40 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
   const weighted: string[] = [];
   let tips = [
     {
-      content: hass.localize(
-        "ui.panel.config.tips.join",
-        "forums",
-        html`<a
+      content: hass.localize("ui.panel.config.tips.join", {
+        forums: html`<a
           href="https://community.home-assistant.io"
           target="_blank"
           rel="noreferrer"
           >Forums</a
         >`,
-        "twitter",
-        html`<a
+        twitter: html`<a
           href=${documentationUrl(hass, `/twitter`)}
           target="_blank"
           rel="noreferrer"
           >Twitter</a
         >`,
-        "discord",
-        html`<a
+        discord: html`<a
           href=${documentationUrl(hass, `/join-chat`)}
           target="_blank"
           rel="noreferrer"
           >Chat</a
         >`,
-        "blog",
-        html`<a
+        blog: html`<a
           href=${documentationUrl(hass, `/blog`)}
           target="_blank"
           rel="noreferrer"
           >Blog</a
         >`,
-        "newsletter",
-        html`<span class="keep-together"
+        newsletter: html`<span class="keep-together"
           ><a
             href=${documentationUrl(hass, `/newsletter`)}
             target="_blank"
             rel="noreferrer"
             >Newsletter</a
           >
-        </span>`
-      ),
+        </span>`,
+      }),
       weight: 2,
       narrow: true,
     },
@@ -231,15 +226,17 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                       ></ha-config-repairs>
                       ${totalRepairIssues > repairsIssues.length
                         ? html`
-                            <a class="button" href="/config/repairs">
-                              ${this.hass.localize(
+                            <ha-assist-chip
+                              href="/config/repairs"
+                              .label=${this.hass.localize(
                                 "ui.panel.config.repairs.more_repairs",
                                 {
                                   count:
                                     totalRepairIssues - repairsIssues.length,
                                 }
                               )}
-                            </a>
+                            >
+                            </ha-assist-chip>
                           `
                         : ""}
                     `
@@ -257,15 +254,17 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                       ></ha-config-updates>
                       ${totalUpdates > canInstallUpdates.length
                         ? html`
-                            <a class="button" href="/config/updates">
-                              ${this.hass.localize(
+                            <ha-assist-chip
+                              href="/config/updates"
+                              label=${this.hass.localize(
                                 "ui.panel.config.updates.more_updates",
                                 {
                                   count:
                                     totalUpdates - canInstallUpdates.length,
                                 }
                               )}
-                            </a>
+                            >
+                            </ha-assist-chip>
                           `
                         : ""}
                     `
@@ -349,13 +348,8 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           text-decoration: none;
           color: var(--primary-text-color);
         }
-        a.button {
-          display: inline-block;
-          color: var(--primary-text-color);
-          padding: 6px 16px;
+        ha-assist-chip {
           margin: 8px 16px 16px 16px;
-          border-radius: 32px;
-          border: 1px solid var(--divider-color);
         }
         .title {
           font-size: 16px;

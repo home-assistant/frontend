@@ -20,7 +20,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
 import { UNAVAILABLE, isUnavailableState } from "../../../data/entity";
 import { LightEntity, lightSupportsBrightness } from "../../../data/light";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
@@ -196,9 +196,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   }
 
   private _dragEvent(e: any): void {
-    this.shadowRoot!.querySelector(
-      ".brightness"
-    )!.innerHTML = `${e.detail.value} %`;
+    this.shadowRoot!.querySelector(".brightness")!.innerHTML =
+      `${e.detail.value} %`;
     this._showBrightness();
     this._hideBrightness();
   }

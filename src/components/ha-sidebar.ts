@@ -41,7 +41,7 @@ import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
 import { throttle } from "../common/util/throttle";
-import { ActionHandlerDetail } from "../data/lovelace";
+import { ActionHandlerDetail } from "../data/lovelace/action_handler";
 import {
   PersistentNotification,
   subscribeNotifications,
@@ -425,8 +425,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         panel.url_path === this.hass.defaultPanel && !panel.icon
           ? PANEL_ICONS.lovelace
           : panel.url_path in PANEL_ICONS
-          ? PANEL_ICONS[panel.url_path]
-          : undefined
+            ? PANEL_ICONS[panel.url_path]
+            : undefined
       )
     );
   }
@@ -499,11 +499,14 @@ class HaSidebar extends SubscribeMixin(LitElement) {
                   .path=${PANEL_ICONS.lovelace}
                 ></ha-svg-icon>`
               : panel.url_path in PANEL_ICONS
-              ? html`<ha-svg-icon
-                  slot="item-icon"
-                  .path=${PANEL_ICONS[panel.url_path]}
-                ></ha-svg-icon>`
-              : html`<ha-icon slot="item-icon" .icon=${panel.icon}></ha-icon>`}
+                ? html`<ha-svg-icon
+                    slot="item-icon"
+                    .path=${PANEL_ICONS[panel.url_path]}
+                  ></ha-svg-icon>`
+                : html`<ha-icon
+                    slot="item-icon"
+                    .icon=${panel.icon}
+                  ></ha-icon>`}
             <span class="item-text"
               >${panel.url_path === this.hass.defaultPanel
                 ? this.hass.localize("panel.states")

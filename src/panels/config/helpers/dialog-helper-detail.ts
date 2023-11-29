@@ -225,8 +225,7 @@ export class DialogHelperDetail extends LitElement {
                     <simple-tooltip animation-delay="0"
                       >${this.hass.localize(
                         "ui.dialogs.helper_settings.platform_not_loaded",
-                        "platform",
-                        domain
+                        { platform: domain }
                       )}</simple-tooltip
                     >
                   `
@@ -250,10 +249,12 @@ export class DialogHelperDetail extends LitElement {
           this._domain
             ? this.hass.localize(
                 "ui.panel.config.helpers.dialog.create_platform",
-                "platform",
-                this.hass.localize(
-                  `ui.panel.config.helpers.types.${this._domain}`
-                ) || this._domain
+                {
+                  platform:
+                    this.hass.localize(
+                      `ui.panel.config.helpers.types.${this._domain}`
+                    ) || this._domain,
+                }
               )
             : this.hass.localize("ui.panel.config.helpers.dialog.create_helper")
         )}

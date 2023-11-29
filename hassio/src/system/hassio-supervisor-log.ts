@@ -124,13 +124,10 @@ class HassioSupervisorLog extends LitElement {
         this._selectedLogProvider
       );
     } catch (err: any) {
-      this._error = this.supervisor.localize(
-        "system.log.get_logs",
-        "provider",
-        this._selectedLogProvider,
-        "error",
-        extractApiErrorMessage(err)
-      );
+      this._error = this.supervisor.localize("system.log.get_logs", {
+        provider: this._selectedLogProvider,
+        error: extractApiErrorMessage(err),
+      });
     }
   }
 

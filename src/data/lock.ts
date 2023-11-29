@@ -35,8 +35,8 @@ export const callProtectedLockService = async (
     const response = await showEnterCodeDialogDialog(element, {
       codeFormat: "text",
       codePattern: stateObj!.attributes.code_format,
-      title: hass.localize(`ui.dialogs.more_info_control.lock.${service}`),
-      submitText: hass.localize(`ui.dialogs.more_info_control.lock.${service}`),
+      title: hass.localize(`ui.card.lock.${service}`),
+      submitText: hass.localize(`ui.card.lock.${service}`),
     });
     if (!response) {
       throw new Error("Code dialog closed");
