@@ -2963,6 +2963,14 @@
             "delete_blueprint": "Delete blueprint",
             "share_blueprint": "Share blueprint",
             "share_blueprint_no_url": "Unable to share blueprint: no source url",
+            "re_import_blueprint": "Re-import blueprint",
+            "re_import_blueprint_no_url": "Unable to re-import blueprint: no source url",
+            "re_import_confirm_title": "Re-import blueprint",
+            "re_import_confirm_text": "[%key:ui::panel::config::blueprint::add::override_description%]",
+            "re_import_confirm_action": "Re-import",
+            "re_import_error_source_not_found": "Unable to re-import the blueprint: source not found.",
+            "re_import_error_save": "Unable to re-import the blueprint: {error}.",
+            "re_import_success": "{name} has been successfully re-imported.",
             "discover_more": "Discover more blueprints"
           },
           "add": {
