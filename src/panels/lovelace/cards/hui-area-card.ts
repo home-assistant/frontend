@@ -94,7 +94,7 @@ const DOMAIN_ICONS = {
     heat: mdiFire,
     motion: mdiRun,
     moisture: mdiWaterAlert,
-    smoke: mdiSmokeDetectorVariantAlert
+    smoke: mdiSmokeDetectorVariantAlert,
   },
 };
 
