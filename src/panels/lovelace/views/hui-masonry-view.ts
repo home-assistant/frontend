@@ -64,10 +64,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   private _mqlListenerRef?: () => void;
 
-  public constructor() {
-    super();
-  }
-
   public connectedCallback() {
     super.connectedCallback();
     this._initMqls();

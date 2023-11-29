@@ -16,7 +16,12 @@ class HaFaded extends LitElement {
         style=${!this._contentShown ? `max-height: ${this.fadedHeight}px` : ""}
         @click=${this._showContent}
       >
-        <slot></slot>
+        <slot
+          @content-resize=${
+            // ha-markdown-element fire this when render is complete
+            this._setShowContent
+          }
+        ></slot>
       </div>
     `;
   }
@@ -73,5 +78,8 @@ class HaFaded extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-faded": HaFaded;
+  }
+  interface HASSDomEvents {
+    "content-resize": undefined;
   }
 }

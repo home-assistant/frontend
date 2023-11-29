@@ -1,5 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
 import { renderMarkdown } from "../resources/render-markdown";
 
 const _blockQuoteToAlert = { Note: "info", Warning: "warning" };
@@ -38,6 +39,8 @@ class HaMarkdownElement extends ReactiveElement {
       }
     );
 
+    this._resize();
+
     const walker = document.createTreeWalker(
       this,
       NodeFilter.SHOW_ELEMENT,
@@ -63,6 +66,7 @@ class HaMarkdownElement extends ReactiveElement {
         if (this.lazyImages) {
           node.loading = "lazy";
         }
+        node.addEventListener("load", this._resize);
       } else if (node instanceof HTMLQuoteElement) {
         // Map GitHub blockquote elements to our ha-alert element
         const firstElementChild = node.firstElementChild;
@@ -94,6 +98,8 @@ class HaMarkdownElement extends ReactiveElement {
       }
     }
   }
+
+  private _resize = () => fireEvent(this, "content-resize");
 }
 
 declare global {
