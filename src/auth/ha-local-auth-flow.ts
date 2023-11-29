@@ -17,7 +17,7 @@ import {
   submitLoginFlow,
 } from "../data/auth";
 import { DataEntryFlowStep } from "../data/data_entry_flow";
-import { listPersons } from "../data/person";
+import { BasePerson, listUserPersons } from "../data/person";
 import "./ha-auth-textfield";
 import type { HaAuthTextField } from "./ha-auth-textfield";
 
@@ -43,7 +43,7 @@ export class HaLocalAuthFlow extends LitElement {
 
   @state() private _submitting = false;
 
-  @state() private _persons?: Promise<Record<string, string>>;
+  @state() private _persons?: Record<string, BasePerson>;
 
   @state() private _selectedUser?: string;
 
@@ -198,9 +198,9 @@ export class HaLocalAuthFlow extends LitElement {
         : this._selectedUser
           ? html`<div class="login-form"><div class="person">
               <ha-person-badge
-                .person=${this._persons![this._selectedUser]}
+                .person=${this._persons[this._selectedUser]}
               ></ha-person-badge>
-              <p>${this._persons![this._selectedUser].name}</p>
+              <p>${this._persons[this._selectedUser].name}</p>
             </div>
             <form>
               <input
@@ -273,6 +273,9 @@ export class HaLocalAuthFlow extends LitElement {
               >
                 ${userIds.map((userId) => {
                   const person = this._persons![userId];
+                  if (!person) {
+                    return nothing;
+                  }
                   return html`<div
                     class="person"
                     .userId=${userId}
@@ -316,7 +319,12 @@ export class HaLocalAuthFlow extends LitElement {
   }
 
   private async _load() {
-    this._persons = await (await listPersons()).json();
+    try {
+      this._persons = await listUserPersons();
+    } catch {
+      this._persons = {};
+      this._error = "Failed to fetch persons";
+    }
   }
 
   private _restart() {
