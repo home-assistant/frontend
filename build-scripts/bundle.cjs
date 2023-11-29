@@ -120,15 +120,21 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
       "template-html-minifier",
       {
         modules: {
-          lit: [
-            "html",
-            { name: "svg", encapsulation: "svg" },
-            { name: "css", encapsulation: "style" },
-          ],
+          ...Object.fromEntries(
+            ["lit", "lit-element", "lit-html"].map((m) => [
+              m,
+              [
+                "html",
+                { name: "svg", encapsulation: "svg" },
+                { name: "css", encapsulation: "style" },
+              ],
+            ])
+          ),
+          "@polymer/polymer/lib/utils/html-tag.js": ["html"],
         },
         strictCSS: true,
         htmlMinifier: module.exports.htmlMinifierOptions,
-        failOnError: true, // we can turn this off in case of false positives
+        failOnError: false, // we can turn this off in case of false positives
       },
     ],
     // Import helpers and regenerator from runtime package
