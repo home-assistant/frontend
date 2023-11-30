@@ -302,7 +302,8 @@ export class HaAuthFlow extends LitElement {
           redirectWithAuthCode(
             this.redirectUri!,
             data.result,
-            this.oauth2State
+            this.oauth2State,
+            this.storeToken
           );
           return;
         }
@@ -383,7 +384,8 @@ export class HaAuthFlow extends LitElement {
         redirectWithAuthCode(
           this.redirectUri!,
           newStep.result,
-          this.oauth2State
+          this.oauth2State,
+          this.storeToken
         );
         return;
       }

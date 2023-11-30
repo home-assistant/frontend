@@ -80,7 +80,8 @@ export const deleteLoginFlow = (flow_id) =>
 export const redirectWithAuthCode = (
   url: string,
   authCode: string,
-  oauth2State: string | undefined
+  oauth2State: string | undefined,
+  storeToken: boolean
 ) => {
   // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
   if (!url.includes("?")) {
@@ -94,7 +95,9 @@ export const redirectWithAuthCode = (
   if (oauth2State) {
     url += `&state=${encodeURIComponent(oauth2State)}`;
   }
-  url += `&storeToken=true`;
+  if (storeToken) {
+    url += `&storeToken=true`;
+  }
 
   document.location.assign(url);
 };
