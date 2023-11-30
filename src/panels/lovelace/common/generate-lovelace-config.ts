@@ -476,7 +476,7 @@ export const generateDefaultViewConfig = (
 
   if (areasPrefs?.hidden) {
     for (const area of areasPrefs.hidden) {
-      splittedByAreaDevice.areasWithEntities[area] = [];
+      delete splittedByAreaDevice.areasWithEntities[area];
     }
   }
 
