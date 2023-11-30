@@ -5,20 +5,20 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { isUnavailableState } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
-import { NumberValueCardFeatureConfig } from "./types";
+import { NumericInputCardFeatureConfig } from "./types";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
 import "../../../components/ha-control-slider";
 import "../../../components/ha-icon";
 
-export const supportsNumberValueCardFeature = (stateObj: HassEntity) => {
+export const supportsNumericInputCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return domain === "input_number" || domain === "number";
 };
 
-@customElement("hui-number-value-card-feature")
-class HuiNumberValueCardFeature
+@customElement("hui-numeric-input-card-feature")
+class HuiNumericInputCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
@@ -26,25 +26,25 @@ class HuiNumberValueCardFeature
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: NumberValueCardFeatureConfig;
+  @state() private _config?: NumericInputCardFeatureConfig;
 
   @state() _currentState?: string;
 
-  static getStubConfig(): NumberValueCardFeatureConfig {
+  static getStubConfig(): NumericInputCardFeatureConfig {
     return {
-      type: "number-value",
+      type: "numeric-input",
       style: "buttons",
     };
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
     await import(
-      "../editor/config-elements/hui-number-value-card-feature-editor"
+      "../editor/config-elements/hui-numeric-input-card-feature-editor"
     );
-    return document.createElement("hui-number-value-card-feature-editor");
+    return document.createElement("hui-numeric-input-card-feature-editor");
   }
 
-  public setConfig(config: NumberValueCardFeatureConfig): void {
+  public setConfig(config: NumericInputCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -74,7 +74,7 @@ class HuiNumberValueCardFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsNumberValueCardFeature(this.stateObj)
+      !supportsNumericInputCardFeature(this.stateObj)
     ) {
       return nothing;
     }
@@ -126,6 +126,6 @@ class HuiNumberValueCardFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-number-value-card-feature": HuiNumberValueCardFeature;
+    "hui-numeric-input-card-feature": HuiNumericInputCardFeature;
   }
 }

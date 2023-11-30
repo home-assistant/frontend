@@ -10,7 +10,7 @@ import "../card-features/hui-humidifier-modes-card-feature";
 import "../card-features/hui-lawn-mower-commands-card-feature";
 import "../card-features/hui-light-brightness-card-feature";
 import "../card-features/hui-light-color-temp-card-feature";
-import "../card-features/hui-number-value-card-feature";
+import "../card-features/hui-numeric-input-card-feature";
 import "../card-features/hui-select-options-card-feature";
 import "../card-features/hui-target-temperature-card-feature";
 import "../card-features/hui-vacuum-commands-card-feature";
@@ -34,7 +34,7 @@ const TYPES: Set<LovelaceCardFeatureConfig["type"]> = new Set([
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
-  "number-value",
+  "numeric-input",
   "select-options",
   "target-temperature",
   "vacuum-commands",

@@ -6,14 +6,14 @@ import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import {
-  NumberValueCardFeatureConfig,
+  NumericInputCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
 import { LocalizeFunc } from "../../../../common/translations/localize";
 
-@customElement("hui-number-value-card-feature-editor")
-export class HuiNumberValueCardFeatureEditor
+@customElement("hui-numeric-input-card-feature-editor")
+export class HuiNumericInputCardFeatureEditor
   extends LitElement
   implements LovelaceCardFeatureEditor
 {
@@ -21,9 +21,9 @@ export class HuiNumberValueCardFeatureEditor
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: NumberValueCardFeatureConfig;
+  @state() private _config?: NumericInputCardFeatureConfig;
 
-  public setConfig(config: NumberValueCardFeatureConfig): void {
+  public setConfig(config: NumericInputCardFeatureConfig): void {
     this._config = config;
   }
 
@@ -39,7 +39,7 @@ export class HuiNumberValueCardFeatureEditor
               options: ["slider", "buttons"].map((mode) => ({
                 value: mode,
                 label: localize(
-                  `ui.panel.lovelace.editor.features.types.number-value.style_list.${mode}`
+                  `ui.panel.lovelace.editor.features.types.numeric-input.style_list.${mode}`
                 ),
               })),
             },
@@ -53,7 +53,7 @@ export class HuiNumberValueCardFeatureEditor
       return nothing;
     }
 
-    const data: NumberValueCardFeatureConfig = {
+    const data: NumericInputCardFeatureConfig = {
       style: "buttons",
       ...this._config,
     };
@@ -79,12 +79,12 @@ export class HuiNumberValueCardFeatureEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) =>
     this.hass!.localize(
-      `ui.panel.lovelace.editor.features.types.number-value.${schema.name}`
+      `ui.panel.lovelace.editor.features.types.numeric-input.${schema.name}`
     );
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-number-value-card-feature-editor": HuiNumberValueCardFeatureEditor;
+    "hui-numeric-input-card-feature-editor": HuiNumericInputCardFeatureEditor;
   }
 }
