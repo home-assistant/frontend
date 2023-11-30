@@ -62,7 +62,7 @@ export class HuiGaugeCardEditor
           name: "entity",
           selector: {
             entity: {
-              domain: ["counter", "input_number", "number-value", "sensor"],
+              domain: ["counter", "input_number", "number", "sensor"],
             },
           },
         },
