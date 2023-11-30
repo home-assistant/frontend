@@ -42,6 +42,7 @@ import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
 import "../components/hui-timestamp-display";
 import "../card-features/hui-card-features";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -362,7 +363,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
           <div
             class="background"
             @action=${this._handleAction}
-            .actionHandler=${actionHandler()}
+            .actionHandler=${actionHandler({
+              hasHold: hasAction(this._config!.hold_action),
+              hasDoubleClick: hasAction(this._config!.double_tap_action),
+            })}
             role="button"
             tabindex="0"
             aria-labelledby="info"
