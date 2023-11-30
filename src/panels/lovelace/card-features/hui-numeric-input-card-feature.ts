@@ -115,6 +115,10 @@ class HuiNumericInputCardFeature
       }
       ha-control-slider {
         --control-slider-color: var(--feature-color);
+        --control-slider-background: var(--feature-color);
+        --control-slider-background-opacity: 0.2;
+        --control-slider-thickness: 40px;
+        --control-slider-border-radius: 10px;
       }
       .container {
         padding: 0 12px 12px 12px;
