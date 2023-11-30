@@ -473,7 +473,7 @@ export const computeHistory = (
       currentState?.attributes || numericStateFromHistory?.a
     )?.device_class;
 
-    const key = `${unit}_${deviceClass || ""}`;
+    const key = computeGroupKey(unit, deviceClass);
 
     if (!unit) {
       timelineDevices.push(
@@ -511,3 +511,8 @@ export const computeHistory = (
 
   return { line: unitStates, timeline: timelineDevices };
 };
+
+export const computeGroupKey = (
+  unit: string | undefined,
+  device_class: string | undefined
+) => `${unit}_${device_class || ""}`;
