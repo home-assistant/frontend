@@ -99,11 +99,9 @@ export class DialogAreaFilter
     if (ev.oldIndex === ev.newIndex) return;
 
     const areas = this._areas.concat();
-    const nonHiddenAreas = areas.filter((ar) => !this._hidden.includes(ar));
-    const newIndex = Math.min(ev.newIndex!, nonHiddenAreas.length - 1);
 
     const option = areas.splice(ev.oldIndex!, 1)[0];
-    areas.splice(newIndex, 0, option);
+    areas.splice(ev.newIndex!, 0, option);
 
     this._areas = areas;
   }
