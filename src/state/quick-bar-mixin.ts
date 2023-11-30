@@ -60,28 +60,30 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _showQuickBar(e: KeyboardEvent, commandMode = false) {
+      if (!this._canShowQuickBar(e)) {
+        return;
+      }
+
       if (e.defaultPrevented) {
         return;
       }
       e.preventDefault();
-      if (!this._canShowQuickBar(e)) {
-        return;
-      }
 
       showQuickBar(this, { commandMode });
     }
 
     private async _createMyLink(e: KeyboardEvent) {
-      if (e.defaultPrevented) {
-        return;
-      }
-      e.preventDefault();
       if (
         !this.hass?.enableShortcuts ||
         !this._canOverrideAlphanumericInput(e)
       ) {
         return;
       }
+
+      if (e.defaultPrevented) {
+        return;
+      }
+      e.preventDefault();
 
       const targetPath = mainWindow.location.pathname;
       const isHassio = isComponentLoaded(this.hass, "hassio");
