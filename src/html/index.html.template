@@ -39,7 +39,7 @@
         align-items: center;
       }
       #ha-launch-screen svg {
-        width: 170px;
+        width: 112px;
         flex-shrink: 0;
       }
       #ha-launch-screen .ha-launch-screen-spacer {

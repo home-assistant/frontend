@@ -46,6 +46,7 @@ import {
   EntityHistoryState,
   LineChartUnit,
   LineChartEntity,
+  computeGroupKey,
 } from "../../data/history";
 import { fetchStatistics, Statistics } from "../../data/recorder";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
@@ -221,14 +222,20 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   ): HistoryResult {
     const result: HistoryResult = { ...historyResult, line: [] };
 
-    const units = new Set(
+    const keys = new Set(
       historyResult.line
-        .map((i) => i.unit)
-        .concat(ltsResult.line.map((i) => i.unit))
+        .map((i) => computeGroupKey(i.unit, i.device_class))
+        .concat(
+          ltsResult.line.map((i) => computeGroupKey(i.unit, i.device_class))
+        )
     );
-    units.forEach((unit) => {
-      const historyItem = historyResult.line.find((i) => i.unit === unit);
-      const ltsItem = ltsResult.line.find((i) => i.unit === unit);
+    keys.forEach((key) => {
+      const historyItem = historyResult.line.find(
+        (i) => computeGroupKey(i.unit, i.device_class) === key
+      );
+      const ltsItem = ltsResult.line.find(
+        (i) => computeGroupKey(i.unit, i.device_class) === key
+      );
       if (historyItem && ltsItem) {
         const newLineItem: LineChartUnit = { ...historyItem, data: [] };
         const entities = new Set(
