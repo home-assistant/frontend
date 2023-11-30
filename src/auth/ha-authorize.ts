@@ -116,6 +116,16 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           position: relative;
           padding: 16px;
         }
+        .action {
+          margin: 16px 0 8px;
+          display: flex;
+          width: 100%;
+          max-width: 336px;
+          justify-content: center;
+        }
+        .space-between {
+          justify-content: space-between;
+        }
         .footer {
           padding-top: 8px;
           display: flex;
@@ -164,7 +174,10 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           </ha-alert>`
         : nothing}
 
-      <div class="card-content">
+      <div
+        class="card-content"
+        @default-login-flow=${this._handleDefaultLoginFlow}
+      >
         ${!this._authProvider
           ? html`<p>
               ${this.localize("ui.panel.page-authorize.initializing")}
@@ -181,7 +194,6 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
                 .authProviders=${this._authProviders}
                 .localize=${this.localize}
                 .ownInstance=${this._ownInstance}
-                @default-login-flow=${this._handleDefaultLoginFlow}
               ></ha-local-auth-flow>`
             : html`<ha-auth-flow
                   .clientId=${this.clientId}
@@ -315,8 +327,8 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     }
   }
 
-  private _handleDefaultLoginFlow() {
-    this._forceDefaultLogin = true;
+  private _handleDefaultLoginFlow(ev) {
+    this._forceDefaultLogin = ev.detail.value;
   }
 
   private async _handleAuthProviderPick(ev) {
