@@ -52,16 +52,6 @@ export class DialogEnterCode
   }
 
   private _submit(): void {
-    if (this._dialogParams && this._dialogParams.codePattern) {
-      if (
-        RegExp(this._dialogParams.codePattern).test(this._input?.value ?? "")
-      ) {
-        this._dialogParams?.submit?.(this._input?.value ?? "");
-        this.closeDialog();
-      } else {
-        this.closeDialog();
-      }
-    }
     this._dialogParams?.submit?.(this._input?.value ?? "");
     this.closeDialog();
   }
