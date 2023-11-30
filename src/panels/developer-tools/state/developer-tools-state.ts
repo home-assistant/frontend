@@ -360,15 +360,14 @@ class HaPanelDevState extends LitElement {
   }
 
   private _updateEntity() {
-    if (!this._entityId) {
+    const entityState = this._entityId
+      ? this.hass.states[this._entityId]
+      : undefined;
+    if (!entityState) {
       this._entity = undefined;
       this._state = "";
       this._stateAttributes = {};
       this._updateEditor();
-      return;
-    }
-    const entityState = this.hass.states[this._entityId];
-    if (!entityState) {
       return;
     }
     this._entity = entityState;
