@@ -351,7 +351,8 @@ export class HaLocalAuthFlow extends LitElement {
           redirectWithAuthCode(
             this.redirectUri!,
             data.result,
-            this.oauth2State
+            this.oauth2State,
+            true
           );
           return;
         }
@@ -372,7 +373,8 @@ export class HaLocalAuthFlow extends LitElement {
               redirectWithAuthCode(
                 this.redirectUri!,
                 result.result,
-                this.oauth2State
+                this.oauth2State,
+                true
               );
               return;
             }
