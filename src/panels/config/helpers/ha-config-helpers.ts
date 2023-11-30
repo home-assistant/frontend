@@ -226,19 +226,16 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         };
       });
 
-      const entries =
-        Object.keys(configEntriesCopy).length !== 0
-          ? Object.values(configEntriesCopy).map((configEntry) => ({
-              id: configEntry.entry_id,
-              entity_id: "",
-              icon: mdiAlertCircle,
-              name: configEntry.title || "",
-              editable: true,
-              type: configEntry.domain,
-              configEntry,
-              entity: undefined,
-            }))
-          : [];
+      const entries = Object.values(configEntriesCopy).map((configEntry) => ({
+        id: configEntry.entry_id,
+        entity_id: "",
+        icon: mdiAlertCircle,
+        name: configEntry.title || "",
+        editable: true,
+        type: configEntry.domain,
+        configEntry,
+        entity: undefined,
+      }));
 
       return [...states, ...entries].map((item) => ({
         ...item,
