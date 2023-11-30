@@ -136,7 +136,7 @@ export class HaMap extends ReactiveElement {
       autoFitRequired = true;
     }
 
-    if (this.autoFit && autoFitRequired) {
+    if (changedProps.has("_loaded") || (this.autoFit && autoFitRequired)) {
       this.fitMap();
     }
 
