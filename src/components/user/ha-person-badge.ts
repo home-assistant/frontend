@@ -2,12 +2,12 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { Person } from "../../data/person";
+import { BasePerson } from "../../data/person";
 import { computeUserInitials } from "../../data/user";
 
 @customElement("ha-person-badge")
 class PersonBadge extends LitElement {
-  @property({ attribute: false }) public person?: Person;
+  @property({ attribute: false }) public person?: BasePerson;
 
   protected render() {
     if (!this.person) {

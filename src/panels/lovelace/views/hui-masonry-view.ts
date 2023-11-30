@@ -64,11 +64,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   private _mqlListenerRef?: () => void;
 
-  public constructor() {
-    super();
-    this.addEventListener("iron-resize", (ev: Event) => ev.stopPropagation());
-  }
-
   public connectedCallback() {
     super.connectedCallback();
     this._initMqls();

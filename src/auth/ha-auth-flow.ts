@@ -21,6 +21,7 @@ import {
   DataEntryFlowStepForm,
 } from "../data/data_entry_flow";
 import "./ha-auth-form";
+import { fireEvent } from "../common/dom/fire_event";
 
 type State = "loading" | "error" | "step";
 
@@ -85,10 +86,6 @@ export class HaAuthFlow extends LitElement {
   protected render() {
     return html`
       <style>
-        ha-auth-flow .action {
-          margin: 24px 0 8px;
-          text-align: center;
-        }
         ha-auth-flow .store-token {
           margin-left: -16px;
         }
@@ -158,14 +155,25 @@ export class HaAuthFlow extends LitElement {
   }
 
   private _renderForm() {
+    const showBack =
+      this.step?.type === "form" &&
+      this.authProvider?.users &&
+      !["select_mfa_module", "mfa"].includes(this.step.step_id);
+
     switch (this._state) {
       case "step":
         if (this.step == null) {
           return nothing;
         }
+
         return html`
           ${this._renderStep(this.step)}
-          <div class="action">
+          <div class="action ${showBack ? "space-between" : ""}">
+            ${showBack
+              ? html`<mwc-button @click=${this._localFlow}>
+                  ${this.localize("ui.panel.page-authorize.form.previous")}
+                </mwc-button>`
+              : nothing}
             <mwc-button
               raised
               @click=${this._handleSubmit}
@@ -294,7 +302,8 @@ export class HaAuthFlow extends LitElement {
           redirectWithAuthCode(
             this.redirectUri!,
             data.result,
-            this.oauth2State
+            this.oauth2State,
+            this.storeToken
           );
           return;
         }
@@ -375,7 +384,8 @@ export class HaAuthFlow extends LitElement {
         redirectWithAuthCode(
           this.redirectUri!,
           newStep.result,
-          this.oauth2State
+          this.oauth2State,
+          this.storeToken
         );
         return;
       }
@@ -389,6 +399,10 @@ export class HaAuthFlow extends LitElement {
     } finally {
       this._submitting = false;
     }
+  }
+
+  private _localFlow() {
+    fireEvent(this, "default-login-flow", { value: false });
   }
 }
 

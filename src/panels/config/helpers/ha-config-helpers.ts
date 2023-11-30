@@ -226,10 +226,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         };
       });
 
-      if (!Object.keys(configEntriesCopy).length) {
-        return states;
-      }
-
       const entries = Object.values(configEntriesCopy).map((configEntry) => ({
         id: configEntry.entry_id,
         entity_id: "",

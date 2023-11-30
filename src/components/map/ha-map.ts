@@ -136,7 +136,7 @@ export class HaMap extends ReactiveElement {
       autoFitRequired = true;
     }
 
-    if (this.autoFit && autoFitRequired) {
+    if (changedProps.has("_loaded") || (this.autoFit && autoFitRequired)) {
       this.fitMap();
     }
 
@@ -155,10 +155,11 @@ export class HaMap extends ReactiveElement {
   }
 
   private _updateMapStyle(): void {
-    const darkMode = this.darkMode ?? this.hass.themes.darkMode;
+    const darkMode = this.darkMode ?? this.hass.themes.darkMode ?? false;
+    const forcedDark = this.darkMode ?? false;
     const map = this.shadowRoot!.getElementById("map");
     map!.classList.toggle("dark", darkMode);
-    map!.classList.toggle("forced-dark", this.darkMode);
+    map!.classList.toggle("forced-dark", forcedDark);
   }
 
   private async _loadMap(): Promise<void> {

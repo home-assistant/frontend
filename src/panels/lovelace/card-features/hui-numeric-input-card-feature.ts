@@ -5,41 +5,46 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { isUnavailableState } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
-import { NumberCardFeatureConfig } from "./types";
+import { NumericInputCardFeatureConfig } from "./types";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
 import "../../../components/ha-control-slider";
 import "../../../components/ha-icon";
 
-export const supportsNumberCardFeature = (stateObj: HassEntity) => {
+export const supportsNumericInputCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return domain === "input_number" || domain === "number";
 };
 
-@customElement("hui-number-card-feature")
-class HuiNumberCardFeature extends LitElement implements LovelaceCardFeature {
+@customElement("hui-numeric-input-card-feature")
+class HuiNumericInputCardFeature
+  extends LitElement
+  implements LovelaceCardFeature
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: NumberCardFeatureConfig;
+  @state() private _config?: NumericInputCardFeatureConfig;
 
   @state() _currentState?: string;
 
-  static getStubConfig(): NumberCardFeatureConfig {
+  static getStubConfig(): NumericInputCardFeatureConfig {
     return {
-      type: "number",
+      type: "numeric-input",
       style: "buttons",
     };
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import("../editor/config-elements/hui-number-card-feature-editor");
-    return document.createElement("hui-number-card-feature-editor");
+    await import(
+      "../editor/config-elements/hui-numeric-input-card-feature-editor"
+    );
+    return document.createElement("hui-numeric-input-card-feature-editor");
   }
 
-  public setConfig(config: NumberCardFeatureConfig): void {
+  public setConfig(config: NumericInputCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -69,7 +74,7 @@ class HuiNumberCardFeature extends LitElement implements LovelaceCardFeature {
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsNumberCardFeature(this.stateObj)
+      !supportsNumericInputCardFeature(this.stateObj)
     ) {
       return nothing;
     }
@@ -110,6 +115,10 @@ class HuiNumberCardFeature extends LitElement implements LovelaceCardFeature {
       }
       ha-control-slider {
         --control-slider-color: var(--feature-color);
+        --control-slider-background: var(--feature-color);
+        --control-slider-background-opacity: 0.2;
+        --control-slider-thickness: 40px;
+        --control-slider-border-radius: 10px;
       }
       .container {
         padding: 0 12px 12px 12px;
@@ -121,6 +130,6 @@ class HuiNumberCardFeature extends LitElement implements LovelaceCardFeature {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-number-card-feature": HuiNumberCardFeature;
+    "hui-numeric-input-card-feature": HuiNumericInputCardFeature;
   }
 }
