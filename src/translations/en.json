@@ -5292,8 +5292,8 @@
               "select-options": {
                 "label": "Select options"
               },
-              "number": {
-                "label": "Number",
+              "number-value": {
+                "label": "Number value",
                 "style": "Style",
                 "style_list": {
                   "buttons": "Buttons",

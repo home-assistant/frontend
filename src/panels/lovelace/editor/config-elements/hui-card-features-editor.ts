@@ -33,7 +33,7 @@ import { supportsHumidifierModesCardFeature } from "../../card-features/hui-humi
 import { supportsLawnMowerCommandCardFeature } from "../../card-features/hui-lawn-mower-commands-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
 import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
-import { supportsNumberCardFeature } from "../../card-features/hui-number-card-feature";
+import { supportsNumberValueCardFeature } from "../../card-features/hui-number-value-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
@@ -61,7 +61,7 @@ const UI_FEATURE_TYPES = [
   "target-temperature",
   "vacuum-commands",
   "water-heater-operation-modes",
-  "number",
+  "number-value",
 ] as const satisfies readonly FeatureType[];
 
 type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
@@ -73,7 +73,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "water-heater-operation-modes",
   "lawn-mower-commands",
   "climate-preset-modes",
-  "number",
+  "number-value",
 ]);
 
 const SUPPORTS_FEATURE_TYPES: Record<
@@ -92,7 +92,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "lawn-mower-commands": supportsLawnMowerCommandCardFeature,
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
-  number: supportsNumberCardFeature,
+  "number-value": supportsNumberValueCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
