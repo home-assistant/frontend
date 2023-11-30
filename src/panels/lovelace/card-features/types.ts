@@ -50,8 +50,8 @@ export interface SelectOptionsCardFeatureConfig {
   type: "select-options";
 }
 
-export interface NumberCardFeatureConfig {
-  type: "number";
+export interface NumericInputCardFeatureConfig {
+  type: "numeric-input";
   style?: "buttons" | "slider";
 }
 
@@ -109,7 +109,7 @@ export type LovelaceCardFeatureConfig =
   | TargetTemperatureCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig
   | SelectOptionsCardFeatureConfig
-  | NumberCardFeatureConfig;
+  | NumericInputCardFeatureConfig;
 
 export type LovelaceCardFeatureContext = {
   entity_id?: string;
