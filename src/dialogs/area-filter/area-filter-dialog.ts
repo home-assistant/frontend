@@ -73,6 +73,7 @@ export class DialogAreaFilter
       animation: 150,
       fallbackClass: "sortable-fallback",
       handle: ".handle",
+      draggable: ".draggable",
       onChoose: (evt: SortableEvent) => {
         (evt.item as any).placeholder =
           document.createComment("sort-placeholder");
@@ -130,7 +131,10 @@ export class DialogAreaFilter
               const name = this.hass!.areas[area]?.name || area;
               return html`
                 <ha-list-item
-                  class=${classMap({ hidden: !isVisible })}
+                  class=${classMap({
+                    hidden: !isVisible,
+                    draggable: isVisible,
+                  })}
                   hasMeta
                   graphic="icon"
                   noninteractive
