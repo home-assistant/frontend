@@ -49,6 +49,7 @@ export interface LineChartEntity {
 
 export interface LineChartUnit {
   unit: string;
+  device_class?: string;
   identifier: string;
   data: LineChartEntity[];
 }
@@ -323,7 +324,8 @@ const processTimelineEntity = (
 };
 
 const processLineChartEntities = (
-  unit,
+  unit: string,
+  device_class: string | undefined,
   entities: HistoryStates,
   hassEntities: HassEntities
 ): LineChartUnit => {
@@ -391,6 +393,7 @@ const processLineChartEntities = (
 
   return {
     unit,
+    device_class,
     identifier: Object.keys(entities).join(""),
     data,
   };
@@ -466,6 +469,12 @@ export const computeHistory = (
       }[domain];
     }
 
+    const deviceClass: string | undefined = (
+      currentState?.attributes || numericStateFromHistory?.a
+    )?.device_class;
+
+    const key = `${unit}_${deviceClass || ""}`;
+
     if (!unit) {
       timelineDevices.push(
         processTimelineEntity(
@@ -478,19 +487,27 @@ export const computeHistory = (
           currentState
         )
       );
-    } else if (unit in lineChartDevices && entityId in lineChartDevices[unit]) {
-      lineChartDevices[unit][entityId].push(...stateInfo);
+    } else if (key in lineChartDevices && entityId in lineChartDevices[key]) {
+      lineChartDevices[key][entityId].push(...stateInfo);
     } else {
-      if (!(unit in lineChartDevices)) {
-        lineChartDevices[unit] = {};
+      if (!(key in lineChartDevices)) {
+        lineChartDevices[key] = {};
       }
-      lineChartDevices[unit][entityId] = stateInfo;
+      lineChartDevices[key][entityId] = stateInfo;
     }
   });
 
-  const unitStates = Object.keys(lineChartDevices).map((unit) =>
-    processLineChartEntities(unit, lineChartDevices[unit], hass.states)
-  );
+  const unitStates = Object.keys(lineChartDevices).map((key) => {
+    const splitKey = key.split("_");
+    const unit = splitKey[0];
+    const deviceClass = splitKey[1] || undefined;
+    return processLineChartEntities(
+      unit,
+      deviceClass,
+      lineChartDevices[key],
+      hass.states
+    );
+  });
 
   return { line: unitStates, timeline: timelineDevices };
 };
