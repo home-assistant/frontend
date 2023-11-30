@@ -73,6 +73,7 @@ export class DialogAreaFilter
       animation: 150,
       fallbackClass: "sortable-fallback",
       handle: ".handle",
+      draggable: ".draggable",
       onChoose: (evt: SortableEvent) => {
         (evt.item as any).placeholder =
           document.createComment("sort-placeholder");
@@ -98,9 +99,11 @@ export class DialogAreaFilter
     if (ev.oldIndex === ev.newIndex) return;
 
     const areas = this._areas.concat();
+    const nonHiddenAreas = areas.filter((ar) => !this._hidden.includes(ar));
+    const newIndex = Math.min(ev.newIndex!, nonHiddenAreas.length - 1);
 
     const option = areas.splice(ev.oldIndex!, 1)[0];
-    areas.splice(ev.newIndex!, 0, option);
+    areas.splice(newIndex, 0, option);
 
     this._areas = areas;
   }
@@ -128,16 +131,21 @@ export class DialogAreaFilter
               const name = this.hass!.areas[area]?.name || area;
               return html`
                 <ha-list-item
-                  class=${classMap({ hidden: !isVisible })}
+                  class=${classMap({
+                    hidden: !isVisible,
+                    draggable: isVisible,
+                  })}
                   hasMeta
                   graphic="icon"
                   noninteractive
                 >
-                  <ha-svg-icon
-                    class="handle"
-                    .path=${mdiDrag}
-                    slot="graphic"
-                  ></ha-svg-icon>
+                  ${isVisible
+                    ? html`<ha-svg-icon
+                        class="handle"
+                        .path=${mdiDrag}
+                        slot="graphic"
+                      ></ha-svg-icon>`
+                    : nothing}
                   ${name}
                   <ha-icon-button
                     tabindex="0"
@@ -177,6 +185,11 @@ export class DialogAreaFilter
       hidden.push(area);
     }
     this._hidden = hidden;
+    const nonHiddenAreas = this._areas.filter(
+      (ar) => !this._hidden.includes(ar)
+    );
+    const hiddenAreas = this._areas.filter((ar) => this._hidden.includes(ar));
+    this._areas = [...nonHiddenAreas, ...hiddenAreas];
   }
 
   static get styles(): CSSResultGroup {
@@ -193,7 +206,7 @@ export class DialogAreaFilter
           overflow: visible;
         }
         .hidden {
-          opacity: 0.3;
+          color: var(--disabled-text-color);
         }
         .handle {
           cursor: grab;
