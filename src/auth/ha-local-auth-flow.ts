@@ -148,16 +148,6 @@ export class HaLocalAuthFlow extends LitElement {
           height: 120px;
           --person-badge-font-size: 3em;
         }
-        .action {
-          margin: 16px 0 8px;
-          display: flex;
-          width: 100%;
-          max-width: 336px;
-          justify-content: center;
-        }
-        .space-between {
-          justify-content: space-between;
-        }
         ha-list-item {
           margin-top: 16px;
         }
@@ -470,7 +460,7 @@ export class HaLocalAuthFlow extends LitElement {
   }
 
   private _otherLogin() {
-    fireEvent(this, "default-login-flow");
+    fireEvent(this, "default-login-flow", { value: true });
   }
 }
 
@@ -479,6 +469,6 @@ declare global {
     "ha-local-auth-flow": HaLocalAuthFlow;
   }
   interface HASSDomEvents {
-    "default-login-flow": undefined;
+    "default-login-flow": { value: boolean };
   }
 }
