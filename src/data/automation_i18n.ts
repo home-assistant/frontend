@@ -786,7 +786,6 @@ const tryDescribeCondition = (
     }
 
     const entities: string[] = [];
-    let entitiesString = "";
     if (Array.isArray(condition.entity_id)) {
       for (const entity of condition.entity_id.values()) {
         if (hass.states[entity]) {
@@ -799,12 +798,6 @@ const tryDescribeCondition = (
           ? computeStateName(hass.states[condition.entity_id])
           : condition.entity_id
       );
-    }
-    if (entities.length !== 0) {
-      entitiesString =
-        condition.match === "any"
-          ? formatListWithOrs(hass.locale, entities)
-          : formatListWithAnds(hass.locale, entities);
     }
 
     const states: string[] = [];
@@ -842,8 +835,6 @@ const tryDescribeCondition = (
       );
     }
 
-    const statesString = formatListWithOrs(hass.locale, states);
-
     let duration = "";
     if (condition.for) {
       duration = describeDuration(hass.locale, condition.for) || "";
@@ -855,9 +846,12 @@ const tryDescribeCondition = (
         hasAttribute: attribute !== "",
         attribute: attribute,
         numberOfEntities: entities.length,
-        entities: entitiesString,
+        entities:
+          condition.match === "any"
+            ? formatListWithOrs(hass.locale, entities)
+            : formatListWithAnds(hass.locale, entities),
         numberOfStates: states.length,
-        states: statesString,
+        states: formatListWithOrs(hass.locale, states),
         hasDuration: duration !== "",
         duration: duration,
       }
