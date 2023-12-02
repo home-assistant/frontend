@@ -268,9 +268,7 @@ export class HaBaseTimeInput extends LitElement {
   }
 
   private _clearValue(): void {
-    fireEvent(this, "value-changed", {
-      value: null,
-    });
+    fireEvent(this, "value-changed");
   }
 
   private _valueChanged(ev: InputEvent) {
