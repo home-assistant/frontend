@@ -1475,15 +1475,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/commands@npm:6.3.1":
-  version: 6.3.1
-  resolution: "@codemirror/commands@npm:6.3.1"
+"@codemirror/commands@npm:6.3.2":
+  version: 6.3.2
+  resolution: "@codemirror/commands@npm:6.3.2"
   dependencies:
     "@codemirror/language": "npm:^6.0.0"
     "@codemirror/state": "npm:^6.2.0"
     "@codemirror/view": "npm:^6.0.0"
     "@lezer/common": "npm:^1.1.0"
-  checksum: c4b5637062c86a1c96c8de0edc32148a59058471799ef209b18f6ed57b31ab47300d3db185ab6e375188acb05294d6e6dac6ba4540ee20e8101b77d4739f778c
+  checksum: 85bf8242645e3f8c52b143883e837277795f9c50ad76f28f72d0d55ec921750f15ef5b4fa156b37e123b51e540d96c8db89b48bf0460cbe4a6f7b57271a65ba6
   languageName: node
   linkType: hard
 
@@ -9565,7 +9565,7 @@ __metadata:
     "@braintree/sanitize-url": "npm:6.0.4"
     "@bundle-stats/plugin-webpack-filter": "npm:4.8.3"
     "@codemirror/autocomplete": "npm:6.11.1"
-    "@codemirror/commands": "npm:6.3.1"
+    "@codemirror/commands": "npm:6.3.2"
     "@codemirror/language": "npm:6.9.3"
     "@codemirror/legacy-modes": "npm:6.3.3"
     "@codemirror/search": "npm:6.5.5"
