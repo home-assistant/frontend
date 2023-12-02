@@ -120,7 +120,7 @@
     "leaflet-draw": "1.0.4",
     "lit": "2.8.0",
     "luxon": "3.4.4",
-    "marked": "10.0.0",
+    "marked": "11.0.0",
     "memoize-one": "6.0.0",
     "node-vibrant": "3.2.1-alpha.1",
     "proxy-polyfill": "0.3.2",
