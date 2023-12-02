@@ -215,12 +215,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             ></ha-relative-time>
           `;
         }
-        if (content === "battery_icon") {
-          return html`<ha-state-icon
-            .icon=${stateObj.attributes[content]}
-            slot="graphic"
-          ></ha-state-icon>`;
-        }
         if (stateObj.attributes[content] == null) {
           return undefined;
         }

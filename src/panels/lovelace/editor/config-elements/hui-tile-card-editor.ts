@@ -87,6 +87,8 @@ const HIDDEN_ATTRIBUTES = [
   "unit_of_measurement",
   "visibility_unit",
   "wind_speed_unit",
+  "battery_icon",
+  "battery_level",
 ];
 
 const cardConfigStruct = assign(
