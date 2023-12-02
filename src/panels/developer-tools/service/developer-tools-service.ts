@@ -38,7 +38,13 @@ class HaPanelDevService extends LitElement {
 
   @state() private _uiAvailable = true;
 
-  @state() private _response?: Record<string, any>;
+  @storage({
+    key: "panel-dev-service-response-data",
+    state: true,
+    subscribe: false,
+    storage: "sessionStorage",
+  })
+  private _response?: Record<string, any>;
 
   @state() private _error?: string;
 

@@ -5884,7 +5884,8 @@
             "no_listeners": "This template does not listen for any events and will not update automatically.",
             "listeners": "This template listens for the following state changed events:",
             "entity": "Entity",
-            "domain": "Domain"
+            "domain": "Domain",
+            "import_service_response": "Import service response"
           },
           "statistics": {
             "title": "Statistics",

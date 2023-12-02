@@ -4,6 +4,7 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { debounce } from "../../../common/util/debounce";
+import { storage } from "../../../common/decorators/storage";
 import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
@@ -15,6 +16,8 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+
+const SERVICE_RESPONSE = "__service_response__";
 
 const DEMO_TEMPLATE = `{## Imitate available variables: ##}
 {% set my_test_json = {
@@ -52,6 +55,14 @@ class HaPanelDevTemplate extends LitElement {
   @state() private _templateResult?: RenderTemplateResult;
 
   @state() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
+
+  @storage({
+    key: "panel-dev-service-response-data",
+    state: false,
+    subscribe: true,
+    storage: "sessionStorage",
+  })
+  private _serviceResponse?: Record<string, any>;
 
   private _template = "";
 
@@ -150,6 +161,13 @@ class HaPanelDevTemplate extends LitElement {
           <mwc-button @click=${this._clear}>
             ${this.hass.localize("ui.common.clear")}
           </mwc-button>
+          ${this._serviceResponse && typeof this._serviceResponse === "object"
+            ? html`<mwc-button @click=${this._importServiceResponse}>
+                ${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.templates.import_service_response"
+                )}
+              </mwc-button>`
+            : nothing}
         </div>
 
         <div class="render-pane">
@@ -343,6 +361,16 @@ class HaPanelDevTemplate extends LitElement {
     this._error = undefined;
     this._errorLevel = undefined;
     this._templateResult = undefined;
+    let template = this._template;
+    if (
+      this._serviceResponse &&
+      typeof this._serviceResponse === "object" &&
+      template.includes(SERVICE_RESPONSE)
+    ) {
+      template = `
+       {% set ${SERVICE_RESPONSE} = ${JSON.stringify(this._serviceResponse)} %}
+       ${template}`;
+    }
     try {
       this._unsubRenderTemplate = subscribeRenderTemplate(
         this.hass.connection,
@@ -358,7 +386,7 @@ class HaPanelDevTemplate extends LitElement {
           }
         },
         {
-          template: this._template,
+          template,
           timeout: 3,
           report_errors: true,
         }
@@ -438,6 +466,12 @@ class HaPanelDevTemplate extends LitElement {
       result: "",
       listeners: { all: false, entities: [], domains: [], time: false },
     };
+  }
+
+  private _importServiceResponse() {
+    this._template += `{{ ${SERVICE_RESPONSE} }}`;
+    this._subscribeTemplate();
+    delete localStorage["panel-dev-template-template"];
   }
 }
 
