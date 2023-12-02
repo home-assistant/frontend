@@ -471,7 +471,6 @@ class HaPanelDevTemplate extends LitElement {
   private _importServiceResponse() {
     this._template += `{{ ${SERVICE_RESPONSE} }}`;
     this._subscribeTemplate();
-    delete localStorage["panel-dev-template-template"];
   }
 }
 
