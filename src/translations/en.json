@@ -865,6 +865,9 @@
       "climate-control": {
         "temperature_up": "Increase temperature",
         "temperature_down": "Decrease temperature"
+      },
+      "yaml-editor": {
+        "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
       }
     },
     "dialogs": {
