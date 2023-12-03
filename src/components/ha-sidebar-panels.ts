@@ -222,8 +222,8 @@ class HaSidebarPanels extends LitElement {
       panel.url_path === this.hass.defaultPanel && !panel.icon
         ? PANEL_ICONS.lovelace
         : panel.url_path in PANEL_ICONS
-        ? PANEL_ICONS[panel.url_path]
-        : undefined;
+          ? PANEL_ICONS[panel.url_path]
+          : undefined;
     const renderPanel = (panel: PanelInfo) =>
       panel.url_path === "config"
         ? html`<ha-sidebar-panel-config
