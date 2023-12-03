@@ -450,7 +450,7 @@ export class HaChartBase extends LitElement {
         border-radius: 4px;
         pointer-events: none;
         z-index: 1000;
-        width: 230px;
+        width: 200px;
         box-sizing: border-box;
       }
       :host([rtl]) .chartTooltip {
