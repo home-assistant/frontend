@@ -9742,7 +9742,7 @@ __metadata:
     rrule: "npm:2.8.1"
     serve-handler: "npm:6.1.5"
     sinon: "npm:17.0.1"
-    sortablejs: "npm:1.15.0"
+    sortablejs: "npm:1.15.1"
     source-map-url: "npm:0.4.1"
     stacktrace-js: "npm:2.0.2"
     superstruct: "npm:1.0.3"
@@ -14394,17 +14394,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sortablejs@npm:1.15.0":
-  version: 1.15.0
-  resolution: "sortablejs@npm:1.15.0"
-  checksum: f93a8e2f34b9fced858d09056fe9da55b022d51401cddee652b19449be99ce7b4e42f3bfad926d7e2a34ac4ca681296c5ba129f33ddbd4fc1f69c04af741049d
-  languageName: node
-  linkType: hard
-
-"sortablejs@patch:sortablejs@npm%3A1.15.0#./.yarn/patches/sortablejs-npm-1.15.0-f3a393abcc.patch::locator=home-assistant-frontend%40workspace%3A.":
-  version: 1.15.0
-  resolution: "sortablejs@patch:sortablejs@npm%3A1.15.0#./.yarn/patches/sortablejs-npm-1.15.0-f3a393abcc.patch::version=1.15.0&hash=29e891&locator=home-assistant-frontend%40workspace%3A."
-  checksum: 4d625fe45dec2b9f69ac2a0dece104ba14b99c4b1ab4f0fb249991050651c113ad5e71a2203cff4e4c93c18f18851039c33d679d05ec1ee75d5df52d893c7608
+"sortablejs@npm:1.15.1":
+  version: 1.15.1
+  resolution: "sortablejs@npm:1.15.1"
+  checksum: c4ccbc60e7936321eee0e07448e04b1f4481fed727ed1ace86866f49f9929e3acda2b7b825894e7ece5b8bc41f3c135eb4d00d09a287de1ee896d8256a0a84df
   languageName: node
   linkType: hard
 
