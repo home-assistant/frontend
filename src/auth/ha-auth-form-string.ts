@@ -41,8 +41,8 @@ export class HaAuthFormString extends HaFormString {
         !this.isPassword
           ? this.stringType
           : this.unmaskedPassword
-          ? "text"
-          : "password"
+            ? "text"
+            : "password"
       }
         .label=${this.label}
         .value=${this.data || ""}

@@ -27,7 +27,7 @@ import type {
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button-related-filter-menu";
-import "../../../components/ha-chip";
+import "../../../components/ha-label";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
@@ -202,11 +202,11 @@ class HaAutomationPicker extends LitElement {
             template: (automation) =>
               automation.disabled
                 ? html`
-                    <ha-chip>
+                    <ha-label>
                       ${this.hass.localize(
                         "ui.panel.config.automation.picker.disabled"
                       )}
-                    </ha-chip>
+                    </ha-label>
                   `
                 : "",
           };
@@ -352,10 +352,12 @@ class HaAutomationPicker extends LitElement {
     this._activeFilters = [
       this.hass.localize(
         "ui.panel.config.automation.picker.filtered_by_blueprint",
-        "name",
-        !blueprintMeta || "error" in blueprintMeta
-          ? blueprint
-          : blueprintMeta.metadata.name || blueprint
+        {
+          name:
+            !blueprintMeta || "error" in blueprintMeta
+              ? blueprint
+              : blueprintMeta.metadata.name || blueprint,
+        }
       ),
     ];
   }
@@ -431,8 +433,7 @@ class HaAutomationPicker extends LitElement {
               )
             : this.hass.localize(
                 "ui.panel.config.automation.editor.load_error_unknown",
-                "err_no",
-                err.status_code
+                { err_no: err.status_code }
               ),
       });
     }
@@ -457,8 +458,7 @@ class HaAutomationPicker extends LitElement {
       await showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.automation.editor.load_error_unknown",
-          "err_no",
-          err.status_code
+          { err_no: err.status_code }
         ),
       });
     }

@@ -151,10 +151,11 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_stateHistory")) {
-      return true;
-    }
-    return hasConfigOrEntitiesChanged(this, changedProps);
+    return (
+      hasConfigOrEntitiesChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -216,6 +217,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                   .showNames=${this._config.show_names !== undefined
                     ? this._config.show_names
                     : true}
+                  .logarithmicScale=${this._config.logarithmic_scale || false}
                 ></state-history-charts>
               `}
         </div>

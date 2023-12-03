@@ -105,10 +105,10 @@ export class HaIntegrationCard extends LitElement {
                   `ui.panel.config.integrations.config_entry.state.${entryState}`
                 )
               : debugLoggingEnabled
-              ? this.hass.localize(
-                  "ui.panel.config.integrations.config_entry.debug_logging_enabled"
-                )
-              : undefined}
+                ? this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+                  )
+                : undefined}
             .manifest=${this.manifest}
           >
           </ha-integration-header>
@@ -140,32 +140,29 @@ export class HaIntegrationCard extends LitElement {
                   `ui.panel.config.integrations.config_entry.${
                     services ? "services" : "devices"
                   }`,
-                  "count",
-                  devices.length
+                  { count: devices.length }
                 )}
               </ha-button>
             </a>`
           : entities.length > 0
-          ? html`<a
-              href=${`/config/entities?historyBack=1&domain=${this.domain}`}
-            >
-              <ha-button>
-                ${this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.entities`,
-                  "count",
-                  entities.length
-                )}
-              </ha-button>
-            </a>`
-          : html`<a href=${`/config/integrations/integration/${this.domain}`}>
-              <ha-button>
-                ${this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.entries`,
-                  "count",
-                  this.items.length
-                )}
-              </ha-button>
-            </a>`}
+            ? html`<a
+                href=${`/config/entities?historyBack=1&domain=${this.domain}`}
+              >
+                <ha-button>
+                  ${this.hass.localize(
+                    `ui.panel.config.integrations.config_entry.entities`,
+                    { count: entities.length }
+                  )}
+                </ha-button>
+              </a>`
+            : html`<a href=${`/config/integrations/integration/${this.domain}`}>
+                <ha-button>
+                  ${this.hass.localize(
+                    `ui.panel.config.integrations.config_entry.entries`,
+                    { count: this.items.length }
+                  )}
+                </ha-button>
+              </a>`}
         <div class="icons">
           ${this.manifest && !this.manifest.is_built_in
             ? html`<span class="icon custom">

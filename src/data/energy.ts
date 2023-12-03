@@ -581,6 +581,28 @@ const clearEnergyCollectionPreferences = (hass: HomeAssistant) => {
   });
 };
 
+const scheduleHourlyRefresh = (collection: EnergyCollection) => {
+  if (collection._refreshTimeout) {
+    clearTimeout(collection._refreshTimeout);
+  }
+
+  if (collection._active && (!collection.end || collection.end > new Date())) {
+    // The stats are created every hour
+    // Schedule a refresh for 20 minutes past the hour
+    // If the end is larger than the current time.
+    const nextFetch = new Date();
+    if (nextFetch.getMinutes() >= 20) {
+      nextFetch.setHours(nextFetch.getHours() + 1);
+    }
+    nextFetch.setMinutes(20, 0, 0);
+
+    collection._refreshTimeout = window.setTimeout(
+      () => collection.refresh(),
+      nextFetch.getTime() - Date.now()
+    );
+  }
+};
+
 export const getEnergyDataCollection = (
   hass: HomeAssistant,
   options: { prefs?: EnergyPreferences; key?: string } = {}
@@ -609,28 +631,7 @@ export const getEnergyDataCollection = (
         collection.prefs = await getEnergyPreferences(hass);
       }
 
-      if (collection._refreshTimeout) {
-        clearTimeout(collection._refreshTimeout);
-      }
-
-      if (
-        collection._active &&
-        (!collection.end || collection.end > new Date())
-      ) {
-        // The stats are created every hour
-        // Schedule a refresh for 20 minutes past the hour
-        // If the end is larger than the current time.
-        const nextFetch = new Date();
-        if (nextFetch.getMinutes() >= 20) {
-          nextFetch.setHours(nextFetch.getHours() + 1);
-        }
-        nextFetch.setMinutes(20, 0, 0);
-
-        collection._refreshTimeout = window.setTimeout(
-          () => collection.refresh(),
-          nextFetch.getTime() - Date.now()
-        );
-      }
+      scheduleHourlyRefresh(collection);
 
       return getEnergyData(
         hass,
@@ -647,6 +648,11 @@ export const getEnergyDataCollection = (
   collection.subscribe = (subscriber: (data: EnergyData) => void) => {
     const unsub = origSubscribe(subscriber);
     collection._active++;
+
+    if (collection._refreshTimeout === undefined) {
+      scheduleHourlyRefresh(collection);
+    }
+
     return () => {
       collection._active--;
       if (collection._active < 1) {
@@ -767,8 +773,8 @@ export const getEnergyGasUnit = (
   return unitClass === "energy"
     ? "kWh"
     : hass.config.unit_system.length === "km"
-    ? "m³"
-    : "ft³";
+      ? "m³"
+      : "ft³";
 };
 
 export const getEnergyWaterUnit = (hass: HomeAssistant): string | undefined =>

@@ -49,7 +49,6 @@ declare global {
     };
     change: undefined;
     "hass-logout": undefined;
-    "iron-resize": undefined;
     "config-refresh": undefined;
     "hass-api-called": {
       success: boolean;
@@ -291,7 +290,7 @@ export type AsyncReturnType<T extends (...args: any) => any> = T extends (
 ) => Promise<infer U>
   ? U
   : T extends (...args: any) => infer U
-  ? U
-  : never;
+    ? U
+    : never;
 
 export type Entries<T> = [keyof T, T[keyof T]][];

@@ -5,6 +5,7 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeRTL } from "../common/util/compute_rtl";
+import { type ActionHandlerDetail } from "../data/lovelace/action_handler";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
@@ -86,12 +87,12 @@ class HaSidebarTitle extends LitElement {
     </div>`;
   }
 
-  private _toggleSidebar(ev: CustomEvent) {
+  private _toggleSidebar(ev: CustomEvent<ActionHandlerDetail>) {
     if (ev.detail.action !== "tap") return;
     fireEvent(this, "hass-toggle-menu");
   }
 
-  private _editModeOn(ev: CustomEvent) {
+  private _editModeOn(ev: CustomEvent<ActionHandlerDetail>) {
     if (ev.detail.action !== "hold") return;
     fireEvent(this, "hass-edit-sidebar", { editMode: true });
   }

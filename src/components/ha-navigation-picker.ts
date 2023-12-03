@@ -3,12 +3,9 @@ import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { titleCase } from "../common/string/title-case";
-import {
-  fetchConfig,
-  LovelaceConfig,
-  LovelaceViewConfig,
-} from "../data/lovelace";
-import { ValueChangedEvent, HomeAssistant, PanelInfo } from "../types";
+import { fetchConfig } from "../data/lovelace/config/types";
+import { LovelaceViewRawConfig } from "../data/lovelace/config/view";
+import { HomeAssistant, PanelInfo, ValueChangedEvent } from "../types";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-icon";
@@ -32,7 +29,7 @@ const rowRenderer: ComboBoxLitRenderer<NavigationItem> = (item) => html`
 
 const createViewNavigationItem = (
   prefix: string,
-  view: LovelaceViewConfig,
+  view: LovelaceViewRawConfig,
   index: number
 ) => ({
   path: `/${prefix}/${view.path ?? index}`,
@@ -121,7 +118,7 @@ export class HaNavigationPicker extends LitElement {
           panel.url_path === "lovelace" ? null : panel.url_path,
           true
         )
-          .then((config) => [panel.id, config] as [string, LovelaceConfig])
+          .then((config) => [panel.id, config] as [string, typeof config])
           .catch((_) => [panel.id, undefined] as [string, undefined])
       )
     );
@@ -135,7 +132,7 @@ export class HaNavigationPicker extends LitElement {
 
       const config = panelViewConfig.get(panel.id);
 
-      if (!config) continue;
+      if (!config || !("views" in config)) continue;
 
       config.views.forEach((view, index) =>
         this.navigationItems.push(

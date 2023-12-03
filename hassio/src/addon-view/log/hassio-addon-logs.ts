@@ -72,11 +72,9 @@ class HassioAddonLogs extends LitElement {
     try {
       this._content = await fetchHassioAddonLogs(this.hass, this.addon.slug);
     } catch (err: any) {
-      this._error = this.supervisor.localize(
-        "addon.logs.get_logs",
-        "error",
-        extractApiErrorMessage(err)
-      );
+      this._error = this.supervisor.localize("addon.logs.get_logs", {
+        error: extractApiErrorMessage(err),
+      });
     }
   }
 

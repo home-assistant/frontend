@@ -73,6 +73,8 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean }) public isLoadingData = false;
 
+  @property({ type: Boolean }) public logarithmicScale = false;
+
   private _computedStartTime!: Date;
 
   private _computedEndTime!: Date;
@@ -159,6 +161,7 @@ export class StateHistoryCharts extends LitElement {
           .names=${this.names}
           .chartIndex=${index}
           .clickForMoreInfo=${this.clickForMoreInfo}
+          .logarithmicScale=${this.logarithmicScale}
           @y-width-changed=${this._yWidthChanged}
         ></state-history-chart-line>
       </div> `;
@@ -298,6 +301,11 @@ export class StateHistoryCharts extends LitElement {
       :host([virtualize]) .entry-container {
         padding-left: 1px;
         padding-right: 1px;
+      }
+
+      .entry-container:not(:first-child) {
+        border-top: 2px solid var(--divider-color);
+        margin-top: 16px;
       }
 
       .container,

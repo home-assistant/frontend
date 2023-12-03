@@ -64,7 +64,7 @@ export class HaFileUpload extends LitElement {
                 >${this.value
                   ? this.hass?.localize(
                       "ui.components.file-upload.uploading_name",
-                      { name: this.value }
+                      { name: this.value.toString() }
                     )
                   : this.hass?.localize(
                       "ui.components.file-upload.uploading"
@@ -112,40 +112,40 @@ export class HaFileUpload extends LitElement {
                   >
                   <span class="supports">${this.supports}</span>`
               : typeof this.value === "string"
-              ? html`<div class="row">
-                  <div class="value" @click=${this._openFilePicker}>
-                    <ha-svg-icon
-                      .path=${this.icon || mdiFileUpload}
-                    ></ha-svg-icon>
-                    ${this.value}
-                  </div>
-                  <ha-icon-button
-                    @click=${this._clearValue}
-                    .label=${this.hass?.localize("ui.common.delete") ||
-                    "Delete"}
-                    .path=${mdiDelete}
-                  ></ha-icon-button>
-                </div>`
-              : (this.value instanceof FileList
-                  ? Array.from(this.value)
-                  : ensureArray(this.value)
-                ).map(
-                  (file) =>
-                    html`<div class="row">
-                      <div class="value" @click=${this._openFilePicker}>
-                        <ha-svg-icon
-                          .path=${this.icon || mdiFileUpload}
-                        ></ha-svg-icon>
-                        ${file.name} - ${bytesToString(file.size)}
-                      </div>
-                      <ha-icon-button
-                        @click=${this._clearValue}
-                        .label=${this.hass?.localize("ui.common.delete") ||
-                        "Delete"}
-                        .path=${mdiDelete}
-                      ></ha-icon-button>
-                    </div>`
-                )}
+                ? html`<div class="row">
+                    <div class="value" @click=${this._openFilePicker}>
+                      <ha-svg-icon
+                        .path=${this.icon || mdiFileUpload}
+                      ></ha-svg-icon>
+                      ${this.value}
+                    </div>
+                    <ha-icon-button
+                      @click=${this._clearValue}
+                      .label=${this.hass?.localize("ui.common.delete") ||
+                      "Delete"}
+                      .path=${mdiDelete}
+                    ></ha-icon-button>
+                  </div>`
+                : (this.value instanceof FileList
+                    ? Array.from(this.value)
+                    : ensureArray(this.value)
+                  ).map(
+                    (file) =>
+                      html`<div class="row">
+                        <div class="value" @click=${this._openFilePicker}>
+                          <ha-svg-icon
+                            .path=${this.icon || mdiFileUpload}
+                          ></ha-svg-icon>
+                          ${file.name} - ${bytesToString(file.size)}
+                        </div>
+                        <ha-icon-button
+                          @click=${this._clearValue}
+                          .label=${this.hass?.localize("ui.common.delete") ||
+                          "Delete"}
+                          .path=${mdiDelete}
+                        ></ha-icon-button>
+                      </div>`
+                  )}
             <input
               id="input"
               type="file"

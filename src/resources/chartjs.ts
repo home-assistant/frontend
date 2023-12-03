@@ -12,6 +12,7 @@ import {
   Chart,
   BarElement,
   BarController,
+  LogarithmicScale,
 } from "chart.js";
 import { TextBarElement } from "../components/chart/timeline-chart/textbar-element";
 import { TimelineController } from "../components/chart/timeline-chart/timeline-controller";
@@ -35,5 +36,6 @@ Chart.register(
   TextBarElement,
   TimeLineScale,
   TimelineController,
-  CategoryScale
+  CategoryScale,
+  LogarithmicScale
 );

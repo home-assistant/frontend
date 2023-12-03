@@ -27,7 +27,7 @@ import {
   fuzzyFilterSort,
 } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
-import "../../components/ha-chip";
+import "../../components/ha-label";
 import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
@@ -217,35 +217,36 @@ export class QuickBar extends LitElement {
               active
             ></ha-circular-progress>`
           : items.length === 0
-          ? html`
-              <div class="nothing-found">
-                ${this.hass.localize("ui.dialogs.quick-bar.nothing_found")}
-              </div>
-            `
-          : html`
-              <mwc-list>
-                ${this._opened
-                  ? html`<lit-virtualizer
-                      scroller
-                      @keydown=${this._handleListItemKeyDown}
-                      @rangechange=${this._handleRangeChanged}
-                      @click=${this._handleItemClick}
-                      class="ha-scrollbar"
-                      style=${styleMap({
-                        height: this._narrow
-                          ? "calc(100vh - 56px)"
-                          : `${Math.min(
-                              items.length * (this._commandMode ? 56 : 72) + 26,
-                              500
-                            )}px`,
-                      })}
-                      .items=${items}
-                      .renderItem=${this._renderItem}
-                    >
-                    </lit-virtualizer>`
-                  : ""}
-              </mwc-list>
-            `}
+            ? html`
+                <div class="nothing-found">
+                  ${this.hass.localize("ui.dialogs.quick-bar.nothing_found")}
+                </div>
+              `
+            : html`
+                <mwc-list>
+                  ${this._opened
+                    ? html`<lit-virtualizer
+                        scroller
+                        @keydown=${this._handleListItemKeyDown}
+                        @rangechange=${this._handleRangeChanged}
+                        @click=${this._handleItemClick}
+                        class="ha-scrollbar"
+                        style=${styleMap({
+                          height: this._narrow
+                            ? "calc(100vh - 56px)"
+                            : `${Math.min(
+                                items.length * (this._commandMode ? 56 : 72) +
+                                  26,
+                                500
+                              )}px`,
+                        })}
+                        .items=${items}
+                        .renderItem=${this._renderItem}
+                      >
+                      </lit-virtualizer>`
+                    : ""}
+                </mwc-list>
+              `}
         ${this._hint
           ? html`<ha-tip .hass=${this.hass}>${this._hint}</ha-tip>`
           : ""}
@@ -326,19 +327,17 @@ export class QuickBar extends LitElement {
         hasMeta
       >
         <span>
-          <ha-chip
+          <ha-label
             .label=${item.categoryText}
-            hasIcon
             class="command-category ${item.categoryKey}"
           >
             ${item.iconPath
-              ? html`<ha-svg-icon
-                  .path=${item.iconPath}
-                  slot="icon"
-                ></ha-svg-icon>`
-              : ""}
-            ${item.categoryText}</ha-chip
-          >
+              ? html`
+                  <ha-svg-icon .path=${item.iconPath} slot="icon"></ha-svg-icon>
+                `
+              : nothing}
+            ${item.categoryText}
+          </ha-label>
         </span>
 
         <span class="command-text">${item.primaryText}</span>
@@ -524,11 +523,9 @@ export class QuickBar extends LitElement {
     const commands = reloadableDomains.map((domain) => ({
       primaryText:
         this.hass.localize(`ui.dialogs.quick-bar.commands.reload.${domain}`) ||
-        this.hass.localize(
-          "ui.dialogs.quick-bar.commands.reload.reload",
-          "domain",
-          domainToName(localize, domain)
-        ),
+        this.hass.localize("ui.dialogs.quick-bar.commands.reload.reload", {
+          domain: domainToName(localize, domain),
+        }),
       action: () => this.hass.callService(domain, "reload"),
       iconPath: mdiReload,
       categoryText: this.hass.localize(
@@ -589,10 +586,11 @@ export class QuickBar extends LitElement {
       const item = {
         primaryText: this.hass.localize(
           "ui.dialogs.quick-bar.commands.server_control.perform_action",
-          "action",
-          this.hass.localize(
-            `ui.dialogs.quick-bar.commands.server_control.${action}`
-          )
+          {
+            action: this.hass.localize(
+              `ui.dialogs.quick-bar.commands.server_control.${action}`
+            ),
+          }
         ),
         iconPath: mdiServerNetwork,
         categoryText: this.hass.localize(
@@ -766,6 +764,7 @@ export class QuickBar extends LitElement {
       haStyleDialog,
       css`
         mwc-list {
+          position: relative;
           --mdc-list-vertical-padding: 0;
         }
         .heading {
@@ -815,20 +814,20 @@ export class QuickBar extends LitElement {
         }
 
         .command-category {
-          --ha-chip-icon-color: #585858;
-          --ha-chip-text-color: #212121;
+          --ha-label-icon-color: #585858;
+          --ha-label-text-color: #212121;
         }
 
         .command-category.reload {
-          --ha-chip-background-color: #cddc39;
+          --ha-label-background-color: #cddc39;
         }
 
         .command-category.navigation {
-          --ha-chip-background-color: var(--light-primary-color);
+          --ha-label-background-color: var(--light-primary-color);
         }
 
         .command-category.server_control {
-          --ha-chip-background-color: var(--warning-color);
+          --ha-label-background-color: var(--warning-color);
         }
 
         span.command-text {

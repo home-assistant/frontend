@@ -2,12 +2,12 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { Person } from "../../data/person";
+import { BasePerson } from "../../data/person";
 import { computeUserInitials } from "../../data/user";
 
 @customElement("ha-person-badge")
 class PersonBadge extends LitElement {
-  @property({ attribute: false }) public person?: Person;
+  @property({ attribute: false }) public person?: BasePerson;
 
   protected render() {
     if (!this.person) {
@@ -33,25 +33,29 @@ class PersonBadge extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        display: contents;
-      }
-      .picture {
         width: 40px;
         height: 40px;
+        display: block;
+      }
+      .picture {
+        width: 100%;
+        height: 100%;
         background-size: cover;
         border-radius: 50%;
       }
       .initials {
-        display: inline-block;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
         box-sizing: border-box;
-        width: 40px;
-        line-height: 40px;
+        width: 100%;
+        height: 100%;
         border-radius: 50%;
-        text-align: center;
         background-color: var(--light-primary-color);
         text-decoration: none;
         color: var(--text-light-primary-color, var(--primary-text-color));
         overflow: hidden;
+        font-size: var(--person-badge-font-size, 1em);
       }
       .initials.long {
         font-size: 80%;

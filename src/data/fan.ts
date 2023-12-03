@@ -89,8 +89,8 @@ export function computeFanSpeedIcon(
   return speed === "on"
     ? mdiFan
     : speed === "off"
-    ? mdiFanOff
-    : [mdiFanSpeed1, mdiFanSpeed2, mdiFanSpeed3][index - 1];
+      ? mdiFanOff
+      : [mdiFanSpeed1, mdiFanSpeed2, mdiFanSpeed3][index - 1];
 }
 export const FAN_SPEED_COUNT_MAX_FOR_BUTTONS = 4;
 

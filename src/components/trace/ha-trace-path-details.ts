@@ -62,8 +62,8 @@ export class HaTracePathDetails extends LitElement {
       ${this._view === "config"
         ? this._renderSelectedConfig()
         : this._view === "changed_variables"
-        ? this._renderChangedVars()
-        : this._renderLogbook()}
+          ? this._renderChangedVars()
+          : this._renderLogbook()}
     `;
   }
 
@@ -134,8 +134,8 @@ export class HaTracePathDetails extends LitElement {
               ? html`Result:
                   <pre>${dump(result)}</pre>`
               : error
-              ? html`<div class="error">Error: ${error}</div>`
-              : ""}
+                ? html`<div class="error">Error: ${error}</div>`
+                : ""}
             ${Object.keys(rest).length === 0
               ? ""
               : html`<pre>${dump(rest)}</pre>`}

@@ -66,6 +66,9 @@ export class HaControlCircularSlider extends LitElement {
   @property({ type: Boolean, reflect: true })
   public disabled = false;
 
+  @property({ type: Boolean, reflect: true })
+  public readonly = false;
+
   @property({ type: Boolean })
   public dual?: boolean;
 
@@ -258,7 +261,7 @@ export class HaControlCircularSlider extends LitElement {
         e.srcEvent.preventDefault();
       });
       this._mc.on("panstart", (e) => {
-        if (this.disabled) return;
+        if (this.disabled || this.readonly) return;
         const percentage = this._getPercentageFromEvent(e);
         const raw = this._percentageToValue(percentage);
         this._activeSlider = this._findActiveSlider(raw);
@@ -266,11 +269,11 @@ export class HaControlCircularSlider extends LitElement {
         this.shadowRoot?.getElementById("#slider")?.focus();
       });
       this._mc.on("pancancel", () => {
-        if (this.disabled) return;
+        if (this.disabled || this.readonly) return;
         this._activeSlider = undefined;
       });
       this._mc.on("panmove", (e) => {
-        if (this.disabled) return;
+        if (this.disabled || this.readonly) return;
         const percentage = this._getPercentageFromEvent(e);
         const raw = this._percentageToValue(percentage);
         const bounded = this._boundedValue(raw);
@@ -281,7 +284,7 @@ export class HaControlCircularSlider extends LitElement {
         }
       });
       this._mc.on("panend", (e) => {
-        if (this.disabled) return;
+        if (this.disabled || this.readonly) return;
         const percentage = this._getPercentageFromEvent(e);
         const raw = this._percentageToValue(percentage);
         const bounded = this._boundedValue(raw);
@@ -296,7 +299,7 @@ export class HaControlCircularSlider extends LitElement {
         this._activeSlider = undefined;
       });
       this._mc.on("singletap", (e) => {
-        if (this.disabled) return;
+        if (this.disabled || this.readonly) return;
         const percentage = this._getPercentageFromEvent(e);
         const raw = this._percentageToValue(percentage);
         this._activeSlider = this._findActiveSlider(raw);
@@ -433,23 +436,29 @@ export class HaControlCircularSlider extends LitElement {
       mode === "end"
         ? target <= current
         : mode === "start"
-        ? current <= target
-        : false;
+          ? current <= target
+          : false;
 
-    const activeArc = showActive
-      ? mode === "end"
-        ? this._strokeDashArc(target, current)
-        : this._strokeDashArc(current, target)
-      : this._strokeCircleDashArc(target);
+    const showTarget = value != null;
+
+    const activeArc = showTarget
+      ? showActive
+        ? mode === "end"
+          ? this._strokeDashArc(target, current)
+          : this._strokeDashArc(current, target)
+        : this._strokeCircleDashArc(target)
+      : undefined;
 
     const coloredArc =
       mode === "full"
         ? this._strokeDashArc(this.min, this.max)
         : mode === "end"
-        ? this._strokeDashArc(target, limit)
-        : this._strokeDashArc(limit, target);
+          ? this._strokeDashArc(target, limit)
+          : this._strokeDashArc(limit, target);
 
-    const targetCircle = this._strokeCircleDashArc(target);
+    const targetCircle = showTarget
+      ? this._strokeCircleDashArc(target)
+      : undefined;
 
     const currentCircle =
       this.current != null &&
@@ -473,26 +482,33 @@ export class HaControlCircularSlider extends LitElement {
           stroke-dasharray=${coloredArc[0]}
           stroke-dashoffset=${coloredArc[1]}
         />
-        <path
-          .id=${id}
-          d=${path}
-          class="arc arc-active ${classMap({ [id]: true })}"
-          stroke-dasharray=${activeArc[0]}
-          stroke-dashoffset=${activeArc[1]}
-          role="slider"
-          tabindex="0"
-          aria-valuemin=${this.min}
-          aria-valuemax=${this.max}
-          aria-valuenow=${
-            this._localValue != null
-              ? this._steppedValue(this._localValue)
-              : undefined
-          }
-          aria-disabled=${this.disabled}
-          aria-label=${ifDefined(this.lowLabel ?? this.label)}
-          @keydown=${this._handleKeyDown}
-          @keyup=${this._handleKeyUp}
-        />
+        ${
+          activeArc
+            ? svg`
+              <path
+                .id=${id}
+                d=${path}
+                class="arc arc-active ${classMap({ [id]: true })}"
+                stroke-dasharray=${activeArc[0]}
+                stroke-dashoffset=${activeArc[1]}
+                role="slider"
+                tabindex="0"
+                aria-valuemin=${this.min}
+                aria-valuemax=${this.max}
+                aria-valuenow=${
+                  this._localValue != null
+                    ? this._steppedValue(this._localValue)
+                    : undefined
+                }
+                aria-disabled=${this.disabled}
+                aria-readonly=${this.readonly}
+                aria-label=${ifDefined(this.lowLabel ?? this.label)}
+                @keydown=${this._handleKeyDown}
+                @keyup=${this._handleKeyUp}
+              />
+            `
+            : nothing
+        }
         ${
           currentCircle
             ? svg`
@@ -505,18 +521,24 @@ export class HaControlCircularSlider extends LitElement {
           `
             : nothing
         }
-        <path
-          class="target-border ${classMap({ [id]: true })}"
-          d=${path}
-          stroke-dasharray=${targetCircle[0]}
-          stroke-dashoffset=${targetCircle[1]}
-        />
-        <path
-          class="target"
-          d=${path}
-          stroke-dasharray=${targetCircle[0]}
-          stroke-dashoffset=${targetCircle[1]}
-        />
+        ${
+          targetCircle
+            ? svg`
+              <path
+                class="target-border ${classMap({ [id]: true })}"
+                d=${path}
+                stroke-dasharray=${targetCircle[0]}
+                stroke-dashoffset=${targetCircle[1]}
+              />
+              <path
+                class="target"
+                d=${path}
+                stroke-dasharray=${targetCircle[0]}
+                stroke-dashoffset=${targetCircle[1]}
+              />
+          `
+            : nothing
+        }
       </g>
     `;
   }
@@ -568,7 +590,7 @@ export class HaControlCircularSlider extends LitElement {
                   />
                 `
               : nothing}
-            ${lowValue != null
+            ${lowValue != null || this.mode === "full"
               ? this.renderArc(
                   this.dual ? "low" : "value",
                   lowValue,
@@ -596,9 +618,11 @@ export class HaControlCircularSlider extends LitElement {
         --control-circular-slider-high-color: var(
           --control-circular-slider-color
         );
+        width: 320px;
+        display: block;
       }
       svg {
-        width: 320px;
+        width: 100%;
         display: block;
       }
       #slider {
@@ -615,7 +639,8 @@ export class HaControlCircularSlider extends LitElement {
       #display {
         pointer-events: none;
       }
-      :host([disabled]) #interaction {
+      :host([disabled]) #interaction,
+      :host([readonly]) #interaction {
         cursor: initial;
       }
 

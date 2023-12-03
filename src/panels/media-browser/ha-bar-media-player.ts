@@ -109,6 +109,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     if (this._progressInterval) {
       clearInterval(this._progressInterval);
       this._progressInterval = undefined;
@@ -184,32 +185,32 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     const controls: ControlButton[] | undefined = !this.narrow
       ? computeMediaControls(stateObj, true)
       : (stateObj.state === "playing" &&
-          (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE) ||
-            supportsFeature(stateObj, MediaPlayerEntityFeature.STOP))) ||
-        ((stateObj.state === "paused" || stateObj.state === "idle") &&
-          supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) ||
-        (stateObj.state === "on" &&
-          (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY) ||
-            supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)))
-      ? [
-          {
-            icon:
-              stateObj.state === "on"
-                ? mdiPlayPause
-                : stateObj.state !== "playing"
-                ? mdiPlay
-                : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-                ? mdiPause
-                : mdiStop,
-            action:
-              stateObj.state !== "playing"
-                ? "media_play"
-                : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-                ? "media_pause"
-                : "media_stop",
-          },
-        ]
-      : undefined;
+            (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE) ||
+              supportsFeature(stateObj, MediaPlayerEntityFeature.STOP))) ||
+          ((stateObj.state === "paused" || stateObj.state === "idle") &&
+            supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) ||
+          (stateObj.state === "on" &&
+            (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY) ||
+              supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)))
+        ? [
+            {
+              icon:
+                stateObj.state === "on"
+                  ? mdiPlayPause
+                  : stateObj.state !== "playing"
+                    ? mdiPlay
+                    : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
+                      ? mdiPause
+                      : mdiStop,
+              action:
+                stateObj.state !== "playing"
+                  ? "media_play"
+                  : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
+                    ? "media_pause"
+                    : "media_stop",
+            },
+          ]
+        : undefined;
     const mediaDescription = computeMediaDescription(stateObj);
     const mediaDuration = formatMediaTime(stateObj.attributes.media_duration);
     const mediaTitleClean = cleanupMediaTitle(
@@ -275,14 +276,14 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
               ${stateObj.attributes.media_duration === Infinity
                 ? nothing
                 : this.narrow
-                ? html`<mwc-linear-progress></mwc-linear-progress>`
-                : html`
-                    <div class="progress">
-                      <div id="CurrentProgress"></div>
-                      <mwc-linear-progress wide></mwc-linear-progress>
-                      <div>${mediaDuration}</div>
-                    </div>
-                  `}
+                  ? html`<mwc-linear-progress></mwc-linear-progress>`
+                  : html`
+                      <div class="progress">
+                        <div id="CurrentProgress"></div>
+                        <mwc-linear-progress wide></mwc-linear-progress>
+                        <div>${mediaDuration}</div>
+                      </div>
+                    `}
             `}
       </div>
       ${this._renderChoosePlayer(stateObj)}

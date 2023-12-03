@@ -405,24 +405,24 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 </div>
               `
             : this._mode === "yaml"
-            ? html`
-                <ha-yaml-editor
-                  .hass=${this.hass}
-                  .defaultValue=${this._preprocessYaml()}
-                  .readOnly=${this._readOnly}
-                  @value-changed=${this._yamlChanged}
-                ></ha-yaml-editor>
-                <ha-card outlined>
-                  <div class="card-actions">
-                    <mwc-button @click=${this._copyYaml}>
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.copy_to_clipboard"
-                      )}
-                    </mwc-button>
-                  </div>
-                </ha-card>
-              `
-            : ``}
+              ? html`
+                  <ha-yaml-editor
+                    .hass=${this.hass}
+                    .defaultValue=${this._preprocessYaml()}
+                    .readOnly=${this._readOnly}
+                    @value-changed=${this._yamlChanged}
+                  ></ha-yaml-editor>
+                  <ha-card outlined>
+                    <div class="card-actions">
+                      <mwc-button @click=${this._copyYaml}>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.copy_to_clipboard"
+                        )}
+                      </mwc-button>
+                    </div>
+                  </ha-card>
+                `
+              : ``}
         </div>
         <ha-fab
           slot="fab"
@@ -483,8 +483,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 )
               : this.hass.localize(
                   "ui.panel.config.script.editor.load_error_unknown",
-                  "err_no",
-                  resp.status_code || resp.code
+                  { err_no: resp.status_code || resp.code }
                 )
           );
           history.back();
@@ -628,11 +627,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     ev.stopPropagation();
     await triggerScript(this.hass, this.scriptId!);
     showToast(this, {
-      message: this.hass.localize(
-        "ui.notification_toast.triggered",
-        "name",
-        this._config!.alias
-      ),
+      message: this.hass.localize("ui.notification_toast.triggered", {
+        name: this._config!.alias,
+      }),
     });
   }
 

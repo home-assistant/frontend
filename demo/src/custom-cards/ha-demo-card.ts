@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-circular-progress";
-import { LovelaceCardConfig } from "../../../src/data/lovelace";
+import { LovelaceCardConfig } from "../../../src/data/lovelace/config/card";
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { Lovelace, LovelaceCard } from "../../../src/panels/lovelace/types";
 import {
@@ -48,8 +48,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
                         <a target="_blank" href=${conf.authorUrl}>
                           ${this.hass.localize(
                             "ui.panel.page-demo.cards.demo.demo_by",
-                            "name",
-                            conf.authorName
+                            { name: conf.authorName }
                           )}
                         </a>
                       </small>

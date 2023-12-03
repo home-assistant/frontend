@@ -14,10 +14,8 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
-import type {
-  LovelaceViewConfig,
-  LovelaceViewElement,
-} from "../../../data/lovelace";
+import type { LovelaceViewElement } from "../../../data/lovelace";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
 import { computeCardSize } from "../common/compute-card-size";
@@ -65,11 +63,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   private _mqls?: MediaQueryList[];
 
   private _mqlListenerRef?: () => void;
-
-  public constructor() {
-    super();
-    this.addEventListener("iron-resize", (ev: Event) => ev.stopPropagation());
-  }
 
   public connectedCallback() {
     super.connectedCallback();

@@ -1,21 +1,24 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
   nothing,
 } from "lit";
+import { mdiPencil } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
-import { LovelaceConfig } from "../../data/lovelace";
+import "../../components/ha-list-item";
+import "../../components/ha-top-app-bar-fixed";
+import { LovelaceConfig } from "../../data/lovelace/config/types";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-energy-period-selector";
 import { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
-import "../../components/ha-top-app-bar-fixed";
+import { navigate } from "../../common/navigate";
 
 const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {
   views: [
@@ -71,7 +74,21 @@ class PanelEnergy extends LitElement {
           <hui-energy-period-selector
             .hass=${this.hass}
             collectionKey="energy_dashboard"
-          ></hui-energy-period-selector>
+          >
+            ${this.hass.user?.is_admin
+              ? html`
+                  <ha-list-item
+                    slot="overflow-menu"
+                    graphic="icon"
+                    @request-selected=${this._navigateConfig}
+                  >
+                    <ha-svg-icon slot="graphic" .path=${mdiPencil}>
+                    </ha-svg-icon>
+                    ${this.hass!.localize("ui.panel.energy.configure")}
+                  </ha-list-item>
+                `
+              : nothing}
+          </hui-energy-period-selector>
         </div>
       </div>
       <hui-view
@@ -98,6 +115,11 @@ class PanelEnergy extends LitElement {
       deleteConfig: async () => undefined,
       setEditMode: () => undefined,
     };
+  }
+
+  private _navigateConfig(ev) {
+    ev.stopPropagation();
+    navigate("/config/energy?historyBack=1");
   }
 
   private _reloadView() {

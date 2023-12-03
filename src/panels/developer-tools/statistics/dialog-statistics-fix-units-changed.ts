@@ -36,7 +36,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
     if (!this._params) {
       return nothing;
     }
-    /* eslint-disable lit/quoted-expressions */
+
     return html`
       <ha-dialog
         open
@@ -46,17 +46,26 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
         )}
       >
         <p>
-          The unit of this entity changed to
-          '${this._params.issue.data.state_unit}' which can't be converted to
-          the previously stored unit,
-          '${this._params.issue.data.metadata_unit}'.
-          <br />If the historic statistic values have a wrong unit, you can
-          update the units of the old values. The values will not be updated.<br />Otherwise
-          you can choose to delete all historic statistic values, and start
-          over.
+          ${this.hass.localize(
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.info_text_1",
+            {
+              current_unit: this._params.issue.data.state_unit,
+              previous_unit: this._params.issue.data.metadata_unit,
+            }
+          )}<br />
+          ${this.hass.localize(
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.info_text_2"
+          )}<br />
+          ${this.hass.localize(
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.info_text_3"
+          )}
         </p>
 
-        <h3>How do you want to fix this issue?</h3>
+        <h3>
+          ${this.hass.localize(
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.how_to_fix"
+          )}
+        </h3>
         <ha-formfield
           .label=${this.hass.localize(
             "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.update",
@@ -94,7 +103,6 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
         </mwc-button>
       </ha-dialog>
     `;
-    /* eslint-enable lit/quoted-expressions */
   }
 
   private _handleActionChanged(ev): void {
