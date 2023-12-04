@@ -97,7 +97,7 @@ export class SystemLogCard extends LitElement {
           ${this._items === undefined
             ? html`
                 <div class="loading-container">
-                  <ha-circular-progress active></ha-circular-progress>
+                  <ha-circular-progress indeterminate></ha-circular-progress>
                 </div>
               `
             : html`

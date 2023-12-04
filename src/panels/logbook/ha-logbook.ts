@@ -107,10 +107,7 @@ export class HaLogbook extends LitElement {
     if (this._logbookEntries === undefined) {
       return html`
         <div class="progress-wrapper">
-          <ha-circular-progress
-            active
-            alt=${this.hass.localize("ui.common.loading")}
-          ></ha-circular-progress>
+          <ha-circular-progress indeterminate></ha-circular-progress>
         </div>
       `;
     }

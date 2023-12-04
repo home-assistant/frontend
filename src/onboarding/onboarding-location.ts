@@ -123,7 +123,7 @@ class OnboardingLocation extends LitElement {
             ? html`
                 <ha-circular-progress
                   slot="trailingIcon"
-                  active
+                  indeterminate
                   size="small"
                 ></ha-circular-progress>
               `

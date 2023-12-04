@@ -163,9 +163,9 @@ class DialogImportBlueprint extends LitElement {
               >
                 ${this._importing
                   ? html`<ha-circular-progress
-                      active
+                      indeterminate
                       size="small"
-                      .title=${this.hass.localize(
+                      .ariaLabel=${this.hass.localize(
                         "ui.panel.config.blueprint.add.importing"
                       )}
                     ></ha-circular-progress>`
@@ -183,9 +183,9 @@ class DialogImportBlueprint extends LitElement {
               >
                 ${this._saving
                   ? html`<ha-circular-progress
-                      active
+                      indeterminate
                       size="small"
-                      .title=${this.hass.localize(
+                      .ariaLabel=${this.hass.localize(
                         "ui.panel.config.blueprint.add.saving"
                       )}
                     ></ha-circular-progress>`

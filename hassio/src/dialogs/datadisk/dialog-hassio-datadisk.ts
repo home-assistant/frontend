@@ -71,7 +71,11 @@ class HassioDatadiskDialog extends LitElement {
         ?hideActions=${this.moving}
       >
         ${this.moving
-          ? html` <ha-circular-progress alt="Moving" size="large" active>
+          ? html` <ha-circular-progress
+                aria-label="Moving"
+                size="large"
+                indeterminate
+              >
               </ha-circular-progress>
               <p class="progress-text">
                 ${this.dialogParams.supervisor.localize(

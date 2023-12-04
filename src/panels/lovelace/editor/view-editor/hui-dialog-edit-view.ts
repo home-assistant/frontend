@@ -323,9 +323,9 @@ export class HuiDialogEditView extends LitElement {
         >
           ${this._saving
             ? html`<ha-circular-progress
-                active
+                indeterminate
                 size="small"
-                title="Saving"
+                aria-label="Saving"
               ></ha-circular-progress>`
             : ""}
           ${this.hass!.localize("ui.common.save")}</mwc-button
@@ -528,7 +528,7 @@ export class HuiDialogEditView extends LitElement {
         ha-circular-progress {
           display: none;
         }
-        ha-circular-progress[active] {
+        ha-circular-progress[indeterminate] {
           display: block;
         }
         .selected_menu_item {
