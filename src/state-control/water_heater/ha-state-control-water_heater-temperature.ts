@@ -1,6 +1,7 @@
 import { mdiMinus, mdiPlus } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../common/const";
 import { stateActive } from "../../common/entity/state_active";
@@ -18,7 +19,10 @@ import {
   WaterHeaterEntityFeature,
 } from "../../data/water_heater";
 import { HomeAssistant } from "../../types";
-import { stateControlCircularSliderStyle } from "../state-control-circular-slider-style";
+import {
+  createStateControlCircularSliderController,
+  stateControlCircularSliderStyle,
+} from "../state-control-circular-slider-style";
 
 @customElement("ha-state-control-water_heater-temperature")
 export class HaStateControlWaterHeaterTemperature extends LitElement {
@@ -30,6 +34,8 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
   public showCurrent?: boolean;
 
   @state() private _targetTemperature?: number;
+
+  private _sizeController = createStateControlCircularSliderController(this);
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
@@ -174,6 +180,10 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
     const stateColor = stateColorCss(this.stateObj);
     const active = stateActive(this.stateObj);
 
+    const containerSizeClass = this._sizeController.value
+      ? { [this._sizeController.value]: true }
+      : {};
+
     if (
       supportsTargetTemperature &&
       this._targetTemperature != null &&
@@ -181,7 +191,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
     ) {
       return html`
         <div
-          class="container"
+          class="container${classMap(containerSizeClass)}"
           style=${styleMap({
             "--state-color": stateColor,
           })}
@@ -211,7 +221,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
 
     return html`
       <div
-        class="container"
+        class="container${classMap(containerSizeClass)}"
         style=${styleMap({
           "--state-color": stateColor,
         })}
