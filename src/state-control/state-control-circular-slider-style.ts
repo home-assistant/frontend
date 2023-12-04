@@ -1,4 +1,5 @@
-import { css } from "lit";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { ReactiveControllerHost, css } from "lit";
 
 export const stateControlCircularSliderStyle = css`
   /* Layout elements */
@@ -70,39 +71,50 @@ export const stateControlCircularSliderStyle = css`
     --md-outlined-icon-button-icon-size: 24px;
   }
 
-  @container container (max-width: 250px) {
-    ha-big-number {
-      font-size: 44px;
-    }
-    .buttons {
-      gap: 16px;
-    }
-    .info {
-      margin-top: 12px;
-      gap: 6px;
-    }
-    .buttons {
-      display: none;
-    }
-    ha-control-circular-slider {
-      margin-bottom: -16px;
-    }
+  .container.md ha-big-number {
+    font-size: 44px;
   }
-  @container container (max-width: 190px) {
-    ha-big-number {
-      font-size: 32px;
-    }
-    .info {
-      font-size: 14px;
-      gap: 2px;
-      --mdc-icon-size: 14px;
-    }
+  .container.md .info {
+    margin-top: 12px;
+    gap: 6px;
+  }
+  .container.md .buttons {
+    display: none;
+  }
+  .container.md ha-control-circular-slider {
+    margin-bottom: -16px;
   }
 
-  @container container (max-width: 130px) {
-    .label {
-      display: none;
-    }
+  .container.sm ha-big-number {
+    font-size: 32px;
+  }
+  .container.sm .info {
+    margin-top: 12px;
+    font-size: 14px;
+    gap: 2px;
+    --mdc-icon-size: 14px;
+  }
+  .container.sm .buttons {
+    display: none;
+  }
+  .container.sm ha-control-circular-slider {
+    margin-bottom: -16px;
+  }
+
+  .container.xs ha-big-number {
+    font-size: 32px;
+  }
+  .container.xs .info {
+    margin-top: 12px;
+  }
+  .container.xs .buttons {
+    display: none;
+  }
+  .container.xs ha-control-circular-slider {
+    margin-bottom: -16px;
+  }
+  .container.xs .label {
+    display: none;
   }
 
   /* Slider */
@@ -127,3 +139,19 @@ export const stateControlCircularSliderStyle = css`
     pointer-events: none;
   }
 `;
+
+export const createStateControlCircularSliderController = (
+  element: ReactiveControllerHost & Element
+) =>
+  new ResizeController(element, {
+    callback: (entries) => {
+      const width = entries[0]?.contentRect.width;
+      return width < 130
+        ? "xs"
+        : width < 190
+          ? "sm"
+          : width < 250
+            ? "md"
+            : "lg";
+    },
+  });
