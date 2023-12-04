@@ -6,6 +6,11 @@ import { MdOutlinedIconButton } from "@material/web/iconbutton/outlined-icon-but
 @customElement("ha-outlined-icon-button")
 export class HaOutlinedIconButton extends MdOutlinedIconButton {
   static override styles = [
+    css`
+      .icon-button {
+        border-radius: var(--_container-shape);
+      }
+    `,
     ...super.styles,
     css`
       :host {
