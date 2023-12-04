@@ -38,6 +38,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
 ) =>
   class extends superClass {
+    pingInterval: ReturnType<typeof setInterval> | undefined;
+
     protected initializeHass(auth: Auth, conn: Connection) {
       const language = getLocalLanguage();
 
@@ -269,6 +271,30 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       subscribeFrontendUserData(conn, "core", (userData) =>
         this._updateHass({ userData })
       );
+
+      if (this.pingInterval !== undefined) {
+        clearInterval(this.pingInterval);
+      }
+
+      this.pingInterval = setInterval(async () => {
+        // eslint-disable-next-line no-console
+        console.log("This function is called periodically.");
+
+        if (!this.hass!.connected) {
+          return;
+        }
+
+        // Force reconnection since socket in some cases can be closed gracefully
+        const timeout = setTimeout(() => {
+          if (!this.hass?.connected) {
+            return;
+          }
+          this.hass?.connection.reconnect(true);
+        }, 5000);
+
+        await this.hass?.connection.ping();
+        clearTimeout(timeout);
+      }, 20000);
     }
 
     protected hassReconnected() {
