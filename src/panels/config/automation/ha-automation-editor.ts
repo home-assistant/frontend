@@ -25,19 +25,16 @@ import {
   html,
   nothing,
 } from "lit";
-import { property, query, state } from "lit/decorators";
+import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
-import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
-import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
-import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
   AutomationConfig,
   AutomationEntity,
@@ -111,8 +108,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   @state() private _readOnly = false;
 
   @state() private _validationErrors?: (string | TemplateResult)[];
-
-  @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
 
   private _configSubscriptions: Record<
     string,
@@ -342,8 +337,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                         ></manual-automation-editor>
                       `
                   : this._mode === "yaml"
-                    ? html`
-                        ${this._readOnly
+                    ? html` ${this._readOnly
                           ? html`<ha-alert alert-type="warning">
                               ${this.hass.localize(
                                 "ui.panel.config.automation.editor.read_only"
@@ -376,22 +370,13 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                             `
                           : ""}
                         <ha-yaml-editor
+                          copyClipboard
                           .hass=${this.hass}
                           .defaultValue=${this._preprocessYaml()}
                           .readOnly=${this._readOnly}
                           @value-changed=${this._yamlChanged}
-                        ></ha-yaml-editor>
-                        <ha-card outlined>
-                          <div class="card-actions">
-                            <mwc-button @click=${this._copyYaml}>
-                              ${this.hass.localize(
-                                "ui.panel.config.automation.editor.copy_to_clipboard"
-                              )}
-                            </mwc-button>
-                          </div>
-                        </ha-card>
-                      `
-                    : ``}
+                        ></ha-yaml-editor>`
+                    : nothing}
               </div>
             `
           : ""}
@@ -612,15 +597,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     return cleanConfig;
   }
 
-  private async _copyYaml(): Promise<void> {
-    if (this._yamlEditor?.yaml) {
-      await copyToClipboard(this._yamlEditor.yaml);
-      showToast(this, {
-        message: this.hass.localize("ui.common.copied_clipboard"),
-      });
-    }
-  }
-
   private _yamlChanged(ev: CustomEvent) {
     ev.stopPropagation();
     if (!ev.detail.isValid) {
@@ -776,9 +752,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     return [
       haStyle,
       css`
-        ha-card {
-          overflow: hidden;
-        }
         .content {
           padding-bottom: 20px;
         }
@@ -796,13 +769,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
         ha-yaml-editor {
           flex-grow: 1;
+          --actions-border-radius: 0;
           --code-mirror-height: 100%;
           min-height: 0;
-        }
-        .yaml-mode ha-card {
-          overflow: initial;
-          --ha-card-border-radius: 0;
-          border-bottom: 1px solid var(--divider-color);
+          display: flex;
+          flex-direction: column;
         }
         p {
           margin-bottom: 0;
