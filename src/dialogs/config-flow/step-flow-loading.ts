@@ -27,7 +27,7 @@ class StepFlowLoading extends LitElement {
     return html`
       <div class="init-spinner">
         ${description ? html`<div>${description}</div>` : ""}
-        <ha-circular-progress active></ha-circular-progress>
+        <ha-circular-progress indeterminate></ha-circular-progress>
       </div>
     `;
   }

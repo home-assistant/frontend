@@ -155,7 +155,11 @@ export class DialogHassioNetwork
                   .disabled=${this._scanning}
                 >
                   ${this._scanning
-                    ? html`<ha-circular-progress active size="small">
+                    ? html`<ha-circular-progress
+                        aria-label="Scanning"
+                        indeterminate
+                        size="small"
+                      >
                       </ha-circular-progress>`
                     : this.supervisor.localize("dialog.network.scan_ap")}
                 </mwc-button>
@@ -274,7 +278,7 @@ export class DialogHassioNetwork
         </mwc-button>
         <mwc-button @click=${this._updateNetwork} .disabled=${!this._dirty}>
           ${this._processing
-            ? html`<ha-circular-progress active size="small">
+            ? html`<ha-circular-progress indeterminate size="small">
               </ha-circular-progress>`
             : this.supervisor.localize("common.save")}
         </mwc-button>

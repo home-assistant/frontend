@@ -60,7 +60,6 @@
     "@material/mwc-base": "0.27.0",
     "@material/mwc-button": "0.27.0",
     "@material/mwc-checkbox": "0.27.0",
-    "@material/mwc-circular-progress": "0.27.0",
     "@material/mwc-dialog": "0.27.0",
     "@material/mwc-drawer": "0.27.0",
     "@material/mwc-fab": "0.27.0",
