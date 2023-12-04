@@ -218,7 +218,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       this._handleProgress(ev)
     );
     if (window.innerWidth > 450) {
-      import("./particles");
+      import("../resources/particles");
     }
     makeDialogManager(this, this.shadowRoot!);
     import("../components/ha-language-picker");

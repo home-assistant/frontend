@@ -279,6 +279,10 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
       );
     }
 
+    if (window.innerWidth > 450) {
+      import("../resources/particles");
+    }
+
     // If we are logging into the instance that is hosting this auth form
     // we will register the service worker to start preloading.
     if (url.host === location.host) {
