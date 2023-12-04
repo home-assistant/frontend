@@ -323,6 +323,7 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   title?: string;
   show_names?: boolean;
   logarithmic_scale?: boolean;
+  split_device_classes?: boolean;
 }
 
 export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
