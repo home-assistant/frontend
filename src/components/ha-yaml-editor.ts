@@ -101,15 +101,13 @@ export class HaYamlEditor extends LitElement {
         dir="ltr"
       ></ha-code-editor>
       ${this.copyClipboard
-        ? html`<ha-card outlined>
-            <div class="card-actions">
-              <mwc-button @click=${this._copyYaml}>
-                ${this.hass.localize(
-                  "ui.components.yaml-editor.copy_to_clipboard"
-                )}
-              </mwc-button>
-            </div>
-          </ha-card>`
+        ? html`<div class="card-actions">
+            <mwc-button @click=${this._copyYaml}>
+              ${this.hass.localize(
+                "ui.components.yaml-editor.copy_to_clipboard"
+              )}
+            </mwc-button>
+          </div>`
         : nothing}
     `;
   }
@@ -154,10 +152,14 @@ export class HaYamlEditor extends LitElement {
     return [
       haStyle,
       css`
-        ha-card {
-          overflow: initial;
-          --ha-card-border-radius: 0;
-          border-bottom: 1px solid var(--divider-color);
+        .card-actions {
+          border-radius: var(
+            --actions-border-radius,
+            0px 0px var(--ha-card-border-radius, 12px)
+              var(--ha-card-border-radius, 12px)
+          );
+          border: 1px solid var(--divider-color);
+          padding: 5px 16px;
         }
         ha-code-editor {
           flex-grow: 1;

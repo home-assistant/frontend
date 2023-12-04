@@ -880,6 +880,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         }
         ha-yaml-editor {
           flex-grow: 1;
+          --actions-border-radius: 0;
           --code-mirror-height: 100%;
           min-height: 0;
           display: flex;
