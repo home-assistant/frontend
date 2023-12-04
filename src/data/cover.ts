@@ -77,7 +77,11 @@ export function canClose(stateObj: CoverEntity): boolean {
 }
 
 export function canStop(stateObj: CoverEntity): boolean {
-  return stateObj.state !== UNAVAILABLE;
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  return isOpening(stateObj) || isClosing(stateObj) || assumedState;
 }
 
 export function canOpenTilt(stateObj: CoverEntity): boolean {
