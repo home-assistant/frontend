@@ -843,7 +843,7 @@ const tryDescribeCondition = (
     return hass.localize(
       `${conditionsTranslationBaseKey}.state.description.full`,
       {
-        hasAttribute: attribute !== "",
+        hasAttribute: attribute !== "" ? "true" : "false",
         attribute: attribute,
         numberOfEntities: entities.length,
         entities:
@@ -852,7 +852,7 @@ const tryDescribeCondition = (
             : formatListWithAnds(hass.locale, entities),
         numberOfStates: states.length,
         states: formatListWithOrs(hass.locale, states),
-        hasDuration: duration !== "",
+        hasDuration: duration !== "" ? "true" : "false",
         duration: duration,
       }
     );
