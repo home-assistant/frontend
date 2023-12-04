@@ -580,7 +580,7 @@ class HUIRoot extends LitElement {
     const searchParams = extractSearchParamsObject();
     if (searchParams.edit === "1") {
       this._clearParam("edit");
-      if (this.hass!.user?.is_admin) {
+      if (this.hass!.user?.is_admin && this.lovelace!.mode === "storage") {
         this.lovelace!.setEditMode(true);
       }
     } else if (searchParams.conversation === "1") {
