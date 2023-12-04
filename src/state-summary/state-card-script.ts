@@ -10,7 +10,7 @@ import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 
 @customElement("state-card-script")
-export class StateCardScript extends LitElement {
+class StateCardScript extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public stateObj!: HassEntity;
@@ -30,11 +30,9 @@ export class StateCardScript extends LitElement {
           ? html`<mwc-button @click=${this._cancelScript}>
               ${stateObj.attributes.mode !== "single" &&
               (stateObj.attributes.current || 0) > 0
-                ? this.hass.localize(
-                    "ui.card.script.cancel_multiple",
-                    "number",
-                    stateObj.attributes.current
-                  )
+                ? this.hass.localize("ui.card.script.cancel_multiple", {
+                    number: stateObj.attributes.current,
+                  })
                 : this.hass.localize("ui.card.script.cancel")}
             </mwc-button>`
           : ""}
@@ -69,5 +67,11 @@ export class StateCardScript extends LitElement {
 
   static get styles(): CSSResultGroup {
     return haStyle;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "state-card-script": StateCardScript;
   }
 }

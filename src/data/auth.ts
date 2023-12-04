@@ -11,6 +11,7 @@ export interface AuthProvider {
   name: string;
   id: string;
   type: string;
+  users?: Record<string, string>;
 }
 
 export interface Credential {
@@ -47,6 +48,59 @@ export const fetchAuthProviders = () =>
   fetch("/auth/providers", {
     credentials: "same-origin",
   });
+
+export const createLoginFlow = (
+  client_id: string | undefined,
+  redirect_uri: string | undefined,
+  handler: (string | null)[]
+) =>
+  fetch("/auth/login_flow", {
+    method: "POST",
+    credentials: "same-origin",
+    body: JSON.stringify({
+      client_id,
+      handler,
+      redirect_uri,
+    }),
+  });
+
+export const submitLoginFlow = (flow_id: string, data: Record<string, any>) =>
+  fetch(`/auth/login_flow/${flow_id}`, {
+    method: "POST",
+    credentials: "same-origin",
+    body: JSON.stringify(data),
+  });
+
+export const deleteLoginFlow = (flow_id) =>
+  fetch(`/auth/login_flow/${flow_id}`, {
+    method: "DELETE",
+    credentials: "same-origin",
+  });
+
+export const redirectWithAuthCode = (
+  url: string,
+  authCode: string,
+  oauth2State: string | undefined,
+  storeToken: boolean
+) => {
+  // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
+  if (!url.includes("?")) {
+    url += "?";
+  } else if (!url.endsWith("&")) {
+    url += "&";
+  }
+
+  url += `code=${encodeURIComponent(authCode)}`;
+
+  if (oauth2State) {
+    url += `&state=${encodeURIComponent(oauth2State)}`;
+  }
+  if (storeToken) {
+    url += `&storeToken=true`;
+  }
+
+  document.location.assign(url);
+};
 
 export const createAuthForUser = async (
   hass: HomeAssistant,

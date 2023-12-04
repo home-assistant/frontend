@@ -93,7 +93,7 @@ export class CloudWebhooks extends LitElement {
                         ? html`
                             <div class="progress">
                               <ha-circular-progress
-                                active
+                                indeterminate
                               ></ha-circular-progress>
                             </div>
                           `

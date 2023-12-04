@@ -98,8 +98,7 @@ class StepFlowCreateEntry extends LitElement {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_flow.error_saving_area",
-          "error",
-          err.message
+          { error: err.message }
         ),
       });
       picker.value = null;

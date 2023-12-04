@@ -104,8 +104,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         <hui-warning
           >${this.hass.localize(
             "ui.panel.lovelace.warning.entity_unavailable",
-            "entity",
-            this._config.entity
+            { entity: this._config.entity }
           )}</hui-warning
         >
       `;
@@ -116,8 +115,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         <hui-warning
           >${this.hass.localize(
             "ui.panel.lovelace.warning.entity_non_numeric",
-            "entity",
-            this._config.entity
+            { entity: this._config.entity }
           )}</hui-warning
         >
       `;

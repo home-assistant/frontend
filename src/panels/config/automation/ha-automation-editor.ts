@@ -549,8 +549,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               )
             : this.hass.localize(
                 "ui.panel.config.automation.editor.load_error_unknown",
-                "err_no",
-                err.status_code
+                { err_no: err.status_code }
               ),
       });
       history.back();
@@ -559,10 +558,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {
     ev.stopPropagation();
+    this._config = ev.detail.value;
     if (this._readOnly) {
       return;
     }
-    this._config = ev.detail.value;
     this._dirty = true;
     this._errors = undefined;
   }

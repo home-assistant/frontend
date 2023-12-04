@@ -6,16 +6,8 @@ import {
   mdiTuneVariant,
   mdiWaterPercent,
 } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select-menu";
@@ -35,11 +27,11 @@ import {
 } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
 import { haOscillating } from "../../../data/icons/haOscillating";
+import "../../../state-control/climate/ha-state-control-climate-humidity";
+import "../../../state-control/climate/ha-state-control-climate-temperature";
 import { HomeAssistant } from "../../../types";
-import "../components/climate/ha-more-info-climate-humidity";
-import "../components/climate/ha-more-info-climate-temperature";
 import "../components/ha-more-info-control-select-container";
-import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 type MainControl = "temperature" | "humidity";
 
@@ -49,8 +41,6 @@ class MoreInfoClimate extends LitElement {
   @property() public stateObj?: ClimateEntity;
 
   @state() private _mainControl: MainControl = "temperature";
-
-  private _resizeDebounce?: number;
 
   protected render() {
     if (!this.stateObj) {
@@ -121,18 +111,18 @@ class MoreInfoClimate extends LitElement {
       <div class="controls">
         ${this._mainControl === "temperature"
           ? html`
-              <ha-more-info-climate-temperature
+              <ha-state-control-climate-temperature
                 .hass=${this.hass}
                 .stateObj=${this.stateObj}
-              ></ha-more-info-climate-temperature>
+              ></ha-state-control-climate-temperature>
             `
           : nothing}
         ${this._mainControl === "humidity"
           ? html`
-              <ha-more-info-climate-humidity
+              <ha-state-control-climate-humidity
                 .hass=${this.hass}
                 .stateObj=${this.stateObj}
-              ></ha-more-info-climate-humidity>
+              ></ha-state-control-climate-humidity>
             `
           : nothing}
         ${supportTargetHumidity
@@ -291,21 +281,6 @@ class MoreInfoClimate extends LitElement {
           : nothing}
       </ha-more-info-control-select-container>
     `;
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (!changedProps.has("stateObj") || !this.stateObj) {
-      return;
-    }
-
-    if (this._resizeDebounce) {
-      clearTimeout(this._resizeDebounce);
-    }
-    this._resizeDebounce = window.setTimeout(() => {
-      fireEvent(this, "iron-resize");
-      this._resizeDebounce = undefined;
-    }, 500);
   }
 
   private _setMainControl(ev: any) {

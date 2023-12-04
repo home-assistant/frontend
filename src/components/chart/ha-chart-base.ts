@@ -469,6 +469,7 @@ export class HaChartBase extends LitElement {
       .chartTooltip li {
         display: flex;
         white-space: pre-line;
+        word-break: break-word;
         align-items: center;
         line-height: 16px;
         padding: 4px 0;
@@ -476,6 +477,7 @@ export class HaChartBase extends LitElement {
       .chartTooltip .title {
         text-align: center;
         font-weight: 500;
+        word-break: break-word;
         direction: ltr;
       }
       .chartTooltip .footer {

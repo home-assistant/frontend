@@ -303,6 +303,11 @@ export class StateHistoryCharts extends LitElement {
         padding-right: 1px;
       }
 
+      .entry-container:not(:first-child) {
+        border-top: 2px solid var(--divider-color);
+        margin-top: 16px;
+      }
+
       .container,
       lit-virtualizer {
         height: 100%;

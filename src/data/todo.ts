@@ -47,14 +47,24 @@ export interface TodoItems {
 
 export const fetchItems = async (
   hass: HomeAssistant,
-  entityId: string
+  entity_id: string
 ): Promise<TodoItem[]> => {
   const result = await hass.callWS<TodoItems>({
     type: "todo/item/list",
-    entity_id: entityId,
+    entity_id,
   });
   return result.items;
 };
+
+export const subscribeItems = (
+  hass: HomeAssistant,
+  entity_id: string,
+  callback: (item) => void
+) =>
+  hass.connection.subscribeMessage<any>(callback, {
+    type: "todo/item/subscribe",
+    entity_id,
+  });
 
 export const updateItem = (
   hass: HomeAssistant,

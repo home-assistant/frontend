@@ -83,7 +83,7 @@ class HaMfaModuleSetupFlow extends LitElement {
             : ""}
           ${!this._step
             ? html`<div class="init-spinner">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
               </div>`
             : html`${this._step.type === "abort"
                 ? html` <ha-markdown
@@ -97,8 +97,7 @@ class HaMfaModuleSetupFlow extends LitElement {
                   ? html`<p>
                       ${this.hass.localize(
                         "ui.panel.profile.mfa_setup.step_done",
-                        "step",
-                        this._step.title
+                        { step: this._step.title }
                       )}
                     </p>`
                   : this._step.type === "form"

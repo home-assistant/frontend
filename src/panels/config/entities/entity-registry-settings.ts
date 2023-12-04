@@ -184,8 +184,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         showAlertDialog(this, {
           text: this.hass.localize(
             "ui.dialogs.entity_registry.editor.enabled_delay_confirm",
-            "delay",
-            result.reload_delay
+            { delay: result.reload_delay }
           ),
         });
       }

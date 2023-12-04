@@ -77,7 +77,7 @@ export class DeveloperYamlConfig extends LitElement {
                 ? html`<div
                     class="validate-container layout vertical center-center"
                   >
-                    <ha-circular-progress active></ha-circular-progress>
+                    <ha-circular-progress indeterminate></ha-circular-progress>
                   </div> `
                 : nothing
               : html`
@@ -94,7 +94,7 @@ export class DeveloperYamlConfig extends LitElement {
                               )
                         }
                     </div>
-                  
+
                     ${
                       this._validateResult.errors
                         ? html`<ha-alert
@@ -186,8 +186,7 @@ export class DeveloperYamlConfig extends LitElement {
                   ) ||
                   this.hass.localize(
                     "ui.panel.developer-tools.tabs.yaml.section.reloading.reload",
-                    "domain",
-                    domainToName(this.hass.localize, domain)
+                    { domain: domainToName(this.hass.localize, domain) }
                   )}
                 </ha-call-service-button>
               </div>

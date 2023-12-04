@@ -107,10 +107,12 @@ export class HaMap extends ReactiveElement {
     if (!this._loaded) {
       return;
     }
+    let autoFitRequired = false;
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
     if (changedProps.has("_loaded") || changedProps.has("entities")) {
       this._drawEntities();
+      autoFitRequired = true;
     } else if (this._loaded && oldHass && this.entities) {
       // Check if any state has changed
       for (const entity of this.entities) {
@@ -119,6 +121,7 @@ export class HaMap extends ReactiveElement {
           this.hass!.states[getEntityId(entity)]
         ) {
           this._drawEntities();
+          autoFitRequired = true;
           break;
         }
       }
@@ -130,13 +133,10 @@ export class HaMap extends ReactiveElement {
 
     if (changedProps.has("_loaded") || changedProps.has("layers")) {
       this._drawLayers(changedProps.get("layers") as Layer[] | undefined);
+      autoFitRequired = true;
     }
 
-    if (
-      changedProps.has("_loaded") ||
-      ((changedProps.has("entities") || changedProps.has("layers")) &&
-        this.autoFit)
-    ) {
+    if (changedProps.has("_loaded") || (this.autoFit && autoFitRequired)) {
       this.fitMap();
     }
 
@@ -155,10 +155,11 @@ export class HaMap extends ReactiveElement {
   }
 
   private _updateMapStyle(): void {
-    const darkMode = this.darkMode ?? this.hass.themes.darkMode;
+    const darkMode = this.darkMode ?? this.hass.themes.darkMode ?? false;
+    const forcedDark = this.darkMode ?? false;
     const map = this.shadowRoot!.getElementById("map");
     map!.classList.toggle("dark", darkMode);
-    map!.classList.toggle("forced-dark", this.darkMode);
+    map!.classList.toggle("forced-dark", forcedDark);
   }
 
   private async _loadMap(): Promise<void> {

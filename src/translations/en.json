@@ -72,15 +72,30 @@
       "upload_backup": "Upload backup"
     },
     "card": {
+      "common": {
+        "turn_on": "Turn on",
+        "turn_off": "Turn off",
+        "toggle": "Toggle"
+      },
       "alarm_control_panel": {
         "code": "Code",
         "clear_code": "Clear",
         "disarm": "Disarm",
+        "arm": "Arm",
         "arm_home": "Arm home",
         "arm_away": "Arm away",
         "arm_night": "Arm night",
         "arm_vacation": "Arm vacation",
-        "arm_custom_bypass": "Custom bypass"
+        "arm_custom_bypass": "Custom bypass",
+        "modes_label": "Modes",
+        "modes": {
+          "armed_away": "Away",
+          "armed_home": "Home",
+          "armed_night": "Night",
+          "armed_vacation": "Vacation",
+          "armed_custom_bypass": "Custom",
+          "disarmed": "Disarmed"
+        }
       },
       "area": {
         "area_not_found": "Area not found."
@@ -106,7 +121,10 @@
         "high": "high",
         "low": "low",
         "mode": "Mode",
-        "preset": "Preset"
+        "preset": "Preset",
+        "target_label": "{action} to target",
+        "target": "Target",
+        "humidity_target": "Humidity target"
       },
       "counter": {
         "actions": {
@@ -117,17 +135,27 @@
       },
       "cover": {
         "position": "Position",
-        "tilt_position": "Tilt position"
+        "tilt_position": "Tilt position",
+        "open_cover": "Open cover",
+        "close_cover": "Close cover",
+        "open_tilt_cover": "Open cover tilt",
+        "close_tilt_cover": "Close cover tilt",
+        "stop_cover": "Stop cover"
       },
       "fan": {
-        "speed": "Speed",
         "preset_mode": "Preset mode",
         "oscillate": "Oscillate",
         "direction": "Direction",
         "forward": "Forward",
-        "reverse": "Reverse"
+        "reverse": "Reverse",
+        "speed": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High"
+        }
       },
       "humidifier": {
+        "currently": "[%key:ui::card::climate::currently%]",
         "humidity": "Target humidity",
         "state": "State",
         "mode": "Mode",
@@ -135,7 +163,9 @@
         "current_humidity_entity": "{name} current humidity",
         "humidifying": "{name} humidifying",
         "drying": "{name} drying",
-        "on_entity": "{name} on"
+        "on_entity": "{name} on",
+        "target_label": "[%key:ui::card::climate::target_label%]",
+        "target": "[%key:ui::card::climate::target%]"
       },
       "lawn_mower": {
         "actions": {
@@ -226,11 +256,13 @@
         }
       },
       "water_heater": {
-        "currently": "Currently",
+        "currently": "[%key:ui::card::climate::currently%]",
         "on_off": "On / off",
         "target_temperature": "Target temperature",
         "away_mode": "Away mode",
-        "mode": "Mode"
+        "mode": "Mode",
+        "target_label": "[%key:ui::card::climate::target_label%]",
+        "target": "[%key:ui::card::climate::target%]"
       },
       "weather": {
         "attributes": {
@@ -328,6 +360,36 @@
         "file": {
           "upload_failed": "Upload failed",
           "unknown_file": "Unknown file"
+        },
+        "selector": {
+          "options": "Selector Options",
+          "types": {
+            "action": "Action",
+            "area": "Area",
+            "attribute": "Attribute",
+            "boolean": "Boolean",
+            "color_temp": "Color temperature",
+            "condition": "Condition",
+            "date": "Date",
+            "datetime": "Date and Time",
+            "device": "Device",
+            "duration": "Duration",
+            "entity": "Entity",
+            "icon": "Icon",
+            "location": "Location",
+            "media": "Media",
+            "number": "Number",
+            "object": "Object",
+            "color_rgb": "RGB Color",
+            "select": "Select",
+            "state": "State",
+            "target": "Target",
+            "template": "Template",
+            "text": "Text",
+            "theme": "Theme",
+            "time": "Time",
+            "manual": "Manual Entry"
+          }
         },
         "text": {
           "show_password": "Show password",
@@ -480,6 +542,14 @@
           "failed_create_area": "Failed to create area."
         }
       },
+      "area-filter": {
+        "title": "Areas",
+        "no_areas": "No areas",
+        "area_count": "{count} {count, plural,\n one {area}\n other {areas}\n}",
+        "all_areas": "All areas",
+        "show": "Show {area}",
+        "hide": "Hide {area}"
+      },
       "statistic-picker": {
         "statistic": "Statistic",
         "no_statistics": "You don't have any statistics",
@@ -541,7 +611,9 @@
           "last_week": "Last week",
           "this_quarter": "This quarter",
           "this_month": "This month",
-          "this_year": "This year"
+          "last_month": "Last month",
+          "this_year": "This year",
+          "last_year": "Last year"
         }
       },
       "relative_time": {
@@ -555,7 +627,9 @@
         "loading_history": "Loading state history…",
         "no_history_found": "No state history found.",
         "error": "Unable to load history",
-        "duration": "Duration"
+        "duration": "Duration",
+        "source_history": "Source: History",
+        "source_stats": "Source: Long term statistics"
       },
       "map": {
         "error": "Unable to load map"
@@ -671,7 +745,10 @@
           "url": "URL",
           "video": "Video"
         },
-        "media_player_unavailable": "The selected media player is unavailable."
+        "media_player_unavailable": "The selected media player is unavailable.",
+        "auto": "Auto",
+        "grid": "Grid",
+        "list": "List"
       },
       "calendar": {
         "label": "Calendar",
@@ -922,9 +999,6 @@
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "show_more": "Show more",
-        "turn_on": "Turn on",
-        "turn_off": "Turn off",
-        "toggle": "Toggle",
         "exit_edit_mode": "Exit edit mode",
         "script": {
           "last_action": "Last action",
@@ -936,8 +1010,6 @@
           "setting": "Setting"
         },
         "update": {
-          "installed_version": "Installed version",
-          "latest_version": "Latest version",
           "release_announcement": "Read release announcement",
           "skip": "Skip",
           "clear_skipped": "Clear skipped",
@@ -969,11 +1041,6 @@
           "create_zone": "Create zone from current location"
         },
         "cover": {
-          "open_cover": "Open cover",
-          "close_cover": "Close cover",
-          "open_tilt_cover": "Open cover tilt",
-          "close_tilt_cover": "Close cover tilt",
-          "stop_cover": "Stop cover",
           "switch_mode": {
             "button": "Switch to button mode",
             "position": "Switch to position mode"
@@ -989,7 +1056,6 @@
           "color_temp": "Temperature",
           "set_white": "Set white",
           "select_effect": "Select effect",
-          "brightness": "Brightness",
           "color_picker": {
             "title": "Change color",
             "mode": {
@@ -1013,43 +1079,11 @@
           "set_forward_direction": "Set forward direction",
           "set_reverse_direction": "Set reverse direction",
           "turn_on_oscillating": "Turn on oscillating",
-          "turn_off_oscillating": "Turn off oscillating",
-          "speed": {
-            "low": "Low",
-            "medium": "Medium",
-            "high": "High"
-          }
-        },
-        "alarm_control_panel": {
-          "modes_label": "Modes",
-          "modes": {
-            "armed_away": "Away",
-            "armed_home": "Home",
-            "armed_night": "Night",
-            "armed_vacation": "Vacation",
-            "armed_custom_bypass": "Custom",
-            "disarmed": "Disarmed"
-          },
-          "disarm_title": "Disarm",
-          "disarm_action": "Disarm",
-          "arm_title": "Arm",
-          "arm_action": "Arm"
-        },
-        "lock": {
-          "open": "Open",
-          "lock": "Lock",
-          "unlock": "Unlock"
+          "turn_off_oscillating": "Turn off oscillating"
         },
         "climate": {
-          "target_label": "{action} to target",
-          "target": "Target",
-          "humidity_target": "Humidity target",
           "temperature": "Temperature",
           "humidity": "Humidity"
-        },
-        "humidifier": {
-          "target_label": "[%key:ui::dialogs::more_info_control::climate::target_label%]",
-          "target": "[%key:ui::dialogs::more_info_control::climate::target%]"
         },
         "lawn_mower": {
           "activity": "Activity",
@@ -1057,9 +1091,6 @@
           "start_mowing": "Start mowing",
           "pause": "Pause",
           "dock": "Return to dock"
-        },
-        "water_heater": {
-          "target": "[%key:ui::dialogs::more_info_control::climate::target%]"
         }
       },
       "entity_registry": {
@@ -1254,10 +1285,10 @@
       },
       "aliases": {
         "heading": "{name} aliases",
-        "remove_alias": "Remove alias {number}",
-        "input_label": "Alias {number}",
+        "label": "Alias",
+        "remove": "Remove alias",
         "save": "Save",
-        "add_alias": "Add alias",
+        "add": "Add alias",
         "no_aliases": "No aliases have been added yet",
         "update": "Update",
         "unknown_error": "Unknown error"
@@ -2961,7 +2992,15 @@
             "view_script": "Show scripts using this blueprint",
             "delete_blueprint": "Delete blueprint",
             "share_blueprint": "Share blueprint",
-            "share_blueprint_no_url": "Unable to share blueprint: no source url",
+            "share_blueprint_no_url": "Unable to share blueprint: no source URL",
+            "re_import_blueprint": "Re-import blueprint",
+            "re_import_blueprint_no_url": "Unable to re-import blueprint: no source URL",
+            "re_import_confirm_title": "Re-import blueprint",
+            "re_import_confirm_text": "[%key:ui::panel::config::blueprint::add::override_description%]",
+            "re_import_confirm_action": "Re-import",
+            "re_import_error_source_not_found": "Unable to re-import the blueprint: source not found.",
+            "re_import_error_save": "Unable to re-import the blueprint: {error}.",
+            "re_import_success": "{name} has been successfully re-imported.",
             "discover_more": "Discover more blueprints"
           },
           "add": {
@@ -2975,6 +3014,9 @@
             "import_btn": "Preview",
             "saving": "Importing blueprint…",
             "save_btn": "Import blueprint",
+            "save_btn_override": "Override blueprint",
+            "override_title": "This blueprint already exists",
+            "override_description": "Importing it will override the existing blueprint. If the updated blueprint is not compatible, it can break your automations. Automations will have to be adjusted manually.",
             "error_no_url": "Please enter the blueprint address.",
             "unsupported_blueprint": "This blueprint is not supported",
             "file_name": "Blueprint Path"
@@ -4075,7 +4117,8 @@
             "unknown": "Unknown",
             "zwave_plus": "Z-Wave Plus",
             "zwave_plus_version": "Version {version}",
-            "node_statistics": "Statistics"
+            "node_statistics": "Statistics",
+            "custom_device_config": "This device is using a custom device config file not provided by Z-Wave JS. If you want to use the default device config provided by Z-Wave JS, you must remove the custom device config file from the folder that Z-Wave JS is reading from."
           },
           "hard_reset_controller": {
             "NotStarted": {
@@ -4870,6 +4913,13 @@
               }
             }
           },
+          "strategy-editor": {
+            "header": "Edit dashboard",
+            "take_control": "Take control",
+            "raw_configuration_editor": "[%key:ui::panel::lovelace::editor::menu::raw_editor%]",
+            "show_code_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_code_editor%]",
+            "show_visual_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_visual_editor%]"
+          },
           "card": {
             "alarm-panel": {
               "name": "Alarm panel",
@@ -5151,99 +5201,6 @@
               "state_content_options": {
                 "state": "State",
                 "last-changed": "Last changed"
-              },
-              "features": {
-                "name": "Features",
-                "not_compatible": "Not compatible",
-                "no_compatible_available": "No compatible features available for this entity",
-                "add": "Add feature",
-                "edit": "Edit feature",
-                "remove": "Remove feature",
-                "types": {
-                  "cover-open-close": {
-                    "label": "Cover open/close"
-                  },
-                  "cover-position": {
-                    "label": "Cover position"
-                  },
-                  "cover-tilt": {
-                    "label": "Cover tilt"
-                  },
-                  "cover-tilt-position": {
-                    "label": "Cover tilt position"
-                  },
-                  "fan-speed": {
-                    "label": "Fan speed"
-                  },
-                  "alarm-modes": {
-                    "label": "Alarm modes",
-                    "modes": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes_label%]",
-                    "modes_list": {
-                      "armed_away": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_away%]",
-                      "armed_home": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_home%]",
-                      "armed_night": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_night%]",
-                      "armed_vacation": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_vacation%]",
-                      "armed_custom_bypass": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_custom_bypass%]",
-                      "disarmed": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::disarmed%]"
-                    }
-                  },
-                  "light-brightness": {
-                    "label": "Light brightness"
-                  },
-                  "light-color-temp": {
-                    "label": "Light color temperature"
-                  },
-                  "vacuum-commands": {
-                    "label": "Vacuum commands",
-                    "commands": "Commands",
-                    "commands_list": {
-                      "start_pause": "[%key:ui::dialogs::more_info_control::vacuum::start_pause%]",
-                      "stop": "[%key:ui::dialogs::more_info_control::vacuum::stop%]",
-                      "clean_spot": "[%key:ui::dialogs::more_info_control::vacuum::clean_spot%]",
-                      "locate": "[%key:ui::dialogs::more_info_control::vacuum::locate%]",
-                      "return_home": "[%key:ui::dialogs::more_info_control::vacuum::return_home%]"
-                    }
-                  },
-                  "climate-hvac-modes": {
-                    "label": "Climate HVAC modes",
-                    "hvac_modes": "HVAC modes"
-                  },
-                  "climate-preset-modes": {
-                    "label": "Climate preset modes",
-                    "style": "Style",
-                    "style_list": {
-                      "dropdown": "Dropdown",
-                      "icons": "Icons"
-                    },
-                    "preset_modes": "Preset modes"
-                  },
-                  "select-options": {
-                    "label": "Select options"
-                  },
-                  "number": {
-                    "label": "Number",
-                    "style": "Style",
-                    "style_list": {
-                      "buttons": "Buttons",
-                      "slider": "Slider"
-                    }
-                  },
-                  "target-temperature": {
-                    "label": "Target temperature"
-                  },
-                  "water-heater-operation-modes": {
-                    "label": "Water heater operation modes",
-                    "operation_modes": "Operation modes"
-                  },
-                  "lawn-mower-commands": {
-                    "label": "Lawn mower commands",
-                    "commands": "Commands",
-                    "commands_list": {
-                      "start_pause": "Start Pause",
-                      "dock": "[%key:ui::dialogs::more_info_control::lawn_mower::dock%]"
-                    }
-                  }
-                }
               }
             },
             "vertical-stack": {
@@ -5262,6 +5219,109 @@
               "daily": "Daily",
               "hourly": "Hourly",
               "twice_daily": "Twice daily"
+            }
+          },
+          "features": {
+            "name": "Features",
+            "not_compatible": "Not compatible",
+            "no_compatible_available": "No compatible features available for this entity",
+            "add": "Add feature",
+            "edit": "Edit feature",
+            "remove": "Remove feature",
+            "types": {
+              "cover-open-close": {
+                "label": "Cover open/close"
+              },
+              "cover-position": {
+                "label": "Cover position"
+              },
+              "cover-tilt": {
+                "label": "Cover tilt"
+              },
+              "cover-tilt-position": {
+                "label": "Cover tilt position"
+              },
+              "fan-speed": {
+                "label": "Fan speed"
+              },
+              "alarm-modes": {
+                "label": "Alarm modes",
+                "modes": "[%key:ui::card::alarm_control_panel::modes_label%]",
+                "modes_list": {
+                  "armed_away": "[%key:ui::card::alarm_control_panel::modes::armed_away%]",
+                  "armed_home": "[%key:ui::card::alarm_control_panel::modes::armed_home%]",
+                  "armed_night": "[%key:ui::card::alarm_control_panel::modes::armed_night%]",
+                  "armed_vacation": "[%key:ui::card::alarm_control_panel::modes::armed_vacation%]",
+                  "armed_custom_bypass": "[%key:ui::card::alarm_control_panel::modes::armed_custom_bypass%]",
+                  "disarmed": "[%key:ui::card::alarm_control_panel::modes::disarmed%]"
+                }
+              },
+              "light-brightness": {
+                "label": "Light brightness"
+              },
+              "light-color-temp": {
+                "label": "Light color temperature"
+              },
+              "vacuum-commands": {
+                "label": "Vacuum commands",
+                "commands": "Commands",
+                "commands_list": {
+                  "start_pause": "[%key:ui::dialogs::more_info_control::vacuum::start_pause%]",
+                  "stop": "[%key:ui::dialogs::more_info_control::vacuum::stop%]",
+                  "clean_spot": "[%key:ui::dialogs::more_info_control::vacuum::clean_spot%]",
+                  "locate": "[%key:ui::dialogs::more_info_control::vacuum::locate%]",
+                  "return_home": "[%key:ui::dialogs::more_info_control::vacuum::return_home%]"
+                }
+              },
+              "climate-hvac-modes": {
+                "label": "Climate HVAC modes",
+                "hvac_modes": "HVAC modes"
+              },
+              "climate-preset-modes": {
+                "label": "Climate preset modes",
+                "style": "Style",
+                "style_list": {
+                  "dropdown": "Dropdown",
+                  "icons": "Icons"
+                },
+                "preset_modes": "Preset modes"
+              },
+              "humidifier-modes": {
+                "label": "Humidifier modes"
+              },
+              "select-options": {
+                "label": "Select options"
+              },
+              "numeric-input": {
+                "label": "Numeric input",
+                "style": "Style",
+                "style_list": {
+                  "buttons": "Buttons",
+                  "slider": "Slider"
+                }
+              },
+              "target-temperature": {
+                "label": "Target temperature"
+              },
+              "water-heater-operation-modes": {
+                "label": "Water heater operation modes",
+                "operation_modes": "Operation modes"
+              },
+              "lawn-mower-commands": {
+                "label": "Lawn mower commands",
+                "commands": "Commands",
+                "commands_list": {
+                  "start_pause": "Start Pause",
+                  "dock": "[%key:ui::dialogs::more_info_control::lawn_mower::dock%]"
+                }
+              }
+            }
+          },
+          "strategy": {
+            "original-states": {
+              "areas": "Areas",
+              "hide_entities_without_area": "Hide entities without area",
+              "hide_energy": "Hide energy"
             }
           },
           "view": {
@@ -5330,7 +5390,7 @@
               "header": "Header editor",
               "footer": "Footer editor",
               "row": "Entity row editor",
-              "tile-feature": "Tile feature editor"
+              "feature": "Feature editor"
             }
           }
         },
@@ -5572,16 +5632,24 @@
         "authorizing": "Log in to your Home Assistant instance",
         "authorizing_app": "You're about to give the Home Assistant Companion app for {app} access to your Home Assistant instance.",
         "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
-        "logging_in_with": "Logging in with {authProviderName}.",
         "pick_auth_provider": "Or log in with",
         "abort_intro": "Login aborted",
         "store_token": "Keep me logged in",
+        "help": "Help",
+        "welcome_home": "Welcome home!",
+        "just_checking": "Just checking",
+        "who_is_logging_in": "Who is logging in?",
+        "other_options": "Other login options",
+        "forgot_password": "Forgot password?",
         "form": {
           "working": "Please wait",
           "unknown_error": "Something went wrong",
           "next": "Log in",
+          "previous": "Previous",
           "start_over": "Start over",
           "error": "Error: {error}",
+          "hide_password": "Hide password",
+          "show_password": "Show password",
           "providers": {
             "command_line": {
               "step": {

@@ -109,6 +109,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     if (this._progressInterval) {
       clearInterval(this._progressInterval);
       this._progressInterval = undefined;
@@ -167,7 +168,10 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
             new Promise((resolve) => {
               setTimeout(resolve, 500);
             }).then(
-              () => html`<ha-circular-progress active></ha-circular-progress>`
+              () =>
+                html`<ha-circular-progress
+                  indeterminate
+                ></ha-circular-progress>`
             )
           )}
         </div>
@@ -253,7 +257,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
           : ""}"
       >
         ${stateObj.state === "buffering"
-          ? html`<ha-circular-progress active></ha-circular-progress>`
+          ? html`<ha-circular-progress indeterminate></ha-circular-progress> `
           : html`
               <div class="controls">
                 ${controls === undefined

@@ -19,12 +19,12 @@ import {
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -64,11 +64,17 @@ import { documentationUrl } from "../../util/documentation-url";
 import { swapView } from "./editor/config-util";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
+import { showDashboardStrategyEditorDialog } from "./strategies/device-registry-detail/show-dialog-dashboard-strategy-editor";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import { LovelaceViewConfig } from "../../data/lovelace/config/view";
-import { LovelaceConfig } from "../../data/lovelace/config/types";
+import {
+  LovelaceConfig,
+  isStrategyDashboard,
+} from "../../data/lovelace/config/types";
+import { showSaveDialog } from "./editor/show-save-config-dialog";
+import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -574,7 +580,7 @@ class HUIRoot extends LitElement {
     const searchParams = extractSearchParamsObject();
     if (searchParams.edit === "1") {
       this._clearParam("edit");
-      if (this.hass!.user?.is_admin) {
+      if (this.hass!.user?.is_admin && this.lovelace!.mode === "storage") {
         this.lovelace!.setEditMode(true);
       }
     } else if (searchParams.conversation === "1") {
@@ -648,8 +654,6 @@ class HUIRoot extends LitElement {
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
         const views = this.config && this.config.views;
-
-        fireEvent(this, "iron-resize");
 
         // Leave unused entities when leaving edit mode
         if (
@@ -813,6 +817,26 @@ class HUIRoot extends LitElement {
       });
       return;
     }
+    if (
+      isStrategyDashboard(this.lovelace!.rawConfig) &&
+      !isLegacyStrategyConfig(this.lovelace!.rawConfig.strategy)
+    ) {
+      showDashboardStrategyEditorDialog(this, {
+        config: this.lovelace!.rawConfig,
+        saveConfig: this.lovelace!.saveConfig,
+        takeControl: () => {
+          showSaveDialog(this, {
+            lovelace: this.lovelace!,
+            mode: "storage",
+            narrow: this.narrow!,
+          });
+        },
+        showRawConfigEditor: () => {
+          this.lovelace!.enableFullEditMode();
+        },
+      });
+      return;
+    }
     this.lovelace!.setEditMode(true);
   }
 
@@ -954,8 +978,6 @@ class HUIRoot extends LitElement {
     }
 
     root.appendChild(view);
-    // Recalculate to see if we need to adjust content area for tab bar
-    fireEvent(this, "iron-resize");
   }
 
   static get styles(): CSSResultGroup {

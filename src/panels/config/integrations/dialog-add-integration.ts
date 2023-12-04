@@ -249,7 +249,7 @@ class AddIntegrationDialog extends LitElement {
             "iot_standards",
           ],
           isCaseSensitive: false,
-          minMatchCharLength: 2,
+          minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
         };
         const helpers = Object.entries(h).map(([domain, integration]) => ({
@@ -449,7 +449,7 @@ class AddIntegrationDialog extends LitElement {
             >
             </lit-virtualizer>
           </mwc-list>`
-        : html`<ha-circular-progress active></ha-circular-progress>`} `;
+        : html`<ha-circular-progress indeterminate></ha-circular-progress>`} `;
   }
 
   private _keyFunction = (integration: IntegrationListItem) =>

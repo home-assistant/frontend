@@ -158,7 +158,7 @@ class HassioRepositoriesDialog extends LitElement {
             <mwc-button @click=${this._addRepository}>
               ${this._processing
                 ? html`<ha-circular-progress
-                    active
+                    indeterminate
                     size="small"
                   ></ha-circular-progress>`
                 : this._dialogParams!.supervisor.localize(

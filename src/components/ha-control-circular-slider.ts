@@ -618,9 +618,11 @@ export class HaControlCircularSlider extends LitElement {
         --control-circular-slider-high-color: var(
           --control-circular-slider-color
         );
+        width: 320px;
+        display: block;
       }
       svg {
-        width: 320px;
+        width: 100%;
         display: block;
       }
       #slider {

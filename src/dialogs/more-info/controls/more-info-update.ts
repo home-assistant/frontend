@@ -63,8 +63,9 @@ class MoreInfoUpdate extends LitElement {
         : ""}
       <div class="row">
         <div class="key">
-          ${this.hass.localize(
-            "ui.dialogs.more_info_control.update.installed_version"
+          ${this.hass.formatEntityAttributeName(
+            this.stateObj,
+            "installed_version"
           )}
         </div>
         <div class="value">
@@ -74,8 +75,9 @@ class MoreInfoUpdate extends LitElement {
       </div>
       <div class="row">
         <div class="key">
-          ${this.hass.localize(
-            "ui.dialogs.more_info_control.update.latest_version"
+          ${this.hass.formatEntityAttributeName(
+            this.stateObj,
+            "latest_version"
           )}
         </div>
         <div class="value">
@@ -102,7 +104,7 @@ class MoreInfoUpdate extends LitElement {
       ${supportsFeature(this.stateObj!, UPDATE_SUPPORT_RELEASE_NOTES) &&
       !this._error
         ? this._releaseNotes === undefined
-          ? html`<ha-circular-progress active></ha-circular-progress>`
+          ? html`<ha-circular-progress indeterminate></ha-circular-progress>`
           : html`<hr />
               <ha-faded>
                 <ha-markdown .content=${this._releaseNotes}></ha-markdown>
