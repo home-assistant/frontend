@@ -420,7 +420,8 @@ export const computeHistory = (
   hass: HomeAssistant,
   stateHistory: HistoryStates,
   localize: LocalizeFunc,
-  sensorNumericalDeviceClasses: string[]
+  sensorNumericalDeviceClasses: string[],
+  splitDeviceClasses = false
 ): HistoryResult => {
   const lineChartDevices: { [unit: string]: HistoryStates } = {};
   const timelineDevices: TimelineEntity[] = [];
@@ -473,7 +474,7 @@ export const computeHistory = (
       currentState?.attributes || numericStateFromHistory?.a
     )?.device_class;
 
-    const key = computeGroupKey(unit, deviceClass);
+    const key = computeGroupKey(unit, deviceClass, splitDeviceClasses);
 
     if (!unit) {
       timelineDevices.push(
@@ -487,9 +488,13 @@ export const computeHistory = (
           currentState
         )
       );
-    } else if (key in lineChartDevices && entityId in lineChartDevices[key]) {
+    } else if (
+      key &&
+      key in lineChartDevices &&
+      entityId in lineChartDevices[key]
+    ) {
       lineChartDevices[key][entityId].push(...stateInfo);
-    } else {
+    } else if (key) {
       if (!(key in lineChartDevices)) {
         lineChartDevices[key] = {};
       }
@@ -514,5 +519,6 @@ export const computeHistory = (
 
 export const computeGroupKey = (
   unit: string | undefined,
-  device_class: string | undefined
-) => `${unit}_${device_class || ""}`;
+  device_class: string | undefined,
+  splitDeviceClasses: boolean
+) => (splitDeviceClasses ? `${unit}_${device_class || ""}` : unit);

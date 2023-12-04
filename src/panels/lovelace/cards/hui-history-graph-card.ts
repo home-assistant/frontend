@@ -118,7 +118,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           this.hass!,
           combinedHistory,
           this.hass!.localize,
-          sensorNumericDeviceClasses
+          sensorNumericDeviceClasses,
+          this._config?.split_device_classes
         );
       },
       this._hoursToShow,

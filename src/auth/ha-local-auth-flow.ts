@@ -154,6 +154,10 @@ export class HaLocalAuthFlow extends LitElement {
         ha-button {
           --mdc-typography-button-text-transform: none;
         }
+        .forgot-password-container {
+          text-align: right;
+          padding: 8px 0 16px 0;
+        }
         a.forgot-password {
           color: var(--primary-color);
           text-decoration: none;
@@ -177,7 +181,7 @@ export class HaLocalAuthFlow extends LitElement {
       </style>
       ${this._error
         ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-        : ""}
+        : nothing}
       ${this._step
         ? html`<ha-auth-flow
             .clientId=${this.clientId}
@@ -188,72 +192,76 @@ export class HaLocalAuthFlow extends LitElement {
             .localize=${this.localize}
           ></ha-auth-flow>`
         : this._selectedUser
-          ? html`<div class="login-form"><div class="person">
-              <ha-person-badge
-                .person=${this._persons[this._selectedUser]}
-              ></ha-person-badge>
-              <p>${this._persons[this._selectedUser].name}</p>
-            </div>
-            <form>
-              <input
-                type="hidden"
-                name="username"
-                autocomplete="username"
-                .value=${this.authProvider.users[this._selectedUser]}
-              />
-              <ha-auth-textfield
-              .type=${this._unmaskedPassword ? "text" : "password"}
-                id="password"
-                name="password"
-        .label=${this.localize(
-          "ui.panel.page-authorize.form.providers.homeassistant.step.init.data.password"
-        )}
-        required
-        autoValidate
-        autocomplete
-        iconTrailing
-        validationMessage="Required"
-              >
-              <ha-icon-button
-        toggles
-        .label=${
-          this.localize(
-            this._unmaskedPassword
-              ? "ui.panel.page-authorize.form.hide_password"
-              : "ui.panel.page-authorize.form.show_password"
-          ) || (this._unmaskedPassword ? "Hide password" : "Show password")
-        }
-        @click=${this._toggleUnmaskedPassword}
-        .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
-      ></ha-icon-button>
-    </ha-auth-textfield>
-      </div>
-              <div class="action space-between">
-              <mwc-button
-                  @click=${this._restart}
-                  .disabled=${this._submitting}
-                >
-                  ${this.localize("ui.panel.page-authorize.form.previous")}
-                </mwc-button>
-              <mwc-button
-                  raised
-                  @click=${this._handleSubmit}
-                  .disabled=${this._submitting}
-                >
-                  ${this.localize("ui.panel.page-authorize.form.next")}
-                </mwc-button>
+          ? html`<div class="login-form">
+              <div class="person">
+                <ha-person-badge
+                  .person=${this._persons[this._selectedUser]}
+                ></ha-person-badge>
+                <p>${this._persons[this._selectedUser].name}</p>
               </div>
-              <div class="action">
-              <a class="forgot-password"
-                  href="https://www.home-assistant.io/docs/locked_out/#forgot-password"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  >${this.localize(
-                    "ui.panel.page-authorize.forgot_password"
-                  )}</a
+              <form>
+                <input
+                  type="hidden"
+                  name="username"
+                  autocomplete="username"
+                  readonly
+                  .value=${this.authProvider.users[this._selectedUser]}
+                />
+                <ha-auth-textfield
+                  .type=${this._unmaskedPassword ? "text" : "password"}
+                  autocomplete="current-password"
+                  id="password"
+                  name="password"
+                  .label=${this.localize(
+                    "ui.panel.page-authorize.form.providers.homeassistant.step.init.data.password"
+                  )}
+                  required
+                  autoValidate
+                  iconTrailing
+                  validationMessage="Required"
                 >
+                  <ha-icon-button
+                    toggles
+                    .label=${this.localize(
+                      this._unmaskedPassword
+                        ? "ui.panel.page-authorize.form.hide_password"
+                        : "ui.panel.page-authorize.form.show_password"
+                    ) ||
+                    (this._unmaskedPassword
+                      ? "Hide password"
+                      : "Show password")}
+                    @click=${this._toggleUnmaskedPassword}
+                    .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
+                  ></ha-icon-button>
+                </ha-auth-textfield>
+                <div class="forgot-password-container">
+                  <a
+                    class="forgot-password"
+                    href="https://www.home-assistant.io/docs/locked_out/#forgot-password"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    >${this.localize(
+                      "ui.panel.page-authorize.forgot_password"
+                    )}</a
+                  >
                 </div>
-            </form>`
+                <div class="action space-between">
+                  <mwc-button
+                    @click=${this._restart}
+                    .disabled=${this._submitting}
+                  >
+                    ${this.localize("ui.panel.page-authorize.form.previous")}
+                  </mwc-button>
+                  <mwc-button
+                    raised
+                    @click=${this._handleSubmit}
+                    .disabled=${this._submitting}
+                  >
+                    ${this.localize("ui.panel.page-authorize.form.next")}
+                  </mwc-button>
+                </div>
+              </form>
+            </div>`
           : html`<h1>
                 ${this.localize("ui.panel.page-authorize.welcome_home")}
               </h1>
