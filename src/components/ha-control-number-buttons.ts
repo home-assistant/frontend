@@ -1,3 +1,4 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiMinus, mdiPlus } from "@mdi/js";
 import {
   CSSResultGroup,
@@ -48,6 +49,13 @@ export class HaControlNumberButton extends LitElement {
   public formatOptions: Intl.NumberFormatOptions = {};
 
   @query("#input") _input!: HTMLDivElement;
+
+  private _hideUnit = new ResizeController(this, {
+    callback: (entries) => {
+      const width = entries[0]?.contentRect.width;
+      return width < 100;
+    },
+  });
 
   private boundedValue(value: number) {
     const clamped = conditionalClamp(value, this.min, this.max);
@@ -145,7 +153,10 @@ export class HaControlNumberButton extends LitElement {
           ?disabled=${this.disabled}
           @keydown=${this._handleKeyDown}
         >
-          ${value} ${unit ? html`<span class="unit">${unit}</span>` : nothing}
+          ${value}
+          ${unit && !this._hideUnit.value
+            ? html`<span class="unit">${unit}</span>`
+            : nothing}
         </div>
         <button
           class="button minus"

@@ -22,7 +22,10 @@ import {
 } from "../../data/climate";
 import { UNAVAILABLE } from "../../data/entity";
 import { HomeAssistant } from "../../types";
-import { stateControlCircularSliderStyle } from "../state-control-circular-slider-style";
+import {
+  createStateControlCircularSliderController,
+  stateControlCircularSliderStyle,
+} from "../state-control-circular-slider-style";
 
 type Target = "value" | "low" | "high";
 
@@ -48,6 +51,8 @@ export class HaStateControlClimateTemperature extends LitElement {
   @state() private _targetTemperature: Partial<Record<Target, number>> = {};
 
   @state() private _selectTargetTemperature: Target = "low";
+
+  private _sizeController = createStateControlCircularSliderController(this);
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
@@ -285,6 +290,10 @@ export class HaStateControlClimateTemperature extends LitElement {
       );
     }
 
+    const containerSizeClass = this._sizeController.value
+      ? { [this._sizeController.value]: true }
+      : {};
+
     if (
       supportsTargetTemperature &&
       this._targetTemperature.value != null &&
@@ -302,7 +311,7 @@ export class HaStateControlClimateTemperature extends LitElement {
 
       return html`
         <div
-          class="container"
+          class="container${classMap(containerSizeClass)}"
           style=${styleMap({
             "--state-color": stateColor,
             "--action-color": actionColor,
@@ -340,7 +349,7 @@ export class HaStateControlClimateTemperature extends LitElement {
     ) {
       return html`
         <div
-          class="container"
+          class="container${classMap(containerSizeClass)}"
           style=${styleMap({
             "--low-color": lowColor,
             "--high-color": highColor,
@@ -395,7 +404,9 @@ export class HaStateControlClimateTemperature extends LitElement {
 
     return html`
       <div
-        class="container"
+        class="container${classMap({
+          [this._sizeController.value ?? ""]: true,
+        })}"
         style=${styleMap({
           "--state-color": stateColor,
         })}
@@ -450,15 +461,12 @@ export class HaStateControlClimateTemperature extends LitElement {
         .dual button.selected {
           opacity: 1;
         }
-        @container container (max-width: 250px) {
-          .dual {
-            gap: 16px;
-          }
+        .container.md .dual {
+          gap: 16px;
         }
-        @container container (max-width: 190px) {
-          .dual {
-            gap: 8px;
-          }
+        .container.sm .dual,
+        .container.xs .dual {
+          gap: 8px;
         }
         ha-control-circular-slider {
           --control-circular-slider-low-color: var(
