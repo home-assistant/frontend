@@ -347,7 +347,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                     .title=${this.hass!.localize(
                       "ui.panel.lovelace.cards.todo-list.drag_and_drop"
                     )}
-                    class="reorderButton"
+                    class="reorderButton handle"
                     .path=${mdiDrag}
                   >
                   </ha-svg-icon>
@@ -581,6 +581,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         margin-right: -12px;
         margin-inline-end: -12px;
         direction: var(--direction);
+      }
+
+      .handle {
+        cursor: move;
       }
 
       ha-checkbox {
