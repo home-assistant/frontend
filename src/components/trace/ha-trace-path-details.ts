@@ -25,7 +25,7 @@ import { traceTabStyles } from "./trace-tab-styles";
 import { HomeAssistant } from "../../types";
 import type { NodeInfo } from "./hat-script-graph";
 
-const trace_path_tabs = [
+const TRACE_PATH_TABS = [
   "step_config",
   "changed_variables",
   "logbook",
@@ -47,8 +47,7 @@ export class HaTracePathDetails extends LitElement {
 
   @property() public trackedNodes!: Record<string, any>;
 
-  @state() private _view: "step_config" | "changed_variables" | "logbook" =
-    "step_config";
+  @state() private _view: (typeof TRACE_PATH_TABS)[number] = "step_config";
 
   protected render(): TemplateResult {
     return html`
@@ -57,7 +56,7 @@ export class HaTracePathDetails extends LitElement {
       </div>
 
       <div class="tabs top">
-        ${trace_path_tabs.map(
+        ${TRACE_PATH_TABS.map(
           (view) => html`
             <button
               .view=${view}

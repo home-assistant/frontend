@@ -48,7 +48,7 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { computeRTL } from "../../../common/util/compute_rtl";
 
-const tabs = ["details", "automation_config", "timeline", "logbook"] as const;
+const TABS = ["details", "automation_config", "timeline", "logbook"] as const;
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
@@ -245,7 +245,7 @@ export class HaAutomationTrace extends LitElement {
 
                     <div class="info">
                       <div class="tabs top">
-                        ${tabs.map(
+                        ${TABS.map(
                           (view) => html`
                             <button
                               tabindex="0"
