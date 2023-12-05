@@ -5294,14 +5294,14 @@
               "humidifier-on-off": {
                 "label": "Humidifier on/off"
               },
-              "humidifier-preset-modes": {
-                "label": "Humidifier preset modes",
+              "humidifier-modes": {
+                "label": "Humidifier modes",
                 "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
                 "style_list": {
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
-                "preset_modes": "Preset modes"
+                "modes": "Modes"
               },
               "select-options": {
                 "label": "Select options"

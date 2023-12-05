@@ -17,11 +17,9 @@ import {
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
-import { HumidifierPresetModesCardFeatureConfig } from "./types";
+import { HumidifierModesCardFeatureConfig } from "./types";
 
-export const supportsHumidifierPresetModesCardFeature = (
-  stateObj: HassEntity
-) => {
+export const supportsHumidifierModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "humidifier" &&
@@ -29,8 +27,8 @@ export const supportsHumidifierPresetModesCardFeature = (
   );
 };
 
-@customElement("hui-humidifier-preset-modes-card-feature")
-class HuiHumidifierPresetModesCardFeature
+@customElement("hui-humidifier-modes-card-feature")
+class HuiHumidifierModesCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
@@ -38,7 +36,7 @@ class HuiHumidifierPresetModesCardFeature
 
   @property({ attribute: false }) public stateObj?: HumidifierEntity;
 
-  @state() private _config?: HumidifierPresetModesCardFeatureConfig;
+  @state() private _config?: HumidifierModesCardFeatureConfig;
 
   @state() _currentMode?: string;
 
@@ -48,24 +46,22 @@ class HuiHumidifierPresetModesCardFeature
   static getStubConfig(
     _,
     stateObj?: HassEntity
-  ): HumidifierPresetModesCardFeatureConfig {
+  ): HumidifierModesCardFeatureConfig {
     return {
-      type: "humidifier-preset-modes",
+      type: "humidifier-modes",
       style: "dropdown",
-      preset_modes: stateObj?.attributes.available_modes || [],
+      modes: stateObj?.attributes.available_modes || [],
     };
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
     await import(
-      "../editor/config-elements/hui-humidifier-preset-modes-card-feature-editor"
+      "../editor/config-elements/hui-humidifier-modes-card-feature-editor"
     );
-    return document.createElement(
-      "hui-humidifier-preset-modes-card-feature-editor"
-    );
+    return document.createElement("hui-humidifier-modes-card-feature-editor");
   }
 
-  public setConfig(config: HumidifierPresetModesCardFeatureConfig): void {
+  public setConfig(config: HumidifierModesCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -122,7 +118,7 @@ class HuiHumidifierPresetModesCardFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsHumidifierPresetModesCardFeature(this.stateObj)
+      !supportsHumidifierModesCardFeature(this.stateObj)
     ) {
       return null;
     }
@@ -132,7 +128,7 @@ class HuiHumidifierPresetModesCardFeature
     const modes = stateObj.attributes.available_modes || [];
 
     const options = modes
-      .filter((mode) => (this._config!.preset_modes || []).includes(mode))
+      .filter((mode) => (this._config!.modes || []).includes(mode))
       .map<ControlSelectOption>((mode) => ({
         value: mode,
         label: this.hass!.formatEntityAttributeValue(
@@ -213,6 +209,6 @@ class HuiHumidifierPresetModesCardFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-humidifier-preset-modes-card-feature": HuiHumidifierPresetModesCardFeature;
+    "hui-humidifier-modes-card-feature": HuiHumidifierModesCardFeature;
   }
 }

@@ -12,13 +12,13 @@ import type {
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import {
-  HumidifierPresetModesCardFeatureConfig,
+  HumidifierModesCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
 
-@customElement("hui-humidifier-preset-modes-card-feature-editor")
-export class HuiHumidifierPresetModesCardFeatureEditor
+@customElement("hui-humidifier-modes-card-feature-editor")
+export class HuiHumidifierModesCardFeatureEditor
   extends LitElement
   implements LovelaceCardFeatureEditor
 {
@@ -26,9 +26,9 @@ export class HuiHumidifierPresetModesCardFeatureEditor
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: HumidifierPresetModesCardFeatureConfig;
+  @state() private _config?: HumidifierModesCardFeatureConfig;
 
-  public setConfig(config: HumidifierPresetModesCardFeatureConfig): void {
+  public setConfig(config: HumidifierModesCardFeatureConfig): void {
     this._config = config;
   }
 
@@ -48,14 +48,14 @@ export class HuiHumidifierPresetModesCardFeatureEditor
               options: ["dropdown", "icons"].map((mode) => ({
                 value: mode,
                 label: localize(
-                  `ui.panel.lovelace.editor.features.types.humidifier-preset-modes.style_list.${mode}`
+                  `ui.panel.lovelace.editor.features.types.humidifier-modes.style_list.${mode}`
                 ),
               })),
             },
           },
         },
         {
-          name: "preset_modes",
+          name: "modes",
           selector: {
             select: {
               multiple: true,
@@ -80,9 +80,9 @@ export class HuiHumidifierPresetModesCardFeatureEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const data: HumidifierPresetModesCardFeatureConfig = {
+    const data: HumidifierModesCardFeatureConfig = {
       style: "dropdown",
-      preset_modes: [],
+      modes: [],
       ...this._config,
     };
 
@@ -112,9 +112,9 @@ export class HuiHumidifierPresetModesCardFeatureEditor
   ) => {
     switch (schema.name) {
       case "style":
-      case "preset_modes":
+      case "modes":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.features.types.humidifier-preset-modes.${schema.name}`
+          `ui.panel.lovelace.editor.features.types.humidifier-modes.${schema.name}`
         );
       default:
         return "";
@@ -124,6 +124,6 @@ export class HuiHumidifierPresetModesCardFeatureEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-humidifier-preset-modes-card-feature-editor": HuiHumidifierPresetModesCardFeatureEditor;
+    "hui-humidifier-modes-card-feature-editor": HuiHumidifierModesCardFeatureEditor;
   }
 }
