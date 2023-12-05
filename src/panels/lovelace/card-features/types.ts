@@ -68,14 +68,14 @@ export interface WaterHeaterOperationModesCardFeatureConfig {
   operation_modes?: OperationMode[];
 }
 
-export interface HumidifierOnOffCardFeatureConfig {
-  type: "humidifier-on-off";
-}
-
 export interface HumidifierModesCardFeatureConfig {
   type: "humidifier-modes";
   style?: "dropdown" | "icons";
   modes?: string[];
+}
+
+export interface HumidifierToggleCardFeatureConfig {
+  type: "humidifier-toggle";
 }
 
 export const VACUUM_COMMANDS = [
@@ -111,7 +111,7 @@ export type LovelaceCardFeatureConfig =
   | CoverTiltPositionCardFeatureConfig
   | CoverTiltCardFeatureConfig
   | FanSpeedCardFeatureConfig
-  | HumidifierOnOffCardFeatureConfig
+  | HumidifierToggleCardFeatureConfig
   | HumidifierModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig
   | LightBrightnessCardFeatureConfig

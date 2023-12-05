@@ -11,15 +11,15 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { HumidifierEntity, HumidifierState } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature } from "../types";
-import { HumidifierOnOffCardFeatureConfig } from "./types";
+import { HumidifierToggleCardFeatureConfig } from "./types";
 
-export const supportsHumidifierOnOffCardFeature = (stateObj: HassEntity) => {
+export const supportsHumidifierToggleCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return domain === "humidifier";
 };
 
-@customElement("hui-humidifier-on-off-card-feature")
-class HuiHumidifierOnOffCardFeature
+@customElement("hui-humidifier-toggle-card-feature")
+class HuiHumidifierToggleCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
@@ -27,17 +27,17 @@ class HuiHumidifierOnOffCardFeature
 
   @property({ attribute: false }) public stateObj?: HumidifierEntity;
 
-  @state() private _config?: HumidifierOnOffCardFeatureConfig;
+  @state() private _config?: HumidifierToggleCardFeatureConfig;
 
   @state() _currentState?: HumidifierState;
 
-  static getStubConfig(): HumidifierOnOffCardFeatureConfig {
+  static getStubConfig(): HumidifierToggleCardFeatureConfig {
     return {
-      type: "humidifier-on-off",
+      type: "humidifier-toggle",
     };
   }
 
-  public setConfig(config: HumidifierOnOffCardFeatureConfig): void {
+  public setConfig(config: HumidifierToggleCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -81,7 +81,7 @@ class HuiHumidifierOnOffCardFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsHumidifierOnOffCardFeature(this.stateObj)
+      !supportsHumidifierToggleCardFeature(this.stateObj)
     ) {
       return null;
     }
@@ -131,6 +131,6 @@ class HuiHumidifierOnOffCardFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-humidifier-on-off-card-feature": HuiHumidifierOnOffCardFeature;
+    "hui-humidifier-toggle-card-feature": HuiHumidifierToggleCardFeature;
   }
 }

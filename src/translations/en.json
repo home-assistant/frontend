@@ -5291,8 +5291,8 @@
                 },
                 "preset_modes": "Preset modes"
               },
-              "humidifier-on-off": {
-                "label": "Humidifier on/off"
+              "humidifier-toggle": {
+                "label": "Humidifier toggle"
               },
               "humidifier-modes": {
                 "label": "Humidifier modes",

@@ -29,7 +29,7 @@ import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
-import { supportsHumidifierOnOffCardFeature } from "../../card-features/hui-humidifier-on-off-card-feature";
+import { supportsHumidifierToggleCardFeature } from "../../card-features/hui-humidifier-toggle-card-feature";
 import { supportsHumidifierModesCardFeature } from "../../card-features/hui-humidifier-modes-card-feature";
 import { supportsLawnMowerCommandCardFeature } from "../../card-features/hui-lawn-mower-commands-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
@@ -55,8 +55,8 @@ const UI_FEATURE_TYPES = [
   "cover-tilt-position",
   "cover-tilt",
   "fan-speed",
-  "humidifier-on-off",
   "humidifier-modes",
+  "humidifier-toggle",
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
@@ -93,8 +93,8 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
   "cover-tilt": supportsCoverTiltCardFeature,
   "fan-speed": supportsFanSpeedCardFeature,
-  "humidifier-on-off": supportsHumidifierOnOffCardFeature,
   "humidifier-modes": supportsHumidifierModesCardFeature,
+  "humidifier-toggle": supportsHumidifierToggleCardFeature,
   "lawn-mower-commands": supportsLawnMowerCommandCardFeature,
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
