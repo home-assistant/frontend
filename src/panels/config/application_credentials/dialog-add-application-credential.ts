@@ -227,7 +227,7 @@ export class DialogAddApplicationCredential extends LitElement {
         ${this._loading
           ? html`
               <div slot="primaryAction" class="submit-spinner">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
               </div>
             `
           : html`

@@ -68,8 +68,7 @@ class PanelTodo extends LitElement {
   private _headerHeight = 56;
 
   private _showPaneController = new ResizeController(this, {
-    callback: (entries: ResizeObserverEntry[]) =>
-      entries[0]?.contentRect.width > 750,
+    callback: (entries) => entries[0]?.contentRect.width > 750,
   });
 
   private _mql?: MediaQueryList;

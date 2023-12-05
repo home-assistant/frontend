@@ -27,14 +27,14 @@ const onTagAttr = (
   return undefined;
 };
 
-const renderMarkdown = (
+const renderMarkdown = async (
   content: string,
   markedOptions: MarkedOptions,
   hassOptions: {
     // Do not allow SVG on untrusted content, it allows XSS.
     allowSvg?: boolean;
   } = {}
-): string => {
+): Promise<string> => {
   if (!whiteListNormal) {
     whiteListNormal = {
       ...getDefaultWhiteList(),
@@ -61,7 +61,7 @@ const renderMarkdown = (
     whiteList = whiteListNormal;
   }
 
-  return filterXSS(marked(content, markedOptions), {
+  return filterXSS(await marked(content, markedOptions), {
     whiteList,
     onTagAttr,
   });

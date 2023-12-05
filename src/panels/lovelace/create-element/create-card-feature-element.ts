@@ -7,12 +7,14 @@ import "../card-features/hui-cover-tilt-card-feature";
 import "../card-features/hui-cover-tilt-position-card-feature";
 import "../card-features/hui-fan-speed-card-feature";
 import "../card-features/hui-humidifier-modes-card-feature";
+import "../card-features/hui-humidifier-toggle-card-feature";
 import "../card-features/hui-lawn-mower-commands-card-feature";
 import "../card-features/hui-light-brightness-card-feature";
 import "../card-features/hui-light-color-temp-card-feature";
 import "../card-features/hui-numeric-input-card-feature";
 import "../card-features/hui-select-options-card-feature";
 import "../card-features/hui-target-temperature-card-feature";
+import "../card-features/hui-target-humidity-card-feature";
 import "../card-features/hui-vacuum-commands-card-feature";
 import "../card-features/hui-water-heater-operation-modes-card-feature";
 import { LovelaceCardFeatureConfig } from "../card-features/types";
@@ -31,11 +33,13 @@ const TYPES: Set<LovelaceCardFeatureConfig["type"]> = new Set([
   "cover-tilt",
   "fan-speed",
   "humidifier-modes",
+  "humidifier-toggle",
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
   "numeric-input",
   "select-options",
+  "target-humidity",
   "target-temperature",
   "vacuum-commands",
   "water-heater-operation-modes",

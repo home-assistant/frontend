@@ -51,7 +51,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       entity: foundEntities[0] || "",
       features: [
         {
-          type: "humidifier-modes",
+          type: "humidifier-toggle",
         },
       ],
     };
@@ -180,6 +180,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         max-width: 344px; /* 12px + 12px + 320px */
         padding: 0 12px 12px 12px;
         box-sizing: border-box;
+        --interaction-margin: 0px;
       }
 
       .more-info {

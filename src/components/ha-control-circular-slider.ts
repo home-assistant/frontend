@@ -618,6 +618,7 @@ export class HaControlCircularSlider extends LitElement {
         --control-circular-slider-high-color: var(
           --control-circular-slider-color
         );
+        --control-circular-slider-interaction-margin: 12px;
         width: 320px;
         display: block;
       }
@@ -633,7 +634,9 @@ export class HaControlCircularSlider extends LitElement {
         fill: none;
         stroke: transparent;
         stroke-linecap: round;
-        stroke-width: 48px;
+        stroke-width: calc(
+          24px + 2 * var(--control-circular-slider-interaction-margin)
+        );
         cursor: pointer;
       }
       #display {
