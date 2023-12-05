@@ -9,7 +9,7 @@ import { updateCanInstall, UpdateEntity } from "../data/update";
 import { haStyleSidebarItem } from "../resources/styles";
 import { HomeAssistant } from "../types";
 import "./ha-svg-icon";
-import { createKeydown, createKeyup } from "../resources/button-handlers";
+import { keydown, keyup } from "../resources/button-handlers";
 
 const styles = css`
   .item.expanded {
@@ -33,10 +33,6 @@ class HaSidebarPanelConfig extends LitElement {
 
   protected render() {
     const notices = this._updatesCount + this._issuesCount;
-    const keydown = createKeydown((e) =>
-      (e.currentTarget as HTMLElement).click()
-    );
-    const keyup = createKeyup((e) => (e.currentTarget as HTMLElement).click());
     return html`<a
       href="/config"
       aria-label=${this.name}

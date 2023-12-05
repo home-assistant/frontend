@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { haStyleSidebarItem } from "../resources/styles";
 import { HomeAssistant } from "../types";
 import "./user/ha-user-badge";
-import { createKeydown, createKeyup } from "../resources/button-handlers";
+import { keydown, keyup } from "../resources/button-handlers";
 
 const styles = css`
   .icon {
@@ -28,10 +28,6 @@ class HaSidebarPanelUser extends LitElement {
   @property({ type: Boolean }) public selected = false;
 
   protected render() {
-    const keydown = createKeydown((e) =>
-      (e.currentTarget as HTMLElement).click()
-    );
-    const keyup = createKeyup((e) => (e.currentTarget as HTMLElement).click());
     return html`<a
       href="/profile"
       aria-current=${this.selected ? "page" : "false"}

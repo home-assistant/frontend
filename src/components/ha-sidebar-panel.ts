@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { haStyleSidebarItem } from "../resources/styles";
 import "./ha-svg-icon";
 import "./ha-icon";
-import { createKeydown, createKeyup } from "../resources/button-handlers";
+import { keydown, keyup } from "../resources/button-handlers";
 
 const styles = css`
   .item.expanded {
@@ -30,10 +30,6 @@ class HaSidebarPanel extends LitElement {
   @property({ type: Boolean }) public selected = false;
 
   protected render() {
-    const keydown = createKeydown((e) =>
-      (e.currentTarget as HTMLElement).click()
-    );
-    const keyup = createKeyup((e) => (e.currentTarget as HTMLElement).click());
     return html`<a
       href="/${this.path}"
       aria-current=${this.selected ? "page" : "false"}
