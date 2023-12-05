@@ -96,6 +96,7 @@ const styles = css`
     }
   }
 `;
+
 @customElement("ha-sidebar-edit-panels")
 class HaSidebarEditPanels extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -103,8 +104,6 @@ class HaSidebarEditPanels extends LitElement {
   @property() public panels: any[] = [];
 
   @property() public hiddenPanels: any[] = [];
-
-  static styles = styles;
 
   private _sortable?: SortableInstance;
 
@@ -172,6 +171,8 @@ class HaSidebarEditPanels extends LitElement {
     if (!panel) return;
     fireEvent(this, "panel-show", panel);
   }
+
+  static styles = styles;
 }
 
 declare global {

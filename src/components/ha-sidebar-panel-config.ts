@@ -9,13 +9,14 @@ import { updateCanInstall, UpdateEntity } from "../data/update";
 import { haStyleSidebarItem } from "../resources/styles";
 import { HomeAssistant } from "../types";
 import "./ha-svg-icon";
-import { keydown, keyup } from "../resources/button-handlers";
+import { createKeydown, createKeyup } from "../resources/button-handlers";
 
 const styles = css`
   .item.expanded {
     width: 100%;
   }
 `;
+
 @customElement("ha-sidebar-panel-config")
 class HaSidebarPanelConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -30,17 +31,19 @@ class HaSidebarPanelConfig extends LitElement {
 
   @state() private _issuesCount = 0;
 
-  static styles = [haStyleSidebarItem, styles];
-
   protected render() {
     const notices = this._updatesCount + this._issuesCount;
+    const keydown = createKeydown((e) =>
+      (e.currentTarget as HTMLElement).click()
+    );
+    const keyup = createKeyup((e) => (e.currentTarget as HTMLElement).click());
     return html`<a
       href="/config"
       aria-label=${this.name}
       aria-current=${this.selected ? "page" : "false"}
       class="item ${this.expanded ? "expanded" : ""}"
-      @keydown=${keydown((e) => (e.currentTarget as HTMLElement).click())}
-      @keyup=${keyup((e) => (e.currentTarget as HTMLElement).click())}
+      @keydown=${keydown}
+      @keyup=${keyup}
     >
       <div class="target"></div>
       <span class="icon">
@@ -80,6 +83,8 @@ class HaSidebarPanelConfig extends LitElement {
         ]
       : [];
   }
+
+  static styles = [haStyleSidebarItem, styles];
 }
 
 declare global {

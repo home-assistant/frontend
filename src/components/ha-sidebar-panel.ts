@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { haStyleSidebarItem } from "../resources/styles";
 import "./ha-svg-icon";
 import "./ha-icon";
-import { keydown, keyup } from "../resources/button-handlers";
+import { createKeydown, createKeyup } from "../resources/button-handlers";
 
 const styles = css`
   .item.expanded {
@@ -14,6 +14,7 @@ const styles = css`
     margin-left: auto;
   }
 `;
+
 @customElement("ha-sidebar-panel")
 class HaSidebarPanel extends LitElement {
   @property() public path = "";
@@ -28,16 +29,18 @@ class HaSidebarPanel extends LitElement {
 
   @property({ type: Boolean }) public selected = false;
 
-  static styles = [haStyleSidebarItem, styles];
-
   protected render() {
+    const keydown = createKeydown((e) =>
+      (e.currentTarget as HTMLElement).click()
+    );
+    const keyup = createKeyup((e) => (e.currentTarget as HTMLElement).click());
     return html`<a
       href="/${this.path}"
       aria-current=${this.selected ? "page" : "false"}
       aria-label=${this.name}
       class="item ${this.expanded ? "expanded" : ""}"
-      @keydown=${keydown((e) => (e.currentTarget as HTMLElement).click())}
-      @keyup=${keyup((e) => (e.currentTarget as HTMLElement).click())}
+      @keydown=${keydown}
+      @keyup=${keyup}
     >
       <div class="target"></div>
       <span class="icon">
@@ -48,6 +51,8 @@ class HaSidebarPanel extends LitElement {
       <span class="name">${this.name}</span>
     </a>`;
   }
+
+  static styles = [haStyleSidebarItem, styles];
 }
 
 declare global {

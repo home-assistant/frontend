@@ -16,6 +16,7 @@ const styles = css`
     width: 100%;
   }
 `;
+
 @customElement("ha-sidebar-panel-notifications")
 class HaSidebarPanelNotifications extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -23,8 +24,6 @@ class HaSidebarPanelNotifications extends LitElement {
   @property({ type: Boolean }) public expanded = false;
 
   @state() private _notifications?: PersistentNotification[];
-
-  static styles = [haStyleSidebarItem, styles];
 
   protected render() {
     const notificationCount = this._notifications
@@ -60,6 +59,8 @@ class HaSidebarPanelNotifications extends LitElement {
   private _showNotifications() {
     fireEvent(this, "hass-show-notifications");
   }
+
+  static styles = [haStyleSidebarItem, styles];
 }
 
 declare global {

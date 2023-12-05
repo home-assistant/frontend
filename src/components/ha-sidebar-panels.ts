@@ -164,8 +164,6 @@ class HaSidebarPanels extends LitElement {
 
   private searchKeysUpdated = 0;
 
-  static styles = styles;
-
   constructor() {
     super();
     const getCurrentFocus = () => {
@@ -329,6 +327,8 @@ class HaSidebarPanels extends LitElement {
       []
     );
   }
+
+  static styles = styles;
 }
 
 declare global {

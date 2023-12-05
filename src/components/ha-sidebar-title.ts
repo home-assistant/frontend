@@ -43,6 +43,7 @@ const styles = css`
     margin-inline-end: 0;
   }
 `;
+
 @customElement("ha-sidebar-title")
 class HaSidebarTitle extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -52,8 +53,6 @@ class HaSidebarTitle extends LitElement {
   @property({ type: Boolean }) public expanded = false;
 
   @property({ type: Boolean }) public editMode = false;
-
-  static styles = styles;
 
   protected render() {
     const classes = classMap({
@@ -100,6 +99,8 @@ class HaSidebarTitle extends LitElement {
   private _editModeOff() {
     fireEvent(this, "hass-edit-sidebar", { editMode: false });
   }
+
+  static styles = styles;
 }
 
 declare global {

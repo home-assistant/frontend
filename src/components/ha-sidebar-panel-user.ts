@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { haStyleSidebarItem } from "../resources/styles";
 import { HomeAssistant } from "../types";
 import "./user/ha-user-badge";
-import { keydown, keyup } from "../resources/button-handlers";
+import { createKeydown, createKeyup } from "../resources/button-handlers";
 
 const styles = css`
   .icon {
@@ -18,6 +18,7 @@ const styles = css`
     transform: translate(-50%, -50%) scale(0.8);
   }
 `;
+
 @customElement("ha-sidebar-panel-user")
 class HaSidebarPanelUser extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -26,15 +27,17 @@ class HaSidebarPanelUser extends LitElement {
 
   @property({ type: Boolean }) public selected = false;
 
-  static styles = [haStyleSidebarItem, styles];
-
   protected render() {
+    const keydown = createKeydown((e) =>
+      (e.currentTarget as HTMLElement).click()
+    );
+    const keyup = createKeyup((e) => (e.currentTarget as HTMLElement).click());
     return html`<a
       href="/profile"
       aria-current=${this.selected ? "page" : "false"}
       class="item ${this.expanded ? "expanded" : ""}"
-      @keydown=${keydown((e) => (e.currentTarget as HTMLElement).click())}
-      @keyup=${keyup((e) => (e.currentTarget as HTMLElement).click())}
+      @keydown=${keydown}
+      @keyup=${keyup}
     >
       <div class="target"></div>
       <span class="icon">
@@ -48,6 +51,8 @@ class HaSidebarPanelUser extends LitElement {
       <span class="name">${this.hass.user ? this.hass.user.name : ""}</span>
     </a>`;
   }
+
+  static styles = [haStyleSidebarItem, styles];
 }
 
 declare global {

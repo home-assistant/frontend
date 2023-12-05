@@ -12,6 +12,7 @@ const styles = css`
     width: 100%;
   }
 `;
+
 @customElement("ha-sidebar-panel-ext-config")
 class HaSidebarPanelExtConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -19,8 +20,6 @@ class HaSidebarPanelExtConfig extends LitElement {
   @property() public name = "";
 
   @property({ type: Boolean }) public expanded = false;
-
-  static styles = [haStyleSidebarItem, styles];
 
   protected render() {
     return html`<button
@@ -41,6 +40,8 @@ class HaSidebarPanelExtConfig extends LitElement {
       type: "config_screen/show",
     });
   }
+
+  static styles = [haStyleSidebarItem, styles];
 }
 
 declare global {

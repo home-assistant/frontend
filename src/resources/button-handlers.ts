@@ -1,4 +1,4 @@
-export const keydown =
+export const createKeydown =
   (activate: (e: KeyboardEvent) => void) => (e: KeyboardEvent) => {
     if (e.key === " ") e.preventDefault();
     if (e.key === "Enter") {
@@ -6,7 +6,7 @@ export const keydown =
       activate(e);
     }
   };
-export const keyup =
+export const createKeyup =
   (activate: (e: KeyboardEvent) => void) => (e: KeyboardEvent) => {
     if (e.key === " ") activate(e);
   };

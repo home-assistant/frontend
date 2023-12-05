@@ -14,13 +14,14 @@ const styles = css`
     display: none;
   }
 `;
+
 @customElement("ha-sidebar-tooltip")
 class HaSidebarTooltip extends LitElement {
-  static styles = styles;
-
   protected render() {
     return html`<div></div>`;
   }
+
+  static styles = styles;
 }
 
 export interface TooltipPosition {
