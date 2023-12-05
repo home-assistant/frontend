@@ -22,6 +22,7 @@ import memoizeOne from "memoize-one";
 import type { SortableEvent } from "sortablejs";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../components/ha-card";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-icon-button";
@@ -439,7 +440,21 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
     const checkedItems = this._getCheckedItems(this._items);
     const uids = checkedItems.map((item: TodoItem) => item.uid);
-    deleteItems(this.hass!, this._entityId!, uids);
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.lovelace.cards.todo-list.delete_confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.lovelace.cards.todo-list.delete_confirm_text",
+        { number: uids.length }
+      ),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirmText: this.hass.localize("ui.common.delete"),
+      destructive: true,
+      confirm: () => {
+        deleteItems(this.hass!, this._entityId!, uids);
+      },
+    });
   }
 
   private get _newItem(): HaTextField {
