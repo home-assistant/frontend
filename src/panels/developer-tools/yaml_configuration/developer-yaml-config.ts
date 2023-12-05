@@ -233,7 +233,7 @@ export class DeveloperYamlConfig extends LitElement {
         }
 
         .validate-log {
-          white-space: pre;
+          white-space: pre-wrap;
           direction: ltr;
         }
 
