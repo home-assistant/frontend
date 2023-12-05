@@ -55,6 +55,10 @@ export interface NumericInputCardFeatureConfig {
   style?: "buttons" | "slider";
 }
 
+export interface TargetHumidityCardFeatureConfig {
+  type: "target-humidity";
+}
+
 export interface TargetTemperatureCardFeatureConfig {
   type: "target-temperature";
 }
@@ -106,6 +110,7 @@ export type LovelaceCardFeatureConfig =
   | LightBrightnessCardFeatureConfig
   | LightColorTempCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
+  | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig
   | SelectOptionsCardFeatureConfig

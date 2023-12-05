@@ -35,6 +35,7 @@ import { supportsLightBrightnessCardFeature } from "../../card-features/hui-ligh
 import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
+import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
@@ -58,6 +59,7 @@ const UI_FEATURE_TYPES = [
   "light-brightness",
   "light-color-temp",
   "select-options",
+  "target-humidity",
   "target-temperature",
   "vacuum-commands",
   "water-heater-operation-modes",
@@ -93,6 +95,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
+  "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,

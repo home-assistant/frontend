@@ -13,6 +13,7 @@ import "../card-features/hui-light-color-temp-card-feature";
 import "../card-features/hui-numeric-input-card-feature";
 import "../card-features/hui-select-options-card-feature";
 import "../card-features/hui-target-temperature-card-feature";
+import "../card-features/hui-target-humidity-card-feature";
 import "../card-features/hui-vacuum-commands-card-feature";
 import "../card-features/hui-water-heater-operation-modes-card-feature";
 import { LovelaceCardFeatureConfig } from "../card-features/types";
@@ -36,6 +37,7 @@ const TYPES: Set<LovelaceCardFeatureConfig["type"]> = new Set([
   "light-color-temp",
   "numeric-input",
   "select-options",
+  "target-humidity",
   "target-temperature",
   "vacuum-commands",
   "water-heater-operation-modes",
