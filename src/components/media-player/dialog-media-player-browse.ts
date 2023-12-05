@@ -58,6 +58,7 @@ class DialogMediaPlayerBrowse extends LitElement {
     this._navigateIds = undefined;
     this._currentItem = undefined;
     this._preferredLayout = "auto";
+    this.classList.remove("opened");
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -79,6 +80,7 @@ class DialogMediaPlayerBrowse extends LitElement {
             )
           : this._currentItem.title}
         @closed=${this.closeDialog}
+        @opened=${this._dialogOpened}
       >
         <ha-dialog-header show-border slot="heading">
           ${this._navigateIds.length > 1
@@ -167,6 +169,10 @@ class DialogMediaPlayerBrowse extends LitElement {
     `;
   }
 
+  private _dialogOpened() {
+    this.classList.add("opened");
+  }
+
   private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
@@ -217,8 +223,11 @@ class DialogMediaPlayerBrowse extends LitElement {
 
         ha-media-player-browse {
           --media-browser-max-height: calc(100vh - 65px);
-          height: calc(100vh - 65px);
           direction: ltr;
+        }
+
+        :host(.opened) ha-media-player-browse {
+          height: calc(100vh - 65px);
         }
 
         @media (min-width: 800px) {
@@ -231,7 +240,6 @@ class DialogMediaPlayerBrowse extends LitElement {
           ha-media-player-browse {
             position: initial;
             --media-browser-max-height: 100vh - 137px;
-            height: 100vh - 137px;
             width: 700px;
           }
         }
