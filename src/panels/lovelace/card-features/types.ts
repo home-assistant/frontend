@@ -68,8 +68,8 @@ export interface WaterHeaterOperationModesCardFeatureConfig {
   operation_modes?: OperationMode[];
 }
 
-export interface HumidifierModesCardFeatureConfig {
-  type: "humidifier-modes";
+export interface HumidifierOnOffCardFeatureConfig {
+  type: "humidifier-on-off";
 }
 
 export interface HumidifierPresetModesCardFeatureConfig {
@@ -111,7 +111,7 @@ export type LovelaceCardFeatureConfig =
   | CoverTiltPositionCardFeatureConfig
   | CoverTiltCardFeatureConfig
   | FanSpeedCardFeatureConfig
-  | HumidifierModesCardFeatureConfig
+  | HumidifierOnOffCardFeatureConfig
   | HumidifierPresetModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig
   | LightBrightnessCardFeatureConfig

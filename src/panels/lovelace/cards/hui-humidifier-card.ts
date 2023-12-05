@@ -51,7 +51,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       entity: foundEntities[0] || "",
       features: [
         {
-          type: "humidifier-modes",
+          type: "humidifier-on-off",
         },
       ],
     };

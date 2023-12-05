@@ -27,7 +27,7 @@ import "./hui-card-features-editor";
 import type { FeatureType } from "./hui-card-features-editor";
 
 const COMPATIBLE_FEATURES_TYPES: FeatureType[] = [
-  "humidifier-modes",
+  "humidifier-on-off",
   "humidifier-preset-modes",
 ];
 

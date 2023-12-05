@@ -11,15 +11,15 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { HumidifierEntity, HumidifierState } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature } from "../types";
-import { HumidifierModesCardFeatureConfig } from "./types";
+import { HumidifierOnOffCardFeatureConfig } from "./types";
 
-export const supportsHumidifierModesCardFeature = (stateObj: HassEntity) => {
+export const supportsHumidifierOnOffCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return domain === "humidifier";
 };
 
-@customElement("hui-humidifier-modes-card-feature")
-class HuiHumidifierModeCardFeature
+@customElement("hui-humidifier-on-off-card-feature")
+class HuiHumidifierOnOffCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
@@ -27,17 +27,17 @@ class HuiHumidifierModeCardFeature
 
   @property({ attribute: false }) public stateObj?: HumidifierEntity;
 
-  @state() private _config?: HumidifierModesCardFeatureConfig;
+  @state() private _config?: HumidifierOnOffCardFeatureConfig;
 
   @state() _currentState?: HumidifierState;
 
-  static getStubConfig(): HumidifierModesCardFeatureConfig {
+  static getStubConfig(): HumidifierOnOffCardFeatureConfig {
     return {
-      type: "humidifier-modes",
+      type: "humidifier-on-off",
     };
   }
 
-  public setConfig(config: HumidifierModesCardFeatureConfig): void {
+  public setConfig(config: HumidifierOnOffCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -81,7 +81,7 @@ class HuiHumidifierModeCardFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsHumidifierModesCardFeature(this.stateObj)
+      !supportsHumidifierOnOffCardFeature(this.stateObj)
     ) {
       return null;
     }
@@ -131,6 +131,6 @@ class HuiHumidifierModeCardFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-humidifier-modes-card-feature": HuiHumidifierModeCardFeature;
+    "hui-humidifier-on-off-card-feature": HuiHumidifierOnOffCardFeature;
   }
 }
