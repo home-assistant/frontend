@@ -4592,7 +4592,9 @@
             "add_item": "Add item",
             "reorder_items": "Reorder items",
             "drag_and_drop": "Drag and drop",
-            "delete_item": "Delete item"
+            "delete_item": "Delete item",
+            "delete_confirm_title": "Clear checked items?",
+            "delete_confirm_text": "{number} {number, plural,\n  one {item}\n  other {items}\n} will be permanently deleted from the to-do list."
           },
           "picture-elements": {
             "hold": "Hold:",
