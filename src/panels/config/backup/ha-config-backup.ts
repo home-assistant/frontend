@@ -158,7 +158,7 @@ class HaConfigBackup extends LitElement {
           ${this._backupData.backing_up
             ? html`<ha-circular-progress
                 slot="icon"
-                active
+                indeterminate
               ></ha-circular-progress>`
             : html`<ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>`}
         </ha-fab>

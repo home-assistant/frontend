@@ -98,8 +98,8 @@ class ZHAAddDevicesPage extends LitElement {
                   )}
                 </h1>
                 <ha-circular-progress
-                  active
-                  alt="Searching"
+                  indeterminate
+                  aria-label="Searching"
                 ></ha-circular-progress>
               `
             : html`

@@ -101,6 +101,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
+
+    this.updateComplete.then(() => this._measureCard());
   }
 
   public connectedCallback(): void {
@@ -339,14 +341,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   protected firstUpdated(): void {
     this._attachObserver();
+    this._measureCard();
   }
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
-
-    if (!this.hasUpdated) {
-      this._measureCard();
-    }
 
     if (
       !this._config ||
@@ -468,6 +467,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   private _measureCard() {
     const card = this.shadowRoot!.querySelector("ha-card");
+
     if (!card) {
       return;
     }

@@ -174,7 +174,11 @@ class UpdateAvailableCard extends LitElement {
                       `
                     : ""}
                 `
-              : html`<ha-circular-progress alt="Updating" size="large" active>
+              : html`<ha-circular-progress
+                    aria-label="Updating"
+                    size="large"
+                    indeterminate
+                  >
                   </ha-circular-progress>
                   <p class="progress-text">
                     ${this.supervisor.localize("update_available.updating", {

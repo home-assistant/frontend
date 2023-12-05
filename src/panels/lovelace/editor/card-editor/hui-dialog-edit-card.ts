@@ -235,8 +235,8 @@ export class HuiDialogEditCard
             ${this._error
               ? html`
                   <ha-circular-progress
-                    active
-                    alt="Can't update card"
+                    indeterminate
+                    aria-label="Can't update card"
                   ></ha-circular-progress>
                 `
               : ``}
@@ -271,8 +271,8 @@ export class HuiDialogEditCard
                   ${this._saving
                     ? html`
                         <ha-circular-progress
-                          active
-                          title="Saving"
+                          indeterminate
+                          aria-label="Saving"
                           size="small"
                         ></ha-circular-progress>
                       `

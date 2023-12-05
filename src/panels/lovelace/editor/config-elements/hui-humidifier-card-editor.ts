@@ -14,15 +14,22 @@ import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { HumidifierCardConfig } from "../../cards/types";
 import {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
+import type { HumidifierCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
+import "../hui-sub-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditSubElementEvent, SubElementEditorConfig } from "../types";
 import "./hui-card-features-editor";
+import type { FeatureType } from "./hui-card-features-editor";
+
+const COMPATIBLE_FEATURES_TYPES: FeatureType[] = [
+  "humidifier-modes",
+  "humidifier-toggle",
+];
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -103,6 +110,7 @@ export class HuiHumidifierCardEditor
       <hui-card-features-editor
         .hass=${this.hass}
         .stateObj=${stateObj}
+        .featuresTypes=${COMPATIBLE_FEATURES_TYPES}
         .features=${this._config!.features ?? []}
         @features-changed=${this._featuresChanged}
         @edit-detail-element=${this._editDetailElement}

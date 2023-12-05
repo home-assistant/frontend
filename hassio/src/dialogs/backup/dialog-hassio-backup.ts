@@ -95,7 +95,7 @@ class HassioBackupDialog
           </ha-header-bar>
         </div>
         ${this._restoringBackup
-          ? html`<ha-circular-progress active></ha-circular-progress>`
+          ? html`<ha-circular-progress indeterminate></ha-circular-progress>`
           : html`
               <supervisor-backup-content
                 .hass=${this.hass}

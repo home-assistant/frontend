@@ -1,9 +1,19 @@
 import { DEFAULT_SCHEMA, dump, load, Schema } from "js-yaml";
-import { html, LitElement, nothing, PropertyValues } from "lit";
+import {
+  CSSResultGroup,
+  css,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
+import { haStyle } from "../resources/styles";
 import "./ha-code-editor";
+import { showToast } from "../util/toast";
+import { copyToClipboard } from "../common/util/copy-clipboard";
 
 const isEmpty = (obj: Record<string, unknown>): boolean => {
   if (typeof obj !== "object") {
@@ -36,6 +46,8 @@ export class HaYamlEditor extends LitElement {
   @property({ type: Boolean }) public readOnly = false;
 
   @property({ type: Boolean }) public required = false;
+
+  @property({ type: Boolean }) public copyClipboard = false;
 
   @state() private _yaml = "";
 
@@ -88,6 +100,15 @@ export class HaYamlEditor extends LitElement {
         @value-changed=${this._onChange}
         dir="ltr"
       ></ha-code-editor>
+      ${this.copyClipboard
+        ? html`<div class="card-actions">
+            <mwc-button @click=${this._copyYaml}>
+              ${this.hass.localize(
+                "ui.components.yaml-editor.copy_to_clipboard"
+              )}
+            </mwc-button>
+          </div>`
+        : nothing}
     `;
   }
 
@@ -116,6 +137,35 @@ export class HaYamlEditor extends LitElement {
 
   get yaml() {
     return this._yaml;
+  }
+
+  private async _copyYaml(): Promise<void> {
+    if (this.yaml) {
+      await copyToClipboard(this.yaml);
+      showToast(this, {
+        message: this.hass.localize("ui.common.copied_clipboard"),
+      });
+    }
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        .card-actions {
+          border-radius: var(
+            --actions-border-radius,
+            0px 0px var(--ha-card-border-radius, 12px)
+              var(--ha-card-border-radius, 12px)
+          );
+          border: 1px solid var(--divider-color);
+          padding: 5px 16px;
+        }
+        ha-code-editor {
+          flex-grow: 1;
+        }
+      `,
+    ];
   }
 }
 

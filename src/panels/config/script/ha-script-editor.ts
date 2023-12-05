@@ -26,7 +26,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
@@ -38,7 +37,6 @@ import type {
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
-import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
@@ -93,8 +91,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @state() private _mode: "gui" | "yaml" = "gui";
 
   @state() private _readOnly = false;
-
-  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   @query("manual-script-editor")
   private _manualEditor?: HaManualScriptEditor;
@@ -405,24 +401,14 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 </div>
               `
             : this._mode === "yaml"
-              ? html`
-                  <ha-yaml-editor
-                    .hass=${this.hass}
-                    .defaultValue=${this._preprocessYaml()}
-                    .readOnly=${this._readOnly}
-                    @value-changed=${this._yamlChanged}
-                  ></ha-yaml-editor>
-                  <ha-card outlined>
-                    <div class="card-actions">
-                      <mwc-button @click=${this._copyYaml}>
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.copy_to_clipboard"
-                        )}
-                      </mwc-button>
-                    </div>
-                  </ha-card>
-                `
-              : ``}
+              ? html` <ha-yaml-editor
+                  copyClipboard
+                  .hass=${this.hass}
+                  .defaultValue=${this._preprocessYaml()}
+                  .readOnly=${this._readOnly}
+                  @value-changed=${this._yamlChanged}
+                ></ha-yaml-editor>`
+              : nothing}
         </div>
         <ha-fab
           slot="fab"
@@ -735,15 +721,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     return this._config;
   }
 
-  private async _copyYaml(): Promise<void> {
-    if (this._yamlEditor?.yaml) {
-      await copyToClipboard(this._yamlEditor.yaml);
-      showToast(this, {
-        message: this.hass.localize("ui.common.copied_clipboard"),
-      });
-    }
-  }
-
   private _yamlChanged(ev: CustomEvent) {
     ev.stopPropagation();
     if (!ev.detail.isValid) {
@@ -903,8 +880,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         }
         ha-yaml-editor {
           flex-grow: 1;
+          --actions-border-radius: 0;
           --code-mirror-height: 100%;
           min-height: 0;
+          display: flex;
+          flex-direction: column;
         }
         .yaml-mode ha-card {
           overflow: initial;

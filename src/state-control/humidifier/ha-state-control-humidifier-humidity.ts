@@ -1,6 +1,7 @@
 import { mdiMinus, mdiPlus, mdiWaterPercent } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
@@ -17,7 +18,10 @@ import {
   HumidifierEntityDeviceClass,
 } from "../../data/humidifier";
 import { HomeAssistant } from "../../types";
-import { stateControlCircularSliderStyle } from "../state-control-circular-slider-style";
+import {
+  createStateControlCircularSliderController,
+  stateControlCircularSliderStyle,
+} from "../state-control-circular-slider-style";
 
 @customElement("ha-state-control-humidifier-humidity")
 export class HaStateControlHumidifierHumidity extends LitElement {
@@ -29,6 +33,8 @@ export class HaStateControlHumidifierHumidity extends LitElement {
   public showCurrent?: boolean = false;
 
   @state() private _targetHumidity?: number;
+
+  private _sizeController = createStateControlCircularSliderController(this);
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
@@ -178,6 +184,10 @@ export class HaStateControlHumidifierHumidity extends LitElement {
     const targetHumidity = this._targetHumidity;
     const currentHumidity = this.stateObj.attributes.current_humidity;
 
+    const containerSizeClass = this._sizeController.value
+      ? { [this._sizeController.value]: true }
+      : {};
+
     if (targetHumidity != null && this.stateObj.state !== UNAVAILABLE) {
       const inverted =
         this.stateObj.attributes.device_class ===
@@ -185,7 +195,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
       return html`
         <div
-          class="container"
+          class="container${classMap(containerSizeClass)}"
           style=${styleMap({
             "--state-color": stateColor,
             "--action-color": actionColor,
@@ -216,7 +226,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
     return html`
       <div
-        class="container"
+        class="container${classMap(containerSizeClass)}"
         style=${styleMap({
           "--action-color": actionColor,
         })}

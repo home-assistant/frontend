@@ -29,12 +29,14 @@ import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
+import { supportsHumidifierToggleCardFeature } from "../../card-features/hui-humidifier-toggle-card-feature";
 import { supportsHumidifierModesCardFeature } from "../../card-features/hui-humidifier-modes-card-feature";
 import { supportsLawnMowerCommandCardFeature } from "../../card-features/hui-lawn-mower-commands-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
 import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
+import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
@@ -54,10 +56,12 @@ const UI_FEATURE_TYPES = [
   "cover-tilt",
   "fan-speed",
   "humidifier-modes",
+  "humidifier-toggle",
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
   "select-options",
+  "target-humidity",
   "target-temperature",
   "vacuum-commands",
   "water-heater-operation-modes",
@@ -70,6 +74,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "vacuum-commands",
   "alarm-modes",
   "climate-hvac-modes",
+  "humidifier-modes",
   "water-heater-operation-modes",
   "lawn-mower-commands",
   "climate-preset-modes",
@@ -89,10 +94,12 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "cover-tilt": supportsCoverTiltCardFeature,
   "fan-speed": supportsFanSpeedCardFeature,
   "humidifier-modes": supportsHumidifierModesCardFeature,
+  "humidifier-toggle": supportsHumidifierToggleCardFeature,
   "lawn-mower-commands": supportsLawnMowerCommandCardFeature,
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
+  "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,

@@ -184,6 +184,8 @@ class HaPanelDevService extends LitElement {
             >
               <div class="card-content">
                 <ha-yaml-editor
+                  .hass=${this.hass}
+                  copyClipboard
                   readOnly
                   autoUpdate
                   .value=${this._response}

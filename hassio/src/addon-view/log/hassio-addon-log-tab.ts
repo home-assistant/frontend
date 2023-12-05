@@ -18,7 +18,9 @@ class HassioAddonLogDashboard extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.addon) {
-      return html` <ha-circular-progress active></ha-circular-progress> `;
+      return html`
+        <ha-circular-progress indeterminate></ha-circular-progress>
+      `;
     }
     return html`
       <div class="content">
