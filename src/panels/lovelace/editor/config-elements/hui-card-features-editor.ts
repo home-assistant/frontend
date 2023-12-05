@@ -94,7 +94,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "cover-tilt": supportsCoverTiltCardFeature,
   "fan-speed": supportsFanSpeedCardFeature,
   "humidifier-on-off": supportsHumidifierOnOffCardFeature,
-  "humidifier-preset-modes": supportsHumidifierModesCardFeature,
+  "humidifier-modes": supportsHumidifierModesCardFeature,
   "lawn-mower-commands": supportsLawnMowerCommandCardFeature,
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
