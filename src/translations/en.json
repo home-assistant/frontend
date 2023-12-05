@@ -5291,8 +5291,17 @@
                 },
                 "preset_modes": "Preset modes"
               },
+              "humidifier-toggle": {
+                "label": "Humidifier toggle"
+              },
               "humidifier-modes": {
-                "label": "Humidifier modes"
+                "label": "Humidifier modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                },
+                "modes": "Modes"
               },
               "select-options": {
                 "label": "Select options"
