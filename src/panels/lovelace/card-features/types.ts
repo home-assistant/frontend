@@ -72,6 +72,12 @@ export interface HumidifierModesCardFeatureConfig {
   type: "humidifier-modes";
 }
 
+export interface HumidifierPresetModesCardFeatureConfig {
+  type: "humidifier-preset-modes";
+  style?: "dropdown" | "icons";
+  preset_modes?: string[];
+}
+
 export const VACUUM_COMMANDS = [
   "start_pause",
   "stop",
@@ -106,6 +112,7 @@ export type LovelaceCardFeatureConfig =
   | CoverTiltCardFeatureConfig
   | FanSpeedCardFeatureConfig
   | HumidifierModesCardFeatureConfig
+  | HumidifierPresetModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig
   | LightBrightnessCardFeatureConfig
   | LightColorTempCardFeatureConfig

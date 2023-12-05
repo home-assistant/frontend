@@ -30,6 +30,7 @@ import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
 import { supportsHumidifierModesCardFeature } from "../../card-features/hui-humidifier-modes-card-feature";
+import { supportsHumidifierPresetModesCardFeature } from "../../card-features/hui-humidifier-preset-modes-card-feature";
 import { supportsLawnMowerCommandCardFeature } from "../../card-features/hui-lawn-mower-commands-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
 import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
@@ -55,6 +56,7 @@ const UI_FEATURE_TYPES = [
   "cover-tilt",
   "fan-speed",
   "humidifier-modes",
+  "humidifier-preset-modes",
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
@@ -72,6 +74,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "vacuum-commands",
   "alarm-modes",
   "climate-hvac-modes",
+  "humidifier-preset-modes",
   "water-heater-operation-modes",
   "lawn-mower-commands",
   "climate-preset-modes",
@@ -91,6 +94,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "cover-tilt": supportsCoverTiltCardFeature,
   "fan-speed": supportsFanSpeedCardFeature,
   "humidifier-modes": supportsHumidifierModesCardFeature,
+  "humidifier-preset-modes": supportsHumidifierPresetModesCardFeature,
   "lawn-mower-commands": supportsLawnMowerCommandCardFeature,
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
