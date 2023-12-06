@@ -121,10 +121,6 @@ export const stateControlCircularSliderStyle = css`
   ha-control-circular-slider {
     width: 100%;
     --control-circular-slider-color: var(--state-color, var(--disabled-color));
-    --control-circular-slider-interaction-margin: var(
-      --interaction-margin,
-      12px
-    );
   }
   ha-control-circular-slider::after {
     display: block;
