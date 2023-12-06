@@ -119,6 +119,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       <ha-card>
         <p class="title">${name}</p>
         <ha-state-control-climate-temperature
+          prevent-interaction-on-scroll
           show-current
           .hass=${this.hass}
           .stateObj=${stateObj}
@@ -172,7 +173,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         max-width: 344px; /* 12px + 12px + 320px */
         padding: 0 12px 12px 12px;
         box-sizing: border-box;
-        --interaction-margin: 0px;
       }
 
       .more-info {
