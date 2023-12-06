@@ -33,6 +33,9 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
   @property({ attribute: "show-current", type: Boolean })
   public showCurrent?: boolean;
 
+  @property({ type: Boolean, attribute: "prevent-interaction-on-scroll" })
+  public preventInteractionOnScroll?: boolean;
+
   @state() private _targetTemperature?: number;
 
   private _sizeController = createStateControlCircularSliderController(this);
@@ -197,6 +200,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
           })}
         >
           <ha-control-circular-slider
+            .preventInteractionOnScroll=${this.preventInteractionOnScroll}
             .inactive=${!active}
             .value=${this._targetTemperature}
             .min=${this._min}
@@ -227,6 +231,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
         })}
       >
         <ha-control-circular-slider
+          .preventInteractionOnScroll=${this.preventInteractionOnScroll}
           mode="full"
           .current=${this.stateObj.attributes.current_temperature}
           .min=${this._min}

@@ -32,6 +32,9 @@ export class HaStateControlHumidifierHumidity extends LitElement {
   @property({ attribute: "show-current", type: Boolean })
   public showCurrent?: boolean = false;
 
+  @property({ type: Boolean, attribute: "prevent-interaction-on-scroll" })
+  public preventInteractionOnScroll?: boolean;
+
   @state() private _targetHumidity?: number;
 
   private _sizeController = createStateControlCircularSliderController(this);
@@ -202,6 +205,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
           })}
         >
           <ha-control-circular-slider
+            .preventInteractionOnScroll=${this.preventInteractionOnScroll}
             .inactive=${!active}
             .mode=${inverted ? "end" : "start"}
             .value=${targetHumidity}
@@ -232,6 +236,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
         })}
       >
         <ha-control-circular-slider
+          .preventInteractionOnScroll=${this.preventInteractionOnScroll}
           .current=${currentHumidity}
           .min=${this._min}
           .max=${this._max}
