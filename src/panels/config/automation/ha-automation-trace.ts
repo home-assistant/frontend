@@ -76,12 +76,7 @@ export class HaAutomationTrace extends LitElement {
 
   @state() private _logbookEntries?: LogbookEntry[];
 
-  @state() private _view:
-    | "details"
-    | "config"
-    | "timeline"
-    | "logbook"
-    | "blueprint" = "details";
+  @state() private _view: (typeof TABS)[number] | "blueprint" = "details";
 
   @query("hat-script-graph") private _graph?: HatScriptGraph;
 
@@ -292,7 +287,7 @@ export class HaAutomationTrace extends LitElement {
                                 .renderedNodes=${renderedNodes!}
                               ></ha-trace-path-details>
                             `
-                          : this._view === "config"
+                          : this._view === "automation_config"
                             ? html`
                                 <ha-trace-config
                                   .hass=${this.hass}
