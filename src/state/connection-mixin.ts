@@ -33,13 +33,12 @@ import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi from "../util/hass-call-api";
 import { HassBaseEl } from "./hass-base-mixin";
+import { promiseTimeout } from "../common/util/promise-timeout";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
 ) =>
   class extends superClass {
-    pingInterval: ReturnType<typeof setInterval> | undefined;
-
     protected initializeHass(auth: Auth, conn: Connection) {
       const language = getLocalLanguage();
 
@@ -272,29 +271,22 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         this._updateHass({ userData })
       );
 
-      if (this.pingInterval !== undefined) {
-        clearInterval(this.pingInterval);
-      }
+      const pingBackend = async () => {
+        if (this.hass?.connected) {
+          promiseTimeout(5000, this.hass?.connection.ping()).catch(() => {
+            if (!this.hass?.connected) {
+              return;
+            }
 
-      this.pingInterval = setInterval(async () => {
-        // eslint-disable-next-line no-console
-        console.log("This function is called periodically.");
-
-        if (!this.hass!.connected) {
-          return;
+            // eslint-disable-next-line no-console
+            console.log("Websocket died, forcing reconnect...");
+            this.hass?.connection.reconnect(true);
+          });
         }
+        setTimeout(pingBackend, 5000);
+      };
 
-        // Force reconnection since socket in some cases can be closed gracefully
-        const timeout = setTimeout(() => {
-          if (!this.hass?.connected) {
-            return;
-          }
-          this.hass?.connection.reconnect(true);
-        }, 5000);
-
-        await this.hass?.connection.ping();
-        clearTimeout(timeout);
-      }, 20000);
+      pingBackend();
     }
 
     protected hassReconnected() {
