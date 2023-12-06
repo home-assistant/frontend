@@ -449,7 +449,9 @@ class AddIntegrationDialog extends LitElement {
             >
             </lit-virtualizer>
           </mwc-list>`
-        : html`<ha-circular-progress indeterminate></ha-circular-progress>`} `;
+        : html`<div class="flex center">
+            <ha-circular-progress indeterminate></ha-circular-progress>
+          </div>`} `;
   }
 
   private _keyFunction = (integration: IntegrationListItem) =>
@@ -682,10 +684,12 @@ class AddIntegrationDialog extends LitElement {
       p > a {
         color: var(--primary-color);
       }
-      ha-circular-progress {
-        width: 100%;
+      .flex.center {
         display: flex;
         justify-content: center;
+        align-items: center;
+      }
+      ha-circular-progress {
         margin: 24px 0;
       }
       mwc-list {

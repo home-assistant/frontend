@@ -103,8 +103,10 @@ class MoreInfoUpdate extends LitElement {
         : ""}
       ${supportsFeature(this.stateObj!, UPDATE_SUPPORT_RELEASE_NOTES) &&
       !this._error
-        ? this._releaseNotes === undefined
-          ? html`<ha-circular-progress indeterminate></ha-circular-progress>`
+        ? !this._releaseNotes
+          ? html`<div class="flex center">
+              <ha-circular-progress indeterminate></ha-circular-progress>
+            </div>`
           : html`<hr />
               <ha-faded>
                 <ha-markdown .content=${this._releaseNotes}></ha-markdown>
@@ -254,9 +256,10 @@ class MoreInfoUpdate extends LitElement {
       a {
         color: var(--primary-color);
       }
-      ha-circular-progress {
-        width: 100%;
+      .flex.center {
+        display: flex;
         justify-content: center;
+        align-items: center;
       }
       mwc-linear-progress {
         margin-bottom: -8px;
