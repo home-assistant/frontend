@@ -18,6 +18,7 @@ import type { ValueChangedEvent, HomeAssistant } from "../../../../../types";
 import "../../../ha-config-section";
 import "./zha-device-endpoint-data-table";
 import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
+import { ChangeEvent } from "./types";
 
 @customElement("zha-add-group-page")
 export class ZHAAddGroupPage extends LitElement {
@@ -30,6 +31,8 @@ export class ZHAAddGroupPage extends LitElement {
   @state() private _processingAdd = false;
 
   @state() private _groupName = "";
+
+  @state() private _groupId?: string | number;
 
   @query("zha-device-endpoint-data-table", true)
   private _zhaDevicesDataTable!: ZHADeviceEndpointDataTable;
@@ -72,6 +75,15 @@ export class ZHAAddGroupPage extends LitElement {
             @value-changed=${this._handleNameChange}
             placeholder=${this.hass!.localize(
               "ui.panel.config.zha.groups.group_name_placeholder"
+            )}
+          ></paper-input>
+
+          <paper-input
+            type="number"
+            .value=${this._groupId}
+            @value-changed=${this._handleGroupIdChange}
+            placeholder=${this.hass!.localize(
+              "ui.panel.config.zha.groups.group_id_placeholder"
             )}
           ></paper-input>
 
@@ -131,12 +143,24 @@ export class ZHAAddGroupPage extends LitElement {
       const memberParts = member.split("_");
       return { ieee: memberParts[0], endpoint_id: memberParts[1] };
     });
-    const group: ZHAGroup = await addGroup(this.hass, this._groupName, members);
+    const groupId = this._groupId
+      ? parseInt(this._groupId as string, 10)
+      : undefined;
+    const group: ZHAGroup = await addGroup(
+      this.hass,
+      this._groupName,
+      groupId,
+      members
+    );
     this._selectedDevicesToAdd = [];
     this._processingAdd = false;
     this._groupName = "";
     this._zhaDevicesDataTable.clearSelection();
     navigate(`/config/zha/group/${group.group_id}`, { replace: true });
+  }
+
+  private _handleGroupIdChange(value: ChangeEvent) {
+    this._groupId = value.detail?.value;
   }
 
   private _handleNameChange(ev: ValueChangedEvent<string>) {
