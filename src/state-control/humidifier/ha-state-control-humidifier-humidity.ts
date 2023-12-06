@@ -185,8 +185,8 @@ export class HaStateControlHumidifierHumidity extends LitElement {
     const currentHumidity = this.stateObj.attributes.current_humidity;
 
     const containerSizeClass = this._sizeController.value
-      ? { [this._sizeController.value]: true }
-      : {};
+      ? classMap({ [this._sizeController.value]: true })
+      : "";
 
     if (targetHumidity != null && this.stateObj.state !== UNAVAILABLE) {
       const inverted =
@@ -195,7 +195,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
       return html`
         <div
-          class="container${classMap(containerSizeClass)}"
+          class="container${containerSizeClass}"
           style=${styleMap({
             "--state-color": stateColor,
             "--action-color": actionColor,
@@ -226,7 +226,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
     return html`
       <div
-        class="container${classMap(containerSizeClass)}"
+        class="container${containerSizeClass}"
         style=${styleMap({
           "--action-color": actionColor,
         })}

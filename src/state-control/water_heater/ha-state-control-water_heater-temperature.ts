@@ -181,8 +181,8 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
     const active = stateActive(this.stateObj);
 
     const containerSizeClass = this._sizeController.value
-      ? { [this._sizeController.value]: true }
-      : {};
+      ? classMap({ [this._sizeController.value]: true })
+      : "";
 
     if (
       supportsTargetTemperature &&
@@ -191,7 +191,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
     ) {
       return html`
         <div
-          class="container${classMap(containerSizeClass)}"
+          class="container${containerSizeClass}"
           style=${styleMap({
             "--state-color": stateColor,
           })}
@@ -221,7 +221,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
 
     return html`
       <div
-        class="container${classMap(containerSizeClass)}"
+        class="container${containerSizeClass}"
         style=${styleMap({
           "--state-color": stateColor,
         })}

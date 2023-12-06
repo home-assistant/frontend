@@ -291,8 +291,8 @@ export class HaStateControlClimateTemperature extends LitElement {
     }
 
     const containerSizeClass = this._sizeController.value
-      ? { [this._sizeController.value]: true }
-      : {};
+      ? classMap({ [this._sizeController.value]: true })
+      : "";
 
     if (
       supportsTargetTemperature &&
@@ -311,7 +311,7 @@ export class HaStateControlClimateTemperature extends LitElement {
 
       return html`
         <div
-          class="container${classMap(containerSizeClass)}"
+          class="container${containerSizeClass}"
           style=${styleMap({
             "--state-color": stateColor,
             "--action-color": actionColor,
@@ -349,7 +349,7 @@ export class HaStateControlClimateTemperature extends LitElement {
     ) {
       return html`
         <div
-          class="container${classMap(containerSizeClass)}"
+          class="container${containerSizeClass}"
           style=${styleMap({
             "--low-color": lowColor,
             "--high-color": highColor,

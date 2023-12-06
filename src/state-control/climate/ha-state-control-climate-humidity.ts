@@ -176,8 +176,8 @@ export class HaStateControlClimateHumidity extends LitElement {
     const currentHumidity = this.stateObj.attributes.current_humidity;
 
     const containerSizeClass = this._sizeController.value
-      ? { [this._sizeController.value]: true }
-      : {};
+      ? classMap({ [this._sizeController.value]: true })
+      : "";
 
     if (
       supportsTargetHumidity &&
@@ -186,7 +186,7 @@ export class HaStateControlClimateHumidity extends LitElement {
     ) {
       return html`
         <div
-          class="container${classMap(containerSizeClass)}"
+          class="container${containerSizeClass}"
           style=${styleMap({
             "--state-color": stateColor,
           })}
@@ -214,7 +214,7 @@ export class HaStateControlClimateHumidity extends LitElement {
     }
 
     return html`
-      <div class="container${classMap(containerSizeClass)}">
+      <div class="container${containerSizeClass}">
         <ha-control-circular-slider
           .current=${this.stateObj.attributes.current_humidity}
           .min=${this._min}
