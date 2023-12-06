@@ -127,6 +127,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       <ha-card>
         <p class="title">${name}</p>
         <ha-state-control-humidifier-humidity
+          prevent-interaction-on-scroll
           show-current
           .hass=${this.hass}
           .stateObj=${stateObj}
@@ -168,11 +169,14 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       .title {
         width: 100%;
         font-size: 18px;
-        line-height: 24px;
-        padding: 12px 36px 16px 36px;
+        line-height: 36px;
+        padding: 8px 30px 8px 30px;
         margin: 0;
         text-align: center;
         box-sizing: border-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       ha-state-control-humidifier-humidity {
@@ -180,7 +184,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         max-width: 344px; /* 12px + 12px + 320px */
         padding: 0 12px 12px 12px;
         box-sizing: border-box;
-        --interaction-margin: 0px;
       }
 
       .more-info {

@@ -48,6 +48,9 @@ export class HaStateControlClimateTemperature extends LitElement {
   @property({ attribute: "show-current", type: Boolean })
   public showCurrent?: boolean;
 
+  @property({ type: Boolean, attribute: "prevent-interaction-on-scroll" })
+  public preventInteractionOnScroll?: boolean;
+
   @state() private _targetTemperature: Partial<Record<Target, number>> = {};
 
   @state() private _selectTargetTemperature: Target = "low";
@@ -291,8 +294,8 @@ export class HaStateControlClimateTemperature extends LitElement {
     }
 
     const containerSizeClass = this._sizeController.value
-      ? { [this._sizeController.value]: true }
-      : {};
+      ? ` ${this._sizeController.value}`
+      : "";
 
     if (
       supportsTargetTemperature &&
@@ -311,13 +314,14 @@ export class HaStateControlClimateTemperature extends LitElement {
 
       return html`
         <div
-          class="container${classMap(containerSizeClass)}"
+          class="container${containerSizeClass}"
           style=${styleMap({
             "--state-color": stateColor,
             "--action-color": actionColor,
           })}
         >
           <ha-control-circular-slider
+            .preventInteractionOnScroll=${this.preventInteractionOnScroll}
             .inactive=${!active}
             .mode=${sliderMode}
             .value=${this._targetTemperature.value}
@@ -349,7 +353,7 @@ export class HaStateControlClimateTemperature extends LitElement {
     ) {
       return html`
         <div
-          class="container${classMap(containerSizeClass)}"
+          class="container${containerSizeClass}"
           style=${styleMap({
             "--low-color": lowColor,
             "--high-color": highColor,
@@ -357,6 +361,7 @@ export class HaStateControlClimateTemperature extends LitElement {
           })}
         >
           <ha-control-circular-slider
+            .preventInteractionOnScroll=${this.preventInteractionOnScroll}
             .inactive=${!active}
             dual
             .low=${this._targetTemperature.low}
@@ -412,6 +417,7 @@ export class HaStateControlClimateTemperature extends LitElement {
         })}
       >
         <ha-control-circular-slider
+          .preventInteractionOnScroll=${this.preventInteractionOnScroll}
           mode="full"
           .current=${this.stateObj.attributes.current_temperature}
           .min=${this._min}
