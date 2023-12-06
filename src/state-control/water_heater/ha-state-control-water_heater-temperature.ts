@@ -1,7 +1,6 @@
 import { mdiMinus, mdiPlus } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../common/const";
 import { stateActive } from "../../common/entity/state_active";
@@ -181,7 +180,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
     const active = stateActive(this.stateObj);
 
     const containerSizeClass = this._sizeController.value
-      ? classMap({ [this._sizeController.value]: true })
+      ? ` ${this._sizeController.value}`
       : "";
 
     if (

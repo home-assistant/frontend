@@ -1,7 +1,6 @@
 import { mdiMinus, mdiPlus, mdiWaterPercent } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { stateActive } from "../../common/entity/state_active";
 import { domainStateColorProperties } from "../../common/entity/state_color";
@@ -176,7 +175,7 @@ export class HaStateControlClimateHumidity extends LitElement {
     const currentHumidity = this.stateObj.attributes.current_humidity;
 
     const containerSizeClass = this._sizeController.value
-      ? classMap({ [this._sizeController.value]: true })
+      ? ` ${this._sizeController.value}`
       : "";
 
     if (

@@ -291,7 +291,7 @@ export class HaStateControlClimateTemperature extends LitElement {
     }
 
     const containerSizeClass = this._sizeController.value
-      ? classMap({ [this._sizeController.value]: true })
+      ? ` ${this._sizeController.value}`
       : "";
 
     if (
