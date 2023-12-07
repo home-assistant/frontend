@@ -26,7 +26,8 @@
         width: 100%;
         max-width: 400px;
         margin: 0 auto;
-        box-sizing: border-box;
+        padding: 0 16px;
+        box-sizing: content-box;
       }
 
       .header {
@@ -39,12 +40,6 @@
       .header img {
         height: 56px;
         width: 56px;
-      }
-
-      @media (max-width: 592px) {
-        .content {
-          margin: 0 16px;
-        }
       }
     </style>
   </head>
