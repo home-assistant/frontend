@@ -8,7 +8,7 @@ interface Image {
   id: string;
 }
 
-const URL_PREFIX = "/api/image/serve/";
+export const URL_PREFIX = "/api/image/serve/";
 
 export interface ImageMutableParams {
   name: string;
