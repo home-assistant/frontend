@@ -8,9 +8,23 @@ interface Image {
   id: string;
 }
 
+const URL_PREFIX = "/api/image/serve/";
+
 export interface ImageMutableParams {
   name: string;
 }
+
+export const getIdFromUrl = (url: string): string | undefined => {
+  let id;
+  if (url.startsWith(URL_PREFIX)) {
+    id = url.substring(URL_PREFIX.length);
+    const idx = id.indexOf("/");
+    if (idx >= 0) {
+      id = id.substring(0, idx);
+    }
+  }
+  return id;
+};
 
 export const generateImageThumbnailUrl = (
   mediaId: string,
@@ -61,5 +75,5 @@ export const updateImage = (
 export const deleteImage = (hass: HomeAssistant, id: string) =>
   hass.callWS({
     type: "image/delete",
-    media_id: id,
+    image_id: id,
   });
