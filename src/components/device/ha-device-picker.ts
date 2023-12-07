@@ -133,7 +133,10 @@ export class HaDevicePicker extends LitElement {
         deviceEntityLookup = getDeviceEntityDisplayLookup(entities);
       }
 
-      const areaLookup = areas;
+      const areaLookup: { [areaId: string]: AreaRegistryEntry } = {};
+      for (const area of areas) {
+        areaLookup[area.area_id] = area;
+      }
 
       let inputDevices = devices.filter(
         (device) => device.id === this.value || !device.disabled_by
