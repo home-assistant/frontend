@@ -413,8 +413,9 @@
           }
         },
         "image": {
-          "upload_on": "Show Upload Form",
-          "upload_off": "Hide Upload Form"
+          "select_image": "Select image",
+          "upload": "Upload picture",
+          "url": "Local path or web URL"
         },
         "text": {
           "show_password": "Show password",

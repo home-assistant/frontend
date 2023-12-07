@@ -1,5 +1,4 @@
-import { mdiUpload, mdiUploadOff } from "@mdi/js";
-import { css, CSSResultGroup, html, nothing, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { ImageSelector } from "../../data/selector";
@@ -8,7 +7,9 @@ import "../ha-icon-button";
 import "../ha-textarea";
 import "../ha-textfield";
 import "../ha-picture-upload";
+import "../ha-radio";
 import type { HaPictureUpload } from "../ha-picture-upload";
+import { URL_PREFIX } from "../../data/image_upload";
 
 @customElement("ha-selector-image")
 export class HaImageSelector extends LitElement {
@@ -32,52 +33,74 @@ export class HaImageSelector extends LitElement {
 
   @state() private showUpload = false;
 
+  protected firstUpdated(changedProps): void {
+    super.firstUpdated(changedProps);
+
+    if (!this.value || this.value.startsWith(URL_PREFIX)) {
+      this.showUpload = true;
+    }
+  }
+
   protected render() {
     return html`
-      <div class="row">
-        <ha-textfield
-          .name=${this.name}
-          .value=${this.value || ""}
-          .placeholder=${this.placeholder || ""}
-          .helper=${this.helper}
-          helperPersistent
-          .disabled=${this.disabled}
-          @input=${this._handleChange}
-          .label=${this.label || ""}
-          .required=${this.required}
-        ></ha-textfield>
-        <ha-icon-button
-          @click=${this._handleUploadToggle}
-          .path=${this.showUpload ? mdiUploadOff : mdiUpload}
-          .label=${this.hass.localize(
-            this.showUpload
-              ? "ui.components.selectors.image.upload_off"
-              : "ui.components.selectors.image.upload_on"
-          )}
-        >
-        </ha-icon-button>
+      <div>
+        <label>
+          ${this.hass.localize("ui.components.selectors.image.select_image")}
+          <ha-formfield
+            .label=${this.hass.localize("ui.components.selectors.image.upload")}
+          >
+            <ha-radio
+              name="mode"
+              value="upload"
+              .checked=${this.showUpload}
+              @change=${this._radioGroupPicked}
+            ></ha-radio>
+          </ha-formfield>
+          <ha-formfield
+            .label=${this.hass.localize("ui.components.selectors.image.url")}
+          >
+            <ha-radio
+              name="mode"
+              value="url"
+              .checked=${!this.showUpload}
+              @change=${this._radioGroupPicked}
+            ></ha-radio>
+          </ha-formfield>
+        </label>
+        ${!this.showUpload
+          ? html`
+              <ha-textfield
+                .name=${this.name}
+                .value=${this.value || ""}
+                .placeholder=${this.placeholder || ""}
+                .helper=${this.helper}
+                helperPersistent
+                .disabled=${this.disabled}
+                @input=${this._handleChange}
+                .label=${this.label || ""}
+                .required=${this.required}
+              ></ha-textfield>
+            `
+          : html`
+              <ha-picture-upload
+                canDelete
+                .hass=${this.hass}
+                .value=${this.value?.startsWith(URL_PREFIX) ? this.value : null}
+                @change=${this._pictureChanged}
+              ></ha-picture-upload>
+            `}
       </div>
-      ${this.showUpload
-        ? html`
-            <ha-picture-upload
-              .hass=${this.hass}
-              .value=${this.value?.startsWith("/api/") ? this.value : null}
-              @change=${this._pictureChanged}
-            ></ha-picture-upload>
-          `
-        : nothing}
     `;
   }
 
-  private _handleUploadToggle() {
-    this.showUpload = !this.showUpload;
+  private _radioGroupPicked(ev): void {
+    this.showUpload = ev.target.value === "upload";
   }
 
   private _pictureChanged(ev) {
     const value = (ev.target as HaPictureUpload).value;
-    if (value) {
-      fireEvent(this, "value-changed", { value });
-    }
+
+    fireEvent(this, "value-changed", { value: value ?? undefined });
   }
 
   private _handleChange(ev) {
@@ -100,7 +123,11 @@ export class HaImageSelector extends LitElement {
       }
       div {
         display: flex;
-        align-items: center;
+        flex-direction: column;
+      }
+      label {
+        display: flex;
+        flex-direction: column;
       }
       ha-textarea,
       ha-textfield {
