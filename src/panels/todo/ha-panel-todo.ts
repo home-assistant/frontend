@@ -107,15 +107,21 @@ class PanelTodo extends LitElement {
       this.hass.loadFragmentTranslation("lovelace");
     }
 
-    if (!this.hasUpdated && !this._entityId) {
-      this._entityId = getTodoLists(this.hass)[0]?.entity_id;
-    } else if (!this.hasUpdated) {
-      this._setupTodoElement();
+    const searchParams = new URLSearchParams(location.search);
+    if (!this.hasUpdated) {
+      if (searchParams.has("entity_id")) {
+        this._entityId = searchParams.get("entity_id")!;
+      } else if (!this._entityId) {
+        this._entityId = getTodoLists(this.hass)[0]?.entity_id;
+      } else {
+        this._setupTodoElement();
+      }
     }
   }
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
+
     if (changedProperties.has("_entityId")) {
       this._setupTodoElement();
     }
