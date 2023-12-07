@@ -425,13 +425,6 @@ class DataEntryFlowDialog extends LitElement {
         );
       }
     );
-    if (this._step?.flow_id) {
-      await this._unsubDataEntryFlowProgressed;
-      // fetch flow after we subscribe to the event, so we don't miss the first event
-      this._processStep(
-        this._params!.flowConfig.fetchFlow(this.hass, this._step.flow_id)
-      );
-    }
   }
 
   static get styles(): CSSResultGroup {
