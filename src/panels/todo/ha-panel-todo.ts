@@ -107,8 +107,8 @@ class PanelTodo extends LitElement {
       this.hass.loadFragmentTranslation("lovelace");
     }
 
-    const searchParams = new URLSearchParams(location.search);
     if (!this.hasUpdated) {
+      const searchParams = new URLSearchParams(location.search);
       if (searchParams.has("entity_id")) {
         this._entityId = searchParams.get("entity_id")!;
       } else if (!this._entityId) {
