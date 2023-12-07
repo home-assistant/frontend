@@ -157,7 +157,7 @@ export const computeCards = (
         entity: entityId,
         features: [
           {
-            type: "humidifier-modes",
+            type: "humidifier-toggle",
           },
         ],
       };
