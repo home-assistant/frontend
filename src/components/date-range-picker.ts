@@ -63,6 +63,34 @@ const Component = Vue.extend({
       type: Boolean,
       default: false,
     },
+    weekdaySu: {
+      type: String,
+      default: "Su",
+    },
+    weekdayMo: {
+      type: String,
+      default: "Mo",
+    },
+    weekdayTu: {
+      type: String,
+      default: "Tu",
+    },
+    weekdayWe: {
+      type: String,
+      default: "We",
+    },
+    weekdayTh: {
+      type: String,
+      default: "Th",
+    },
+    weekdayFr: {
+      type: String,
+      default: "Fr",
+    },
+    weekdaySa: {
+      type: String,
+      default: "Sa",
+    },
   },
   render(createElement) {
     // @ts-expect-error
@@ -77,6 +105,15 @@ const Component = Vue.extend({
         ranges: this.ranges ? {} : false,
         "locale-data": {
           firstDay: this.firstDay,
+          daysOfWeek: [
+            this.weekdaySu,
+            this.weekdayMo,
+            this.weekdayTu,
+            this.weekdayWe,
+            this.weekdayTh,
+            this.weekdayFr,
+            this.weekdaySa,
+          ],
         },
       },
       model: {

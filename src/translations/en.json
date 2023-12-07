@@ -604,6 +604,15 @@
         "end_date": "End date",
         "select": "Select",
         "select_date_range": "Select time period",
+        "weekdays_short": {
+          "su": "[%key:ui::components::calendar::event::repeat::weekly::weekday::su%]",
+          "mo": "[%key:ui::components::calendar::event::repeat::weekly::weekday::mo%]",
+          "tu": "[%key:ui::components::calendar::event::repeat::weekly::weekday::tu%]",
+          "we": "[%key:ui::components::calendar::event::repeat::weekly::weekday::we%]",
+          "th": "[%key:ui::components::calendar::event::repeat::weekly::weekday::th%]",
+          "fr": "[%key:ui::components::calendar::event::repeat::weekly::weekday::fr%]",
+          "sa": "[%key:ui::components::calendar::event::repeat::weekly::weekday::sa%]"
+        },
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",

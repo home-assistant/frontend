@@ -42,6 +42,8 @@ export interface DateRangePickerRanges {
   [key: string]: [Date, Date];
 }
 
+const DAYS = ["su", "mo", "tu", "we", "th", "fr", "sa"] as const;
+
 @customElement("ha-date-range-picker")
 export class HaDateRangePicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -76,12 +78,23 @@ export class HaDateRangePicker extends LitElement {
     | "center"
     | "inline";
 
+  @state() private _weekdays?: string[];
+
   protected willUpdate(changedProps: PropertyValues) {
     if (
       (!this.hasUpdated && this.ranges === undefined) ||
       (changedProps.has("hass") &&
         this.hass?.localize !== changedProps.get("hass")?.localize)
     ) {
+      this._weekdays = DAYS.map((day) =>
+        this.hass.localize(
+          `ui.components.date-range-picker.weekdays_short.${day}`
+        )
+      );
+
+      // temporary for development so I can view other languages
+      // this._weekdays = DAYS.map((day) => this.hass.localize(`ui.components.calendar.event.repeat.weekly.weekday.${day}`));
+
       const today = new Date();
       const weekStartsOn = firstWeekdayIndex(this.hass.locale);
       const weekStart = calcDate(
@@ -253,6 +266,13 @@ export class HaDateRangePicker extends LitElement {
         opening-direction=${this.openingDirection ||
         this._calcedOpeningDirection}
         first-day=${firstWeekdayIndex(this.hass.locale)}
+        weekday-su=${this._weekdays?.[0]}
+        weekday-mo=${this._weekdays?.[1]}
+        weekday-tu=${this._weekdays?.[2]}
+        weekday-we=${this._weekdays?.[3]}
+        weekday-th=${this._weekdays?.[4]}
+        weekday-fr=${this._weekdays?.[5]}
+        weekday-sa=${this._weekdays?.[6]}
       >
         <div slot="input" class="date-range-inputs" @click=${this._handleClick}>
           ${!this.minimal
