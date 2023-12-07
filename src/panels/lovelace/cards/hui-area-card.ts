@@ -21,6 +21,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { STATES_OFF } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -29,6 +30,7 @@ import { domainIcon } from "../../../common/entity/domain_icon";
 import { navigate } from "../../../common/navigate";
 import { formatNumber } from "../../../common/number/format_number";
 import { subscribeOne } from "../../../common/util/subscribe-one";
+import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -54,6 +56,8 @@ import "../components/hui-image";
 import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { AreaCardConfig } from "./types";
+
+export const DEFAULT_ASPECT_RATIO = "16:9";
 
 const SENSOR_DOMAINS = ["sensor"];
 
@@ -108,6 +112,11 @@ export class HuiAreaCard
   @state() private _devices?: DeviceRegistryEntry[];
 
   @state() private _areas?: AreaRegistryEntry[];
+
+  private _ratio: {
+    w: number;
+    h: number;
+  } | null = null;
 
   private _entitiesByDomain = memoizeOne(
     (
@@ -319,6 +328,18 @@ export class HuiAreaCard
     return false;
   }
 
+  public willUpdate(changedProps: PropertyValues) {
+    if (changedProps.has("_config") || this._ratio === null) {
+      this._ratio = this._config?.aspect_ratio
+        ? parseAspectRatio(this._config?.aspect_ratio)
+        : null;
+
+      if (this._ratio === null || this._ratio.w <= 0 || this._ratio.h <= 0) {
+        this._ratio = parseAspectRatio(DEFAULT_ASPECT_RATIO);
+      }
+    }
+  }
+
   protected render() {
     if (
       !this._config ||
@@ -374,15 +395,24 @@ export class HuiAreaCard
       cameraEntityId = entitiesByDomain.camera[0].entity_id;
     }
 
+    const imageClass = area.picture || cameraEntityId;
     return html`
-      <ha-card class=${area.picture || cameraEntityId ? "image" : ""}>
+      <ha-card
+        class=${imageClass ? "image" : ""}
+        style=${styleMap({
+          paddingBottom: imageClass
+            ? "0"
+            : `${((100 * this._ratio!.h) / this._ratio!.w).toFixed(2)}%`,
+        })}
+      >
         ${area.picture || cameraEntityId
           ? html`<hui-image
               .config=${this._config}
               .hass=${this.hass}
               .image=${area.picture ? area.picture : undefined}
               .cameraImage=${cameraEntityId}
-              aspectRatio="16:9"
+              .cameraView=${this._config.camera_view}
+              .aspectRatio=${this._config.aspect_ratio || DEFAULT_ASPECT_RATIO}
             ></hui-image>`
           : ""}
 
@@ -488,12 +518,7 @@ export class HuiAreaCard
       ha-card {
         overflow: hidden;
         position: relative;
-        padding-bottom: 56.25%;
         background-size: cover;
-      }
-
-      ha-card.image {
-        padding-bottom: 0;
       }
 
       .container {

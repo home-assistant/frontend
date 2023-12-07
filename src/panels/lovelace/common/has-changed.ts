@@ -12,6 +12,10 @@ export function hasConfigChanged(
     return true;
   }
 
+  if (!changedProps.has("hass")) {
+    return false;
+  }
+
   const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
   if (!oldHass) {
     return true;
@@ -69,6 +73,10 @@ export function hasConfigOrEntityChanged(
     return true;
   }
 
+  if (!changedProps.has("hass")) {
+    return false;
+  }
+
   const oldHass = changedProps.get("hass") as HomeAssistant;
   const newHass = element.hass as HomeAssistant;
 
@@ -85,6 +93,10 @@ export function hasConfigOrEntitiesChanged(
 ): boolean {
   if (hasConfigChanged(element, changedProps)) {
     return true;
+  }
+
+  if (!changedProps.has("hass")) {
+    return false;
   }
 
   const oldHass = changedProps.get("hass") as HomeAssistant;

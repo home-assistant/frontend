@@ -49,11 +49,9 @@ export class CloudTTSPref extends LitElement {
         header=${this.hass.localize("ui.panel.config.cloud.account.tts.title")}
       >
         <div class="card-content">
-          ${this.hass.localize(
-            "ui.panel.config.cloud.account.tts.info",
-            "service",
-            '"tts.cloud_say"'
-          )}
+          ${this.hass.localize("ui.panel.config.cloud.account.tts.info", {
+            service: '"tts.cloud_say"',
+          })}
           <br /><br />
           <div class="row">
             <ha-language-picker

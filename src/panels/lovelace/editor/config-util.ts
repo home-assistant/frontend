@@ -287,8 +287,8 @@ export const moveCard = (
       index === toPath[0]
         ? newView2
         : index === fromPath[0]
-        ? newView1
-        : origView
+          ? newView1
+          : origView
     ),
   };
 };

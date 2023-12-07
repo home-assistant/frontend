@@ -33,8 +33,8 @@ class HaInputDateTimeForm extends LitElement {
         item.has_time && item.has_date
           ? "datetime"
           : item.has_time
-          ? "time"
-          : "date";
+            ? "time"
+            : "date";
       this._item.has_date =
         !item.has_date && !item.has_time ? true : item.has_date;
     } else {

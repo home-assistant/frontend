@@ -63,8 +63,9 @@ class MoreInfoUpdate extends LitElement {
         : ""}
       <div class="row">
         <div class="key">
-          ${this.hass.localize(
-            "ui.dialogs.more_info_control.update.installed_version"
+          ${this.hass.formatEntityAttributeName(
+            this.stateObj,
+            "installed_version"
           )}
         </div>
         <div class="value">
@@ -74,8 +75,9 @@ class MoreInfoUpdate extends LitElement {
       </div>
       <div class="row">
         <div class="key">
-          ${this.hass.localize(
-            "ui.dialogs.more_info_control.update.latest_version"
+          ${this.hass.formatEntityAttributeName(
+            this.stateObj,
+            "latest_version"
           )}
         </div>
         <div class="value">
@@ -101,18 +103,20 @@ class MoreInfoUpdate extends LitElement {
         : ""}
       ${supportsFeature(this.stateObj!, UPDATE_SUPPORT_RELEASE_NOTES) &&
       !this._error
-        ? this._releaseNotes === undefined
-          ? html`<ha-circular-progress active></ha-circular-progress>`
+        ? !this._releaseNotes
+          ? html`<div class="flex center">
+              <ha-circular-progress indeterminate></ha-circular-progress>
+            </div>`
           : html`<hr />
               <ha-faded>
                 <ha-markdown .content=${this._releaseNotes}></ha-markdown>
               </ha-faded> `
         : this.stateObj.attributes.release_summary
-        ? html`<hr />
-            <ha-markdown
-              .content=${this.stateObj.attributes.release_summary}
-            ></ha-markdown>`
-        : ""}
+          ? html`<hr />
+              <ha-markdown
+                .content=${this.stateObj.attributes.release_summary}
+              ></ha-markdown>`
+          : ""}
       ${supportsFeature(this.stateObj, UPDATE_SUPPORT_BACKUP)
         ? html`<hr />
             <ha-formfield
@@ -131,26 +135,26 @@ class MoreInfoUpdate extends LitElement {
         ${this.stateObj.attributes.auto_update
           ? ""
           : this.stateObj.state === BINARY_STATE_OFF &&
-            this.stateObj.attributes.skipped_version
-          ? html`
-              <mwc-button @click=${this._handleClearSkipped}>
-                ${this.hass.localize(
-                  "ui.dialogs.more_info_control.update.clear_skipped"
-                )}
-              </mwc-button>
-            `
-          : html`
-              <mwc-button
-                @click=${this._handleSkip}
-                .disabled=${skippedVersion ||
-                this.stateObj.state === BINARY_STATE_OFF ||
-                updateIsInstalling(this.stateObj)}
-              >
-                ${this.hass.localize(
-                  "ui.dialogs.more_info_control.update.skip"
-                )}
-              </mwc-button>
-            `}
+              this.stateObj.attributes.skipped_version
+            ? html`
+                <mwc-button @click=${this._handleClearSkipped}>
+                  ${this.hass.localize(
+                    "ui.dialogs.more_info_control.update.clear_skipped"
+                  )}
+                </mwc-button>
+              `
+            : html`
+                <mwc-button
+                  @click=${this._handleSkip}
+                  .disabled=${skippedVersion ||
+                  this.stateObj.state === BINARY_STATE_OFF ||
+                  updateIsInstalling(this.stateObj)}
+                >
+                  ${this.hass.localize(
+                    "ui.dialogs.more_info_control.update.skip"
+                  )}
+                </mwc-button>
+              `}
         ${supportsFeature(this.stateObj, UPDATE_SUPPORT_INSTALL)
           ? html`
               <mwc-button
@@ -252,9 +256,10 @@ class MoreInfoUpdate extends LitElement {
       a {
         color: var(--primary-color);
       }
-      ha-circular-progress {
-        width: 100%;
+      .flex.center {
+        display: flex;
         justify-content: center;
+        align-items: center;
       }
       mwc-linear-progress {
         margin-bottom: -8px;

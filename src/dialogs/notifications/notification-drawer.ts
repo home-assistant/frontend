@@ -34,7 +34,7 @@ export class HuiNotificationDrawer extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.addEventListener("location-changed", this.closeDialog);
+    window.removeEventListener("location-changed", this.closeDialog);
   }
 
   showDialog({ narrow }) {

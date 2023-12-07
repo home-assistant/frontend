@@ -169,12 +169,14 @@ export class ZHAGroupPage extends LitElement {
                     @click=${this._removeMembersFromGroup}
                     class="button"
                   >
-                    <ha-circular-progress
-                      ?active=${this._processingRemove}
-                      alt=${this.hass.localize(
-                        "ui.panel.config.zha.groups.removing_members"
-                      )}
-                    ></ha-circular-progress>
+                    ${this._processingRemove
+                      ? html`<ha-circular-progress
+                          indeterminate
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.zha.groups.removing_members"
+                          )}
+                        ></ha-circular-progress>`
+                      : nothing}
                     ${this.hass!.localize(
                       "ui.panel.config.zha.groups.remove_members"
                     )}</mwc-button
@@ -208,7 +210,7 @@ export class ZHAGroupPage extends LitElement {
                 ? html`<ha-circular-progress
                     active
                     size="small"
-                    title="Saving"
+                    aria-label="Saving"
                   ></ha-circular-progress>`
                 : ""}
               ${this.hass!.localize(

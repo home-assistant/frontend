@@ -102,10 +102,7 @@ export class HaPanelCustom extends ReactiveElement {
         !confirm(
           `${this.hass.localize(
             "ui.panel.custom.external_panel.question_trust",
-            "name",
-            config.name,
-            "link",
-            tempA.href
+            { name: config.name, link: tempA.href }
           )}
 
            ${this.hass.localize(

@@ -112,9 +112,9 @@ export class HaStateLabelBadge extends LitElement {
     const image = this.icon
       ? ""
       : this.image
-      ? this.image
-      : entityState.attributes.entity_picture_local ||
-        entityState.attributes.entity_picture;
+        ? this.image
+        : entityState.attributes.entity_picture_local ||
+          entityState.attributes.entity_picture;
     const value =
       !image && !showIcon
         ? this._computeValue(domain, entityState, entry)
@@ -186,12 +186,12 @@ export class HaStateLabelBadge extends LitElement {
           entityState.state === UNAVAILABLE
           ? "—"
           : isNumericState(entityState)
-          ? formatNumber(
-              entityState.state,
-              this.hass!.locale,
-              getNumberFormatOptions(entityState, entry)
-            )
-          : this.hass!.formatEntityState(entityState);
+            ? formatNumber(
+                entityState.state,
+                this.hass!.locale,
+                getNumberFormatOptions(entityState, entry)
+              )
+            : this.hass!.formatEntityState(entityState);
     }
   }
 

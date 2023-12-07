@@ -62,10 +62,10 @@ export class DialogEnergyWaterSettings
     this._costs = this._source.entity_energy_price
       ? "entity"
       : this._source.number_energy_price
-      ? "number"
-      : this._source.stat_cost
-      ? "statistic"
-      : "no-costs";
+        ? "number"
+        : this._source.stat_cost
+          ? "statistic"
+          : "no-costs";
     this._water_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "water")
     ).units;

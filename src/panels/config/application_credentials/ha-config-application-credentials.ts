@@ -16,7 +16,6 @@ import {
   DataTableColumnContainer,
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/data-table/ha-data-table-icon";
 import "../../../components/ha-fab";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
@@ -120,8 +119,7 @@ export class HaConfigApplicationCredentials extends LitElement {
                 <p class="selected-txt">
                   ${this.hass.localize(
                     "ui.panel.config.application_credentials.picker.selected",
-                    "number",
-                    this._selected.length
+                    { number: this._selected.length }
                   )}
                 </p>
                 <div class="header-btns">
@@ -178,8 +176,7 @@ export class HaConfigApplicationCredentials extends LitElement {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         `ui.panel.config.application_credentials.picker.remove_selected.confirm_title`,
-        "number",
-        this._selected.length
+        { number: this._selected.length }
       ),
       text: this.hass.localize(
         "ui.panel.config.application_credentials.picker.remove_selected.confirm_text"

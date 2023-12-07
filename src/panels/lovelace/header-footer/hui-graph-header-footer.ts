@@ -111,7 +111,10 @@ export class HuiGraphHeaderFooter
     if (!this._coordinates) {
       return html`
         <div class="container">
-          <ha-circular-progress active size="small"></ha-circular-progress>
+          <ha-circular-progress
+            indeterminate
+            size="small"
+          ></ha-circular-progress>
         </div>
       `;
     }

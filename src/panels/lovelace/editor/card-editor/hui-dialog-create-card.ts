@@ -69,8 +69,7 @@ export class HuiCreateDialogCard
     const title = this._viewConfig.title
       ? this.hass!.localize(
           "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
-          "name",
-          `"${this._viewConfig.title}"`
+          { name: `"${this._viewConfig.title}"` }
         )
       : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
 

@@ -125,13 +125,6 @@ class HaAttributes extends LitElement {
           text-align: center;
           margin-top: 16px;
         }
-        pre {
-          font-family: inherit;
-          font-size: inherit;
-          margin: 0px;
-          overflow-wrap: break-word;
-          white-space: pre-line;
-        }
         hr {
           border-color: var(--divider-color);
           border-bottom: none;

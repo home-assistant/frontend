@@ -322,8 +322,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                     ? html`
                         ${this.hass.localize(
                           "ui.panel.config.automation.editor.triggers.unsupported_platform",
-                          "platform",
-                          this.trigger.platform
+                          { platform: this.trigger.platform }
                         )}
                       `
                     : ""}

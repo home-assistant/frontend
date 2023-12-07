@@ -429,41 +429,41 @@ export class MoreInfoDialog extends LitElement {
                   </div>
                 `
               : this._currView === "info"
-              ? html`
-                  <ha-more-info-info
-                    dialogInitialFocus
-                    .hass=${this.hass}
-                    .entityId=${this._entityId}
-                    .entry=${this._entry}
-                    .editMode=${this._infoEditMode}
-                  ></ha-more-info-info>
-                `
-              : this._currView === "history"
-              ? html`
-                  <ha-more-info-history-and-logbook
-                    .hass=${this.hass}
-                    .entityId=${this._entityId}
-                  ></ha-more-info-history-and-logbook>
-                `
-              : this._currView === "settings"
-              ? html`
-                  <ha-more-info-settings
-                    .hass=${this.hass}
-                    .entityId=${this._entityId}
-                    .entry=${this._entry}
-                  ></ha-more-info-settings>
-                `
-              : this._currView === "related"
-              ? html`
-                  <ha-related-items
-                    .hass=${this.hass}
-                    .itemId=${entityId}
-                    .itemType=${SearchableDomains.has(domain)
-                      ? domain
-                      : "entity"}
-                  ></ha-related-items>
-                `
-              : nothing
+                ? html`
+                    <ha-more-info-info
+                      dialogInitialFocus
+                      .hass=${this.hass}
+                      .entityId=${this._entityId}
+                      .entry=${this._entry}
+                      .editMode=${this._infoEditMode}
+                    ></ha-more-info-info>
+                  `
+                : this._currView === "history"
+                  ? html`
+                      <ha-more-info-history-and-logbook
+                        .hass=${this.hass}
+                        .entityId=${this._entityId}
+                      ></ha-more-info-history-and-logbook>
+                    `
+                  : this._currView === "settings"
+                    ? html`
+                        <ha-more-info-settings
+                          .hass=${this.hass}
+                          .entityId=${this._entityId}
+                          .entry=${this._entry}
+                        ></ha-more-info-settings>
+                      `
+                    : this._currView === "related"
+                      ? html`
+                          <ha-related-items
+                            .hass=${this.hass}
+                            .itemId=${entityId}
+                            .itemType=${SearchableDomains.has(domain)
+                              ? domain
+                              : "entity"}
+                          ></ha-related-items>
+                        `
+                      : nothing
           )}
         </div>
       </ha-dialog>

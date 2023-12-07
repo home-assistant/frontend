@@ -110,8 +110,8 @@ export class HuiDialogSuggestCard extends LitElement {
                 ${this._saving
                   ? html`
                       <ha-circular-progress
-                        active
-                        title="Saving"
+                        indeterminate
+                        aria-label="Saving"
                         size="small"
                       ></ha-circular-progress>
                     `

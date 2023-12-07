@@ -85,8 +85,8 @@ export class HaCameraStream extends LitElement {
         .src=${__DEMO__
           ? this.stateObj.attributes.entity_picture!
           : this._connected
-          ? computeMJPEGStreamUrl(this.stateObj)
-          : ""}
+            ? computeMJPEGStreamUrl(this.stateObj)
+            : ""}
         .alt=${`Preview of the ${computeStateName(this.stateObj)} camera.`}
       />`;
     }

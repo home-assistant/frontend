@@ -129,8 +129,8 @@ export class HaControlSelectMenu extends SelectBase {
         ${icon && "path" in icon
           ? html`<ha-svg-icon .path=${icon.path}></ha-svg-icon>`
           : icon && "icon" in icon
-          ? html`<ha-icon .path=${icon.icon}></ha-icon>`
-          : html`<slot name="icon"></slot>`}
+            ? html`<ha-icon .path=${icon.icon}></ha-icon>`
+            : html`<slot name="icon"></slot>`}
       </div>
     `;
   }

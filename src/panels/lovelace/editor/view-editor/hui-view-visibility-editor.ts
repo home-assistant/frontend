@@ -55,7 +55,6 @@ export class HuiViewVisibilityEditor extends LitElement {
 
     fetchUsers(this.hass).then((users) => {
       this._users = users.filter((user) => !user.system_generated);
-      fireEvent(this, "iron-resize");
     });
   }
 

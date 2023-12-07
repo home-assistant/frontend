@@ -34,7 +34,7 @@ class HassioAddonDocumentationDashboard extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.addon) {
-      return html`<ha-circular-progress active></ha-circular-progress>`;
+      return html`<ha-circular-progress indeterminate></ha-circular-progress>`;
     }
     return html`
       <div class="content">
@@ -85,8 +85,7 @@ class HassioAddonDocumentationDashboard extends LitElement {
     } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.documentation.get_documentation",
-        "error",
-        extractApiErrorMessage(err)
+        { error: extractApiErrorMessage(err) }
       );
     }
   }

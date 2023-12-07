@@ -71,7 +71,11 @@ class HassioDatadiskDialog extends LitElement {
         ?hideActions=${this.moving}
       >
         ${this.moving
-          ? html` <ha-circular-progress alt="Moving" size="large" active>
+          ? html` <ha-circular-progress
+                aria-label="Moving"
+                size="large"
+                indeterminate
+              >
               </ha-circular-progress>
               <p class="progress-text">
                 ${this.dialogParams.supervisor.localize(
@@ -105,12 +109,12 @@ class HassioDatadiskDialog extends LitElement {
                     </ha-select>
                   `
                 : this.devices === undefined
-                ? this.dialogParams.supervisor.localize(
-                    "dialog.datadisk_move.loading_devices"
-                  )
-                : this.dialogParams.supervisor.localize(
-                    "dialog.datadisk_move.no_devices"
-                  )}
+                  ? this.dialogParams.supervisor.localize(
+                      "dialog.datadisk_move.loading_devices"
+                    )
+                  : this.dialogParams.supervisor.localize(
+                      "dialog.datadisk_move.no_devices"
+                    )}
 
               <mwc-button
                 slot="secondaryAction"

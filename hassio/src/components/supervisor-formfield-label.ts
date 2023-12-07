@@ -17,8 +17,11 @@ class SupervisorFormfieldLabel extends LitElement {
       ${this.imageUrl
         ? html`<img loading="lazy" alt="" src=${this.imageUrl} class="icon" />`
         : this.iconPath
-        ? html`<ha-svg-icon .path=${this.iconPath} class="icon"></ha-svg-icon>`
-        : ""}
+          ? html`<ha-svg-icon
+              .path=${this.iconPath}
+              class="icon"
+            ></ha-svg-icon>`
+          : ""}
       <span class="label">${this.label}</span>
       ${this.version
         ? html`<span class="version">(${this.version})</span>`

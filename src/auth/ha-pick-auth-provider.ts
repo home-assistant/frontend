@@ -21,7 +21,11 @@ export class HaPickAuthProvider extends LitElement {
 
   protected render() {
     return html`
-      <p>${this.localize("ui.panel.page-authorize.pick_auth_provider")}:</p>
+      <h3>
+        <span
+          >${this.localize("ui.panel.page-authorize.pick_auth_provider")}</span
+        >
+      </h3>
       <mwc-list>
         ${this.authProviders.map(
           (provider) => html`
@@ -35,8 +39,8 @@ export class HaPickAuthProvider extends LitElement {
               <ha-icon-next slot="meta"></ha-icon-next>
             </ha-list-item>
           `
-        )}</mwc-list
-      >
+        )}
+      </mwc-list>
     `;
   }
 
@@ -45,12 +49,34 @@ export class HaPickAuthProvider extends LitElement {
   }
 
   static styles = css`
-    p {
-      margin-top: 0;
+    h3 {
+      margin: 0 -16px;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 20px;
+    }
+    h3:before {
+      border-top: 1px solid var(--divider-color);
+      content: "";
+      margin: 0 auto;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      z-index: -1;
+    }
+    h3 span {
+      background: var(--card-background-color);
+      padding: 0 15px;
     }
     mwc-list {
-      margin: 0 -16px;
-      --mdc-list-side-padding: 16px;
+      margin: 16px -16px 0;
+      --mdc-list-side-padding: 24px;
     }
   `;
 }

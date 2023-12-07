@@ -374,7 +374,7 @@ const tryDescribeTrigger = (
       trigger.event === "sunset"
         ? `${triggerTranslationBaseKey}.sun.description.sets`
         : `${triggerTranslationBaseKey}.sun.description.rises`,
-      { hasDuration: duration !== "", duration: duration }
+      { hasDuration: duration !== "" ? "true" : "false", duration: duration }
     );
   }
 
@@ -389,8 +389,8 @@ const tryDescribeTrigger = (
       typeof at !== "string"
         ? at
         : at.includes(".")
-        ? `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`
-        : localizeTimeString(at, hass.locale, hass.config)
+          ? `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`
+          : localizeTimeString(at, hass.locale, hass.config)
     );
 
     return hass.localize(`${triggerTranslationBaseKey}.time.description.full`, {
@@ -411,10 +411,10 @@ const tryDescribeTrigger = (
       const seconds = seconds_all
         ? 0
         : typeof trigger.seconds === "number"
-        ? trigger.seconds
-        : seconds_interval
-        ? parseInt(trigger.seconds.substring(1))
-        : parseInt(trigger.seconds);
+          ? trigger.seconds
+          : seconds_interval
+            ? parseInt(trigger.seconds.substring(1))
+            : parseInt(trigger.seconds);
 
       if (
         isNaN(seconds) ||
@@ -440,10 +440,10 @@ const tryDescribeTrigger = (
       const minutes = minutes_all
         ? 0
         : typeof trigger.minutes === "number"
-        ? trigger.minutes
-        : minutes_interval
-        ? parseInt(trigger.minutes.substring(1))
-        : parseInt(trigger.minutes);
+          ? trigger.minutes
+          : minutes_interval
+            ? parseInt(trigger.minutes.substring(1))
+            : parseInt(trigger.minutes);
 
       if (
         isNaN(minutes) ||
@@ -477,10 +477,10 @@ const tryDescribeTrigger = (
       const hours = hours_all
         ? 0
         : typeof trigger.hours === "number"
-        ? trigger.hours
-        : hours_interval
-        ? parseInt(trigger.hours.substring(1))
-        : parseInt(trigger.hours);
+          ? trigger.hours
+          : hours_interval
+            ? parseInt(trigger.hours.substring(1))
+            : parseInt(trigger.hours);
 
       if (
         isNaN(hours) ||
@@ -604,7 +604,7 @@ const tryDescribeTrigger = (
 
     return hass.localize(
       `${triggerTranslationBaseKey}.template.description.full`,
-      { hasDuration: duration !== "", duration: duration }
+      { hasDuration: duration !== "" ? "true" : "false", duration: duration }
     );
   }
 
@@ -919,23 +919,23 @@ const tryDescribeCondition = (
         typeof condition.before !== "string"
           ? condition.before
           : condition.before.includes(".")
-          ? `entity ${
-              hass.states[condition.before]
-                ? computeStateName(hass.states[condition.before])
-                : condition.before
-            }`
-          : localizeTimeString(condition.before, hass.locale, hass.config);
+            ? `entity ${
+                hass.states[condition.before]
+                  ? computeStateName(hass.states[condition.before])
+                  : condition.before
+              }`
+            : localizeTimeString(condition.before, hass.locale, hass.config);
 
       const after =
         typeof condition.after !== "string"
           ? condition.after
           : condition.after.includes(".")
-          ? `entity ${
-              hass.states[condition.after]
-                ? computeStateName(hass.states[condition.after])
-                : condition.after
-            }`
-          : localizeTimeString(condition.after, hass.locale, hass.config);
+            ? `entity ${
+                hass.states[condition.after]
+                  ? computeStateName(hass.states[condition.after])
+                  : condition.after
+              }`
+            : localizeTimeString(condition.after, hass.locale, hass.config);
 
       let localizedDays: string[] = [];
       if (validWeekdays) {
@@ -959,8 +959,8 @@ const tryDescribeCondition = (
         `${conditionsTranslationBaseKey}.time.description.full`,
         {
           hasTime: hasTime,
-          hasTimeAndDay: (after || before) && validWeekdays,
-          hasDay: validWeekdays,
+          hasTimeAndDay: (after || before) && validWeekdays ? "true" : "false",
+          hasDay: validWeekdays ? "true" : "false",
           time_before: before,
           time_after: after,
           day: formatListWithOrs(hass.locale, localizedDays),

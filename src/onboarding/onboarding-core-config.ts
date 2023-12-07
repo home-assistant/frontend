@@ -57,7 +57,7 @@ class OnboardingCoreConfig extends LitElement {
     }
     if (this._skipCore) {
       return html`<div class="row center">
-        <ha-circular-progress active></ha-circular-progress>
+        <ha-circular-progress indeterminate></ha-circular-progress>
       </div>`;
     }
     return html`

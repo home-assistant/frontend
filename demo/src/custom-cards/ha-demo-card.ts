@@ -39,7 +39,9 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         <div class="picker">
           <div class="label">
             ${this._switching
-              ? html`<ha-circular-progress active></ha-circular-progress>`
+              ? html`<ha-circular-progress
+                  indeterminate
+                ></ha-circular-progress>`
               : until(
                   selectedDemoConfig.then(
                     (conf) => html`
@@ -48,8 +50,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
                         <a target="_blank" href=${conf.authorUrl}>
                           ${this.hass.localize(
                             "ui.panel.page-demo.cards.demo.demo_by",
-                            "name",
-                            conf.authorName
+                            { name: conf.authorName }
                           )}
                         </a>
                       </small>

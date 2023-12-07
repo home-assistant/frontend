@@ -43,8 +43,8 @@ const generateMeanStatistics = (
       period === "day"
         ? addDays(currentDate, 1)
         : period === "month"
-        ? addMonths(currentDate, 1)
-        : addHours(currentDate, 1);
+          ? addMonths(currentDate, 1)
+          : addHours(currentDate, 1);
   }
   return statistics;
 };
@@ -80,8 +80,8 @@ const generateSumStatistics = (
       period === "day"
         ? addDays(currentDate, 1)
         : period === "month"
-        ? addMonths(currentDate, 1)
-        : addHours(currentDate, 1);
+          ? addMonths(currentDate, 1)
+          : addHours(currentDate, 1);
   }
   return statistics;
 };

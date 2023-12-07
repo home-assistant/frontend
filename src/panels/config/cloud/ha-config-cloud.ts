@@ -1,4 +1,3 @@
-import { PolymerElement } from "@polymer/polymer";
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../common/navigate";
 import { CloudStatus } from "../../../data/cloud";
@@ -113,24 +112,12 @@ class HaConfigCloud extends HassRouterPage {
       return;
     }
 
-    if ("setProperties" in el) {
-      // As long as we have Polymer pages
-      (el as PolymerElement).setProperties({
-        hass: this.hass,
-        email: this._loginEmail,
-        isWide: this.isWide,
-        narrow: this.narrow,
-        cloudStatus: this.cloudStatus,
-        flashMessage: this._flashMessage,
-      });
-    } else {
-      el.hass = this.hass;
-      el.email = this._loginEmail;
-      el.isWide = this.isWide;
-      el.narrow = this.narrow;
-      el.cloudStatus = this.cloudStatus;
-      el.flashMessage = this._flashMessage;
-    }
+    el.hass = this.hass;
+    el.email = this._loginEmail;
+    el.isWide = this.isWide;
+    el.narrow = this.narrow;
+    el.cloudStatus = this.cloudStatus;
+    el.flashMessage = this._flashMessage;
   }
 }
 

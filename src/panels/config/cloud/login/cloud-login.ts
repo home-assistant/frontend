@@ -18,7 +18,6 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
-import "../../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
 import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";

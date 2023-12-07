@@ -103,6 +103,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
@@ -210,26 +211,26 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 )
               : formatDate(this._startDate, this.hass.locale, this.hass.config)
             : simpleRange === "month"
-            ? formatDateMonthYear(
-                this._startDate,
-                this.hass.locale,
-                this.hass.config
-              )
-            : simpleRange === "year"
-            ? formatDateYear(
-                this._startDate,
-                this.hass.locale,
-                this.hass.config
-              )
-            : `${formatDateVeryShort(
-                this._startDate,
-                this.hass.locale,
-                this.hass.config
-              )} – ${formatDateVeryShort(
-                this._endDate || new Date(),
-                this.hass.locale,
-                this.hass.config
-              )}`}
+              ? formatDateMonthYear(
+                  this._startDate,
+                  this.hass.locale,
+                  this.hass.config
+                )
+              : simpleRange === "year"
+                ? formatDateYear(
+                    this._startDate,
+                    this.hass.locale,
+                    this.hass.config
+                  )
+                : `${formatDateVeryShort(
+                    this._startDate,
+                    this.hass.locale,
+                    this.hass.config
+                  )} – ${formatDateVeryShort(
+                    this._endDate || new Date(),
+                    this.hass.locale,
+                    this.hass.config
+                  )}`}
         </div>
         <div class="time-handle">
           <ha-icon-button-prev
@@ -278,6 +279,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
               "ui.panel.lovelace.components.energy_period_selector.compare"
             )}
           </ha-check-list-item>
+          <slot name="overflow-menu"></slot>
         </ha-button-menu>
       </div>
     `;

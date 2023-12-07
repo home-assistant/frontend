@@ -40,4 +40,5 @@ docker run \
     --file /opt/src/${LOCAL_FILE} \
     --lang-iso ${LANG_ISO} \
     --convert-placeholders=false \
-    --replace-modified=true
+    --replace-modified=true \
+#    --cleanup-mode=true

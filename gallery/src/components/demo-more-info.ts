@@ -23,7 +23,7 @@ class DemoMoreInfo extends LitElement {
             <state-card-content
               .stateObj=${state}
               .hass=${this.hass}
-              in-dialog
+              inDialog
             ></state-card-content>
 
             <more-info-content

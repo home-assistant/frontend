@@ -13,10 +13,10 @@ import {
   LockEntityFeature,
   callProtectedLockService,
 } from "../../../data/lock";
+import "../../../state-control/lock/ha-state-control-lock-toggle";
 import type { HomeAssistant } from "../../../types";
-import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
-import "../components/lock/ha-more-info-lock-toggle";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 @customElement("more-info-lock")
 class MoreInfoLock extends LitElement {
@@ -69,11 +69,11 @@ class MoreInfoLock extends LitElement {
                 </div>
               `
             : html`
-                <ha-more-info-lock-toggle
+                <ha-state-control-lock-toggle
                   .stateObj=${this.stateObj}
                   .hass=${this.hass}
                 >
-                </ha-more-info-lock-toggle>
+                </ha-state-control-lock-toggle>
               `
         }
         ${
@@ -84,12 +84,8 @@ class MoreInfoLock extends LitElement {
                     ? html`
                         <ha-outlined-icon-button
                           .disabled=${this.stateObj.state === UNAVAILABLE}
-                          .title=${this.hass.localize(
-                            "ui.dialogs.more_info_control.lock.open"
-                          )}
-                          .ariaLabel=${this.hass.localize(
-                            "ui.dialogs.more_info_control.lock.open"
-                          )}
+                          .title=${this.hass.localize("ui.card.lock.open")}
+                          .ariaLabel=${this.hass.localize("ui.card.lock.open")}
                           @click=${this._open}
                         >
                           <ha-svg-icon .path=${mdiDoorOpen}></ha-svg-icon>
@@ -99,22 +95,16 @@ class MoreInfoLock extends LitElement {
                   ${isJammed
                     ? html`
                         <ha-outlined-icon-button
-                          .title=${this.hass.localize(
-                            "ui.dialogs.more_info_control.lock.lock"
-                          )}
-                          .ariaLabel=${this.hass.localize(
-                            "ui.dialogs.more_info_control.lock.lock"
-                          )}
+                          .title=${this.hass.localize("ui.card.lock.lock")}
+                          .ariaLabel=${this.hass.localize("ui.card.lock.lock")}
                           @click=${this._lock}
                         >
                           <ha-svg-icon .path=${mdiLock}></ha-svg-icon>
                         </ha-outlined-icon-button>
                         <ha-outlined-icon-button
-                          .title=${this.hass.localize(
-                            "ui.dialogs.more_info_control.lock.unlock"
-                          )}
+                          .title=${this.hass.localize("ui.card.lock.unlock")}
                           .ariaLabel=${this.hass.localize(
-                            "ui.dialogs.more_info_control.lock.unlock"
+                            "ui.card.lock.unlock"
                           )}
                           @click=${this._unlock}
                         >

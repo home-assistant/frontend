@@ -91,7 +91,7 @@ class DialogRestart extends LitElement {
         ${this._loadingHostInfo
           ? html`
               <div class="loader">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
               </div>
             `
           : html`

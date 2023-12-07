@@ -74,15 +74,14 @@ export const handleAction = async (
       !(await showConfirmationDialog(node, {
         text:
           actionConfig.confirmation.text ||
-          hass.localize(
-            "ui.panel.lovelace.cards.actions.action_confirmation",
-            "action",
-            serviceName ||
+          hass.localize("ui.panel.lovelace.cards.actions.action_confirmation", {
+            action:
+              serviceName ||
               hass.localize(
                 `ui.panel.lovelace.editor.action-editor.actions.${actionConfig.action}`
               ) ||
-              actionConfig.action
-          ),
+              actionConfig.action,
+          }),
       }))
     ) {
       return;

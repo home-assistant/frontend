@@ -55,14 +55,12 @@ class HaConfigSystemNavigation extends LitElement {
         switch (page.translationKey) {
           case "backup":
             description = this._latestBackupDate
-              ? this.hass.localize(
-                  "ui.panel.config.backup.description",
-                  "relative_time",
-                  relativeTime(
+              ? this.hass.localize("ui.panel.config.backup.description", {
+                  relative_time: relativeTime(
                     new Date(this._latestBackupDate),
                     this.hass.locale
-                  )
-                )
+                  ),
+                })
               : this.hass.localize(
                   "ui.panel.config.backup.description_no_backup"
                 );
@@ -70,23 +68,21 @@ class HaConfigSystemNavigation extends LitElement {
           case "network":
             description = this.hass.localize(
               "ui.panel.config.network.description",
-              "state",
-              this._externalAccess
-                ? this.hass.localize("ui.panel.config.network.enabled")
-                : this.hass.localize("ui.panel.config.network.disabled")
+              {
+                state: this._externalAccess
+                  ? this.hass.localize("ui.panel.config.network.enabled")
+                  : this.hass.localize("ui.panel.config.network.disabled"),
+              }
             );
             break;
           case "storage":
             description = this._storageInfo
-              ? this.hass.localize(
-                  "ui.panel.config.storage.description",
-                  "percent_used",
-                  `${Math.round(
+              ? this.hass.localize("ui.panel.config.storage.description", {
+                  percent_used: `${Math.round(
                     (this._storageInfo.used / this._storageInfo.total) * 100
                   )}${blankBeforePercent(this.hass.locale)}%`,
-                  "free_space",
-                  `${this._storageInfo.free} GB`
-                )
+                  free_space: `${this._storageInfo.free} GB`,
+                })
               : "";
             break;
           case "hardware":
@@ -164,10 +160,10 @@ class HaConfigSystemNavigation extends LitElement {
     const backups: BackupContent[] | HassioBackup[] = isHassioLoaded
       ? await fetchHassioBackups(this.hass)
       : isComponentLoaded(this.hass, "backup")
-      ? await fetchBackupInfo(this.hass).then(
-          (backupData) => backupData.backups
-        )
-      : [];
+        ? await fetchBackupInfo(this.hass).then(
+            (backupData) => backupData.backups
+          )
+        : [];
 
     if (backups.length > 0) {
       this._latestBackupDate = (backups as any[]).reduce((a, b) =>

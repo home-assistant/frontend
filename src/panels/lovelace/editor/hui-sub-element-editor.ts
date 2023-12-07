@@ -10,7 +10,7 @@ import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import "./entity-row-editor/hui-row-element-editor";
 import "./header-footer-editor/hui-header-footer-element-editor";
 import type { HuiElementEditor } from "./hui-element-editor";
-import "./tile-feature-editor/hui-tile-feature-element-editor";
+import "./feature-editor/hui-card-feature-element-editor";
 import type { GUIModeChangedEvent, SubElementEditorConfig } from "./types";
 
 declare global {
@@ -74,28 +74,28 @@ export class HuiSubElementEditor extends LitElement {
             ></hui-row-element-editor>
           `
         : this.config.type === "header" || this.config.type === "footer"
-        ? html`
-            <hui-headerfooter-element-editor
-              class="editor"
-              .hass=${this.hass}
-              .value=${this.config.elementConfig}
-              .context=${this.context}
-              @config-changed=${this._handleConfigChanged}
-              @GUImode-changed=${this._handleGUIModeChanged}
-            ></hui-headerfooter-element-editor>
-          `
-        : this.config.type === "tile-feature"
-        ? html`
-            <hui-tile-feature-element-editor
-              class="editor"
-              .hass=${this.hass}
-              .value=${this.config.elementConfig}
-              .context=${this.context}
-              @config-changed=${this._handleConfigChanged}
-              @GUImode-changed=${this._handleGUIModeChanged}
-            ></hui-tile-feature-element-editor>
-          `
-        : ""}
+          ? html`
+              <hui-headerfooter-element-editor
+                class="editor"
+                .hass=${this.hass}
+                .value=${this.config.elementConfig}
+                .context=${this.context}
+                @config-changed=${this._handleConfigChanged}
+                @GUImode-changed=${this._handleGUIModeChanged}
+              ></hui-headerfooter-element-editor>
+            `
+          : this.config.type === "feature"
+            ? html`
+                <hui-card-feature-element-editor
+                  class="editor"
+                  .hass=${this.hass}
+                  .value=${this.config.elementConfig}
+                  .context=${this.context}
+                  @config-changed=${this._handleConfigChanged}
+                  @GUImode-changed=${this._handleGUIModeChanged}
+                ></hui-card-feature-element-editor>
+              `
+            : ""}
     `;
   }
 

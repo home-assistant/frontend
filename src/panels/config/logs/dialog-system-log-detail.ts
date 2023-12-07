@@ -69,13 +69,11 @@ class DialogSystemLogDetail extends LitElement {
         // Custom components with our official docs should not link to our docs
         !this._manifest.documentation.includes("://www.home-assistant.io"));
 
-    const title = this.hass.localize(
-      "ui.panel.config.logs.details",
-      "level",
-      html`<span class=${item.level}
+    const title = this.hass.localize("ui.panel.config.logs.details", {
+      level: html`<span class=${item.level}
         >${this.hass.localize(`ui.panel.config.logs.level.${item.level}`)}</span
-      >`
-    );
+      >`,
+    });
 
     return html`
       <ha-dialog open @closed=${this.closeDialog} hideActions .heading=${title}>

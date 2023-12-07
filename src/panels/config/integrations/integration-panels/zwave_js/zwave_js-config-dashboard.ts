@@ -171,7 +171,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                       <div class="icon">
                         ${this._status === "disconnected"
                           ? html`<ha-circular-progress
-                              active
+                              indeterminate
                             ></ha-circular-progress>`
                           : html`
                               <ha-svg-icon
@@ -457,7 +457,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                       : html`
                           <ha-circular-progress
                             size="small"
-                            active
+                            indeterminate
                           ></ha-circular-progress>
                         `}
                   </div>

@@ -1,4 +1,5 @@
 import { customElement } from "lit/decorators";
+import "element-internals-polyfill";
 import { MdSlider } from "@material/web/slider/slider";
 import { CSSResult, css } from "lit";
 

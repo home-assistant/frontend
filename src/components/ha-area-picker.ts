@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
@@ -25,21 +24,22 @@ import {
   showAlertDialog,
   showPromptDialog,
 } from "../dialogs/generic/show-dialog-box";
-import { ValueChangedEvent, HomeAssistant } from "../types";
+import { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-icon-button";
+import "./ha-list-item";
 import "./ha-svg-icon";
 
 type ScorableAreaRegistryEntry = ScorableTextItem & AreaRegistryEntry;
 
 const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (item) =>
-  html`<mwc-list-item
+  html`<ha-list-item
     class=${classMap({ "add-new": item.area_id === "add_new" })}
   >
     ${item.name}
-  </mwc-list-item>`;
+  </ha-list-item>`;
 
 @customElement("ha-area-picker")
 export class HaAreaPicker extends LitElement {
@@ -328,7 +328,7 @@ export class HaAreaPicker extends LitElement {
         item-value-path="area_id"
         item-id-path="area_id"
         item-label-path="name"
-        .value=${this.value}
+        .value=${this._value}
         .disabled=${this.disabled}
         .required=${this.required}
         .label=${this.label === undefined && this.hass
@@ -347,18 +347,19 @@ export class HaAreaPicker extends LitElement {
   }
 
   private _filterChanged(ev: CustomEvent): void {
-    const filter = ev.detail.value;
-    if (!filter) {
+    const target = ev.target as HaComboBox;
+    const filterString = ev.detail.value;
+    if (!filterString) {
       this.comboBox.filteredItems = this.comboBox.items;
       return;
     }
 
     const filteredItems = fuzzyFilterSort<ScorableAreaRegistryEntry>(
-      filter,
-      this.comboBox?.items || []
+      filterString,
+      target.items || []
     );
     if (!this.noAdd && filteredItems?.length === 0) {
-      this._suggestion = filter;
+      this._suggestion = filterString;
       this.comboBox.filteredItems = [
         {
           area_id: "add_new_suggestion",

@@ -96,7 +96,7 @@ class HaChangePasswordCard extends LitElement {
         <div class="card-actions">
           ${this._loading
             ? html`<div>
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
               </div>`
             : html`<mwc-button
                 @click=${this._changePassword}

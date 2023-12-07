@@ -589,8 +589,7 @@ export class HaSceneEditor extends SubscribeMixin(
               )
             : this.hass.localize(
                 "ui.panel.config.scene.editor.load_error_unknown",
-                "err_no",
-                err.status_code
+                { err_no: err.status_code }
               ),
       });
       history.back();

@@ -39,7 +39,7 @@
         align-items: center;
       }
       #ha-launch-screen svg {
-        width: 170px;
+        width: 112px;
         flex-shrink: 0;
       }
       #ha-launch-screen .ha-launch-screen-spacer {
@@ -77,14 +77,11 @@
     <script>
         if (!window.latestJS) {
           window.customPanelJS = "<%= es5CustomPanelJS %>";
-
           <% if (useRollup) { %>
             _ls("/static/js/s.min.js").onload = function() {
-              // Although core and app can load in any order, we need to
-              // force loading core first because it contains polyfills
-              return System.import("<%= es5EntryJS[0] %>").then(function() {
-                System.import("<%= es5EntryJS[1] %>");
-              });
+              <% for (const entry of es5EntryJS) { %>
+                System.import("<%= entry %>");
+              <% } %>
             }
           <% } else { %>
             <% for (const entry of es5EntryJS) { %>

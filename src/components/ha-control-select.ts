@@ -184,8 +184,8 @@ export class HaControlSelect extends LitElement {
           ${option.path
             ? html`<ha-svg-icon .path=${option.path}></ha-svg-icon>`
             : option.icon
-            ? html`<ha-icon .icon=${option.icon}></ha-icon> `
-            : nothing}
+              ? html`<ha-icon .icon=${option.icon}></ha-icon> `
+              : nothing}
           ${option.label && !this.hideLabel
             ? html`<span>${option.label}</span>`
             : nothing}

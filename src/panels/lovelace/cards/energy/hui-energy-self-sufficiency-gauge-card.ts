@@ -1,7 +1,14 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiInformation } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import "../../../../components/ha-card";
@@ -18,6 +25,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import { severityMap } from "../hui-gauge-card";
 import type { EnergySelfSufficiencyGaugeCardConfig } from "../types";
+import { hasConfigChanged } from "../../common/has-changed";
 
 const FORMAT_OPTIONS = {
   maximumFractionDigits: 0,
@@ -52,6 +60,14 @@ class HuiEnergySelfSufficiencyGaugeCard
 
   public setConfig(config: EnergySelfSufficiencyGaugeCardConfig): void {
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return (
+      hasConfigChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
   }
 
   protected render() {

@@ -44,10 +44,12 @@ export interface LineChartEntity {
   name: string;
   entity_id: string;
   states: LineChartState[];
+  statistics?: LineChartState[];
 }
 
 export interface LineChartUnit {
   unit: string;
+  device_class?: string;
   identifier: string;
   data: LineChartEntity[];
 }
@@ -322,7 +324,8 @@ const processTimelineEntity = (
 };
 
 const processLineChartEntities = (
-  unit,
+  unit: string,
+  device_class: string | undefined,
   entities: HistoryStates,
   hassEntities: HassEntities
 ): LineChartUnit => {
@@ -377,8 +380,8 @@ const processLineChartEntities = (
       entityId in hassEntities
         ? hassEntities[entityId].attributes
         : "friendly_name" in first.a
-        ? first.a
-        : undefined;
+          ? first.a
+          : undefined;
 
     data.push({
       domain,
@@ -390,6 +393,7 @@ const processLineChartEntities = (
 
   return {
     unit,
+    device_class,
     identifier: Object.keys(entities).join(""),
     data,
   };
@@ -416,7 +420,8 @@ export const computeHistory = (
   hass: HomeAssistant,
   stateHistory: HistoryStates,
   localize: LocalizeFunc,
-  sensorNumericalDeviceClasses: string[]
+  sensorNumericalDeviceClasses: string[],
+  splitDeviceClasses = false
 ): HistoryResult => {
   const lineChartDevices: { [unit: string]: HistoryStates } = {};
   const timelineDevices: TimelineEntity[] = [];
@@ -465,6 +470,12 @@ export const computeHistory = (
       }[domain];
     }
 
+    const deviceClass: string | undefined = (
+      currentState?.attributes || numericStateFromHistory?.a
+    )?.device_class;
+
+    const key = computeGroupKey(unit, deviceClass, splitDeviceClasses);
+
     if (!unit) {
       timelineDevices.push(
         processTimelineEntity(
@@ -477,19 +488,37 @@ export const computeHistory = (
           currentState
         )
       );
-    } else if (unit in lineChartDevices && entityId in lineChartDevices[unit]) {
-      lineChartDevices[unit][entityId].push(...stateInfo);
-    } else {
-      if (!(unit in lineChartDevices)) {
-        lineChartDevices[unit] = {};
+    } else if (
+      key &&
+      key in lineChartDevices &&
+      entityId in lineChartDevices[key]
+    ) {
+      lineChartDevices[key][entityId].push(...stateInfo);
+    } else if (key) {
+      if (!(key in lineChartDevices)) {
+        lineChartDevices[key] = {};
       }
-      lineChartDevices[unit][entityId] = stateInfo;
+      lineChartDevices[key][entityId] = stateInfo;
     }
   });
 
-  const unitStates = Object.keys(lineChartDevices).map((unit) =>
-    processLineChartEntities(unit, lineChartDevices[unit], hass.states)
-  );
+  const unitStates = Object.keys(lineChartDevices).map((key) => {
+    const splitKey = key.split("_");
+    const unit = splitKey[0];
+    const deviceClass = splitKey[1] || undefined;
+    return processLineChartEntities(
+      unit,
+      deviceClass,
+      lineChartDevices[key],
+      hass.states
+    );
+  });
 
   return { line: unitStates, timeline: timelineDevices };
 };
+
+export const computeGroupKey = (
+  unit: string | undefined,
+  device_class: string | undefined,
+  splitDeviceClasses: boolean
+) => (splitDeviceClasses ? `${unit}_${device_class || ""}` : unit);

@@ -37,8 +37,10 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
           ${this.schema.icon
             ? html` <ha-icon .icon=${this.schema.icon}></ha-icon> `
             : this.schema.iconPath
-            ? html` <ha-svg-icon .path=${this.schema.iconPath}></ha-svg-icon> `
-            : nothing}
+              ? html`
+                  <ha-svg-icon .path=${this.schema.iconPath}></ha-svg-icon>
+                `
+              : nothing}
           ${this.schema.title}
         </div>
         <div class="content">

@@ -99,7 +99,7 @@ class HaMarkdownElement extends ReactiveElement {
     }
   }
 
-  private _resize = () => fireEvent(this, "iron-resize");
+  private _resize = () => fireEvent(this, "content-resize");
 }
 
 declare global {

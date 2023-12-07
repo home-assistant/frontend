@@ -31,9 +31,7 @@ class HaCoverTiltControls extends LitElement {
             CoverEntityFeature.OPEN_TILT
           ),
         })}
-        .label=${this.hass.localize(
-          "ui.dialogs.more_info_control.cover.open_tilt_cover"
-        )}
+        .label=${this.hass.localize("ui.card.cover.open_tilt_cover")}
         .path=${mdiArrowTopRight}
         @click=${this._onOpenTiltTap}
         .disabled=${!canOpenTilt(this.stateObj)}
@@ -45,9 +43,7 @@ class HaCoverTiltControls extends LitElement {
             CoverEntityFeature.STOP_TILT
           ),
         })}
-        .label=${this.hass.localize(
-          "ui.dialogs.more_info_control.cover.stop_cover"
-        )}
+        .label=${this.hass.localize("ui.card.cover.stop_cover")}
         .path=${mdiStop}
         @click=${this._onStopTiltTap}
         .disabled=${!canStopTilt(this.stateObj)}
@@ -59,9 +55,7 @@ class HaCoverTiltControls extends LitElement {
             CoverEntityFeature.CLOSE_TILT
           ),
         })}
-        .label=${this.hass.localize(
-          "ui.dialogs.more_info_control.cover.close_tilt_cover"
-        )}
+        .label=${this.hass.localize("ui.card.cover.close_tilt_cover")}
         .path=${mdiArrowBottomLeft}
         @click=${this._onCloseTiltTap}
         .disabled=${!canCloseTilt(this.stateObj)}

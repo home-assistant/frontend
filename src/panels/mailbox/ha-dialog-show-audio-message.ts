@@ -37,7 +37,7 @@ class HaDialogShowAudioMessage extends LitElement {
         heading=${this.hass.localize("ui.panel.mailbox.playback_title")}
       >
         ${this._loading
-          ? html`<ha-circular-progress active></ha-circular-progress>`
+          ? html`<ha-circular-progress indeterminate></ha-circular-progress>`
           : html`<div class="icon">
                 <ha-icon-button id="delicon" @click=${this._openDeleteDialog}>
                   <ha-icon icon="hass:delete"></ha-icon>

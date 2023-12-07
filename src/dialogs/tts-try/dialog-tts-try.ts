@@ -85,8 +85,7 @@ export class TTSTryDialog extends LitElement {
           ? html`
               <ha-circular-progress
                 size="small"
-                active
-                alt=""
+                indeterminate
                 slot="primaryAction"
                 class="loading"
               ></ha-circular-progress>

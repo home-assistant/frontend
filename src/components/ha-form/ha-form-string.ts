@@ -53,8 +53,8 @@ export class HaFormString extends LitElement implements HaFormElement {
         .type=${!this.isPassword
           ? this.stringType
           : this.unmaskedPassword
-          ? "text"
-          : "password"}
+            ? "text"
+            : "password"}
         .label=${this.label}
         .value=${this.data || ""}
         .helper=${this.helper}

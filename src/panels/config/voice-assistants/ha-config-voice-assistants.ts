@@ -52,7 +52,7 @@ class HaConfigVoiceAssistants extends HassRouterPage {
   }
 
   public disconnectedCallback(): void {
-    super.connectedCallback();
+    super.disconnectedCallback();
     this.removeEventListener(
       "exposed-entities-changed",
       this._fetchExposedEntities

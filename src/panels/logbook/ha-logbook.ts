@@ -107,10 +107,7 @@ export class HaLogbook extends LitElement {
     if (this._logbookEntries === undefined) {
       return html`
         <div class="progress-wrapper">
-          <ha-circular-progress
-            active
-            alt=${this.hass.localize("ui.common.loading")}
-          ></ha-circular-progress>
+          <ha-circular-progress indeterminate></ha-circular-progress>
         </div>
       `;
     }
@@ -343,10 +340,10 @@ export class HaLogbook extends LitElement {
     !this._logbookEntries
       ? []
       : purgeBeforePythonTime
-      ? this._logbookEntries.filter(
-          (entry) => entry.when > purgeBeforePythonTime!
-        )
-      : this._logbookEntries;
+        ? this._logbookEntries.filter(
+            (entry) => entry.when > purgeBeforePythonTime!
+          )
+        : this._logbookEntries;
 
   private _processOrQueueStreamMessage = (
     streamMessage: LogbookStreamMessage

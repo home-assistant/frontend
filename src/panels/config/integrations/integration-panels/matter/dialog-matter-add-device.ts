@@ -57,7 +57,7 @@ class DialogMatterAddDevice extends LitElement {
               )
             : html`<ha-circular-progress
                 size="large"
-                active
+                indeterminate
               ></ha-circular-progress>`}
         </div>
         <mwc-button slot="primaryAction" @click=${this.closeDialog}>

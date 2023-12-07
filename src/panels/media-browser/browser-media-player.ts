@@ -88,8 +88,8 @@ export class BrowserMediaPlayer {
     stateObj.state = this.buffering
       ? "buffering"
       : this.player.paused || this.player.ended
-      ? "paused"
-      : "playing";
+        ? "paused"
+        : "playing";
     stateObj.attributes = {
       media_title: this.item.title,
       entity_picture: this.item.thumbnail,

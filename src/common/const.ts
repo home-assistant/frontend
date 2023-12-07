@@ -203,6 +203,7 @@ export const DOMAINS_WITH_CARD = [
   "select",
   "timer",
   "text",
+  "update",
   "vacuum",
   "water_heater",
 ];

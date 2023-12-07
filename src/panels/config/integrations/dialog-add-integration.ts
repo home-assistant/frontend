@@ -249,7 +249,7 @@ class AddIntegrationDialog extends LitElement {
             "iot_standards",
           ],
           isCaseSensitive: false,
-          minMatchCharLength: 2,
+          minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
         };
         const helpers = Object.entries(h).map(([domain, integration]) => ({
@@ -449,7 +449,9 @@ class AddIntegrationDialog extends LitElement {
             >
             </lit-virtualizer>
           </mwc-list>`
-        : html`<ha-circular-progress active></ha-circular-progress>`} `;
+        : html`<div class="flex center">
+            <ha-circular-progress indeterminate></ha-circular-progress>
+          </div>`} `;
   }
 
   private _keyFunction = (integration: IntegrationListItem) =>
@@ -570,11 +572,20 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (
-      ["cloud", "google_assistant", "alexa"].includes(integration.domain) &&
+      integration.domain === "cloud" &&
       isComponentLoaded(this.hass, "cloud")
     ) {
       this.closeDialog();
       navigate("/config/cloud");
+      return;
+    }
+
+    if (
+      ["google_assistant", "alexa"].includes(integration.domain) &&
+      isComponentLoaded(this.hass, "cloud")
+    ) {
+      this.closeDialog();
+      navigate("/config/voice-assistants/assistants");
       return;
     }
 
@@ -673,10 +684,12 @@ class AddIntegrationDialog extends LitElement {
       p > a {
         color: var(--primary-color);
       }
-      ha-circular-progress {
-        width: 100%;
+      .flex.center {
         display: flex;
         justify-content: center;
+        align-items: center;
+      }
+      ha-circular-progress {
         margin: 24px 0;
       }
       mwc-list {

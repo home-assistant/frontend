@@ -30,9 +30,9 @@ export class HaNumberSelector extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues) {
     if (changedProps.has("value")) {
-      if (this.value !== Number(this._valueStr)) {
+      if (this._valueStr === "" || this.value !== Number(this._valueStr)) {
         this._valueStr =
-          !this.value || isNaN(this.value) ? "" : this.value.toString();
+          this.value == null || isNaN(this.value) ? "" : this.value.toString();
       }
     }
   }

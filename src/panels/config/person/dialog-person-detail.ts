@@ -306,8 +306,7 @@ class DialogPersonDetail extends LitElement {
         !(await showConfirmationDialog(this, {
           text: this.hass!.localize(
             "ui.panel.config.person.detail.confirm_delete_user",
-            "name",
-            this._name
+            { name: this._name }
           ),
           confirmText: this.hass!.localize(
             "ui.panel.config.person.detail.delete"

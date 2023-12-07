@@ -37,6 +37,10 @@ interface EMOutgoingMessageMatterCommission extends EMMessage {
   type: "matter/commission";
 }
 
+interface EMOutgoingMessageImportThreadCredentials extends EMMessage {
+  type: "thread/import_credentials";
+}
+
 type EMOutgoingMessageWithAnswer = {
   "config/get": {
     request: EMOutgoingMessageConfigGet;
@@ -116,7 +120,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageThemeUpdate
   | EMMessageResultSuccess
   | EMMessageResultError
-  | EMOutgoingMessageMatterCommission;
+  | EMOutgoingMessageMatterCommission
+  | EMOutgoingMessageImportThreadCredentials;
 
 interface EMIncomingMessageRestart {
   id: number;
@@ -161,6 +166,7 @@ export interface ExternalConfig {
   canWriteTag: boolean;
   hasExoPlayer: boolean;
   canCommissionMatter: boolean;
+  canImportThreadCredentials: boolean;
   hasAssist: boolean;
 }
 

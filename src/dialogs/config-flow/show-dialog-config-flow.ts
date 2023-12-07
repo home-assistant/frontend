@@ -174,8 +174,7 @@ export const showConfigFlowDialog = (
         <p>
           ${hass.localize(
             "ui.panel.config.integrations.config_flow.created_config",
-            "name",
-            step.title
+            { name: step.title }
           )}
         </p>
       `;

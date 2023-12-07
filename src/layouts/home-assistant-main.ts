@@ -127,10 +127,10 @@ export class HomeAssistantMain extends LitElement {
           dock: ev.detail?.open
             ? "docked"
             : ev.detail?.open === false
-            ? "auto"
-            : this.hass.dockedSidebar === "auto"
-            ? "docked"
-            : "auto",
+              ? "auto"
+              : this.hass.dockedSidebar === "auto"
+                ? "docked"
+                : "auto",
         });
       }
     });

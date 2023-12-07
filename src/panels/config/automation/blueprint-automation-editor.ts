@@ -101,7 +101,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
               : this.hass.localize(
                   "ui.panel.config.automation.editor.blueprint.no_blueprints"
                 )
-            : html`<ha-circular-progress active></ha-circular-progress>`}
+            : html`<ha-circular-progress indeterminate></ha-circular-progress>`}
         </div>
 
         ${this.config.use_blueprint.path

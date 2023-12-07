@@ -2,6 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
+import { fireEvent } from "../../common/dom/fire_event";
 import {
   EntitySources,
   fetchEntitySourcesWithCache,
@@ -35,6 +36,18 @@ export class HaEntitySelector extends LitElement {
       selector.entity?.filter &&
       ensureArray(selector.entity.filter).some((filter) => filter.integration)
     );
+  }
+
+  protected willUpdate(changedProperties: PropertyValues): void {
+    if (changedProperties.has("selector") && this.value !== undefined) {
+      if (this.selector.entity?.multiple && !Array.isArray(this.value)) {
+        this.value = [this.value];
+        fireEvent(this, "value-changed", { value: this.value });
+      } else if (!this.selector.entity?.multiple && Array.isArray(this.value)) {
+        this.value = this.value[0];
+        fireEvent(this, "value-changed", { value: this.value });
+      }
+    }
   }
 
   protected render() {

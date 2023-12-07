@@ -9,7 +9,7 @@ body:
 
         If you have a feature or enhancement request for the frontend, please [start an discussion][fr] instead of creating an issue.
 
-        **Please not not report issues for custom cards.**
+        **Please do not report issues for custom cards.**
 
         [fr]: https://github.com/home-assistant/frontend/discussions
         [releases]: https://github.com/home-assistant/home-assistant/releases

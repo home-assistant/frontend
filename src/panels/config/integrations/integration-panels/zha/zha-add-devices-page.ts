@@ -98,8 +98,8 @@ class ZHAAddDevicesPage extends LitElement {
                   )}
                 </h1>
                 <ha-circular-progress
-                  active
-                  alt="Searching"
+                  indeterminate
+                  aria-label="Searching"
                 ></ha-circular-progress>
               `
             : html`
@@ -236,7 +236,7 @@ class ZHAAddDevicesPage extends LitElement {
           color: var(--error-color);
         }
         ha-circular-progress {
-          padding: 20px;
+          margin: 20px;
         }
         .searching {
           margin-top: 20px;

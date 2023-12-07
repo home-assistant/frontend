@@ -212,8 +212,7 @@ export class HaConfigUsers extends LitElement {
           !(await showConfirmationDialog(this, {
             title: this.hass!.localize(
               "ui.panel.config.users.editor.confirm_user_deletion_title",
-              "name",
-              entry.name
+              { name: entry.name }
             ),
             text: this.hass!.localize(
               "ui.panel.config.users.editor.confirm_user_deletion_text"

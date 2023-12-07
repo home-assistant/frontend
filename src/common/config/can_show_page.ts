@@ -10,10 +10,10 @@ const isLoadedIntegration = (hass: HomeAssistant, page: PageNavigation) =>
   page.component
     ? isComponentLoaded(hass, page.component)
     : page.components
-    ? page.components.some((integration) =>
-        isComponentLoaded(hass, integration)
-      )
-    : true;
+      ? page.components.some((integration) =>
+          isComponentLoaded(hass, integration)
+        )
+      : true;
 const isCore = (page: PageNavigation) => page.core;
 const isAdvancedPage = (page: PageNavigation) => page.advancedOnly;
 const userWantsAdvanced = (hass: HomeAssistant) => hass.userData?.showAdvanced;

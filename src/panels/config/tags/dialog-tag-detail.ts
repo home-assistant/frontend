@@ -118,18 +118,16 @@ class DialogTagDetail
             ? html`
                 <div>
                   <p>
-                    ${this.hass!.localize(
-                      "ui.panel.config.tag.detail.usage",
-                      "companion_link",
-                      html`<a
+                    ${this.hass!.localize("ui.panel.config.tag.detail.usage", {
+                      companion_link: html`<a
                         href="https://companion.home-assistant.io/"
                         target="_blank"
                         rel="noreferrer"
                         >${this.hass!.localize(
                           "ui.panel.config.tag.detail.companion_apps"
                         )}</a
-                      >`
-                    )}
+                      >`,
+                    })}
                   </p>
                 </div>
                 ${this._qrCode
@@ -251,11 +249,9 @@ class DialogTagDetail
     );
 
     this._qrCode = html`<img
-        alt=${this.hass.localize(
-          "ui.panel.config.tag.qr_code_image",
-          "name",
-          this._name
-        )}
+        alt=${this.hass.localize("ui.panel.config.tag.qr_code_image", {
+          name: this._name,
+        })}
         src=${canvas.toDataURL()}
       ></img>`;
   }

@@ -35,16 +35,16 @@ import {
   lightSupportsColorMode,
   lightSupportsFavoriteColors,
 } from "../../../data/light";
+import "../../../state-control/ha-state-control-toggle";
+import "../../../state-control/light/ha-state-control-light-brightness";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
-import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
-import "../components/ha-more-info-toggle";
 import "../components/lights/ha-favorite-color-button";
-import "../components/lights/ha-more-info-light-brightness";
 import "../components/lights/ha-more-info-light-favorite-colors";
 import "../components/lights/light-color-rgb-picker";
 import "../components/lights/light-color-temp-picker";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 type MainControl = "brightness" | "color_temp" | "color";
 
@@ -123,23 +123,23 @@ class MoreInfoLight extends LitElement {
       <div class="controls">
         ${!supportsBrightness
           ? html`
-              <ha-more-info-toggle
+              <ha-state-control-toggle
                 .stateObj=${this.stateObj}
                 .hass=${this.hass}
                 .iconPathOn=${mdiLightbulb}
                 .iconPathOff=${mdiLightbulbOff}
-              ></ha-more-info-toggle>
+              ></ha-state-control-toggle>
             `
           : nothing}
         ${supportsColorTemp || supportsColor || supportsBrightness
           ? html`
               ${supportsBrightness && this._mainControl === "brightness"
                 ? html`
-                    <ha-more-info-light-brightness
+                    <ha-state-control-light-brightness
                       .stateObj=${this.stateObj}
                       .hass=${this.hass}
                     >
-                    </ha-more-info-light-brightness>
+                    </ha-state-control-light-brightness>
                   `
                 : nothing}
               ${supportsColor && this._mainControl === "color"
@@ -180,8 +180,9 @@ class MoreInfoLight extends LitElement {
                       <ha-icon-button-toggle
                         .selected=${this._mainControl === "brightness"}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .label=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.brightness"
+                        .label=${this.hass.formatEntityAttributeName(
+                          this.stateObj,
+                          "brightness"
                         )}
                         .control=${"brightness"}
                         @click=${this._setMainControl}

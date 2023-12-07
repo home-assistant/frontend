@@ -59,8 +59,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
         @closed=${this._close}
         .heading=${this.hass!.localize(
           "ui.dialogs.mqtt_device_debug_info.title",
-          "device",
-          computeDeviceName(this._params.device, this.hass)
+          { device: computeDeviceName(this._params.device, this.hass) }
         )}
       >
         <h4>
@@ -179,8 +178,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                       .subscribedTopic=${topic.topic}
                       .summary=${this.hass!.localize(
                         "ui.dialogs.mqtt_device_debug_info.recent_messages",
-                        "n",
-                        topic.messages.length
+                        { n: topic.messages.length }
                       )}
                     >
                     </mqtt-rx-messages>
@@ -203,8 +201,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                       .subscribedTopic=${topic.topic}
                       .summary=${this.hass!.localize(
                         "ui.dialogs.mqtt_device_debug_info.recent_tx_messages",
-                        "n",
-                        topic.messages.length
+                        { n: topic.messages.length }
                       )}
                     >
                     </mqtt-tx-messages>

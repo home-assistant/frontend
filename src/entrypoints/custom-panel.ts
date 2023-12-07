@@ -2,7 +2,6 @@
 import "../resources/compatibility";
 import "../resources/safari-14-attachshadow-patch";
 
-import { PolymerElement } from "@polymer/polymer";
 import { CSSResult } from "lit";
 import { fireEvent } from "../common/dom/fire_event";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
@@ -36,7 +35,7 @@ window.loadES5Adapter = () => {
   return es5Loaded;
 };
 
-let panelEl: HTMLElement | PolymerElement | undefined;
+let panelEl: HTMLElement | undefined;
 
 function setProperties(properties) {
   if (!panelEl) {

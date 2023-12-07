@@ -161,7 +161,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         const options: IFuseOptions<ConfigEntryExtended> = {
           keys: ["domain", "localized_domain_name", "title"],
           isCaseSensitive: false,
-          minMatchCharLength: 2,
+          minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
         };
         const fuse = new Fuse(configEntries, options);
@@ -205,7 +205,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         const options: IFuseOptions<DataEntryFlowProgressExtended> = {
           keys: ["handler", "localized_title"],
           isCaseSensitive: false,
-          minMatchCharLength: 2,
+          minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
         };
         const fuse = new Fuse(configEntriesInProgress, options);
@@ -465,57 +465,60 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
                   ></ha-integration-card>`
               )
             : this._filter &&
-              !configEntriesInProgress.length &&
-              !integrations.length &&
-              this.configEntries.length
-            ? html`
-                <div class="empty-message">
-                  <h1>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.none_found"
-                    )}
-                  </h1>
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.none_found_detail"
-                    )}
-                  </p>
-                  <mwc-button
-                    @click=${this._createFlow}
-                    unelevated
-                    .label=${this.hass.localize(
-                      "ui.panel.config.integrations.add_integration"
-                    )}
-                  ></mwc-button>
-                </div>
-              `
-            : // If we have a filter, never show a card
-            this._filter
-            ? ""
-            : // If we're showing 0 cards, show empty state text
-            (!this._showIgnored || ignoredConfigEntries.length === 0) &&
-              (!this._showDisabled || disabledConfigEntries.length === 0) &&
-              integrations.length === 0
-            ? html`
-                <div class="empty-message">
-                  <h1>
-                    ${this.hass.localize("ui.panel.config.integrations.none")}
-                  </h1>
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.no_integrations"
-                    )}
-                  </p>
-                  <mwc-button
-                    @click=${this._createFlow}
-                    unelevated
-                    .label=${this.hass.localize(
-                      "ui.panel.config.integrations.add_integration"
-                    )}
-                  ></mwc-button>
-                </div>
-              `
-            : ""}
+                !configEntriesInProgress.length &&
+                !integrations.length &&
+                this.configEntries.length
+              ? html`
+                  <div class="empty-message">
+                    <h1>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.none_found"
+                      )}
+                    </h1>
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.none_found_detail"
+                      )}
+                    </p>
+                    <mwc-button
+                      @click=${this._createFlow}
+                      unelevated
+                      .label=${this.hass.localize(
+                        "ui.panel.config.integrations.add_integration"
+                      )}
+                    ></mwc-button>
+                  </div>
+                `
+              : // If we have a filter, never show a card
+                this._filter
+                ? ""
+                : // If we're showing 0 cards, show empty state text
+                  (!this._showIgnored || ignoredConfigEntries.length === 0) &&
+                    (!this._showDisabled ||
+                      disabledConfigEntries.length === 0) &&
+                    integrations.length === 0
+                  ? html`
+                      <div class="empty-message">
+                        <h1>
+                          ${this.hass.localize(
+                            "ui.panel.config.integrations.none"
+                          )}
+                        </h1>
+                        <p>
+                          ${this.hass.localize(
+                            "ui.panel.config.integrations.no_integrations"
+                          )}
+                        </p>
+                        <mwc-button
+                          @click=${this._createFlow}
+                          unelevated
+                          .label=${this.hass.localize(
+                            "ui.panel.config.integrations.add_integration"
+                          )}
+                        ></mwc-button>
+                      </div>
+                    `
+                  : ""}
         </div>
         <ha-fab
           slot="fab"

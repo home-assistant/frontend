@@ -104,38 +104,39 @@ export class AssistPipelineRunDebug extends LitElement {
                   </div>
                 `
               : this._pipelineRuns[0].init_options!.start_stage === "intent"
-              ? html`
-                  <ha-textfield
-                    id="continue-conversation-text"
-                    label="Response"
-                    .disabled=${!this._finished}
-                    @keydown=${this._handleContinueKeyDown}
-                  ></ha-textfield>
-                  <ha-button
-                    @click=${this._runTextPipeline}
-                    .disabled=${!this._finished}
-                  >
-                    Send
-                  </ha-button>
-                `
-              : this._finished
-              ? this._pipelineRuns[0].init_options!.start_stage === "wake_word"
                 ? html`
-                    <ha-button @click=${this._runAudioWakeWordPipeline}>
-                      Continue listening for wake word
+                    <ha-textfield
+                      id="continue-conversation-text"
+                      label="Response"
+                      .disabled=${!this._finished}
+                      @keydown=${this._handleContinueKeyDown}
+                    ></ha-textfield>
+                    <ha-button
+                      @click=${this._runTextPipeline}
+                      .disabled=${!this._finished}
+                    >
+                      Send
                     </ha-button>
                   `
-                : html`<ha-button @click=${this._runAudioPipeline}>
-                    Continue talking
-                  </ha-button>`
-              : html`
-                  <ha-formfield label="Continue conversation">
-                    <ha-checkbox
-                      id="continue-conversation"
-                      checked
-                    ></ha-checkbox>
-                  </ha-formfield>
-                `}
+                : this._finished
+                  ? this._pipelineRuns[0].init_options!.start_stage ===
+                    "wake_word"
+                    ? html`
+                        <ha-button @click=${this._runAudioWakeWordPipeline}>
+                          Continue listening for wake word
+                        </ha-button>
+                      `
+                    : html`<ha-button @click=${this._runAudioPipeline}>
+                        Continue talking
+                      </ha-button>`
+                  : html`
+                      <ha-formfield label="Continue conversation">
+                        <ha-checkbox
+                          id="continue-conversation"
+                          checked
+                        ></ha-checkbox>
+                      </ha-formfield>
+                    `}
           </div>
 
           ${this._pipelineRuns.map((run) =>

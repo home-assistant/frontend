@@ -104,50 +104,50 @@ class HassioAddonConfig extends LitElement {
               selector: { select: { options: entry.options } },
             }
           : entry.type === "string"
-          ? entry.multiple
-            ? {
-                name: entry.name,
-                required: entry.required,
-                selector: {
-                  select: { options: [], multiple: true, custom_value: true },
-                },
-              }
-            : {
-                name: entry.name,
-                required: entry.required,
-                selector: {
-                  text: {
-                    type:
-                      entry.format || MASKED_FIELDS.includes(entry.name)
-                        ? "password"
-                        : "text",
+            ? entry.multiple
+              ? {
+                  name: entry.name,
+                  required: entry.required,
+                  selector: {
+                    select: { options: [], multiple: true, custom_value: true },
                   },
-                },
-              }
-          : entry.type === "boolean"
-          ? {
-              name: entry.name,
-              required: entry.required,
-              selector: { boolean: {} },
-            }
-          : entry.type === "schema"
-          ? {
-              name: entry.name,
-              required: entry.required,
-              selector: { object: {} },
-            }
-          : entry.type === "float" || entry.type === "integer"
-          ? {
-              name: entry.name,
-              required: entry.required,
-              selector: {
-                number: {
-                  mode: "box",
-                  step: entry.type === "float" ? "any" : undefined,
-                },
-              },
-            }
-          : entry
+                }
+              : {
+                  name: entry.name,
+                  required: entry.required,
+                  selector: {
+                    text: {
+                      type:
+                        entry.format || MASKED_FIELDS.includes(entry.name)
+                          ? "password"
+                          : "text",
+                    },
+                  },
+                }
+            : entry.type === "boolean"
+              ? {
+                  name: entry.name,
+                  required: entry.required,
+                  selector: { boolean: {} },
+                }
+              : entry.type === "schema"
+                ? {
+                    name: entry.name,
+                    required: entry.required,
+                    selector: { object: {} },
+                  }
+                : entry.type === "float" || entry.type === "integer"
+                  ? {
+                      name: entry.name,
+                      required: entry.required,
+                      selector: {
+                        number: {
+                          mode: "box",
+                          step: entry.type === "float" ? "any" : undefined,
+                        },
+                      },
+                    }
+                  : entry
       )
   );
 
@@ -340,11 +340,9 @@ class HassioAddonConfig extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err: any) {
-      this._error = this.supervisor.localize(
-        "addon.failed_to_reset",
-        "error",
-        extractApiErrorMessage(err)
-      );
+      this._error = this.supervisor.localize("addon.failed_to_reset", {
+        error: extractApiErrorMessage(err),
+      });
     }
     button.progress = false;
   }
@@ -381,11 +379,9 @@ class HassioAddonConfig extends LitElement {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
     } catch (err: any) {
-      this._error = this.supervisor.localize(
-        "addon.failed_to_save",
-        "error",
-        extractApiErrorMessage(err)
-      );
+      this._error = this.supervisor.localize("addon.failed_to_save", {
+        error: extractApiErrorMessage(err),
+      });
       eventdata.success = false;
     }
     button.progress = false;

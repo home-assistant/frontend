@@ -81,7 +81,7 @@ export class HuiCardPicker extends LitElement {
       const options: IFuseOptions<Card> = {
         keys: ["type", "name", "description"],
         isCaseSensitive: false,
-        minMatchCharLength: 2,
+        minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
       };
       const fuse = new Fuse(cards, options);
@@ -142,8 +142,7 @@ export class HuiCardPicker extends LitElement {
                   html`
                     <div class="card spinner">
                       <ha-circular-progress
-                        active
-                        alt="Loading"
+                        indeterminate
                       ></ha-circular-progress>
                     </div>
                   `
@@ -238,7 +237,7 @@ export class HuiCardPicker extends LitElement {
         this._renderCardElement(card),
         html`
           <div class="card spinner">
-            <ha-circular-progress active alt="Loading"></ha-circular-progress>
+            <ha-circular-progress indeterminate></ha-circular-progress>
           </div>
         `
       )}`,
@@ -363,11 +362,11 @@ export class HuiCardPicker extends LitElement {
           ${element && element.tagName !== "HUI-ERROR-CARD"
             ? element
             : customCard
-            ? customCard.description ||
-              this.hass!.localize(
-                `ui.panel.lovelace.editor.cardpicker.no_description`
-              )
-            : description}
+              ? customCard.description ||
+                this.hass!.localize(
+                  `ui.panel.lovelace.editor.cardpicker.no_description`
+                )
+              : description}
         </div>
       </div>
     `;

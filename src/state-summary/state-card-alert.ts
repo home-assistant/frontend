@@ -8,7 +8,7 @@ import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 
 @customElement("state-card-alert")
-export class StateCardAlert extends LitElement {
+class StateCardAlert extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
@@ -76,5 +76,11 @@ export class StateCardAlert extends LitElement {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "state-card-alert": StateCardAlert;
   }
 }

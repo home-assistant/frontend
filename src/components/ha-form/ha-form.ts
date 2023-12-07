@@ -115,12 +115,12 @@ export class HaForm extends LitElement implements HaFormElement {
                   </ha-alert>
                 `
               : warning
-              ? html`
-                  <ha-alert own-margin alert-type="warning">
-                    ${this._computeWarning(warning, item)}
-                  </ha-alert>
-                `
-              : ""}
+                ? html`
+                    <ha-alert own-margin alert-type="warning">
+                      ${this._computeWarning(warning, item)}
+                    </ha-alert>
+                  `
+                : ""}
             ${"selector" in item
               ? html`<ha-selector
                   .schema=${item}
@@ -204,8 +204,8 @@ export class HaForm extends LitElement implements HaFormElement {
     return this.computeLabel
       ? this.computeLabel(schema, data)
       : schema
-      ? schema.name
-      : "";
+        ? schema.name
+        : "";
   }
 
   private _computeHelper(schema: HaFormSchema) {

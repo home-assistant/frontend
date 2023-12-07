@@ -64,6 +64,11 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         return;
       }
 
+      if (e.defaultPrevented) {
+        return;
+      }
+      e.preventDefault();
+
       showQuickBar(this, { commandMode });
     }
 
@@ -74,6 +79,11 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       ) {
         return;
       }
+
+      if (e.defaultPrevented) {
+        return;
+      }
+      e.preventDefault();
 
       const targetPath = mainWindow.location.pathname;
       const isHassio = isComponentLoaded(this.hass, "hassio");

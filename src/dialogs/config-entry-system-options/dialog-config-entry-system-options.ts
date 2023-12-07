@@ -56,9 +56,12 @@ class DialogConfigEntrySystemOptions extends LitElement {
         @closed=${this.closeDialog}
         .heading=${this.hass.localize(
           "ui.dialogs.config_entry_system_options.title",
-          "integration",
-          this.hass.localize(`component.${this._params.entry.domain}.title`) ||
-            this._params.entry.domain
+          {
+            integration:
+              this.hass.localize(
+                `component.${this._params.entry.domain}.title`
+              ) || this._params.entry.domain,
+          }
         )}
       >
         ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
@@ -71,10 +74,12 @@ class DialogConfigEntrySystemOptions extends LitElement {
             <p class="secondary">
               ${this.hass.localize(
                 "ui.dialogs.config_entry_system_options.enable_new_entities_description",
-                "integration",
-                this.hass.localize(
-                  `component.${this._params.entry.domain}.title`
-                ) || this._params.entry.domain
+                {
+                  integration:
+                    this.hass.localize(
+                      `component.${this._params.entry.domain}.title`
+                    ) || this._params.entry.domain,
+                }
               )}
             </p>`}
           .dir=${computeRTLDirection(this.hass)}
@@ -96,10 +101,12 @@ class DialogConfigEntrySystemOptions extends LitElement {
             <p class="secondary">
               ${this.hass.localize(
                 "ui.dialogs.config_entry_system_options.enable_polling_description",
-                "integration",
-                this.hass.localize(
-                  `component.${this._params.entry.domain}.title`
-                ) || this._params.entry.domain
+                {
+                  integration:
+                    this.hass.localize(
+                      `component.${this._params.entry.domain}.title`
+                    ) || this._params.entry.domain,
+                }
               )}
             </p>`}
           .dir=${computeRTLDirection(this.hass)}

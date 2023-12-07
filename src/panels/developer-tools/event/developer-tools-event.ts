@@ -25,7 +25,11 @@ class HaPanelDevEvent extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class=${this.narrow ? "content" : "content layout horizontal"}>
+      <div
+        class=${this.narrow
+          ? "content layout vertical"
+          : "content layout horizontal"}
+      >
         <div class="flex">
           <p>
             ${this.hass.localize(
@@ -128,6 +132,7 @@ class HaPanelDevEvent extends LitElement {
       haStyle,
       css`
         .content {
+          gap: 16px;
           padding: 16px;
           padding: max(16px, env(safe-area-inset-top))
             max(16px, env(safe-area-inset-right))
@@ -143,6 +148,10 @@ class HaPanelDevEvent extends LitElement {
           -moz-user-select: initial;
           @apply --paper-font-body1;
           display: block;
+        }
+
+        .flex {
+          min-width: 0;
         }
 
         .inputs {
@@ -163,9 +172,7 @@ class HaPanelDevEvent extends LitElement {
 
         event-subscribe-card {
           display: block;
-          margin: 16px 16px 0 0;
-          margin-inline-start: initial;
-          margin-inline-end: 16px;
+          margin-top: 16px;
           direction: var(--direction);
         }
 

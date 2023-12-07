@@ -1,11 +1,14 @@
 import { HomeAssistant } from "../types";
 
-export interface Person {
-  id: string;
+export interface BasePerson {
   name: string;
+  picture?: string;
+}
+
+export interface Person extends BasePerson {
+  id: string;
   user_id?: string;
   device_trackers?: string[];
-  picture?: string;
 }
 
 export interface PersonMutableParams {
@@ -20,6 +23,16 @@ export const fetchPersons = (hass: HomeAssistant) =>
     storage: Person[];
     config: Person[];
   }>({ type: "person/list" });
+
+export const listUserPersons = (): Promise<Record<string, BasePerson>> =>
+  fetch("/api/person/list", {
+    credentials: "same-origin",
+  }).then((resp) => {
+    if (resp.ok) {
+      return resp.json();
+    }
+    throw new Error(resp.statusText);
+  });
 
 export const createPerson = (
   hass: HomeAssistant,

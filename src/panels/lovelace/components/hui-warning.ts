@@ -9,11 +9,9 @@ export const createEntityNotFoundWarning = (
   entityId: string
 ) =>
   hass.config.state !== STATE_NOT_RUNNING
-    ? hass.localize(
-        "ui.panel.lovelace.warning.entity_not_found",
-        "entity",
-        entityId || "[empty]"
-      )
+    ? hass.localize("ui.panel.lovelace.warning.entity_not_found", {
+        entity: entityId || "[empty]",
+      })
     : hass.localize("ui.panel.lovelace.warning.starting");
 
 @customElement("hui-warning")

@@ -57,7 +57,7 @@ class HassioCreateBackupDialog extends LitElement {
         )}
       >
         ${this._creatingBackup
-          ? html`<ha-circular-progress active></ha-circular-progress>`
+          ? html`<ha-circular-progress indeterminate></ha-circular-progress>`
           : html`<supervisor-backup-content
               .hass=${this.hass}
               .supervisor=${this._dialogParams.supervisor}

@@ -108,7 +108,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               ></state-badge>
               ${this.narrow && entity.attributes.in_progress
                 ? html`<ha-circular-progress
-                    active
+                    indeterminate
                     size="small"
                     slot="graphic"
                     class="absolute"
@@ -128,7 +128,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               ${!this.narrow
                 ? entity.attributes.in_progress
                   ? html`<ha-circular-progress
-                      active
+                      indeterminate
                       size="small"
                       slot="meta"
                     ></ha-circular-progress>`

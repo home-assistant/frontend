@@ -1,18 +1,18 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import { computeGroupDomain, GroupEntity } from "../../../data/group";
+import { GroupEntity, computeGroupDomain } from "../../../data/group";
 import "../../../state-summary/state-card-content";
 import { HomeAssistant } from "../../../types";
-import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 import {
   domainMoreInfoType,
   importMoreInfoControl,

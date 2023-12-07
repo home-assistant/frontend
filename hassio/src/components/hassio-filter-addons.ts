@@ -6,7 +6,7 @@ export function filterAndSort(addons: StoreAddon[], filter: string) {
   const options: IFuseOptions<StoreAddon> = {
     keys: ["name", "description", "slug"],
     isCaseSensitive: false,
-    minMatchCharLength: 2,
+    minMatchCharLength: Math.min(filter.length, 2),
     threshold: 0.2,
   };
   const fuse = new Fuse(addons, options);

@@ -1,3 +1,4 @@
+import "element-internals-polyfill";
 import { MdInputChip } from "@material/web/chips/input-chip";
 import { css } from "lit";
 import { customElement } from "lit/decorators";

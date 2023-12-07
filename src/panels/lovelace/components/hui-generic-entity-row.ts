@@ -105,50 +105,57 @@ class HuiGenericEntityRow extends LitElement {
                     (this.config.secondary_info === "entity-id"
                       ? stateObj.entity_id
                       : this.config.secondary_info === "last-changed"
-                      ? html`
-                          <ha-relative-time
-                            .hass=${this.hass}
-                            .datetime=${stateObj.last_changed}
-                            capitalize
-                          ></ha-relative-time>
-                        `
-                      : this.config.secondary_info === "last-updated"
-                      ? html`
-                          <ha-relative-time
-                            .hass=${this.hass}
-                            .datetime=${stateObj.last_updated}
-                            capitalize
-                          ></ha-relative-time>
-                        `
-                      : this.config.secondary_info === "last-triggered"
-                      ? stateObj.attributes.last_triggered
                         ? html`
                             <ha-relative-time
                               .hass=${this.hass}
-                              .datetime=${stateObj.attributes.last_triggered}
+                              .datetime=${stateObj.last_changed}
                               capitalize
                             ></ha-relative-time>
                           `
-                        : this.hass.localize(
-                            "ui.panel.lovelace.cards.entities.never_triggered"
-                          )
-                      : this.config.secondary_info === "position" &&
-                        stateObj.attributes.current_position !== undefined
-                      ? `${this.hass.localize("ui.card.cover.position")}: ${
-                          stateObj.attributes.current_position
-                        }`
-                      : this.config.secondary_info === "tilt-position" &&
-                        stateObj.attributes.current_tilt_position !== undefined
-                      ? `${this.hass.localize(
-                          "ui.card.cover.tilt_position"
-                        )}: ${stateObj.attributes.current_tilt_position}`
-                      : this.config.secondary_info === "brightness" &&
-                        stateObj.attributes.brightness
-                      ? html`${Math.round(
-                          (stateObj.attributes.brightness / 255) * 100
-                        )}
-                        %`
-                      : "")}
+                        : this.config.secondary_info === "last-updated"
+                          ? html`
+                              <ha-relative-time
+                                .hass=${this.hass}
+                                .datetime=${stateObj.last_updated}
+                                capitalize
+                              ></ha-relative-time>
+                            `
+                          : this.config.secondary_info === "last-triggered"
+                            ? stateObj.attributes.last_triggered
+                              ? html`
+                                  <ha-relative-time
+                                    .hass=${this.hass}
+                                    .datetime=${stateObj.attributes
+                                      .last_triggered}
+                                    capitalize
+                                  ></ha-relative-time>
+                                `
+                              : this.hass.localize(
+                                  "ui.panel.lovelace.cards.entities.never_triggered"
+                                )
+                            : this.config.secondary_info === "position" &&
+                                stateObj.attributes.current_position !==
+                                  undefined
+                              ? `${this.hass.localize(
+                                  "ui.card.cover.position"
+                                )}: ${stateObj.attributes.current_position}`
+                              : this.config.secondary_info ===
+                                    "tilt-position" &&
+                                  stateObj.attributes.current_tilt_position !==
+                                    undefined
+                                ? `${this.hass.localize(
+                                    "ui.card.cover.tilt_position"
+                                  )}: ${
+                                    stateObj.attributes.current_tilt_position
+                                  }`
+                                : this.config.secondary_info === "brightness" &&
+                                    stateObj.attributes.brightness
+                                  ? html`${Math.round(
+                                      (stateObj.attributes.brightness / 255) *
+                                        100
+                                    )}
+                                    %`
+                                  : "")}
                   </div>
                 `
               : ""}

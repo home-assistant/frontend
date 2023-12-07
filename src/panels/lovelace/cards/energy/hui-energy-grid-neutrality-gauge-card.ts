@@ -1,7 +1,14 @@
 import { mdiInformation } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-card";
@@ -18,6 +25,7 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGridGaugeCardConfig } from "../types";
+import { hasConfigChanged } from "../../common/has-changed";
 
 const LEVELS: LevelDefinition[] = [
   { level: -1, stroke: "var(--energy-grid-consumption-color)" },
@@ -53,6 +61,14 @@ class HuiEnergyGridGaugeCard
 
   public setConfig(config: EnergyGridGaugeCardConfig): void {
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return (
+      hasConfigChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
   }
 
   protected render() {

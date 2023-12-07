@@ -1,5 +1,6 @@
 import { css } from "lit";
 import { customElement } from "lit/decorators";
+import "element-internals-polyfill";
 import { MdOutlinedButton } from "@material/web/button/outlined-button";
 
 @customElement("ha-outlined-button")

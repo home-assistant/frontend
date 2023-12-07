@@ -316,14 +316,14 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                       ></hui-timestamp-display>
                     `
                   : entityConf.show_last_changed
-                  ? html`
-                      <ha-relative-time
-                        .hass=${this.hass}
-                        .datetime=${stateObj.last_changed}
-                        capitalize
-                      ></ha-relative-time>
-                    `
-                  : this.hass!.formatEntityState(stateObj)}
+                    ? html`
+                        <ha-relative-time
+                          .hass=${this.hass}
+                          .datetime=${stateObj.last_changed}
+                          capitalize
+                        ></ha-relative-time>
+                      `
+                    : this.hass!.formatEntityState(stateObj)}
               </div>
             `
           : ""}

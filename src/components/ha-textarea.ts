@@ -3,6 +3,7 @@ import { styles as textfieldStyles } from "@material/mwc-textfield/mwc-textfield
 import { styles as textareaStyles } from "@material/mwc-textarea/mwc-textarea.css";
 import { css, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
+import { mainWindow } from "../common/dom/get_main_window";
 
 @customElement("ha-textarea")
 export class HaTextArea extends TextAreaBase {
@@ -11,7 +12,7 @@ export class HaTextArea extends TextAreaBase {
   firstUpdated() {
     super.firstUpdated();
 
-    this.setAttribute("dir", document.dir);
+    this.setAttribute("dir", mainWindow.document.dir);
   }
 
   updated(changedProperties: PropertyValues) {

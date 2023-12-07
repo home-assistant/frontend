@@ -7,7 +7,11 @@ import type { ColorTempSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-labeled-slider";
 import { generateColorTemperatureGradient } from "../../dialogs/more-info/components/lights/light-color-temp-picker";
-import { mired2kelvin } from "../../common/color/convert-light-color";
+import {
+  DEFAULT_MAX_KELVIN,
+  DEFAULT_MIN_KELVIN,
+  mired2kelvin,
+} from "../../common/color/convert-light-color";
 
 @customElement("ha-selector-color_temp")
 export class HaColorTempSelector extends LitElement {
@@ -26,10 +30,31 @@ export class HaColorTempSelector extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   protected render() {
-    const min = this.selector.color_temp?.min_mireds ?? 153;
-    const max = this.selector.color_temp?.max_mireds ?? 500;
+    let min: number;
+    let max: number;
 
-    const gradient = this._generateTemperatureGradient(min, max);
+    switch (this.selector.color_temp?.unit) {
+      case "kelvin":
+        min = this.selector.color_temp?.min ?? DEFAULT_MIN_KELVIN;
+        max = this.selector.color_temp?.max ?? DEFAULT_MAX_KELVIN;
+        break;
+      case "mired":
+      default:
+        min =
+          this.selector.color_temp?.min ??
+          this.selector.color_temp?.min_mireds ??
+          153;
+        max =
+          this.selector.color_temp?.max ??
+          this.selector.color_temp?.max_mireds ??
+          500;
+        break;
+    }
+    const gradient = this._generateTemperatureGradient(
+      this.selector.color_temp?.unit ?? "mired",
+      min,
+      max
+    );
 
     return html`
       <ha-labeled-slider
@@ -51,8 +76,22 @@ export class HaColorTempSelector extends LitElement {
   }
 
   private _generateTemperatureGradient = memoizeOne(
-    (min: number, max: number) =>
-      generateColorTemperatureGradient(mired2kelvin(min), mired2kelvin(max))
+    (unit: "kelvin" | "mired", min: number, max: number) => {
+      let gradient;
+
+      switch (unit) {
+        case "kelvin":
+          gradient = generateColorTemperatureGradient(min, max);
+          break;
+        case "mired":
+          gradient = generateColorTemperatureGradient(
+            mired2kelvin(min),
+            mired2kelvin(max)
+          );
+      }
+
+      return gradient;
+    }
   );
 
   private _valueChanged(ev: CustomEvent) {
