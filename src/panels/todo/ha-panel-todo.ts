@@ -46,7 +46,10 @@ import { HuiErrorCard } from "../lovelace/cards/hui-error-card";
 import { createCardElement } from "../lovelace/create-element/create-card-element";
 import { LovelaceCard } from "../lovelace/types";
 import { navigate } from "../../common/navigate";
-import { createSearchParam } from "../../common/url/search-params";
+import {
+  createSearchParam,
+  extractSearchParam,
+} from "../../common/url/search-params";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 
 @customElement("ha-panel-todo")
@@ -105,18 +108,21 @@ class PanelTodo extends LitElement {
 
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
+
+      const urlEntityId = extractSearchParam("entity_id");
+      if (urlEntityId) {
+        this._entityId = urlEntityId;
+      } else {
+        if (this._entityId && !(this._entityId in this.hass.states)) {
+          this._entityId = undefined;
+        }
+        if (!this._entityId) {
+          this._entityId = getTodoLists(this.hass)[0]?.entity_id;
+        }
+      }
     }
 
-    if (!this.hasUpdated && !this._entityId) {
-      this._entityId = getTodoLists(this.hass)[0]?.entity_id;
-    } else if (!this.hasUpdated) {
-      this._setupTodoElement();
-    }
-  }
-
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
-    if (changedProperties.has("_entityId")) {
+    if (changedProperties.has("_entityId") || !this.hasUpdated) {
       this._setupTodoElement();
     }
 
