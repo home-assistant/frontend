@@ -97,6 +97,12 @@ export class HaStateControlClimateHumidity extends LitElement {
       `;
     }
 
+    if (!this._targetHumidity) {
+      return html`
+        <p class="label">${this.hass.formatEntityState(this.stateObj)}</p>
+      `;
+    }
+
     return html`
       <p class="label">
         ${this.hass.localize("ui.card.climate.humidity_target")}

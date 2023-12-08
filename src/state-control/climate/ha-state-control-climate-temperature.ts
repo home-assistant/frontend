@@ -164,14 +164,17 @@ export class HaStateControlClimateTemperature extends LitElement {
     }
 
     if (
-      !supportsFeature(
+      (!supportsFeature(
         this.stateObj,
         ClimateEntityFeature.TARGET_TEMPERATURE
-      ) &&
-      !supportsFeature(
+      ) ||
+        this._targetTemperature.value === null) &&
+      (!supportsFeature(
         this.stateObj,
         ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
-      )
+      ) ||
+        this._targetTemperature.low === null ||
+        this._targetTemperature.high === null)
     ) {
       return html`
         <p class="label">${this.hass.formatEntityState(this.stateObj)}</p>

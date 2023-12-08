@@ -107,7 +107,8 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
       !supportsFeature(
         this.stateObj,
         WaterHeaterEntityFeature.TARGET_TEMPERATURE
-      )
+      ) ||
+      !this._targetTemperature
     ) {
       return html`
         <p class="label">${this.hass.formatEntityState(this.stateObj)}</p>
