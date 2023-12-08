@@ -5280,7 +5280,12 @@
               },
               "climate-hvac-modes": {
                 "label": "Climate HVAC modes",
-                "hvac_modes": "HVAC modes"
+                "hvac_modes": "HVAC modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                }
               },
               "climate-preset-modes": {
                 "label": "Climate preset modes",
