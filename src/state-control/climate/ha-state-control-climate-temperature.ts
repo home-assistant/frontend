@@ -185,11 +185,19 @@ export class HaStateControlClimateTemperature extends LitElement {
       "hvac_action"
     );
 
+    if (action && action !== "off" && action !== "idle") {
+      return html`
+      <p class="label">
+        ${actionLabel}
+      </p>
+    `;
+    }
+
     return html`
       <p class="label">
-        ${action && action !== "off" && action !== "idle"
-          ? actionLabel
-          : this.hass.localize("ui.card.climate.target")}
+        ${this._targetTemperature.value
+          ? this.hass.localize("ui.card.climate.target")
+          : "" }
       </p>
     `;
   }
