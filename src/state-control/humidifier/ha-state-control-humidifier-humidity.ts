@@ -112,7 +112,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
           ? actionLabel
           : this._targetHumidity
             ? this.hass.localize("ui.card.humidifier.target")
-            : this.hass.formatEntityState(this.stateObj, UNAVAILABLE)}
+            : this.hass.formatEntityState(this.stateObj)}
       </p>
     `;
   }
