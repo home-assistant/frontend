@@ -108,9 +108,9 @@ class PanelTodo extends LitElement {
     }
 
     if (!this.hasUpdated) {
-      const searchParams = new URLSearchParams(location.search);
-      if (searchParams.has("entity_id")) {
-        this._entityId = searchParams.get("entity_id")!;
+      const urlEntityId = extractSearchParam("entity_id");
+      if (urlEntityId) {
+        this._entityId = urlEntityId;
       } else if (!this._entityId) {
         this._entityId = getTodoLists(this.hass)[0]?.entity_id;
       } else {
