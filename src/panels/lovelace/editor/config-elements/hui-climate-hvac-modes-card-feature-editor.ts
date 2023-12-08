@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { FormatEntityStateFunc } from "../../../../common/translations/entity-state";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import { HVAC_MODES } from "../../../../data/climate";
@@ -30,8 +31,27 @@ export class HuiClimateHvacModesCardFeatureEditor
   }
 
   private _schema = memoizeOne(
-    (formatEntityState: FormatEntityStateFunc, stateObj?: HassEntity) =>
+    (
+      localize: LocalizeFunc,
+      formatEntityState: FormatEntityStateFunc,
+      stateObj?: HassEntity
+    ) =>
       [
+        {
+          name: "style",
+          selector: {
+            select: {
+              multiple: false,
+              mode: "list",
+              options: ["dropdown", "icons"].map((mode) => ({
+                value: mode,
+                label: localize(
+                  `ui.panel.lovelace.editor.features.types.climate-preset-modes.style_list.${mode}`
+                ),
+              })),
+            },
+          },
+        },
         {
           name: "hvac_modes",
           selector: {
@@ -59,12 +79,22 @@ export class HuiClimateHvacModesCardFeatureEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const schema = this._schema(this.hass.formatEntityState, stateObj);
+    const data: ClimateHvacModesCardFeatureConfig = {
+      style: "icons",
+      hvac_modes: [],
+      ...this._config,
+    };
+
+    const schema = this._schema(
+      this.hass.localize,
+      this.hass.formatEntityState,
+      stateObj
+    );
 
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
@@ -81,13 +111,12 @@ export class HuiClimateHvacModesCardFeatureEditor
   ) => {
     switch (schema.name) {
       case "hvac_modes":
+      case "style":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.features.types.climate-hvac-modes.${schema.name}`
         );
       default:
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}`
-        );
+        return "";
     }
   };
 }
