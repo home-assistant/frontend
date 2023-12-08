@@ -37,6 +37,7 @@ export interface AlarmModesCardFeatureConfig {
 
 export interface ClimateHvacModesCardFeatureConfig {
   type: "climate-hvac-modes";
+  style?: "dropdown" | "icons";
   hvac_modes?: HvacMode[];
 }
 
