@@ -5,6 +5,10 @@ import DateRangePicker from "vue2-daterange-picker";
 // @ts-ignore
 import dateRangePickerStyles from "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import { fireEvent } from "../common/dom/fire_event";
+import {
+  localizeWeekdays,
+  localizeMonths,
+} from "../common/datetime/localize_date";
 
 // Set the current date to the left picker instead of the right picker because the right is hidden
 const CustomDateRangePicker = Vue.extend({
@@ -63,33 +67,9 @@ const Component = Vue.extend({
       type: Boolean,
       default: false,
     },
-    weekdaySu: {
+    language: {
       type: String,
-      default: "Su",
-    },
-    weekdayMo: {
-      type: String,
-      default: "Mo",
-    },
-    weekdayTu: {
-      type: String,
-      default: "Tu",
-    },
-    weekdayWe: {
-      type: String,
-      default: "We",
-    },
-    weekdayTh: {
-      type: String,
-      default: "Th",
-    },
-    weekdayFr: {
-      type: String,
-      default: "Fr",
-    },
-    weekdaySa: {
-      type: String,
-      default: "Sa",
+      default: "en",
     },
   },
   render(createElement) {
@@ -105,15 +85,8 @@ const Component = Vue.extend({
         ranges: this.ranges ? {} : false,
         "locale-data": {
           firstDay: this.firstDay,
-          daysOfWeek: [
-            this.weekdaySu,
-            this.weekdayMo,
-            this.weekdayTu,
-            this.weekdayWe,
-            this.weekdayTh,
-            this.weekdayFr,
-            this.weekdaySa,
-          ],
+          daysOfWeek: localizeWeekdays(this.language, true),
+          monthNames: localizeMonths(this.language, false),
         },
       },
       model: {
@@ -199,7 +172,7 @@ class DateRangePickerElement extends WrappedElement {
             color: var(--secondary-text-color);
             border-radius: 0;
             outline: none;
-            width: 32px;
+            min-width: 32px;
             height: 32px;
           }
           .daterangepicker td.off,
@@ -275,6 +248,9 @@ class DateRangePickerElement extends WrappedElement {
           }
           .daterangepicker .drp-calendar.left {
             padding: 8px;
+            width: unset;
+            max-width: unset;
+            min-width: 270px;
           }
           .daterangepicker.show-calendar .ranges {
             margin-top: 0;
