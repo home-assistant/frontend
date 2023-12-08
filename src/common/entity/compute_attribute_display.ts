@@ -1,5 +1,6 @@
 import { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import {
+  DOMAIN_ATTRIBUTES_FORMATERS,
   DOMAIN_ATTRIBUTES_UNITS,
   TEMPERATURE_ATTRIBUTES,
 } from "../../data/entity_attributes";
@@ -14,11 +15,10 @@ import { formatNumber } from "../number/format_number";
 import { capitalizeFirstLetter } from "../string/capitalize-first-letter";
 import { isDate } from "../string/is_date";
 import { isTimestamp } from "../string/is_timestamp";
-import { blankBeforePercent } from "../translations/blank_before_percent";
+import { blankBeforeUnit } from "../translations/blank_before_unit";
 import { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
 import { computeStateDomain } from "./compute_state_domain";
-import { blankBeforeUnit } from "../translations/blank_before_unit";
 
 export const computeAttributeValueDisplay = (
   localize: LocalizeFunc,
@@ -39,18 +39,17 @@ export const computeAttributeValueDisplay = (
 
   // Number value, return formatted number
   if (typeof attributeValue === "number") {
-    const formattedValue = formatNumber(attributeValue, locale);
-
     const domain = computeStateDomain(stateObj);
+
+    const formatter = DOMAIN_ATTRIBUTES_FORMATERS[domain]?.[attribute];
+
+    const formattedValue = formatter
+      ? formatter(attributeValue, locale)
+      : formatNumber(attributeValue, locale);
 
     let unit = DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] as
       | string
       | undefined;
-
-    if (domain === "light" && attribute === "brightness") {
-      const percentage = Math.round((attributeValue / 255) * 100);
-      return `${percentage}${blankBeforePercent(locale)}%`;
-    }
 
     if (domain === "weather") {
       unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
