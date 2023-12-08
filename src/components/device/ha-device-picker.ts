@@ -10,7 +10,6 @@ import {
   ScorableTextItem,
   fuzzyFilterSort,
 } from "../../common/string/filter/sequence-matching";
-import { AreaRegistryEntry } from "../../data/area_registry";
 import {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
@@ -102,7 +101,7 @@ export class HaDevicePicker extends LitElement {
   private _getDevices = memoizeOne(
     (
       devices: DeviceRegistryEntry[],
-      areas: AreaRegistryEntry[],
+      areas: HomeAssistant["areas"],
       entities: EntityRegistryDisplayEntry[],
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
@@ -132,8 +131,6 @@ export class HaDevicePicker extends LitElement {
       ) {
         deviceEntityLookup = getDeviceEntityDisplayLookup(entities);
       }
-
-      const areaLookup = areas;
 
       let inputDevices = devices.filter(
         (device) => device.id === this.value || !device.disabled_by
@@ -224,8 +221,8 @@ export class HaDevicePicker extends LitElement {
           id: device.id,
           name: name,
           area:
-            device.area_id && areaLookup[device.area_id]
-              ? areaLookup[device.area_id].name
+            device.area_id && areas[device.area_id]
+              ? areas[device.area_id].name
               : this.hass.localize("ui.components.device-picker.no_area"),
           strings: [name || ""],
         };
@@ -267,7 +264,7 @@ export class HaDevicePicker extends LitElement {
       this._init = true;
       const devices = this._getDevices(
         Object.values(this.hass.devices),
-        Object.values(this.hass.areas),
+        this.hass.areas,
         Object.values(this.hass.entities),
         this.includeDomains,
         this.excludeDomains,
