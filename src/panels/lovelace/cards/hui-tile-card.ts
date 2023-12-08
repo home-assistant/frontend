@@ -310,24 +310,22 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     if (!stateObj) {
       return html`
         <ha-card>
-          <div class="tile">
-            <div class="content ${classMap(contentClasses)}">
-              <div class="icon-container">
-                <ha-tile-icon class="icon" .iconPath=${mdiHelp}></ha-tile-icon>
-                <ha-tile-badge
-                  class="badge"
-                  .iconPath=${mdiExclamationThick}
-                  style=${styleMap({
-                    "--tile-badge-background-color": `var(--red-color)`,
-                  })}
-                ></ha-tile-badge>
-              </div>
-              <ha-tile-info
-                class="info"
-                .primary=${entityId}
-                secondary=${this.hass.localize("ui.card.tile.not_found")}
-              ></ha-tile-info>
+          <div class="content ${classMap(contentClasses)}">
+            <div class="icon-container">
+              <ha-tile-icon class="icon" .iconPath=${mdiHelp}></ha-tile-icon>
+              <ha-tile-badge
+                class="badge"
+                .iconPath=${mdiExclamationThick}
+                style=${styleMap({
+                  "--tile-badge-background-color": `var(--red-color)`,
+                })}
+              ></ha-tile-badge>
             </div>
+            <ha-tile-info
+              class="info"
+              .primary=${entityId}
+              secondary=${this.hass.localize("ui.card.tile.not_found")}
+            ></ha-tile-info>
           </div>
         </ha-card>
       `;
@@ -359,73 +357,71 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
-        <div class="tile">
+        <div
+          class="background"
+          @action=${this._handleAction}
+          .actionHandler=${actionHandler({
+            hasHold: hasAction(this._config!.hold_action),
+            hasDoubleClick: hasAction(this._config!.double_tap_action),
+          })}
+          role="button"
+          tabindex="0"
+          aria-labelledby="info"
+          @mousedown=${this.handleRippleActivate}
+          @mouseup=${this.handleRippleDeactivate}
+          @mouseenter=${this.handleRippleMouseEnter}
+          @mouseleave=${this.handleRippleMouseLeave}
+          @touchstart=${this.handleRippleActivate}
+          @touchend=${this.handleRippleDeactivate}
+          @touchcancel=${this.handleRippleDeactivate}
+        >
+          ${this._shouldRenderRipple
+            ? html`<mwc-ripple></mwc-ripple>`
+            : nothing}
+        </div>
+        <div class="content ${classMap(contentClasses)}">
           <div
-            class="background"
-            @action=${this._handleAction}
-            .actionHandler=${actionHandler({
-              hasHold: hasAction(this._config!.hold_action),
-              hasDoubleClick: hasAction(this._config!.double_tap_action),
-            })}
+            class="icon-container"
             role="button"
             tabindex="0"
-            aria-labelledby="info"
-            @mousedown=${this.handleRippleActivate}
-            @mouseup=${this.handleRippleDeactivate}
-            @mouseenter=${this.handleRippleMouseEnter}
-            @mouseleave=${this.handleRippleMouseLeave}
-            @touchstart=${this.handleRippleActivate}
-            @touchend=${this.handleRippleDeactivate}
-            @touchcancel=${this.handleRippleDeactivate}
+            @action=${this._handleIconAction}
+            .actionHandler=${actionHandler()}
           >
-            ${this._shouldRenderRipple
-              ? html`<mwc-ripple></mwc-ripple>`
+            ${imageUrl
+              ? html`
+                  <ha-tile-image
+                    class="icon"
+                    .imageUrl=${imageUrl}
+                  ></ha-tile-image>
+                `
+              : html`
+                  <ha-tile-icon
+                    data-domain=${ifDefined(domain)}
+                    data-state=${ifDefined(stateObj?.state)}
+                    class="icon"
+                    .icon=${icon}
+                    .iconPath=${iconPath}
+                  ></ha-tile-icon>
+                `}
+            ${badge
+              ? html`
+                  <ha-tile-badge
+                    class="badge"
+                    .icon=${badge.icon}
+                    .iconPath=${badge.iconPath}
+                    style=${styleMap({
+                      "--tile-badge-background-color": badge.color,
+                    })}
+                  ></ha-tile-badge>
+                `
               : nothing}
           </div>
-          <div class="content ${classMap(contentClasses)}">
-            <div
-              class="icon-container"
-              role="button"
-              tabindex="0"
-              @action=${this._handleIconAction}
-              .actionHandler=${actionHandler()}
-            >
-              ${imageUrl
-                ? html`
-                    <ha-tile-image
-                      class="icon"
-                      .imageUrl=${imageUrl}
-                    ></ha-tile-image>
-                  `
-                : html`
-                    <ha-tile-icon
-                      data-domain=${ifDefined(domain)}
-                      data-state=${ifDefined(stateObj?.state)}
-                      class="icon"
-                      .icon=${icon}
-                      .iconPath=${iconPath}
-                    ></ha-tile-icon>
-                  `}
-              ${badge
-                ? html`
-                    <ha-tile-badge
-                      class="badge"
-                      .icon=${badge.icon}
-                      .iconPath=${badge.iconPath}
-                      style=${styleMap({
-                        "--tile-badge-background-color": badge.color,
-                      })}
-                    ></ha-tile-badge>
-                  `
-                : nothing}
-            </div>
-            <ha-tile-info
-              id="info"
-              class="info"
-              .primary=${name}
-              .secondary=${localizedState}
-            ></ha-tile-info>
-          </div>
+          <ha-tile-info
+            id="info"
+            class="info"
+            .primary=${name}
+            .secondary=${localizedState}
+          ></ha-tile-info>
         </div>
         <hui-card-features
           .hass=${this.hass}
@@ -472,7 +468,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         bottom: 0;
         right: 0;
         border-radius: var(--ha-card-border-radius, 12px);
-        inset: calc(-1 * var(--ha-card-border-width, 1px));
+        margin: calc(-1 * var(--ha-card-border-width, 1px));
         overflow: hidden;
       }
       .content {
