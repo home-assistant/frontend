@@ -155,8 +155,8 @@ export class HaMap extends ReactiveElement {
   }
 
   private _updateMapStyle(): void {
-    const darkMode = this.darkMode ?? this.hass.themes.darkMode ?? false;
-    const forcedDark = this.darkMode ?? false;
+    const darkMode = this.hass.themes.darkMode ?? false;
+    const forcedDark = this.darkMode ?? this.hass.themes.darkMode ?? false;
     const map = this.shadowRoot!.getElementById("map");
     map!.classList.toggle("dark", darkMode);
     map!.classList.toggle("forced-dark", forcedDark);
@@ -522,7 +522,7 @@ export class HaMap extends ReactiveElement {
         filter: var(--map-filter);
       }
       .dark .leaflet-bar a {
-        background-color: var(--card-background-color, #1c1c1c);
+        background-color: #1c1c1c;
         color: #ffffff;
       }
       .leaflet-marker-draggable {
