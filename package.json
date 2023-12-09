@@ -237,7 +237,7 @@
     "tar": "6.2.0",
     "terser-webpack-plugin": "5.3.9",
     "ts-lit-plugin": "2.0.1",
-    "typescript": "5.3.2",
+    "typescript": "5.3.3",
     "vinyl-buffer": "1.0.1",
     "vinyl-source-stream": "2.0.0",
     "webpack": "5.89.0",
