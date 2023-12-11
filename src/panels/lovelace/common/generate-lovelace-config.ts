@@ -526,7 +526,7 @@ export const generateDefaultViewConfig = (
   const areaCards: LovelaceCardConfig[] = [];
 
   const sortedAreas = Object.keys(splittedByAreaDevice.areasWithEntities).sort(
-    areaCompare(areaEntries, areasPrefs?.order ?? [])
+    areaCompare(areaEntries, areasPrefs?.order)
   );
 
   for (const areaId of sortedAreas) {
