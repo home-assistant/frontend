@@ -90,6 +90,10 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "timer",
+    showElement: true,
+  },
+  {
     type: "weather-forecast",
     showElement: true,
   },
