@@ -597,9 +597,9 @@ export class HaServiceControl extends LitElement {
           );
         }
         target = {
-          entity_id: targetEntities,
-          device_id: targetDevices,
-          area_id: targetAreas,
+          ...(targetEntities.length ? { entity_id: targetEntities } : {}),
+          ...(targetDevices.length ? { device_id: targetDevices } : {}),
+          ...(targetAreas.length ? { area_id: targetAreas } : {}),
         };
       }
     }
