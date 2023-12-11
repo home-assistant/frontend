@@ -70,6 +70,7 @@ import { binarySensorIcon } from "./binary_sensor_icon";
 import { coverIcon } from "./cover_icon";
 import { numberIcon } from "./number_icon";
 import { sensorIcon } from "./sensor_icon";
+import { valveIcon } from "./valve_icon";
 
 export const domainIcon = (
   domain: string,
@@ -273,6 +274,9 @@ export const domainIconWithoutDefault = (
           ? mdiPackageDown
           : mdiPackageUp
         : mdiPackage;
+
+    case "valve":
+      return valveIcon(compareState);
 
     case "water_heater":
       return compareState === "off" ? mdiWaterBoilerOff : mdiWaterBoiler;
