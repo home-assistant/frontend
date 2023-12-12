@@ -1,45 +1,45 @@
 Build:
-- changed-files:
-  - any-glob-to-any-file:
-    - build-scripts/**
-    - .browserslistrc
-    - gulpfile.js
+  - changed-files:
+      - any-glob-to-any-file:
+          - build-scripts/**
+          - .browserslistrc
+          - gulpfile.js
 
 Cast:
-- changed-files:
-  - any-glob-to-any-file:
-    - cast/src/**
-    - src/cast/**
+  - changed-files:
+      - any-glob-to-any-file:
+          - cast/src/**
+          - src/cast/**
 
 Demo:
-- changed-files:
-  - any-glob-to-any-file:
-    - demo/src/**
-    - src/fake_data/**
+  - changed-files:
+      - any-glob-to-any-file:
+          - demo/src/**
+          - src/fake_data/**
 
 Design:
-- changed-files:
-  - any-glob-to-any-file:
-    - gallery/src/**
-    - src/fake_data/**
+  - changed-files:
+      - any-glob-to-any-file:
+          - gallery/src/**
+          - src/fake_data/**
 
 Dependencies:
-- changed-files:
-  - any-glob-to-any-file:
-    - package.json
-    - renovate.json
-    - yarn.lock
-    - .yarn/**
-    - .yarnrc.yml
-    - .nvmrc
+  - changed-files:
+      - any-glob-to-any-file:
+          - package.json
+          - renovate.json
+          - yarn.lock
+          - .yarn/**
+          - .yarnrc.yml
+          - .nvmrc
 
 GitHub Actions:
-- changed-files:
-  - any-glob-to-any-file:
-    - .github/workflows/**
-    - .github/*.yml
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/workflows/**
+          - .github/*.yml
 
 Supervisor:
-- changed-files:
-  - any-glob-to-any-file:
-    - hassio/src/**
+  - changed-files:
+      - any-glob-to-any-file:
+          - hassio/src/**
