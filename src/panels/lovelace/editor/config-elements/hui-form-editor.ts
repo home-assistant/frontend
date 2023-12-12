@@ -9,6 +9,7 @@ import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceGenericElementEditor } from "../../types";
 import { configElementStyle } from "./config-elements-style";
+import { computeInitialHaFormData } from "../../../../components/ha-form/compute-initial-ha-form-data";
 
 @customElement("hui-form-editor")
 export class HuiFormEditor
@@ -27,7 +28,7 @@ export class HuiFormEditor
 
   public setConfig(config: LovelaceCardConfig): void {
     this.assertConfig(config);
-    this._config = config;
+    this._config = { ...computeInitialHaFormData(this.schema), ...config };
   }
 
   protected render() {
