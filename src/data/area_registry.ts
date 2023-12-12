@@ -128,7 +128,7 @@ export const areaCompare =
   (entries?: HomeAssistant["areas"], order?: string[]) =>
   (a: string, b: string) => {
     const indexA = order ? order.indexOf(a) : -1;
-    const indexB = order ? order.indexOf(b) : 1;
+    const indexB = order ? order.indexOf(b) : -1;
     if (indexA === -1 && indexB === -1) {
       const nameA = entries?.[a]?.name ?? a;
       const nameB = entries?.[b]?.name ?? b;
