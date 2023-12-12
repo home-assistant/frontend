@@ -101,7 +101,8 @@ export class StatisticsChart extends LitElement {
       changedProps.has("unit") ||
       changedProps.has("period") ||
       changedProps.has("chartType") ||
-      changedProps.has("logarithmicScale")
+      changedProps.has("logarithmicScale") ||
+      changedProps.has("hideLegend")
     ) {
       this._createOptions();
     }
