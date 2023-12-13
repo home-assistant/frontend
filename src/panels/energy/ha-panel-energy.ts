@@ -141,6 +141,7 @@ class PanelEnergy extends LitElement {
           padding-inline-start: 32px;
           --disabled-text-color: rgba(var(--rgb-text-primary-color), 0.5);
           direction: var(--direction);
+          --date-range-picker-max-height: calc(100vh - 80px);
         }
         :host([narrow]) hui-energy-period-selector {
           padding-left: 0px;

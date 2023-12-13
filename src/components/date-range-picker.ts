@@ -145,6 +145,8 @@ class DateRangePickerElement extends WrappedElement {
             );
             color: var(--primary-text-color);
             min-width: initial !important;
+            max-height: var(--date-range-picker-max-height);
+            overflow-y: auto;
           }
           .daterangepicker:before {
             display: none;
