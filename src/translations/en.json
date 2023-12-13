@@ -4057,8 +4057,6 @@
             "cancel_inclusion_exclusion": "Stop searching"
           },
           "dashboard": {
-            "header": "Manage your Z-Wave network",
-            "introduction": "Manage your Z-Wave network and Z-Wave devices",
             "driver_version": "Driver version",
             "server_version": "Server version",
             "home_id": "Home ID",
