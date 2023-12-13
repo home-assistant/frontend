@@ -125,10 +125,6 @@ export class HatGraphNode extends LitElement {
       :host([notEnabled]:hover) circle {
         --stroke-clr: var(--disabled-hover-clr);
       }
-      svg {
-        width: 100%;
-        height: 100%;
-      }
       circle,
       path.connector {
         stroke: var(--stroke-clr);
