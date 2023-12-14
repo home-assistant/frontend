@@ -6,19 +6,23 @@ import {
   array,
   assert,
   assign,
+  boolean,
   object,
   optional,
   string,
 } from "superstruct";
 import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { ThermostatCardConfig } from "../../cards/types";
 import {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
+import type { ThermostatCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
@@ -37,6 +41,7 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     name: optional(string()),
     theme: optional(string()),
+    use_current_as_primary: optional(boolean()),
     features: optional(array(any())),
   })
 );
@@ -51,7 +56,13 @@ const SCHEMA = [
       { name: "theme", selector: { theme: {} } },
     ],
   },
-] as const;
+  {
+    name: "use_current_as_primary",
+    selector: {
+      boolean: {},
+    },
+  },
+] as const satisfies readonly HaFormSchema[];
 
 @customElement("hui-thermostat-card-editor")
 export class HuiThermostatCardEditor
@@ -175,9 +186,9 @@ export class HuiThermostatCardEditor
   }
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
-    if (schema.name === "entity") {
+    if (schema.name === "use_current_as_primary") {
       return this.hass!.localize(
-        "ui.panel.lovelace.editor.card.generic.entity"
+        "ui.panel.lovelace.editor.card.thermostat.use_current_as_primary"
       );
     }
 

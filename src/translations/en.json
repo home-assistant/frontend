@@ -5189,7 +5189,8 @@
             },
             "thermostat": {
               "name": "Thermostat",
-              "description": "The Thermostat card gives control of your climate entity. Allowing you to change the temperature and mode of the entity."
+              "description": "The Thermostat card gives control of your climate entity. Allowing you to change the temperature and mode of the entity.",
+              "use_current_as_primary": "Use current temperature as primary information"
             },
             "tile": {
               "name": "Tile",
