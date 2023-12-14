@@ -1528,14 +1528,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:6.22.1, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0":
-  version: 6.22.1
-  resolution: "@codemirror/view@npm:6.22.1"
+"@codemirror/view@npm:6.22.2, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0":
+  version: 6.22.2
+  resolution: "@codemirror/view@npm:6.22.2"
   dependencies:
     "@codemirror/state": "npm:^6.1.4"
     style-mod: "npm:^4.1.0"
     w3c-keyname: "npm:^2.2.4"
-  checksum: 01688ece35683aaa6999bb0deae31e9f7825336906a1658150fdb6d1b8d060b672845bead9a0416a692c2e60926cdc88f525ed106d9c0284397c47f936cab26e
+  checksum: ddd75424e9bef556663f4bfa4f76c181bc80c8cb6fd12f910714f7d3cc6942a6732c569b9c69561d99b66852a8537870cf7306df9326558c642a95a0364fcf00
   languageName: node
   linkType: hard
 
@@ -2051,12 +2051,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@koa/cors@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@koa/cors@npm:4.0.0"
+"@koa/cors@npm:5.0.0":
+  version: 5.0.0
+  resolution: "@koa/cors@npm:5.0.0"
   dependencies:
     vary: "npm:^1.1.2"
-  checksum: 1509d98b72e321dda99a78b28626142a473533c84bde72b4ee7a76716bd91243765ec3d1790a214e4c5b4c398e72a6abace77f04dbcc7c499c955eed943494f0
+  checksum: 3a0e32fbc422a5f9a41540ce3b7499d46073ddb0e4e851394a74bac5ecd0eaa1f24a8f189b7bd6a50c5863788ae6945c52d990edf99fdd2151a4404f266fe2e7
   languageName: node
   linkType: hard
 
@@ -9606,7 +9606,7 @@ __metadata:
     "@codemirror/legacy-modes": "npm:6.3.3"
     "@codemirror/search": "npm:6.5.5"
     "@codemirror/state": "npm:6.3.3"
-    "@codemirror/view": "npm:6.22.1"
+    "@codemirror/view": "npm:6.22.2"
     "@egjs/hammerjs": "npm:2.0.17"
     "@formatjs/intl-datetimeformat": "npm:6.12.0"
     "@formatjs/intl-displaynames": "npm:6.6.4"
@@ -9622,7 +9622,7 @@ __metadata:
     "@fullcalendar/list": "npm:6.1.10"
     "@fullcalendar/luxon3": "npm:6.1.10"
     "@fullcalendar/timegrid": "npm:6.1.10"
-    "@koa/cors": "npm:4.0.0"
+    "@koa/cors": "npm:5.0.0"
     "@lezer/highlight": "npm:1.2.0"
     "@lit-labs/context": "npm:0.4.1"
     "@lit-labs/motion": "npm:1.0.6"
@@ -9763,7 +9763,7 @@ __metadata:
     object-hash: "npm:3.0.0"
     open: "npm:9.1.0"
     pinst: "npm:3.0.0"
-    prettier: "npm:3.1.0"
+    prettier: "npm:3.1.1"
     proxy-polyfill: "npm:0.3.2"
     punycode: "npm:2.3.1"
     qr-scanner: "npm:1.4.2"
@@ -9772,7 +9772,7 @@ __metadata:
     rollup: "npm:2.79.1"
     rollup-plugin-string: "npm:3.0.0"
     rollup-plugin-terser: "npm:7.0.2"
-    rollup-plugin-visualizer: "npm:5.10.0"
+    rollup-plugin-visualizer: "npm:5.11.0"
     rrule: "npm:2.8.1"
     serve-handler: "npm:6.1.5"
     sinon: "npm:17.0.1"
@@ -13254,12 +13254,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.1.0":
-  version: 3.1.0
-  resolution: "prettier@npm:3.1.0"
+"prettier@npm:3.1.1":
+  version: 3.1.1
+  resolution: "prettier@npm:3.1.1"
   bin:
     prettier: bin/prettier.cjs
-  checksum: e95e8f93c6b9aea2ac1e86bebe329bee90c8c50d9a23d1f593eba8d7f39b33b3641eb28785001505b6723c47895a5322ad12a2fb855b289cb7bae450ffc34425
+  checksum: 26a249f321b97d26c04483f1bf2eeb22e082a76f4222a2c922bebdc60111691aad4ec3979610e83942e0b956058ec361d9e9c81c185172264eb6db9aa678082b
   languageName: node
   linkType: hard
 
@@ -13937,9 +13937,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup-plugin-visualizer@npm:5.10.0":
-  version: 5.10.0
-  resolution: "rollup-plugin-visualizer@npm:5.10.0"
+"rollup-plugin-visualizer@npm:5.11.0":
+  version: 5.11.0
+  resolution: "rollup-plugin-visualizer@npm:5.11.0"
   dependencies:
     open: "npm:^8.4.0"
     picomatch: "npm:^2.3.1"
@@ -13952,7 +13952,7 @@ __metadata:
       optional: true
   bin:
     rollup-plugin-visualizer: dist/bin/cli.js
-  checksum: aa4ef8d2aae064b50a50168094db1337762d91bd0cd06206cfbc96a97adca45b7036dc1871eab7e70878111eeedb8164fe267f5cc56cd9eb4225ed71c8966aa6
+  checksum: 947238aa22706a47a4d3e8ce616855f0e5cb969ed9f61b9a268eaede0a86f461ecb38e27b4e6bf00f4b5e3f63677667f65e0d4af89a659a5160f74add1f192bb
   languageName: node
   linkType: hard
 
