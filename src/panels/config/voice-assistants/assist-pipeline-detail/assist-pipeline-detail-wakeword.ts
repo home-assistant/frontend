@@ -110,7 +110,10 @@ export class AssistPipelineDetailWakeWord extends LitElement {
                   `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.wakeword.no_wake_words`
                 )}
                 <a
-                  href=${documentationUrl(this.hass, "/docs/assist/")}
+                  href=${documentationUrl(
+                    this.hass,
+                    "/voice_control/install_wake_word_add_on/"
+                  )}
                   target="_blank"
                   rel="noreferrer noopener"
                   >${this.hass.localize(
