@@ -9763,7 +9763,7 @@ __metadata:
     object-hash: "npm:3.0.0"
     open: "npm:9.1.0"
     pinst: "npm:3.0.0"
-    prettier: "npm:3.1.0"
+    prettier: "npm:3.1.1"
     proxy-polyfill: "npm:0.3.2"
     punycode: "npm:2.3.1"
     qr-scanner: "npm:1.4.2"
@@ -13254,12 +13254,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.1.0":
-  version: 3.1.0
-  resolution: "prettier@npm:3.1.0"
+"prettier@npm:3.1.1":
+  version: 3.1.1
+  resolution: "prettier@npm:3.1.1"
   bin:
     prettier: bin/prettier.cjs
-  checksum: e95e8f93c6b9aea2ac1e86bebe329bee90c8c50d9a23d1f593eba8d7f39b33b3641eb28785001505b6723c47895a5322ad12a2fb855b289cb7bae450ffc34425
+  checksum: 26a249f321b97d26c04483f1bf2eeb22e082a76f4222a2c922bebdc60111691aad4ec3979610e83942e0b956058ec361d9e9c81c185172264eb6db9aa678082b
   languageName: node
   linkType: hard
 
