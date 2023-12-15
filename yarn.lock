@@ -9751,7 +9751,7 @@ __metadata:
     leaflet-draw: "npm:1.0.4"
     lint-staged: "npm:15.2.0"
     lit: "npm:2.8.0"
-    lit-analyzer: "npm:2.0.1"
+    lit-analyzer: "npm:2.0.2"
     lodash.template: "npm:4.5.0"
     luxon: "npm:3.4.4"
     magic-string: "npm:0.30.5"
@@ -11389,9 +11389,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-analyzer@npm:2.0.1, lit-analyzer@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "lit-analyzer@npm:2.0.1"
+"lit-analyzer@npm:2.0.2, lit-analyzer@npm:^2.0.1":
+  version: 2.0.2
+  resolution: "lit-analyzer@npm:2.0.2"
   dependencies:
     "@vscode/web-custom-data": "npm:^0.4.2"
     chalk: "npm:^2.4.2"
@@ -11404,7 +11404,7 @@ __metadata:
     web-component-analyzer: "npm:^2.0.0"
   bin:
     lit-analyzer: cli.js
-  checksum: 06661790554ae80d8dcb4e3083d6d58c9000bc840fbbeac2edf8e7bc09332b8676b0ca197209ca75bf418cd59a2d8ac05ddeb98be084bf0218d7896335d2c87e
+  checksum: 247de26c9de2a340d9bf0d82ce87c8ff1a32c399111c5e66485e6831e204d3e3393614d7a430b24869c392861a075dba581647185c66c4febec9cebf4c3433e8
   languageName: node
   linkType: hard
 
