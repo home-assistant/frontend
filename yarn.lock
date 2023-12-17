@@ -3136,13 +3136,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/web@npm:=1.0.1":
-  version: 1.0.1
-  resolution: "@material/web@npm:1.0.1"
+"@material/web@npm:=1.1.1":
+  version: 1.1.1
+  resolution: "@material/web@npm:1.1.1"
   dependencies:
     lit: "npm:^2.7.4 || ^3.0.0"
     tslib: "npm:^2.4.0"
-  checksum: febc2ee82d5d85a3387ca89ef6179893e50d491655355a7377f6b79bd2d367a685c14fe7f805acb2a77dd2d0f313ab661c6fbcedd70d243fcfaef890152751cc
+  checksum: e1066e50b06af54e64029a281bd49044c6b54817fa920453d622680f8dcbbbc920f83dfd6977c15b669fe3bfdf1e01cb851a4cd38d27cc96a497590a4b3cb2cd
   languageName: node
   linkType: hard
 
@@ -9657,7 +9657,7 @@ __metadata:
     "@material/mwc-top-app-bar": "npm:0.27.0"
     "@material/mwc-top-app-bar-fixed": "npm:0.27.0"
     "@material/top-app-bar": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/web": "npm:=1.0.1"
+    "@material/web": "npm:=1.1.1"
     "@mdi/js": "npm:7.3.67"
     "@mdi/svg": "npm:7.3.67"
     "@octokit/auth-oauth-device": "npm:6.0.1"
