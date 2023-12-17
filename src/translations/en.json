@@ -4685,7 +4685,9 @@
             },
             "energy_devices_graph": {
               "energy_usage": "Energy usage",
-              "previous_energy_usage": "Previous energy usage"
+              "previous_energy_usage": "Previous energy usage",
+              "show_detail": "Show detail view",
+              "show_summary": "Show summary view"
             },
             "carbon_consumed_gauge": {
               "card_indicates_energy_used": "This card indicates how much of the energy consumed by your home was generated using non-fossil fuels like solar, wind and nuclear. The higher, the better!",

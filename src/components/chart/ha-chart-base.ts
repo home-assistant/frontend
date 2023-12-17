@@ -2,13 +2,22 @@ import type {
   Chart,
   ChartType,
   ChartData,
+  ChartDataset,
   ChartOptions,
   TooltipModel,
 } from "chart.js";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  nothing,
+  LitElement,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { fireEvent } from "../../common/dom/fire_event";
 import { clamp } from "../../common/number/clamp";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { HomeAssistant } from "../../types";
@@ -47,6 +56,8 @@ export class HaChartBase extends LitElement {
 
   @property({ type: Number }) public paddingYAxis = 0;
 
+  @property({ type: Boolean }) public externalHidden = false;
+
   @state() private _chartHeight?: number;
 
   @state() private _tooltip?: Tooltip;
@@ -58,6 +69,8 @@ export class HaChartBase extends LitElement {
   private _paddingUpdateLock = false;
 
   private _paddingYAxisInternal = 0;
+
+  private _datasetOrder: number[] = [];
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -149,6 +162,29 @@ export class HaChartBase extends LitElement {
       }
     }
 
+    // put the legend labels in sorted order if provided
+    if (changedProps.has("data")) {
+      this._datasetOrder = this.data.datasets.map((_, index) => index);
+      if (this.data?.datasets.some((dataset) => dataset.order)) {
+        this._datasetOrder.sort(
+          (a, b) =>
+            (this.data.datasets[a].order || 0) -
+            (this.data.datasets[b].order || 0)
+        );
+      }
+
+      if (this.externalHidden) {
+        this._hiddenDatasets = new Set();
+        if (this.data?.datasets) {
+          this.data.datasets.forEach((dataset, index) => {
+            if (dataset.hidden) {
+              this._hiddenDatasets.add(index);
+            }
+          });
+        }
+      }
+    }
+
     if (!this.hasUpdated || !this.chart) {
       return;
     }
@@ -158,7 +194,7 @@ export class HaChartBase extends LitElement {
       return;
     }
     if (changedProps.has("data")) {
-      if (this._hiddenDatasets.size) {
+      if (this._hiddenDatasets.size && !this.externalHidden) {
         this.data.datasets.forEach((dataset, index) => {
           dataset.hidden = this._hiddenDatasets.has(index);
         });
@@ -176,26 +212,29 @@ export class HaChartBase extends LitElement {
       ${this.options?.plugins?.legend?.display === true
         ? html`<div class="chartLegend">
             <ul>
-              ${this.data.datasets.map(
-                (dataset, index) =>
-                  html`<li
-                    .datasetIndex=${index}
-                    @click=${this._legendClick}
-                    class=${classMap({
-                      hidden: this._hiddenDatasets.has(index),
-                    })}
-                    .title=${dataset.label}
-                  >
-                    <div
-                      class="bullet"
-                      style=${styleMap({
-                        backgroundColor: dataset.backgroundColor as string,
-                        borderColor: dataset.borderColor as string,
+              ${this._datasetOrder.map((index) => {
+                const dataset = this.data.datasets[index];
+                return this.chartType === "bar" &&
+                  (dataset as ChartDataset<"bar">).pointStyle === false
+                  ? nothing
+                  : html`<li
+                      .datasetIndex=${index}
+                      @click=${this._legendClick}
+                      class=${classMap({
+                        hidden: this._hiddenDatasets.has(index),
                       })}
-                    ></div>
-                    <div class="label">${dataset.label}</div>
-                  </li>`
-              )}
+                      .title=${dataset.label}
+                    >
+                      <div
+                        class="bullet"
+                        style=${styleMap({
+                          backgroundColor: dataset.backgroundColor as string,
+                          borderColor: dataset.borderColor as string,
+                        })}
+                      ></div>
+                      <div class="label">${dataset.label}</div>
+                    </li>`;
+              })}
             </ul>
           </div>`
         : ""}
@@ -342,9 +381,19 @@ export class HaChartBase extends LitElement {
     if (this.chart.isDatasetVisible(index)) {
       this.chart.setDatasetVisibility(index, false);
       this._hiddenDatasets.add(index);
+      if (this.externalHidden) {
+        fireEvent(this, "dataset-hidden", {
+          index,
+        });
+      }
     } else {
       this.chart.setDatasetVisibility(index, true);
       this._hiddenDatasets.delete(index);
+      if (this.externalHidden) {
+        fireEvent(this, "dataset-unhidden", {
+          index,
+        });
+      }
     }
     this.chart.update("none");
     this.requestUpdate("_hiddenDatasets");
@@ -495,5 +544,9 @@ export class HaChartBase extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-chart-base": HaChartBase;
+  }
+  interface HASSDomEvents {
+    "dataset-hidden": { index: number };
+    "dataset-unhidden": { index: number };
   }
 }
