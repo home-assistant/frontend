@@ -766,48 +766,38 @@ const tryDescribeCondition = (
 
   // State Condition
   if (condition.condition === "state") {
-    let base = "Confirm";
     if (!condition.entity_id) {
-      return `${base} state`;
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.state.description.no_entity`
+      );
     }
 
+    let attribute = "";
     if (condition.attribute) {
       const stateObj = Array.isArray(condition.entity_id)
         ? hass.states[condition.entity_id[0]]
         : hass.states[condition.entity_id];
-      base += ` ${computeAttributeNameDisplay(
+      attribute = computeAttributeNameDisplay(
         hass.localize,
         stateObj,
         hass.entities,
         condition.attribute
-      )} of`;
+      );
     }
 
+    const entities: string[] = [];
     if (Array.isArray(condition.entity_id)) {
-      const entities: string[] = [];
       for (const entity of condition.entity_id.values()) {
         if (hass.states[entity]) {
           entities.push(computeStateName(hass.states[entity]) || entity);
         }
       }
-      if (entities.length !== 0) {
-        const entitiesString =
-          condition.match === "any"
-            ? formatListWithOrs(hass.locale, entities)
-            : formatListWithAnds(hass.locale, entities);
-        base += ` ${entitiesString} ${
-          condition.entity_id.length > 1 ? "are" : "is"
-        }`;
-      } else {
-        // no entity_id or empty array
-        base += " an entity";
-      }
     } else if (condition.entity_id) {
-      base += ` ${
+      entities.push(
         hass.states[condition.entity_id]
           ? computeStateName(hass.states[condition.entity_id])
           : condition.entity_id
-      } is`;
+      );
     }
 
     const states: string[] = [];
@@ -845,21 +835,27 @@ const tryDescribeCondition = (
       );
     }
 
-    if (states.length === 0) {
-      states.push("a state");
-    }
-
-    const statesString = formatListWithOrs(hass.locale, states);
-    base += ` ${statesString}`;
-
+    let duration = "";
     if (condition.for) {
-      const duration = describeDuration(hass.locale, condition.for);
-      if (duration) {
-        base += ` for ${duration}`;
-      }
+      duration = describeDuration(hass.locale, condition.for) || "";
     }
 
-    return base;
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.state.description.full`,
+      {
+        hasAttribute: attribute !== "" ? "true" : "false",
+        attribute: attribute,
+        numberOfEntities: entities.length,
+        entities:
+          condition.match === "any"
+            ? formatListWithOrs(hass.locale, entities)
+            : formatListWithAnds(hass.locale, entities),
+        numberOfStates: states.length,
+        states: formatListWithOrs(hass.locale, states),
+        hasDuration: duration !== "" ? "true" : "false",
+        duration: duration,
+      }
+    );
   }
 
   // Numeric State Condition
