@@ -52,12 +52,17 @@ export class HaNumberSelector extends LitElement {
                 : ""}
               <ha-slider
                 labeled
-                .min=${this.selector.number?.min}
-                .max=${this.selector.number?.max}
+                .min=${this.selector.number!.min}
+                .max=${this.selector.number!.max}
                 .value=${this.value ?? ""}
-                .step=${this.selector.number?.step === "any"
-                  ? undefined
-                  : this.selector.number?.step ?? 1}
+                .step=${this.selector.number!.step === "any"
+                  ? Math.min(
+                      1,
+                      (this.selector.number!.max! -
+                        this.selector.number!.min!) /
+                        100
+                    )
+                  : this.selector.number!.step ?? 1}
                 .disabled=${this.disabled}
                 .required=${this.required}
                 @change=${this._handleSliderChange}
