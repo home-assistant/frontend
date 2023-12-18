@@ -6,13 +6,17 @@ import {
   array,
   assert,
   assign,
+  boolean,
   object,
   optional,
   string,
 } from "superstruct";
 import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import {
   LovelaceCardFeatureConfig,
@@ -37,6 +41,7 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     name: optional(string()),
     theme: optional(string()),
+    use_current_as_primary: optional(boolean()),
     features: optional(array(any())),
   })
 );
@@ -55,7 +60,13 @@ const SCHEMA = [
       { name: "theme", selector: { theme: {} } },
     ],
   },
-] as const;
+  {
+    name: "use_current_as_primary",
+    selector: {
+      boolean: {},
+    },
+  },
+] as const satisfies readonly HaFormSchema[];
 
 @customElement("hui-humidifier-card-editor")
 export class HuiHumidifierCardEditor
@@ -179,18 +190,10 @@ export class HuiHumidifierCardEditor
   }
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
-    if (schema.name === "entity") {
+    if (schema.name === "use_current_as_primary") {
       return this.hass!.localize(
-        "ui.panel.lovelace.editor.card.generic.entity"
+        "ui.panel.lovelace.editor.card.humidifier.use_current_as_primary"
       );
-    }
-
-    if (schema.name === "theme") {
-      return `${this.hass!.localize(
-        "ui.panel.lovelace.editor.card.generic.theme"
-      )} (${this.hass!.localize(
-        "ui.panel.lovelace.editor.card.config.optional"
-      )})`;
     }
 
     return this.hass!.localize(
