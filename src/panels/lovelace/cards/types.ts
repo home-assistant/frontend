@@ -262,7 +262,7 @@ export interface HumidifierCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
   name?: string;
-  use_current_as_primary?: boolean;
+  show_current_as_primary?: boolean;
   features?: LovelaceCardFeatureConfig[];
 }
 

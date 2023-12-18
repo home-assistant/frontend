@@ -41,7 +41,7 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     name: optional(string()),
     theme: optional(string()),
-    use_current_as_primary: optional(boolean()),
+    show_current_as_primary: optional(boolean()),
     features: optional(array(any())),
   })
 );
@@ -61,7 +61,7 @@ const SCHEMA = [
     ],
   },
   {
-    name: "use_current_as_primary",
+    name: "show_current_as_primary",
     selector: {
       boolean: {},
     },
@@ -190,9 +190,9 @@ export class HuiHumidifierCardEditor
   }
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
-    if (schema.name === "use_current_as_primary") {
+    if (schema.name === "show_current_as_primary") {
       return this.hass!.localize(
-        "ui.panel.lovelace.editor.card.humidifier.use_current_as_primary"
+        "ui.panel.lovelace.editor.card.humidifier.show_current_as_primary"
       );
     }
 

@@ -33,7 +33,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
   public showSecondary?: boolean;
 
   @property({ attribute: "use-current-as-primary", type: Boolean })
-  public useCurrentAsPrimary?: boolean;
+  public showCurrentAsPrimary?: boolean;
 
   @property({ type: Boolean, attribute: "prevent-interaction-on-scroll" })
   public preventInteractionOnScroll?: boolean;
@@ -136,11 +136,11 @@ export class HaStateControlHumidifierHumidity extends LitElement {
   private _renderPrimary() {
     const currentHumidity = this.stateObj.attributes.current_humidity;
 
-    if (currentHumidity != null && this.useCurrentAsPrimary) {
+    if (currentHumidity != null && this.showCurrentAsPrimary) {
       return this._renderCurrent(currentHumidity, "big");
     }
 
-    if (this._targetHumidity != null && !this.useCurrentAsPrimary) {
+    if (this._targetHumidity != null && !this.showCurrentAsPrimary) {
       return this._renderTarget(this._targetHumidity!, "big");
     }
 
@@ -154,7 +154,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
     const currentHumidity = this.stateObj.attributes.current_humidity;
 
-    if (currentHumidity != null && !this.useCurrentAsPrimary) {
+    if (currentHumidity != null && !this.showCurrentAsPrimary) {
       return html`
         <p class="label">
           <ha-svg-icon .path=${mdiWaterPercent}></ha-svg-icon>
@@ -163,7 +163,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
       `;
     }
 
-    if (this._targetHumidity != null && this.useCurrentAsPrimary) {
+    if (this._targetHumidity != null && this.showCurrentAsPrimary) {
       return html`
         <p class="label">
           <ha-svg-icon .path=${mdiThermostat}></ha-svg-icon>
