@@ -412,9 +412,7 @@ export class HaStateControlClimateTemperature extends LitElement {
 
     return html`
       <div
-        class="container${classMap({
-          [this._sizeController.value ?? ""]: true,
-        })}"
+        class="container${containerSizeClass}"
         style=${styleMap({
           "--state-color": stateColor,
         })}
