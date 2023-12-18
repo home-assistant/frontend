@@ -1,4 +1,3 @@
-import { mdiDotsVertical } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -73,7 +72,15 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  private _handleMoreInfo() {
+  private _handleMoreInfo(ev) {
+    if (ev.defaultPrevented) {
+      return;
+    }
+    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
+      return;
+    }
+    ev.preventDefault();
+    ev.stopPropagation();
     fireEvent(this, "hass-more-info", {
       entityId: this._config!.entity,
     });
@@ -125,22 +132,21 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        <p class="title">${name}</p>
+        <p
+          class="title"
+          role="button"
+          tabindex="0"
+          @click=${this._handleMoreInfo}
+          @keydown=${this._handleMoreInfo}
+        >
+          ${name}
+        </p>
         <ha-state-control-humidifier-humidity
           prevent-interaction-on-scroll
           show-current
           .hass=${this.hass}
           .stateObj=${stateObj}
         ></ha-state-control-humidifier-humidity>
-        <ha-icon-button
-          class="more-info"
-          .label=${this.hass!.localize(
-            "ui.panel.lovelace.cards.show_more_info"
-          )}
-          .path=${mdiDotsVertical}
-          @click=${this._handleMoreInfo}
-          tabindex="0"
-        ></ha-icon-button>
         <hui-card-features
           style=${styleMap({
             "--feature-color": color,
@@ -170,13 +176,19 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         width: 100%;
         font-size: 18px;
         line-height: 36px;
-        padding: 8px 30px 8px 30px;
+        padding: 8px;
         margin: 0;
         text-align: center;
         box-sizing: border-box;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        cursor: pointer;
+      }
+
+      .title:focus-visible {
+        outline: none;
+        background: rgba(var(--rgb-primary-text-color), 0.04);
       }
 
       ha-state-control-humidifier-humidity {

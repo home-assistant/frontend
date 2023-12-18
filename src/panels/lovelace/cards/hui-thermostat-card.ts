@@ -1,4 +1,3 @@
-import { mdiDotsVertical } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -18,9 +17,9 @@ import "../../../components/ha-icon-button";
 import { ClimateEntity } from "../../../data/climate";
 import "../../../state-control/climate/ha-state-control-climate-temperature";
 import { HomeAssistant } from "../../../types";
+import "../card-features/hui-card-features";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import "../card-features/hui-card-features";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ThermostatCardConfig } from "./types";
 
@@ -65,7 +64,15 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  private _handleMoreInfo() {
+  private _handleMoreInfo(ev) {
+    if (ev.defaultPrevented) {
+      return;
+    }
+    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
+      return;
+    }
+    ev.preventDefault();
+    ev.stopPropagation();
     fireEvent(this, "hass-more-info", {
       entityId: this._config!.entity,
     });
@@ -117,22 +124,21 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        <p class="title">${name}</p>
+        <p
+          class="title"
+          role="button"
+          tabindex="0"
+          @click=${this._handleMoreInfo}
+          @keydown=${this._handleMoreInfo}
+        >
+          ${name}
+        </p>
         <ha-state-control-climate-temperature
           prevent-interaction-on-scroll
           show-current
           .hass=${this.hass}
           .stateObj=${stateObj}
         ></ha-state-control-climate-temperature>
-        <ha-icon-button
-          class="more-info"
-          .label=${this.hass!.localize(
-            "ui.panel.lovelace.cards.show_more_info"
-          )}
-          .path=${mdiDotsVertical}
-          @click=${this._handleMoreInfo}
-          tabindex="0"
-        ></ha-icon-button>
         <hui-card-features
           style=${styleMap({
             "--feature-color": color,
@@ -162,13 +168,19 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         width: 100%;
         font-size: 18px;
         line-height: 36px;
-        padding: 8px 30px 8px 30px;
+        padding: 8px;
         margin: 0;
         text-align: center;
         box-sizing: border-box;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        cursor: pointer;
+      }
+
+      .title:focus-visible {
+        outline: none;
+        background: rgba(var(--rgb-primary-text-color), 0.04);
       }
 
       ha-state-control-climate-temperature {
@@ -176,18 +188,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         max-width: 344px; /* 12px + 12px + 320px */
         padding: 0 12px 12px 12px;
         box-sizing: border-box;
-      }
-
-      .more-info {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        right: 0;
-        inset-inline-end: 0px;
-        inset-inline-start: initial;
-        border-radius: 100%;
-        color: var(--secondary-text-color);
-        direction: var(--direction);
       }
 
       hui-card-features {
