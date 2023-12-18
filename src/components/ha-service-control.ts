@@ -522,6 +522,14 @@ export class HaServiceControl extends LitElement {
         defaultValue = field.selector.constant?.value;
       }
 
+      if (
+        defaultValue == null &&
+        field?.selector &&
+        "boolean" in field.selector
+      ) {
+        defaultValue = false;
+      }
+
       if (defaultValue != null) {
         data = {
           ...this._value?.data,
