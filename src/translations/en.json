@@ -2349,7 +2349,10 @@
               "trigger": "Trigger",
               "actions": "Actions",
               "state": "State"
-            }
+            },
+            "empty_header": "Start automating",
+            "empty_text_1": "The automation editor is an easy way of creating and editing automations.",
+            "empty_text_2": "Even if you're new to home automation."
           },
           "dialog_new": {
             "header": "Create automation",
@@ -3044,7 +3047,9 @@
               "state": "State"
             },
             "delete": "[%key:ui::common::delete%]",
-            "duplicate": "[%key:ui::common::duplicate%]"
+            "duplicate": "[%key:ui::common::duplicate%]",
+            "empty_header": "Create your first script",
+            "empty_text": "Scripts allow you to perform a sequence of actions."
           },
           "dialog_new": {
             "header": "Create script",
@@ -3144,7 +3149,9 @@
               "state": "State",
               "name": "Name",
               "last_activated": "Last activated"
-            }
+            },
+            "empty_header": "Create your first scene",
+            "empty_text": "Scenes are an easy way to store and replicate the state of devices."
           },
           "editor": {
             "default_name": "New scene",
