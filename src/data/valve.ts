@@ -40,7 +40,7 @@ export function canOpen(stateObj: ValveEntity) {
     return false;
   }
   const assumedState = stateObj.attributes.assumed_state === true;
-  return (!isFullyOpen(stateObj) && !isOpening(stateObj)) || assumedState;
+  return assumedState || (!isFullyOpen(stateObj) && !isOpening(stateObj));
 }
 
 export function canClose(stateObj: ValveEntity): boolean {
@@ -48,7 +48,7 @@ export function canClose(stateObj: ValveEntity): boolean {
     return false;
   }
   const assumedState = stateObj.attributes.assumed_state === true;
-  return (!isFullyClosed(stateObj) && !isClosing(stateObj)) || assumedState;
+  return assumedState || (!isFullyClosed(stateObj) && !isClosing(stateObj));
 }
 
 export function canStop(stateObj: ValveEntity): boolean {
