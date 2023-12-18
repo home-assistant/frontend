@@ -175,15 +175,6 @@ export class HaStateControlClimateTemperature extends LitElement {
       `;
     }
 
-    if (
-      !this._supportsTargetTemperature &&
-      !this._supportsTargetTemperatureRange
-    ) {
-      return html`
-        <p class="label">${this.hass.formatEntityState(this.stateObj)}</p>
-      `;
-    }
-
     const action = this.stateObj.attributes.hvac_action;
 
     return html`
@@ -355,6 +346,7 @@ export class HaStateControlClimateTemperature extends LitElement {
     if (this._supportsTargetTemperatureRange && this.useCurrentAsPrimary) {
       return html`
         <p class="label">
+          <ha-svg-icon class="target-icon" .path=${mdiThermostat}></ha-svg-icon>
           <button
             @click=${this._handleSelectTemp}
             .target=${"low"}
@@ -546,7 +538,7 @@ export class HaStateControlClimateTemperature extends LitElement {
           font-weight: inherit;
           -webkit-tap-highlight-color: transparent;
           border: none;
-          opacity: 0.5;
+          opacity: 0.7;
           padding: 0;
           transition:
             opacity 180ms ease-in-out,
@@ -565,6 +557,9 @@ export class HaStateControlClimateTemperature extends LitElement {
         .container.sm .dual,
         .container.xs .dual {
           gap: 8px;
+        }
+        .container.sm .target-icon {
+          display: none;
         }
         ha-control-circular-slider {
           --control-circular-slider-low-color: var(
