@@ -83,6 +83,7 @@ const LAZY_LOAD_TYPES = {
   starting: () => import("../cards/hui-starting-card"),
   "statistics-graph": () => import("../cards/hui-statistics-graph-card"),
   statistic: () => import("../cards/hui-statistic-card"),
+  timer: () => import("../cards/hui-timer-card"),
   "vertical-stack": () => import("../cards/hui-vertical-stack-card"),
 };
 
