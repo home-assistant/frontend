@@ -83,6 +83,11 @@ export class HaManualAutomationEditor extends LitElement {
           ></ha-icon-button>
         </a>
       </div>
+      <p>
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.description"
+        )}
+      </p>
 
       <ha-automation-trigger
         role="region"
@@ -98,6 +103,9 @@ export class HaManualAutomationEditor extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.automation.editor.conditions.header"
           )}
+          <span class="small"
+            >(${this.hass.localize("ui.common.optional")})</span
+          >
         </h2>
         <a
           href=${documentationUrl(this.hass, "/docs/automation/condition/")}
@@ -112,6 +120,12 @@ export class HaManualAutomationEditor extends LitElement {
           ></ha-icon-button>
         </a>
       </div>
+      <p>
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.conditions.description",
+          { user: this.hass.user?.name }
+        )}
+      </p>
 
       <ha-automation-condition
         role="region"
@@ -143,6 +157,11 @@ export class HaManualAutomationEditor extends LitElement {
           </a>
         </div>
       </div>
+      <p>
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.description"
+        )}
+      </p>
 
       <ha-automation-action
         role="region"
@@ -207,9 +226,11 @@ export class HaManualAutomationEditor extends LitElement {
           margin: 0;
         }
         p {
-          margin-bottom: 0;
+          margin-top: 0;
         }
         .header {
+          margin-top: 16px;
+
           display: flex;
           align-items: center;
         }
@@ -217,12 +238,17 @@ export class HaManualAutomationEditor extends LitElement {
           margin-top: -16px;
         }
         .header .name {
-          font-size: 20px;
+          font-size: 32px;
           font-weight: 400;
           flex: 1;
         }
         .header a {
           color: var(--secondary-text-color);
+        }
+        .header .small {
+          font-size: small;
+          font-weight: normal;
+          line-height: 0;
         }
       `,
     ];
