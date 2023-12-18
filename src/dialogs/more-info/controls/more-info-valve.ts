@@ -32,7 +32,7 @@ class MoreInfoValve extends LitElement {
 
   @property({ attribute: false }) public stateObj?: ValveEntity;
 
-  @state() private _mode: Mode = "button";
+  @state() private _mode?: Mode;
 
   private _setMode(ev) {
     this._mode = ev.currentTarget.mode;
@@ -41,7 +41,9 @@ class MoreInfoValve extends LitElement {
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     if (changedProps.has("stateObj") && this.stateObj) {
-      if (!this._mode) {
+      const entityId = this.stateObj.entity_id;
+      const oldEntityId = changedProps.get("stateObj")?.entity_id;
+      if (!this._mode || entityId !== oldEntityId) {
         this._mode = supportsFeature(
           this.stateObj,
           ValveEntityFeature.SET_POSITION
