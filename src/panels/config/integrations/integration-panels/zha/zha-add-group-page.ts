@@ -82,7 +82,7 @@ export class ZHAAddGroupPage extends LitElement {
             type="number"
             .value=${this._groupId}
             @value-changed=${this._handleGroupIdChange}
-            placeholder=${this.hass!.localize(
+            .placeholder=${this.hass!.localize(
               "ui.panel.config.zha.groups.group_id_placeholder"
             )}
           ></paper-input>
