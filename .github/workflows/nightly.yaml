@@ -57,14 +57,14 @@ jobs:
         run: tar -czvf translations.tar.gz translations
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.0.0
         with:
           name: wheels
           path: dist/home_assistant_frontend*.whl
           if-no-files-found: error
 
       - name: Upload translations
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.0.0
         with:
           name: translations
           path: translations.tar.gz
