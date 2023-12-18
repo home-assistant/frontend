@@ -4039,6 +4039,7 @@
             "removing_members": "Removing devices",
             "create_group_details": "Enter the required details to create a new Zigbee group",
             "group_name_placeholder": "Group name",
+            "group_id_placeholder": "Group ID (optional)",
             "create_group": "Create group",
             "create": "Create group",
             "creating_group": "Creating group",
