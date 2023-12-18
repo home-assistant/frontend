@@ -30,6 +30,8 @@ export class ZHAAddGroupPage extends LitElement {
 
   @state() private _groupName = "";
 
+  @state() private _groupId?: string;
+
   @query("zha-device-endpoint-data-table", true)
   private _zhaDevicesDataTable!: ZHADeviceEndpointDataTable;
 
@@ -71,6 +73,15 @@ export class ZHAAddGroupPage extends LitElement {
             @change=${this._handleNameChange}
             .placeholder=${this.hass!.localize(
               "ui.panel.config.zha.groups.group_name_placeholder"
+            )}
+          ></ha-textfield>
+
+          <ha-textfield
+            type="number"
+            .value=${this._groupId}
+            @change=${this._handleGroupIdChange}
+            .placeholder=${this.hass!.localize(
+              "ui.panel.config.zha.groups.group_id_placeholder"
             )}
           ></ha-textfield>
 
@@ -130,12 +141,24 @@ export class ZHAAddGroupPage extends LitElement {
       const memberParts = member.split("_");
       return { ieee: memberParts[0], endpoint_id: memberParts[1] };
     });
-    const group: ZHAGroup = await addGroup(this.hass, this._groupName, members);
+    const groupId = this._groupId
+      ? parseInt(this._groupId as string, 10)
+      : undefined;
+    const group: ZHAGroup = await addGroup(
+      this.hass,
+      this._groupName,
+      groupId,
+      members
+    );
     this._selectedDevicesToAdd = [];
     this._processingAdd = false;
     this._groupName = "";
     this._zhaDevicesDataTable.clearSelection();
     navigate(`/config/zha/group/${group.group_id}`, { replace: true });
+  }
+
+  private _handleGroupIdChange(event) {
+    this._groupId = event.target.value;
   }
 
   private _handleNameChange(event) {
