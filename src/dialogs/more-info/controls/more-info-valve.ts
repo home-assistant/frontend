@@ -13,25 +13,24 @@ import "../../../components/ha-attributes";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
 import {
-  CoverEntity,
-  CoverEntityFeature,
-  computeCoverPositionStateDisplay,
-} from "../../../data/cover";
-import "../../../state-control/cover/ha-state-control-cover-buttons";
-import "../../../state-control/cover/ha-state-control-cover-position";
-import "../../../state-control/cover/ha-state-control-cover-tilt-position";
-import "../../../state-control/cover/ha-state-control-cover-toggle";
+  ValveEntity,
+  ValveEntityFeature,
+  computeValvePositionStateDisplay,
+} from "../../../data/valve";
+import "../../../state-control/valve/ha-state-control-valve-buttons";
+import "../../../state-control/valve/ha-state-control-valve-position";
+import "../../../state-control/valve/ha-state-control-valve-toggle";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 type Mode = "position" | "button";
 
-@customElement("more-info-cover")
-class MoreInfoCover extends LitElement {
+@customElement("more-info-valve")
+class MoreInfoValve extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: CoverEntity;
+  @property({ attribute: false }) public stateObj?: ValveEntity;
 
   @state() private _mode?: Mode;
 
@@ -45,11 +44,12 @@ class MoreInfoCover extends LitElement {
       const entityId = this.stateObj.entity_id;
       const oldEntityId = changedProps.get("stateObj")?.entity_id;
       if (!this._mode || entityId !== oldEntityId) {
-        this._mode =
-          supportsFeature(this.stateObj, CoverEntityFeature.SET_POSITION) ||
-          supportsFeature(this.stateObj, CoverEntityFeature.SET_TILT_POSITION)
-            ? "position"
-            : "button";
+        this._mode = supportsFeature(
+          this.stateObj,
+          ValveEntityFeature.SET_POSITION
+        )
+          ? "position"
+          : "button";
       }
     }
   }
@@ -57,7 +57,7 @@ class MoreInfoCover extends LitElement {
   private get _stateOverride() {
     const stateDisplay = this.hass.formatEntityState(this.stateObj!);
 
-    const positionStateDisplay = computeCoverPositionStateDisplay(
+    const positionStateDisplay = computeValvePositionStateDisplay(
       this.stateObj!,
       this.hass
     );
@@ -75,30 +75,18 @@ class MoreInfoCover extends LitElement {
 
     const supportsPosition = supportsFeature(
       this.stateObj,
-      CoverEntityFeature.SET_POSITION
-    );
-
-    const supportsTiltPosition = supportsFeature(
-      this.stateObj,
-      CoverEntityFeature.SET_TILT_POSITION
+      ValveEntityFeature.SET_POSITION
     );
 
     const supportsOpenClose =
-      supportsFeature(this.stateObj, CoverEntityFeature.OPEN) ||
-      supportsFeature(this.stateObj, CoverEntityFeature.CLOSE) ||
-      supportsFeature(this.stateObj, CoverEntityFeature.STOP);
-
-    const supportsTilt =
-      supportsFeature(this.stateObj, CoverEntityFeature.OPEN_TILT) ||
-      supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT) ||
-      supportsFeature(this.stateObj, CoverEntityFeature.STOP_TILT);
+      supportsFeature(this.stateObj, ValveEntityFeature.OPEN) ||
+      supportsFeature(this.stateObj, ValveEntityFeature.CLOSE) ||
+      supportsFeature(this.stateObj, ValveEntityFeature.STOP);
 
     const supportsOpenCloseWithoutStop =
-      supportsFeature(this.stateObj, CoverEntityFeature.OPEN) &&
-      supportsFeature(this.stateObj, CoverEntityFeature.CLOSE) &&
-      !supportsFeature(this.stateObj, CoverEntityFeature.STOP) &&
-      !supportsFeature(this.stateObj, CoverEntityFeature.OPEN_TILT) &&
-      !supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT);
+      supportsFeature(this.stateObj, ValveEntityFeature.OPEN) &&
+      supportsFeature(this.stateObj, ValveEntityFeature.CLOSE) &&
+      !supportsFeature(this.stateObj, ValveEntityFeature.STOP);
 
     return html`
       <ha-more-info-state-header
@@ -113,18 +101,10 @@ class MoreInfoCover extends LitElement {
               ? html`
                   ${supportsPosition
                     ? html`
-                        <ha-state-control-cover-position
+                        <ha-state-control-valve-position
                           .stateObj=${this.stateObj}
                           .hass=${this.hass}
-                        ></ha-state-control-cover-position>
-                      `
-                    : nothing}
-                  ${supportsTiltPosition
-                    ? html`
-                        <ha-state-control-cover-tilt-position
-                          .stateObj=${this.stateObj}
-                          .hass=${this.hass}
-                        ></ha-state-control-cover-tilt-position>
+                        ></ha-state-control-valve-position>
                       `
                     : nothing}
                 `
@@ -135,17 +115,17 @@ class MoreInfoCover extends LitElement {
               ? html`
                   ${supportsOpenCloseWithoutStop
                     ? html`
-                        <ha-state-control-cover-toggle
+                        <ha-state-control-valve-toggle
                           .stateObj=${this.stateObj}
                           .hass=${this.hass}
-                        ></ha-state-control-cover-toggle>
+                        ></ha-state-control-valve-toggle>
                       `
-                    : supportsOpenClose || supportsTilt
+                    : supportsOpenClose
                       ? html`
-                          <ha-state-control-cover-buttons
+                          <ha-state-control-valve-buttons
                             .stateObj=${this.stateObj}
                             .hass=${this.hass}
-                          ></ha-state-control-cover-buttons>
+                          ></ha-state-control-valve-buttons>
                         `
                       : nothing}
                 `
@@ -153,13 +133,12 @@ class MoreInfoCover extends LitElement {
           }
             </div>
           ${
-            (supportsPosition || supportsTiltPosition) &&
-            (supportsOpenClose || supportsTilt)
+            supportsPosition && supportsOpenClose
               ? html`
                   <ha-icon-button-group>
                     <ha-icon-button-toggle
                       .label=${this.hass.localize(
-                        `ui.dialogs.more_info_control.cover.switch_mode.position`
+                        `ui.dialogs.more_info_control.valve.switch_mode.position`
                       )}
                       .selected=${this._mode === "position"}
                       .path=${mdiMenu}
@@ -168,7 +147,7 @@ class MoreInfoCover extends LitElement {
                     ></ha-icon-button-toggle>
                     <ha-icon-button-toggle
                       .label=${this.hass.localize(
-                        `ui.dialogs.more_info_control.cover.switch_mode.button`
+                        `ui.dialogs.more_info_control.valve.switch_mode.button`
                       )}
                       .selected=${this._mode === "button"}
                       .path=${mdiSwapVertical}
@@ -208,6 +187,6 @@ class MoreInfoCover extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "more-info-cover": MoreInfoCover;
+    "more-info-valve": MoreInfoValve;
   }
 }
