@@ -627,9 +627,6 @@ class HaPanelDevState extends LitElement {
         .entities th {
           padding: 0 8px;
           text-align: left;
-          font-size: var(
-            --paper-input-container-shared-input-style_-_font-size
-          );
         }
 
         .filters th {
