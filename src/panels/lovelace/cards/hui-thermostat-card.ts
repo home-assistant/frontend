@@ -120,7 +120,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         <p class="title">${name}</p>
         <ha-state-control-climate-temperature
           prevent-interaction-on-scroll
-          .useCurrentAsPrimary=${this._config.use_current_as_primary}
+          .showCurrentAsPrimary=${this._config.show_current_as_primary}
           show-secondary
           .hass=${this.hass}
           .stateObj=${stateObj}

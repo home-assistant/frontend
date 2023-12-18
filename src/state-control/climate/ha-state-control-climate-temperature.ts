@@ -58,7 +58,7 @@ export class HaStateControlClimateTemperature extends LitElement {
   public showSecondary?: boolean;
 
   @property({ attribute: "use-current-as-primary", type: Boolean })
-  public useCurrentAsPrimary?: boolean;
+  public showCurrentAsPrimary?: boolean;
 
   @property({ type: Boolean, attribute: "prevent-interaction-on-scroll" })
   public preventInteractionOnScroll?: boolean;
@@ -282,15 +282,15 @@ export class HaStateControlClimateTemperature extends LitElement {
   private _renderPrimary() {
     const currentTemperature = this.stateObj.attributes.current_temperature;
 
-    if (currentTemperature != null && this.useCurrentAsPrimary) {
+    if (currentTemperature != null && this.showCurrentAsPrimary) {
       return this._renderCurrent(currentTemperature, "big");
     }
 
-    if (this._supportsTargetTemperature && !this.useCurrentAsPrimary) {
+    if (this._supportsTargetTemperature && !this.showCurrentAsPrimary) {
       return this._renderTarget(this._targetTemperature.value!, "big");
     }
 
-    if (this._supportsTargetTemperatureRange && !this.useCurrentAsPrimary) {
+    if (this._supportsTargetTemperatureRange && !this.showCurrentAsPrimary) {
       return html`
         <div class="dual">
           <button
@@ -325,7 +325,7 @@ export class HaStateControlClimateTemperature extends LitElement {
 
     const currentTemperature = this.stateObj.attributes.current_temperature;
 
-    if (currentTemperature && !this.useCurrentAsPrimary) {
+    if (currentTemperature && !this.showCurrentAsPrimary) {
       return html`
         <p class="label">
           <ha-svg-icon .path=${mdiThermometer}></ha-svg-icon>
@@ -334,7 +334,7 @@ export class HaStateControlClimateTemperature extends LitElement {
       `;
     }
 
-    if (this._supportsTargetTemperature && this.useCurrentAsPrimary) {
+    if (this._supportsTargetTemperature && this.showCurrentAsPrimary) {
       return html`
         <p class="label">
           <ha-svg-icon .path=${mdiThermostat}></ha-svg-icon>
@@ -343,7 +343,7 @@ export class HaStateControlClimateTemperature extends LitElement {
       `;
     }
 
-    if (this._supportsTargetTemperatureRange && this.useCurrentAsPrimary) {
+    if (this._supportsTargetTemperatureRange && this.showCurrentAsPrimary) {
       return html`
         <p class="label">
           <ha-svg-icon class="target-icon" .path=${mdiThermostat}></ha-svg-icon>
