@@ -157,7 +157,7 @@ export class ZHAAddGroupPage extends LitElement {
     navigate(`/config/zha/group/${group.group_id}`, { replace: true });
   }
 
-  private _handleGroupIdChange(value) {
+  private _handleGroupIdChange(event) {
     this._groupId = event.target.value;
   }
 
