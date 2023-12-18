@@ -13,7 +13,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
 import { ClimateEntity } from "../../../data/climate";
 import "../../../state-control/climate/ha-state-control-climate-temperature";
 import { HomeAssistant } from "../../../types";
