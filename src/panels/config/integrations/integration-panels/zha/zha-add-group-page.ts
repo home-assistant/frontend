@@ -17,7 +17,6 @@ import "../../../ha-config-section";
 import "../../../../../components/ha-textfield";
 import "./zha-device-endpoint-data-table";
 import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
-import { ChangeEvent } from "./types";
 
 @customElement("zha-add-group-page")
 export class ZHAAddGroupPage extends LitElement {
@@ -31,7 +30,7 @@ export class ZHAAddGroupPage extends LitElement {
 
   @state() private _groupName = "";
 
-  @state() private _groupId?: string | number;
+  @state() private _groupId?: string;
 
   @query("zha-device-endpoint-data-table", true)
   private _zhaDevicesDataTable!: ZHADeviceEndpointDataTable;
