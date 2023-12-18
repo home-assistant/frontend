@@ -24,6 +24,7 @@ body:
           required: true
         - label: I have tried a different browser to see if it is related to my browser.
           required: true
+        - label: I have tried reproducing the issue in [safe mode](https://www.home-assistant.io/blog/2023/11/01/release-202311/#restarting-into-safe-mode) to rule out problems with unsupported custom resources.
   - type: markdown
     attributes:
       value: |
