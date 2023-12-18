@@ -662,7 +662,9 @@ export class HuiEnergyUsageGraphCard
       });
     });
 
-    const uniqueKeys = Array.from(new Set(allKeys));
+    const uniqueKeys = Array.from(new Set(allKeys)).sort(
+      (a, b) => Number(a) - Number(b)
+    );
 
     Object.entries(combinedData).forEach(([type, sources]) => {
       Object.entries(sources).forEach(([statId, source], idx) => {

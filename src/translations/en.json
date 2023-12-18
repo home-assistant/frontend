@@ -1546,10 +1546,10 @@
       "supervisor": {
         "title": "Could not load the Supervisor panel!",
         "wait": "If you just started, make sure you have given the Supervisor enough time to start.",
-        "ask": "Ask for help",
-        "reboot": "Try a reboot of the host",
-        "observer": "Check the observer",
-        "system_health": "Check system health"
+        "ask": "Ask for help.",
+        "reboot": "Try a reboot of the host.",
+        "observer": "Check the observer.",
+        "system_health": "Check the system health."
       }
     },
     "login-form": {
@@ -4058,8 +4058,6 @@
             "cancel_inclusion_exclusion": "Stop searching"
           },
           "dashboard": {
-            "header": "Manage your Z-Wave network",
-            "introduction": "Manage your Z-Wave network and Z-Wave devices",
             "driver_version": "Driver version",
             "server_version": "Server version",
             "home_id": "Home ID",
