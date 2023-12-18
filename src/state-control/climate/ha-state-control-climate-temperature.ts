@@ -1,4 +1,4 @@
-import { mdiMinus, mdiPlus, mdiThermometer } from "@mdi/js";
+import { mdiMinus, mdiPlus, mdiThermometer, mdiThermostat } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -232,48 +232,46 @@ export class HaStateControlClimateTemperature extends LitElement {
     `;
   }
 
-  private _renderTargetTemperature(temperature: number) {
+  private _renderTarget(
+    temperature: number,
+    style: "normal" | "big",
+    hideUnit?: boolean
+  ) {
     const digits = this._step.toString().split(".")?.[1]?.length ?? 0;
     const formatOptions: Intl.NumberFormatOptions = {
       maximumFractionDigits: digits,
       minimumFractionDigits: digits,
     };
-    return html`
-      <ha-big-number
-        .value=${temperature}
-        .unit=${this.hass.config.unit_system.temperature}
-        .hass=${this.hass}
-        .formatOptions=${formatOptions}
-      ></ha-big-number>
-    `;
-  }
 
-  private _formatTargetTemperature(temperature: number) {
-    const digits = this._step.toString().split(".")?.[1]?.length ?? 0;
-    const formatOptions: Intl.NumberFormatOptions = {
-      maximumFractionDigits: digits,
-      minimumFractionDigits: digits,
-    };
+    const unit = hideUnit ? "" : this.hass.config.unit_system.temperature;
+
+    if (style === "big") {
+      return html`
+        <ha-big-number
+          .value=${temperature}
+          .unit=${unit}
+          .hass=${this.hass}
+          .formatOptions=${formatOptions}
+        ></ha-big-number>
+      `;
+    }
+
     const formatted = formatNumber(
       temperature,
       this.hass.locale,
       formatOptions
     );
-    const unit = this.hass.config.unit_system.temperature;
-    return `${formatted}${blankBeforeUnit(unit)}${unit}`;
+    return html`${formatted}${blankBeforeUnit(unit)}${unit}`;
   }
 
-  private _renderPrimary() {
-    const currentTemperature = this.stateObj.attributes.current_temperature;
-
-    if (currentTemperature != null && this.useCurrentAsPrimary) {
-      const formatOptions: Intl.NumberFormatOptions = {
-        maximumFractionDigits: 1,
-      };
-
+  private _renderCurrent(temperature: number, style: "normal" | "big") {
+    const formatOptions: Intl.NumberFormatOptions = {
+      maximumFractionDigits: 1,
+    };
+    if (style === "big") {
       return html`
         <ha-big-number
-          .value=${currentTemperature}
+          .value=${temperature}
           .unit=${this.hass.config.unit_system.temperature}
           .hass=${this.hass}
           .formatOptions=${formatOptions}
@@ -281,8 +279,24 @@ export class HaStateControlClimateTemperature extends LitElement {
       `;
     }
 
+    return html`
+      ${this.hass.formatEntityAttributeValue(
+        this.stateObj,
+        "current_temperature",
+        temperature
+      )}
+    `;
+  }
+
+  private _renderPrimary() {
+    const currentTemperature = this.stateObj.attributes.current_temperature;
+
+    if (currentTemperature != null && this.useCurrentAsPrimary) {
+      return this._renderCurrent(currentTemperature, "big");
+    }
+
     if (this._supportsTargetTemperature && !this.useCurrentAsPrimary) {
-      return this._renderTargetTemperature(this._targetTemperature.value!);
+      return this._renderTarget(this._targetTemperature.value!, "big");
     }
 
     if (this._supportsTargetTemperatureRange && !this.useCurrentAsPrimary) {
@@ -295,7 +309,7 @@ export class HaStateControlClimateTemperature extends LitElement {
               selected: this._selectTargetTemperature === "low",
             })}"
           >
-            ${this._renderTargetTemperature(this._targetTemperature.low!)}
+            ${this._renderTarget(this._targetTemperature.low!, "big")}
           </button>
           <button
             @click=${this._handleSelectTemp}
@@ -304,7 +318,7 @@ export class HaStateControlClimateTemperature extends LitElement {
               selected: this._selectTargetTemperature === "high",
             })}"
           >
-            ${this._renderTargetTemperature(this._targetTemperature.high!)}
+            ${this._renderTarget(this._targetTemperature.high!, "big")}
           </button>
         </div>
       `;
@@ -324,10 +338,7 @@ export class HaStateControlClimateTemperature extends LitElement {
       return html`
         <p class="label">
           <ha-svg-icon .path=${mdiThermometer}></ha-svg-icon>
-          ${this.hass.formatEntityAttributeValue(
-            this.stateObj,
-            "current_temperature"
-          )}
+          ${this._renderCurrent(currentTemperature, "normal")}
         </p>
       `;
     }
@@ -335,7 +346,8 @@ export class HaStateControlClimateTemperature extends LitElement {
     if (this._supportsTargetTemperature && this.useCurrentAsPrimary) {
       return html`
         <p class="label">
-          ${this._formatTargetTemperature(this._targetTemperature.value!)}
+          <ha-svg-icon .path=${mdiThermostat}></ha-svg-icon>
+          ${this._renderTarget(this._targetTemperature.value!, "normal")}
         </p>
       `;
     }
@@ -350,7 +362,7 @@ export class HaStateControlClimateTemperature extends LitElement {
               selected: this._selectTargetTemperature === "low",
             })}"
           >
-            ${this._formatTargetTemperature(this._targetTemperature.low!)}
+            ${this._renderTarget(this._targetTemperature.low!, "normal", true)}
           </button>
           <span>⸱</span>
           <button
@@ -360,7 +372,7 @@ export class HaStateControlClimateTemperature extends LitElement {
               selected: this._selectTargetTemperature === "high",
             })}"
           >
-            ${this._formatTargetTemperature(this._targetTemperature.high!)}
+            ${this._renderTarget(this._targetTemperature.high!, "normal", true)}
           </button>
         </p>
       `;
