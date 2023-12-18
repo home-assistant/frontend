@@ -1,5 +1,5 @@
-import { mdiMinus, mdiPlus, mdiWaterPercent } from "@mdi/js";
-import { CSSResultGroup, LitElement, PropertyValues, html } from "lit";
+import { mdiMinus, mdiPlus, mdiThermostat, mdiWaterPercent } from "@mdi/js";
+import { CSSResultGroup, LitElement, PropertyValues, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { stateActive } from "../../common/entity/state_active";
@@ -11,6 +11,7 @@ import "../../components/ha-control-circular-slider";
 import "../../components/ha-outlined-icon-button";
 import "../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../data/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity_attributes";
 import {
   HUMIDIFIER_ACTION_MODE,
   HumidifierEntity,
@@ -28,8 +29,11 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HumidifierEntity;
 
-  @property({ attribute: "show-current", type: Boolean })
-  public showCurrent?: boolean = false;
+  @property({ attribute: "show-secondary", type: Boolean })
+  public showSecondary?: boolean;
+
+  @property({ attribute: "use-current-as-primary", type: Boolean })
+  public useCurrentAsPrimary?: boolean;
 
   @property({ type: Boolean, attribute: "prevent-interaction-on-scroll" })
   public preventInteractionOnScroll?: boolean;
@@ -101,37 +105,11 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
     const action = this.stateObj.attributes.action;
 
-    const actionLabel = this.hass.formatEntityAttributeValue(
-      this.stateObj,
-      "action"
-    );
-
     return html`
       <p class="label">
-        ${action && action !== "off" && action !== "idle"
-          ? actionLabel
-          : this._targetHumidity
-            ? this.hass.localize("ui.card.humidifier.target")
-            : this.hass.formatEntityState(this.stateObj)}
-      </p>
-    `;
-  }
-
-  private _renderCurrentHumidity(humidity?: number) {
-    if (!this.showCurrent || humidity == null) {
-      return html`<p class="label">&nbsp;</p>`;
-    }
-
-    return html`
-      <p class="label">
-        <ha-svg-icon .path=${mdiWaterPercent}></ha-svg-icon>
-        <span>
-          ${this.hass.formatEntityAttributeValue(
-            this.stateObj,
-            "current_humidity",
-            humidity
-          )}
-        </span>
+        ${action
+          ? this.hass.formatEntityAttributeValue(this.stateObj, "action")
+          : this.hass.formatEntityState(this.stateObj)}
       </p>
     `;
   }
@@ -155,19 +133,95 @@ export class HaStateControlHumidifierHumidity extends LitElement {
     `;
   }
 
-  private _renderTarget(humidity: number) {
-    const formatOptions = {
+  private _renderPrimary() {
+    const currentHumidity = this.stateObj.attributes.current_humidity;
+
+    if (currentHumidity != null && this.useCurrentAsPrimary) {
+      return this._renderCurrent(currentHumidity, "big");
+    }
+
+    if (this._targetHumidity != null && !this.useCurrentAsPrimary) {
+      return this._renderTarget(this._targetHumidity!, "big");
+    }
+
+    return nothing;
+  }
+
+  private _renderSecondary() {
+    if (!this.showSecondary) {
+      return html`<p class="label"></p>`;
+    }
+
+    const currentHumidity = this.stateObj.attributes.current_humidity;
+
+    if (currentHumidity != null && !this.useCurrentAsPrimary) {
+      return html`
+        <p class="label">
+          <ha-svg-icon .path=${mdiWaterPercent}></ha-svg-icon>
+          ${this._renderCurrent(currentHumidity, "normal")}
+        </p>
+      `;
+    }
+
+    if (this._targetHumidity != null && this.useCurrentAsPrimary) {
+      return html`
+        <p class="label">
+          <ha-svg-icon .path=${mdiThermostat}></ha-svg-icon>
+          ${this._renderCurrent(this._targetHumidity, "normal")}
+        </p>
+      `;
+    }
+
+    return html`<p class="label"></p>`;
+  }
+
+  private _renderTarget(humidity: number, style: "normal" | "big") {
+    const formatOptions: Intl.NumberFormatOptions = {
       maximumFractionDigits: 0,
     };
+    if (style === "big") {
+      return html`
+        <ha-big-number
+          .value=${humidity}
+          .unit=${DOMAIN_ATTRIBUTES_UNITS.humidifier.current_humidity}
+          .hass=${this.hass}
+          .formatOptions=${formatOptions}
+          unit-position="bottom"
+        ></ha-big-number>
+      `;
+    }
 
     return html`
-      <ha-big-number
-        .value=${humidity}
-        unit="%"
-        unit-position="bottom"
-        .hass=${this.hass}
-        .formatOptions=${formatOptions}
-      ></ha-big-number>
+      ${this.hass.formatEntityAttributeValue(
+        this.stateObj,
+        "humidity",
+        humidity
+      )}
+    `;
+  }
+
+  private _renderCurrent(humidity: number, style: "normal" | "big") {
+    const formatOptions: Intl.NumberFormatOptions = {
+      maximumFractionDigits: 1,
+    };
+    if (style === "big") {
+      return html`
+        <ha-big-number
+          .value=${humidity}
+          .unit=${DOMAIN_ATTRIBUTES_UNITS.humidifier.current_humidity}
+          .hass=${this.hass}
+          .formatOptions=${formatOptions}
+          unit-position="bottom"
+        ></ha-big-number>
+      `;
+    }
+
+    return html`
+      ${this.hass.formatEntityAttributeValue(
+        this.stateObj,
+        "current_humidity",
+        humidity
+      )}
     `;
   }
 
@@ -219,10 +273,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            ${this._renderLabel()} ${this._renderTarget(targetHumidity)}
-            ${this._renderCurrentHumidity(
-              this.stateObj.attributes.current_humidity
-            )}
+            ${this._renderLabel()}${this._renderPrimary()}${this._renderSecondary()}
           </div>
           ${this._renderButtons()}
         </div>
@@ -246,10 +297,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
         >
         </ha-control-circular-slider>
         <div class="info">
-          ${this._renderLabel()}
-          ${this._renderCurrentHumidity(
-            this.stateObj.attributes.current_humidity
-          )}
+          ${this._renderLabel()} ${this._renderSecondary()}
         </div>
       </div>
     `;
