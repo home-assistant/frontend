@@ -255,6 +255,11 @@
           "turn_off": "Turn off"
         }
       },
+      "valve": {
+        "open_valve": "Open valve",
+        "close_valve": "Close valve",
+        "stop_valve": "Stop valve"
+      },
       "water_heater": {
         "currently": "[%key:ui::card::climate::currently%]",
         "on_off": "On / off",
@@ -1094,6 +1099,12 @@
           "start_mowing": "Start mowing",
           "pause": "Pause",
           "dock": "Return to dock"
+        },
+        "valve": {
+          "switch_mode": {
+            "button": "[%key:ui::dialogs::more_info_control::valve::switch_mode::button%]",
+            "position": "[%key:ui::dialogs::more_info_control::valve::switch_mode::position%]"
+          }
         }
       },
       "entity_registry": {
