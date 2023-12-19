@@ -2444,7 +2444,7 @@
             "triggers": {
               "name": "Triggers",
               "header": "When",
-              "description": "This list of triggers is what starts your automation. A trigger is a specific event happening in your home, for example: ''When the sun sets''.",
+              "description": "This list of triggers is what starts your automation. A trigger is a specific event happening in or around your home, for example: ''When the sun sets''.",
               "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
