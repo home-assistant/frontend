@@ -2,13 +2,15 @@ import "@material/mwc-list/mwc-list";
 import { mdiClose, mdiContentPaste, mdiPlus } from "@mdi/js";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { stringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/ha-dialog";
+import type { HaDialog } from "../../../components/ha-dialog";
 import "../../../components/ha-header-bar";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
@@ -91,6 +93,8 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   @state() private _filter = "";
 
   @state() private _manifests?: DomainManifestLookup;
+
+  @query("ha-dialog") private _dialog?: HaDialog;
 
   public showDialog(params): void {
     this._params = params;
@@ -490,6 +494,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
+    this._dialog!.scrollToPos(0, 0);
     const item = ev.currentTarget;
     if (item.group) {
       this._prev = this._group;
