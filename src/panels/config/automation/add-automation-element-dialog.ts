@@ -262,11 +262,9 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           result.push({
             group: false,
             icon: domainIcon(dmn),
-            key: `service_${domain}.${service}`,
-            name: `${domainToName(localize, dmn)}: ${
-              this.hass.localize(
-                `component.${domain}.services.${service}.name`
-              ) ||
+            key: `service_${dmn}.${service}`,
+            name: `${domain ? "" : `${domainToName(localize, dmn)}: `}${
+              this.hass.localize(`component.${dmn}.services.${service}.name`) ||
               services[dmn][service].name ||
               service
             }`,
