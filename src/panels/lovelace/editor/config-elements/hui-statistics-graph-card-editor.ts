@@ -212,6 +212,7 @@ export class HuiStatisticsGraphCardEditor
             },
             {
               name: "legend_mode",
+              required: true,
               selector: {
                 select: {
                   mode: "dropdown",
