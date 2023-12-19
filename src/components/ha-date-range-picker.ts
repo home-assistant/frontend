@@ -253,6 +253,7 @@ export class HaDateRangePicker extends LitElement {
         opening-direction=${this.openingDirection ||
         this._calcedOpeningDirection}
         first-day=${firstWeekdayIndex(this.hass.locale)}
+        language=${this.hass.locale.language}
       >
         <div slot="input" class="date-range-inputs" @click=${this._handleClick}>
           ${!this.minimal
