@@ -186,6 +186,10 @@ export default class HaAutomationAction extends LitElement {
     let actions: Action[];
     if (action === PASTE_VALUE) {
       actions = this.actions.concat(deepClone(this._clipboard!.action));
+    } else if (action.startsWith("service_")) {
+      actions = this.actions.concat({
+        service: action.substring(8),
+      });
     } else {
       const elClass = customElements.get(
         `ha-automation-action-${action}`

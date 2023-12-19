@@ -5,6 +5,7 @@ import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { domainIcon } from "../../../common/entity/domain_icon";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { stringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
@@ -25,6 +26,7 @@ import {
   CONDITION_GROUPS,
   CONDITION_ICONS,
 } from "../../../data/condition";
+import { domainToName } from "../../../data/integration";
 import { TRIGGER_GROUPS, TRIGGER_ICONS } from "../../../data/trigger";
 import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
@@ -124,6 +126,10 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
 
       const items = flattenGroups(groups).flat();
 
+      if (type === "action") {
+        items.push(...this._services(this.hass.localize, this.hass.services));
+      }
+
       const options: IFuseOptions<ListItem> = {
         keys: ["key", "name", "description"],
         isCaseSensitive: false,
@@ -143,26 +149,107 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       localize: LocalizeFunc
     ): ListItem[] => {
       const groupKey = buildingBlocks ? "building_blocks" : "groups";
+
+      if (type === "action" && group?.startsWith("service_")) {
+        return this._services(
+          this.hass.localize,
+          this.hass.services,
+          group.substring(8)
+        );
+      }
+
       const groups: AutomationElementGroup = group
         ? TYPES[type][groupKey][group].members
         : TYPES[type][groupKey];
 
-      return Object.entries(groups)
-        .map(([key, options]) =>
-          this._convertToItem(key, options, type, localize)
-        )
-        .sort((a, b) => {
-          if (a.group && b.group) {
-            return 0;
-          }
-          if (a.group && !b.group) {
-            return 1;
-          }
-          if (!a.group && b.group) {
-            return -1;
-          }
-          return stringCompare(a.name, b.name, this.hass.locale.language);
+      const result = Object.entries(groups).map(([key, options]) =>
+        this._convertToItem(key, options, type, localize)
+      );
+
+      if (type === "action" && !this._group) {
+        result.unshift(
+          ...this._serviceGroups(this.hass.localize, this.hass.services)
+        );
+      }
+
+      return result.sort((a, b) => {
+        if (a.group && b.group) {
+          return 0;
+        }
+        if (a.group && !b.group) {
+          return 1;
+        }
+        if (!a.group && b.group) {
+          return -1;
+        }
+        return stringCompare(a.name, b.name, this.hass.locale.language);
+      });
+    }
+  );
+
+  private _serviceGroups = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      services: HomeAssistant["services"]
+    ): ListItem[] => {
+      if (!services) {
+        return [];
+      }
+      return Object.keys(services)
+        .sort()
+        .map((domain) => ({
+          group: true,
+          icon: domainIcon(domain),
+          key: `service_${domain}`,
+          name: domainToName(localize, domain),
+          description: "",
+        }));
+    }
+  );
+
+  private _services = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      services: HomeAssistant["services"],
+      domain?: string
+    ): ListItem[] => {
+      if (!services) {
+        return [];
+      }
+      const result: ListItem[] = [];
+
+      const addDomain = (dmn: string) => {
+        const services_keys = Object.keys(services[dmn]).sort();
+
+        for (const service of services_keys) {
+          result.push({
+            group: false,
+            icon: domainIcon(dmn),
+            key: `service_${domain}.${service}`,
+            name: `${domainToName(localize, dmn)}: ${
+              this.hass.localize(
+                `component.${domain}.services.${service}.name`
+              ) ||
+              services[dmn][service].name ||
+              service
+            }`,
+            description: "",
+          });
+        }
+      };
+
+      if (domain) {
+        addDomain(domain);
+        return result;
+      }
+
+      Object.keys(services)
+        .sort()
+        .forEach((dmn) => {
+          addDomain(dmn);
         });
+
+      return result;
     }
   );
 

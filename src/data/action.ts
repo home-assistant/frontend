@@ -42,7 +42,6 @@ export const YAML_ONLY_ACTION_TYPES = new Set<keyof typeof ACTION_ICONS>([
 
 export const ACTION_GROUPS: AutomationElementGroup = {
   device_id: {},
-  service: {},
   play_media: {},
   activate_scene: {},
   other: {
