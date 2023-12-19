@@ -178,7 +178,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         this._convertToItem(key, options, type, localize)
       );
 
-      if (type === "action") {
+      if (type === "action" && !buildingBlocks) {
         if (!this._group) {
           result.unshift(
             ...this._serviceGroups(localize, services, manifests, false, false)
@@ -226,10 +226,10 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         .forEach((domain) => {
           const manifest = manifests[domain];
           if (
-            (!helper && !other && manifest.integration_type === "entity") ||
-            (helper && manifest.integration_type === "helper") ||
+            (!helper && !other && manifest?.integration_type === "entity") ||
+            (helper && manifest?.integration_type === "helper") ||
             (other &&
-              !["helper", "entity"].includes(manifest.integration_type || ""))
+              !["helper", "entity"].includes(manifest?.integration_type || ""))
           ) {
             result.push({
               group: true,
