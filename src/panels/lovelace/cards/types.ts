@@ -24,6 +24,10 @@ export type AlarmPanelCardConfigState =
   | "arm_vacation"
   | "arm_custom_bypass";
 
+export type LovelaceCardFeatureLayout = {
+  type?: "vertical" | "horizontal" | "compact";
+};
+
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
@@ -506,4 +510,5 @@ export interface TileCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
   icon_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
+  feature_layout?: LovelaceCardFeatureLayout;
 }

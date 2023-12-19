@@ -10,6 +10,7 @@ import {
 import { customElement, property } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
+import { LovelaceCardFeatureLayout } from "../cards/types";
 import { createCardFeatureElement } from "../create-element/create-card-feature-element";
 import type { LovelaceCardFeature } from "../types";
 import type { LovelaceCardFeatureConfig } from "./types";
@@ -21,6 +22,8 @@ export class HuiCardFeatures extends LitElement {
   @property({ attribute: false }) public stateObj!: HassEntity;
 
   @property({ attribute: false }) public features?: LovelaceCardFeatureConfig[];
+
+  @property({ attribute: false }) public layout?: LovelaceCardFeatureLayout;
 
   @property({ attribute: false }) public color?: string;
 
@@ -58,10 +61,15 @@ export class HuiCardFeatures extends LitElement {
     if (!this.features) {
       return nothing;
     }
+
+    const containerClass = this.layout?.type ? ` ${this.layout.type}` : "";
+
     return html`
-      ${this.features.map((featureConf) =>
-        this.renderFeature(featureConf, this.stateObj)
-      )}
+      <div class="container${containerClass}">
+        ${this.features.map((featureConf) =>
+          this.renderFeature(featureConf, this.stateObj)
+        )}
+      </div>
     `;
   }
 
@@ -69,8 +77,21 @@ export class HuiCardFeatures extends LitElement {
     return css`
       :host {
         --feature-color: var(--state-icon-color);
+        --feature-padding: 12px;
+      }
+      .container {
         display: flex;
         flex-direction: column;
+        padding: var(--feature-padding);
+        padding-top: 0px;
+        gap: var(--feature-padding);
+      }
+      .container.horizontal {
+        display: flex;
+        flex-direction: row;
+      }
+      .container.horizontal > * {
+        flex: 1;
       }
     `;
   }
