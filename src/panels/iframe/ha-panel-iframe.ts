@@ -41,9 +41,9 @@ class HaPanelIframe extends LitElement {
           )}
           src=${this.panel.config.url}
           sandbox="allow-forms allow-popups allow-pointer-lock allow-same-origin allow-scripts allow-modals allow-downloads"
-          allow="${ifDefined(
+          allow=${ifDefined(
             this.panel.config.allow === null ? 'fullscreen' : this.panel.config.allow
-          )}"
+          )}
         ></iframe>
       </hass-subpage>
     `;
