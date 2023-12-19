@@ -4,7 +4,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
-  any,
   array,
   assert,
   assign,
@@ -29,11 +28,15 @@ import {
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import { getEntityDefaultTileIconAction } from "../../cards/hui-tile-card";
-import type { TileCardConfig } from "../../cards/types";
+import type {
+  LovelaceCardFeatureLayout,
+  TileCardConfig,
+} from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { cardFeatureConfig } from "../structs/card-feature-struct";
 import { EditSubElementEvent, SubElementEditorConfig } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
@@ -93,6 +96,7 @@ const HIDDEN_ATTRIBUTES = [
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
+  cardFeatureConfig,
   object({
     entity: optional(string()),
     name: optional(string()),
@@ -104,7 +108,6 @@ const cardConfigStruct = assign(
     vertical: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     icon_tap_action: optional(actionConfigStruct),
-    features: optional(array(any())),
   })
 );
 
@@ -299,6 +302,8 @@ export class HuiTileCardEditor
         .stateObj=${stateObj}
         .features=${this._config!.features ?? []}
         @features-changed=${this._featuresChanged}
+        .layout=${this._config!.feature_layout}
+        @layout-changed=${this._layoutChanged}
         @edit-detail-element=${this._editDetailElement}
       ></hui-card-features-editor>
     `;
@@ -347,6 +352,21 @@ export class HuiTileCardEditor
     if (features.length === 0) {
       delete config.features;
     }
+
+    fireEvent(this, "config-changed", { config });
+  }
+
+  private _layoutChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    const layout = ev.detail.layout as LovelaceCardFeatureLayout;
+    const config: TileCardConfig = {
+      ...this._config,
+      feature_layout: layout,
+    };
 
     fireEvent(this, "config-changed", { config });
   }
