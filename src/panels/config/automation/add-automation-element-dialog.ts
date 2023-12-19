@@ -79,6 +79,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this._params = undefined;
     this._group = undefined;
     this._prev = undefined;
+    this._filter = "";
   }
 
   private _convertToItem = (
