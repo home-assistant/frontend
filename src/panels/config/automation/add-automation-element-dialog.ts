@@ -420,6 +420,10 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   }
 
   private _back() {
+    if (this._filter) {
+      this._filter = "";
+      return;
+    }
     if (this._prev) {
       this._group = this._prev;
       this._prev = undefined;
