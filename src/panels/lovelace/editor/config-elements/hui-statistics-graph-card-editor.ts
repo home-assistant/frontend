@@ -72,6 +72,9 @@ const cardConfigStruct = assign(
     stat_types: optional(union([array(statTypeStruct), statTypeStruct])),
     unit: optional(string()),
     hide_legend: optional(boolean()),
+    legend_mode: optional(
+      union([literal("off"), literal("compact"), literal("full")])
+    ),
     logarithmic_scale: optional(boolean()),
   })
 );
@@ -208,9 +211,18 @@ export class HuiStatisticsGraphCardEditor
               ],
             },
             {
-              name: "hide_legend",
-              required: false,
-              selector: { boolean: {} },
+              name: "legend_mode",
+              selector: {
+                select: {
+                  mode: "dropdown",
+                  options: ["full", "compact", "off"].map((mode) => ({
+                    label: localize(
+                      `ui.panel.lovelace.editor.card.statistics-graph.legend_modes.${mode}`
+                    ),
+                    value: mode,
+                  })),
+                },
+              },
             },
             {
               name: "logarithmic_scale",
@@ -261,6 +273,7 @@ export class HuiStatisticsGraphCardEditor
     const data = {
       chart_type: "line",
       period: "hour",
+      legend_mode: this._config.hide_legend ? "off" : "full",
       ...this._config,
       stat_types: configured_stat_types,
     };
@@ -298,6 +311,7 @@ export class HuiStatisticsGraphCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
+    delete ev.detail.value.hide_legend;
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
@@ -352,7 +366,7 @@ export class HuiStatisticsGraphCardEditor
       case "stat_types":
       case "period":
       case "unit":
-      case "hide_legend":
+      case "legend_mode":
       case "logarithmic_scale":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.statistics-graph.${schema.name}`

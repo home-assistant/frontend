@@ -32,7 +32,11 @@ import {
 } from "../../data/recorder";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
-import type { ChartResizeOptions, HaChartBase } from "./ha-chart-base";
+import type {
+  ChartResizeOptions,
+  ChartDatasetExtra,
+  HaChartBase,
+} from "./ha-chart-base";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -42,6 +46,8 @@ export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   state: "sum",
   change: "sum",
 };
+
+export type LegendMode = "full" | "compact" | "off";
 
 @customElement("statistics-chart")
 export class StatisticsChart extends LitElement {
@@ -69,7 +75,7 @@ export class StatisticsChart extends LitElement {
 
   @property() public chartType: ChartType = "line";
 
-  @property({ type: Boolean }) public hideLegend = false;
+  @property() public legendMode: LegendMode = "full";
 
   @property({ type: Boolean }) public logarithmicScale = false;
 
@@ -79,9 +85,13 @@ export class StatisticsChart extends LitElement {
 
   @state() private _chartData: ChartData = { datasets: [] };
 
+  @state() private _chartDatasetExtra: ChartDatasetExtra[] = [];
+
   @state() private _statisticIds: string[] = [];
 
   @state() private _chartOptions?: ChartOptions;
+
+  @state() private _hiddenStats = new Set<string>();
 
   @query("ha-chart-base") private _chart?: HaChartBase;
 
@@ -96,13 +106,16 @@ export class StatisticsChart extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues) {
+    if (changedProps.has("legendMode")) {
+      this._hiddenStats.clear();
+    }
     if (
       !this.hasUpdated ||
       changedProps.has("unit") ||
       changedProps.has("period") ||
       changedProps.has("chartType") ||
       changedProps.has("logarithmicScale") ||
-      changedProps.has("hideLegend")
+      changedProps.has("legendMode")
     ) {
       this._createOptions();
     }
@@ -110,7 +123,8 @@ export class StatisticsChart extends LitElement {
       changedProps.has("statisticsData") ||
       changedProps.has("statTypes") ||
       changedProps.has("chartType") ||
-      changedProps.has("hideLegend")
+      changedProps.has("_hiddenStats") ||
+      changedProps.has("legendMode")
     ) {
       this._generateData();
     }
@@ -145,12 +159,28 @@ export class StatisticsChart extends LitElement {
 
     return html`
       <ha-chart-base
+        .externalHidden=${this.legendMode === "compact"}
         .hass=${this.hass}
         .data=${this._chartData}
+        .extraData=${this._chartDatasetExtra}
         .options=${this._chartOptions}
         .chartType=${this.chartType}
+        @dataset-hidden=${this._datasetHidden}
+        @dataset-unhidden=${this._datasetUnhidden}
       ></ha-chart-base>
     `;
+  }
+
+  private _datasetHidden(ev) {
+    ev.stopPropagation();
+    this._hiddenStats.add(this._statisticIds[ev.detail.index]);
+    this.requestUpdate("_hiddenStats");
+  }
+
+  private _datasetUnhidden(ev) {
+    ev.stopPropagation();
+    this._hiddenStats.delete(this._statisticIds[ev.detail.index]);
+    this.requestUpdate("_hiddenStats");
   }
 
   private _createOptions(unit?: string) {
@@ -226,7 +256,7 @@ export class StatisticsChart extends LitElement {
           propagate: true,
         },
         legend: {
-          display: !this.hideLegend,
+          display: this.legendMode !== "off",
           labels: {
             usePointStyle: true,
           },
@@ -274,6 +304,7 @@ export class StatisticsChart extends LitElement {
     let colorIndex = 0;
     const statisticsData = Object.entries(this.statisticsData);
     const totalDataSets: ChartDataset<"line">[] = [];
+    const totalDatasetExtras: ChartDatasetExtra[] = [];
     const statisticIds: string[] = [];
     let endTime: Date;
 
@@ -324,6 +355,7 @@ export class StatisticsChart extends LitElement {
 
       // The datasets for the current statistic
       const statDataSets: ChartDataset<"line">[] = [];
+      const statDatasetExtras: ChartDatasetExtra[] = [];
 
       const pushData = (
         start: Date,
@@ -384,9 +416,20 @@ export class StatisticsChart extends LitElement {
           })
         : this.statTypes;
 
+      let displayed_legend = false;
       sortedTypes.forEach((type) => {
         if (statisticsHaveType(stats, type)) {
           const band = drawBands && (type === "min" || type === "max");
+          if (this.legendMode === "compact") {
+            const show_legend = hasMean
+              ? type === "mean"
+              : displayed_legend === false;
+            statDatasetExtras.push({
+              legend_label: name,
+              show_legend,
+            });
+            displayed_legend = displayed_legend || show_legend;
+          }
           statTypes.push(type);
           statDataSets.push({
             label: name
@@ -405,9 +448,15 @@ export class StatisticsChart extends LitElement {
                   : false
               : false,
             borderColor:
-              band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color,
+              band && hasMean
+                ? color + (this.legendMode === "off" ? "00" : "7F")
+                : color,
             backgroundColor: band ? color + "3F" : color + "7F",
             pointRadius: 0,
+            hidden:
+              this.legendMode === "compact"
+                ? this._hiddenStats.has(statistic_id)
+                : false,
             data: [],
             // @ts-ignore
             unit: meta?.unit_of_measurement,
@@ -446,6 +495,7 @@ export class StatisticsChart extends LitElement {
 
       // Concat two arrays
       Array.prototype.push.apply(totalDataSets, statDataSets);
+      Array.prototype.push.apply(totalDatasetExtras, statDatasetExtras);
     });
 
     if (unit) {
@@ -455,6 +505,7 @@ export class StatisticsChart extends LitElement {
     this._chartData = {
       datasets: totalDataSets,
     };
+    this._chartDatasetExtra = totalDatasetExtras;
     this._statisticIds = statisticIds;
   }
 

@@ -14,6 +14,7 @@ import {
 } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import { LovelaceCardFeatureConfig } from "../card-features/types";
+import type { LegendMode } from "../../../components/chart/statistics-chart";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -335,6 +336,7 @@ export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   stat_types?: StatisticType | StatisticType[];
   chart_type?: "line" | "bar";
   hide_legend?: boolean;
+  legend_mode?: LegendMode;
   logarithmic_scale?: boolean;
 }
 
