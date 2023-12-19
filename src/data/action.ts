@@ -5,6 +5,7 @@ import {
   mdiCallSplit,
   mdiCodeBraces,
   mdiDevices,
+  mdiDotsHorizontal,
   mdiGestureDoubleTap,
   mdiHandBackRight,
   mdiPalette,
@@ -15,8 +16,9 @@ import {
   mdiTimerOutline,
   mdiTrafficLight,
 } from "@mdi/js";
+import { AutomationElementGroup } from "./automation";
 
-export const ACTION_TYPES = {
+export const ACTION_ICONS = {
   condition: mdiAbTesting,
   delay: mdiTimerOutline,
   event: mdiGestureDoubleTap,
@@ -34,6 +36,32 @@ export const ACTION_TYPES = {
   variables: mdiApplicationVariableOutline,
 } as const;
 
-export const YAML_ONLY_ACTION_TYPES = new Set<keyof typeof ACTION_TYPES>([
+export const YAML_ONLY_ACTION_TYPES = new Set<keyof typeof ACTION_ICONS>([
   "variables",
 ]);
+
+export const ACTION_GROUPS: AutomationElementGroup = {
+  device_id: {},
+  service: {},
+  play_media: {},
+  activate_scene: {},
+  other: {
+    icon: mdiDotsHorizontal,
+    members: {
+      event: {},
+    },
+  },
+} as const;
+
+export const ACTION_BUILDING_BLOCKS_GROUPS: AutomationElementGroup = {
+  condition: {},
+  delay: {},
+  wait_template: {},
+  wait_for_trigger: {},
+  repeat: {},
+  choose: {},
+  if: {},
+  stop: {},
+  parallel: {},
+  variables: {},
+} as const;

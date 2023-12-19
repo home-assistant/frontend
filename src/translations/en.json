@@ -2461,6 +2461,17 @@
               "unsupported_platform": "No visual editor support for platform: {platform}",
               "type_select": "Trigger type",
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
+              "groups": {
+                "entity": {
+                  "label": "Entity",
+                  "description": "When something happens to an entity"
+                },
+                "time_location": {
+                  "label": "Time and location",
+                  "description": "When someone enters or leaves a zone, or at a specific time."
+                },
+                "other": { "label": "Other" }
+              },
               "type": {
                 "calendar": {
                   "label": "Calendar",
@@ -2638,6 +2649,7 @@
               "header": "Conditions",
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
+              "add_building_block": "Add building block",
               "test": "Test",
               "testing_error": "Condition did not pass",
               "testing_pass": "Condition passes",
@@ -2657,6 +2669,17 @@
               "unsupported_condition": "No visual editor support for condition: {condition}",
               "type_select": "Condition type",
               "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
+              "groups": {
+                "entity": {
+                  "label": "Entity",
+                  "description": "If an entity is in a specific state"
+                },
+                "time_location": {
+                  "label": "Time and location",
+                  "description": "If someone is in a zone or if the current time is before or after a specified time"
+                },
+                "other": { "label": "Other" }
+              },
               "type": {
                 "and": {
                   "label": "And",
@@ -2674,6 +2697,9 @@
                     "for": "Duration",
                     "hvac_mode": "HVAC mode",
                     "preset_mode": "Preset mode"
+                  },
+                  "description": {
+                    "picker": "If something happens to a device. Great way to start."
                   }
                 },
                 "not": {
@@ -2774,6 +2800,7 @@
               "header": "Actions",
               "learn_more": "Learn more about actions",
               "add": "Add action",
+              "add_building_block": "Add building block",
               "invalid_action": "Invalid action",
               "run": "Run",
               "run_action_error": "Error running action",
@@ -2795,6 +2822,10 @@
               "unsupported_action": "No visual editor support for this action",
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
+              "groups": {
+                "helpers": { "label": "Helpers" },
+                "other": { "label": "Other" }
+              },
               "type": {
                 "service": {
                   "label": "Call service",
@@ -2814,6 +2845,7 @@
                 "play_media": {
                   "label": "Play media",
                   "description": {
+                    "picker": "Play media on a media player",
                     "full": "Play {hasMedia, select, \n true {{media}} \n other {media}\n } on {hasMediaPlayer, select, \n true {{mediaPlayer}} \n other {a media player}\n }"
                   }
                 },

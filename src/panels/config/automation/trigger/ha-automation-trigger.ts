@@ -1,59 +1,25 @@
 import "@material/mwc-button";
-import type { ActionDetail } from "@material/mwc-list";
-import {
-  mdiArrowDown,
-  mdiArrowUp,
-  mdiContentPaste,
-  mdiDrag,
-  mdiPlus,
-} from "@mdi/js";
+import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import memoizeOne from "memoize-one";
 import type { SortableEvent } from "sortablejs";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stringCompare } from "../../../../common/string/compare";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
-import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
 import { AutomationClipboard, Trigger } from "../../../../data/automation";
-import { TRIGGER_TYPES } from "../../../../data/trigger";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import type { SortableInstance } from "../../../../resources/sortable";
-import { Entries, HomeAssistant } from "../../../../types";
+import { HomeAssistant } from "../../../../types";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
-import "./types/ha-automation-trigger-calendar";
-import "./types/ha-automation-trigger-conversation";
-import "./types/ha-automation-trigger-device";
-import "./types/ha-automation-trigger-event";
-import "./types/ha-automation-trigger-geo_location";
-import "./types/ha-automation-trigger-homeassistant";
-import "./types/ha-automation-trigger-mqtt";
-import "./types/ha-automation-trigger-numeric_state";
-import "./types/ha-automation-trigger-persistent_notification";
-import "./types/ha-automation-trigger-state";
-import "./types/ha-automation-trigger-sun";
-import "./types/ha-automation-trigger-tag";
-import "./types/ha-automation-trigger-template";
-import "./types/ha-automation-trigger-time";
-import "./types/ha-automation-trigger-time_pattern";
-import "./types/ha-automation-trigger-webhook";
-import "./types/ha-automation-trigger-zone";
-
-const PASTE_VALUE = "__paste__";
+import {
+  PASTE_VALUE,
+  showAddAutomationElementDialog,
+} from "../show-add-automation-element-dialog";
 
 @customElement("ha-automation-trigger")
 export default class HaAutomationTrigger extends LitElement {
@@ -147,46 +113,47 @@ export default class HaAutomationTrigger extends LitElement {
             </ha-automation-trigger-row>
           `
         )}
-        <ha-button-menu
-          @action=${this._addTrigger}
-          .disabled=${this.disabled}
-          fixed
-        >
-          <ha-button
-            slot="trigger"
-            outlined
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.add"
-            )}
-            .disabled=${this.disabled}
-          >
-            <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-          </ha-button>
-          ${this._clipboard?.trigger
-            ? html` <mwc-list-item .value=${PASTE_VALUE} graphic="icon">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.triggers.paste"
-                )}
-                (${this.hass.localize(
-                  `ui.panel.config.automation.editor.triggers.type.${this._clipboard.trigger.platform}.label`
-                )})
-                <ha-svg-icon
-                  slot="graphic"
-                  .path=${mdiContentPaste}
-                ></ha-svg-icon
-              ></mwc-list-item>`
-            : nothing}
-          ${this._processedTypes(this.hass.localize).map(
-            ([opt, label, icon]) => html`
-              <mwc-list-item .value=${opt} graphic="icon">
-                ${label}<ha-svg-icon slot="graphic" .path=${icon}></ha-svg-icon
-              ></mwc-list-item>
-            `
+        <ha-button
+          outlined
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.triggers.add"
           )}
-        </ha-button-menu>
+          .disabled=${this.disabled}
+          @click=${this._addTriggerDialog}
+        >
+          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+        </ha-button>
       </div>
     `;
   }
+
+  private _addTriggerDialog() {
+    showAddAutomationElementDialog(this, {
+      type: "trigger",
+      add: this._addTrigger,
+      clipboardItem: this._clipboard!.trigger?.platform,
+    });
+  }
+
+  private _addTrigger = (value: string) => {
+    let triggers: Trigger[];
+    if (value === PASTE_VALUE) {
+      triggers = this.triggers.concat(deepClone(this._clipboard!.trigger));
+    } else {
+      const platform = value as Trigger["platform"];
+      const elClass = customElements.get(
+        `ha-automation-trigger-${platform}`
+      ) as CustomElementConstructor & {
+        defaultConfig: Omit<Trigger, "platform">;
+      };
+      triggers = this.triggers.concat({
+        platform: platform as any,
+        ...elClass.defaultConfig,
+      });
+    }
+    this._focusLastTriggerOnChange = true;
+    fireEvent(this, "value-changed", { value: triggers });
+  };
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
@@ -261,30 +228,6 @@ export default class HaAutomationTrigger extends LitElement {
     return this._triggerKeys.get(action)!;
   }
 
-  private _addTrigger(ev: CustomEvent<ActionDetail>) {
-    const value = (ev.currentTarget as HaSelect).items[ev.detail.index].value;
-
-    let triggers: Trigger[];
-    if (value === PASTE_VALUE) {
-      triggers = this.triggers.concat(deepClone(this._clipboard!.trigger));
-    } else {
-      const platform = value as Trigger["platform"];
-
-      const elClass = customElements.get(
-        `ha-automation-trigger-${platform}`
-      ) as CustomElementConstructor & {
-        defaultConfig: Omit<Trigger, "platform">;
-      };
-
-      triggers = this.triggers.concat({
-        platform: platform as any,
-        ...elClass.defaultConfig,
-      });
-    }
-    this._focusLastTriggerOnChange = true;
-    fireEvent(this, "value-changed", { value: triggers });
-  }
-
   private _moveUp(ev) {
     const index = (ev.target as any).index;
     const newIndex = index - 1;
@@ -335,22 +278,6 @@ export default class HaAutomationTrigger extends LitElement {
       value: this.triggers.concat(deepClone(this.triggers[index])),
     });
   }
-
-  private _processedTypes = memoizeOne(
-    (localize: LocalizeFunc): [string, string, string][] =>
-      (Object.entries(TRIGGER_TYPES) as Entries<typeof TRIGGER_TYPES>)
-        .map(
-          ([action, icon]) =>
-            [
-              action,
-              localize(
-                `ui.panel.config.automation.editor.triggers.type.${action}.label`
-              ),
-              icon,
-            ] as [string, string, string]
-        )
-        .sort((a, b) => stringCompare(a[1], b[1], this.hass.locale.language))
-  );
 
   static get styles(): CSSResultGroup {
     return [
