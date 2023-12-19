@@ -99,6 +99,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   public showDialog(params): void {
     this._params = params;
     if (this._params?.type === "action") {
+      this.hass.loadBackendTranslation("services");
       this._fetchManifests();
     }
   }
@@ -301,10 +302,13 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
             key: `service_${dmn}.${service}`,
             name: `${domain ? "" : `${domainToName(localize, dmn)}: `}${
               this.hass.localize(`component.${dmn}.services.${service}.name`) ||
-              services[dmn][service].name ||
+              services[dmn][service]?.name ||
               service
             }`,
-            description: "",
+            description:
+              this.hass.localize(
+                `component.${domain}.services.${service}.description`
+              ) || services[dmn][service]?.description,
           });
         }
       };
