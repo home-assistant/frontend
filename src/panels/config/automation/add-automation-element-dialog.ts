@@ -26,7 +26,11 @@ import {
   CONDITION_GROUPS,
   CONDITION_ICONS,
 } from "../../../data/condition";
-import { domainToName } from "../../../data/integration";
+import {
+  IntegrationManifest,
+  domainToName,
+  fetchIntegrationManifests,
+} from "../../../data/integration";
 import { TRIGGER_GROUPS, TRIGGER_ICONS } from "../../../data/trigger";
 import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
@@ -58,6 +62,10 @@ interface ListItem {
   group: boolean;
 }
 
+interface DomainManifestLookup {
+  [domain: string]: IntegrationManifest;
+}
+
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -70,8 +78,13 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
 
   @state() private _filter = "";
 
+  @state() private _manifests?: DomainManifestLookup;
+
   public showDialog(params): void {
     this._params = params;
+    if (this._params?.type === "action") {
+      this._fetchManifests();
+    }
   }
 
   public closeDialog(): void {
@@ -82,6 +95,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this._group = undefined;
     this._prev = undefined;
     this._filter = "";
+    this._manifests = undefined;
   }
 
   private _convertToItem = (
@@ -146,16 +160,14 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       type: AddAutomationElementDialogParams["type"],
       buildingBlocks: AddAutomationElementDialogParams["building_block"],
       group: string | undefined,
-      localize: LocalizeFunc
+      localize: LocalizeFunc,
+      services: HomeAssistant["services"],
+      manifests?: DomainManifestLookup
     ): ListItem[] => {
       const groupKey = buildingBlocks ? "building_blocks" : "groups";
 
       if (type === "action" && group?.startsWith("service_")) {
-        return this._services(
-          this.hass.localize,
-          this.hass.services,
-          group.substring(8)
-        );
+        return this._services(localize, services, group.substring(8));
       }
 
       const groups: AutomationElementGroup = group
@@ -166,10 +178,20 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         this._convertToItem(key, options, type, localize)
       );
 
-      if (type === "action" && !this._group) {
-        result.unshift(
-          ...this._serviceGroups(this.hass.localize, this.hass.services)
-        );
+      if (type === "action") {
+        if (!this._group) {
+          result.unshift(
+            ...this._serviceGroups(localize, services, manifests, false, false)
+          );
+        } else if (this._group === "helpers") {
+          result.unshift(
+            ...this._serviceGroups(localize, services, manifests, true, false)
+          );
+        } else if (this._group === "other") {
+          result.unshift(
+            ...this._serviceGroups(localize, services, manifests, false, true)
+          );
+        }
       }
 
       return result.sort((a, b) => {
@@ -190,20 +212,35 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   private _serviceGroups = memoizeOne(
     (
       localize: LocalizeFunc,
-      services: HomeAssistant["services"]
+      services: HomeAssistant["services"],
+      manifests: DomainManifestLookup | undefined,
+      helper: boolean,
+      other: boolean
     ): ListItem[] => {
-      if (!services) {
+      if (!services || !manifests) {
         return [];
       }
-      return Object.keys(services)
+      const result: ListItem[] = [];
+      Object.keys(services)
         .sort()
-        .map((domain) => ({
-          group: true,
-          icon: domainIcon(domain),
-          key: `service_${domain}`,
-          name: domainToName(localize, domain),
-          description: "",
-        }));
+        .forEach((domain) => {
+          const manifest = manifests[domain];
+          if (
+            (!helper && !other && manifest.integration_type === "entity") ||
+            (helper && manifest.integration_type === "helper") ||
+            (other &&
+              !["helper", "entity"].includes(manifest.integration_type || ""))
+          ) {
+            result.push({
+              group: true,
+              icon: domainIcon(domain),
+              key: `service_${domain}`,
+              name: domainToName(localize, domain, manifest),
+              description: "",
+            });
+          }
+        });
+      return result;
     }
   );
 
@@ -253,6 +290,15 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     }
   );
 
+  private async _fetchManifests() {
+    const manifests = {};
+    const fetched = await fetchIntegrationManifests(this.hass);
+    for (const manifest of fetched) {
+      manifests[manifest.domain] = manifest;
+    }
+    this._manifests = manifests;
+  }
+
   protected render() {
     if (!this._params) {
       return nothing;
@@ -269,7 +315,9 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           this._params.type,
           this._params.building_block,
           this._group,
-          this.hass.localize
+          this.hass.localize,
+          this.hass.services,
+          this._manifests
         );
 
     return html`
@@ -278,10 +326,16 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           <ha-header-bar>
             <span slot="title"
               >${this._group
-                ? this.hass.localize(
-                    // @ts-ignore
-                    `ui.panel.config.automation.editor.${this._params.type}s.groups.${this._group}.label`
-                  )
+                ? this._group.startsWith("service_")
+                  ? domainToName(
+                      this.hass.localize,
+                      this._group.substring(8),
+                      this._manifests?.[this._group.substring(8)]
+                    )
+                  : this.hass.localize(
+                      // @ts-ignore
+                      `ui.panel.config.automation.editor.${this._params.type}s.groups.${this._group}.label`
+                    )
                 : this.hass.localize(
                     `ui.panel.config.automation.editor.${this._params.type}s.add`
                   )}</span

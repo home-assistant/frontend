@@ -14,6 +14,7 @@ import {
   mdiRoomService,
   mdiShuffleDisabled,
   mdiTimerOutline,
+  mdiTools,
   mdiTrafficLight,
 } from "@mdi/js";
 import { AutomationElementGroup } from "./automation";
@@ -44,6 +45,10 @@ export const ACTION_GROUPS: AutomationElementGroup = {
   device_id: {},
   play_media: {},
   activate_scene: {},
+  helpers: {
+    icon: mdiTools,
+    members: {},
+  },
   other: {
     icon: mdiDotsHorizontal,
     members: {
