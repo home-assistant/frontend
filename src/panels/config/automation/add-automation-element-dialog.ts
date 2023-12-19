@@ -1,5 +1,6 @@
 import "@material/mwc-list/mwc-list";
 import { mdiClose, mdiContentPaste, mdiPlus } from "@mdi/js";
+import Fuse, { IFuseOptions } from "fuse.js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -12,6 +13,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
+import "../../../components/search-input";
 import {
   ACTION_BUILDING_BLOCKS_GROUPS,
   ACTION_GROUPS,
@@ -46,6 +48,14 @@ const TYPES = {
   },
 };
 
+interface ListItem {
+  key: string;
+  name: string;
+  description: string;
+  icon: string;
+  group: boolean;
+}
+
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -55,6 +65,8 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   @state() private _group?: string;
 
   @state() private _prev?: string;
+
+  @state() private _filter = "";
 
   public showDialog(params): void {
     this._params = params;
@@ -69,42 +81,75 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this._prev = undefined;
   }
 
-  private _processedTypes = memoizeOne(
+  private _convertToItem = (
+    key: string,
+    options,
+    type: AddAutomationElementDialogParams["type"],
+    localize: LocalizeFunc
+  ): ListItem => ({
+    group: Boolean(options.members),
+    key,
+    name: localize(
+      // @ts-ignore
+      `ui.panel.config.automation.editor.${type}s.${
+        options.members ? "groups" : "type"
+      }.${key}.label`
+    ),
+    description: localize(
+      // @ts-ignore
+      `ui.panel.config.automation.editor.${type}s.${
+        options.members ? "groups" : "type"
+      }.${key}.description${options.members ? "" : ".picker"}`
+    ),
+    icon: options.icon || TYPES[type].icons[key],
+  });
+
+  private _getFilteredItems = memoizeOne(
+    (
+      type: AddAutomationElementDialogParams["type"],
+      buildingBlocks: AddAutomationElementDialogParams["building_block"],
+      filter: string,
+      localize: LocalizeFunc
+    ): ListItem[] => {
+      const groupKey = buildingBlocks ? "building_blocks" : "groups";
+      const groups: AutomationElementGroup = TYPES[type][groupKey];
+
+      const flattenGroups = (group: AutomationElementGroup) =>
+        Object.entries(group).map(([key, options]) =>
+          options.members
+            ? flattenGroups(options.members)
+            : this._convertToItem(key, options, type, localize)
+        );
+
+      const items = flattenGroups(groups).flat();
+
+      const options: IFuseOptions<ListItem> = {
+        keys: ["key", "name", "description"],
+        isCaseSensitive: false,
+        minMatchCharLength: Math.min(filter.length, 2),
+        threshold: 0.2,
+      };
+      const fuse = new Fuse(items, options);
+      return fuse.search(filter).map((result) => result.item);
+    }
+  );
+
+  private _getGroupItems = memoizeOne(
     (
       type: AddAutomationElementDialogParams["type"],
       buildingBlocks: AddAutomationElementDialogParams["building_block"],
       group: string | undefined,
       localize: LocalizeFunc
-    ): {
-      key: string;
-      name: string;
-      description: string;
-      icon: string;
-      group: boolean;
-    }[] => {
+    ): ListItem[] => {
       const groupKey = buildingBlocks ? "building_blocks" : "groups";
       const groups: AutomationElementGroup = group
         ? TYPES[type][groupKey][group].members
         : TYPES[type][groupKey];
 
       return Object.entries(groups)
-        .map(([key, options]) => ({
-          group: Boolean(options.members),
-          key,
-          name: localize(
-            // @ts-ignore
-            `ui.panel.config.automation.editor.${type}s.${
-              options.members ? "groups" : "type"
-            }.${key}.label`
-          ),
-          description: localize(
-            // @ts-ignore
-            `ui.panel.config.automation.editor.${type}s.${
-              options.members ? "groups" : "type"
-            }.${key}.description${options.members ? "" : ".picker"}`
-          ),
-          icon: options.icon || TYPES[type].icons[key],
-        }))
+        .map(([key, options]) =>
+          this._convertToItem(key, options, type, localize)
+        )
         .sort((a, b) => {
           if (a.group && b.group) {
             return 0;
@@ -125,12 +170,19 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       return nothing;
     }
 
-    const items = this._processedTypes(
-      this._params.type,
-      this._params.building_block,
-      this._group,
-      this.hass.localize
-    );
+    const items = this._filter
+      ? this._getFilteredItems(
+          this._params.type,
+          this._params.building_block,
+          this._filter,
+          this.hass.localize
+        )
+      : this._getGroupItems(
+          this._params.type,
+          this._params.building_block,
+          this._group,
+          this.hass.localize
+        );
 
     return html`
       <ha-dialog open hideActions @closed=${this.closeDialog} .heading=${true}>
@@ -157,6 +209,11 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                   dialogAction="cancel"
                 ></ha-icon-button>`}
           </ha-header-bar>
+          <search-input
+            .hass=${this.hass}
+            .filter=${this._filter}
+            @value-changed=${this._filterChanged}
+          ></search-input>
         </div>
         <mwc-list
           innerRole="listbox"
@@ -165,6 +222,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           dialogInitialFocus
         >
           ${this._params.clipboardItem &&
+          !this._filter &&
           (!this._group ||
             items.find((item) => item.key === this._params!.clipboardItem))
             ? html`<ha-list-item
@@ -242,6 +300,10 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this.closeDialog();
   }
 
+  private _filterChanged(ev) {
+    this._filter = ev.detail.value;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -267,6 +329,10 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         }
         .paste {
           --mdc-theme-primary: var(--primary-text-color);
+        }
+        search-input {
+          display: block;
+          margin: 0 16px;
         }
       `,
     ];
