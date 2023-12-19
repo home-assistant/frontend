@@ -3728,6 +3728,8 @@
             "entries_service": "Services",
             "entries_helper": "Helpers",
             "entries_hardware": "Hardware",
+            "entries_system": "[%key:ui::panel::config::integrations::integration_page::entries%]",
+            "entries_entity": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "no_entries": "No entries",
             "attention_entries": "Needs attention",
             "add_entry": "Add entry",
@@ -3735,7 +3737,9 @@
             "add_hub": "Add hub",
             "add_service": "Add service",
             "add_helper": "Add helper",
-            "add_hardware": "Add hardware"
+            "add_hardware": "Add hardware",
+            "add_entity": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
+            "add_system": "[%key:ui::panel::config::integrations::integration_page::add_entry%]"
           },
           "config_entry": {
             "application_credentials": {
