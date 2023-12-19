@@ -1,20 +1,3 @@
-import {
-  mdiAirHumidifier,
-  mdiBrightness5,
-  mdiFan,
-  mdiFormDropdown,
-  mdiFormTextbox,
-  mdiMenu,
-  mdiRobotMower,
-  mdiShield,
-  mdiSunThermometer,
-  mdiSwapVertical,
-  mdiThermometer,
-  mdiThermostat,
-  mdiTuneVariant,
-  mdiVacuum,
-  mdiWaterPercent,
-} from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
@@ -33,30 +16,6 @@ import { LovelaceCardFeatureLayout } from "../cards/types";
 import { createCardFeatureElement } from "../create-element/create-card-feature-element";
 import type { LovelaceCardFeature } from "../types";
 import type { LovelaceCardFeatureConfig } from "./types";
-
-const SHOW_ICON = true;
-
-const ICONS: Record<LovelaceCardFeatureConfig["type"], string> = {
-  "alarm-modes": mdiShield,
-  "climate-hvac-modes": mdiThermostat,
-  "climate-preset-modes": mdiTuneVariant,
-  "cover-open-close": mdiSwapVertical,
-  "cover-position": mdiMenu,
-  "cover-tilt": mdiSwapVertical,
-  "cover-tilt-position": mdiMenu,
-  "fan-speed": mdiFan,
-  "humidifier-modes": mdiTuneVariant,
-  "humidifier-toggle": mdiAirHumidifier,
-  "lawn-mower-commands": mdiRobotMower,
-  "light-brightness": mdiBrightness5,
-  "light-color-temp": mdiSunThermometer,
-  "numeric-input": mdiFormTextbox,
-  "select-options": mdiFormDropdown,
-  "target-humidity": mdiWaterPercent,
-  "target-temperature": mdiThermometer,
-  "vacuum-commands": mdiVacuum,
-  "water-heater-operation-modes": mdiThermostat,
-};
 
 @customElement("hui-card-features")
 export class HuiCardFeatures extends LitElement {
@@ -110,14 +69,6 @@ export class HuiCardFeatures extends LitElement {
     this._currentFeatureIndex = newIndex;
   }
 
-  private get _nextFeatureIndex() {
-    const newIndex = this._currentFeatureIndex + 1;
-    if (this.features?.length && newIndex >= this.features.length) {
-      return 0;
-    }
-    return newIndex;
-  }
-
   protected render() {
     if (!this.features) {
       return nothing;
@@ -125,7 +76,6 @@ export class HuiCardFeatures extends LitElement {
 
     if (this.layout?.type === "compact") {
       const currentFeature = this.features[this._currentFeatureIndex];
-      const nextFeature = this.features[this._nextFeatureIndex];
       return html`
         <div class="container horizontal">
           ${this.renderFeature(currentFeature, this.stateObj)}
@@ -136,13 +86,7 @@ export class HuiCardFeatures extends LitElement {
                   @click=${this._next}
                   .label=${"Next"}
                 >
-                  ${ICONS[nextFeature.type] && SHOW_ICON
-                    ? html`
-                        <ha-svg-icon
-                          .path=${ICONS[nextFeature.type]}
-                        ></ha-svg-icon>
-                      `
-                    : html`<ha-icon-next></ha-icon-next>`}
+                  <ha-icon-next></ha-icon-next>
                 </ha-control-button>
               `
             : nothing}
