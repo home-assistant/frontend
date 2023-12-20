@@ -1,4 +1,4 @@
-import { mdiTuneVariant } from "@mdi/js";
+import { mdiFan } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -171,7 +171,7 @@ class HuiClimateFanModesCardFeature
           @selected=${this._valueChanged}
           @closed=${stopPropagation}
         >
-          <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
           ${options.map(
             (option) => html`
               <ha-list-item .value=${option.value} graphic="icon">
