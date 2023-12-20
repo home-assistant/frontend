@@ -191,7 +191,11 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       const groupKey = buildingBlocks ? "building_blocks" : "groups";
 
       if (type === "action" && group?.startsWith("service_")) {
-        return this._services(localize, services, manifests, group);
+        const result = this._services(localize, services, manifests, group);
+        if (group === "service_media_player") {
+          result.unshift(this._convertToItem("play_media", {}, type, localize));
+        }
+        return result;
       }
 
       const groups: AutomationElementGroup = group
@@ -293,7 +297,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       }
 
       const addDomain = (dmn: string) => {
-        const services_keys = Object.keys(services[dmn]).sort();
+        const services_keys = Object.keys(services[dmn]);
 
         for (const service of services_keys) {
           result.push({
@@ -315,7 +319,9 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
 
       if (domain) {
         addDomain(domain);
-        return result;
+        return result.sort((a, b) =>
+          stringCompare(a.name, b.name, this.hass.locale.language)
+        );
       }
 
       Object.keys(services)
@@ -430,29 +436,29 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           (!this._group ||
             items.find((item) => item.key === this._params!.clipboardItem))
             ? html`<ha-list-item
-                twoline
-                activated
-                class="paste"
-                .value=${PASTE_VALUE}
-                graphic="icon"
-                hasMeta
-                @request-selected=${this._selected}
-              >
-                ${this.hass.localize(
-                  `ui.panel.config.automation.editor.${this._params.type}s.paste`
-                )}
-                <span slot="secondary"
-                  >${this.hass.localize(
-                    // @ts-ignore
-                    `ui.panel.config.automation.editor.${this._params.type}s.type.${this._params.clipboardItem}.label`
-                  )}</span
+                  twoline
+                  class="paste"
+                  .value=${PASTE_VALUE}
+                  graphic="icon"
+                  hasMeta
+                  @request-selected=${this._selected}
                 >
-                <ha-svg-icon
-                  slot="graphic"
-                  .path=${mdiContentPaste}
-                ></ha-svg-icon
-                ><ha-svg-icon slot="meta" .path=${mdiPlus}></ha-svg-icon>
-              </ha-list-item>`
+                  ${this.hass.localize(
+                    `ui.panel.config.automation.editor.${this._params.type}s.paste`
+                  )}
+                  <span slot="secondary"
+                    >${this.hass.localize(
+                      // @ts-ignore
+                      `ui.panel.config.automation.editor.${this._params.type}s.type.${this._params.clipboardItem}.label`
+                    )}</span
+                  >
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiContentPaste}
+                  ></ha-svg-icon
+                  ><ha-svg-icon slot="meta" .path=${mdiPlus}></ha-svg-icon>
+                </ha-list-item>
+                <li divider role="separator"></li>`
             : ""}
           ${items.map(
             (item) => html`
@@ -535,9 +541,6 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         }
         ha-icon-next {
           width: 24px;
-        }
-        .paste {
-          --mdc-theme-primary: var(--primary-text-color);
         }
         search-input {
           display: block;
