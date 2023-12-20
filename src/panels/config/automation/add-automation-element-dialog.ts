@@ -275,7 +275,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       manifests: DomainManifestLookup | undefined,
       group?: string
     ): ListItem[] => {
-      if (!services || group === "building_blocks") {
+      if (!services) {
         return [];
       }
       const result: ListItem[] = [];
@@ -312,6 +312,10 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         return result.sort((a, b) =>
           stringCompare(a.name, b.name, this.hass.locale.language)
         );
+      }
+
+      if (group && !["helpers", "other"].includes(group)) {
+        return [];
       }
 
       Object.keys(services)
