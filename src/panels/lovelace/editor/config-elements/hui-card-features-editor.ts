@@ -206,7 +206,7 @@ export class HuiCardFeaturesEditor extends LitElement {
         );
     }
   };
-)
+
   private _supportsFeatureType(type: string): boolean {
     if (!this.stateObj) return false;
 

@@ -83,7 +83,7 @@ export class HaControlSelectMenu extends SelectBase {
     if (!this.showArrow) return nothing;
 
     return html`
-      <div class="icon">
+      <div class="icon arrow">
         <ha-svg-icon .path=${mdiMenuDown}></ha-svg-icon>
       </div>
     `;
@@ -179,7 +179,8 @@ export class HaControlSelectMenu extends SelectBase {
         flex-direction: column;
         align-items: flex-start;
         justify-content: center;
-        flex: 1;
+        width: 0;
+        flex-grow: 1;
         overflow: hidden;
       }
 
@@ -190,6 +191,13 @@ export class HaControlSelectMenu extends SelectBase {
         min-width: 0;
         width: 100%;
         margin: auto;
+      }
+
+      .arrow {
+        margin-left: -10px;
+        margin-inline-end: initial;
+        margin-inline-start: -10px;
+        direction: var(--direction);
       }
 
       .label {
