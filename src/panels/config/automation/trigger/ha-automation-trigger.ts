@@ -131,7 +131,7 @@ export default class HaAutomationTrigger extends LitElement {
     showAddAutomationElementDialog(this, {
       type: "trigger",
       add: this._addTrigger,
-      clipboardItem: this._clipboard!.trigger?.platform,
+      clipboardItem: this._clipboard?.trigger?.platform,
     });
   }
 

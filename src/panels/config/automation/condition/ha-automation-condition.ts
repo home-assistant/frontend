@@ -201,7 +201,7 @@ export default class HaAutomationCondition extends LitElement {
     showAddAutomationElementDialog(this, {
       type: "condition",
       add: this._addCondition,
-      clipboardItem: this._clipboard!.condition?.condition,
+      clipboardItem: this._clipboard?.condition?.condition,
     });
   }
 
@@ -209,7 +209,7 @@ export default class HaAutomationCondition extends LitElement {
     showAddAutomationElementDialog(this, {
       type: "condition",
       add: this._addCondition,
-      clipboardItem: this._clipboard!.condition?.condition,
+      clipboardItem: this._clipboard?.condition?.condition,
       building_block: true,
     });
   }

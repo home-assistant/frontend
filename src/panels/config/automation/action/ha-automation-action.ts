@@ -169,7 +169,7 @@ export default class HaAutomationAction extends LitElement {
     showAddAutomationElementDialog(this, {
       type: "action",
       add: this._addAction,
-      clipboardItem: getType(this._clipboard!.action),
+      clipboardItem: getType(this._clipboard?.action),
     });
   }
 
@@ -177,7 +177,7 @@ export default class HaAutomationAction extends LitElement {
     showAddAutomationElementDialog(this, {
       type: "action",
       add: this._addAction,
-      clipboardItem: getType(this._clipboard!.action),
+      clipboardItem: getType(this._clipboard?.action),
       building_block: true,
     });
   }
