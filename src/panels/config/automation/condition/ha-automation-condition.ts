@@ -210,7 +210,7 @@ export default class HaAutomationCondition extends LitElement {
       type: "condition",
       add: this._addCondition,
       clipboardItem: this._clipboard?.condition?.condition,
-      building_block: true,
+      group: "building_blocks",
     });
   }
 

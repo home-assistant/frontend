@@ -18,7 +18,6 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
 import "../../../components/search-input";
 import {
-  ACTION_BUILDING_BLOCKS_GROUPS,
   ACTION_GROUPS,
   ACTION_ICONS,
   SERVICE_PREFIX,
@@ -26,11 +25,7 @@ import {
   isService,
 } from "../../../data/action";
 import { AutomationElementGroup } from "../../../data/automation";
-import {
-  CONDITION_BUILDING_BLOCKS_GROUPS,
-  CONDITION_GROUPS,
-  CONDITION_ICONS,
-} from "../../../data/condition";
+import { CONDITION_GROUPS, CONDITION_ICONS } from "../../../data/condition";
 import {
   IntegrationManifest,
   domainToName,
@@ -49,12 +44,10 @@ const TYPES = {
   trigger: { groups: TRIGGER_GROUPS, icons: TRIGGER_ICONS },
   condition: {
     groups: CONDITION_GROUPS,
-    building_blocks: CONDITION_BUILDING_BLOCKS_GROUPS,
     icons: CONDITION_ICONS,
   },
   action: {
     groups: ACTION_GROUPS,
-    building_blocks: ACTION_BUILDING_BLOCKS_GROUPS,
     icons: ACTION_ICONS,
   },
 };
@@ -101,6 +94,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
 
   public showDialog(params): void {
     this._params = params;
+    this._group = params.group;
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
       this._fetchManifests();
@@ -144,19 +138,17 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   private _getFilteredItems = memoizeOne(
     (
       type: AddAutomationElementDialogParams["type"],
-      buildingBlocks: AddAutomationElementDialogParams["building_block"],
       group: string | undefined,
       filter: string,
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup
     ): ListItem[] => {
-      const groupKey = buildingBlocks ? "building_blocks" : "groups";
       const groups: AutomationElementGroup = group
         ? isService(group)
           ? {}
-          : TYPES[type][groupKey][group].members
-        : TYPES[type][groupKey];
+          : TYPES[type].groups[group].members!
+        : TYPES[type].groups;
 
       const flattenGroups = (grp: AutomationElementGroup) =>
         Object.entries(grp).map(([key, options]) =>
@@ -185,14 +177,11 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   private _getGroupItems = memoizeOne(
     (
       type: AddAutomationElementDialogParams["type"],
-      buildingBlocks: AddAutomationElementDialogParams["building_block"],
       group: string | undefined,
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup
     ): ListItem[] => {
-      const groupKey = buildingBlocks ? "building_blocks" : "groups";
-
       if (type === "action" && isService(group)) {
         const result = this._services(localize, services, manifests, group);
         if (group === "service_media_player") {
@@ -202,14 +191,14 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       }
 
       const groups: AutomationElementGroup = group
-        ? TYPES[type][groupKey][group].members
-        : TYPES[type][groupKey];
+        ? TYPES[type].groups[group].members!
+        : TYPES[type].groups;
 
       const result = Object.entries(groups).map(([key, options]) =>
         this._convertToItem(key, options, type, localize)
       );
 
-      if (type === "action" && !buildingBlocks) {
+      if (type === "action") {
         if (!this._group) {
           result.unshift(
             ...this._serviceGroups(localize, services, manifests, undefined)
@@ -363,7 +352,6 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     const items = this._filter
       ? this._getFilteredItems(
           this._params.type,
-          this._params.building_block,
           this._group,
           this._filter,
           this.hass.localize,
@@ -372,7 +360,6 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         )
       : this._getGroupItems(
           this._params.type,
-          this._params.building_block,
           this._group,
           this.hass.localize,
           this.hass.services,
@@ -401,7 +388,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                     `ui.panel.config.automation.editor.${this._params.type}s.add`
                   )}</span
             >
-            ${this._group
+            ${this._group && this._group !== this._params.group
               ? html`<ha-icon-button-prev
                   slot="navigationIcon"
                   @click=${this._back}

@@ -2492,6 +2492,9 @@
                     "below": "Below",
                     "for": "Duration (optional)",
                     "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]"
+                  },
+                  "description": {
+                    "picker": "When something happens to a device. Great way to start."
                   }
                 },
                 "event": {
@@ -2681,7 +2684,11 @@
                   "label": "Time and location",
                   "description": "If someone is in a zone or if the current time is before or after a specified time"
                 },
-                "other": { "label": "Other" }
+                "other": { "label": "Other" },
+                "building_blocks": {
+                  "label": "Building blocks",
+                  "description": "Help with logic in your automation"
+                }
               },
               "type": {
                 "and": {
@@ -2828,7 +2835,11 @@
               "continue_on_error": "Continue on error",
               "groups": {
                 "helpers": { "label": "Helpers" },
-                "other": { "label": "Other" }
+                "other": { "label": "Other" },
+                "building_blocks": {
+                  "label": "Building blocks",
+                  "description": "Help with logic in your automation"
+                }
               },
               "type": {
                 "service": {

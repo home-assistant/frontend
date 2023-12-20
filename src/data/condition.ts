@@ -4,6 +4,7 @@ import {
   mdiCodeBraces,
   mdiDevices,
   mdiDotsHorizontal,
+  mdiExcavator,
   mdiGateOr,
   mdiIdentifier,
   mdiMapClock,
@@ -37,6 +38,10 @@ export const CONDITION_GROUPS: AutomationElementGroup = {
     icon: mdiMapClock,
     members: { sun: {}, time: {}, zone: {} },
   },
+  building_blocks: {
+    icon: mdiExcavator,
+    members: { and: {}, or: {}, not: {} },
+  },
   other: {
     icon: mdiDotsHorizontal,
     members: {
@@ -44,10 +49,4 @@ export const CONDITION_GROUPS: AutomationElementGroup = {
       trigger: {},
     },
   },
-} as const;
-
-export const CONDITION_BUILDING_BLOCKS_GROUPS: AutomationElementGroup = {
-  and: {},
-  or: {},
-  not: {},
 } as const;

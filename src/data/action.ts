@@ -6,6 +6,7 @@ import {
   mdiCodeBraces,
   mdiDevices,
   mdiDotsHorizontal,
+  mdiExcavator,
   mdiGestureDoubleTap,
   mdiHandBackRight,
   mdiPalette,
@@ -47,25 +48,27 @@ export const ACTION_GROUPS: AutomationElementGroup = {
     icon: mdiTools,
     members: {},
   },
+  building_blocks: {
+    icon: mdiExcavator,
+    members: {
+      condition: {},
+      delay: {},
+      wait_template: {},
+      wait_for_trigger: {},
+      repeat: {},
+      choose: {},
+      if: {},
+      stop: {},
+      parallel: {},
+      variables: {},
+    },
+  },
   other: {
     icon: mdiDotsHorizontal,
     members: {
       event: {},
     },
   },
-} as const;
-
-export const ACTION_BUILDING_BLOCKS_GROUPS: AutomationElementGroup = {
-  condition: {},
-  delay: {},
-  wait_template: {},
-  wait_for_trigger: {},
-  repeat: {},
-  choose: {},
-  if: {},
-  stop: {},
-  parallel: {},
-  variables: {},
 } as const;
 
 export const SERVICE_PREFIX = "__SERVICE__";

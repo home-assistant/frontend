@@ -44,6 +44,7 @@ export const TRIGGER_ICONS = {
 };
 
 export const TRIGGER_GROUPS: AutomationElementGroup = {
+  device: {},
   entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
   time_location: {
     icon: mdiMapClock,
@@ -52,7 +53,6 @@ export const TRIGGER_GROUPS: AutomationElementGroup = {
   other: {
     icon: mdiDotsHorizontal,
     members: {
-      device: {},
       event: {},
       geo_location: {},
       homeassistant: {},

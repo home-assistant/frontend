@@ -179,7 +179,7 @@ export default class HaAutomationAction extends LitElement {
       type: "action",
       add: this._addAction,
       clipboardItem: getType(this._clipboard?.action),
-      building_block: true,
+      group: "building_blocks",
     });
   }
 
