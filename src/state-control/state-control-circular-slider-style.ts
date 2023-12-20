@@ -41,6 +41,9 @@ export const stateControlCircularSliderStyle = css`
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    line-height: 1.5;
+    min-height: 1.5em;
+    white-space: nowrap;
   }
   .label span {
     white-space: nowrap;
