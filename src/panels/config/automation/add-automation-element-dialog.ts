@@ -21,6 +21,9 @@ import {
   ACTION_BUILDING_BLOCKS_GROUPS,
   ACTION_GROUPS,
   ACTION_ICONS,
+  SERVICE_PREFIX,
+  getService,
+  isService,
 } from "../../../data/action";
 import { AutomationElementGroup } from "../../../data/automation";
 import {
@@ -79,14 +82,6 @@ const ENTITY_DOMAINS_OTHER = new Set([
   "weather",
   "image_processing",
 ]);
-
-const SERVICE_PREFIX = "service_";
-
-const isService = (key: string | undefined): boolean | undefined =>
-  key?.startsWith(SERVICE_PREFIX);
-
-const getService = (key: string): string =>
-  key.substring(SERVICE_PREFIX.length);
 
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement extends LitElement implements HassDialog {

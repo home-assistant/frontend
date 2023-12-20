@@ -9,6 +9,7 @@ import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-svg-icon";
+import { getService, isService } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
 import { Action } from "../../../../data/script";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
@@ -18,8 +19,8 @@ import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
-import { getType } from "./ha-automation-action-row";
 import type HaAutomationActionRow from "./ha-automation-action-row";
+import { getType } from "./ha-automation-action-row";
 
 @customElement("ha-automation-action")
 export default class HaAutomationAction extends LitElement {
@@ -186,9 +187,9 @@ export default class HaAutomationAction extends LitElement {
     let actions: Action[];
     if (action === PASTE_VALUE) {
       actions = this.actions.concat(deepClone(this._clipboard!.action));
-    } else if (action.startsWith("service_")) {
+    } else if (isService(action)) {
       actions = this.actions.concat({
-        service: action.substring(8),
+        service: getService(action),
       });
     } else {
       const elClass = customElements.get(

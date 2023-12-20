@@ -67,3 +67,11 @@ export const ACTION_BUILDING_BLOCKS_GROUPS: AutomationElementGroup = {
   parallel: {},
   variables: {},
 } as const;
+
+export const SERVICE_PREFIX = "__SERVICE__";
+
+export const isService = (key: string | undefined): boolean | undefined =>
+  key?.startsWith(SERVICE_PREFIX);
+
+export const getService = (key: string): string =>
+  key.substring(SERVICE_PREFIX.length);
