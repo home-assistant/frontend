@@ -8,13 +8,10 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
-import type {
-  LovelaceCardConfig,
-  LovelaceViewConfig,
-  LovelaceViewElement,
-} from "../../../data/lovelace";
+import type { LovelaceViewElement } from "../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { SortableInstance } from "../../../resources/sortable";
-import { loadSortable } from "../../../resources/sortable.ondemand";
 import type { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
 import type { Lovelace, LovelaceCard } from "../types";
@@ -58,6 +55,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   public disconnectedCallback() {
+    super.disconnectedCallback();
     this._destroySortable();
   }
 
@@ -106,7 +104,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   private _sortable?: SortableInstance;
 
   private async _createSortable() {
-    const Sortable = await loadSortable();
+    const Sortable = (await import("../../../resources/sortable")).default;
     this._sortable = new Sortable(this.shadowRoot!.querySelector("#grid")!, {
       animation: 500,
       draggable: ".draggable",
