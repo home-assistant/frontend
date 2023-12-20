@@ -2687,7 +2687,7 @@
                 "other": { "label": "Other" },
                 "building_blocks": {
                   "label": "Building blocks",
-                  "description": "Help with logic in your automation"
+                  "description": "Build more complex conditions"
                 }
               },
               "type": {
@@ -2838,7 +2838,7 @@
                 "other": { "label": "Other" },
                 "building_blocks": {
                   "label": "Building blocks",
-                  "description": "Help with logic in your automation"
+                  "description": "Build more complex sequences of actions"
                 }
               },
               "type": {
