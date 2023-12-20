@@ -80,6 +80,14 @@ const ENTITY_DOMAINS_OTHER = new Set([
   "image_processing",
 ]);
 
+const SERVICE_PREFIX = "service_";
+
+const isService = (key: string | undefined): boolean | undefined =>
+  key?.startsWith(SERVICE_PREFIX);
+
+const getService = (key: string): string =>
+  key.substring(SERVICE_PREFIX.length);
+
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -150,7 +158,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     ): ListItem[] => {
       const groupKey = buildingBlocks ? "building_blocks" : "groups";
       const groups: AutomationElementGroup = group
-        ? group.startsWith("service_")
+        ? isService(group)
           ? {}
           : TYPES[type][groupKey][group].members
         : TYPES[type][groupKey];
@@ -190,7 +198,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     ): ListItem[] => {
       const groupKey = buildingBlocks ? "building_blocks" : "groups";
 
-      if (type === "action" && group?.startsWith("service_")) {
+      if (type === "action" && isService(group)) {
         const result = this._services(localize, services, manifests, group);
         if (group === "service_media_player") {
           result.unshift(this._convertToItem("play_media", {}, type, localize));
@@ -209,15 +217,15 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       if (type === "action" && !buildingBlocks) {
         if (!this._group) {
           result.unshift(
-            ...this._serviceGroups(localize, services, manifests, false, false)
+            ...this._serviceGroups(localize, services, manifests, undefined)
           );
         } else if (this._group === "helpers") {
           result.unshift(
-            ...this._serviceGroups(localize, services, manifests, true, false)
+            ...this._serviceGroups(localize, services, manifests, "helper")
           );
         } else if (this._group === "other") {
           result.unshift(
-            ...this._serviceGroups(localize, services, manifests, false, true)
+            ...this._serviceGroups(localize, services, manifests, "other")
           );
         }
       }
@@ -242,8 +250,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
       manifests: DomainManifestLookup | undefined,
-      helper: boolean,
-      other: boolean
+      type: "helper" | "other" | undefined
     ): ListItem[] => {
       if (!services || !manifests) {
         return [];
@@ -254,12 +261,11 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         .forEach((domain) => {
           const manifest = manifests[domain];
           if (
-            (!helper &&
-              !other &&
+            (type === undefined &&
               manifest?.integration_type === "entity" &&
               !ENTITY_DOMAINS_OTHER.has(domain)) ||
-            (helper && manifest?.integration_type === "helper") ||
-            (other &&
+            (type === "helper" && manifest?.integration_type === "helper") ||
+            (type === "other" &&
               (ENTITY_DOMAINS_OTHER.has(domain) ||
                 !["helper", "entity"].includes(
                   manifest?.integration_type || ""
@@ -268,7 +274,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
             result.push({
               group: true,
               icon: domainIcon(domain),
-              key: `service_${domain}`,
+              key: `${SERVICE_PREFIX}${domain}`,
               name: domainToName(localize, domain, manifest),
               description: "",
             });
@@ -292,8 +298,8 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
 
       let domain: string | undefined;
 
-      if (group && group.startsWith("service_")) {
-        domain = group.substring(8);
+      if (isService(group)) {
+        domain = getService(group!);
       }
 
       const addDomain = (dmn: string) => {
@@ -303,7 +309,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           result.push({
             group: false,
             icon: domainIcon(dmn),
-            key: `service_${dmn}.${service}`,
+            key: `${SERVICE_PREFIX}${dmn}.${service}`,
             name: `${domain ? "" : `${domainToName(localize, dmn)}: `}${
               this.hass.localize(`component.${dmn}.services.${service}.name`) ||
               services[dmn][service]?.name ||
@@ -378,11 +384,11 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           this._manifests
         );
 
-    const groupName = this._group?.startsWith("service_")
+    const groupName = isService(this._group)
       ? domainToName(
           this.hass.localize,
-          this._group.substring(8),
-          this._manifests?.[this._group.substring(8)]
+          getService(this._group!),
+          this._manifests?.[getService(this._group!)]
         )
       : this.hass.localize(
           // @ts-ignore
