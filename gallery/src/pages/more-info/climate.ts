@@ -11,7 +11,7 @@ import "../../components/demo-more-infos";
 import { ClimateEntityFeature } from "../../../../src/data/climate";
 
 const ENTITIES = [
-  getEntity("climate", "thermostat", "heat", {
+  getEntity("climate", "radiator", "heat", {
     friendly_name: "Basic heater",
     hvac_modes: ["heat", "off"],
     hvac_mode: "heat",
@@ -79,6 +79,24 @@ const ENTITIES = [
     min_humidity: 0,
     max_humidity: 100,
     humidity: 50,
+  }),
+  getEntity("climate", "towel_dryer", "heat", {
+    friendly_name: "Preset only heater",
+    hvac_modes: ["heat", "off"],
+    hvac_mode: "heat",
+    preset_modes: [
+      "none",
+      "frost_protection",
+      "eco",
+      "comfort",
+      "comfort-1",
+      "comfort-2",
+    ],
+    preset_mode: "eco",
+    current_temperature: null,
+    min_temp: 7,
+    max_temp: 35,
+    supported_features: ClimateEntityFeature.PRESET_MODE,
   }),
   getEntity("climate", "unavailable", "unavailable", {
     friendly_name: "Unavailable heater",

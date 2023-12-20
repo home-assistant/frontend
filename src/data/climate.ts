@@ -6,6 +6,7 @@ import {
   mdiBed,
   mdiCircleMedium,
   mdiClockOutline,
+  mdiClose,
   mdiFan,
   mdiFanAuto,
   mdiFanOff,
@@ -18,6 +19,7 @@ import {
   mdiRocketLaunch,
   mdiSnowflake,
   mdiSofa,
+  mdiSnowflakeMelt,
   mdiSpeedometer,
   mdiSpeedometerMedium,
   mdiSpeedometerSlow,
@@ -140,7 +142,10 @@ export const computeHvacModeIcon = (mode: HvacMode) =>
   CLIMATE_HVAC_MODE_ICONS[mode];
 
 type ClimateBuiltInPresetMode =
+  | "none"
   | "eco"
+  | "frost_protection"
+  | "auto"
   | "away"
   | "boost"
   | "comfort"
@@ -152,11 +157,14 @@ export const CLIMATE_PRESET_MODE_ICONS: Record<
   ClimateBuiltInPresetMode,
   string
 > = {
+  auto: mdiThermostatAuto,
   away: mdiAccountArrowRight,
   boost: mdiRocketLaunch,
   comfort: mdiSofa,
   eco: mdiLeaf,
+  frost_protection: mdiSnowflakeMelt,
   home: mdiHome,
+  none: mdiClose,
   sleep: mdiBed,
   activity: mdiMotionSensor,
 };
