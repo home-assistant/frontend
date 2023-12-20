@@ -79,6 +79,11 @@ const CONFIGS = [
       hvac_modes:
         - fan_only
         - 'off'
+    - type: climate-fan-modes
+      style: icons
+      fan_modes:
+        - low
+        - high
     `,
   },
   {

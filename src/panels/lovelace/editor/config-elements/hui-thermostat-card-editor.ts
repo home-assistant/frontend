@@ -29,6 +29,7 @@ import type { FeatureType } from "./hui-card-features-editor";
 const COMPATIBLE_FEATURES_TYPES: FeatureType[] = [
   "climate-hvac-modes",
   "climate-preset-modes",
+  "climate-fan-modes",
 ];
 
 const cardConfigStruct = assign(
