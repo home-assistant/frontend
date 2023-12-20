@@ -5136,7 +5136,8 @@
             },
             "humidifier": {
               "name": "Humidifier",
-              "description": "The Humidifier card gives control of your humidifier entity. Allowing you to change the humidity and mode of the entity."
+              "description": "The Humidifier card gives control of your humidifier entity. Allowing you to change the humidity and mode of the entity.",
+              "show_current_as_primary": "Show current humidity as primary information"
             },
             "iframe": {
               "name": "Webpage",
