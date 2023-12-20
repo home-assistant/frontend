@@ -298,9 +298,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     return html`
     <div class="choose-player ${isBrowser ? "browser" : ""}">
       ${
-        !this.narrow &&
-        stateObj &&
-        supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
+        !this.narrow && stateObj && stateObj.attributes.volume_level != null
           ? html`
               <ha-button-menu y="0" x="76">
                 <ha-icon-button
@@ -308,6 +306,10 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                   .path=${mdiVolumeHigh}
                 ></ha-icon-button>
                 <ha-slider
+                  ?disabled=${!supportsFeature(
+                    stateObj,
+                    MediaPlayerEntityFeature.VOLUME_SET
+                  )}
                   labeled
                   min="0"
                   max="100"

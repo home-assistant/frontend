@@ -125,9 +125,13 @@ class MoreInfoMediaPlayer extends LitElement {
                     ></ha-icon-button>
                   `
                 : ""}
-              ${supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
+              ${stateObj.attributes.volume_level != null
                 ? html`
                     <ha-slider
+                      ?disabled=${!supportsFeature(
+                        stateObj,
+                        MediaPlayerEntityFeature.VOLUME_SET
+                      )}
                       labeled
                       id="input"
                       .dir=${computeRTLDirection(this.hass!)}
