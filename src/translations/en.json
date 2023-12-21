@@ -756,6 +756,22 @@
         "grid": "Grid",
         "list": "List"
       },
+      "todo": {
+        "item": {
+          "summary": "Task name",
+          "description": "Description",
+          "add": "Add item",
+          "delete": "Delete item",
+          "edit": "Edit item",
+          "save": "Save item",
+          "due": "Due date",
+          "not_all_required_fields": "Not all required fields are filled in",
+          "confirm_delete": {
+            "delete": "Delete item",
+            "prompt": "Do you want to delete this item?"
+          }
+        }
+      },
       "calendar": {
         "label": "Calendar",
         "my_calendars": "My calendars",
@@ -4690,14 +4706,17 @@
             "never_triggered": "Never triggered"
           },
           "todo-list": {
-            "checked_items": "Checked items",
-            "clear_items": "Clear checked items",
+            "unchecked_items": "Active",
+            "no_unchecked_items": "You have no to-do items!",
+            "checked_items": "Completed",
+            "clear_items": "Remove completed items",
             "add_item": "Add item",
+            "today": "Today",
             "reorder_items": "Reorder items",
             "drag_and_drop": "Drag and drop",
             "delete_item": "Delete item",
-            "delete_confirm_title": "Clear checked items?",
-            "delete_confirm_text": "{number} {number, plural,\n  one {item}\n  other {items}\n} will be permanently deleted from the to-do list."
+            "delete_confirm_title": "Remove completed items?",
+            "delete_confirm_text": "{number} {number, plural,\n  one {item}\n  other {items}\n} will be permanently removed from the to-do list."
           },
           "picture-elements": {
             "hold": "Hold:",
@@ -5758,6 +5777,7 @@
         "assist": "[%key:ui::panel::lovelace::menu::assist%]",
         "create_list": "Create list",
         "delete_list": "Delete list",
+        "add_item": "Add item",
         "information": "Information",
         "delete_confirm_title": "Remove {name}?",
         "delete_confirm_text": "Are you sure you want to remove this list and all of its items?",
