@@ -1533,7 +1533,8 @@
       },
       "update_backup": {
         "title": "Create backup",
-        "text": "Whould you like to create a backup before installing?"
+        "text": "This will create a backup before installing.",
+        "create": "Create"
       }
     },
     "weekdays": {
