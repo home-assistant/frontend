@@ -509,6 +509,7 @@ class HaScriptPicker extends LitElement {
         .empty {
           --paper-font-headline_-_font-size: 28px;
           --mdc-icon-size: 80px;
+          max-width: 500px;
         }
       `,
     ];

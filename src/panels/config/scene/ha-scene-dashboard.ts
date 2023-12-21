@@ -249,7 +249,7 @@ class HaSceneDashboard extends LitElement {
         >
         </ha-button-related-filter-menu>
         ${!this.scenes.length
-          ? html` <div class="empty" slot="empty">
+          ? html`<div class="empty" slot="empty">
               <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
               <h1>
                 ${this.hass.localize(
@@ -387,6 +387,7 @@ class HaSceneDashboard extends LitElement {
         .empty {
           --paper-font-headline_-_font-size: 28px;
           --mdc-icon-size: 80px;
+          max-width: 500px;
         }
       `,
     ];
