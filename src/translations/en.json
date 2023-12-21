@@ -5325,6 +5325,15 @@
                   "return_home": "[%key:ui::dialogs::more_info_control::vacuum::return_home%]"
                 }
               },
+              "climate-fan-modes": {
+                "label": "Climate fan modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                },
+                "fan_modes": "Fan modes"
+              },
               "climate-hvac-modes": {
                 "label": "Climate HVAC modes",
                 "hvac_modes": "HVAC modes",
