@@ -4649,6 +4649,7 @@
           },
           "todo-list": {
             "unchecked_items": "Active",
+            "no_unchecked_items": "You have no to-do items!",
             "checked_items": "Completed",
             "clear_items": "Remove completed items",
             "add_item": "Add item",

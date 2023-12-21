@@ -4,8 +4,6 @@ import { TodoItem } from "../../data/todo";
 export interface TodoItemEditDialogParams {
   entity: string;
   item?: TodoItem;
-  canUpdate?: boolean;
-  canDelete?: boolean;
 }
 
 export const loadTodoItemEditDialog = () => import("./dialog-todo-item-editor");

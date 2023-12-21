@@ -10,6 +10,7 @@ import "../../components/ha-textarea";
 import "../../components/ha-time-input";
 import {
   TodoItemStatus,
+  TodoListEntityFeature,
   createItem,
   deleteItems,
   updateItem,
@@ -19,6 +20,7 @@ import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { TodoItemEditDialogParams } from "./show-dialog-todo-item-editor";
+import { supportsFeature } from "../../common/entity/supports-feature";
 
 @customElement("dialog-todo-item-editor")
 class DialogTodoItemEditor extends LitElement {
@@ -88,6 +90,10 @@ class DialogTodoItemEditor extends LitElement {
 
     const { dueDate, dueTime } = this._getLocaleStrings(this._due);
 
+    const canUpdate = this._todoListSupportsFeature(
+      TodoListEntityFeature.UPDATE_TODO_ITEM
+    );
+
     return html`
       <ha-dialog
         open
@@ -117,7 +123,7 @@ class DialogTodoItemEditor extends LitElement {
             <ha-checkbox
               .checked=${this._checked}
               @change=${this._checkedCanged}
-              .disabled=${isCreate || !this._params.canUpdate}
+              .disabled=${isCreate || !canUpdate}
             ></ha-checkbox>
             <ha-textfield
               class="summary"
@@ -130,38 +136,54 @@ class DialogTodoItemEditor extends LitElement {
                 "ui.common.error_required"
               )}
               dialogInitialFocus
-              .disabled=${!this._params.canUpdate}
+              .disabled=${!canUpdate}
             ></ha-textfield>
           </div>
-          <ha-textarea
-            class="description"
-            name="description"
-            .label=${this.hass.localize("ui.components.todo.item.description")}
-            .value=${this._description}
-            @change=${this._handleDescriptionChanged}
-            autogrow
-            .disabled=${!this._params.canUpdate}
-          ></ha-textarea>
-
-          <div>
-            <span class="label"
-              >${this.hass.localize("ui.components.todo.item.due")}:</span
-            >
-            <div class="flex">
-              <ha-date-input
-                .value=${dueDate}
-                .locale=${this.hass.locale}
-                .disabled=${!this._params.canUpdate}
-                @value-changed=${this._endDateChanged}
-              ></ha-date-input>
-              <ha-time-input
-                .value=${dueTime}
-                .locale=${this.hass.locale}
-                .disabled=${!this._params.canUpdate}
-                @value-changed=${this._endTimeChanged}
-              ></ha-time-input>
-            </div>
-          </div>
+          ${this._todoListSupportsFeature(
+            TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
+          )
+            ? html`<ha-textarea
+                class="description"
+                name="description"
+                .label=${this.hass.localize(
+                  "ui.components.todo.item.description"
+                )}
+                .value=${this._description}
+                @change=${this._handleDescriptionChanged}
+                autogrow
+                .disabled=${!canUpdate}
+              ></ha-textarea>`
+            : nothing}
+          ${this._todoListSupportsFeature(
+            TodoListEntityFeature.SET_DUE_DATE_ON_ITEM
+          ) ||
+          this._todoListSupportsFeature(
+            TodoListEntityFeature.SET_DUE_DATETIME_ON_ITEM
+          )
+            ? html`<div>
+                <span class="label"
+                  >${this.hass.localize("ui.components.todo.item.due")}:</span
+                >
+                <div class="flex">
+                  <ha-date-input
+                    .value=${dueDate}
+                    .locale=${this.hass.locale}
+                    .disabled=${!canUpdate}
+                    @value-changed=${this._endDateChanged}
+                  ></ha-date-input>
+                  ${this._todoListSupportsFeature(
+                    TodoListEntityFeature.SET_DUE_DATETIME_ON_ITEM
+                  )
+                    ? html` <ha-time-input
+                        .value=${dueTime}
+                        .locale=${this.hass.locale}
+                        .disabled=${!canUpdate}
+                        @value-changed=${this._endTimeChanged}
+                      ></ha-time-input>`
+                    : nothing}
+                </div>
+              </div>`
+            : nothing}
         </div>
         ${isCreate
           ? html`
@@ -177,11 +199,13 @@ class DialogTodoItemEditor extends LitElement {
               <mwc-button
                 slot="primaryAction"
                 @click=${this._saveItem}
-                .disabled=${!this._params.canUpdate || this._submitting}
+                .disabled=${!canUpdate || this._submitting}
               >
                 ${this.hass.localize("ui.components.todo.item.save")}
               </mwc-button>
-              ${this._params.canDelete
+              ${this._todoListSupportsFeature(
+                TodoListEntityFeature.DELETE_TODO_ITEM
+              )
                 ? html`
                     <mwc-button
                       slot="secondaryAction"
@@ -196,6 +220,14 @@ class DialogTodoItemEditor extends LitElement {
             `}
       </ha-dialog>
     `;
+  }
+
+  private _todoListSupportsFeature(feature: number): boolean {
+    if (!this._params?.entity) {
+      return false;
+    }
+    const entityStateObj = this.hass!.states[this._params?.entity];
+    return entityStateObj && supportsFeature(entityStateObj, feature);
   }
 
   private _getLocaleStrings = memoizeOne((due?: Date) => ({
@@ -290,7 +322,14 @@ class DialogTodoItemEditor extends LitElement {
       await updateItem(this.hass!, this._params!.entity, {
         ...entry,
         summary: this._summary,
-        description: this._description,
+        description:
+          this._description ||
+          (this._todoListSupportsFeature(
+            TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
+          )
+            ? // backend should accept null to clear the field, but it doesn't now
+              " "
+            : undefined),
         due: this._due
           ? this._hasTime
             ? this._due.toISOString()

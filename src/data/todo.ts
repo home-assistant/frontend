@@ -27,6 +27,9 @@ export const enum TodoListEntityFeature {
   DELETE_TODO_ITEM = 2,
   UPDATE_TODO_ITEM = 4,
   MOVE_TODO_ITEM = 8,
+  SET_DUE_DATE_ON_ITEM = 16,
+  SET_DUE_DATETIME_ON_ITEM = 32,
+  SET_DESCRIPTION_ON_ITEM = 64,
 }
 
 export const getTodoLists = (hass: HomeAssistant): TodoList[] =>
@@ -80,7 +83,7 @@ export const updateItem = (
       item: item.uid,
       rename: item.summary,
       status: item.status,
-      description: item.description || "",
+      description: item.description || undefined,
       due_datetime: item.due?.includes("T") ? item.due : undefined,
       due_date: item.due?.includes("T") ? undefined : item.due || undefined,
     },
@@ -97,7 +100,7 @@ export const createItem = (
     "add_item",
     {
       item: item.summary,
-      description: item.description,
+      description: item.description || undefined,
       due_datetime: item.due?.includes("T") ? item.due : undefined,
       due_date: item.due?.includes("T") ? undefined : item.due,
     },

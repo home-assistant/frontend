@@ -346,7 +346,7 @@ class PanelTodo extends LitElement {
   }
 
   private _addItem() {
-    showTodoItemEditDialog(this, { entity: this._entityId!, canUpdate: true });
+    showTodoItemEditDialog(this, { entity: this._entityId! });
   }
 
   static get styles(): CSSResultGroup {
