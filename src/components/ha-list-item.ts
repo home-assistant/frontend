@@ -47,6 +47,13 @@ export class HaListItem extends ListItemBase {
           display: var(--mdc-list-item-meta-display);
           align-items: center;
         }
+        :host([graphic="icon"]:not([twoline]))
+          .mdc-deprecated-list-item__graphic {
+          margin-inline-end: var(
+            --mdc-list-item-graphic-margin,
+            20px
+          ) !important;
+        }
         :host([multiline-secondary]) {
           height: auto;
         }

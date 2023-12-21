@@ -2441,6 +2441,7 @@
             "edit_yaml": "Edit in YAML",
             "edit_ui": "Edit in visual editor",
             "copy_to_clipboard": "Copy to clipboard",
+            "search_in": "Search · {group}",
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -2448,6 +2449,7 @@
               "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
+              "search": "Search trigger",
               "id": "Trigger ID",
               "edit_id": "Edit ID",
               "duplicate": "[%key:ui::common::duplicate%]",
@@ -2464,6 +2466,17 @@
               "unsupported_platform": "No visual editor support for platform: {platform}",
               "type_select": "Trigger type",
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
+              "groups": {
+                "entity": {
+                  "label": "Entity",
+                  "description": "When something happens to an entity"
+                },
+                "time_location": {
+                  "label": "Time and location",
+                  "description": "When someone enters or leaves a zone, or at a specific time."
+                },
+                "other": { "label": "Other" }
+              },
               "type": {
                 "calendar": {
                   "label": "Calendar",
@@ -2482,6 +2495,9 @@
                     "below": "Below",
                     "for": "Duration (optional)",
                     "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]"
+                  },
+                  "description": {
+                    "picker": "When something happens to a device. Great way to start."
                   }
                 },
                 "event": {
@@ -2643,6 +2659,8 @@
               "description": "This list of conditions needs to be satisfied for the automation to run. A condition can be satisfied or not at any given time, for example: ''If {user} is home''. You can use building blocks to create more complex conditions.",
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
+              "search": "Search condition",
+              "add_building_block": "Add building block",
               "test": "Test",
               "testing_error": "Condition did not pass",
               "testing_pass": "Condition passes",
@@ -2662,6 +2680,21 @@
               "unsupported_condition": "No visual editor support for condition: {condition}",
               "type_select": "Condition type",
               "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
+              "groups": {
+                "entity": {
+                  "label": "Entity",
+                  "description": "If an entity is in a specific state"
+                },
+                "time_location": {
+                  "label": "Time and location",
+                  "description": "If someone is in a zone or if the current time is before or after a specified time"
+                },
+                "other": { "label": "Other" },
+                "building_blocks": {
+                  "label": "Building blocks",
+                  "description": "Build more complex conditions"
+                }
+              },
               "type": {
                 "and": {
                   "label": "And",
@@ -2679,6 +2712,9 @@
                     "for": "Duration",
                     "hvac_mode": "HVAC mode",
                     "preset_mode": "Preset mode"
+                  },
+                  "description": {
+                    "picker": "If something happens to a device. Great way to start."
                   }
                 },
                 "not": {
@@ -2781,6 +2817,8 @@
               "description": "This list of actions will be performed in sequence when the automation runs. An action usually controls one of your areas, devices, or entities, for example: 'Turn on the lights'. You can use building blocks to create more complex sequences of actions.",
               "learn_more": "Learn more about actions",
               "add": "Add action",
+              "search": "Search action",
+              "add_building_block": "Add building block",
               "invalid_action": "Invalid action",
               "run": "Run",
               "run_action_error": "Error running action",
@@ -2802,6 +2840,14 @@
               "unsupported_action": "No visual editor support for this action",
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
+              "groups": {
+                "helpers": { "label": "Helpers" },
+                "other": { "label": "Other" },
+                "building_blocks": {
+                  "label": "Building blocks",
+                  "description": "Build more complex sequences of actions"
+                }
+              },
               "type": {
                 "service": {
                   "label": "Call service",
@@ -2821,6 +2867,7 @@
                 "play_media": {
                   "label": "Play media",
                   "description": {
+                    "picker": "Play media on a media player",
                     "full": "Play {hasMedia, select, \n true {{media}} \n other {media}\n } on {hasMediaPlayer, select, \n true {{mediaPlayer}} \n other {a media player}\n }"
                   }
                 },
@@ -3703,6 +3750,8 @@
             "entries_service": "Services",
             "entries_helper": "Helpers",
             "entries_hardware": "Hardware",
+            "entries_system": "[%key:ui::panel::config::integrations::integration_page::entries%]",
+            "entries_entity": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "no_entries": "No entries",
             "attention_entries": "Needs attention",
             "add_entry": "Add entry",
@@ -3710,7 +3759,9 @@
             "add_hub": "Add hub",
             "add_service": "Add service",
             "add_helper": "Add helper",
-            "add_hardware": "Add hardware"
+            "add_hardware": "Add hardware",
+            "add_entity": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
+            "add_system": "[%key:ui::panel::config::integrations::integration_page::add_entry%]"
           },
           "config_entry": {
             "application_credentials": {
