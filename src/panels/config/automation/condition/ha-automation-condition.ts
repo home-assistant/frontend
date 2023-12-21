@@ -1,25 +1,18 @@
 import "@material/mwc-button";
-import type { ActionDetail } from "@material/mwc-list";
-import {
-  mdiArrowDown,
-  mdiArrowUp,
-  mdiContentPaste,
-  mdiDrag,
-  mdiPlus,
-} from "@mdi/js";
+import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import memoizeOne from "memoize-one";
 import type { SortableEvent } from "sortablejs";
+import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
@@ -28,30 +21,15 @@ import type {
   AutomationClipboard,
   Condition,
 } from "../../../../data/automation";
-import type { Entries, HomeAssistant } from "../../../../types";
-import "./ha-automation-condition-row";
-import type HaAutomationConditionRow from "./ha-automation-condition-row";
-// Uncommenting these and this element doesn't load
-// import "./types/ha-automation-condition-not";
-// import "./types/ha-automation-condition-or";
-import { storage } from "../../../../common/decorators/storage";
-import { stringCompare } from "../../../../common/string/compare";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import type { HaSelect } from "../../../../components/ha-select";
-import { CONDITION_TYPES } from "../../../../data/condition";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import type { SortableInstance } from "../../../../resources/sortable";
-import "./types/ha-automation-condition-and";
-import "./types/ha-automation-condition-device";
-import "./types/ha-automation-condition-numeric_state";
-import "./types/ha-automation-condition-state";
-import "./types/ha-automation-condition-sun";
-import "./types/ha-automation-condition-template";
-import "./types/ha-automation-condition-time";
-import "./types/ha-automation-condition-trigger";
-import "./types/ha-automation-condition-zone";
-
-const PASTE_VALUE = "__paste__";
+import type { HomeAssistant } from "../../../../types";
+import {
+  PASTE_VALUE,
+  showAddAutomationElementDialog,
+} from "../show-add-automation-element-dialog";
+import "./ha-automation-condition-row";
+import type HaAutomationConditionRow from "./ha-automation-condition-row";
 
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends LitElement {
@@ -197,42 +175,66 @@ export default class HaAutomationCondition extends LitElement {
           `
         )}
       </div>
-      <ha-button-menu
-        @action=${this._addCondition}
+      <ha-button
+        outlined
         .disabled=${this.disabled}
-        fixed
-      >
-        <ha-button
-          slot="trigger"
-          outlined
-          .disabled=${this.disabled}
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.add"
-          )}
-        >
-          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </ha-button>
-        ${this._clipboard?.condition
-          ? html` <mwc-list-item .value=${PASTE_VALUE} graphic="icon">
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.paste"
-              )}
-              (${this.hass.localize(
-                `ui.panel.config.automation.editor.conditions.type.${this._clipboard.condition.condition}.label`
-              )})
-              <ha-svg-icon slot="graphic" .path=${mdiContentPaste}></ha-svg-icon
-            ></mwc-list-item>`
-          : nothing}
-        ${this._processedTypes(this.hass.localize).map(
-          ([opt, label, icon]) => html`
-            <mwc-list-item .value=${opt} graphic="icon">
-              ${label}<ha-svg-icon slot="graphic" .path=${icon}></ha-svg-icon
-            ></mwc-list-item>
-          `
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.conditions.add"
         )}
-      </ha-button-menu>
+        @click=${this._addConditionDialog}
+      >
+        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+      </ha-button>
+      <ha-button
+        .disabled=${this.disabled}
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.conditions.add_building_block"
+        )}
+        @click=${this._addConditionBuildingBlockDialog}
+      >
+        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+      </ha-button>
     `;
   }
+
+  private _addConditionDialog() {
+    showAddAutomationElementDialog(this, {
+      type: "condition",
+      add: this._addCondition,
+      clipboardItem: this._clipboard?.condition?.condition,
+    });
+  }
+
+  private _addConditionBuildingBlockDialog() {
+    showAddAutomationElementDialog(this, {
+      type: "condition",
+      add: this._addCondition,
+      clipboardItem: this._clipboard?.condition?.condition,
+      group: "building_blocks",
+    });
+  }
+
+  private _addCondition = (value) => {
+    let conditions: Condition[];
+    if (value === PASTE_VALUE) {
+      conditions = this.conditions.concat(
+        deepClone(this._clipboard!.condition)
+      );
+    } else {
+      const condition = value as Condition["condition"];
+      const elClass = customElements.get(
+        `ha-automation-condition-${condition}`
+      ) as CustomElementConstructor & {
+        defaultConfig: Omit<Condition, "condition">;
+      };
+      conditions = this.conditions.concat({
+        condition: condition as any,
+        ...elClass.defaultConfig,
+      });
+    }
+    this._focusLastConditionOnChange = true;
+    fireEvent(this, "value-changed", { value: conditions });
+  };
 
   private async _enterReOrderMode(ev: CustomEvent) {
     if (this.nested) return;
@@ -280,32 +282,6 @@ export default class HaAutomationCondition extends LitElement {
     }
 
     return this._conditionKeys.get(condition)!;
-  }
-
-  private _addCondition(ev: CustomEvent<ActionDetail>) {
-    const value = (ev.currentTarget as HaSelect).items[ev.detail.index].value;
-
-    let conditions: Condition[];
-    if (value === PASTE_VALUE) {
-      conditions = this.conditions.concat(
-        deepClone(this._clipboard!.condition)
-      );
-    } else {
-      const condition = value as Condition["condition"];
-
-      const elClass = customElements.get(
-        `ha-automation-condition-${condition}`
-      ) as CustomElementConstructor & {
-        defaultConfig: Omit<Condition, "condition">;
-      };
-
-      conditions = this.conditions.concat({
-        condition: condition as any,
-        ...elClass.defaultConfig,
-      });
-    }
-    this._focusLastConditionOnChange = true;
-    fireEvent(this, "value-changed", { value: conditions });
   }
 
   private _moveUp(ev) {
@@ -360,22 +336,6 @@ export default class HaAutomationCondition extends LitElement {
       value: this.conditions.concat(deepClone(this.conditions[index])),
     });
   }
-
-  private _processedTypes = memoizeOne(
-    (localize: LocalizeFunc): [string, string, string][] =>
-      (Object.entries(CONDITION_TYPES) as Entries<typeof CONDITION_TYPES>)
-        .map(
-          ([condition, icon]) =>
-            [
-              condition,
-              localize(
-                `ui.panel.config.automation.editor.conditions.type.${condition}.label`
-              ),
-              icon,
-            ] as [string, string, string]
-        )
-        .sort((a, b) => stringCompare(a[1], b[1], this.hass.locale.language))
-  );
 
   static get styles(): CSSResultGroup {
     return [

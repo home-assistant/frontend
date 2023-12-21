@@ -37,7 +37,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import { ACTION_TYPES, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
+import { ACTION_ICONS, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
 import { AutomationClipboard } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
@@ -82,9 +82,9 @@ export const getType = (action: Action | undefined) => {
   if (["and", "or", "not"].some((key) => key in action)) {
     return "condition" as const;
   }
-  return Object.keys(ACTION_TYPES).find(
+  return Object.keys(ACTION_ICONS).find(
     (option) => option in action
-  ) as keyof typeof ACTION_TYPES;
+  ) as keyof typeof ACTION_ICONS;
 };
 
 export interface ActionElement extends LitElement {
@@ -190,7 +190,7 @@ export default class HaAutomationActionRow extends LitElement {
           <h3 slot="header">
             <ha-svg-icon
               class="action-icon"
-              .path=${ACTION_TYPES[type!]}
+              .path=${ACTION_ICONS[type!]}
             ></ha-svg-icon>
             ${capitalizeFirstLetter(
               describeAction(this.hass, this._entityReg, this.action)
