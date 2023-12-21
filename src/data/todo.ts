@@ -18,6 +18,8 @@ export interface TodoItem {
   uid: string;
   summary: string;
   status: TodoItemStatus;
+  description?: string;
+  due?: string;
 }
 
 export const enum TodoListEntityFeature {
@@ -74,20 +76,28 @@ export const updateItem = (
   hass.callService(
     "todo",
     "update_item",
-    { item: item.uid, rename: item.summary, status: item.status },
+    {
+      item: item.uid,
+      rename: item.summary,
+      status: item.status,
+      description: item.description,
+      due_datetime: item.due,
+    },
     { entity_id }
   );
 
 export const createItem = (
   hass: HomeAssistant,
   entity_id: string,
-  summary: string
+  item: Omit<TodoItem, "uid" | "status">
 ): Promise<ServiceCallResponse> =>
   hass.callService(
     "todo",
     "add_item",
     {
-      item: summary,
+      item: item.summary,
+      description: item.description,
+      due_datetime: item.due,
     },
     { entity_id }
   );
