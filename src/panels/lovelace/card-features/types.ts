@@ -35,6 +35,12 @@ export interface AlarmModesCardFeatureConfig {
   modes?: AlarmMode[];
 }
 
+export interface ClimateFanModesCardFeatureConfig {
+  type: "climate-fan-modes";
+  style?: "dropdown" | "icons";
+  fan_modes?: string[];
+}
+
 export interface ClimateHvacModesCardFeatureConfig {
   type: "climate-hvac-modes";
   style?: "dropdown" | "icons";
@@ -105,6 +111,7 @@ export interface LawnMowerCommandsCardFeatureConfig {
 
 export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
+  | ClimateFanModesCardFeatureConfig
   | ClimateHvacModesCardFeatureConfig
   | ClimatePresetModesCardFeatureConfig
   | CoverOpenCloseCardFeatureConfig

@@ -22,6 +22,7 @@ import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import type { SortableInstance } from "../../../../resources/sortable";
 import { HomeAssistant } from "../../../../types";
 import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
+import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
 import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
 import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
@@ -48,6 +49,7 @@ type SupportsFeature = (stateObj: HassEntity) => boolean;
 
 const UI_FEATURE_TYPES = [
   "alarm-modes",
+  "climate-fan-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
   "cover-open-close",
@@ -86,6 +88,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   SupportsFeature | undefined
 > = {
   "alarm-modes": supportsAlarmModesCardFeature,
+  "climate-fan-modes": supportsClimateFanModesCardFeature,
   "climate-hvac-modes": supportsClimateHvacModesCardFeature,
   "climate-preset-modes": supportsClimatePresetModesCardFeature,
   "cover-open-close": supportsCoverOpenCloseCardFeature,
