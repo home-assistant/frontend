@@ -131,7 +131,7 @@ class DialogTodoItemEditor extends LitElement {
               .label=${this.hass.localize("ui.components.todo.item.summary")}
               .value=${this._summary}
               required
-              @change=${this._handleSummaryChanged}
+              @input=${this._handleSummaryChanged}
               .validationMessage=${this.hass.localize(
                 "ui.common.error_required"
               )}
@@ -149,7 +149,7 @@ class DialogTodoItemEditor extends LitElement {
                   "ui.components.todo.item.description"
                 )}
                 .value=${this._description}
-                @change=${this._handleDescriptionChanged}
+                @input=${this._handleDescriptionChanged}
                 autogrow
                 .disabled=${!canUpdate}
               ></ha-textarea>`
@@ -174,7 +174,7 @@ class DialogTodoItemEditor extends LitElement {
                   ${this._todoListSupportsFeature(
                     TodoListEntityFeature.SET_DUE_DATETIME_ON_ITEM
                   )
-                    ? html` <ha-time-input
+                    ? html`<ha-time-input
                         .value=${dueTime}
                         .locale=${this.hass.locale}
                         .disabled=${!canUpdate}
