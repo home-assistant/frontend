@@ -263,7 +263,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                   : !this._veryNarrow &&
                       supportsFeature(
                         stateObj,
-                        MediaPlayerEntityFeature.VOLUME_SET
+                        MediaPlayerEntityFeature.VOLUME_STEP
                       )
                     ? html`
                         <ha-icon-button
