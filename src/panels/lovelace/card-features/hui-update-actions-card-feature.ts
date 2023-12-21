@@ -13,7 +13,7 @@ import {
   UpdateEntityFeature,
   updateIsInstalling,
 } from "../../../data/update";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showUpdateBackupDialogParams } from "../../../dialogs/update_backup/show-update-backup-dialog";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { UpdateActionsCardFeatureConfig } from "./types";
@@ -97,12 +97,9 @@ class HuiUpdateActionsCardFeature
     let backup = supportsBackup && this._config?.backup === "yes";
 
     if (supportsBackup && this._config?.backup === "ask") {
-      backup = await showConfirmationDialog(this, {
-        text: this.hass!.localize("ui.dialogs.ask_update_backup.text"),
-        title: this.hass!.localize("ui.dialogs.ask_update_backup.title"),
-        confirmText: this.hass!.localize("ui.common.yes"),
-        dismissText: this.hass!.localize("ui.common.no"),
-      });
+      const response = await showUpdateBackupDialogParams(this, {});
+      if (response === null) return;
+      backup = response;
     }
 
     this.hass!.callService("update", "install", {

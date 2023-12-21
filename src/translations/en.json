@@ -1531,7 +1531,7 @@
         "method": "Method: {method}",
         "nameservers": "Name Servers: {nameservers}"
       },
-      "ask_update_backup": {
+      "update_backup": {
         "title": "Create backup",
         "text": "Whould you like to create a backup before installing?"
       }
