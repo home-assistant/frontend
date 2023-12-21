@@ -3,6 +3,7 @@ import { mdiClose, mdiContentPaste, mdiPlus } from "@mdi/js";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { domainIcon } from "../../../common/entity/domain_icon";
@@ -452,7 +453,9 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                 </ha-list-item>
                 <li divider role="separator"></li>`
             : ""}
-          ${items.map(
+          ${repeat(
+            items,
+            (item) => item.key,
             (item) => html`
               <ha-list-item
                 .twoline=${Boolean(item.description)}
