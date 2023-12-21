@@ -68,25 +68,9 @@ class DialogBox extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      :host([inert]) {
-        pointer-events: initial !important;
-        cursor: initial !important;
-      }
-      a {
-        color: var(--primary-color);
-      }
       p {
         margin: 0;
         color: var(--primary-text-color);
-      }
-      .no-bottom-padding {
-        padding-bottom: 0;
-      }
-      .secondary {
-        color: var(--secondary-text-color);
-      }
-      .destructive {
-        --mdc-theme-primary: var(--error-color);
       }
       ha-dialog {
         /* Place above other dialogs */
@@ -96,9 +80,6 @@ class DialogBox extends LitElement {
         ha-dialog {
           --mdc-dialog-min-width: 400px;
         }
-      }
-      ha-textfield {
-        width: 100%;
       }
     `;
   }
