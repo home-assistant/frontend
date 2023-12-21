@@ -8054,16 +8054,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-lit@npm:1.10.1, eslint-plugin-lit@npm:^1.10.1":
-  version: 1.10.1
-  resolution: "eslint-plugin-lit@npm:1.10.1"
+"eslint-plugin-lit@npm:1.11.0, eslint-plugin-lit@npm:^1.10.1":
+  version: 1.11.0
+  resolution: "eslint-plugin-lit@npm:1.11.0"
   dependencies:
     parse5: "npm:^6.0.1"
     parse5-htmlparser2-tree-adapter: "npm:^6.0.1"
     requireindex: "npm:^1.2.0"
   peerDependencies:
     eslint: ">= 5"
-  checksum: e9aea27c2bdf4745b5afa76182d2f14e42e6170b5e5c9f6b1838b57b1e48e6996da7fd65b42237fe0c32d7c25471864396c03171ae9ed684bcfb3b8f71f92aa8
+  checksum: c6819c4e2054ebb316f2205bb56590c28193e9986fb5dc5627250e5f2db56b2a8058bebafd994ee3d48db322650d5028d48bfd97366e288491f804882d997bb7
   languageName: node
   linkType: hard
 
@@ -9744,7 +9744,7 @@ __metadata:
     eslint-import-resolver-webpack: "npm:0.13.8"
     eslint-plugin-disable: "npm:2.0.3"
     eslint-plugin-import: "npm:2.29.1"
-    eslint-plugin-lit: "npm:1.10.1"
+    eslint-plugin-lit: "npm:1.11.0"
     eslint-plugin-lit-a11y: "npm:4.1.1"
     eslint-plugin-unused-imports: "npm:3.0.0"
     eslint-plugin-wc: "npm:2.0.4"
