@@ -8,7 +8,7 @@ import {
   mdiPlus,
   mdiSort,
 } from "@mdi/js";
-import { endOfDay } from "date-fns";
+import { endOfDay, isSameDay } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
@@ -333,6 +333,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
               ? new Date(item.due)
               : endOfDay(new Date(item.due))
             : undefined;
+          const today =
+            due && !item.due!.includes("T") && isSameDay(new Date(), due);
           return html`
             <ha-check-list-item
               left
@@ -363,12 +365,15 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                   : nothing}
                 ${due
                   ? html`<div class="due ${due < new Date() ? "overdue" : ""}">
-                      <ha-svg-icon .path=${mdiClock}></ha-svg-icon
-                      ><ha-relative-time
-                        capitalize
-                        .hass=${this.hass}
-                        .datetime=${due}
-                      ></ha-relative-time>
+                      <ha-svg-icon .path=${mdiClock}></ha-svg-icon>${today
+                        ? this.hass!.localize(
+                            "ui.panel.lovelace.cards.todo-list.today"
+                          )
+                        : html`<ha-relative-time
+                            capitalize
+                            .hass=${this.hass}
+                            .datetime=${due}
+                          ></ha-relative-time>`}
                     </div>`
                   : nothing}
               </div>
