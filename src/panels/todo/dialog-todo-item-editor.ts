@@ -36,6 +36,8 @@ class DialogTodoItemEditor extends LitElement {
 
   @state() private _checked = false;
 
+  @state() private _hasTime = false;
+
   @state() private _submitting = false;
 
   // Dates are manipulated and displayed in the browser timezone
@@ -57,7 +59,9 @@ class DialogTodoItemEditor extends LitElement {
       this._summary = entry.summary;
       this._description = entry.description || "";
       this._due = entry.due ? new Date(entry.due) : undefined;
+      this._hasTime = entry.due?.includes("T") || false;
     } else {
+      this._hasTime = false;
       this._checked = false;
       this._due = undefined;
     }
@@ -72,6 +76,7 @@ class DialogTodoItemEditor extends LitElement {
     this._due = undefined;
     this._summary = "";
     this._description = "";
+    this._hasTime = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -208,7 +213,9 @@ class DialogTodoItemEditor extends LitElement {
     date: Date,
     timeZone: string = this._timeZone!
   ): string | undefined {
-    return formatInTimeZone(date, timeZone, "HH:mm:ss"); // 24 hr
+    return this._hasTime
+      ? formatInTimeZone(date, timeZone, "HH:mm:ss")
+      : undefined; // 24 hr
   }
 
   // Parse a date in the browser timezone
@@ -234,6 +241,7 @@ class DialogTodoItemEditor extends LitElement {
   }
 
   private _endTimeChanged(ev: CustomEvent) {
+    this._hasTime = true;
     this._due = this._parseDate(
       `${this._formatDate(this._due || new Date())}T${ev.detail.value}`
     );
@@ -252,7 +260,9 @@ class DialogTodoItemEditor extends LitElement {
       await createItem(this.hass!, this._params!.entity, {
         summary: this._summary,
         description: this._description,
-        due: this._due?.toISOString(),
+        due: this._hasTime
+          ? this._due?.toISOString()
+          : this._due?.toISOString().split("T")[0],
       });
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
@@ -279,7 +289,9 @@ class DialogTodoItemEditor extends LitElement {
         ...entry,
         summary: this._summary,
         description: this._description,
-        due: this._due?.toISOString(),
+        due: this._hasTime
+          ? this._due?.toISOString()
+          : this._due?.toISOString().split("T")[0],
         status: this._checked
           ? TodoItemStatus.Completed
           : TodoItemStatus.NeedsAction,

@@ -81,7 +81,8 @@ export const updateItem = (
       rename: item.summary,
       status: item.status,
       description: item.description,
-      due_datetime: item.due,
+      due_datetime: item.due?.includes("T") ? item.due : undefined,
+      due_date: item.due?.includes("T") ? undefined : item.due,
     },
     { entity_id }
   );
@@ -97,7 +98,8 @@ export const createItem = (
     {
       item: item.summary,
       description: item.description,
-      due_datetime: item.due,
+      due_datetime: item.due?.includes("T") ? item.due : undefined,
+      due_date: item.due?.includes("T") ? undefined : item.due,
     },
     { entity_id }
   );
