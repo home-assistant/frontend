@@ -260,9 +260,11 @@ class DialogTodoItemEditor extends LitElement {
       await createItem(this.hass!, this._params!.entity, {
         summary: this._summary,
         description: this._description,
-        due: this._hasTime
-          ? this._due?.toISOString()
-          : this._due?.toISOString().split("T")[0],
+        due: this._due
+          ? this._hasTime
+            ? this._due.toISOString()
+            : this._formatDate(this._due)
+          : undefined,
       });
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
@@ -289,9 +291,11 @@ class DialogTodoItemEditor extends LitElement {
         ...entry,
         summary: this._summary,
         description: this._description,
-        due: this._hasTime
-          ? this._due?.toISOString()
-          : this._due?.toISOString().split("T")[0],
+        due: this._due
+          ? this._hasTime
+            ? this._due.toISOString()
+            : this._formatDate(this._due)
+          : undefined,
         status: this._checked
           ? TodoItemStatus.Completed
           : TodoItemStatus.NeedsAction,

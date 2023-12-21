@@ -8,6 +8,7 @@ import {
   mdiPlus,
   mdiSort,
 } from "@mdi/js";
+import { endOfDay } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
@@ -50,11 +51,11 @@ import {
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { SortableInstance } from "../../../resources/sortable";
 import { HomeAssistant } from "../../../types";
+import { showTodoItemEditDialog } from "../../todo/show-dialog-todo-item-editor";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { TodoListCardConfig } from "./types";
-import { showTodoItemEditDialog } from "../../todo/show-dialog-todo-item-editor";
 
 @customElement("hui-todo-list-card")
 export class HuiTodoListCard extends LitElement implements LovelaceCard {
@@ -316,7 +317,11 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             );
           const showReorder =
             item.status !== TodoItemStatus.Completed && this._reordering;
-          const due = item.due ? new Date(item.due) : undefined;
+          const due = item.due
+            ? item.due.includes("T")
+              ? new Date(item.due)
+              : endOfDay(new Date(item.due))
+            : undefined;
           return html`
             <ha-check-list-item
               left

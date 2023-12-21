@@ -80,9 +80,9 @@ export const updateItem = (
       item: item.uid,
       rename: item.summary,
       status: item.status,
-      description: item.description,
+      description: item.description || "",
       due_datetime: item.due?.includes("T") ? item.due : undefined,
-      due_date: item.due?.includes("T") ? undefined : item.due,
+      due_date: item.due?.includes("T") ? undefined : item.due || undefined,
     },
     { entity_id }
   );
