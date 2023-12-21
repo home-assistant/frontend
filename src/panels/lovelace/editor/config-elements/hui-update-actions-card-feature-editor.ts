@@ -40,10 +40,10 @@ export class HuiUpdateActionsCardFeatureEditor
             select: {
               default: "yes",
               mode: "dropdown",
-              options: ["yes", "no", "ask"].map((option) => ({
+              options: ["ask", "yes", "no"].map((option) => ({
                 value: option,
                 label: localize(
-                  `ui.panel.lovelace.editor.card.features.types.update-actions.backup_options.${option}`
+                  `ui.panel.lovelace.editor.features.types.update-actions.backup_options.${option}`
                 ),
               })),
             },
@@ -52,27 +52,28 @@ export class HuiUpdateActionsCardFeatureEditor
       ] as const
   );
 
+  private get _stateObj() {
+    return this.context?.entity_id
+      ? this.hass!.states[this.context?.entity_id]
+      : undefined;
+  }
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
-    const stateObj = this.context?.entity_id
-      ? this.hass.states[this.context?.entity_id]
-      : undefined;
-
     const supportsBackup =
-      Boolean(stateObj) &&
-      supportsFeature(stateObj!, UpdateEntityFeature.BACKUP);
+      this._stateObj != null &&
+      supportsFeature(this._stateObj, UpdateEntityFeature.BACKUP);
 
     const schema = this._schema(this.hass.localize, supportsBackup);
 
-    const data = {
-      ...this._config,
-      ...(!this._config.backup && supportsBackup
-        ? { backup: DEFAULT_UPDATE_BACKUP_OPTION }
-        : {}),
-    };
+    const data = { ...this._config };
+
+    if (!this._config.backup && supportsBackup) {
+      data.backup = DEFAULT_UPDATE_BACKUP_OPTION;
+    }
 
     return html`
       <ha-form
@@ -96,31 +97,25 @@ export class HuiUpdateActionsCardFeatureEditor
     switch (schema.name) {
       case "backup":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.features.types.update-actions.${schema.name}`
+          `ui.panel.lovelace.editor.features.types.update-actions.${schema.name}`
         );
       default:
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}`
-        );
+        return "";
     }
   };
 
   private _computeHelperCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
-    const stateObj = this.context?.entity_id
-      ? this.hass!.states[this.context?.entity_id]
-      : undefined;
-
     const supportsBackup =
-      Boolean(stateObj) &&
-      supportsFeature(stateObj!, UpdateEntityFeature.BACKUP);
+      this._stateObj != null &&
+      supportsFeature(this._stateObj, UpdateEntityFeature.BACKUP);
 
     switch (schema.name) {
       case "backup":
         if (!supportsBackup) {
           return this.hass!.localize(
-            "ui.panel.lovelace.editor.card.features.types.update-actions.backup_not_supported"
+            "ui.panel.lovelace.editor.features.types.update-actions.backup_not_supported"
           );
         }
         return undefined;
