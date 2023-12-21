@@ -208,10 +208,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                 ></ha-icon-button>
               `
             : !supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET) &&
-                !supportsFeature(
-                  stateObj,
-                  MediaPlayerEntityFeature.VOLUME_BUTTONS
-                )
+                !supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP)
               ? buttons
               : ""}
           ${supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF) &&
@@ -226,8 +223,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             : ""}
         </div>
       </hui-generic-entity-row>
-      ${(supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET) ||
-        supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_BUTTONS)) &&
+      ${(supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP) ||
+        supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)) &&
       stateActive(stateObj)
         ? html`
             <div class="flex">
@@ -266,7 +263,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                   : !this._veryNarrow &&
                       supportsFeature(
                         stateObj,
-                        MediaPlayerEntityFeature.VOLUME_BUTTONS
+                        MediaPlayerEntityFeature.VOLUME_SET
                       )
                     ? html`
                         <ha-icon-button
