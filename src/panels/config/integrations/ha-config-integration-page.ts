@@ -104,6 +104,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
 import { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
+import { string } from "superstruct";
 
 @customElement("ha-config-integration-page")
 class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
@@ -551,9 +552,25 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       ];
       if (item.reason) {
         this.hass.loadBackendTranslation("config", item.domain);
-        stateTextExtra = html`${this.hass.localize(
+        const stateTextError = this.hass.localize(
           `component.${item.domain}.config.error.${item.reason}`
-        ) || item.reason}`;
+        );
+        let stateTextReason: string | null = null;
+        if (item.reason_translation) {
+          this.hass.loadBackendTranslation("exceptions", item.domain);
+          const placeHolders: Record<string, string> | undefined =
+            item.reason_translation.get("translation_placeholders") ??
+            undefined;
+          stateTextReason = this.hass.localize(
+            `component.${item.domain}.exceptions.${item.reason_translation.get(
+              "translation_key"
+            )}.message`,
+            placeHolders
+          );
+        } else {
+          stateTextReason = item.reason;
+        }
+        stateTextExtra = html`${stateTextError || stateTextReason}`;
       } else {
         stateTextExtra = html`
           <br />
