@@ -4,14 +4,7 @@ import {
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
-import {
-  addHours,
-  differenceInDays,
-  differenceInHours,
-  endOfToday,
-  isToday,
-  startOfToday,
-} from "date-fns";
+import { endOfToday, isToday, startOfToday } from "date-fns";
 import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -31,12 +24,7 @@ import {
   rgb2lab,
 } from "../../../../common/color/convert-color";
 import { labBrighten, labDarken } from "../../../../common/color/lab";
-import { formatDateVeryShort } from "../../../../common/datetime/format_date";
-import { formatTime } from "../../../../common/datetime/format_time";
-import {
-  formatNumber,
-  numberFormatToLocale,
-} from "../../../../common/number/format_number";
+import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import {
@@ -56,6 +44,7 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyGasGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
+import { getCommonOptions } from "./common/energy-chart-options";
 
 @customElement("hui-energy-gas-graph-card")
 export class HuiEnergyGasGraphCard
@@ -159,110 +148,23 @@ export class HuiEnergyGasGraphCard
       compareStart?: Date,
       compareEnd?: Date
     ): ChartOptions => {
-      const dayDifference = differenceInDays(end, start);
-      const compare = compareStart !== undefined && compareEnd !== undefined;
-      if (compare) {
-        const difference = differenceInHours(end, start);
-        const differenceCompare = differenceInHours(compareEnd!, compareStart!);
-        // If the compare period doesn't match the main period, adjust them to match
-        if (differenceCompare > difference) {
-          end = addHours(end, differenceCompare - difference);
-        } else if (difference > differenceCompare) {
-          compareEnd = addHours(compareEnd!, difference - differenceCompare);
-        }
-      }
-
+      const commonOptions = getCommonOptions(
+        start,
+        end,
+        locale,
+        config,
+        unit,
+        compareStart,
+        compareEnd
+      );
       const options: ChartOptions = {
-        parsing: false,
-        animation: false,
-        interaction: {
-          mode: "x",
-        },
-        scales: {
-          x: {
-            type: "time",
-            suggestedMin: start.getTime(),
-            suggestedMax:
-              dayDifference > 35
-                ? new Date(end.setDate(1)).setHours(0, 0, 0, 0)
-                : dayDifference > 2
-                ? end.setHours(0, 0, 0, 0)
-                : end.setMinutes(0, 0, 0),
-            adapters: {
-              date: {
-                locale,
-                config,
-              },
-            },
-            ticks: {
-              maxRotation: 0,
-              sampleSize: 5,
-              autoSkipPadding: 20,
-              font: (context) =>
-                context.tick && context.tick.major
-                  ? ({ weight: "bold" } as any)
-                  : {},
-            },
-            time: {
-              tooltipFormat:
-                dayDifference > 35
-                  ? "monthyear"
-                  : dayDifference > 7
-                    ? "date"
-                    : dayDifference > 2
-                      ? "weekday"
-                      : dayDifference > 0
-                        ? "datetime"
-                        : "hour",
-              minUnit:
-                dayDifference > 35
-                  ? "month"
-                  : dayDifference > 2
-                    ? "day"
-                    : "hour",
-            },
-            offset: true,
-          },
-          y: {
-            stacked: true,
-            type: "linear",
-            title: {
-              display: true,
-              text: unit,
-            },
-            ticks: {
-              beginAtZero: true,
-            },
-          },
-        },
+        ...commonOptions,
         plugins: {
+          ...commonOptions.plugins,
           tooltip: {
-            position: "nearest",
-            filter: (val) => val.formattedValue !== "0",
-            itemSort: function (a, b) {
-              return b.datasetIndex - a.datasetIndex;
-            },
+            ...commonOptions.plugins!.tooltip,
             callbacks: {
-              title: (datasets) => {
-                if (dayDifference > 0) {
-                  return datasets[0].label;
-                }
-                const date = new Date(datasets[0].parsed.x);
-                return `${
-                  compare
-                    ? `${formatDateVeryShort(date, locale, config)}: `
-                    : ""
-                }${formatTime(date, locale, config)} – ${formatTime(
-                  addHours(date, 1),
-                  locale,
-                  config
-                )}`;
-              },
-              label: (context) =>
-                `${context.dataset.label}: ${formatNumber(
-                  context.parsed.y,
-                  locale
-                )} ${unit}`,
+              ...commonOptions.plugins!.tooltip!.callbacks,
               footer: (contexts) => {
                 if (contexts.length < 2) {
                   return [];
@@ -283,38 +185,8 @@ export class HuiEnergyGasGraphCard
               },
             },
           },
-          filler: {
-            propagate: false,
-          },
-          legend: {
-            display: false,
-            labels: {
-              usePointStyle: true,
-            },
-          },
         },
-        elements: {
-          bar: { borderWidth: 1.5, borderRadius: 4 },
-          point: {
-            hitRadius: 50,
-          },
-        },
-        // @ts-expect-error
-        locale: numberFormatToLocale(locale),
       };
-      if (compare) {
-        options.scales!.xAxisCompare = {
-          ...(options.scales!.x as Record<string, any>),
-          suggestedMin: compareStart!.getTime(),
-          suggestedMax:
-            dayDifference > 35
-              ? new Date(compareEnd!.setDate(1)).setHours(0, 0, 0, 0)
-              : dayDifference > 2
-              ? compareEnd!.setHours(0, 0, 0, 0)
-              : compareEnd!.setMinutes(0, 0, 0),
-          display: false,
-        };
-      }
       return options;
     }
   );
