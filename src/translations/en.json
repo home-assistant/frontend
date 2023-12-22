@@ -1676,7 +1676,8 @@
           "show_skipped": "Show skipped updates",
           "join_beta": "[%key:supervisor::system::supervisor::join_beta_action%]",
           "leave_beta": "[%key:supervisor::system::supervisor::leave_beta_action%]",
-          "skipped": "Skipped"
+          "skipped": "Skipped",
+          "update_in_progress": "Update in progress"
         },
         "repairs": {
           "caption": "Repairs",

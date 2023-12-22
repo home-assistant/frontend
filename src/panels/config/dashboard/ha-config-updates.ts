@@ -111,6 +111,9 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                     indeterminate
                     slot="graphic"
                     class="absolute"
+                    .ariaLabel=${this.hass.localize(
+                      "ui.panel.config.updates.update_in_progress"
+                    )}
                   ></ha-circular-progress>`
                 : ""}
               <span
@@ -130,6 +133,9 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                       indeterminate
                       size="small"
                       slot="meta"
+                      .ariaLabel=${this.hass.localize(
+                        "ui.panel.config.updates.update_in_progress"
+                      )}
                     ></ha-circular-progress>`
                   : html`<ha-icon-next slot="meta"></ha-icon-next>`
                 : ""}
