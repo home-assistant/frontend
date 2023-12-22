@@ -3607,8 +3607,7 @@
               "unavailable": "Unavailable",
               "disabled": "Disabled",
               "readonly": "Read-only",
-              "hidden": "Hidden",
-              "ok": "Ok"
+              "hidden": "Hidden"
             },
             "headers": {
               "state_icon": "State icon",
