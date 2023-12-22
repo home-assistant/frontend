@@ -322,6 +322,7 @@
       "enable": "Enable",
       "disable": "Disable",
       "hide": "Hide",
+      "unhide": "Unhide",
       "close": "Close",
       "clear": "Clear",
       "leave": "Leave",
@@ -3641,6 +3642,11 @@
               "button": "Hide selected",
               "confirm_title": "Do you want to hide {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm_text": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with services."
+            },
+            "unhide_selected": {
+              "button": "Unhide selected",
+              "confirm_title": "Do you want to unhide {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
+              "confirm_text": "These entities will become visible on the dashboard again."
             }
           }
         },

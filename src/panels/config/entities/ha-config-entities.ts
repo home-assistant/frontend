@@ -6,6 +6,7 @@ import {
   mdiCancel,
   mdiDelete,
   mdiEyeOff,
+  mdiEye,
   mdiFilterVariant,
   mdiPencilOff,
   mdiPlus,
@@ -112,6 +113,14 @@ export class HaConfigEntities extends LitElement {
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _selectedEntities: string[] = [];
+
+  private _selectedCanHide = false;
+
+  private _selectedCanUnhide = false;
+
+  private _selectedCanDisable = false;
+
+  private _selectedCanEnable = false;
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -527,21 +536,34 @@ export class HaConfigEntities extends LitElement {
                 <div class="header-btns">
                   ${!this.narrow
                     ? html`
-                        <mwc-button @click=${this._enableSelected}
-                          >${this.hass.localize(
-                            "ui.panel.config.entities.picker.enable_selected.button"
-                          )}</mwc-button
-                        >
-                        <mwc-button @click=${this._disableSelected}
-                          >${this.hass.localize(
-                            "ui.panel.config.entities.picker.disable_selected.button"
-                          )}</mwc-button
-                        >
-                        <mwc-button @click=${this._hideSelected}
-                          >${this.hass.localize(
-                            "ui.panel.config.entities.picker.hide_selected.button"
-                          )}</mwc-button
-                        >
+                        ${this._selectedCanEnable
+                          ? html`<mwc-button @click=${this._enableSelected}
+                              >${this.hass.localize(
+                                "ui.panel.config.entities.picker.enable_selected.button"
+                              )}</mwc-button
+                            >`
+                          : nothing}
+                        ${this._selectedCanDisable
+                          ? html`<mwc-button @click=${this._disableSelected}
+                              >${this.hass.localize(
+                                "ui.panel.config.entities.picker.disable_selected.button"
+                              )}</mwc-button
+                            >`
+                          : nothing}
+                        ${this._selectedCanHide
+                          ? html`<mwc-button @click=${this._hideSelected}
+                              >${this.hass.localize(
+                                "ui.panel.config.entities.picker.hide_selected.button"
+                              )}</mwc-button
+                            >`
+                          : nothing}
+                        ${this._selectedCanUnhide
+                          ? html`<mwc-button @click=${this._unhideSelected}
+                              >${this.hass.localize(
+                                "ui.panel.config.entities.picker.unhide_selected.button"
+                              )}</mwc-button
+                            >`
+                          : nothing}
                         <mwc-button
                           @click=${this._removeSelected}
                           class="warning"
@@ -551,39 +573,72 @@ export class HaConfigEntities extends LitElement {
                         >
                       `
                     : html`
-                        <ha-icon-button
-                          id="enable-btn"
-                          @click=${this._enableSelected}
-                          .path=${mdiUndo}
-                          .label=${this.hass.localize("ui.common.enable")}
-                        ></ha-icon-button>
-                        <simple-tooltip animation-delay="0" for="enable-btn">
-                          ${this.hass.localize(
-                            "ui.panel.config.entities.picker.enable_selected.button"
-                          )}
-                        </simple-tooltip>
-                        <ha-icon-button
-                          id="disable-btn"
-                          @click=${this._disableSelected}
-                          .path=${mdiCancel}
-                          .label=${this.hass.localize("ui.common.disable")}
-                        ></ha-icon-button>
-                        <simple-tooltip animation-delay="0" for="disable-btn">
-                          ${this.hass.localize(
-                            "ui.panel.config.entities.picker.disable_selected.button"
-                          )}
-                        </simple-tooltip>
-                        <ha-icon-button
-                          id="hide-btn"
-                          @click=${this._hideSelected}
-                          .path=${mdiEyeOff}
-                          .label=${this.hass.localize("ui.common.hide")}
-                        ></ha-icon-button>
-                        <simple-tooltip animation-delay="0" for="hide-btn">
-                          ${this.hass.localize(
-                            "ui.panel.config.entities.picker.hide_selected.button"
-                          )}
-                        </simple-tooltip>
+                        ${this._selectedCanEnable
+                          ? html`<ha-icon-button
+                                id="enable-btn"
+                                @click=${this._enableSelected}
+                                .path=${mdiUndo}
+                                .label=${this.hass.localize("ui.common.enable")}
+                              ></ha-icon-button>
+                              <simple-tooltip
+                                animation-delay="0"
+                                for="enable-btn"
+                              >
+                                ${this.hass.localize(
+                                  "ui.panel.config.entities.picker.enable_selected.button"
+                                )}
+                              </simple-tooltip> `
+                          : nothing}
+                        ${this._selectedCanDisable
+                          ? html`<ha-icon-button
+                                id="disable-btn"
+                                @click=${this._disableSelected}
+                                .path=${mdiCancel}
+                                .label=${this.hass.localize(
+                                  "ui.common.disable"
+                                )}
+                              ></ha-icon-button>
+                              <simple-tooltip
+                                animation-delay="0"
+                                for="disable-btn"
+                              >
+                                ${this.hass.localize(
+                                  "ui.panel.config.entities.picker.disable_selected.button"
+                                )}
+                              </simple-tooltip>`
+                          : nothing}
+                        ${this._selectedCanHide
+                          ? html`<ha-icon-button
+                                id="hide-btn"
+                                @click=${this._hideSelected}
+                                .path=${mdiEyeOff}
+                                .label=${this.hass.localize("ui.common.hide")}
+                              ></ha-icon-button>
+                              <simple-tooltip
+                                animation-delay="0"
+                                for="hide-btn"
+                              >
+                                ${this.hass.localize(
+                                  "ui.panel.config.entities.picker.hide_selected.button"
+                                )}
+                              </simple-tooltip>`
+                          : nothing}
+                        ${this._selectedCanUnhide
+                          ? html`<ha-icon-button
+                                id="hide-btn"
+                                @click=${this._unhideSelected}
+                                .path=${mdiEye}
+                                .label=${this.hass.localize("ui.common.unhide")}
+                              ></ha-icon-button>
+                              <simple-tooltip
+                                animation-delay="0"
+                                for="hide-btn"
+                              >
+                                ${this.hass.localize(
+                                  "ui.panel.config.entities.picker.unhide_selected.button"
+                                )}
+                              </simple-tooltip>`
+                          : nothing}
                         <ha-icon-button
                           class="warning"
                           id="remove-btn"
@@ -718,6 +773,27 @@ export class HaConfigEntities extends LitElement {
         this._stateEntities = stateEntities;
       }
     }
+
+    if (
+      this._selectedEntities.length &&
+      (changedProps.has("_selectedEntities") || changedProps.has("_entities"))
+    ) {
+      const entities = this._selectedEntities.map((entity) =>
+        this._entities.find((e) => e.entity_id === entity)
+      );
+
+      // Can't hide or unhide disabled entries
+      const hidden = entities.map((entity) =>
+        entity?.disabled_by ? "disabled" : entity?.hidden_by
+      );
+      const disabled = entities.map((entity) => entity?.disabled_by);
+
+      this._selectedCanUnhide = hidden.some((h) => h === "user");
+      this._selectedCanHide = hidden.some((h) => h === null);
+
+      this._selectedCanEnable = disabled.some((d) => d === "user");
+      this._selectedCanDisable = disabled.some((d) => d === null);
+    }
   }
 
   private _showDisabledChanged(ev: CustomEvent<RequestSelectedDetail>) {
@@ -844,6 +920,28 @@ export class HaConfigEntities extends LitElement {
         this._selectedEntities.forEach((entity) =>
           updateEntityRegistryEntry(this.hass, entity, {
             hidden_by: "user",
+          })
+        );
+        this._clearSelection();
+      },
+    });
+  }
+
+  private _unhideSelected() {
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.entities.picker.unhide_selected.confirm_title",
+        { number: this._selectedEntities.length }
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.entities.picker.unhide_selected.confirm_text"
+      ),
+      confirmText: this.hass.localize("ui.common.unhide"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirm: () => {
+        this._selectedEntities.forEach((entity) =>
+          updateEntityRegistryEntry(this.hass, entity, {
+            hidden_by: null,
           })
         );
         this._clearSelection();
