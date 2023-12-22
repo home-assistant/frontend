@@ -175,25 +175,27 @@ export default class HaAutomationCondition extends LitElement {
           `
         )}
       </div>
-      <ha-button
-        outlined
-        .disabled=${this.disabled}
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.add"
-        )}
-        @click=${this._addConditionDialog}
-      >
-        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-      </ha-button>
-      <ha-button
-        .disabled=${this.disabled}
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.add_building_block"
-        )}
-        @click=${this._addConditionBuildingBlockDialog}
-      >
-        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-      </ha-button>
+      <div class="buttons">
+        <ha-button
+          outlined
+          .disabled=${this.disabled}
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.conditions.add"
+          )}
+          @click=${this._addConditionDialog}
+        >
+          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+        </ha-button>
+        <ha-button
+          .disabled=${this.disabled}
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.conditions.add_building_block"
+          )}
+          @click=${this._addConditionBuildingBlockDialog}
+        >
+          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+        </ha-button>
+      </div>
     `;
   }
 
@@ -362,6 +364,11 @@ export default class HaAutomationCondition extends LitElement {
         .handle ha-svg-icon {
           pointer-events: none;
           height: 24px;
+        }
+        .buttons {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
         }
       `,
     ];
