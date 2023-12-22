@@ -2501,7 +2501,10 @@
                   "end": "Event end",
                   "offset": "Offset (optional)",
                   "before": "Before",
-                  "after": "After"
+                  "after": "After",
+                  "description": {
+                    "picker": "When a calendar event starts or ends."
+                  }
                 },
                 "device": {
                   "label": "Device",
@@ -2524,6 +2527,7 @@
                   "context_user_picked": "User firing event",
                   "context_user_pick": "Select user",
                   "description": {
+                    "picker": "When an event is being received (event is an advanced concept in Home Assistant)",
                     "full": "When {eventTypes} event is fired"
                   }
                 },
@@ -2535,6 +2539,7 @@
                   "enter": "Enter",
                   "leave": "Leave",
                   "description": {
+                    "picker": "When an entity created by a geolocation platform appears in or disappears from a zone",
                     "full": "When {source} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone}\n other {zones}\n}"
                   }
                 },
@@ -2544,7 +2549,10 @@
                   "from": "From (optional)",
                   "for": "For",
                   "to": "To (optional)",
-                  "any_state_ignore_attributes": "Any state (ignoring attribute changes)"
+                  "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
+                  "description": {
+                    "picker": "When the state of an entity (or attribute) changes."
+                  }
                 },
                 "homeassistant": {
                   "label": "Home Assistant",
@@ -2552,6 +2560,7 @@
                   "start": "Start",
                   "shutdown": "Shutdown",
                   "description": {
+                    "picker": "When Home Assistant starts up or shuts down.",
                     "started": "When Home Assistant is started",
                     "shutdown": "When Home Assistant is shutdown"
                   }
@@ -2561,6 +2570,7 @@
                   "topic": "Topic",
                   "payload": "Payload (optional)",
                   "description": {
+                    "picker": "When a specific message is received on a given MQTT topic.",
                     "full": "When an MQTT message has been received"
                   }
                 },
@@ -2574,6 +2584,7 @@
                   "type_value": "Fixed number",
                   "type_input": "Numeric value of another entity",
                   "description": {
+                    "picker": "When the numeric value of an entity''s state (or attribute''s value) crosses a given threshold.",
                     "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
                     "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
                     "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
@@ -2590,6 +2601,7 @@
                     "updated": "updated"
                   },
                   "description": {
+                    "picker": "When a persistent notification is added or removed",
                     "full": "When a persistent notification is updated"
                   }
                 },
@@ -2600,6 +2612,7 @@
                   "sunset": "Sunset",
                   "offset": "Offset (optional)",
                   "description": {
+                    "picker": "When the sun sets or rises",
                     "sets": "When the sun sets{hasDuration, select, \n true { offset by {duration}} \n other {}\n }",
                     "rises": "When the sun rises{hasDuration, select, \n true { offset by {duration}} \n other {}\n }"
                   }
@@ -2611,6 +2624,7 @@
                   "delete": "Delete sentence",
                   "confirm_delete": "Are you sure you want to delete this sentence?",
                   "description": {
+                    "picker": "When Assist matches a sentence from a voice assistant.",
                     "empty": "When a sentence is said",
                     "full": "When the sentence {sentence} is said"
                   }
@@ -2618,6 +2632,7 @@
                 "tag": {
                   "label": "Tag",
                   "description": {
+                    "picker": "When a tag is scanned (tags are usually created from the companion app).",
                     "full": "When a tag is scanned"
                   }
                 },
@@ -2626,6 +2641,7 @@
                   "value_template": "Value template",
                   "for": "For",
                   "description": {
+                    "picker": "When a template is evaluated to true.",
                     "full": "When a template changes from false to true{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
@@ -2636,6 +2652,7 @@
                   "at": "At time",
                   "mode": "Mode",
                   "description": {
+                    "picker": "At a specific time, or on a specific date.",
                     "full": "When the time is equal to {time}"
                   }
                 },
@@ -2643,7 +2660,10 @@
                   "label": "Time pattern",
                   "hours": "Hours",
                   "minutes": "Minutes",
-                  "seconds": "Seconds"
+                  "seconds": "Seconds",
+                  "description": {
+                    "picker": "Periodically, every defined interval of time."
+                  }
                 },
                 "webhook": {
                   "copy_url": "Copy URL to clipboard",
@@ -2653,6 +2673,7 @@
                   "webhook_id_helper": "Treat this ID like a password: keep it secret, and make it hard to guess.",
                   "webhook_settings": "Webhook settings",
                   "description": {
+                    "picker": "When Home Assistant receives a web request to the webhook endpoint.",
                     "full": "When a Webhook payload has been received"
                   }
                 },
@@ -2664,6 +2685,7 @@
                   "enter": "Enter",
                   "leave": "Leave",
                   "description": {
+                    "picker": "When someone (or something) enters or leaves a zone",
                     "full": "When {entity} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
                   }
                 }
@@ -2699,22 +2721,23 @@
               "groups": {
                 "entity": {
                   "label": "Entity",
-                  "description": "If an entity is in a specific state"
+                  "description": "If an entity is in a specific state."
                 },
                 "time_location": {
                   "label": "Time and location",
-                  "description": "If someone is in a zone or if the current time is before or after a specified time"
+                  "description": "If someone is in a zone or if the current time is before or after a specified time."
                 },
                 "other": { "label": "Other" },
                 "building_blocks": {
                   "label": "Building blocks",
-                  "description": "Build more complex conditions"
+                  "description": "Build more complex conditions."
                 }
               },
               "type": {
                 "and": {
                   "label": "And",
                   "description": {
+                    "picker": "Test if multiple conditions are true.",
                     "no_conditions": "Test if multiple conditions match",
                     "full": "Test if {count} {count, plural,\n one {condition match}\n other {conditions matches}\n}"
                   }
@@ -2736,6 +2759,7 @@
                 "not": {
                   "label": "Not",
                   "description": {
+                    "picker": "Test if a condition is not true",
                     "no_conditions": "Test if no condition matches",
                     "one_condition": "Test if 1 condition does not match",
                     "full": "Test if none of {count} conditions match"
@@ -2751,6 +2775,7 @@
                   "mode_below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_below%]",
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
                   "description": {
+                    "picker": "If the numeric value of an entity''s state (or attribute''s value) is above or below a given threshold.",
                     "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above}",
                     "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is below {below}",
                     "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}"
@@ -2759,6 +2784,7 @@
                 "or": {
                   "label": "Or",
                   "description": {
+                    "picker": "Test if any condition is true.",
                     "no_conditions": "Test if any condition matches",
                     "full": "Test if any of {count} {count, plural,\n  one {condition}\n other {conditions}\n} matches"
                   }
@@ -2767,6 +2793,7 @@
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
                   "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
                   "description": {
+                    "picker": "If an entity (or attribute) is in a specific state",
                     "no_entity": "Confirm state",
                     "full": "Confirm{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n zero {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n zero {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
@@ -2778,12 +2805,16 @@
                   "before_offset": "Before offset (optional)",
                   "after_offset": "After offset (optional)",
                   "sunrise": "Sunrise",
-                  "sunset": "Sunset"
+                  "sunset": "Sunset",
+                  "description": {
+                    "picker": "If the sun is above or below the horizon."
+                  }
                 },
                 "template": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::template::label%]",
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]",
                   "description": {
+                    "picker": "If a template is evaluated to true.",
                     "full": "Test if template renders a value equal to true"
                   }
                 },
@@ -2806,6 +2837,7 @@
                     "sun": "Sunday"
                   },
                   "description": {
+                    "picker": "If the current time is before or after a specified time",
                     "full": "Confirm the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
                   }
                 },
@@ -2814,6 +2846,7 @@
                   "no_triggers": "No triggers have an ID set. You can set an ID using the trigger menu button.",
                   "id": "Trigger",
                   "description": {
+                    "picker": "If the automation has been triggered by a specific trigger.",
                     "full": "When triggered by {id}"
                   }
                 },
@@ -2822,6 +2855,7 @@
                   "entity": "[%key:ui::panel::config::automation::editor::triggers::type::zone::entity%]",
                   "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "description": {
+                    "picker": "If someone (or something) is in a zone",
                     "full": "Confirm {entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n} "
                   }
                 }
@@ -2861,7 +2895,7 @@
                 "other": { "label": "Other" },
                 "building_blocks": {
                   "label": "Building blocks",
-                  "description": "Build more complex sequences of actions"
+                  "description": "Build more complex sequences of actions."
                 }
               },
               "type": {
@@ -2883,7 +2917,7 @@
                 "play_media": {
                   "label": "Play media",
                   "description": {
-                    "picker": "Play media on a media player",
+                    "picker": "Play media on a media player.",
                     "full": "Play {hasMedia, select, \n true {{media}} \n other {media}\n } on {hasMediaPlayer, select, \n true {{mediaPlayer}} \n other {a media player}\n }"
                   }
                 },
@@ -2891,6 +2925,7 @@
                   "label": "Wait for time to pass (delay)",
                   "delay": "Duration",
                   "description": {
+                    "picker": "Wait some time to perform a sequence of actions.",
                     "full": "Delay {duration}",
                     "duration_string": "for {string}",
                     "duration_template": "based on a template",
@@ -2903,6 +2938,7 @@
                   "timeout": "Timeout (optional)",
                   "continue_timeout": "Continue on timeout",
                   "description": {
+                    "picker": "Wait for a template to be evaluated to true to perform a sequence of actions.",
                     "full": "Wait for a template to evaluate to true"
                   }
                 },
@@ -2911,18 +2947,23 @@
                   "timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::timeout%]",
                   "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]",
                   "description": {
+                    "picker": "Wait for a trigger to perform a sequence of actions.",
                     "wait_for_a_trigger": "Wait for a trigger",
                     "wait_for_triggers": "Wait for {count} {count, plural,\n one {trigger}\n other {triggers}\n}"
                   }
                 },
                 "condition": {
-                  "label": "Condition"
+                  "label": "Condition",
+                  "description": {
+                    "picker": "Test a condition (and stop the sequence if the condition is not met)."
+                  }
                 },
                 "event": {
                   "label": "Manual event",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_type%]",
                   "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
                   "description": {
+                    "picker": "Fire an event manually (event is an advanced concept in Home Assistant).",
                     "full": "Manually fire event {name}",
                     "template": "based on a template"
                   }
@@ -2940,6 +2981,9 @@
                     "value": "Value",
                     "brightness_pct": "[%key:ui::card::light::brightness%]",
                     "flash": "Flash"
+                  },
+                  "description": {
+                    "picker": "Do something on a device. Great way to start."
                   }
                 },
                 "activate_scene": {
@@ -2972,6 +3016,7 @@
                   },
                   "sequence": "Actions",
                   "description": {
+                    "picker": "Repeat a sequence of actions.",
                     "full": "Repeat an action {chosenAction}",
                     "count": "{count} {count, plural,\n one {time}\n other {times}\n}",
                     "while_count": "while {count} {count, plural,\n one {condition matches}\n other {conditions match}\n} ",
@@ -2994,6 +3039,7 @@
                   "no_conditions": "[%key:ui::panel::config::devices::automation::conditions::no_conditions%]",
                   "sequence": "Actions",
                   "description": {
+                    "picker": "Choose what to do based on conditions (Similar to If-Then, but more powerful).",
                     "full": "Choose between {number} {number, plural,\n one {action}\n other{actions}\n}",
                     "no_action": "Choose an action"
                   }
@@ -3005,6 +3051,7 @@
                   "else": "Else",
                   "add_else": "Add else",
                   "description": {
+                    "picker": "Do something conditionally.",
                     "if": "Conditionally execute an action",
                     "if_else": "Conditionally execute an action and default to another action"
                   }
@@ -3015,18 +3062,21 @@
                   "response_variable": "The name of the variable to use as response",
                   "error": "Stop because of an unexpected error",
                   "description": {
+                    "picker": "Stop the sequence of actions",
                     "full": "Stop {hasReason, select, \n true { because: {reason}} \n other {}\n }"
                   }
                 },
                 "parallel": {
                   "label": "Run in parallel",
                   "description": {
+                    "picker": "perform a sequence of actions in parallel.",
                     "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in parallel"
                   }
                 },
                 "variables": {
                   "label": "Define variables",
                   "description": {
+                    "picker": "Define variables to be used later in the sequence.",
                     "full": "Define variables {names}"
                   }
                 },
