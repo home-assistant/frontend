@@ -23,6 +23,10 @@ export interface ConfigEntry {
   pref_disable_polling: boolean;
   disabled_by: "user" | null;
   reason: string | null;
+  reason_translation: Map<
+    string,
+    string | null | Record<string, string>
+  > | null;
 }
 
 export type ConfigEntryMutableParams = Partial<
