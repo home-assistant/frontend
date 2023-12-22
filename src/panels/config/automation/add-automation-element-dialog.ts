@@ -5,6 +5,7 @@ import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
@@ -93,6 +94,10 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
 
   @query("ha-dialog") private _dialog?: HaDialog;
 
+  private _width?: number;
+
+  private _height?: number;
+
   public showDialog(params): void {
     this._params = params;
     this._group = params.group;
@@ -106,6 +111,8 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     if (this._params) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
+    this._height = undefined;
+    this._width = undefined;
     this._params = undefined;
     this._group = undefined;
     this._prev = undefined;
@@ -349,6 +356,14 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this._manifests = manifests;
   }
 
+  protected _opened(): void {
+    // Store the width and height so that when we search, box doesn't jump
+    const boundingRect =
+      this.shadowRoot!.querySelector("mwc-list")?.getBoundingClientRect();
+    this._width = boundingRect?.width;
+    this._height = boundingRect?.height;
+  }
+
   protected render() {
     if (!this._params) {
       return nothing;
@@ -383,7 +398,13 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         );
 
     return html`
-      <ha-dialog open hideActions @closed=${this.closeDialog} .heading=${true}>
+      <ha-dialog
+        open
+        hideActions
+        @opened=${this._opened}
+        @closed=${this.closeDialog}
+        .heading=${true}
+      >
         <div slot="heading">
           <ha-header-bar>
             <span slot="title"
@@ -405,6 +426,8 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                 ></ha-icon-button>`}
           </ha-header-bar>
           <search-input
+            autofocus
+            dialogInitialFocus
             .hass=${this.hass}
             .filter=${this._filter}
             @value-changed=${this._filterChanged}
@@ -422,7 +445,10 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           innerRole="listbox"
           itemRoles="option"
           rootTabbable
-          dialogInitialFocus
+          style=${styleMap({
+            width: `${this._width}px`,
+            height: `${this._height}px`,
+          })}
         >
           ${this._params.clipboardItem &&
           !this._filter &&
