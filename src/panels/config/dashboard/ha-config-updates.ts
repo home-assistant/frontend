@@ -109,7 +109,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               ${this.narrow && entity.attributes.in_progress
                 ? html`<ha-circular-progress
                     indeterminate
-                    size="small"
                     slot="graphic"
                     class="absolute"
                   ></ha-circular-progress>`
@@ -191,6 +190,8 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
         }
         ha-circular-progress.absolute {
           position: absolute;
+          width: 40px;
+          height: 40px;
         }
         state-badge.updating {
           opacity: 0.5;
