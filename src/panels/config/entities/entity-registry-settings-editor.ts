@@ -121,7 +121,7 @@ const OVERRIDE_DEVICE_CLASSES = {
   ],
 };
 
-const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
+const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren", "valve"];
 
 const PRECISIONS = [0, 1, 2, 3, 4, 5, 6];
 
