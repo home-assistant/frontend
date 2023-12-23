@@ -784,11 +784,11 @@ export class HaConfigEntities extends LitElement {
 
       // Can't hide or unhide disabled entries
       const hidden = entities.map((entity) =>
-        entity?.disabled_by ? "disabled" : entity?.hidden_by
+        entity?.disabled_by ? undefined : entity?.hidden_by
       );
       const disabled = entities.map((entity) => entity?.disabled_by);
 
-      this._selectedCanUnhide = hidden.some((h) => h === "user");
+      this._selectedCanUnhide = hidden.some((h) => h);
       this._selectedCanHide = hidden.some((h) => h === null);
 
       this._selectedCanEnable = disabled.some((d) => d === "user");
