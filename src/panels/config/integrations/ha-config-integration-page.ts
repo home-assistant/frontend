@@ -556,16 +556,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           `component.${item.domain}.config.error.${item.reason}`
         );
         let stateTextReason: string | null = null;
-        if (item.reason_translation) {
+        if (item.reason_translation_key) {
           this.hass.loadBackendTranslation("exceptions", item.domain);
-          const placeHolders: Record<string, string> | undefined =
-            item.reason_translation.get("translation_placeholders") ??
-            undefined;
           stateTextReason = this.hass.localize(
-            `component.${item.domain}.exceptions.${item.reason_translation.get(
-              "translation_key"
-            )}.message`,
-            placeHolders
+            `component.${item.domain}.exceptions.${item.reason_translation_key}.message`,
+            item.reason_translation_placeholders ?? undefined
           );
         } else {
           stateTextReason = item.reason;
