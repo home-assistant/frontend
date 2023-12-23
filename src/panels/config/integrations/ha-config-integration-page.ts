@@ -104,7 +104,6 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
 import { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
-import { string } from "superstruct";
 
 @customElement("ha-config-integration-page")
 class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
@@ -565,7 +564,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         } else {
           stateTextReason = item.reason;
         }
-        stateTextExtra = html`${stateTextError || stateTextReason}`;
+        stateTextExtra = html`${stateTextReason || stateTextError}`;
       } else {
         stateTextExtra = html`
           <br />
