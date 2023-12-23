@@ -561,10 +561,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             `component.${item.domain}.exceptions.${item.reason_translation_key}.message`,
             item.reason_translation_placeholders ?? undefined
           );
-        } else {
-          stateTextReason = item.reason;
         }
-        stateTextExtra = html`${stateTextReason || stateTextError}`;
+        stateTextExtra = html`${stateTextReason ||
+        stateTextError ||
+        item.reason}`;
       } else {
         stateTextExtra = html`
           <br />
