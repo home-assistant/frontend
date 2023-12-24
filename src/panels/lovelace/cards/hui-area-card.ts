@@ -115,6 +115,8 @@ export class HuiAreaCard
 
   @state() private _areas?: AreaRegistryEntry[];
 
+  private _deviceClasses: { [key: string]: string[] } = DEVICE_CLASSES;
+
   private _ratio: {
     w: number;
     h: number;
@@ -125,7 +127,7 @@ export class HuiAreaCard
       areaId: string,
       devicesInArea: Set<string>,
       registryEntities: EntityRegistryEntry[],
-      binaryDeviceClasses: string[],
+      deviceClasses: { [key: string]: string[] },
       states: HomeAssistant["states"]
     ) => {
       const entitiesInArea = registryEntities
@@ -157,14 +159,11 @@ export class HuiAreaCard
           continue;
         }
 
-        const deviceClasses =
-          domain === "binary_sensor" && binaryDeviceClasses
-            ? binaryDeviceClasses
-            : DEVICE_CLASSES[domain];
-
         if (
           (SENSOR_DOMAINS.includes(domain) || ALERT_DOMAINS.includes(domain)) &&
-          !deviceClasses.includes(stateObj.attributes.device_class || "")
+          !deviceClasses[domain].includes(
+            stateObj.attributes.device_class || ""
+          )
         ) {
           continue;
         }
@@ -184,7 +183,7 @@ export class HuiAreaCard
       this._config!.area,
       this._devicesInArea(this._config!.area, this._devices!),
       this._entities!,
-      this._config!.alert_classes,
+      this._deviceClasses,
       this.hass.states
     )[domain];
     if (!entities) {
@@ -207,7 +206,7 @@ export class HuiAreaCard
       this._config!.area,
       this._devicesInArea(this._config!.area, this._devices!),
       this._entities!,
-      this._config!.alert_classes,
+      this._deviceClasses,
       this.hass.states
     )[domain].filter((entity) =>
       deviceClass ? entity.attributes.device_class === deviceClass : true
@@ -281,6 +280,11 @@ export class HuiAreaCard
     }
 
     this._config = config;
+
+    this._deviceClasses = { ...DEVICE_CLASSES };
+    if (config.alert_classes) {
+      this._deviceClasses.binary_sensor = config.alert_classes;
+    }
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -322,7 +326,7 @@ export class HuiAreaCard
       this._config.area,
       this._devicesInArea(this._config.area, this._devices),
       this._entities,
-      this._config.alert_classes,
+      this._deviceClasses,
       this.hass.states
     );
 
@@ -364,7 +368,7 @@ export class HuiAreaCard
       this._config.area,
       this._devicesInArea(this._config.area, this._devices),
       this._entities,
-      this._config.alert_classes,
+      this._deviceClasses,
       this.hass.states
     );
     const area = this._area(this._config.area, this._areas);
@@ -437,21 +441,17 @@ export class HuiAreaCard
               if (!(domain in entitiesByDomain)) {
                 return "";
               }
-              const deviceClasses =
-                domain === "binary_sensor" && this._config!.alert_classes
-                  ? this._config!.alert_classes
-                  : DEVICE_CLASSES[domain];
-              return deviceClasses.map((deviceClass) => {
-                const e = this._isOn(domain, deviceClass);
-                return e
+              return this._deviceClasses[domain].map((deviceClass) => {
+                const entity = this._isOn(domain, deviceClass);
+                return entity
                   ? html`<ha-svg-icon
                       class="alert"
-                      id=${e.entity_id}
+                      id=${entity.entity_id}
                       .path=${DOMAIN_ICONS[domain][deviceClass] ||
-                      binarySensorIcon(e.state, e)}
+                      binarySensorIcon(entity.state, entity)}
                       @click=${this._moreInfo}
                     ></ha-svg-icon>`
-                  : "";
+                  : nothing;
               });
             })}
           </div>
