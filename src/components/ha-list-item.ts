@@ -36,7 +36,7 @@ export class HaListItem extends ListItemBase {
             --mdc-list-item-graphic-margin,
             16px
           ) !important;
-          direction: var(--direction);
+          direction: var(--direction) !important;
         }
         span.material-icons:last-of-type {
           margin-inline-start: auto !important;
