@@ -7596,10 +7596,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"element-internals-polyfill@npm:1.3.9":
-  version: 1.3.9
-  resolution: "element-internals-polyfill@npm:1.3.9"
-  checksum: bd9b63e68ca3462ed7623758398d5b8016736438b02be4527e456711bb91afe93af60028ddb928e12f0f1975c958c7b439d4b31a1ec41f4737969cd0202bcced
+"element-internals-polyfill@npm:1.3.10":
+  version: 1.3.10
+  resolution: "element-internals-polyfill@npm:1.3.10"
+  checksum: 156fed2c83b309714d7241d73d741798bfd4177e73cef0f105735b87a5fd0791d8e09d44eddfda5bc4b6ba411777d43994894e2f2ec352d4b144454cb7c2e07f
   languageName: node
   linkType: hard
 
@@ -9698,7 +9698,7 @@ __metadata:
     deep-clone-simple: "npm:1.1.1"
     deep-freeze: "npm:0.0.1"
     del: "npm:7.1.0"
-    element-internals-polyfill: "npm:1.3.9"
+    element-internals-polyfill: "npm:1.3.10"
     eslint: "npm:8.56.0"
     eslint-config-airbnb-base: "npm:15.0.0"
     eslint-config-airbnb-typescript: "npm:17.1.0"
