@@ -26,7 +26,7 @@ jobs:
       - name: Check out files from GitHub
         uses: actions/checkout@v4.1.1
       - name: Setup Node
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -57,7 +57,7 @@ jobs:
       - name: Check out files from GitHub
         uses: actions/checkout@v4.1.1
       - name: Setup Node
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -75,7 +75,7 @@ jobs:
       - name: Check out files from GitHub
         uses: actions/checkout@v4.1.1
       - name: Setup Node
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -99,7 +99,7 @@ jobs:
       - name: Check out files from GitHub
         uses: actions/checkout@v4.1.1
       - name: Setup Node
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version-file: ".nvmrc"
           cache: yarn
