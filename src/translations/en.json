@@ -2491,7 +2491,9 @@
                   "label": "Time and location",
                   "description": "When someone enters or leaves a zone, or at a specific time."
                 },
-                "other": { "label": "Other" }
+                "other": {
+                  "label": "Other"
+                }
               },
               "type": {
                 "calendar": {
@@ -2662,7 +2664,11 @@
                   "minutes": "Minutes",
                   "seconds": "Seconds",
                   "description": {
-                    "picker": "Periodically, every defined interval of time."
+                    "picker": "Periodically, every defined interval of time.",
+                    "initial": "When a time pattern matches",
+                    "invalid": "Invalid Time Pattern for {parts}",
+                    "full": "Trigger {secondsChoice, select, \n every {every second of }\n every_interval {every {seconds} seconds of } on_the_xth {on the {secondsWithOrdinal} second of } other {} } {minutesChoice, select, \n every {every minute of }\n every_interval {every {minutes} minutes of } has_seconds {the {minutesWithOrdinal} minute of } on_the_xth {on the {minutesWithOrdinal} minute of }  other {} } {hoursChoice, select, \n every {every hour}\n every_interval {every {hours} hours} has_seconds_or_minutes {the {hoursWithOrdinal} hour} on_the_xth {on the {hoursWithOrdinal} hour} other {} \n}",
+                    "ordinal": "{part, selectordinal, \none {#st}\ntwo {#nd}\nfew {#rd}\nother {#th}\n}"
                   }
                 },
                 "webhook": {
@@ -2727,7 +2733,9 @@
                   "label": "Time and location",
                   "description": "If someone is in a zone or if the current time is before or after a specified time."
                 },
-                "other": { "label": "Other" },
+                "other": {
+                  "label": "Other"
+                },
                 "building_blocks": {
                   "label": "Building blocks",
                   "description": "Build more complex conditions."
@@ -2891,8 +2899,12 @@
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "groups": {
-                "helpers": { "label": "Helpers" },
-                "other": { "label": "Other" },
+                "helpers": {
+                  "label": "Helpers"
+                },
+                "other": {
+                  "label": "Other"
+                },
                 "building_blocks": {
                   "label": "Building blocks",
                   "description": "Build more complex sequences of actions."
