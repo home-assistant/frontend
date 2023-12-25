@@ -1,5 +1,13 @@
-import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import { html, LitElement, PropertyValues } from "lit";
+import type {
+  ChartData,
+  ChartDataset,
+  ChartOptions,
+  ChartEvent,
+  ActiveElement,
+  Chart,
+} from "chart.js";
+import { mdiInformationOutline } from "@mdi/js";
+import { html, css, CSSResultGroup, LitElement, PropertyValues } from "lit";
 import { property, query, state } from "lit/decorators";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -16,6 +24,7 @@ import {
   HaChartBase,
   MIN_TIME_BETWEEN_UPDATES,
 } from "./ha-chart-base";
+import "../ha-svg-icon";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -57,6 +66,10 @@ export class StateHistoryChartLine extends LitElement {
 
   @state() private _yWidth = 0;
 
+  @state() private _showMoreInfoTooltipButton = false;
+
+  @state() private _moreInfoEntityId = "";
+
   private _chartTime: Date = new Date();
 
   @query("ha-chart-base") private _chart?: HaChartBase;
@@ -73,7 +86,16 @@ export class StateHistoryChartLine extends LitElement {
         .options=${this._chartOptions}
         .paddingYAxis=${this.paddingYAxis - this._yWidth}
         chart-type="line"
-      ></ha-chart-base>
+      >
+        ${this._showMoreInfoTooltipButton
+          ? html`<ha-svg-icon
+              class="more-info-button"
+              slot="tooltip-footer"
+              .path=${mdiInformationOutline}
+              @click=${this._moreInfoClick}
+            ></ha-svg-icon>`
+          : ""}
+      </ha-chart-base>
     `;
   }
 
@@ -206,28 +228,17 @@ export class StateHistoryChartLine extends LitElement {
         },
         // @ts-expect-error
         locale: numberFormatToLocale(this.hass.locale),
-        onClick: (e: any) => {
-          if (!this.clickForMoreInfo) {
-            return;
-          }
+        onClick: (e, elements, chart) => {
+          this._handleClickOrHover(e, elements, chart);
 
-          const chart = e.chart;
-
-          const points = chart.getElementsAtEventForMode(
-            e,
-            "nearest",
-            { intersect: true },
-            true
-          );
-
-          if (points.length) {
-            const firstPoint = points[0];
-            fireEvent(this, "hass-more-info", {
-              entityId: this._entityIds[firstPoint.datasetIndex],
-            });
-            chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
+          // if the More Info tooltip button is not shown, the pointer used to make
+          // this event was a mouse so open the more info dialog now
+          if (this.clickForMoreInfo && !this._showMoreInfoTooltipButton) {
+            this._moreInfoClick();
           }
         },
+        onHover: (e, elements, chart) =>
+          this._handleClickOrHover(e, elements, chart),
       };
     }
     if (
@@ -572,6 +583,45 @@ export class StateHistoryChartLine extends LitElement {
     };
     this._entityIds = entityIds;
     this._datasetToDataIndex = datasetToDataIndex;
+  }
+
+  private _handleClickOrHover(
+    e: ChartEvent,
+    _elements: ActiveElement[],
+    chart: Chart
+  ) {
+    if (!this.clickForMoreInfo) {
+      return;
+    }
+
+    const points = chart.getElementsAtEventForMode(
+      e as any,
+      "nearest",
+      { intersect: true },
+      true
+    );
+
+    if (points.length) {
+      const firstPoint = points[0];
+      this._moreInfoEntityId = this._entityIds[firstPoint.datasetIndex];
+
+      // display More Info toottip button for non-mouse events
+      this._showMoreInfoTooltipButton ||= !(e.native instanceof MouseEvent);
+    }
+  }
+
+  private _moreInfoClick() {
+    fireEvent(this, "hass-more-info", {
+      entityId: this._moreInfoEntityId,
+    });
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      .more-info-button {
+        pointer-events: auto;
+      }
+    `;
   }
 }
 customElements.define("state-history-chart-line", StateHistoryChartLine);
