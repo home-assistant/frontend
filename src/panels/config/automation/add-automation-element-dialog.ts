@@ -3,9 +3,10 @@ import { mdiClose, mdiContentPaste, mdiPlus } from "@mdi/js";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
-import memoizeOne from "memoize-one";
 import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
@@ -13,7 +14,7 @@ import { stringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-dialog";
 import type { HaDialog } from "../../../components/ha-dialog";
-import "../../../components/ha-header-bar";
+import "../../../components/ha-dialog-header";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
@@ -94,6 +95,8 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
 
   @query("ha-dialog") private _dialog?: HaDialog;
 
+  private _fullScreen = false;
+
   private _width?: number;
 
   private _height?: number;
@@ -105,6 +108,9 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       this.hass.loadBackendTranslation("services");
       this._fetchManifests();
     }
+    this._fullScreen = matchMedia(
+      "all and (max-width: 450px), all and (max-height: 500px)"
+    ).matches;
   }
 
   public closeDialog(): void {
@@ -406,7 +412,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         .heading=${true}
       >
         <div slot="heading">
-          <ha-header-bar>
+          <ha-dialog-header>
             <span slot="title"
               >${this._group
                 ? groupName
@@ -424,10 +430,9 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                   slot="navigationIcon"
                   dialogAction="cancel"
                 ></ha-icon-button>`}
-          </ha-header-bar>
+          </ha-dialog-header>
           <search-input
-            autofocus
-            dialogInitialFocus
+            dialogInitialFocus=${ifDefined(this._fullScreen ? undefined : "")}
             .hass=${this.hass}
             .filter=${this._filter}
             @value-changed=${this._filterChanged}
@@ -442,6 +447,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           ></search-input>
         </div>
         <mwc-list
+          dialogInitialFocus=${ifDefined(this._fullScreen ? "" : undefined)}
           innerRole="listbox"
           itemRoles="option"
           rootTabbable
@@ -553,12 +559,6 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           ha-dialog {
             --mdc-dialog-min-width: 500px;
           }
-        }
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          margin-top: 8px;
-          display: block;
         }
         ha-icon-next {
           width: 24px;
