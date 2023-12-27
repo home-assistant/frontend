@@ -7,6 +7,7 @@ import { ensureArray } from "../../../common/array/ensure-array";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-markdown";
 import {
   Condition,
   ManualAutomationConfig,
