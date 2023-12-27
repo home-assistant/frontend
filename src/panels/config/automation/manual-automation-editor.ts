@@ -85,8 +85,7 @@ export class HaManualAutomationEditor extends LitElement {
           ></ha-icon-button>
         </a>
       </div>
-      ${!this.hass.userData?.showAdvanced &&
-      !ensureArray(this.config.trigger)?.length
+      ${!ensureArray(this.config.trigger)?.length
         ? html`<p>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.triggers.description"
@@ -125,8 +124,7 @@ export class HaManualAutomationEditor extends LitElement {
           ></ha-icon-button>
         </a>
       </div>
-      ${!this.hass.userData?.showAdvanced &&
-      !ensureArray(this.config.condition)?.length
+      ${!ensureArray(this.config.condition)?.length
         ? html`<p>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.conditions.description",
@@ -165,8 +163,7 @@ export class HaManualAutomationEditor extends LitElement {
           </a>
         </div>
       </div>
-      ${!this.hass.userData?.showAdvanced &&
-      !ensureArray(this.config.action)?.length
+      ${!ensureArray(this.config.action)?.length
         ? html`<p>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.actions.description"
