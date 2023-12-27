@@ -1119,8 +1119,8 @@
         },
         "valve": {
           "switch_mode": {
-            "button": "[%key:ui::dialogs::more_info_control::valve::switch_mode::button%]",
-            "position": "[%key:ui::dialogs::more_info_control::valve::switch_mode::position%]"
+            "button": "[%key:ui::dialogs::more_info_control::cover::switch_mode::button%]",
+            "position": "[%key:ui::dialogs::more_info_control::cover::switch_mode::position%]"
           }
         }
       },
