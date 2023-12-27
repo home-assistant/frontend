@@ -1547,6 +1547,11 @@
         "gateway": "Gateway: {gateway}",
         "method": "Method: {method}",
         "nameservers": "Name Servers: {nameservers}"
+      },
+      "update_backup": {
+        "title": "Create backup?",
+        "text": "This will create a backup before installing.",
+        "create": "Create"
       }
     },
     "weekdays": {
@@ -5518,6 +5523,16 @@
                   "start_pause": "Start Pause",
                   "dock": "[%key:ui::dialogs::more_info_control::lawn_mower::dock%]"
                 }
+              },
+              "update-actions": {
+                "label": "Update actions",
+                "backup": "Backup",
+                "backup_options": {
+                  "yes": "[%key:ui::common::yes%]",
+                  "no": "[%key:ui::common::no%]",
+                  "ask": "Ask"
+                },
+                "backup_not_supported": "Backup is not supported."
               }
             }
           },
