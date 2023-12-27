@@ -64,7 +64,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
       - name: Build resources
-        run: ./node_modules/.bin/gulp build-translations build-locale-data
+        run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data
       - name: Run Tests
         run: yarn run test
   build:
