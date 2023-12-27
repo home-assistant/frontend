@@ -37,6 +37,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isDevVersion } from "../../../common/config/version";
@@ -550,21 +551,24 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         `ui.panel.config.integrations.config_entry.state.${item.state}`,
       ];
       if (item.reason) {
-        this.hass.loadBackendTranslation("config", item.domain);
-        const stateTextError = this.hass.localize(
-          `component.${item.domain}.config.error.${item.reason}`
-        );
-        let stateTextReason: string | null = null;
-        if (item.reason_translation_key) {
-          this.hass.loadBackendTranslation("exceptions", item.domain);
-          stateTextReason = this.hass.localize(
-            `component.${item.domain}.exceptions.${item.reason_translation_key}.message`,
-            item.reason_translation_placeholders ?? undefined
+        const lokalisePromError = this.hass
+          .loadBackendTranslation("config", item.domain)
+          .then((localize) =>
+            localize(`component.${item.domain}.config.error.${item.reason}`)
           );
+        if (item.reason_translation_key) {
+          const lokalisePromExc = this.hass
+            .loadBackendTranslation("exceptions", item.domain)
+            .then((localize) =>
+              localize(
+                `component.${item.domain}.exceptions.${item.reason_translation_key}.message`,
+                item.reason_translation_placeholders ?? undefined
+              )
+            );
+          stateTextExtra = html`${until(lokalisePromExc)}`;
+        } else {
+          stateTextExtra = html`${until(lokalisePromError, item.reason)}`;
         }
-        stateTextExtra = html`${stateTextReason ||
-        stateTextError ||
-        item.reason}`;
       } else {
         stateTextExtra = html`
           <br />
