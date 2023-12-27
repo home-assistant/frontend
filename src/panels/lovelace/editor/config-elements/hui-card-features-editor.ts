@@ -30,8 +30,8 @@ import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
-import { supportsHumidifierToggleCardFeature } from "../../card-features/hui-humidifier-toggle-card-feature";
 import { supportsHumidifierModesCardFeature } from "../../card-features/hui-humidifier-modes-card-feature";
+import { supportsHumidifierToggleCardFeature } from "../../card-features/hui-humidifier-toggle-card-feature";
 import { supportsLawnMowerCommandCardFeature } from "../../card-features/hui-lawn-mower-commands-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
 import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
@@ -43,6 +43,7 @@ import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuu
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
 import { LovelaceCardFeatureConfig } from "../../card-features/types";
 import { getCardFeatureElementClass } from "../../create-element/create-card-feature-element";
+import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
 
 export type FeatureType = LovelaceCardFeatureConfig["type"];
 type SupportsFeature = (stateObj: HassEntity) => boolean;
@@ -66,6 +67,7 @@ const UI_FEATURE_TYPES = [
   "target-humidity",
   "target-temperature",
   "vacuum-commands",
+  "update-actions",
   "water-heater-operation-modes",
   "numeric-input",
 ] as const satisfies readonly FeatureType[];
@@ -81,6 +83,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "lawn-mower-commands",
   "climate-preset-modes",
   "numeric-input",
+  "update-actions",
 ]);
 
 const SUPPORTS_FEATURE_TYPES: Record<
@@ -107,6 +110,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "vacuum-commands": supportsVacuumCommandsCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
+  "update-actions": supportsUpdateActionsCardFeature,
 };
 
 const customCardFeatures = getCustomCardFeatures();
