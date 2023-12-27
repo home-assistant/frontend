@@ -180,7 +180,7 @@ export class HaComboBox extends LitElement {
           ></div>`}
           .icon=${this.icon}
           .invalid=${this.invalid}
-          .helper=${ifDefined(this.helper)}
+          .helper=${this.helper}
           helperPersistent
         >
           <slot name="icon" slot="leadingIcon"></slot>
