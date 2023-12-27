@@ -624,6 +624,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       .addRow ha-icon-button {
         position: absolute;
         right: 16px;
+        inset-inline-start: initial;
+        inset-inline-end: 16px;
       }
 
       .addRow,
@@ -636,8 +638,11 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       .header {
         padding-left: 30px;
         padding-right: 16px;
+        padding-inline-start: 30px;
+        padding-inline-end: 16px;
         margin-top: 8px;
         justify-content: space-between;
+        direction: var(--direction);
       }
 
       .header span {
