@@ -280,6 +280,8 @@ export abstract class TopAppBarBaseBase extends BaseElement {
       }
       #title {
         border-right: 1px solid rgba(255, 255, 255, 0.12);
+        border-inline-end: 1px solid rgba(255, 255, 255, 0.12);
+        border-inline-start: initial;
         box-sizing: border-box;
         flex: 0 0 var(--sidepane-width, 250px);
         width: var(--sidepane-width, 250px);
@@ -290,6 +292,8 @@ export abstract class TopAppBarBaseBase extends BaseElement {
       }
       .pane {
         border-right: 1px solid var(--divider-color);
+        border-inline-end: 1px solid var(--divider-color);
+        border-inline-start: initial;
         box-sizing: border-box;
         display: flex;
         flex: 0 0 var(--sidepane-width, 250px);

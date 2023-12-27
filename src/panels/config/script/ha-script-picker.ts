@@ -5,10 +5,18 @@ import {
   mdiInformationOutline,
   mdiPlay,
   mdiPlus,
+  mdiScriptText,
   mdiTransitConnection,
 } from "@mdi/js";
 import { differenceInDays } from "date-fns/esm";
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -241,6 +249,7 @@ class HaScriptPicker extends LitElement {
         .tabs=${configSections.automations}
         .columns=${this._columns(this.narrow, this.hass.locale)}
         .data=${this._scripts(this.scripts, this._filteredScripts)}
+        .empty=${!this.scripts.length}
         .activeFilters=${this._activeFilters}
         id="entity_id"
         .noDataText=${this.hass.localize(
@@ -266,6 +275,32 @@ class HaScriptPicker extends LitElement {
           @related-changed=${this._relatedFilterChanged}
         >
         </ha-button-related-filter-menu>
+        ${!this.scripts.length
+          ? html` <div class="empty" slot="empty">
+              <ha-svg-icon .path=${mdiScriptText}></ha-svg-icon>
+              <h1>
+                ${this.hass.localize(
+                  "ui.panel.config.script.picker.empty_header"
+                )}
+              </h1>
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.script.picker.empty_text"
+                )}
+              </p>
+              <a
+                href=${documentationUrl(this.hass, "/docs/script/editor/")}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ha-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.script.picker.learn_more"
+                  )}
+                </ha-button>
+              </a>
+            </div>`
+          : nothing}
         <ha-fab
           slot="fab"
           ?is-wide=${this.isWide}
@@ -385,7 +420,7 @@ class HaScriptPicker extends LitElement {
             target="_blank"
             rel="noreferrer"
           >
-            ${this.hass.localize("ui.panel.config.script.picker.learn_more")}
+            ${this.hass.localize("ui.panel.config.common.learn_more")}
           </a>
         </p>
       `,
@@ -470,6 +505,11 @@ class HaScriptPicker extends LitElement {
       css`
         a {
           text-decoration: none;
+        }
+        .empty {
+          --paper-font-headline_-_font-size: 28px;
+          --mdc-icon-size: 80px;
+          max-width: 500px;
         }
       `,
     ];

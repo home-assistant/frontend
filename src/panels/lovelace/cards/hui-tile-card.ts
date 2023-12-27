@@ -251,6 +251,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       return this._renderStateContent(stateObj, ["state", "current_position"]);
     }
 
+    if (domain === "valve" && active) {
+      return this._renderStateContent(stateObj, ["state", "current_position"]);
+    }
+
     if (domain === "humidifier") {
       return this._renderStateContent(stateObj, ["state", "current_humidity"]);
     }

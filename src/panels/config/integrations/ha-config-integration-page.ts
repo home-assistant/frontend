@@ -487,7 +487,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               <h1 class="card-header">
                 ${this._manifest?.integration_type
                   ? this.hass.localize(
-                      `ui.panel.config.integrations.integration_page.entries_${this._manifest?.integration_type}`
+                      `ui.panel.config.integrations.integration_page.entries_${this._manifest.integration_type}`
                     )
                   : this.hass.localize(
                       `ui.panel.config.integrations.integration_page.entries`
@@ -507,7 +507,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 <ha-button @click=${this._addIntegration}>
                   ${this._manifest?.integration_type
                     ? this.hass.localize(
-                        `ui.panel.config.integrations.integration_page.add_${this._manifest?.integration_type}`
+                        `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
                       )
                     : this.hass.localize(
                         `ui.panel.config.integrations.integration_page.add_entry`

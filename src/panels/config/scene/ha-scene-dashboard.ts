@@ -3,12 +3,20 @@ import {
   mdiDelete,
   mdiHelpCircle,
   mdiInformationOutline,
+  mdiPalette,
   mdiPencilOff,
   mdiPlay,
   mdiPlus,
 } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { differenceInDays } from "date-fns/esm";
@@ -21,6 +29,7 @@ import {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button-related-filter-menu";
 import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
@@ -214,6 +223,7 @@ class HaSceneDashboard extends LitElement {
         .columns=${this._columns(this.hass.locale, this.narrow)}
         id="entity_id"
         .data=${this._scenes(this.scenes, this._filteredScenes)}
+        .empty=${!this.scenes.length}
         .activeFilters=${this._activeFilters}
         .noDataText=${this.hass.localize(
           "ui.panel.config.scene.picker.no_scenes"
@@ -238,6 +248,30 @@ class HaSceneDashboard extends LitElement {
           @related-changed=${this._relatedFilterChanged}
         >
         </ha-button-related-filter-menu>
+        ${!this.scenes.length
+          ? html`<div class="empty" slot="empty">
+              <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
+              <h1>
+                ${this.hass.localize(
+                  "ui.panel.config.scene.picker.empty_header"
+                )}
+              </h1>
+              <p>
+                ${this.hass.localize("ui.panel.config.scene.picker.empty_text")}
+              </p>
+              <a
+                href=${documentationUrl(this.hass, "/docs/scene/editor/")}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ha-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.scene.picker.learn_more"
+                  )}
+                </ha-button>
+              </a>
+            </div>`
+          : nothing}
         <a href="/config/scene/edit/new" slot="fab">
           <ha-fab
             .label=${this.hass.localize(
@@ -336,7 +370,7 @@ class HaSceneDashboard extends LitElement {
             target="_blank"
             rel="noreferrer"
           >
-            ${this.hass.localize("ui.panel.config.scene.picker.learn_more")}
+            ${this.hass.localize("ui.panel.config.common.learn_more")}
           </a>
         </p>
       `,
@@ -349,6 +383,11 @@ class HaSceneDashboard extends LitElement {
       css`
         a {
           text-decoration: none;
+        }
+        .empty {
+          --paper-font-headline_-_font-size: 28px;
+          --mdc-icon-size: 80px;
+          max-width: 500px;
         }
       `,
     ];

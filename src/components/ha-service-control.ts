@@ -522,6 +522,14 @@ export class HaServiceControl extends LitElement {
         defaultValue = field.selector.constant?.value;
       }
 
+      if (
+        defaultValue == null &&
+        field?.selector &&
+        "boolean" in field.selector
+      ) {
+        defaultValue = false;
+      }
+
       if (defaultValue != null) {
         data = {
           ...this._value?.data,
@@ -597,9 +605,9 @@ export class HaServiceControl extends LitElement {
           );
         }
         target = {
-          entity_id: targetEntities,
-          device_id: targetDevices,
-          area_id: targetAreas,
+          ...(targetEntities.length ? { entity_id: targetEntities } : {}),
+          ...(targetDevices.length ? { device_id: targetDevices } : {}),
+          ...(targetAreas.length ? { area_id: targetAreas } : {}),
         };
       }
     }

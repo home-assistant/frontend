@@ -13,11 +13,13 @@ import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
 
-export const UPDATE_SUPPORT_INSTALL = 1;
-export const UPDATE_SUPPORT_SPECIFIC_VERSION = 2;
-export const UPDATE_SUPPORT_PROGRESS = 4;
-export const UPDATE_SUPPORT_BACKUP = 8;
-export const UPDATE_SUPPORT_RELEASE_NOTES = 16;
+export enum UpdateEntityFeature {
+  INSTALL = 1,
+  SPECIFIC_VERSION = 2,
+  PROGRESS = 4,
+  BACKUP = 8,
+  RELEASE_NOTES = 16,
+}
 
 interface UpdateEntityAttributes extends HassEntityAttributeBase {
   auto_update: boolean | null;
@@ -35,7 +37,7 @@ export interface UpdateEntity extends HassEntityBase {
 }
 
 export const updateUsesProgress = (entity: UpdateEntity): boolean =>
-  supportsFeature(entity, UPDATE_SUPPORT_PROGRESS) &&
+  supportsFeature(entity, UpdateEntityFeature.PROGRESS) &&
   typeof entity.attributes.in_progress === "number";
 
 export const updateCanInstall = (
@@ -44,7 +46,7 @@ export const updateCanInstall = (
 ): boolean =>
   (entity.state === BINARY_STATE_ON ||
     (showSkipped && Boolean(entity.attributes.skipped_version))) &&
-  supportsFeature(entity, UPDATE_SUPPORT_INSTALL);
+  supportsFeature(entity, UpdateEntityFeature.INSTALL);
 
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
   updateUsesProgress(entity) || !!entity.attributes.in_progress;
@@ -176,7 +178,7 @@ export const computeUpdateStateDisplay = (
   if (state === "on") {
     if (updateIsInstalling(stateObj)) {
       const supportsProgress =
-        supportsFeature(stateObj, UPDATE_SUPPORT_PROGRESS) &&
+        supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
         typeof attributes.in_progress === "number";
       if (supportsProgress) {
         return hass.localize("ui.card.update.installing_with_progress", {

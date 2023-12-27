@@ -29,7 +29,7 @@ import "../../../../components/ha-icon-button";
 import type { AutomationClipboard } from "../../../../data/automation";
 import { Condition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
-import { CONDITION_TYPES } from "../../../../data/condition";
+import { CONDITION_ICONS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import { EntityRegistryEntry } from "../../../../data/entity_registry";
@@ -123,7 +123,7 @@ export default class HaAutomationConditionRow extends LitElement {
           <h3 slot="header">
             <ha-svg-icon
               class="condition-icon"
-              .path=${CONDITION_TYPES[this.condition.condition]}
+              .path=${CONDITION_ICONS[this.condition.condition]}
             ></ha-svg-icon>
             ${capitalizeFirstLetter(
               describeCondition(this.condition, this.hass, this._entityReg)
