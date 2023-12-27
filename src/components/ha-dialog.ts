@@ -126,8 +126,8 @@ export class HaDialog extends DialogBase {
       }
       .header_title {
         position: relative;
-        padding-right: 32px;
-        padding-inline-end: 32px;
+        padding-right: 40px;
+        padding-inline-end: 40px;
         padding-inline-start: initial;
         direction: var(--direction);
       }
