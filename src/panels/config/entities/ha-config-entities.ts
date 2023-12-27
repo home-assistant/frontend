@@ -74,7 +74,7 @@ export interface EntityRow extends StateEntity {
   entity?: HassEntity;
   unavailable: boolean;
   restored: boolean;
-  status: string;
+  status: string | undefined;
   area?: string;
   localized_platform: string;
 }
@@ -429,7 +429,13 @@ export class HaConfigEntities extends LitElement {
               ? localize("ui.panel.config.entities.picker.status.unavailable")
               : entry.disabled_by
                 ? localize("ui.panel.config.entities.picker.status.disabled")
-                : localize("ui.panel.config.entities.picker.status.ok"),
+                : entry.hidden_by
+                  ? localize("ui.panel.config.entities.picker.status.hidden")
+                  : entry.readonly
+                    ? localize(
+                        "ui.panel.config.entities.picker.status.readonly"
+                      )
+                    : undefined,
         });
       }
 
