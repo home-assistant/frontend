@@ -709,7 +709,7 @@
         "media_not_supported": "The Browser Media Player does not support this type of media",
         "media_browsing_error": "Media browsing error",
         "learn_adding_local_media": "Learn more about adding media in the {documentation}.",
-        "local_media_files": "Place your video, audio and image files in the media directory to be able to browse and play them in the browser or on supported media players.",
+        "local_media_files": "Place your video, audio, and image files in the media directory to be able to browse and play them in the browser or on supported media players.",
         "documentation": "documentation",
         "no_local_media_found": "No local media found",
         "no_media_folder": "It looks like you have not yet created a media directory.",
@@ -1626,11 +1626,11 @@
         "dashboard": {
           "devices": {
             "main": "Devices & services",
-            "secondary": "Integrations, devices, entities and helpers"
+            "secondary": "Integrations, devices, entities, and helpers"
           },
           "automations": {
             "main": "Automations & scenes",
-            "secondary": "Automations, scenes, scripts and blueprints"
+            "secondary": "Automations, scenes, scripts, and blueprints"
           },
           "backup": {
             "main": "Backup",
@@ -1674,7 +1674,7 @@
           },
           "about": {
             "main": "About",
-            "secondary": "Version information, credits and more"
+            "secondary": "Version information, credit, and more"
           },
           "cloud": {
             "secondary": "Loading..."
@@ -1688,7 +1688,7 @@
         },
         "updates": {
           "caption": "Updates",
-          "description": "Manage updates of Home Assistant, add-ons and devices",
+          "description": "Manage updates of Home Assistant, add-ons, and devices",
           "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",
@@ -1745,7 +1745,7 @@
           },
           "picker": {
             "header": "Areas",
-            "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
+            "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions, and integrations with other systems.",
             "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
             "integrations_page": "Integrations page",
             "no_areas": "Looks like you have no areas yet!",
@@ -2020,7 +2020,7 @@
           "section": {
             "core": {
               "header": "General configuration",
-              "introduction": "Manage your location, network and analytics.",
+              "introduction": "Manage your location, network, and analytics.",
               "core_config": {
                 "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
                 "location_name": "Name",
@@ -2670,7 +2670,7 @@
                   "label": "Webhook",
                   "local_only": "Only accessible from the local network",
                   "webhook_id": "Webhook ID",
-                  "webhook_id_helper": "Treat this ID like a password: keep it secret, and make it hard to guess.",
+                  "webhook_id_helper": "Treat this ID like a password: keep it secret and make it hard to guess.",
                   "webhook_settings": "Webhook settings",
                   "description": {
                     "picker": "When Home Assistant receives a web request to the webhook endpoint.",
@@ -3144,7 +3144,7 @@
               "script": "scripts"
             },
             "error": "{path} could not be loaded",
-            "blueprint_in_use_title": "This blueprint is in use, and can not be deleted",
+            "blueprint_in_use_title": "This blueprint is in use and can not be deleted",
             "blueprint_in_use_text": "Please remove all below {type} that use this blueprint before deleting it. {list}",
             "blueprint_in_use_view": "view {type}",
             "confirm_delete_title": "Delete blueprint?",
@@ -4719,7 +4719,7 @@
         },
         "system_health": {
           "caption": "System health",
-          "description": "Status, metrics and integration startup time",
+          "description": "Status, metrics, and integration startup time",
           "cpu_usage": "Processor usage",
           "ram_usage": "Memory usage",
           "core_stats": "Core metrics",
@@ -4860,7 +4860,7 @@
               "previous_energy_usage": "Previous energy usage"
             },
             "carbon_consumed_gauge": {
-              "card_indicates_energy_used": "This card indicates how much of the energy consumed by your home was generated using non-fossil fuels like solar, wind and nuclear. The higher, the better!",
+              "card_indicates_energy_used": "This card indicates how much of the energy consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
               "low_carbon_energy_consumed": "Low-carbon energy consumed",
               "low_carbon_energy_not_calculated": "Consumed low-carbon energy couldn't be calculated"
             }
@@ -5110,7 +5110,7 @@
             },
             "calendar": {
               "name": "Calendar",
-              "description": "The Calendar card displays a calendar including day, week and list views",
+              "description": "The Calendar card displays a calendar including day, week, and list views",
               "initial_view": "Initial view",
               "calendar_entities": "Calendar entities",
               "views": {
