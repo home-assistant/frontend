@@ -101,7 +101,9 @@ class HaMarkdownElement extends ReactiveElement {
           node.localName
         )
       ) {
-        import(`./${node.localName}`);
+        import(
+          /* webpackInclude: /(ha-alert)|(ha-qr-code)|(ha-icon)|(ha-svg-icon)/ */ `./${node.localName}`
+        );
       }
     }
   }
