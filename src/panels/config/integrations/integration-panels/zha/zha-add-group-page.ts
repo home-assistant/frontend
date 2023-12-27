@@ -1,6 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
@@ -14,8 +12,9 @@ import {
   ZHAGroup,
 } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
-import type { ValueChangedEvent, HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import "../../../ha-config-section";
+import "../../../../../components/ha-textfield";
 import "./zha-device-endpoint-data-table";
 import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
 
@@ -30,6 +29,8 @@ export class ZHAAddGroupPage extends LitElement {
   @state() private _processingAdd = false;
 
   @state() private _groupName = "";
+
+  @state() private _groupId?: string;
 
   @query("zha-device-endpoint-data-table", true)
   private _zhaDevicesDataTable!: ZHADeviceEndpointDataTable;
@@ -66,14 +67,23 @@ export class ZHAAddGroupPage extends LitElement {
               "ui.panel.config.zha.groups.create_group_details"
             )}
           </p>
-          <paper-input
+          <ha-textfield
             type="string"
             .value=${this._groupName}
-            @value-changed=${this._handleNameChange}
-            placeholder=${this.hass!.localize(
+            @change=${this._handleNameChange}
+            .placeholder=${this.hass!.localize(
               "ui.panel.config.zha.groups.group_name_placeholder"
             )}
-          ></paper-input>
+          ></ha-textfield>
+
+          <ha-textfield
+            type="number"
+            .value=${this._groupId}
+            @change=${this._handleGroupIdChange}
+            .placeholder=${this.hass!.localize(
+              "ui.panel.config.zha.groups.group_id_placeholder"
+            )}
+          ></ha-textfield>
 
           <div class="header">
             ${this.hass.localize("ui.panel.config.zha.groups.add_members")}
@@ -131,7 +141,15 @@ export class ZHAAddGroupPage extends LitElement {
       const memberParts = member.split("_");
       return { ieee: memberParts[0], endpoint_id: memberParts[1] };
     });
-    const group: ZHAGroup = await addGroup(this.hass, this._groupName, members);
+    const groupId = this._groupId
+      ? parseInt(this._groupId as string, 10)
+      : undefined;
+    const group: ZHAGroup = await addGroup(
+      this.hass,
+      this._groupName,
+      groupId,
+      members
+    );
     this._selectedDevicesToAdd = [];
     this._processingAdd = false;
     this._groupName = "";
@@ -139,9 +157,12 @@ export class ZHAAddGroupPage extends LitElement {
     navigate(`/config/zha/group/${group.group_id}`, { replace: true });
   }
 
-  private _handleNameChange(ev: ValueChangedEvent<string>) {
-    const target = ev.currentTarget as PaperInputElement;
-    this._groupName = target.value || "";
+  private _handleGroupIdChange(event) {
+    this._groupId = event.target.value;
+  }
+
+  private _handleNameChange(event) {
+    this._groupName = event.target.value || "";
   }
 
   static get styles(): CSSResultGroup {

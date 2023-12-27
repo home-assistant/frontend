@@ -174,6 +174,7 @@ const mainStyles = css`
     --state-switch-active-color: var(--amber-color);
     --state-update-active-color: var(--orange-color);
     --state-vacuum-active-color: var(--teal-color);
+    --state-valve-active-color: var(--blue-color);
     --state-sensor-battery-high-color: var(--green-color);
     --state-sensor-battery-low-color: var(--red-color);
     --state-sensor-battery-medium-color: var(--orange-color);

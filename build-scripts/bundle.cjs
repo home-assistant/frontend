@@ -1,6 +1,7 @@
 const path = require("path");
 const env = require("./env.cjs");
 const paths = require("./paths.cjs");
+const { dependencies } = require("../package.json");
 
 // GitHub base URL to use for production source maps
 // Nightly builds use the commit SHA, otherwise assumes there is a tag that matches the version
@@ -90,7 +91,7 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
       "@babel/preset-env",
       {
         useBuiltIns: latestBuild ? false : "usage",
-        corejs: latestBuild ? false : "3.33",
+        corejs: latestBuild ? false : dependencies["core-js"],
         bugfixes: true,
         shippedProposals: true,
       },
@@ -140,7 +141,7 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
     // Import helpers and regenerator from runtime package
     [
       "@babel/plugin-transform-runtime",
-      { version: require("../package.json").dependencies["@babel/runtime"] },
+      { version: dependencies["@babel/runtime"] },
     ],
     // Support  some proposals still in TC39 process
     ["@babel/plugin-proposal-decorators", { decoratorsBeforeExport: true }],

@@ -3,21 +3,22 @@ import "@material/mwc-list/mwc-list";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { HassConfig } from "home-assistant-js-websocket";
 import {
-  css,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
-  protocolIntegrationPicked,
   PROTOCOL_INTEGRATIONS,
+  protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
@@ -34,10 +35,10 @@ import {
 import {
   Brand,
   Brands,
-  findIntegration,
-  getIntegrationDescriptions,
   Integration,
   Integrations,
+  findIntegration,
+  getIntegrationDescriptions,
 } from "../../../data/integrations";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import {
@@ -424,8 +425,7 @@ class AddIntegrationDialog extends LitElement {
   private _renderAll(integrations?: IntegrationListItem[]): TemplateResult {
     return html`<search-input
         .hass=${this.hass}
-        autofocus
-        dialogInitialFocus
+        dialogInitialFocus=${ifDefined(this._narrow ? undefined : "")}
         .filter=${this._filter}
         @value-changed=${this._filterChanged}
         .label=${this.hass.localize(
@@ -434,7 +434,9 @@ class AddIntegrationDialog extends LitElement {
         @keypress=${this._maybeSubmit}
       ></search-input>
       ${integrations
-        ? html`<mwc-list>
+        ? html`<mwc-list
+            dialogInitialFocus=${ifDefined(this._narrow ? "" : undefined)}
+          >
             <lit-virtualizer
               scroller
               class="ha-scrollbar"

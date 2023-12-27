@@ -42,7 +42,9 @@ class MoreInfoCover extends LitElement {
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     if (changedProps.has("stateObj") && this.stateObj) {
-      if (!this._mode) {
+      const entityId = this.stateObj.entity_id;
+      const oldEntityId = changedProps.get("stateObj")?.entity_id;
+      if (!this._mode || entityId !== oldEntityId) {
         this._mode =
           supportsFeature(this.stateObj, CoverEntityFeature.SET_POSITION) ||
           supportsFeature(this.stateObj, CoverEntityFeature.SET_TILT_POSITION)

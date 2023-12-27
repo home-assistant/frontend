@@ -1,4 +1,3 @@
-import "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,6 +10,7 @@ import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-area-picker";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-textfield";
 import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
 import {
   EntityRegistryEntry,
@@ -98,14 +98,14 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
                 : ""
             )}
           </div>
-          <paper-input
+          <ha-textfield
             type="string"
             @change=${this._rename}
             .value=${this.device.user_given_name || this.device.name}
             .label=${this.hass.localize(
               "ui.dialogs.zha_device_info.zha_device_card.device_name_placeholder"
             )}
-          ></paper-input>
+          ></ha-textfield>
           <ha-area-picker
             .hass=${this.hass}
             .device=${this.device.device_reg_id}
@@ -228,6 +228,9 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
 
         ha-card {
           border: none;
+        }
+        ha-textfield {
+          width: 100%;
         }
       `,
     ];

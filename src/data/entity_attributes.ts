@@ -75,6 +75,9 @@ export const DOMAIN_ATTRIBUTES_UNITS = {
   vacuum: {
     battery_level: "%",
   },
+  valve: {
+    current_position: "%",
+  },
   sensor: {
     battery_level: "%",
   },

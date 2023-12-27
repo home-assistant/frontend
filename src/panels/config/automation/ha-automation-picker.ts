@@ -7,11 +7,19 @@ import {
   mdiPlay,
   mdiPlayCircleOutline,
   mdiPlus,
+  mdiRobotHappy,
   mdiStopCircleOutline,
   mdiTransitConnection,
 } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { differenceInDays } from "date-fns/esm";
@@ -295,6 +303,7 @@ class HaAutomationPicker extends LitElement {
         .activeFilters=${this._activeFilters}
         .columns=${this._columns(this.narrow, this.hass.locale)}
         .data=${this._automations(this.automations, this._filteredAutomations)}
+        .empty=${!this.automations.length}
         @row-click=${this._handleRowClicked}
         .noDataText=${this.hass.localize(
           "ui.panel.config.automation.picker.no_automations"
@@ -318,6 +327,35 @@ class HaAutomationPicker extends LitElement {
           @related-changed=${this._relatedFilterChanged}
         >
         </ha-button-related-filter-menu>
+        ${!this.automations.length
+          ? html` <div class="empty" slot="empty">
+              <ha-svg-icon .path=${mdiRobotHappy}></ha-svg-icon>
+              <h1>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.picker.empty_header"
+                )}
+              </h1>
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.picker.empty_text_1"
+                )}<br />
+                ${this.hass.localize(
+                  "ui.panel.config.automation.picker.empty_text_2"
+                )}
+              </p>
+              <a
+                href=${documentationUrl(this.hass, "/docs/automation/editor/")}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ha-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.picker.learn_more"
+                  )}
+                </ha-button>
+              </a>
+            </div>`
+          : nothing}
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
@@ -475,9 +513,7 @@ class HaAutomationPicker extends LitElement {
             target="_blank"
             rel="noreferrer"
           >
-            ${this.hass.localize(
-              "ui.panel.config.automation.picker.learn_more"
-            )}
+            ${this.hass.localize("ui.panel.config.common.learn_more")}
           </a>
         </p>
       `,
@@ -505,7 +541,16 @@ class HaAutomationPicker extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return haStyle;
+    return [
+      haStyle,
+      css`
+        .empty {
+          --paper-font-headline_-_font-size: 28px;
+          --mdc-icon-size: 80px;
+          max-width: 500px;
+        }
+      `,
+    ];
   }
 }
 
