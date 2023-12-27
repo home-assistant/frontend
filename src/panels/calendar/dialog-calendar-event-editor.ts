@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import { mdiClose } from "@mdi/js";
 import { formatInTimeZone, toDate } from "date-fns-tz";
 import {
   addDays,
@@ -9,7 +8,7 @@ import {
   startOfHour,
 } from "date-fns/esm";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -18,23 +17,24 @@ import { supportsFeature } from "../../common/entity/supports-feature";
 import { isDate } from "../../common/string/is_date";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-date-input";
+import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-textarea";
 import "../../components/ha-time-input";
 import {
   CalendarEntityFeature,
   CalendarEventMutableParams,
+  RecurrenceRange,
   createCalendarEvent,
   deleteCalendarEvent,
-  RecurrenceRange,
   updateCalendarEvent,
 } from "../../data/calendar";
+import { TimeZone } from "../../data/translation";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-generic-entity-row";
 import "./ha-recurrence-rule-editor";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import { CalendarEventEditDialogParams } from "./show-dialog-calendar-event-editor";
-import { TimeZone } from "../../data/translation";
 
 const CALENDAR_DOMAINS = ["calendar"];
 
@@ -142,19 +142,12 @@ class DialogCalendarEventEditor extends LitElement {
         @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
-        .heading=${html`
-          <div class="header_title">
-            ${isCreate
-              ? this.hass.localize("ui.components.calendar.event.add")
-              : this._summary}
-          </div>
-          <ha-icon-button
-            .label=${this.hass.localize("ui.dialogs.generic.close")}
-            .path=${mdiClose}
-            dialogAction="close"
-            class="header_button"
-          ></ha-icon-button>
-        `}
+        .heading=${createCloseHeading(
+          this.hass,
+          isCreate
+            ? this.hass.localize("ui.components.calendar.event.add")
+            : this._summary
+        )}
       >
         <div class="content">
           ${this._error

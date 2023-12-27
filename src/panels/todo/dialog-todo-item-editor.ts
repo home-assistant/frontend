@@ -1,11 +1,12 @@
 import "@material/mwc-button";
-import { mdiClose } from "@mdi/js";
 import { formatInTimeZone, toDate } from "date-fns-tz";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-date-input";
+import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-textarea";
 import "../../components/ha-time-input";
 import {
@@ -20,7 +21,6 @@ import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { TodoItemEditDialogParams } from "./show-dialog-todo-item-editor";
-import { supportsFeature } from "../../common/entity/supports-feature";
 
 @customElement("dialog-todo-item-editor")
 class DialogTodoItemEditor extends LitElement {
@@ -100,19 +100,12 @@ class DialogTodoItemEditor extends LitElement {
         @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
-        .heading=${html`
-          <div class="header_title">
-            ${isCreate
-              ? this.hass.localize("ui.components.todo.item.add")
-              : this._summary}
-          </div>
-          <ha-icon-button
-            .label=${this.hass.localize("ui.dialogs.generic.close")}
-            .path=${mdiClose}
-            dialogAction="close"
-            class="header_button"
-          ></ha-icon-button>
-        `}
+        .heading=${createCloseHeading(
+          this.hass,
+          isCreate
+            ? this.hass.localize("ui.components.todo.item.add")
+            : this._summary
+        )}
       >
         <div class="content">
           ${this._error
