@@ -23,7 +23,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { STATES_OFF } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -446,10 +445,8 @@ export class HuiAreaCard
                 return entity
                   ? html`<ha-svg-icon
                       class="alert"
-                      id=${entity.entity_id}
                       .path=${DOMAIN_ICONS[domain][deviceClass] ||
                       binarySensorIcon(entity.state, entity)}
-                      @click=${this._moreInfo}
                     ></ha-svg-icon>`
                   : nothing;
               });
@@ -504,13 +501,6 @@ export class HuiAreaCard
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
-  }
-
-  private _moreInfo(ev) {
-    ev.stopPropagation();
-    fireEvent(this, "hass-more-info", {
-      entityId: ev.target.id,
-    });
   }
 
   private _handleNavigation() {
@@ -585,10 +575,6 @@ export class HuiAreaCard
         color: var(--text-accent-color, var(--text-primary-color));
         padding: 8px;
         border-radius: 50%;
-      }
-
-      ha-svg-icon.alert {
-        cursor: pointer;
       }
 
       .name {
