@@ -357,7 +357,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.18.4, @babel/parser@npm:^7.22.15, @babel/parser@npm:^7.23.5, @babel/parser@npm:^7.23.6":
+"@babel/parser@npm:^7.22.15, @babel/parser@npm:^7.23.5, @babel/parser@npm:^7.23.6":
   version: 7.23.6
   resolution: "@babel/parser@npm:7.23.6"
   bin:
@@ -4982,17 +4982,6 @@ __metadata:
   version: 0.4.8
   resolution: "@vscode/web-custom-data@npm:0.4.8"
   checksum: 556106530e399321d1412d0074d1a4dcfc04c17fc334df8de4f10469a2ad6f83c7245caf92174817c5bf032ec5ffd894bc418889d76a2a7d163ad0e4c910adf0
-  languageName: node
-  linkType: hard
-
-"@vue/compiler-sfc@npm:2.7.15":
-  version: 2.7.15
-  resolution: "@vue/compiler-sfc@npm:2.7.15"
-  dependencies:
-    "@babel/parser": "npm:^7.18.4"
-    postcss: "npm:^8.4.14"
-    source-map: "npm:^0.6.1"
-  checksum: 6c01a2a0a41f418f6b5d33a3551d4a6f5f70630bb316317ec8067307508d07b703bfbb660bf2a11140cde8b06b25d676ffff683d8cee3faffc94b87c97f47529
   languageName: node
   linkType: hard
 
@@ -9733,7 +9722,7 @@ __metadata:
     vinyl-source-stream: "npm:2.0.0"
     vis-data: "npm:7.1.9"
     vis-network: "npm:9.1.9"
-    vue: "npm:2.7.15"
+    vue: "npm:2.7.16"
     vue2-daterange-picker: "npm:0.6.8"
     webpack: "npm:5.89.0"
     webpack-cli: "npm:5.1.4"
@@ -16037,17 +16026,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue@npm:2.7.15":
-  version: 2.7.15
-  resolution: "vue@npm:2.7.15"
-  dependencies:
-    "@vue/compiler-sfc": "npm:2.7.15"
-    csstype: "npm:^3.1.0"
-  checksum: 928575f5eee51b99652cfcba0dfb0c924e9571ed45bff9a45abdaaaeb7d55c45339094ecc77cfcf884b40e51c6681cc49699b178f7363af0ca7f88618f7f4ec1
-  languageName: node
-  linkType: hard
-
-"vue@npm:^2.6.10":
+"vue@npm:2.7.16, vue@npm:^2.6.10":
   version: 2.7.16
   resolution: "vue@npm:2.7.16"
   dependencies:
