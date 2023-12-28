@@ -535,45 +535,43 @@ export class HaConfigEntities extends LitElement {
                 </p>
                 <div class="header-btns">
                   ${!this.narrow
-                    ? html`
-                        ${this._selectedCanEnable
-                          ? html`<mwc-button @click=${this._enableSelected}
-                              >${this.hass.localize(
-                                "ui.panel.config.entities.picker.enable_selected.button"
-                              )}</mwc-button
-                            >`
-                          : nothing}
-                        ${this._selectedCanDisable
-                          ? html`<mwc-button @click=${this._disableSelected}
-                              >${this.hass.localize(
-                                "ui.panel.config.entities.picker.disable_selected.button"
-                              )}</mwc-button
-                            >`
-                          : nothing}
-                        ${this._selectedCanHide
-                          ? html`<mwc-button @click=${this._hideSelected}
-                              >${this.hass.localize(
-                                "ui.panel.config.entities.picker.hide_selected.button"
-                              )}</mwc-button
-                            >`
-                          : nothing}
-                        ${this._selectedCanUnhide
-                          ? html`<mwc-button @click=${this._unhideSelected}
-                              >${this.hass.localize(
-                                "ui.panel.config.entities.picker.unhide_selected.button"
-                              )}</mwc-button
-                            >`
-                          : nothing}
+                    ? html`<mwc-button
+                          @click=${this._enableSelected}
+                          .disabled=${!this._selectedCanEnable}
+                          >${this.hass.localize(
+                            "ui.panel.config.entities.picker.enable_selected.button"
+                          )}</mwc-button
+                        >
+                        <mwc-button
+                          @click=${this._disableSelected}
+                          .disabled=${!this._selectedCanDisable}
+                          >${this.hass.localize(
+                            "ui.panel.config.entities.picker.disable_selected.button"
+                          )}</mwc-button
+                        >
+                        <mwc-button
+                          @click=${this._hideSelected}
+                          .disabled=${!this._selectedCanHide}
+                          >${this.hass.localize(
+                            "ui.panel.config.entities.picker.hide_selected.button"
+                          )}</mwc-button
+                        >
+                        <mwc-button
+                          @click=${this._unhideSelected}
+                          .disabled=${!this._selectedCanUnhide}
+                          >${this.hass.localize(
+                            "ui.panel.config.entities.picker.unhide_selected.button"
+                          )}</mwc-button
+                        >
                         <mwc-button
                           @click=${this._removeSelected}
                           class="warning"
                           >${this.hass.localize(
                             "ui.panel.config.entities.picker.remove_selected.button"
                           )}</mwc-button
-                        >
-                      `
+                        > `
                     : html`
-                        ${this._selectedCanEnable
+                        ${this._selectedCanEnable && !this._selectedCanDisable
                           ? html`<ha-icon-button
                                 id="enable-btn"
                                 @click=${this._enableSelected}
@@ -607,7 +605,7 @@ export class HaConfigEntities extends LitElement {
                                 )}
                               </simple-tooltip>`
                           : nothing}
-                        ${this._selectedCanHide
+                        ${this._selectedCanHide && !this._selectedCanUnhide
                           ? html`<ha-icon-button
                                 id="hide-btn"
                                 @click=${this._hideSelected}
@@ -791,7 +789,9 @@ export class HaConfigEntities extends LitElement {
       this._selectedCanUnhide = hidden.some((h) => h);
       this._selectedCanHide = hidden.some((h) => h === null);
 
-      this._selectedCanEnable = disabled.some((d) => d === "user");
+      this._selectedCanEnable = disabled.some(
+        (d) => d === "user" || d === "integration"
+      );
       this._selectedCanDisable = disabled.some((d) => d === null);
     }
   }
