@@ -287,19 +287,38 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   @eventOptions({ passive: true })
   private handleRippleActivate(evt?: Event) {
+    if (!this.hasCardAction) return;
     this._rippleHandlers.startPress(evt);
   }
 
   private handleRippleDeactivate() {
+    if (!this.hasCardAction) return;
     this._rippleHandlers.endPress();
   }
 
   private handleRippleMouseEnter() {
+    if (!this.hasCardAction) return;
     this._rippleHandlers.startHover();
   }
 
   private handleRippleMouseLeave() {
+    if (!this.hasCardAction) return;
     this._rippleHandlers.endHover();
+  }
+
+  get hasCardAction() {
+    return (
+      !this._config?.tap_action ||
+      hasAction(this._config?.tap_action) ||
+      hasAction(this._config?.hold_action) ||
+      hasAction(this._config?.double_tap_action)
+    );
+  }
+
+  get hasIconAction() {
+    return (
+      !this._config?.icon_tap_action || hasAction(this._config?.icon_tap_action)
+    );
   }
 
   protected render() {
@@ -359,15 +378,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       : undefined;
     const badge = computeTileBadge(stateObj, this.hass);
 
-    const hasCardAction =
-      !this._config.tap_action ||
-      hasAction(this._config.tap_action) ||
-      hasAction(this._config.hold_action) ||
-      hasAction(this._config.double_tap_action);
-
-    const hasIconAction =
-      !this._config.icon_tap_action || hasAction(this._config.icon_tap_action);
-
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
         <div
@@ -377,18 +387,16 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             hasHold: hasAction(this._config!.hold_action),
             hasDoubleClick: hasAction(this._config!.double_tap_action),
           })}
-          role=${hasCardAction ? "button" : ""}
-          tabindex=${hasCardAction ? "0" : undefined}
+          role=${this.hasCardAction ? "button" : ""}
+          tabindex=${this.hasCardAction ? "0" : undefined}
           aria-labelledby="info"
-          @mousedown=${hasCardAction ? this.handleRippleActivate : undefined}
-          @mouseup=${hasCardAction ? this.handleRippleDeactivate : undefined}
-          @mouseenter=${hasCardAction ? this.handleRippleMouseEnter : undefined}
-          @mouseleave=${hasCardAction ? this.handleRippleMouseLeave : undefined}
-          @touchstart=${hasCardAction ? this.handleRippleActivate : undefined}
-          @touchend=${hasCardAction ? this.handleRippleDeactivate : undefined}
-          @touchcancel=${hasCardAction
-            ? this.handleRippleDeactivate
-            : undefined}
+          @mousedown=${this.handleRippleActivate}
+          @mouseup=${this.handleRippleDeactivate}
+          @mouseenter=${this.handleRippleMouseEnter}
+          @mouseleave=${this.handleRippleMouseLeave}
+          @touchstart=${this.handleRippleActivate}
+          @touchend=${this.handleRippleDeactivate}
+          @touchcancel=${this.handleRippleDeactivate}
         >
           ${this._shouldRenderRipple
             ? html`<mwc-ripple></mwc-ripple>`
@@ -397,8 +405,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         <div class="content ${classMap(contentClasses)}">
           <div
             class="icon-container"
-            role=${hasIconAction ? "button" : ""}
-            tabindex=${hasIconAction ? "0" : undefined}
+            role=${this.hasIconAction ? "button" : ""}
+            tabindex=${this.hasIconAction ? "0" : undefined}
             @action=${this._handleIconAction}
             .actionHandler=${actionHandler()}
           >
