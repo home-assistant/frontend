@@ -543,7 +543,8 @@ export class HaChooseAction extends LitElement implements ActionElement {
           padding: 0 16px 16px 16px;
         }
         .handle {
-          cursor: move;
+          cursor: move; /* fallback if grab cursor is unsupported */
+          cursor: grab;
           padding: 12px;
         }
         .handle ha-svg-icon {
