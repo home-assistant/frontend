@@ -181,7 +181,8 @@ export class HuiEntityEditor extends LitElement {
         }
         .entity .handle {
           padding-right: 8px;
-          cursor: move;
+          cursor: move; /* fallback if grab cursor is unsupported */
+          cursor: grab;
           padding-inline-end: 8px;
           padding-inline-start: initial;
           direction: var(--direction);

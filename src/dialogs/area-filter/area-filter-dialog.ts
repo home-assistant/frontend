@@ -207,7 +207,8 @@ export class DialogAreaFilter
           color: var(--disabled-text-color);
         }
         .handle {
-          cursor: move;
+          cursor: move; /* fallback if grab cursor is unsupported */
+          cursor: grab;
         }
         .actions {
           display: flex;
