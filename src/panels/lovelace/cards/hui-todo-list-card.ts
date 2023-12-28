@@ -1,4 +1,5 @@
 import "@material/mwc-list/mwc-list";
+import type { List } from "@material/mwc-list/mwc-list";
 import {
   mdiClock,
   mdiDelete,
@@ -229,7 +230,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             : nothing}
         </div>
         ${uncheckedItems.length
-          ? html` <div class="header">
+          ? html`<div class="header">
                 <span>
                   ${this.hass!.localize(
                     "ui.panel.lovelace.cards.todo-list.unchecked_items"
@@ -248,7 +249,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                         graphic="icon"
                       >
                         ${this.hass!.localize(
-                          "ui.panel.lovelace.cards.todo-list.reorder_items"
+                          this._reordering
+                            ? "ui.panel.lovelace.cards.todo-list.exit_reorder_items"
+                            : "ui.panel.lovelace.cards.todo-list.reorder_items"
                         )}
                         <ha-svg-icon
                           slot="graphic"
@@ -466,18 +469,29 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private _completeItem(ev): void {
+  private async _completeItem(ev): Promise<void> {
     const item = this._getItem(ev.currentTarget.itemId);
     if (!item) {
       return;
     }
-    updateItem(this.hass!, this._entityId!, {
+    await updateItem(this.hass!, this._entityId!, {
       ...item,
       status:
         item.status === TodoItemStatus.NeedsAction
           ? TodoItemStatus.Completed
           : TodoItemStatus.NeedsAction,
     });
+    await this.updateComplete;
+    const newList: List = this.shadowRoot!.querySelector(
+      item.status === TodoItemStatus.NeedsAction ? "#checked" : "#unchecked"
+    )!;
+    await newList.updateComplete;
+    const items =
+      item.status === TodoItemStatus.NeedsAction
+        ? this._getCheckedItems(this._items)
+        : this._getUncheckedItems(this._items);
+    const index = items.findIndex((itm) => itm.uid === item.uid);
+    newList.focusItemAtIndex(index);
   }
 
   private async _clearCompletedItems(): Promise<void> {
