@@ -249,7 +249,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                         graphic="icon"
                       >
                         ${this.hass!.localize(
-                          "ui.panel.lovelace.cards.todo-list.reorder_items"
+                          this._reordering
+                            ? "ui.panel.lovelace.cards.todo-list.exit_reorder_items"
+                            : "ui.panel.lovelace.cards.todo-list.reorder_items"
                         )}
                         <ha-svg-icon
                           slot="graphic"
