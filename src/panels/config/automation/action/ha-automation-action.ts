@@ -319,7 +319,8 @@ export default class HaAutomationAction extends LitElement {
           overflow: hidden;
         }
         .handle {
-          cursor: move;
+          cursor: move; /* fallback if grab cursor is unsupported */
+          cursor: grab;
           padding: 12px;
         }
         .handle ha-svg-icon {

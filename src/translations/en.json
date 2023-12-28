@@ -1119,8 +1119,8 @@
         },
         "valve": {
           "switch_mode": {
-            "button": "[%key:ui::dialogs::more_info_control::valve::switch_mode::button%]",
-            "position": "[%key:ui::dialogs::more_info_control::valve::switch_mode::position%]"
+            "button": "[%key:ui::dialogs::more_info_control::cover::switch_mode::button%]",
+            "position": "[%key:ui::dialogs::more_info_control::cover::switch_mode::position%]"
           }
         }
       },
@@ -2759,7 +2759,7 @@
                     "preset_mode": "Preset mode"
                   },
                   "description": {
-                    "picker": "If something happens to a device. Great way to start."
+                    "picker": "If a device is in a certain state. Great way to start."
                   }
                 },
                 "not": {
@@ -4768,6 +4768,7 @@
             "add_item": "Add item",
             "today": "Today",
             "reorder_items": "Reorder items",
+            "exit_reorder_items": "Exit reorder mode",
             "drag_and_drop": "Drag and drop",
             "delete_item": "Delete item",
             "delete_confirm_title": "Remove completed items?",

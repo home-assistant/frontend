@@ -285,7 +285,8 @@ class HaInputSelectForm extends LitElement {
           margin-bottom: 8px;
         }
         .handle {
-          cursor: move;
+          cursor: move; /* fallback if grab cursor is unsupported */
+          cursor: grab;
           padding-right: 12px;
         }
         .handle ha-svg-icon {

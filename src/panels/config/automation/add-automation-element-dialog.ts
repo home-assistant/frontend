@@ -452,8 +452,8 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           itemRoles="option"
           rootTabbable
           style=${styleMap({
-            width: `${this._width}px`,
-            height: `${this._height}px`,
+            width: this._width ? `${this._width}px` : "auto",
+            height: this._height ? `${Math.min(468, this._height)}px` : "auto",
           })}
         >
           ${this._params.clipboardItem &&
