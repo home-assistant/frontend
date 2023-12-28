@@ -265,9 +265,7 @@ class HaSceneDashboard extends LitElement {
                 rel="noreferrer"
               >
                 <ha-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.scene.picker.learn_more"
-                  )}
+                  ${this.hass.localize("ui.panel.config.common.learn_more")}
                 </ha-button>
               </a>
             </div>`
@@ -370,7 +368,7 @@ class HaSceneDashboard extends LitElement {
             target="_blank"
             rel="noreferrer"
           >
-            ${this.hass.localize("ui.panel.config.common.learn_more")}
+            ${this.hass.localize("ui.panel.config.scene.picker.learn_more")}
           </a>
         </p>
       `,
