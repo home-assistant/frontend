@@ -2759,7 +2759,7 @@
                     "preset_mode": "Preset mode"
                   },
                   "description": {
-                    "picker": "If something happens to a device. Great way to start."
+                    "picker": "If a device is in a certain state. Great way to start."
                   }
                 },
                 "not": {
