@@ -471,7 +471,7 @@ const tryDescribeTrigger = (
     } else if (trigger.seconds !== undefined) {
       if (trigger.hours !== undefined) {
         minutes = 0;
-        minutesChoice = "on_the_xth";
+        minutesChoice = "has_seconds";
       } else {
         minutesChoice = "every";
       }
