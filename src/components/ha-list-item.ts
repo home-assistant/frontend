@@ -46,6 +46,7 @@ export class HaListItem extends ListItemBase {
         .mdc-deprecated-list-item__meta {
           display: var(--mdc-list-item-meta-display);
           align-items: center;
+          flex-shrink: 0;
         }
         :host([graphic="icon"]:not([twoline]))
           .mdc-deprecated-list-item__graphic {
