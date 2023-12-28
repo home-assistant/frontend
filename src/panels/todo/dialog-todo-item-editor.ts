@@ -99,7 +99,6 @@ class DialogTodoItemEditor extends LitElement {
         open
         @closed=${this.closeDialog}
         scrimClickAction
-        escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
           isCreate
