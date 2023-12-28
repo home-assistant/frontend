@@ -23,7 +23,6 @@ import {
   formatListWithAnds,
   formatListWithOrs,
 } from "../common/string/format-list";
-import { LocalizeFunc } from "../common/translations/localize";
 
 const triggerTranslationBaseKey =
   "ui.panel.config.automation.editor.triggers.type";
@@ -64,11 +63,6 @@ const localizeTimeString = (
     return time;
   }
 };
-
-const ordinalSuffix = (n: number, localize: LocalizeFunc) =>
-  localize(`${triggerTranslationBaseKey}.time_pattern.description.ordinal`, {
-    part: n,
-  });
 
 export const describeTrigger = (
   trigger: Trigger,
@@ -542,9 +536,24 @@ const tryDescribeTrigger = (
         seconds: seconds,
         minutes: minutes,
         hours: hours,
-        secondsWithOrdinal: ordinalSuffix(seconds, hass.localize),
-        minutesWithOrdinal: ordinalSuffix(minutes, hass.localize),
-        hoursWithOrdinal: ordinalSuffix(hours, hass.localize),
+        secondsWithOrdinal: hass.localize(
+          `${triggerTranslationBaseKey}.time_pattern.description.ordinal`,
+          {
+            part: seconds,
+          }
+        ),
+        minutesWithOrdinal: hass.localize(
+          `${triggerTranslationBaseKey}.time_pattern.description.ordinal`,
+          {
+            part: minutes,
+          }
+        ),
+        hoursWithOrdinal: hass.localize(
+          `${triggerTranslationBaseKey}.time_pattern.description.ordinal`,
+          {
+            part: hours,
+          }
+        ),
       }
     );
   }
