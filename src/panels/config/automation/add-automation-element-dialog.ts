@@ -198,7 +198,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     ): ListItem[] => {
       if (type === "action" && isService(group)) {
         const result = this._services(localize, services, manifests, group);
-        if (group === "service_media_player") {
+        if (group === `${SERVICE_PREFIX}media_player`) {
           result.unshift(this._convertToItem("play_media", {}, type, localize));
         }
         return result;
