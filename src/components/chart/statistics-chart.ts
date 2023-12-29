@@ -16,6 +16,7 @@ import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { fireEvent } from "../../common/dom/fire_event";
 import {
   formatNumber,
   numberFormatToLocale,
@@ -74,6 +75,8 @@ export class StatisticsChart extends LitElement {
   @property({ type: Boolean }) public logarithmicScale = false;
 
   @property({ type: Boolean }) public isLoadingData = false;
+
+  @property({ type: Boolean }) public clickForMoreInfo = true;
 
   @property() public period?: string;
 
@@ -245,6 +248,28 @@ export class StatisticsChart extends LitElement {
       },
       // @ts-expect-error
       locale: numberFormatToLocale(this.hass.locale),
+      onClick: (e: any) => {
+        if (!this.clickForMoreInfo) {
+          return;
+        }
+
+        const chart = e.chart;
+
+        const points = chart.getElementsAtEventForMode(
+          e,
+          "nearest",
+          { intersect: true },
+          true
+        );
+
+        if (points.length) {
+          const firstPoint = points[0];
+          fireEvent(this, "hass-more-info", {
+            entityId: this._statisticIds[firstPoint.datasetIndex],
+          });
+          chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
+        }
+      },
     };
   }
 
