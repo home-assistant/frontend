@@ -1,9 +1,18 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { grid } from "@lit-labs/virtualizer/layouts/grid";
+import Fuse from "fuse.js";
+import type { IFuseOptions } from "fuse.js";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiArrowUpRight, mdiPlay, mdiPlus } from "@mdi/js";
+import {
+  mdiArrowUpRight,
+  mdiPlay,
+  mdiPlus,
+  mdiSortAscending,
+  mdiSortDescending,
+} from "@mdi/js";
+import memoizeOne from "memoize-one";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   css,
@@ -57,6 +66,7 @@ import "../ha-circular-progress";
 import "../ha-fab";
 import "../ha-icon-button";
 import "../ha-svg-icon";
+import "../search-input";
 import "./ha-browse-media-tts";
 import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
 import { loadVirtualizer } from "../../resources/virtualizer";
@@ -106,6 +116,10 @@ export class HaMediaPlayerBrowse extends LitElement {
   @state() private _parentItem?: MediaPlayerItem;
 
   @state() private _currentItem?: MediaPlayerItem;
+
+  @state() private _filter: string = "";
+
+  @state() private _reverseSort = false;
 
   @query(".header") private _header?: HTMLDivElement;
 
@@ -183,6 +197,8 @@ export class HaMediaPlayerBrowse extends LitElement {
     const oldParentItem = this._parentItem;
     this._currentItem = undefined;
     this._parentItem = undefined;
+    this._reverseSort = false;
+    this._filter = "";
     const currentId = navigateIds[navigateIds.length - 1];
     const parentId =
       navigateIds.length > 1 ? navigateIds[navigateIds.length - 2] : undefined;
@@ -320,6 +336,34 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
   }
 
+  private _sortFilter = memoizeOne(
+    (
+      children: MediaPlayerItem[],
+      reverse: boolean,
+      filter: string
+    ): MediaPlayerItem[] => {
+      let filteredChildren: MediaPlayerItem[];
+      if (filter) {
+        const options: IFuseOptions<MediaPlayerItem> = {
+          keys: ["title"],
+          isCaseSensitive: false,
+          minMatchCharLength: Math.min(filter.length, 2),
+          threshold: 0.2,
+        };
+        const fuse = new Fuse(children, options);
+        filteredChildren = fuse.search(filter).map((result) => result.item);
+      } else {
+        filteredChildren = [...children];
+      }
+
+      if (reverse) {
+        filteredChildren.reverse();
+      }
+
+      return filteredChildren;
+    }
+  );
+
   protected render() {
     if (this._error) {
       return html`
@@ -340,7 +384,11 @@ export class HaMediaPlayerBrowse extends LitElement {
     const subtitle = this.hass.localize(
       `ui.components.media-browser.class.${currentItem.media_class}`
     );
-    const children = currentItem.children || [];
+    const children = this._sortFilter(
+      currentItem.children || [],
+      this._reverseSort,
+      this._filter
+    );
     const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
     const childrenMediaClass = currentItem.children_media_class
       ? MediaClassBrowserSettings[currentItem.children_media_class]
@@ -433,6 +481,25 @@ export class HaMediaPlayerBrowse extends LitElement {
                     `
                   : ""
               }
+
+           <div class="search-sort">
+         <search-input
+                  .hass=${this.hass}
+                  .filter=${this._filter}
+                  @value-changed=${this._handleSearchChange}
+                  .label=${this.hass.localize(
+                    "ui.components.media-browser.filter"
+                  )}
+          ></search-input>
+           <ha-icon-button
+             class="sort"
+             .label=${this.hass.localize(
+               `ui.components.media-browser.reverse_order`
+             )}
+             .path=${this._reverseSort ? mdiSortDescending : mdiSortAscending}
+             @click=${this._toggleSort}
+           ></ha-icon-button>
+          </div>
           <div
             class="content"
             @scroll=${this._scroll}
@@ -758,6 +825,14 @@ export class HaMediaPlayerBrowse extends LitElement {
     });
   };
 
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
+  }
+
+  private _toggleSort() {
+    this._reverseSort = !this._reverseSort;
+  }
+
   private async _fetchData(
     entityId: string,
     mediaContentId?: string,
@@ -916,6 +991,15 @@ export class HaMediaPlayerBrowse extends LitElement {
           overflow-y: auto;
           box-sizing: border-box;
           height: 100%;
+        }
+
+        .search-sort {
+          display: flex;
+          align-items: center;
+        }
+        search-input {
+          display: block;
+          width: 100%;
         }
 
         /* HEADER */

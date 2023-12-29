@@ -754,7 +754,9 @@
         "media_player_unavailable": "The selected media player is unavailable.",
         "auto": "Auto",
         "grid": "Grid",
-        "list": "List"
+        "list": "List",
+        "reverse_order": "Reverse order",
+        "filter": "Filter media"
       },
       "todo": {
         "item": {
