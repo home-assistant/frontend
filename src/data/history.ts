@@ -443,6 +443,11 @@ export const computeHistory = (
       ];
     }
   });
+  Object.keys(stateHistory).forEach((entityId) => {
+    if (!(entityId in localStateHistory)) {
+      localStateHistory[entityId] = stateHistory[entityId];
+    }
+  });
 
   if (!localStateHistory) {
     return { line: [], timeline: [] };
