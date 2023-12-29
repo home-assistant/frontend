@@ -2386,7 +2386,7 @@
             },
             "empty_header": "Start automating",
             "empty_text_1": "Automations make Home Assistant automatically respond to things happening in and around your home.",
-            "empty_text_2": "Automations connect triggers to actions in a ''when trigger then action'' fashion with optional conditions. For example: ''When the sun sets and if Alice is home, then turn on the lights''."
+            "empty_text_2": "Automations connect triggers to actions in a ''when trigger then action'' fashion with optional conditions. For example: ''When the sun sets and if {user} is home, then turn on the lights''."
           },
           "dialog_new": {
             "header": "Create automation",
