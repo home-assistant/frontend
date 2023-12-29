@@ -4,7 +4,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import "../resources/intl-polyfill";
 import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";

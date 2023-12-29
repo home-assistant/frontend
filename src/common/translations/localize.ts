@@ -1,6 +1,6 @@
 import IntlMessageFormat from "intl-messageformat";
 import type { HTMLTemplateResult } from "lit";
-import { polyfillLocaleData } from "../../resources/locale-data-polyfill";
+import { polyfillLocaleData } from "../../resources/polyfills/locale-data-polyfill";
 import { Resources, TranslationDict } from "../../types";
 import { fireEvent } from "../dom/fire_event";
 
@@ -89,7 +89,7 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
   resources: Resources,
   formats?: FormatsType
 ): Promise<LocalizeFunc<Keys>> => {
-  await import("../../resources/intl-polyfill").then(() =>
+  await import("../../resources/polyfills/intl-polyfill").then(() =>
     polyfillLocaleData(language)
   );
 
