@@ -80,23 +80,11 @@ export class HuiEntityFilterBadge
     }
 
     const entitiesList = this._configEntities.filter((entityConf) => {
-      const stateObj = this.hass.states[entityConf.entity];
-
-      if (!stateObj) {
-        return false;
-      }
-
-      if (entityConf.state_filter) {
-        for (const filter of entityConf.state_filter) {
-          if (evaluateFilter(stateObj, filter)) {
-            return true;
-          }
-        }
-      } else {
-        for (const filter of this._config!.state_filter) {
-          if (evaluateFilter(stateObj, filter)) {
-            return true;
-          }
+      const state_filters =
+        entityConf.state_filter ?? this._config!.state_filter;
+      for (const filter of state_filters) {
+        if (evaluateFilter(this.hass, entityConf.entity, filter)) {
+          return true;
         }
       }
 

@@ -1,11 +1,30 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import { HomeAssistant } from "../../../types";
 
-export const evaluateFilter = (stateObj: HassEntity, filter: any): boolean => {
+export const evaluateFilter = (
+  hass: HomeAssistant,
+  current_entity_id: string,
+  filter: any
+): boolean => {
+  const stateObj: HassEntity = hass.states[current_entity_id];
+
+  if (!stateObj) {
+    return false;
+  }
+
   const operator = filter.operator || "==";
   let value = filter.value ?? filter;
   let state = filter.attribute
     ? stateObj.attributes[filter.attribute]
     : stateObj.state;
+
+  if (typeof value === "string" && value.includes(".")) {
+    value = hass.states[value]?.state;
+
+    if (!value) {
+      return false;
+    }
+  }
 
   if (operator === "==" || operator === "!=") {
     const valueIsNumeric =

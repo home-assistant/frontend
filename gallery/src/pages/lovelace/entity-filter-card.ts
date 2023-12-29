@@ -38,11 +38,36 @@ const ENTITIES = [
   getEntity("light", "ceiling_lights", "off", {
     friendly_name: "Ceiling Lights",
   }),
+  getEntity("sensor", "gas_station_auchan_saint_priest_e10", 1.712, {
+    device_class: "monetary",
+    icon: "mdi:gas-station",
+    friendly_name: "Gas station Auchan Saint Priest E10",
+    unit_of_measurement: "€",
+  }),
+  getEntity("sensor", "gas_station_carrefour_venissieux_e10", 1.724, {
+    device_class: "monetary",
+    icon: "mdi:gas-station",
+    friendly_name: "Gas station Carrefour Venissieux E10",
+    unit_of_measurement: "€",
+  }),
+  getEntity("sensor", "gas_station_relais_lyon_mermoz_e10", 1.751, {
+    device_class: "monetary",
+    icon: "mdi:gas-station",
+    friendly_name: "Gas station Relais Lyon Mermoz E10",
+    unit_of_measurement: "€",
+  }),
+  getEntity("sensor", "gas_station_lowest_price", 1.712, {
+    state_class: "measurement",
+    min_entity_id: "sensor.gas_station_auchan_saint_priest_e10",
+    icon: "mdi:gas-station-in-use",
+    friendly_name: "Gas station Lowest Price",
+    unit_of_measurement: "€",
+  }),
 ];
 
 const CONFIGS = [
   {
-    heading: "Unfiltered controller",
+    heading: "Unfiltered entities",
     config: `
 - type: entities
   entities:
@@ -52,7 +77,7 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Filtered entities card",
+    heading: "Filtered entities",
     config: `
 - type: entity-filter
   entities:
@@ -105,6 +130,43 @@ const CONFIGS = [
     type: glance
     show_state: true
     title: Custom Title
+    `,
+  },
+  {
+    heading: "Unfiltered number entities",
+    config: `
+- type: entities
+  entities:
+    - sensor.gas_station_auchan_saint_priest_e10
+    - sensor.gas_station_carrefour_venissieux_e10
+    - sensor.gas_station_relais_lyon_mermoz_e10
+    - sensor.gas_station_lowest_price
+    `,
+  },
+  {
+    heading: "Filtered entities with operator & number value",
+    config: `
+- type: entity-filter
+  entities:
+    - sensor.gas_station_auchan_saint_priest_e10
+    - sensor.gas_station_carrefour_venissieux_e10
+    - sensor.gas_station_relais_lyon_mermoz_e10
+  state_filter:
+    - operator: <=
+      value: 1.73
+    `,
+  },
+  {
+    heading: "Filtered entities with operator & entity_id value",
+    config: `
+- type: entity-filter
+  entities:
+    - sensor.gas_station_auchan_saint_priest_e10
+    - sensor.gas_station_carrefour_venissieux_e10
+    - sensor.gas_station_relais_lyon_mermoz_e10
+  state_filter:
+    - operator: ==
+      value: sensor.gas_station_lowest_price
     `,
   },
 ];
