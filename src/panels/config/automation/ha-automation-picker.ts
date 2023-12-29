@@ -342,7 +342,8 @@ class HaAutomationPicker extends LitElement {
               </p>
               <p>
                 ${this.hass.localize(
-                  "ui.panel.config.automation.picker.empty_text_2"
+                  "ui.panel.config.automation.picker.empty_text_2",
+                  { user: this.hass.user?.name || "Alice" }
                 )}
               </p>
               <a
