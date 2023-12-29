@@ -2988,10 +2988,10 @@
               "blueprint_config": "Blueprint Config"
             },
             "path": {
-              "choose": "Select a node on the left for more information.",
+              "choose": "Select a step on the left for more information.",
               "default_action_executed": "The default action was executed because no options matched.",
-              "no_further_execution": "This node was not executed and so no further trace information is available.",
-              "disabled_node": "This node was disabled and skipped during execution so no further trace information is available.",
+              "no_further_execution": "This step was not executed and so no further trace information is available.",
+              "disabled_step": "This step was disabled and skipped during execution so no further trace information is available.",
               "iteration": "Iteration {number}",
               "executed": "Executed: {time}",
               "error": "Error: {error}",

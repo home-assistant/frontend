@@ -133,7 +133,7 @@ export class HaTracePathDetails extends LitElement {
 
           if (result?.enabled === false) {
             return html`${this.hass!.localize(
-              "ui.panel.config.automation.trace.path.disabled_node"
+              "ui.panel.config.automation.trace.path.disabled_step"
             )}`;
           }
 
