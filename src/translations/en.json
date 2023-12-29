@@ -2996,7 +2996,7 @@
               "executed": "Executed: {time}",
               "error": "Error: {error}",
               "result": "Result:",
-              "node_not_tracked": "Node not tracked.",
+              "step_not_executed": "This step was not executed.",
               "no_logbook_entries": "No Logbook entries found for this step.",
               "no_variables_changed": "No variables changed",
               "unable_to_find_config": "Unable to find config"

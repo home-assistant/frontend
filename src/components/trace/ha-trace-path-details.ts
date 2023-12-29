@@ -240,7 +240,7 @@ export class HaTracePathDetails extends LitElement {
     if (index === -1) {
       return html`<div class="padded-box">
         ${this.hass!.localize(
-          "ui.panel.config.automation.trace.path.node_not_tracked"
+          "ui.panel.config.automation.trace.path.step_not_executed"
         )}
       </div>`;
     }
