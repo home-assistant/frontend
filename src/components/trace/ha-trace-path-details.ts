@@ -212,7 +212,7 @@ export class HaTracePathDetails extends LitElement {
       <div class="padded-box">
         ${data.map(
           (trace, idx) => html`
-            ${idx > 0
+            ${data.length > 1
               ? html`<p>
                   ${this.hass!.localize(
                     "ui.panel.config.automation.trace.path.iteration",
