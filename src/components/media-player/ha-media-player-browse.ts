@@ -487,23 +487,23 @@ export class HaMediaPlayerBrowse extends LitElement {
               }
 
            <div class="search-sort">
-         <search-input
-                  .hass=${this.hass}
-                  .filter=${this._filter}
-                  @value-changed=${this._handleSearchChange}
-                  .label=${this.hass.localize(
-                    "ui.components.media-browser.filter"
-                  )}
-          ></search-input>
-           <ha-icon-button
-             class="sort"
-             .label=${this.hass.localize(
-               `ui.components.media-browser.reverse_order`
-             )}
-             .disabled=${this._filter}
-             .path=${this._reverseSort ? mdiSortDescending : mdiSortAscending}
-             @click=${this._toggleSort}
-           ></ha-icon-button>
+             <search-input
+               .hass=${this.hass}
+               .filter=${this._filter}
+               @value-changed=${this._handleSearchChange}
+               .label=${this.hass.localize(
+                 "ui.components.media-browser.filter"
+               )}
+             ></search-input>
+             <ha-icon-button
+               class="sort"
+               .label=${this.hass.localize(
+                 `ui.components.media-browser.reverse_order`
+               )}
+               .disabled=${this._filter}
+               .path=${this._reverseSort ? mdiSortDescending : mdiSortAscending}
+               @click=${this._toggleSort}
+             ></ha-icon-button>
           </div>
           <div
             class="content"
