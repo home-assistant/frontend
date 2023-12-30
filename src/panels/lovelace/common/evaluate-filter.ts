@@ -21,7 +21,7 @@ export const evaluateFilter = (
   if (typeof value === "string" && value.includes(".")) {
     value = hass.states[value]?.state;
 
-    if (!value) {
+    if (value === undefined) {
       return false;
     }
   }
