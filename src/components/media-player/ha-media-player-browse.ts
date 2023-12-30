@@ -342,6 +342,14 @@ export class HaMediaPlayerBrowse extends LitElement {
       reverse: boolean,
       filter: string
     ): MediaPlayerItem[] => {
+      let orderedChildren: MediaPlayerItem[];
+      if (reverse) {
+        orderedChildren = [...children];
+        orderedChildren.reverse();
+      } else {
+        orderedChildren = children;
+      }
+
       let filteredChildren: MediaPlayerItem[];
       if (filter) {
         const options: IFuseOptions<MediaPlayerItem> = {
@@ -350,14 +358,10 @@ export class HaMediaPlayerBrowse extends LitElement {
           minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
         };
-        const fuse = new Fuse(children, options);
+        const fuse = new Fuse(orderedChildren, options);
         filteredChildren = fuse.search(filter).map((result) => result.item);
       } else {
-        filteredChildren = [...children];
-      }
-
-      if (reverse) {
-        filteredChildren.reverse();
+        filteredChildren = orderedChildren;
       }
 
       return filteredChildren;
@@ -496,6 +500,7 @@ export class HaMediaPlayerBrowse extends LitElement {
              .label=${this.hass.localize(
                `ui.components.media-browser.reverse_order`
              )}
+             .disabled=${this._filter}
              .path=${this._reverseSort ? mdiSortDescending : mdiSortAscending}
              @click=${this._toggleSort}
            ></ha-icon-button>
