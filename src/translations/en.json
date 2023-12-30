@@ -2989,7 +2989,8 @@
                     "flash": "Flash"
                   },
                   "description": {
-                    "picker": "Do something on a device. Great way to start."
+                    "picker": "Do something on a device. Great way to start.",
+                    "no_device": "Device action"
                   }
                 },
                 "activate_scene": {
