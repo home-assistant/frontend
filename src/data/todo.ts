@@ -18,8 +18,8 @@ export interface TodoItem {
   uid: string;
   summary: string;
   status: TodoItemStatus;
-  description?: string;
-  due?: string;
+  description?: string | null;
+  due?: string | null;
 }
 
 export const enum TodoListEntityFeature {
@@ -83,9 +83,9 @@ export const updateItem = (
       item: item.uid,
       rename: item.summary,
       status: item.status,
-      description: item.description || undefined,
+      description: item.description || null,
       due_datetime: item.due?.includes("T") ? item.due : undefined,
-      due_date: item.due?.includes("T") ? undefined : item.due || undefined,
+      due_date: item.due?.includes("T") ? undefined : item.due || null,
     },
     { entity_id }
   );
