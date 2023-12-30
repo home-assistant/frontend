@@ -9701,7 +9701,7 @@ __metadata:
     rollup: "npm:2.79.1"
     rollup-plugin-string: "npm:3.0.0"
     rollup-plugin-terser: "npm:7.0.2"
-    rollup-plugin-visualizer: "npm:5.11.0"
+    rollup-plugin-visualizer: "npm:5.12.0"
     rrule: "npm:2.8.1"
     serve-handler: "npm:6.1.5"
     sinon: "npm:17.0.1"
@@ -13846,9 +13846,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup-plugin-visualizer@npm:5.11.0":
-  version: 5.11.0
-  resolution: "rollup-plugin-visualizer@npm:5.11.0"
+"rollup-plugin-visualizer@npm:5.12.0":
+  version: 5.12.0
+  resolution: "rollup-plugin-visualizer@npm:5.12.0"
   dependencies:
     open: "npm:^8.4.0"
     picomatch: "npm:^2.3.1"
@@ -13861,7 +13861,7 @@ __metadata:
       optional: true
   bin:
     rollup-plugin-visualizer: dist/bin/cli.js
-  checksum: 947238aa22706a47a4d3e8ce616855f0e5cb969ed9f61b9a268eaede0a86f461ecb38e27b4e6bf00f4b5e3f63677667f65e0d4af89a659a5160f74add1f192bb
+  checksum: 47358feb672291d6edcfd94197577c192a84c24cb644119425dae8241fb6f5a52556efd0c501f38b276c07534642a80c0885ef681babb474e83c7b5a3b475b84
   languageName: node
   linkType: hard
 
