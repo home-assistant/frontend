@@ -3799,6 +3799,9 @@
           "add_zwave_js_device": "Add Z-Wave device",
           "add_zha_device": "Add Zigbee device",
           "add_matter_device": "Add Matter device",
+          "what_device_type": "What type of device is it?",
+          "what_to_add": "What do you want to add?",
+          "confirm_add_discovered": "Want to add these discovered devices?",
           "disable": {
             "show_disabled": "Show disabled integrations",
             "disabled_integrations": "{number} disabled",
