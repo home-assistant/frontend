@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -9,10 +9,10 @@ import type { HomeAssistant } from "../../../../../types";
 import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
 
+import { isTemplate } from "../../../../../common/string/has-template";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import { hasTemplate } from "../../../../../common/string/has-template";
 
 const OPTIONS = ["count", "while", "until", "for_each"] as const;
 
@@ -32,22 +32,13 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     return { repeat: { count: 2, sequence: [] } };
   }
 
-  public willUpdate(changedProperties: PropertyValues) {
-    if (!changedProperties.has("action")) {
-      return;
-    }
-    // Check for templates in action. If found, revert to YAML mode.
-    if (this.action && hasTemplate(this.action)) {
-      fireEvent(
-        this,
-        "ui-mode-not-available",
-        Error(this.hass.localize("ui.errors.config.no_template_editor_support"))
-      );
-    }
-  }
-
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, type: string, reOrderMode: boolean) =>
+    (
+      localize: LocalizeFunc,
+      type: string,
+      reOrderMode: boolean,
+      template: boolean
+    ) =>
       [
         {
           name: "type",
@@ -68,7 +59,9 @@ export class HaRepeatAction extends LitElement implements ActionElement {
               {
                 name: "count",
                 required: true,
-                selector: { number: { mode: "box", min: 1 } },
+                selector: template
+                  ? ({ template: {} } as const)
+                  : ({ number: { mode: "box", min: 1 } } as const),
               },
             ] as const)
           : []),
@@ -104,7 +97,10 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     const schema = this._schema(
       this.hass.localize,
       type ?? "count",
-      this.reOrderMode
+      this.reOrderMode,
+      "count" in action && typeof action.count === "string"
+        ? isTemplate(action.count)
+        : false
     );
     const data = { ...action, type };
     return html`<ha-form
