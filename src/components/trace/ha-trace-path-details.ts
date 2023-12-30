@@ -208,6 +208,14 @@ export class HaTracePathDetails extends LitElement {
     const paths = this.trace.trace;
     const data: ActionTraceStep[] = paths[this.selected.path];
 
+    if (data === undefined) {
+      return html`<div class="padded-box">
+        ${this.hass!.localize(
+          "ui.panel.config.automation.trace.path.step_not_executed"
+        )}
+      </div>`;
+    }
+
     return html`
       <div class="padded-box">
         ${data.map(
