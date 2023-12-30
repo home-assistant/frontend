@@ -254,31 +254,29 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         return [];
       }
       const result: ListItem[] = [];
-      Object.keys(services)
-        .sort()
-        .forEach((domain) => {
-          const manifest = manifests[domain];
-          if (
-            (type === undefined &&
-              manifest?.integration_type === "entity" &&
-              !ENTITY_DOMAINS_OTHER.has(domain)) ||
-            (type === "helper" && manifest?.integration_type === "helper") ||
-            (type === "other" &&
-              (ENTITY_DOMAINS_OTHER.has(domain) ||
-                !["helper", "entity"].includes(
-                  manifest?.integration_type || ""
-                )))
-          ) {
-            result.push({
-              group: true,
-              icon: domainIcon(domain),
-              key: `${SERVICE_PREFIX}${domain}`,
-              name: domainToName(localize, domain, manifest),
-              description: "",
-            });
-          }
-        });
-      return result;
+      Object.keys(services).forEach((domain) => {
+        const manifest = manifests[domain];
+        if (
+          (type === undefined &&
+            manifest?.integration_type === "entity" &&
+            !ENTITY_DOMAINS_OTHER.has(domain)) ||
+          (type === "helper" && manifest?.integration_type === "helper") ||
+          (type === "other" &&
+            (ENTITY_DOMAINS_OTHER.has(domain) ||
+              !["helper", "entity"].includes(manifest?.integration_type || "")))
+        ) {
+          result.push({
+            group: true,
+            icon: domainIcon(domain),
+            key: `${SERVICE_PREFIX}${domain}`,
+            name: domainToName(localize, domain, manifest),
+            description: "",
+          });
+        }
+      });
+      return result.sort((a, b) =>
+        stringCompare(a.name, b.name, this.hass.locale.language)
+      );
     }
   );
 
@@ -515,6 +513,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   }
 
   private _back() {
+    this._dialog!.scrollToPos(0, 0);
     if (this._filter) {
       this._filter = "";
       return;
