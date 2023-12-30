@@ -3146,17 +3146,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdi/js@npm:7.3.67":
-  version: 7.3.67
-  resolution: "@mdi/js@npm:7.3.67"
-  checksum: 0f54a632d4ab3213931cc348d524f0f5e6b492ea74f8f1babe00298a8e7ae07b2fec88cfaf0cf7be0f1e427026a8da23fb8bed55b22892ad3b40b482e01cfb17
+"@mdi/js@npm:7.4.47":
+  version: 7.4.47
+  resolution: "@mdi/js@npm:7.4.47"
+  checksum: c1a8fc82f23030bccc0cf324b13b73a0034d06140e79f8bc7b0e4e59275624c470e5ca6524d6141ad8c4fe3ad0f314c7af99afb3e38df163eb50d3b13b9eab17
   languageName: node
   linkType: hard
 
-"@mdi/svg@npm:7.3.67":
-  version: 7.3.67
-  resolution: "@mdi/svg@npm:7.3.67"
-  checksum: bd9593e6cc16d140b681dedacd2a164da7884186d496c89809a9389c980c295d16edf4ba8744338d28bb6e627b1801f47c4c0cbf7b8faf7084ee87cd5d7b4250
+"@mdi/svg@npm:7.4.47":
+  version: 7.4.47
+  resolution: "@mdi/svg@npm:7.4.47"
+  checksum: e5a6b80bb82cc7b7c98e9a018883aee1eaa0e98edfb62192e7ec5798fa573f30b9226629361d747de6e0a81fe6657fb37e9bc2fd89c68e9b094a07e863be4fba
   languageName: node
   linkType: hard
 
@@ -9585,8 +9585,8 @@ __metadata:
     "@material/mwc-top-app-bar-fixed": "npm:0.27.0"
     "@material/top-app-bar": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/web": "npm:=1.1.1"
-    "@mdi/js": "npm:7.3.67"
-    "@mdi/svg": "npm:7.3.67"
+    "@mdi/js": "npm:7.4.47"
+    "@mdi/svg": "npm:7.4.47"
     "@octokit/auth-oauth-device": "npm:6.0.1"
     "@octokit/plugin-retry": "npm:6.0.1"
     "@octokit/rest": "npm:20.0.2"
