@@ -1,11 +1,13 @@
 import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { ensureArray } from "../../../common/array/ensure-array";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-markdown";
 import {
   Condition,
   ManualAutomationConfig,
@@ -83,6 +85,13 @@ export class HaManualAutomationEditor extends LitElement {
           ></ha-icon-button>
         </a>
       </div>
+      ${!ensureArray(this.config.trigger)?.length
+        ? html`<p>
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.triggers.description"
+            )}
+          </p>`
+        : nothing}
 
       <ha-automation-trigger
         role="region"
@@ -98,6 +107,9 @@ export class HaManualAutomationEditor extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.automation.editor.conditions.header"
           )}
+          <span class="small"
+            >(${this.hass.localize("ui.common.optional")})</span
+          >
         </h2>
         <a
           href=${documentationUrl(this.hass, "/docs/automation/condition/")}
@@ -112,6 +124,14 @@ export class HaManualAutomationEditor extends LitElement {
           ></ha-icon-button>
         </a>
       </div>
+      ${!ensureArray(this.config.condition)?.length
+        ? html`<p>
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.conditions.description",
+              { user: this.hass.user?.name || "Alice" }
+            )}
+          </p>`
+        : nothing}
 
       <ha-automation-condition
         role="region"
@@ -143,6 +163,13 @@ export class HaManualAutomationEditor extends LitElement {
           </a>
         </div>
       </div>
+      ${!ensureArray(this.config.action)?.length
+        ? html`<p>
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.actions.description"
+            )}
+          </p>`
+        : nothing}
 
       <ha-automation-action
         role="region"
@@ -207,9 +234,11 @@ export class HaManualAutomationEditor extends LitElement {
           margin: 0;
         }
         p {
-          margin-bottom: 0;
+          margin-top: 0;
         }
         .header {
+          margin-top: 16px;
+
           display: flex;
           align-items: center;
         }
@@ -217,12 +246,17 @@ export class HaManualAutomationEditor extends LitElement {
           margin-top: -16px;
         }
         .header .name {
-          font-size: 20px;
           font-weight: 400;
           flex: 1;
+          margin-bottom: 16px;
         }
         .header a {
           color: var(--secondary-text-color);
+        }
+        .header .small {
+          font-size: small;
+          font-weight: normal;
+          line-height: 0;
         }
       `,
     ];
