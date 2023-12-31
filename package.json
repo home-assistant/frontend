@@ -235,7 +235,7 @@
     "source-map-url": "0.4.1",
     "systemjs": "6.14.2",
     "tar": "6.2.0",
-    "terser-webpack-plugin": "5.3.9",
+    "terser-webpack-plugin": "5.3.10",
     "ts-lit-plugin": "2.0.1",
     "typescript": "5.3.3",
     "vinyl-buffer": "1.0.1",
