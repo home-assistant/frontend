@@ -7228,13 +7228,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"default-browser@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "default-browser@npm:5.2.0"
+"default-browser@npm:^5.2.1":
+  version: 5.2.1
+  resolution: "default-browser@npm:5.2.1"
   dependencies:
     bundle-name: "npm:^4.1.0"
     default-browser-id: "npm:^5.0.0"
-  checksum: 95530de0dca75892b4382d086f42bd798f54a1e25eab748e84e1b64566568b1a02cf1eccfb60a8fbab303d72c09938c2d34e0b38e57d85efd24f13a60d2de802
+  checksum: afab7eff7b7f5f7a94d9114d1ec67273d3fbc539edf8c0f80019879d53aa71e867303c6f6d7cffeb10a6f3cfb59d4f963dba3f9c96830b4540cc7339a1bf9840
   languageName: node
   linkType: hard
 
@@ -9690,7 +9690,7 @@ __metadata:
     mocha: "npm:10.2.0"
     node-vibrant: "npm:3.2.1-alpha.1"
     object-hash: "npm:3.0.0"
-    open: "npm:10.0.1"
+    open: "npm:10.0.2"
     pinst: "npm:3.0.0"
     prettier: "npm:3.1.1"
     proxy-polyfill: "npm:0.3.2"
@@ -12530,15 +12530,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"open@npm:10.0.1":
-  version: 10.0.1
-  resolution: "open@npm:10.0.1"
+"open@npm:10.0.2":
+  version: 10.0.2
+  resolution: "open@npm:10.0.2"
   dependencies:
-    default-browser: "npm:^5.2.0"
+    default-browser: "npm:^5.2.1"
     define-lazy-prop: "npm:^3.0.0"
     is-inside-container: "npm:^1.0.0"
     is-wsl: "npm:^3.1.0"
-  checksum: 7ce545e2e68775f06ab800c2a2ef20369bce2738e1219fd31179e1a1773f2c33fcc6b7f816a4f5e9214821cb58ae9c50f2e3f7dd8f5b02e418fbcafabf481f03
+  checksum: 6f7f9e08204af00930f2998690293df1a919a61c98b225ff9e3aa09a765254b8a98bec101644ffe991452c6aabea0c6f9e49670b559d48a44bfc5238f6b58351
   languageName: node
   linkType: hard
 
