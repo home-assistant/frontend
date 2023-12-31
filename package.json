@@ -223,7 +223,7 @@
     "map-stream": "0.0.7",
     "mocha": "10.2.0",
     "object-hash": "3.0.0",
-    "open": "10.0.1",
+    "open": "10.0.2",
     "pinst": "3.0.0",
     "prettier": "3.1.1",
     "rollup": "2.79.1",
