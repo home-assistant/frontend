@@ -340,7 +340,9 @@ class AddIntegrationDialog extends LitElement {
       !("integrations" in integration) &&
       !this._flowsInProgress?.length
     ) {
-      return "What type of device is it?";
+      return this.hass.localize(
+        "ui.panel.config.integrations.what_device_type"
+      );
     }
     if (
       integration &&
@@ -348,9 +350,11 @@ class AddIntegrationDialog extends LitElement {
       !("integrations" in integration) &&
       this._flowsInProgress?.length
     ) {
-      return "Want to add these discovered devices?";
+      return this.hass.localize(
+        "ui.panel.config.integrations.confirm_add_discovered"
+      );
     }
-    return "What do you want to add?";
+    return this.hass.localize("ui.panel.config.integrations.what_to_add");
   }
 
   private _renderIntegration(

@@ -1009,7 +1009,8 @@
         "crop_image": "Picture to crop"
       },
       "date-picker": {
-        "today": "Today"
+        "today": "Today",
+        "clear": "Clear"
       },
       "more_info_control": {
         "dismiss": "Dismiss dialog",
@@ -2386,7 +2387,7 @@
             },
             "empty_header": "Start automating",
             "empty_text_1": "Automations make Home Assistant automatically respond to things happening in and around your home.",
-            "empty_text_2": "Automations connect triggers to actions in a ''when trigger then action'' fashion with optional conditions. For example: ''When the sun sets and if Alice is home, then turn on the lights''."
+            "empty_text_2": "Automations connect triggers to actions in a ''when trigger then action'' fashion with optional conditions. For example: ''When the sun sets and if {user} is home, then turn on the lights''."
           },
           "dialog_new": {
             "header": "Create automation",
@@ -3114,15 +3115,15 @@
               "blueprint_config": "Blueprint Config"
             },
             "path": {
-              "choose": "Select a node on the left for more information.",
+              "choose": "Select a step on the left for more information.",
               "default_action_executed": "The default action was executed because no options matched.",
-              "no_further_execution": "This node was not executed and so no further trace information is available.",
-              "disabled_node": "This node was disabled and skipped during execution so no further trace information is available.",
+              "no_further_execution": "This step was not executed and so no further trace information is available.",
+              "disabled_step": "This step was disabled and skipped during execution so no further trace information is available.",
               "iteration": "Iteration {number}",
               "executed": "Executed: {time}",
               "error": "Error: {error}",
               "result": "Result:",
-              "node_not_tracked": "Node not tracked.",
+              "step_not_executed": "This step was not executed.",
               "no_logbook_entries": "No Logbook entries found for this step.",
               "no_variables_changed": "No variables changed",
               "unable_to_find_config": "Unable to find config"
@@ -3799,6 +3800,9 @@
           "add_zwave_js_device": "Add Z-Wave device",
           "add_zha_device": "Add Zigbee device",
           "add_matter_device": "Add Matter device",
+          "what_device_type": "What type of device is it?",
+          "what_to_add": "What do you want to add?",
+          "confirm_add_discovered": "Want to add these discovered devices?",
           "disable": {
             "show_disabled": "Show disabled integrations",
             "disabled_integrations": "{number} disabled",

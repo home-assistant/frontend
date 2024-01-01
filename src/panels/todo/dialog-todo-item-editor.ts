@@ -161,7 +161,8 @@ class DialogTodoItemEditor extends LitElement {
                     .value=${dueDate}
                     .locale=${this.hass.locale}
                     .disabled=${!canUpdate}
-                    @value-changed=${this._endDateChanged}
+                    @value-changed=${this._dueDateChanged}
+                    canClear
                   ></ha-date-input>
                   ${this._todoListSupportsFeature(
                     TodoListEntityFeature.SET_DUE_DATETIME_ON_ITEM
@@ -170,7 +171,7 @@ class DialogTodoItemEditor extends LitElement {
                         .value=${dueTime}
                         .locale=${this.hass.locale}
                         .disabled=${!canUpdate}
-                        @value-changed=${this._endTimeChanged}
+                        @value-changed=${this._dueTimeChanged}
                       ></ha-time-input>`
                     : nothing}
                 </div>
@@ -259,12 +260,16 @@ class DialogTodoItemEditor extends LitElement {
     this._description = ev.target.value;
   }
 
-  private _endDateChanged(ev: CustomEvent) {
+  private _dueDateChanged(ev: CustomEvent) {
+    if (!ev.detail.value) {
+      this._due = undefined;
+      return;
+    }
     const time = this._due ? this._formatTime(this._due) : undefined;
     this._due = this._parseDate(`${ev.detail.value}${time ? `T${time}` : ""}`);
   }
 
-  private _endTimeChanged(ev: CustomEvent) {
+  private _dueTimeChanged(ev: CustomEvent) {
     this._hasTime = true;
     this._due = this._parseDate(
       `${this._formatDate(this._due || new Date())}T${ev.detail.value}`
@@ -320,13 +325,13 @@ class DialogTodoItemEditor extends LitElement {
             TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
           )
             ? // backend should accept null to clear the field, but it doesn't now
-              " "
+              null
             : undefined),
         due: this._due
           ? this._hasTime
             ? this._due.toISOString()
             : this._formatDate(this._due)
-          : undefined,
+          : null,
         status: this._checked
           ? TodoItemStatus.Completed
           : TodoItemStatus.NeedsAction,
