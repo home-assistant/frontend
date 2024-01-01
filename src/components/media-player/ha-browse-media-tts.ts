@@ -62,7 +62,7 @@ class BrowseMediaTTS extends LitElement {
           this.hass.localize(
             "ui.components.media-browser.tts.example_message",
             {
-              name: this.hass.user?.name || "",
+              name: this.hass.user?.name || "Alice",
             }
           )}
         >

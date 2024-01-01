@@ -128,7 +128,7 @@ export class HaManualAutomationEditor extends LitElement {
         ? html`<p>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.conditions.description",
-              { user: this.hass.user?.name }
+              { user: this.hass.user?.name || "Alice" }
             )}
           </p>`
         : nothing}
