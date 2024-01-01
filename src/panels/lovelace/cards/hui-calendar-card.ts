@@ -206,7 +206,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       return;
     }
     this._narrow = card.offsetWidth < 870;
-    this._veryNarrow = card.offsetWidth < 350;
   }
 
   private async _attachObserver(): Promise<void> {
