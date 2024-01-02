@@ -11,6 +11,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-svg-icon";
 import { AutomationClipboard, Trigger } from "../../../../data/automation";
+import { getTriggerType } from "../../../../data/trigger";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import type { SortableInstance } from "../../../../resources/sortable";
 import { HomeAssistant } from "../../../../types";
@@ -131,7 +132,9 @@ export default class HaAutomationTrigger extends LitElement {
     showAddAutomationElementDialog(this, {
       type: "trigger",
       add: this._addTrigger,
-      clipboardItem: this._clipboard?.trigger?.platform,
+      clipboardItem: this._clipboard?.trigger
+        ? getTriggerType(this._clipboard.trigger)
+        : undefined,
     });
   }
 
