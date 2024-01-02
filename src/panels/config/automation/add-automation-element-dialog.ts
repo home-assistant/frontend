@@ -528,7 +528,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           rootTabbable
           style=${styleMap({
             width: this._width ? `${this._width}px` : "auto",
-            height: this._height ? `${Math.min(468, this._height)}px` : "auto",
+            height: this._height ? `${Math.min(670, this._height)}px` : "auto",
           })}
         >
           ${this._params.clipboardItem &&
@@ -651,7 +651,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           width: 24px;
         }
         mwc-list {
-          max-height: 468px;
+          max-height: 670px;
           max-width: 100vw;
         }
         search-input {
