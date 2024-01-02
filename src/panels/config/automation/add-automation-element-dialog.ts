@@ -90,6 +90,8 @@ const ENTITY_DOMAINS_OTHER = new Set([
   "image_processing",
 ]);
 
+const ENTITY_DOMAINS_MAIN = new Set(["notify"]);
+
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -302,11 +304,13 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       const domainUsed = !domains ? true : domains.has(domain);
       if (
         (type === undefined &&
-          manifest?.integration_type === "entity" &&
-          domainUsed &&
-          !ENTITY_DOMAINS_OTHER.has(domain)) ||
+          (ENTITY_DOMAINS_MAIN.has(domain) ||
+            (manifest?.integration_type === "entity" &&
+              domainUsed &&
+              !ENTITY_DOMAINS_OTHER.has(domain)))) ||
         (type === "helper" && manifest?.integration_type === "helper") ||
         (type === "other" &&
+          !ENTITY_DOMAINS_MAIN.has(domain) &&
           (ENTITY_DOMAINS_OTHER.has(domain) ||
             (!domainUsed && manifest?.integration_type === "entity") ||
             !["helper", "entity"].includes(manifest?.integration_type || "")))
