@@ -2662,6 +2662,21 @@
                     "full": "When the time is equal to {time}"
                   }
                 },
+                "timer": {
+                  "label": "Timer",
+                  "description": {
+                    "picker": "When a timer fires an event.",
+                    "full": "When {entity} is {event}"
+                  },
+                  "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
+                  "event_types": {
+                    "cancelled": "Cancelled",
+                    "finished": "Finished",
+                    "started": "Started",
+                    "restarted": "Restarted",
+                    "paused": "Paused"
+                  }
+                },
                 "time_pattern": {
                   "label": "Time pattern",
                   "hours": "Hours",

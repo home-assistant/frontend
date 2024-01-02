@@ -10,7 +10,8 @@ import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../resources/intl-polyfill";
 import type { HomeAssistant } from "../types";
-import { Condition, ForDict, Trigger } from "./automation";
+import { getTriggerType } from "./trigger";
+import { Condition, ForDict, Trigger, TimerTrigger } from "./automation";
 import {
   DeviceCondition,
   DeviceTrigger,
@@ -111,8 +112,14 @@ const tryDescribeTrigger = (
     return trigger.alias;
   }
 
+  const triggerType = getTriggerType(trigger);
+
   // Event Trigger
-  if (trigger.platform === "event" && trigger.event_type) {
+  if (
+    trigger.platform === "event" &&
+    triggerType === "event" &&
+    trigger.event_type
+  ) {
     const eventTypes: string[] = [];
 
     if (Array.isArray(trigger.event_type)) {
@@ -396,6 +403,38 @@ const tryDescribeTrigger = (
     return hass.localize(`${triggerTranslationBaseKey}.time.description.full`, {
       time: formatListWithOrs(hass.locale, result),
     });
+  }
+
+  // Timer Trigger
+  if (triggerType === "timer") {
+    const timerTrigger = trigger as TimerTrigger;
+    const entity_id = timerTrigger.event_data?.entity_id;
+    const entity = hass.states[entity_id]
+      ? computeStateName(hass.states[entity_id])
+      : entity_id;
+
+    const event = timerTrigger.event_type?.replace("timer.", "") as
+      | "cancelled"
+      | "finished"
+      | "started"
+      | "restarted"
+      | "paused";
+
+    if (timerTrigger.event_type && timerTrigger.event_data?.entity_id) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.timer.description.full`,
+        {
+          event:
+            hass.localize(
+              `${triggerTranslationBaseKey}.timer.event_types.${event}`
+            ) || event,
+          entity,
+        }
+      );
+    }
+    return hass.localize(
+      `${triggerTranslationBaseKey}.timer.description.picker`
+    );
   }
 
   // Time Pattern Trigger

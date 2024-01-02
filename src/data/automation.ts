@@ -107,6 +107,15 @@ export interface NumericStateTrigger extends BaseTrigger {
   for?: string | number | ForDict;
 }
 
+export interface TimerTrigger extends BaseTrigger {
+  platform: "event";
+  event_type: string;
+  event_data: {
+    entity_id: string;
+  };
+  metadata: Record<string, never>;
+}
+
 export interface ConversationTrigger extends BaseTrigger {
   platform: "conversation";
   command: string | string[];
@@ -190,6 +199,7 @@ export type Trigger =
   | ZoneTrigger
   | TagTrigger
   | TimeTrigger
+  | TimerTrigger
   | TemplateTrigger
   | EventTrigger
   | DeviceTrigger
