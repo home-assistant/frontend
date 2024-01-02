@@ -29,6 +29,8 @@ import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { domainIconWithoutDefault } from "../../../../common/entity/domain_icon";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-alert";
@@ -71,8 +73,6 @@ import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-import { domainIcon } from "../../../../common/entity/domain_icon";
-import { computeDomain } from "../../../../common/entity/compute_domain";
 
 export const getType = (action: Action | undefined) => {
   if (!action) {
@@ -193,10 +193,11 @@ export default class HaAutomationActionRow extends LitElement {
             <ha-svg-icon
               class="action-icon"
               .path=${type === "service" &&
-              "metadata" in this.action &&
               "service" in this.action &&
               this.action.service
-                ? domainIcon(computeDomain(this.action.service as string))
+                ? domainIconWithoutDefault(
+                    computeDomain(this.action.service as string)
+                  ) || ACTION_ICONS[type!]
                 : ACTION_ICONS[type!]}
             ></ha-svg-icon>
             ${capitalizeFirstLetter(
