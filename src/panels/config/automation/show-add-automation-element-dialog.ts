@@ -6,6 +6,7 @@ export interface AddAutomationElementDialogParams {
   type: "trigger" | "condition" | "action";
   add: (key: string) => void;
   clipboardItem: string | undefined;
+  root?: boolean;
   group?: string;
 }
 const loadDialog = () => import("./add-automation-element-dialog");
