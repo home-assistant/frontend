@@ -71,6 +71,8 @@ import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
+import { domainIcon } from "../../../../common/entity/domain_icon";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 
 export const getType = (action: Action | undefined) => {
   if (!action) {
@@ -190,7 +192,12 @@ export default class HaAutomationActionRow extends LitElement {
           <h3 slot="header">
             <ha-svg-icon
               class="action-icon"
-              .path=${ACTION_ICONS[type!]}
+              .path=${type === "service" &&
+              "metadata" in this.action &&
+              "service" in this.action &&
+              this.action.service
+                ? domainIcon(computeDomain(this.action.service as string))
+                : ACTION_ICONS[type!]}
             ></ha-svg-icon>
             ${capitalizeFirstLetter(
               describeAction(this.hass, this._entityReg, this.action)
