@@ -144,9 +144,9 @@ class DialogCalendarEventEditor extends LitElement {
         escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
-          isCreate
-            ? this.hass.localize("ui.components.calendar.event.add")
-            : this._summary
+          this.hass.localize(
+            `ui.components.calendar.event.${isCreate ? "add" : "edit"}`
+          )
         )}
       >
         <div class="content">
