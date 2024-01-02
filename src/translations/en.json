@@ -2760,7 +2760,7 @@
                     "preset_mode": "Preset mode"
                   },
                   "description": {
-                    "picker": "If a device is in a certain state. Great way to start."
+                    "picker": "Set of conditions provided by your device. Great way to start."
                   }
                 },
                 "not": {
