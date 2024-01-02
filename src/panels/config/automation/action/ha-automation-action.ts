@@ -191,6 +191,7 @@ export default class HaAutomationAction extends LitElement {
     } else if (isService(action)) {
       actions = this.actions.concat({
         service: getService(action),
+        metadata: {},
       });
     } else {
       const elClass = customElements.get(

@@ -2492,13 +2492,13 @@
               "groups": {
                 "entity": {
                   "label": "Entity",
-                  "description": "When something happens to an entity"
+                  "description": "When something happens to an entity."
                 },
                 "time_location": {
                   "label": "Time and location",
                   "description": "When someone enters or leaves a zone, or at a specific time."
                 },
-                "other": { "label": "Other" }
+                "other": { "label": "Other triggers" }
               },
               "type": {
                 "calendar": {
@@ -2534,7 +2534,7 @@
                   "context_user_picked": "User firing event",
                   "context_user_pick": "Select user",
                   "description": {
-                    "picker": "When an event is being received (event is an advanced concept in Home Assistant)",
+                    "picker": "When an event is being received (event is an advanced concept in Home Assistant).",
                     "full": "When {eventTypes} event is fired"
                   }
                 },
@@ -2546,7 +2546,7 @@
                   "enter": "Enter",
                   "leave": "Leave",
                   "description": {
-                    "picker": "When an entity created by a geolocation platform appears in or disappears from a zone",
+                    "picker": "When an entity created by a geolocation platform appears in or disappears from a zone.",
                     "full": "When {source} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone}\n other {zones}\n}"
                   }
                 },
@@ -2608,7 +2608,7 @@
                     "updated": "updated"
                   },
                   "description": {
-                    "picker": "When a persistent notification is added or removed",
+                    "picker": "When a persistent notification is added or removed.",
                     "full": "When a persistent notification is updated"
                   }
                 },
@@ -2619,7 +2619,7 @@
                   "sunset": "Sunset",
                   "offset": "Offset (optional)",
                   "description": {
-                    "picker": "When the sun sets or rises",
+                    "picker": "When the sun sets or rises.",
                     "sets": "When the sun sets{hasDuration, select, \n true { offset by {duration}} \n other {}\n }",
                     "rises": "When the sun rises{hasDuration, select, \n true { offset by {duration}} \n other {}\n }"
                   }
@@ -2648,7 +2648,7 @@
                   "value_template": "Value template",
                   "for": "For",
                   "description": {
-                    "picker": "When a template is evaluated to true.",
+                    "picker": "When a template evaluates to true.",
                     "full": "When a template changes from false to true{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
@@ -2669,7 +2669,7 @@
                   "minutes": "Minutes",
                   "seconds": "Seconds",
                   "description": {
-                    "picker": "Periodically, every defined interval of time."
+                    "picker": "Periodically, at a defined interval."
                   }
                 },
                 "webhook": {
@@ -2692,7 +2692,7 @@
                   "enter": "Enter",
                   "leave": "Leave",
                   "description": {
-                    "picker": "When someone (or something) enters or leaves a zone",
+                    "picker": "When someone (or something) enters or leaves a zone.",
                     "full": "When {entity} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
                   }
                 }
@@ -2734,7 +2734,7 @@
                   "label": "Time and location",
                   "description": "If someone is in a zone or if the current time is before or after a specified time."
                 },
-                "other": { "label": "Other" },
+                "other": { "label": "Other conditions" },
                 "building_blocks": {
                   "label": "Building blocks",
                   "description": "Build more complex conditions."
@@ -2760,13 +2760,13 @@
                     "preset_mode": "Preset mode"
                   },
                   "description": {
-                    "picker": "If a device is in a certain state. Great way to start."
+                    "picker": "Set of conditions provided by your device. Great way to start."
                   }
                 },
                 "not": {
                   "label": "Not",
                   "description": {
-                    "picker": "Test if a condition is not true",
+                    "picker": "Test if a condition is not true.",
                     "no_conditions": "Test if no condition matches",
                     "one_condition": "Test if 1 condition does not match",
                     "full": "Test if none of {count} conditions match"
@@ -2800,7 +2800,7 @@
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
                   "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
                   "description": {
-                    "picker": "If an entity (or attribute) is in a specific state",
+                    "picker": "If an entity (or attribute) is in a specific state.",
                     "no_entity": "Confirm state",
                     "full": "Confirm{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n zero {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n zero {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
@@ -2821,7 +2821,7 @@
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::template::label%]",
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]",
                   "description": {
-                    "picker": "If a template is evaluated to true.",
+                    "picker": "If a template evaluates to true.",
                     "full": "Test if template renders a value equal to true"
                   }
                 },
@@ -2844,7 +2844,7 @@
                     "sun": "Sunday"
                   },
                   "description": {
-                    "picker": "If the current time is before or after a specified time",
+                    "picker": "If the current time is before or after a specified time.",
                     "full": "Confirm the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
                   }
                 },
@@ -2862,7 +2862,7 @@
                   "entity": "[%key:ui::panel::config::automation::editor::triggers::type::zone::entity%]",
                   "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "description": {
-                    "picker": "If someone (or something) is in a zone",
+                    "picker": "If someone (or something) is in a zone.",
                     "full": "Confirm {entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n} "
                   }
                 }
@@ -2899,7 +2899,7 @@
               "continue_on_error": "Continue on error",
               "groups": {
                 "helpers": { "label": "Helpers" },
-                "other": { "label": "Other" },
+                "other": { "label": "Other actions" },
                 "building_blocks": {
                   "label": "Building blocks",
                   "description": "Build more complex sequences of actions."
@@ -2914,6 +2914,7 @@
                   "description": {
                     "service_based_on_template": "Call a service based on a template on {targets}",
                     "service_based_on_name": "Call a service ''{name}'' on {targets}",
+                    "service_name": "{domain} ''{name}'' on {targets}",
                     "service": "Call a service",
                     "target_template": "templated {name}",
                     "target_unknown_entity": "unknown entity",
@@ -2990,7 +2991,8 @@
                     "flash": "Flash"
                   },
                   "description": {
-                    "picker": "Do something on a device. Great way to start."
+                    "picker": "Do something on a device. Great way to start.",
+                    "no_device": "Device action"
                   }
                 },
                 "activate_scene": {
@@ -3069,14 +3071,14 @@
                   "response_variable": "The name of the variable to use as response",
                   "error": "Stop because of an unexpected error",
                   "description": {
-                    "picker": "Stop the sequence of actions",
+                    "picker": "Stop the sequence of actions.",
                     "full": "Stop {hasReason, select, \n true { because: {reason}} \n other {}\n }"
                   }
                 },
                 "parallel": {
                   "label": "Run in parallel",
                   "description": {
-                    "picker": "perform a sequence of actions in parallel.",
+                    "picker": "Perform a sequence of actions in parallel.",
                     "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in parallel"
                   }
                 },
