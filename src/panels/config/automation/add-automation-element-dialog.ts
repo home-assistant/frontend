@@ -15,7 +15,7 @@ import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { domainIcon } from "../../../common/entity/domain_icon";
+import { domainIconWithoutDefault } from "../../../common/entity/domain_icon";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { stringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
@@ -45,6 +45,7 @@ import { TRIGGER_GROUPS, TRIGGER_ICONS } from "../../../data/trigger";
 import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
 import {
   AddAutomationElementDialogParams,
   PASTE_VALUE,
@@ -68,7 +69,8 @@ interface ListItem {
   key: string;
   name: string;
   description: string;
-  icon: string;
+  icon?: string;
+  image?: string;
   group: boolean;
 }
 
@@ -309,9 +311,17 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
             (!domainUsed && manifest?.integration_type === "entity") ||
             !["helper", "entity"].includes(manifest?.integration_type || "")))
       ) {
+        const icon = domainIconWithoutDefault(domain);
         result.push({
           group: true,
-          icon: domainIcon(domain),
+          icon,
+          image: !icon
+            ? brandsUrl({
+                domain,
+                type: "icon",
+                darkOptimized: this.hass.themes?.darkMode,
+              })
+            : undefined,
           key: `${SERVICE_PREFIX}${domain}`,
           name: domainToName(localize, domain, manifest),
           description: "",
@@ -345,9 +355,17 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         const services_keys = Object.keys(services[dmn]);
 
         for (const service of services_keys) {
+          const icon = domainIconWithoutDefault(dmn);
           result.push({
             group: false,
-            icon: domainIcon(dmn),
+            icon,
+            image: !icon
+              ? brandsUrl({
+                  domain: dmn,
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                })
+              : undefined,
             key: `${SERVICE_PREFIX}${dmn}.${service}`,
             name: `${domain ? "" : `${domainToName(localize, dmn)}: `}${
               this.hass.localize(`component.${dmn}.services.${service}.name`) ||
@@ -556,7 +574,18 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
               >
                 ${item.name}
                 <span slot="secondary">${item.description}</span>
-                <ha-svg-icon slot="graphic" .path=${item.icon}></ha-svg-icon>
+                ${item.icon
+                  ? html`<ha-svg-icon
+                      slot="graphic"
+                      .path=${item.icon}
+                    ></ha-svg-icon>`
+                  : html`<img
+                      alt=""
+                      slot="graphic"
+                      src=${item.image}
+                      crossorigin="anonymous"
+                      referrerpolicy="no-referrer"
+                    />`}
                 ${item.group
                   ? html`<ha-icon-next slot="meta"></ha-icon-next>`
                   : html`<ha-svg-icon
