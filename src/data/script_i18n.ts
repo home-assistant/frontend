@@ -404,7 +404,9 @@ const tryDescribeAction = <T extends ActionType>(
   if (actionType === "device_action") {
     const config = action as DeviceAction;
     if (!config.device_id) {
-      return "Device action";
+      return hass.localize(
+        `${actionTranslationBaseKey}.device_id.description.no_device`
+      );
     }
     const localized = localizeDeviceAutomationAction(
       hass,
