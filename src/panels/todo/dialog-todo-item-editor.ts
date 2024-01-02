@@ -101,9 +101,9 @@ class DialogTodoItemEditor extends LitElement {
         scrimClickAction
         .heading=${createCloseHeading(
           this.hass,
-          isCreate
-            ? this.hass.localize("ui.components.todo.item.add")
-            : this._summary
+          this.hass.localize(
+            `ui.components.todo.item.${isCreate ? "add" : "edit"}`
+          )
         )}
       >
         <div class="content">
