@@ -143,6 +143,23 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this._domains = undefined;
   }
 
+  private _getGroups = (
+    type: AddAutomationElementDialogParams["type"],
+    root: boolean | undefined,
+    group: string | undefined
+  ) => {
+    let groups: AutomationElementGroup = group
+      ? isService(group)
+        ? {}
+        : TYPES[type].groups[group].members!
+      : TYPES[type].groups;
+
+    if (type === "condition" && group === "other" && !root) {
+      groups = { ...groups, trigger: {} };
+    }
+    return groups;
+  };
+
   private _convertToItem = (
     key: string,
     options,
@@ -176,15 +193,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup
     ): ListItem[] => {
-      const groups: AutomationElementGroup = group
-        ? isService(group)
-          ? {}
-          : TYPES[type].groups[group].members!
-        : TYPES[type].groups;
-
-      if (type === "condition" && group === "other" && !root) {
-        groups.trigger = {};
-      }
+      const groups = this._getGroups(type, root, group);
 
       const flattenGroups = (grp: AutomationElementGroup) =>
         Object.entries(grp).map(([key, options]) =>
@@ -228,13 +237,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         return result;
       }
 
-      const groups: AutomationElementGroup = group
-        ? TYPES[type].groups[group].members!
-        : TYPES[type].groups;
-
-      if (type === "condition" && group === "other" && !root) {
-        groups.trigger = {};
-      }
+      const groups = this._getGroups(type, root, group);
 
       const result = Object.entries(groups).map(([key, options]) =>
         this._convertToItem(key, options, type, localize)
