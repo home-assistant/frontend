@@ -8,6 +8,7 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-select";
+import "../../../../components/ha-alert";
 import {
   fetchConfig,
   LovelaceConfig,
