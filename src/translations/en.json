@@ -5020,7 +5020,9 @@
           "select_view": {
             "header": "Choose a view",
             "dashboard_label": "Dashboard",
-            "views_label": "View"
+            "views_label": "View",
+            "no_config": "No config found.",
+            "no_views": "No views in this dashboard."
           },
           "suggest_card": {
             "header": "We created a suggestion for you",
