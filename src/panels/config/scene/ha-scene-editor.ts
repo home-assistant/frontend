@@ -513,6 +513,7 @@ export class HaSceneEditor extends SubscribeMixin(
         if (
           !entity.device_id ||
           entity.entity_category ||
+          entity.hidden_by ||
           SCENE_IGNORED_DOMAINS.includes(computeDomain(entity.entity_id))
         ) {
           continue;

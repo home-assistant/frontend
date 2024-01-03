@@ -4,7 +4,14 @@ import {
   HassServices,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
@@ -82,6 +89,8 @@ export class HaServiceControl extends LitElement {
   @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 
   @property({ type: Boolean }) public showAdvanced?: boolean;
+
+  @property({ type: Boolean, reflect: true }) public hidePicker?: boolean;
 
   @state() private _value!: this["value"];
 
@@ -363,12 +372,14 @@ export class HaServiceControl extends LitElement {
         )) ||
       serviceData?.description;
 
-    return html`<ha-service-picker
-        .hass=${this.hass}
-        .value=${this._value?.service}
-        .disabled=${this.disabled}
-        @value-changed=${this._serviceChanged}
-      ></ha-service-picker>
+    return html`${this.hidePicker
+        ? nothing
+        : html`<ha-service-picker
+            .hass=${this.hass}
+            .value=${this._value?.service}
+            .disabled=${this.disabled}
+            @value-changed=${this._serviceChanged}
+          ></ha-service-picker>`}
       <div class="description">
         ${description ? html`<p>${description}</p>` : ""}
         ${this._manifest
@@ -520,6 +531,14 @@ export class HaServiceControl extends LitElement {
         "constant" in field.selector
       ) {
         defaultValue = field.selector.constant?.value;
+      }
+
+      if (
+        defaultValue == null &&
+        field?.selector &&
+        "boolean" in field.selector
+      ) {
+        defaultValue = false;
       }
 
       if (defaultValue != null) {
@@ -726,6 +745,9 @@ export class HaServiceControl extends LitElement {
       p {
         margin: var(--service-control-padding, 0 16px);
         padding: 16px 0;
+      }
+      :host([hidePicker]) p {
+        padding-top: 0;
       }
       .checkbox-spacer {
         width: 32px;

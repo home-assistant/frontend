@@ -9,6 +9,7 @@ import type { HomeAssistant } from "../../../../../types";
 import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
 
+import { isTemplate } from "../../../../../common/string/has-template";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
@@ -32,7 +33,12 @@ export class HaRepeatAction extends LitElement implements ActionElement {
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, type: string, reOrderMode: boolean) =>
+    (
+      localize: LocalizeFunc,
+      type: string,
+      reOrderMode: boolean,
+      template: boolean
+    ) =>
       [
         {
           name: "type",
@@ -53,7 +59,9 @@ export class HaRepeatAction extends LitElement implements ActionElement {
               {
                 name: "count",
                 required: true,
-                selector: { number: { mode: "box", min: 1 } },
+                selector: template
+                  ? ({ template: {} } as const)
+                  : ({ number: { mode: "box", min: 1 } } as const),
               },
             ] as const)
           : []),
@@ -89,10 +97,13 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     const schema = this._schema(
       this.hass.localize,
       type ?? "count",
-      this.reOrderMode
+      this.reOrderMode,
+      "count" in action && typeof action.count === "string"
+        ? isTemplate(action.count)
+        : false
     );
     const data = { ...action, type };
-    return html` <ha-form
+    return html`<ha-form
       .hass=${this.hass}
       .data=${data}
       .schema=${schema}

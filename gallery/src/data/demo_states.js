@@ -509,7 +509,7 @@ export default {
       away_mode: "on",
       aux_heat: "off",
       unit_of_measurement: "°C",
-      friendly_name: "Hvac",
+      friendly_name: "HVAC",
       supported_features: 3833,
     },
     last_changed: "2018-07-19T10:44:46.200650+00:00",

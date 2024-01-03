@@ -446,6 +446,7 @@ export class HaAreaPicker extends LitElement {
       cancel: () => {
         this._setValue(undefined);
         this._suggestion = undefined;
+        this.comboBox.setInputValue("");
       },
     });
   }

@@ -1,8 +1,8 @@
 import "@material/mwc-button";
-import { mdiCalendarClock, mdiClose } from "@mdi/js";
+import { mdiCalendarClock } from "@mdi/js";
 import { toDate } from "date-fns-tz";
 import { addDays, isSameDay } from "date-fns/esm";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatDateTime } from "../../common/datetime/format_date_time";
@@ -11,6 +11,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { isDate } from "../../common/string/is_date";
 import "../../components/entity/state-info";
 import "../../components/ha-date-input";
+import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-time-input";
 import {
   CalendarEventMutableParams,
@@ -65,15 +66,7 @@ class DialogCalendarEventDetail extends LitElement {
         @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
-        .heading=${html`
-          <div class="header_title">${this._data!.summary}</div>
-          <ha-icon-button
-            .label=${this.hass.localize("ui.dialogs.generic.close")}
-            .path=${mdiClose}
-            dialogAction="close"
-            class="header_button"
-          ></ha-icon-button>
-        `}
+        .heading=${createCloseHeading(this.hass, this._data!.summary)}
       >
         <div class="content">
           ${this._error

@@ -255,6 +255,11 @@
           "turn_off": "Turn off"
         }
       },
+      "valve": {
+        "open_valve": "Open valve",
+        "close_valve": "Close valve",
+        "stop_valve": "Stop valve"
+      },
       "water_heater": {
         "currently": "[%key:ui::card::climate::currently%]",
         "on_off": "On / off",
@@ -344,7 +349,8 @@
       "error_required": "Required",
       "copied": "Copied",
       "copied_clipboard": "Copied to clipboard",
-      "name": "Name"
+      "name": "Name",
+      "optional": "optional"
     },
     "components": {
       "selectors": {
@@ -703,7 +709,7 @@
         "media_not_supported": "The Browser Media Player does not support this type of media",
         "media_browsing_error": "Media browsing error",
         "learn_adding_local_media": "Learn more about adding media in the {documentation}.",
-        "local_media_files": "Place your video, audio and image files in the media directory to be able to browse and play them in the browser or on supported media players.",
+        "local_media_files": "Place your video, audio, and image files in the media directory to be able to browse and play them in the browser or on supported media players.",
         "documentation": "documentation",
         "no_local_media_found": "No local media found",
         "no_media_folder": "It looks like you have not yet created a media directory.",
@@ -749,6 +755,22 @@
         "auto": "Auto",
         "grid": "Grid",
         "list": "List"
+      },
+      "todo": {
+        "item": {
+          "summary": "Task name",
+          "description": "Description",
+          "add": "Add item",
+          "delete": "Delete item",
+          "edit": "Edit item",
+          "save": "Save item",
+          "due": "Due date",
+          "not_all_required_fields": "Not all required fields are filled in",
+          "confirm_delete": {
+            "delete": "Delete item",
+            "prompt": "Do you want to delete this item?"
+          }
+        }
       },
       "calendar": {
         "label": "Calendar",
@@ -987,7 +1009,8 @@
         "crop_image": "Picture to crop"
       },
       "date-picker": {
-        "today": "Today"
+        "today": "Today",
+        "clear": "Clear"
       },
       "more_info_control": {
         "dismiss": "Dismiss dialog",
@@ -1094,6 +1117,12 @@
           "start_mowing": "Start mowing",
           "pause": "Pause",
           "dock": "Return to dock"
+        },
+        "valve": {
+          "switch_mode": {
+            "button": "[%key:ui::dialogs::more_info_control::cover::switch_mode::button%]",
+            "position": "[%key:ui::dialogs::more_info_control::cover::switch_mode::position%]"
+          }
         }
       },
       "entity_registry": {
@@ -1519,6 +1548,11 @@
         "gateway": "Gateway: {gateway}",
         "method": "Method: {method}",
         "nameservers": "Name Servers: {nameservers}"
+      },
+      "update_backup": {
+        "title": "Create backup?",
+        "text": "This will create a backup before installing.",
+        "create": "Create"
       }
     },
     "weekdays": {
@@ -1546,10 +1580,10 @@
       "supervisor": {
         "title": "Could not load the Supervisor panel!",
         "wait": "If you just started, make sure you have given the Supervisor enough time to start.",
-        "ask": "Ask for help",
-        "reboot": "Try a reboot of the host",
-        "observer": "Check the observer",
-        "system_health": "Check system health"
+        "ask": "Ask for help.",
+        "reboot": "Try a reboot of the host.",
+        "observer": "Check the observer.",
+        "system_health": "Check the system health."
       }
     },
     "login-form": {
@@ -1598,11 +1632,11 @@
         "dashboard": {
           "devices": {
             "main": "Devices & services",
-            "secondary": "Integrations, devices, entities and helpers"
+            "secondary": "Integrations, devices, entities, and helpers"
           },
           "automations": {
             "main": "Automations & scenes",
-            "secondary": "Automations, scenes, scripts and blueprints"
+            "secondary": "Automations, scenes, scripts, and blueprints"
           },
           "backup": {
             "main": "Backup",
@@ -1646,7 +1680,7 @@
           },
           "about": {
             "main": "About",
-            "secondary": "Version information, credits and more"
+            "secondary": "Version information, credit, and more"
           },
           "cloud": {
             "secondary": "Loading..."
@@ -1660,7 +1694,7 @@
         },
         "updates": {
           "caption": "Updates",
-          "description": "Manage updates of Home Assistant, add-ons and devices",
+          "description": "Manage updates of Home Assistant, add-ons, and devices",
           "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",
@@ -1676,7 +1710,8 @@
           "show_skipped": "Show skipped updates",
           "join_beta": "[%key:supervisor::system::supervisor::join_beta_action%]",
           "leave_beta": "[%key:supervisor::system::supervisor::leave_beta_action%]",
-          "skipped": "Skipped"
+          "skipped": "Skipped",
+          "update_in_progress": "Update in progress"
         },
         "repairs": {
           "caption": "Repairs",
@@ -1717,7 +1752,7 @@
           },
           "picker": {
             "header": "Areas",
-            "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
+            "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions, and integrations with other systems.",
             "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
             "integrations_page": "Integrations page",
             "no_areas": "Looks like you have no areas yet!",
@@ -1992,7 +2027,7 @@
           "section": {
             "core": {
               "header": "General configuration",
-              "introduction": "Manage your location, network and analytics.",
+              "introduction": "Manage your location, network, and analytics.",
               "core_config": {
                 "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
                 "location_name": "Name",
@@ -2349,7 +2384,10 @@
               "trigger": "Trigger",
               "actions": "Actions",
               "state": "State"
-            }
+            },
+            "empty_header": "Start automating",
+            "empty_text_1": "Automations make Home Assistant automatically respond to things happening in and around your home.",
+            "empty_text_2": "Automations connect triggers to actions in a ''when trigger then action'' fashion with optional conditions. For example: ''When the sun sets and if {user} is home, then turn on the lights''."
           },
           "dialog_new": {
             "header": "Create automation",
@@ -2426,11 +2464,15 @@
             "edit_yaml": "Edit in YAML",
             "edit_ui": "Edit in visual editor",
             "copy_to_clipboard": "Copy to clipboard",
+            "search_in": "Search · {group}",
             "triggers": {
-              "header": "Triggers",
+              "name": "Triggers",
+              "header": "When",
+              "description": "This list of triggers is what starts your automation. A trigger is a specific event happening in or around your home, for example: ''When the sun sets''.",
               "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
+              "search": "Search trigger",
               "id": "Trigger ID",
               "edit_id": "Edit ID",
               "duplicate": "[%key:ui::common::duplicate%]",
@@ -2447,6 +2489,17 @@
               "unsupported_platform": "No visual editor support for platform: {platform}",
               "type_select": "Trigger type",
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
+              "groups": {
+                "entity": {
+                  "label": "Entity",
+                  "description": "When something happens to an entity."
+                },
+                "time_location": {
+                  "label": "Time and location",
+                  "description": "When someone enters or leaves a zone, or at a specific time."
+                },
+                "other": { "label": "Other triggers" }
+              },
               "type": {
                 "calendar": {
                   "label": "Calendar",
@@ -2455,7 +2508,10 @@
                   "end": "Event end",
                   "offset": "Offset (optional)",
                   "before": "Before",
-                  "after": "After"
+                  "after": "After",
+                  "description": {
+                    "picker": "When a calendar event starts or ends."
+                  }
                 },
                 "device": {
                   "label": "Device",
@@ -2465,6 +2521,9 @@
                     "below": "Below",
                     "for": "Duration (optional)",
                     "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]"
+                  },
+                  "description": {
+                    "picker": "When something happens to a device. Great way to start."
                   }
                 },
                 "event": {
@@ -2475,6 +2534,7 @@
                   "context_user_picked": "User firing event",
                   "context_user_pick": "Select user",
                   "description": {
+                    "picker": "When an event is being received (event is an advanced concept in Home Assistant).",
                     "full": "When {eventTypes} event is fired"
                   }
                 },
@@ -2486,6 +2546,7 @@
                   "enter": "Enter",
                   "leave": "Leave",
                   "description": {
+                    "picker": "When an entity created by a geolocation platform appears in or disappears from a zone.",
                     "full": "When {source} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone}\n other {zones}\n}"
                   }
                 },
@@ -2495,7 +2556,10 @@
                   "from": "From (optional)",
                   "for": "For",
                   "to": "To (optional)",
-                  "any_state_ignore_attributes": "Any state (ignoring attribute changes)"
+                  "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
+                  "description": {
+                    "picker": "When the state of an entity (or attribute) changes."
+                  }
                 },
                 "homeassistant": {
                   "label": "Home Assistant",
@@ -2503,6 +2567,7 @@
                   "start": "Start",
                   "shutdown": "Shutdown",
                   "description": {
+                    "picker": "When Home Assistant starts up or shuts down.",
                     "started": "When Home Assistant is started",
                     "shutdown": "When Home Assistant is shutdown"
                   }
@@ -2512,6 +2577,7 @@
                   "topic": "Topic",
                   "payload": "Payload (optional)",
                   "description": {
+                    "picker": "When a specific message is received on a given MQTT topic.",
                     "full": "When an MQTT message has been received"
                   }
                 },
@@ -2525,6 +2591,7 @@
                   "type_value": "Fixed number",
                   "type_input": "Numeric value of another entity",
                   "description": {
+                    "picker": "When the numeric value of an entity''s state (or attribute''s value) crosses a given threshold.",
                     "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
                     "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
                     "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
@@ -2541,6 +2608,7 @@
                     "updated": "updated"
                   },
                   "description": {
+                    "picker": "When a persistent notification is added or removed.",
                     "full": "When a persistent notification is updated"
                   }
                 },
@@ -2551,6 +2619,7 @@
                   "sunset": "Sunset",
                   "offset": "Offset (optional)",
                   "description": {
+                    "picker": "When the sun sets or rises.",
                     "sets": "When the sun sets{hasDuration, select, \n true { offset by {duration}} \n other {}\n }",
                     "rises": "When the sun rises{hasDuration, select, \n true { offset by {duration}} \n other {}\n }"
                   }
@@ -2562,6 +2631,7 @@
                   "delete": "Delete sentence",
                   "confirm_delete": "Are you sure you want to delete this sentence?",
                   "description": {
+                    "picker": "When Assist matches a sentence from a voice assistant.",
                     "empty": "When a sentence is said",
                     "full": "When the sentence {sentence} is said"
                   }
@@ -2569,6 +2639,7 @@
                 "tag": {
                   "label": "Tag",
                   "description": {
+                    "picker": "When a tag is scanned (tags are usually created from the companion app).",
                     "full": "When a tag is scanned"
                   }
                 },
@@ -2577,6 +2648,7 @@
                   "value_template": "Value template",
                   "for": "For",
                   "description": {
+                    "picker": "When a template evaluates to true.",
                     "full": "When a template changes from false to true{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
@@ -2587,6 +2659,7 @@
                   "at": "At time",
                   "mode": "Mode",
                   "description": {
+                    "picker": "At a specific time, or on a specific date.",
                     "full": "When the time is equal to {time}"
                   }
                 },
@@ -2594,16 +2667,20 @@
                   "label": "Time pattern",
                   "hours": "Hours",
                   "minutes": "Minutes",
-                  "seconds": "Seconds"
+                  "seconds": "Seconds",
+                  "description": {
+                    "picker": "Periodically, at a defined interval."
+                  }
                 },
                 "webhook": {
                   "copy_url": "Copy URL to clipboard",
                   "label": "Webhook",
                   "local_only": "Only accessible from the local network",
                   "webhook_id": "Webhook ID",
-                  "webhook_id_helper": "Treat this ID like a password: keep it secret, and make it hard to guess.",
+                  "webhook_id_helper": "Treat this ID like a password: keep it secret and make it hard to guess.",
                   "webhook_settings": "Webhook settings",
                   "description": {
+                    "picker": "When Home Assistant receives a web request to the webhook endpoint.",
                     "full": "When a Webhook payload has been received"
                   }
                 },
@@ -2615,15 +2692,20 @@
                   "enter": "Enter",
                   "leave": "Leave",
                   "description": {
+                    "picker": "When someone (or something) enters or leaves a zone.",
                     "full": "When {entity} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
                   }
                 }
               }
             },
             "conditions": {
-              "header": "Conditions",
+              "name": "Conditions",
+              "header": "And if",
+              "description": "This list of conditions needs to be satisfied for the automation to run. A condition can be satisfied or not at any given time, for example: ''If {user} is home''. You can use building blocks to create more complex conditions.",
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
+              "search": "Search condition",
+              "add_building_block": "Add building block",
               "test": "Test",
               "testing_error": "Condition did not pass",
               "testing_pass": "Condition passes",
@@ -2643,10 +2725,26 @@
               "unsupported_condition": "No visual editor support for condition: {condition}",
               "type_select": "Condition type",
               "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
+              "groups": {
+                "entity": {
+                  "label": "Entity",
+                  "description": "If an entity is in a specific state."
+                },
+                "time_location": {
+                  "label": "Time and location",
+                  "description": "If someone is in a zone or if the current time is before or after a specified time."
+                },
+                "other": { "label": "Other conditions" },
+                "building_blocks": {
+                  "label": "Building blocks",
+                  "description": "Build more complex conditions."
+                }
+              },
               "type": {
                 "and": {
                   "label": "And",
                   "description": {
+                    "picker": "Test if multiple conditions are true.",
                     "no_conditions": "Test if multiple conditions match",
                     "full": "Test if {count} {count, plural,\n one {condition match}\n other {conditions matches}\n}"
                   }
@@ -2660,11 +2758,15 @@
                     "for": "Duration",
                     "hvac_mode": "HVAC mode",
                     "preset_mode": "Preset mode"
+                  },
+                  "description": {
+                    "picker": "Set of conditions provided by your device. Great way to start."
                   }
                 },
                 "not": {
                   "label": "Not",
                   "description": {
+                    "picker": "Test if a condition is not true.",
                     "no_conditions": "Test if no condition matches",
                     "one_condition": "Test if 1 condition does not match",
                     "full": "Test if none of {count} conditions match"
@@ -2680,6 +2782,7 @@
                   "mode_below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_below%]",
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
                   "description": {
+                    "picker": "If the numeric value of an entity''s state (or attribute''s value) is above or below a given threshold.",
                     "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above}",
                     "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is below {below}",
                     "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}"
@@ -2688,13 +2791,19 @@
                 "or": {
                   "label": "Or",
                   "description": {
+                    "picker": "Test if any condition is true.",
                     "no_conditions": "Test if any condition matches",
                     "full": "Test if any of {count} {count, plural,\n  one {condition}\n other {conditions}\n} matches"
                   }
                 },
                 "state": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
-                  "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]"
+                  "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
+                  "description": {
+                    "picker": "If an entity (or attribute) is in a specific state.",
+                    "no_entity": "Confirm state",
+                    "full": "Confirm{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n zero {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n zero {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                  }
                 },
                 "sun": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::sun::label%]",
@@ -2703,12 +2812,16 @@
                   "before_offset": "Before offset (optional)",
                   "after_offset": "After offset (optional)",
                   "sunrise": "Sunrise",
-                  "sunset": "Sunset"
+                  "sunset": "Sunset",
+                  "description": {
+                    "picker": "If the sun is above or below the horizon."
+                  }
                 },
                 "template": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::template::label%]",
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]",
                   "description": {
+                    "picker": "If a template evaluates to true.",
                     "full": "Test if template renders a value equal to true"
                   }
                 },
@@ -2731,6 +2844,7 @@
                     "sun": "Sunday"
                   },
                   "description": {
+                    "picker": "If the current time is before or after a specified time.",
                     "full": "Confirm the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
                   }
                 },
@@ -2739,6 +2853,7 @@
                   "no_triggers": "No triggers have an ID set. You can set an ID using the trigger menu button.",
                   "id": "Trigger",
                   "description": {
+                    "picker": "If the automation has been triggered by a specific trigger.",
                     "full": "When triggered by {id}"
                   }
                 },
@@ -2747,15 +2862,20 @@
                   "entity": "[%key:ui::panel::config::automation::editor::triggers::type::zone::entity%]",
                   "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "description": {
+                    "picker": "If someone (or something) is in a zone.",
                     "full": "Confirm {entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n} "
                   }
                 }
               }
             },
             "actions": {
-              "header": "Actions",
+              "name": "Actions",
+              "header": "Then do",
+              "description": "This list of actions will be performed in sequence when the automation runs. An action usually controls one of your areas, devices, or entities, for example: 'Turn on the lights'. You can use building blocks to create more complex sequences of actions.",
               "learn_more": "Learn more about actions",
               "add": "Add action",
+              "search": "Search action",
+              "add_building_block": "Add building block",
               "invalid_action": "Invalid action",
               "run": "Run",
               "run_action_error": "Error running action",
@@ -2777,6 +2897,14 @@
               "unsupported_action": "No visual editor support for this action",
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
+              "groups": {
+                "helpers": { "label": "Helpers" },
+                "other": { "label": "Other actions" },
+                "building_blocks": {
+                  "label": "Building blocks",
+                  "description": "Build more complex sequences of actions."
+                }
+              },
               "type": {
                 "service": {
                   "label": "Call service",
@@ -2786,6 +2914,7 @@
                   "description": {
                     "service_based_on_template": "Call a service based on a template on {targets}",
                     "service_based_on_name": "Call a service ''{name}'' on {targets}",
+                    "service_name": "{domain} ''{name}'' on {targets}",
                     "service": "Call a service",
                     "target_template": "templated {name}",
                     "target_unknown_entity": "unknown entity",
@@ -2796,6 +2925,7 @@
                 "play_media": {
                   "label": "Play media",
                   "description": {
+                    "picker": "Play media on a media player.",
                     "full": "Play {hasMedia, select, \n true {{media}} \n other {media}\n } on {hasMediaPlayer, select, \n true {{mediaPlayer}} \n other {a media player}\n }"
                   }
                 },
@@ -2803,6 +2933,7 @@
                   "label": "Wait for time to pass (delay)",
                   "delay": "Duration",
                   "description": {
+                    "picker": "Wait some time to perform a sequence of actions.",
                     "full": "Delay {duration}",
                     "duration_string": "for {string}",
                     "duration_template": "based on a template",
@@ -2815,6 +2946,7 @@
                   "timeout": "Timeout (optional)",
                   "continue_timeout": "Continue on timeout",
                   "description": {
+                    "picker": "Wait for a template to be evaluated to true to perform a sequence of actions.",
                     "full": "Wait for a template to evaluate to true"
                   }
                 },
@@ -2823,18 +2955,23 @@
                   "timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::timeout%]",
                   "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]",
                   "description": {
+                    "picker": "Wait for a trigger to perform a sequence of actions.",
                     "wait_for_a_trigger": "Wait for a trigger",
                     "wait_for_triggers": "Wait for {count} {count, plural,\n one {trigger}\n other {triggers}\n}"
                   }
                 },
                 "condition": {
-                  "label": "Condition"
+                  "label": "Condition",
+                  "description": {
+                    "picker": "Test a condition (and stop the sequence if the condition is not met)."
+                  }
                 },
                 "event": {
                   "label": "Manual event",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_type%]",
                   "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
                   "description": {
+                    "picker": "Fire an event manually (event is an advanced concept in Home Assistant).",
                     "full": "Manually fire event {name}",
                     "template": "based on a template"
                   }
@@ -2852,6 +2989,10 @@
                     "value": "Value",
                     "brightness_pct": "[%key:ui::card::light::brightness%]",
                     "flash": "Flash"
+                  },
+                  "description": {
+                    "picker": "Do something on a device. Great way to start.",
+                    "no_device": "Device action"
                   }
                 },
                 "activate_scene": {
@@ -2884,6 +3025,7 @@
                   },
                   "sequence": "Actions",
                   "description": {
+                    "picker": "Repeat a sequence of actions.",
                     "full": "Repeat an action {chosenAction}",
                     "count": "{count} {count, plural,\n one {time}\n other {times}\n}",
                     "while_count": "while {count} {count, plural,\n one {condition matches}\n other {conditions match}\n} ",
@@ -2906,6 +3048,7 @@
                   "no_conditions": "[%key:ui::panel::config::devices::automation::conditions::no_conditions%]",
                   "sequence": "Actions",
                   "description": {
+                    "picker": "Choose what to do based on conditions (Similar to If-Then, but more powerful).",
                     "full": "Choose between {number} {number, plural,\n one {action}\n other{actions}\n}",
                     "no_action": "Choose an action"
                   }
@@ -2917,6 +3060,7 @@
                   "else": "Else",
                   "add_else": "Add else",
                   "description": {
+                    "picker": "Do something conditionally.",
                     "if": "Conditionally execute an action",
                     "if_else": "Conditionally execute an action and default to another action"
                   }
@@ -2927,18 +3071,21 @@
                   "response_variable": "The name of the variable to use as response",
                   "error": "Stop because of an unexpected error",
                   "description": {
+                    "picker": "Stop the sequence of actions.",
                     "full": "Stop {hasReason, select, \n true { because: {reason}} \n other {}\n }"
                   }
                 },
                 "parallel": {
                   "label": "Run in parallel",
                   "description": {
+                    "picker": "Perform a sequence of actions in parallel.",
                     "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in parallel"
                   }
                 },
                 "variables": {
                   "label": "Define variables",
                   "description": {
+                    "picker": "Define variables to be used later in the sequence.",
                     "full": "Define variables {names}"
                   }
                 },
@@ -2958,7 +3105,31 @@
             "download_trace": "Download trace",
             "edit_automation": "Edit automation",
             "older_trace": "Older trace",
-            "newer_trace": "Newer trace"
+            "newer_trace": "Newer trace",
+            "no_traces_found": "No traces found",
+            "tabs": {
+              "details": "Step Details",
+              "timeline": "Trace Timeline",
+              "logbook": "Related logbook entries",
+              "automation_config": "Automation Config",
+              "step_config": "Step Config",
+              "changed_variables": "Changed Variables",
+              "blueprint_config": "Blueprint Config"
+            },
+            "path": {
+              "choose": "Select a step on the left for more information.",
+              "default_action_executed": "The default action was executed because no options matched.",
+              "no_further_execution": "This step was not executed and so no further trace information is available.",
+              "disabled_step": "This step was disabled and skipped during execution so no further trace information is available.",
+              "iteration": "Iteration {number}",
+              "executed": "Executed: {time}",
+              "error": "Error: {error}",
+              "result": "Result:",
+              "step_not_executed": "This step was not executed.",
+              "no_logbook_entries": "No Logbook entries found for this step.",
+              "no_variables_changed": "No variables changed",
+              "unable_to_find_config": "Unable to find config"
+            }
           }
         },
         "blueprint": {
@@ -2982,7 +3153,7 @@
               "script": "scripts"
             },
             "error": "{path} could not be loaded",
-            "blueprint_in_use_title": "This blueprint is in use, and can not be deleted",
+            "blueprint_in_use_title": "This blueprint is in use and can not be deleted",
             "blueprint_in_use_text": "Please remove all below {type} that use this blueprint before deleting it. {list}",
             "blueprint_in_use_view": "view {type}",
             "confirm_delete_title": "Delete blueprint?",
@@ -3044,7 +3215,9 @@
               "state": "State"
             },
             "delete": "[%key:ui::common::delete%]",
-            "duplicate": "[%key:ui::common::duplicate%]"
+            "duplicate": "[%key:ui::common::duplicate%]",
+            "empty_header": "Create your first script",
+            "empty_text": "A script is a sequence of actions that can be run from a dashboard, an automation, or be triggered by voice. For example, a ''Wake-up routine''' script that gradually turns on the light in the bedroom and opens the blinds after a delay."
           },
           "dialog_new": {
             "header": "Create script",
@@ -3144,7 +3317,9 @@
               "state": "State",
               "name": "Name",
               "last_activated": "Last activated"
-            }
+            },
+            "empty_header": "Create your first scene",
+            "empty_text": "Scenes capture entities' states, so you can re-experience the same scene later on. For example, a ''Watching TV'' scene that dims the living room lights, sets a warm white color and turns on the TV."
           },
           "editor": {
             "default_name": "New scene",
@@ -3491,8 +3666,7 @@
               "unavailable": "Unavailable",
               "disabled": "Disabled",
               "readonly": "Read-only",
-              "hidden": "Hidden",
-              "ok": "Ok"
+              "hidden": "Hidden"
             },
             "headers": {
               "state_icon": "State icon",
@@ -3628,6 +3802,9 @@
           "add_zwave_js_device": "Add Z-Wave device",
           "add_zha_device": "Add Zigbee device",
           "add_matter_device": "Add Matter device",
+          "what_device_type": "What type of device is it?",
+          "what_to_add": "What do you want to add?",
+          "confirm_add_discovered": "Want to add these discovered devices?",
           "disable": {
             "show_disabled": "Show disabled integrations",
             "disabled_integrations": "{number} disabled",
@@ -3650,6 +3827,8 @@
             "entries_service": "Services",
             "entries_helper": "Helpers",
             "entries_hardware": "Hardware",
+            "entries_system": "[%key:ui::panel::config::integrations::integration_page::entries%]",
+            "entries_entity": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "no_entries": "No entries",
             "attention_entries": "Needs attention",
             "add_entry": "Add entry",
@@ -3657,7 +3836,9 @@
             "add_hub": "Add hub",
             "add_service": "Add service",
             "add_helper": "Add helper",
-            "add_hardware": "Add hardware"
+            "add_hardware": "Add hardware",
+            "add_entity": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
+            "add_system": "[%key:ui::panel::config::integrations::integration_page::add_entry%]"
           },
           "config_entry": {
             "application_credentials": {
@@ -3993,6 +4174,7 @@
             "removing_members": "Removing devices",
             "create_group_details": "Enter the required details to create a new Zigbee group",
             "group_name_placeholder": "Group name",
+            "group_id_placeholder": "Group ID (optional)",
             "create_group": "Create group",
             "create": "Create group",
             "creating_group": "Creating group",
@@ -4057,8 +4239,6 @@
             "cancel_inclusion_exclusion": "Stop searching"
           },
           "dashboard": {
-            "header": "Manage your Z-Wave network",
-            "introduction": "Manage your Z-Wave network and Z-Wave devices",
             "driver_version": "Driver version",
             "server_version": "Server version",
             "home_id": "Home ID",
@@ -4550,7 +4730,7 @@
         },
         "system_health": {
           "caption": "System health",
-          "description": "Status, metrics and integration startup time",
+          "description": "Status, metrics, and integration startup time",
           "cpu_usage": "Processor usage",
           "ram_usage": "Memory usage",
           "core_stats": "Core metrics",
@@ -4587,14 +4767,18 @@
             "never_triggered": "Never triggered"
           },
           "todo-list": {
-            "checked_items": "Checked items",
-            "clear_items": "Clear checked items",
+            "unchecked_items": "Active",
+            "no_unchecked_items": "You have no to-do items!",
+            "checked_items": "Completed",
+            "clear_items": "Remove completed items",
             "add_item": "Add item",
+            "today": "Today",
             "reorder_items": "Reorder items",
+            "exit_reorder_items": "Exit reorder mode",
             "drag_and_drop": "Drag and drop",
             "delete_item": "Delete item",
-            "delete_confirm_title": "Clear checked items?",
-            "delete_confirm_text": "{number} {number, plural,\n  one {item}\n  other {items}\n} will be permanently deleted from the to-do list."
+            "delete_confirm_title": "Remove completed items?",
+            "delete_confirm_text": "{number} {number, plural,\n  one {item}\n  other {items}\n} will be permanently removed from the to-do list."
           },
           "picture-elements": {
             "hold": "Hold:",
@@ -4690,7 +4874,7 @@
               "show_summary": "Show summary view"
             },
             "carbon_consumed_gauge": {
-              "card_indicates_energy_used": "This card indicates how much of the energy consumed by your home was generated using non-fossil fuels like solar, wind and nuclear. The higher, the better!",
+              "card_indicates_energy_used": "This card indicates how much of the energy consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
               "low_carbon_energy_consumed": "Low-carbon energy consumed",
               "low_carbon_energy_not_calculated": "Consumed low-carbon energy couldn't be calculated"
             }
@@ -4940,7 +5124,7 @@
             },
             "calendar": {
               "name": "Calendar",
-              "description": "The Calendar card displays a calendar including day, week and list views",
+              "description": "The Calendar card displays a calendar including day, week, and list views",
               "initial_view": "Initial view",
               "calendar_entities": "Calendar entities",
               "views": {
@@ -5093,7 +5277,8 @@
             },
             "humidifier": {
               "name": "Humidifier",
-              "description": "The Humidifier card gives control of your humidifier entity. Allowing you to change the humidity and mode of the entity."
+              "description": "The Humidifier card gives control of your humidifier entity. Allowing you to change the humidity and mode of the entity.",
+              "show_current_as_primary": "Show current humidity as primary information"
             },
             "iframe": {
               "name": "Webpage",
@@ -5191,7 +5376,8 @@
             },
             "thermostat": {
               "name": "Thermostat",
-              "description": "The Thermostat card gives control of your climate entity. Allowing you to change the temperature and mode of the entity."
+              "description": "The Thermostat card gives control of your climate entity. Allowing you to change the temperature and mode of the entity.",
+              "show_current_as_primary": "Show current temperature as primary information"
             },
             "tile": {
               "name": "Tile",
@@ -5280,6 +5466,15 @@
                   "return_home": "[%key:ui::dialogs::more_info_control::vacuum::return_home%]"
                 }
               },
+              "climate-fan-modes": {
+                "label": "Climate fan modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                },
+                "fan_modes": "Fan modes"
+              },
               "climate-hvac-modes": {
                 "label": "Climate HVAC modes",
                 "hvac_modes": "HVAC modes",
@@ -5338,6 +5533,16 @@
                   "start_pause": "Start Pause",
                   "dock": "[%key:ui::dialogs::more_info_control::lawn_mower::dock%]"
                 }
+              },
+              "update-actions": {
+                "label": "Update actions",
+                "backup": "Backup",
+                "backup_options": {
+                  "yes": "[%key:ui::common::yes%]",
+                  "no": "[%key:ui::common::no%]",
+                  "ask": "Ask"
+                },
+                "backup_not_supported": "Backup is not supported."
               }
             }
           },
@@ -5646,6 +5851,7 @@
         "assist": "[%key:ui::panel::lovelace::menu::assist%]",
         "create_list": "Create list",
         "delete_list": "Delete list",
+        "add_item": "Add item",
         "information": "Information",
         "delete_confirm_title": "Remove {name}?",
         "delete_confirm_text": "Are you sure you want to remove this list and all of its items?",

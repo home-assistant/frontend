@@ -5,6 +5,10 @@ import DateRangePicker from "vue2-daterange-picker";
 // @ts-ignore
 import dateRangePickerStyles from "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import { fireEvent } from "../common/dom/fire_event";
+import {
+  localizeWeekdays,
+  localizeMonths,
+} from "../common/datetime/localize_date";
 
 // Set the current date to the left picker instead of the right picker because the right is hidden
 const CustomDateRangePicker = Vue.extend({
@@ -63,6 +67,10 @@ const Component = Vue.extend({
       type: Boolean,
       default: false,
     },
+    language: {
+      type: String,
+      default: "en",
+    },
   },
   render(createElement) {
     // @ts-expect-error
@@ -77,6 +85,8 @@ const Component = Vue.extend({
         ranges: this.ranges ? {} : false,
         "locale-data": {
           firstDay: this.firstDay,
+          daysOfWeek: localizeWeekdays(this.language, true),
+          monthNames: localizeMonths(this.language, false),
         },
       },
       model: {
@@ -145,6 +155,8 @@ class DateRangePickerElement extends WrappedElement {
             );
             color: var(--primary-text-color);
             min-width: initial !important;
+            max-height: var(--date-range-picker-max-height);
+            overflow-y: auto;
           }
           .daterangepicker:before {
             display: none;
@@ -162,7 +174,7 @@ class DateRangePickerElement extends WrappedElement {
             color: var(--secondary-text-color);
             border-radius: 0;
             outline: none;
-            width: 32px;
+            min-width: 32px;
             height: 32px;
           }
           .daterangepicker td.off,
@@ -238,6 +250,9 @@ class DateRangePickerElement extends WrappedElement {
           }
           .daterangepicker .drp-calendar.left {
             padding: 8px;
+            width: unset;
+            max-width: unset;
+            min-width: 270px;
           }
           .daterangepicker.show-calendar .ranges {
             margin-top: 0;
