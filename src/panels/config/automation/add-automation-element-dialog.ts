@@ -145,20 +145,13 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
 
   private _getGroups = (
     type: AddAutomationElementDialogParams["type"],
-    root: boolean | undefined,
     group: string | undefined
-  ) => {
-    let groups: AutomationElementGroup = group
+  ): AutomationElementGroup =>
+    group
       ? isService(group)
         ? {}
         : TYPES[type].groups[group].members!
       : TYPES[type].groups;
-
-    if (type === "condition" && group === "other" && !root) {
-      groups = { ...groups, trigger: {} };
-    }
-    return groups;
-  };
 
   private _convertToItem = (
     key: string,
@@ -186,14 +179,13 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   private _getFilteredItems = memoizeOne(
     (
       type: AddAutomationElementDialogParams["type"],
-      root: AddAutomationElementDialogParams["root"],
       group: string | undefined,
       filter: string,
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup
     ): ListItem[] => {
-      const groups = this._getGroups(type, root, group);
+      const groups = this._getGroups(type, group);
 
       const flattenGroups = (grp: AutomationElementGroup) =>
         Object.entries(grp).map(([key, options]) =>
@@ -222,7 +214,6 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   private _getGroupItems = memoizeOne(
     (
       type: AddAutomationElementDialogParams["type"],
-      root: AddAutomationElementDialogParams["root"],
       group: string | undefined,
       domains: Set<string> | undefined,
       localize: LocalizeFunc,
@@ -237,7 +228,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         return result;
       }
 
-      const groups = this._getGroups(type, root, group);
+      const groups = this._getGroups(type, group);
 
       const result = Object.entries(groups).map(([key, options]) =>
         this._convertToItem(key, options, type, localize)
@@ -462,7 +453,6 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     const items = this._filter
       ? this._getFilteredItems(
           this._params.type,
-          this._params.root,
           this._group,
           this._filter,
           this.hass.localize,
@@ -471,7 +461,6 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         )
       : this._getGroupItems(
           this._params.type,
-          this._params.root,
           this._group,
           this._domains,
           this.hass.localize,
