@@ -7,13 +7,7 @@ import {
   ScatterDataPoint,
 } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
-import {
-  addHours,
-  differenceInDays,
-  differenceInHours,
-  endOfToday,
-  startOfToday,
-} from "date-fns";
+import { differenceInDays, endOfToday, startOfToday } from "date-fns";
 import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -32,8 +26,6 @@ import {
   formatNumber,
   numberFormatToLocale,
 } from "../../../../common/number/format_number";
-import { formatTime } from "../../../../common/datetime/format_time";
-import { formatDateVeryShort } from "../../../../common/datetime/format_date";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
@@ -56,6 +48,7 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyDevicesGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
+import { getCommonOptions } from "./common/energy-chart-options";
 
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
@@ -346,106 +339,23 @@ export class HuiEnergyDevicesGraphCard
       compareStart?: Date,
       compareEnd?: Date
     ): ChartOptions => {
-      const dayDifference = differenceInDays(end, start);
-      const compare = compareStart !== undefined && compareEnd !== undefined;
-      if (compare) {
-        const difference = differenceInHours(end, start);
-        const differenceCompare = differenceInHours(compareEnd!, compareStart!);
-        // If the compare period doesn't match the main period, adjust them to match
-        if (differenceCompare > difference) {
-          end = addHours(end, differenceCompare - difference);
-        } else if (difference > differenceCompare) {
-          compareEnd = addHours(compareEnd!, difference - differenceCompare);
-        }
-      }
+      const commonOptions = getCommonOptions(
+        start,
+        end,
+        locale,
+        config,
+        unit,
+        compareStart,
+        compareEnd
+      );
 
       const options: ChartOptions = {
-        parsing: false,
-        animation: false,
+        ...commonOptions,
         interaction: {
           mode: "nearest",
         },
-        scales: {
-          x: {
-            type: "time",
-            suggestedMin: start.getTime(),
-            suggestedMax: end.getTime(),
-            adapters: {
-              date: {
-                locale,
-                config,
-              },
-            },
-            ticks: {
-              maxRotation: 0,
-              sampleSize: 5,
-              autoSkipPadding: 20,
-              font: (context) =>
-                context.tick && context.tick.major
-                  ? ({ weight: "bold" } as any)
-                  : {},
-            },
-            time: {
-              tooltipFormat:
-                dayDifference > 35
-                  ? "monthyear"
-                  : dayDifference > 7
-                    ? "date"
-                    : dayDifference > 2
-                      ? "weekday"
-                      : dayDifference > 0
-                        ? "datetime"
-                        : "hour",
-              minUnit:
-                dayDifference > 35
-                  ? "month"
-                  : dayDifference > 2
-                    ? "day"
-                    : "hour",
-            },
-            offset: true,
-          },
-          y: {
-            stacked: true,
-            type: "linear",
-            title: {
-              display: true,
-              text: unit,
-            },
-            ticks: {
-              beginAtZero: true,
-            },
-          },
-        },
         plugins: {
-          tooltip: {
-            position: "nearest",
-            callbacks: {
-              title: (datasets) => {
-                if (dayDifference > 0) {
-                  return datasets[0].label;
-                }
-                const date = new Date(datasets[0].parsed.x);
-                return `${
-                  compare
-                    ? `${formatDateVeryShort(date, locale, config)}: `
-                    : ""
-                }${formatTime(date, locale, config)} – ${formatTime(
-                  addHours(date, 1),
-                  locale,
-                  config
-                )}`;
-              },
-              label: (context) =>
-                `${context.dataset.label}: ${formatNumber(
-                  context.parsed.y,
-                  locale
-                )} ${unit}`,
-            },
-          },
-          filler: {
-            propagate: false,
-          },
+          ...commonOptions.plugins!,
           legend: {
             display: true,
             labels: {
@@ -453,23 +363,7 @@ export class HuiEnergyDevicesGraphCard
             },
           },
         },
-        elements: {
-          bar: { borderWidth: 1.5, borderRadius: 4 },
-          point: {
-            hitRadius: 50,
-          },
-        },
-        // @ts-expect-error
-        locale: numberFormatToLocale(locale),
       };
-      if (compare) {
-        options.scales!.xAxisCompare = {
-          ...(options.scales!.x as Record<string, any>),
-          suggestedMin: compareStart!.getTime(),
-          suggestedMax: compareEnd!.getTime(),
-          display: false,
-        };
-      }
       return options;
     }
   );
