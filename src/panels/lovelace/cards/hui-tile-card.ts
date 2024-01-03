@@ -387,8 +387,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             hasHold: hasAction(this._config!.hold_action),
             hasDoubleClick: hasAction(this._config!.double_tap_action),
           })}
-          role=${this.hasCardAction ? "button" : ""}
-          tabindex=${this.hasCardAction ? "0" : undefined}
+          role=${ifDefined(this.hasCardAction ? "button" : undefined)}
+          tabindex=${ifDefined(this.hasCardAction ? "0" : undefined)}
           aria-labelledby="info"
           @mousedown=${this.handleRippleActivate}
           @mouseup=${this.handleRippleDeactivate}
@@ -405,8 +405,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         <div class="content ${classMap(contentClasses)}">
           <div
             class="icon-container"
-            role=${this.hasIconAction ? "button" : ""}
-            tabindex=${this.hasIconAction ? "0" : undefined}
+            role=${ifDefined(this.hasIconAction ? "button" : undefined)}
+            tabindex=${ifDefined(this.hasIconAction ? "0" : undefined)}
             @action=${this._handleIconAction}
             .actionHandler=${actionHandler()}
           >
