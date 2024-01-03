@@ -47,7 +47,7 @@ export class HaAuthTextField extends HaTextField {
     // TODO: live() directive needs casting for lit-analyzer
     // https://github.com/runem/lit-analyzer/pull/91/files
     // TODO: lit-analyzer labels min/max as (number|string) instead of string
-    return html` <input
+    return html`<input
       aria-labelledby=${ifDefined(ariaLabelledbyOrUndef)}
       aria-controls=${ifDefined(ariaControlsOrUndef)}
       aria-describedby=${ifDefined(ariaDescribedbyOrUndef)}
