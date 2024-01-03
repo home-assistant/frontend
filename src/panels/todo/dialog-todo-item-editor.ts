@@ -324,14 +324,20 @@ class DialogTodoItemEditor extends LitElement {
           (this._todoListSupportsFeature(
             TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
           )
-            ? // backend should accept null to clear the field, but it doesn't now
-              null
+            ? null
             : undefined),
         due: this._due
           ? this._hasTime
             ? this._due.toISOString()
             : this._formatDate(this._due)
-          : null,
+          : this._todoListSupportsFeature(
+                TodoListEntityFeature.SET_DUE_DATETIME_ON_ITEM
+              ) ||
+              this._todoListSupportsFeature(
+                TodoListEntityFeature.SET_DUE_DATE_ON_ITEM
+              )
+            ? null
+            : undefined,
         status: this._checked
           ? TodoItemStatus.Completed
           : TodoItemStatus.NeedsAction,
