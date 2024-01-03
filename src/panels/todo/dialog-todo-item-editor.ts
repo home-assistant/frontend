@@ -319,11 +319,13 @@ class DialogTodoItemEditor extends LitElement {
       await updateItem(this.hass!, this._params!.entity, {
         ...entry,
         summary: this._summary,
-        description: this._todoListSupportsFeature(
-          TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
-        )
-          ? this._description
-          : undefined,
+        description:
+          this._description ||
+          (this._todoListSupportsFeature(
+            TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
+          )
+            ? null
+            : undefined),
         due: this._due
           ? this._hasTime
             ? this._due.toISOString()

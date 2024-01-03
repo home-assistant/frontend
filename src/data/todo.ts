@@ -83,7 +83,10 @@ export const updateItem = (
       item: item.uid,
       rename: item.summary,
       status: item.status,
-      description: item.description === "" ? null : item.description,
+      description:
+        item.description === undefined || item.description
+          ? item.description
+          : null,
       due_datetime: item.due?.includes("T") ? item.due : undefined,
       due_date:
         item.due === undefined || item.due?.includes("T")
@@ -103,7 +106,7 @@ export const createItem = (
     "add_item",
     {
       item: item.summary,
-      description: item.description === "" ? null : item.description,
+      description: item.description || undefined,
       due_datetime: item.due?.includes("T") ? item.due : undefined,
       due_date:
         item.due === undefined || item.due?.includes("T")
