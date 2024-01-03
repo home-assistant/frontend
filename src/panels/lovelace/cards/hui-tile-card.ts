@@ -287,19 +287,38 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   @eventOptions({ passive: true })
   private handleRippleActivate(evt?: Event) {
+    if (!this.hasCardAction) return;
     this._rippleHandlers.startPress(evt);
   }
 
   private handleRippleDeactivate() {
+    if (!this.hasCardAction) return;
     this._rippleHandlers.endPress();
   }
 
   private handleRippleMouseEnter() {
+    if (!this.hasCardAction) return;
     this._rippleHandlers.startHover();
   }
 
   private handleRippleMouseLeave() {
+    if (!this.hasCardAction) return;
     this._rippleHandlers.endHover();
+  }
+
+  get hasCardAction() {
+    return (
+      !this._config?.tap_action ||
+      hasAction(this._config?.tap_action) ||
+      hasAction(this._config?.hold_action) ||
+      hasAction(this._config?.double_tap_action)
+    );
+  }
+
+  get hasIconAction() {
+    return (
+      !this._config?.icon_tap_action || hasAction(this._config?.icon_tap_action)
+    );
   }
 
   protected render() {
@@ -368,8 +387,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             hasHold: hasAction(this._config!.hold_action),
             hasDoubleClick: hasAction(this._config!.double_tap_action),
           })}
-          role="button"
-          tabindex="0"
+          role=${ifDefined(this.hasCardAction ? "button" : undefined)}
+          tabindex=${ifDefined(this.hasCardAction ? "0" : undefined)}
           aria-labelledby="info"
           @mousedown=${this.handleRippleActivate}
           @mouseup=${this.handleRippleDeactivate}
@@ -386,8 +405,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         <div class="content ${classMap(contentClasses)}">
           <div
             class="icon-container"
-            role="button"
-            tabindex="0"
+            role=${ifDefined(this.hasIconAction ? "button" : undefined)}
+            tabindex=${ifDefined(this.hasIconAction ? "0" : undefined)}
             @action=${this._handleIconAction}
             .actionHandler=${actionHandler()}
           >

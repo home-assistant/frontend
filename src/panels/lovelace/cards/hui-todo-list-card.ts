@@ -476,7 +476,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       return;
     }
     await updateItem(this.hass!, this._entityId!, {
-      ...item,
+      uid: item.uid,
+      summary: item.summary,
       status:
         item.status === TodoItemStatus.NeedsAction
           ? TodoItemStatus.Completed
