@@ -143,6 +143,16 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this._domains = undefined;
   }
 
+  private _getGroups = (
+    type: AddAutomationElementDialogParams["type"],
+    group: string | undefined
+  ): AutomationElementGroup =>
+    group
+      ? isService(group)
+        ? {}
+        : TYPES[type].groups[group].members!
+      : TYPES[type].groups;
+
   private _convertToItem = (
     key: string,
     options,
@@ -169,22 +179,13 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   private _getFilteredItems = memoizeOne(
     (
       type: AddAutomationElementDialogParams["type"],
-      root: AddAutomationElementDialogParams["root"],
       group: string | undefined,
       filter: string,
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup
     ): ListItem[] => {
-      const groups: AutomationElementGroup = group
-        ? isService(group)
-          ? {}
-          : TYPES[type].groups[group].members!
-        : TYPES[type].groups;
-
-      if (type === "condition" && group === "other" && !root) {
-        groups.trigger = {};
-      }
+      const groups = this._getGroups(type, group);
 
       const flattenGroups = (grp: AutomationElementGroup) =>
         Object.entries(grp).map(([key, options]) =>
@@ -213,7 +214,6 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   private _getGroupItems = memoizeOne(
     (
       type: AddAutomationElementDialogParams["type"],
-      root: AddAutomationElementDialogParams["root"],
       group: string | undefined,
       domains: Set<string> | undefined,
       localize: LocalizeFunc,
@@ -221,20 +221,17 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       manifests?: DomainManifestLookup
     ): ListItem[] => {
       if (type === "action" && isService(group)) {
-        const result = this._services(localize, services, manifests, group);
+        let result = this._services(localize, services, manifests, group);
         if (group === `${SERVICE_PREFIX}media_player`) {
-          result.unshift(this._convertToItem("play_media", {}, type, localize));
+          result = [
+            this._convertToItem("play_media", {}, type, localize),
+            ...result,
+          ];
         }
         return result;
       }
 
-      const groups: AutomationElementGroup = group
-        ? TYPES[type].groups[group].members!
-        : TYPES[type].groups;
-
-      if (type === "condition" && group === "other" && !root) {
-        groups.trigger = {};
-      }
+      const groups = this._getGroups(type, group);
 
       const result = Object.entries(groups).map(([key, options]) =>
         this._convertToItem(key, options, type, localize)
@@ -459,7 +456,6 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     const items = this._filter
       ? this._getFilteredItems(
           this._params.type,
-          this._params.root,
           this._group,
           this._filter,
           this.hass.localize,
@@ -468,7 +464,6 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         )
       : this._getGroupItems(
           this._params.type,
-          this._params.root,
           this._group,
           this._domains,
           this.hass.localize,
@@ -537,7 +532,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           rootTabbable
           style=${styleMap({
             width: this._width ? `${this._width}px` : "auto",
-            height: this._height ? `${Math.min(670, this._height)}px` : "auto",
+            height: this._height ? `${Math.min(468, this._height)}px` : "auto",
           })}
         >
           ${this._params.clipboardItem &&
@@ -660,7 +655,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           width: 24px;
         }
         mwc-list {
-          max-height: 670px;
+          max-height: 468px;
           max-width: 100vw;
         }
         search-input {
