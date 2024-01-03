@@ -203,7 +203,6 @@ export default class HaAutomationCondition extends LitElement {
     showAddAutomationElementDialog(this, {
       type: "condition",
       add: this._addCondition,
-      root: !this.nested,
       clipboardItem: this._clipboard?.condition?.condition,
     });
   }
