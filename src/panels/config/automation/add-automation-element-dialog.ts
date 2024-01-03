@@ -122,6 +122,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
       this._fetchManifests();
+      this._calculateUsedDomains();
     }
     this._fullScreen = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
@@ -425,6 +426,13 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this._manifests = manifests;
   }
 
+  private _calculateUsedDomains() {
+    const domains = new Set(Object.keys(this.hass.states).map(computeDomain));
+    if (!deepEqual(domains, this._domains)) {
+      this._domains = domains;
+    }
+  }
+
   protected _opened(): void {
     // Store the width and height so that when we search, box doesn't jump
     const boundingRect =
@@ -439,10 +447,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       changedProperties.has("hass") &&
       changedProperties.get("hass")?.states !== this.hass.states
     ) {
-      const domains = new Set(Object.keys(this.hass.states).map(computeDomain));
-      if (!deepEqual(domains, this._domains)) {
-        this._domains = domains;
-      }
+      this._calculateUsedDomains();
     }
   }
 
