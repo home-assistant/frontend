@@ -14,20 +14,14 @@ export const enum ValveEntityFeature {
 }
 
 export function isFullyOpen(stateObj: ValveEntity) {
-  if (
-    stateObj.attributes.current_position !== undefined &&
-    stateObj.attributes.current_position !== null
-  ) {
+  if (stateObj.attributes.current_position != null) {
     return stateObj.attributes.current_position === 100;
   }
   return stateObj.state === "open";
 }
 
 export function isFullyClosed(stateObj: ValveEntity) {
-  if (
-    stateObj.attributes.current_position !== undefined &&
-    stateObj.attributes.current_position !== null
-  ) {
+  if (stateObj.attributes.current_position != null) {
     return stateObj.attributes.current_position === 0;
   }
   return stateObj.state === "closed";
