@@ -105,11 +105,18 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
     const action = this.stateObj.attributes.action;
 
+    const isHumidityDisplayed =
+      (this.stateObj.attributes.current_humidity != null &&
+        this.showCurrentAsPrimary) ||
+      (this._targetHumidity != null && !this.showCurrentAsPrimary);
+
     return html`
       <p class="label">
-        ${action
+        ${action && action !== "off"
           ? this.hass.formatEntityAttributeValue(this.stateObj, "action")
-          : this.hass.formatEntityState(this.stateObj)}
+          : isHumidityDisplayed
+            ? this.hass.formatEntityState(this.stateObj)
+            : nothing}
       </p>
     `;
   }
@@ -142,6 +149,14 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
     if (this._targetHumidity != null && !this.showCurrentAsPrimary) {
       return this._renderTarget(this._targetHumidity!, "big");
+    }
+
+    if (this.stateObj.state !== UNAVAILABLE) {
+      return html`
+        <p class="primary-state">
+          ${this.hass.formatEntityState(this.stateObj)}
+        </p>
+      `;
     }
 
     return nothing;
@@ -225,6 +240,12 @@ export class HaStateControlHumidifierHumidity extends LitElement {
     `;
   }
 
+  private _renderInfo() {
+    return html` <div class="info">
+      ${this._renderLabel()}${this._renderPrimary()}${this._renderSecondary()}
+    </div>`;
+  }
+
   protected render() {
     const stateColor = stateColorCss(this.stateObj);
     const active = stateActive(this.stateObj);
@@ -272,10 +293,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
             @value-changing=${this._valueChanging}
           >
           </ha-control-circular-slider>
-          <div class="info">
-            ${this._renderLabel()}${this._renderPrimary()}${this._renderSecondary()}
-          </div>
-          ${this._renderButtons()}
+          ${this._renderInfo()} ${this._renderButtons()}
         </div>
       `;
     }
@@ -296,9 +314,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
           disabled
         >
         </ha-control-circular-slider>
-        <div class="info">
-          ${this._renderLabel()} ${this._renderSecondary()}
-        </div>
+        ${this._renderInfo()}
       </div>
     `;
   }

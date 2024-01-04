@@ -177,11 +177,20 @@ export class HaStateControlClimateTemperature extends LitElement {
 
     const action = this.stateObj.attributes.hvac_action;
 
+    const isTemperatureDisplayed =
+      (this.stateObj.attributes.current_temperature != null &&
+        this.showCurrentAsPrimary) ||
+      ((this._supportsTargetTemperature ||
+        this._supportsTargetTemperatureRange) &&
+        !this.showCurrentAsPrimary);
+
     return html`
       <p class="label">
-        ${action
+        ${action && action !== "off"
           ? this.hass.formatEntityAttributeValue(this.stateObj, "hvac_action")
-          : this.hass.formatEntityState(this.stateObj)}
+          : isTemperatureDisplayed
+            ? this.hass.formatEntityState(this.stateObj)
+            : nothing}
       </p>
     `;
   }
@@ -315,6 +324,14 @@ export class HaStateControlClimateTemperature extends LitElement {
       `;
     }
 
+    if (this.stateObj.state !== UNAVAILABLE) {
+      return html`
+        <p class="primary-state">
+          ${this.hass.formatEntityState(this.stateObj)}
+        </p>
+      `;
+    }
+
     return nothing;
   }
 
@@ -371,6 +388,14 @@ export class HaStateControlClimateTemperature extends LitElement {
     }
 
     return html`<p class="label"></p>`;
+  }
+
+  private _renderInfo() {
+    return html`
+      <div class="info">
+        ${this._renderLabel()}${this._renderPrimary()}${this._renderSecondary()}
+      </div>
+    `;
   }
 
   get _supportsTargetTemperature() {
@@ -447,10 +472,7 @@ export class HaStateControlClimateTemperature extends LitElement {
             @value-changing=${this._valueChanging}
           >
           </ha-control-circular-slider>
-          <div class="info">
-            ${this._renderLabel()}${this._renderPrimary()}${this._renderSecondary()}
-          </div>
-          ${this._renderTemperatureButtons("value")}
+          ${this._renderInfo()} ${this._renderTemperatureButtons("value")}
         </div>
       `;
     }
@@ -484,9 +506,7 @@ export class HaStateControlClimateTemperature extends LitElement {
             @high-changing=${this._valueChanging}
           >
           </ha-control-circular-slider>
-          <div class="info">
-            ${this._renderLabel()}${this._renderPrimary()}${this._renderSecondary()}
-          </div>
+          ${this._renderInfo()}
           ${this._renderTemperatureButtons(this._selectTargetTemperature, true)}
         </div>
       `;
@@ -510,9 +530,7 @@ export class HaStateControlClimateTemperature extends LitElement {
           .disabled=${!active}
         >
         </ha-control-circular-slider>
-        <div class="info">
-          ${this._renderLabel()} ${this._renderSecondary()}
-        </div>
+        ${this._renderInfo()}
       </div>
     `;
   }
