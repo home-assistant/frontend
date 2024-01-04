@@ -60,7 +60,11 @@ class DialogTodoItemEditor extends LitElement {
       this._checked = entry.status === TodoItemStatus.Completed;
       this._summary = entry.summary;
       this._description = entry.description || "";
-      this._due = entry.due ? new Date(entry.due) : undefined;
+      this._due = entry.due
+        ? new Date(
+            entry.due.includes("T") ? entry.due : `${entry.due}T00:00:00`
+          )
+        : undefined;
       this._hasTime = entry.due?.includes("T") || false;
     } else {
       this._hasTime = false;

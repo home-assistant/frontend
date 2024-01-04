@@ -335,7 +335,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           const due = item.due
             ? item.due.includes("T")
               ? new Date(item.due)
-              : endOfDay(new Date(item.due))
+              : endOfDay(new Date(`${item.due}T00:00:00`))
             : undefined;
           const today =
             due && !item.due!.includes("T") && isSameDay(new Date(), due);
