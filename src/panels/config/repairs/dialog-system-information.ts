@@ -326,7 +326,7 @@ class DialogSystemInformation extends LitElement {
               value = html`
                 <ha-circular-progress
                   indeterminate
-                  size="tiny"
+                  size="small"
                 ></ha-circular-progress>
               `;
             } else if (info.type === "failed") {
