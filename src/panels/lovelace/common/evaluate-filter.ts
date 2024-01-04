@@ -1,5 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../../../types";
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 
 export const evaluateFilter = (
   hass: HomeAssistant,
@@ -18,12 +19,12 @@ export const evaluateFilter = (
     ? stateObj.attributes[filter.attribute]
     : stateObj.state;
 
-  if (typeof value === "string" && value.includes(".")) {
+  if (
+    typeof value === "string" &&
+    isValidEntityId(value) &&
+    hass.states[value]
+  ) {
     value = hass.states[value]?.state;
-
-    if (value === undefined) {
-      return false;
-    }
   }
 
   if (operator === "==" || operator === "!=") {
