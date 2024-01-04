@@ -254,6 +254,7 @@ export const DOMAINS_INPUT_ROW = [
   "text",
   "time",
   "vacuum",
+  "valve",
 ];
 
 /** States that we consider "off". */
