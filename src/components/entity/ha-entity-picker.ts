@@ -18,6 +18,8 @@ import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./state-badge";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
+import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-helper-detail";
+import type { HelperDomain } from "../../panels/config/helpers/const";
 
 interface HassEntityWithCachedName extends HassEntity, ScorableTextItem {
   friendly_name: string;
@@ -34,6 +36,8 @@ const rowRenderer: ComboBoxLitRenderer<HassEntityWithCachedName> = (item) =>
     <span>${item.friendly_name}</span>
     <span slot="secondary">${item.entity_id}</span>
   </ha-list-item>`;
+
+const NEW_ENTITY_ID = "New Entity";
 
 @customElement("ha-entity-picker")
 export class HaEntityPicker extends LitElement {
@@ -53,6 +57,8 @@ export class HaEntityPicker extends LitElement {
   @property() public value?: string;
 
   @property() public helper?: string;
+
+  @property() public createDomains?: string[];
 
   /**
    * Show entities from specific domains.
@@ -137,7 +143,8 @@ export class HaEntityPicker extends LitElement {
       includeDeviceClasses: this["includeDeviceClasses"],
       includeUnitOfMeasurement: this["includeUnitOfMeasurement"],
       includeEntities: this["includeEntities"],
-      excludeEntities: this["excludeEntities"]
+      excludeEntities: this["excludeEntities"],
+      createDomains: this["createDomains"]
     ): HassEntityWithCachedName[] => {
       let states: HassEntityWithCachedName[] = [];
 
@@ -145,6 +152,22 @@ export class HaEntityPicker extends LitElement {
         return [];
       }
       let entityIds = Object.keys(hass.states);
+
+      const newEntity = {
+        entity_id: NEW_ENTITY_ID,
+        state: "on",
+        last_changed: "",
+        last_updated: "",
+        context: { id: "", user_id: null, parent_id: null },
+        friendly_name: `Create a new ${
+          createDomains?.length === 1 ? `${createDomains[0]} ` : ""
+        }helper`,
+        attributes: {
+          friendly_name: "foo",
+          icon: "mdi:plus",
+        },
+        strings: ["create new"],
+      };
 
       if (!entityIds.length) {
         return [
@@ -165,6 +188,7 @@ export class HaEntityPicker extends LitElement {
             },
             strings: [],
           },
+          ...(createDomains?.length ? [newEntity] : []),
         ];
       }
 
@@ -275,8 +299,11 @@ export class HaEntityPicker extends LitElement {
             },
             strings: [],
           },
+          ...(createDomains?.length ? [newEntity] : []),
         ];
       }
+
+      if (createDomains?.length) states.push(newEntity);
 
       return states;
     }
@@ -304,7 +331,8 @@ export class HaEntityPicker extends LitElement {
         this.includeDeviceClasses,
         this.includeUnitOfMeasurement,
         this.includeEntities,
-        this.excludeEntities
+        this.excludeEntities,
+        this.createDomains
       );
       if (this._initedStates) {
         this.comboBox.filteredItems = this._states;
@@ -348,6 +376,17 @@ export class HaEntityPicker extends LitElement {
   private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
+
+    if (newValue === NEW_ENTITY_ID) {
+      showHelperDetailDialog(this, {
+        domain: this.createDomains![0] as HelperDomain,
+        dialogClosedCallback: (item) => {
+          if (item.entryId) this._setValue(item.entryId);
+        },
+      });
+      return;
+    }
+
     if (newValue !== this._value) {
       this._setValue(newValue);
     }

@@ -46,6 +46,8 @@ export class HaTargetPicker extends LitElement {
 
   @property() public helper?: string;
 
+  @property() public createDomains?: string[];
+
   /**
    * Show only targets with entities from specific domains.
    * @type {Array}
@@ -332,6 +334,7 @@ export class HaTargetPicker extends LitElement {
                 .includeDeviceClasses=${this.includeDeviceClasses}
                 .includeDomains=${this.includeDomains}
                 .excludeEntities=${ensureArray(this.value?.entity_id)}
+                .createDomains=${this.createDomains}
                 @value-changed=${this._targetPicked}
                 @click=${this._preventDefault}
                 allow-custom-entity

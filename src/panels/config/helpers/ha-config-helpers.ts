@@ -289,7 +289,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             "ui.panel.config.helpers.picker.create_helper"
           )}
           extended
-          @click=${this._createHelpler}
+          @click=${this._createHelper}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
@@ -414,7 +414,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _createHelpler() {
+  private _createHelper() {
     showHelperDetailDialog(this, {});
   }
 }
