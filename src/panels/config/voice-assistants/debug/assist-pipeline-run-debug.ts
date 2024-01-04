@@ -247,7 +247,7 @@ export class AssistPipelineRunDebug extends LitElement {
         }
 
         // Play audio when we're done.
-        if (updatedRun.stage === "done") {
+        if (updatedRun.stage === "done" && !updatedRun.error) {
           const url = updatedRun.tts!.tts_output!.url;
           const audio = new Audio(url);
           audio.addEventListener("ended", () => {
@@ -261,7 +261,10 @@ export class AssistPipelineRunDebug extends LitElement {
             }
           });
           audio.play();
-        } else if (updatedRun.stage === "error") {
+        } else if (
+          (updatedRun.stage === "done" && updatedRun.error) ||
+          updatedRun.stage === "error"
+        ) {
           this._finished = true;
         }
       },
