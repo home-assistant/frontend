@@ -24,6 +24,9 @@ export const turnOnOffEntity = (
     case "scene":
       service = "turn_on";
       break;
+    case "valve":
+      service = turnOn ? "open_valve" : "close_valve";
+      break;
     default:
       service = turnOn ? "turn_on" : "turn_off";
   }

@@ -254,6 +254,7 @@ export const DOMAINS_INPUT_ROW = [
   "text",
   "time",
   "vacuum",
+  "valve",
 ];
 
 /** States that we consider "off". */
@@ -272,6 +273,7 @@ export const DOMAINS_TOGGLE = new Set([
   "group",
   "automation",
   "humidifier",
+  "valve",
 ]);
 
 /** Domains that have a dynamic entity image / picture. */
