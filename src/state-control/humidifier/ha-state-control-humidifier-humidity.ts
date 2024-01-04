@@ -241,9 +241,11 @@ export class HaStateControlHumidifierHumidity extends LitElement {
   }
 
   private _renderInfo() {
-    return html` <div class="info">
-      ${this._renderLabel()}${this._renderPrimary()}${this._renderSecondary()}
-    </div>`;
+    return html`
+      <div class="info">
+        ${this._renderLabel()}${this._renderPrimary()}${this._renderSecondary()}
+      </div>
+    `;
   }
 
   protected render() {
@@ -302,6 +304,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
       <div
         class="container${containerSizeClass}"
         style=${styleMap({
+          "--state-color": stateColor,
           "--action-color": actionColor,
         })}
       >

@@ -517,6 +517,7 @@ export class HaStateControlClimateTemperature extends LitElement {
         class="container${containerSizeClass}"
         style=${styleMap({
           "--state-color": stateColor,
+          "--action-color": actionColor,
         })}
       >
         <ha-control-circular-slider
