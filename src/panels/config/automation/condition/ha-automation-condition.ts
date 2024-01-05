@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
@@ -39,7 +38,7 @@ export default class HaAutomationCondition extends LitElement {
 
   @property({ type: Boolean }) public nested = false;
 
-  @property({ type: Boolean }) public reOrderMode = true;
+  @property({ type: Boolean }) public reOrderMode = false;
 
   @storage({
     key: "automationClipboard",
@@ -106,11 +105,11 @@ export default class HaAutomationCondition extends LitElement {
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.re_order_mode.description_conditions"
               )}
-              <mwc-button slot="action" @click=${this._exitReOrderMode}>
+              <ha-button slot="action" @click=${this._exitReOrderMode}>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.re_order_mode.exit"
                 )}
-              </mwc-button>
+              </ha-button>
             </ha-alert>
           `
         : null}
@@ -125,7 +124,6 @@ export default class HaAutomationCondition extends LitElement {
             (condition) => this._getKey(condition),
             (cond, idx) => html`
               <ha-automation-condition-row
-                data-sortable-item
                 .index=${idx}
                 .totalConditions=${this.conditions.length}
                 .condition=${cond}
@@ -263,17 +261,17 @@ export default class HaAutomationCondition extends LitElement {
     this._move(index, newIndex);
   }
 
-  private _conditionMoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
-    this._move(oldIndex, newIndex);
-  }
-
   private _move(index: number, newIndex: number) {
     const conditions = this.conditions.concat();
     const condition = conditions.splice(index, 1)[0];
     conditions.splice(newIndex, 0, condition);
     fireEvent(this, "value-changed", { value: conditions });
+  }
+
+  private _conditionMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+    this._move(oldIndex, newIndex);
   }
 
   private _conditionChanged(ev: CustomEvent) {
@@ -306,36 +304,34 @@ export default class HaAutomationCondition extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      css`
-        ha-automation-condition-row {
-          display: block;
-          margin-bottom: 16px;
-          scroll-margin-top: 48px;
-        }
-        ha-svg-icon {
-          height: 20px;
-        }
-        ha-alert {
-          display: block;
-          margin-bottom: 16px;
-          border-radius: var(--ha-card-border-radius, 12px);
-          overflow: hidden;
-        }
-        .handle {
-          padding: 12px;
-        }
-        .handle ha-svg-icon {
-          pointer-events: none;
-          height: 24px;
-        }
-        .buttons {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-        }
-      `,
-    ];
+    return css`
+      ha-automation-condition-row {
+        display: block;
+        margin-bottom: 16px;
+        scroll-margin-top: 48px;
+      }
+      ha-svg-icon {
+        height: 20px;
+      }
+      ha-alert {
+        display: block;
+        margin-bottom: 16px;
+        border-radius: var(--ha-card-border-radius, 12px);
+        overflow: hidden;
+      }
+      .handle {
+        padding: 12px;
+      }
+      .handle ha-svg-icon {
+        pointer-events: none;
+        height: 24px;
+      }
+      .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+    `;
   }
 }
 

@@ -20,6 +20,12 @@ export class HaSortable extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: String }) public container?: string;
+
+  @property({ type: String }) public item?: string;
+
+  @property({ type: String }) public handle?: string = ".handle";
+
   protected updated(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("disabled")) {
       if (this.disabled) {
@@ -66,20 +72,27 @@ export class HaSortable extends LitElement {
   }
 
   private async _createSortable() {
-    const container = (this.querySelector("[data-sortable-container]") ??
-      this.children[0]) as HTMLElement | undefined;
+    const containerElement = (
+      this.container ? this.querySelector(this.container) : this.children[0]
+    ) as HTMLElement | undefined;
 
-    if (!container) return;
+    if (!containerElement) return;
 
     const Sortable = (await import("../resources/sortable")).default;
-    this._sortable = new Sortable(container, {
+
+    const options: SortableInstance.Options = {
       animation: 150,
-      fallbackClass: "sortable-fallback",
-      handle: ".handle",
-      draggable: "[data-sortable-item]",
       onChoose: this._handleChoose,
       onEnd: this._handleEnd,
-    });
+    };
+
+    if (this.item) {
+      options.draggable = this.item;
+    }
+    if (this.handle) {
+      options.handle = this.handle;
+    }
+    this._sortable = new Sortable(containerElement, options);
   }
 
   private _handleEnd = (evt: SortableEvent) => {
