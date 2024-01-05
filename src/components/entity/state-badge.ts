@@ -195,7 +195,7 @@ export class StateBadge extends LitElement {
           position: relative;
           display: inline-block;
           width: 40px;
-          color: var(--paper-item-icon-color, #44739e);
+          color: var(--state-icon-color, #44739e);
           border-radius: 50%;
           height: 40px;
           text-align: center;
