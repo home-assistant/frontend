@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import "@polymer/paper-item/paper-item-body";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
@@ -10,6 +9,7 @@ import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-tip";
+import "../../../../components/ha-list-item";
 import {
   cloudLogout,
   CloudStatusLoggedIn,
@@ -65,30 +65,32 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               )}
             >
               <div class="account-row">
-                <paper-item-body two-line>
-                  ${this.cloudStatus.email.replace(
-                    /(\w{3})[\w.-]+@([\w.]+\w)/,
-                    "$1***@$2"
-                  )}
-                  <div secondary class="wrap">
-                    ${this._subscription
-                      ? this._subscription.human_description.replace(
-                          "{periodEnd}",
-                          this._subscription.plan_renewal_date
-                            ? formatDateTime(
-                                new Date(
-                                  this._subscription.plan_renewal_date * 1000
-                                ),
-                                this.hass.locale,
-                                this.hass.config
-                              )
-                            : ""
-                        )
-                      : this.hass.localize(
-                          "ui.panel.config.cloud.account.fetching_subscription"
-                        )}
-                  </div>
-                </paper-item-body>
+                <mwc-list>
+                  <ha-list-item twoline>
+                    ${this.cloudStatus.email.replace(
+                      /(\w{3})[\w.-]+@([\w.]+\w)/,
+                      "$1***@$2"
+                    )}
+                    <span slot="secondary" class="wrap">
+                      ${this._subscription
+                        ? this._subscription.human_description.replace(
+                            "{periodEnd}",
+                            this._subscription.plan_renewal_date
+                              ? formatDateTime(
+                                  new Date(
+                                    this._subscription.plan_renewal_date * 1000
+                                  ),
+                                  this.hass.locale,
+                                  this.hass.config
+                                )
+                              : ""
+                          )
+                        : this.hass.localize(
+                            "ui.panel.config.cloud.account.fetching_subscription"
+                          )}
+                    </span>
+                  </ha-list-item>
+                </mwc-list>
               </div>
 
               ${this.cloudStatus.cloud === "connecting" &&
@@ -103,24 +105,24 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                 : ""}
 
               <div class="account-row">
-                <paper-item-body>
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.account.connection_status"
-                  )}
-                </paper-item-body>
-                <div class="status">
-                  ${this.cloudStatus.cloud === "connected"
-                    ? this.hass.localize(
-                        "ui.panel.config.cloud.account.connected"
-                      )
-                    : this.cloudStatus.cloud === "disconnected"
+                <mwc-list>
+                  <ha-list-item>
+                    ${this.hass.localize(
+                      "ui.panel.config.cloud.account.connection_status"
+                    )}:
+                    ${this.cloudStatus.cloud === "connected"
                       ? this.hass.localize(
-                          "ui.panel.config.cloud.account.not_connected"
+                          "ui.panel.config.cloud.account.connected"
                         )
-                      : this.hass.localize(
-                          "ui.panel.config.cloud.account.connecting"
-                        )}
-                </div>
+                      : this.cloudStatus.cloud === "disconnected"
+                        ? this.hass.localize(
+                            "ui.panel.config.cloud.account.not_connected"
+                          )
+                        : this.hass.localize(
+                            "ui.panel.config.cloud.account.connecting"
+                          )}
+                  </ha-list-item>
+                </mwc-list>
               </div>
 
               <div class="card-actions">
