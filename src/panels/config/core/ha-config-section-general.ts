@@ -20,6 +20,7 @@ import type { HaRadio } from "../../../components/ha-radio";
 import "../../../components/ha-select";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
+import type { HaTextField } from "../../../components/ha-textfield";
 import "../../../components/ha-timezone-picker";
 import "../../../components/map/ha-locations-editor";
 import type { MarkerLocation } from "../../../components/map/ha-locations-editor";
@@ -28,7 +29,6 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-import type { HaTextField } from "../../../components/ha-textfield";
 
 @customElement("ha-config-section-general")
 class HaConfigSectionGeneral extends LitElement {

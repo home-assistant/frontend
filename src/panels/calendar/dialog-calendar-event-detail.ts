@@ -10,6 +10,7 @@ import { formatTime } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isDate } from "../../common/string/is_date";
 import "../../components/entity/state-info";
+import "../../components/ha-alert";
 import "../../components/ha-date-input";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-time-input";
