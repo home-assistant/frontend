@@ -11,18 +11,16 @@ import {
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import type { SortableEvent } from "sortablejs";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
+import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type {
   AutomationClipboard,
   Condition,
 } from "../../../../data/automation";
-import { sortableStyles } from "../../../../resources/ha-sortable-style";
-import type { SortableInstance } from "../../../../resources/sortable";
 import type { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
@@ -41,7 +39,7 @@ export default class HaAutomationCondition extends LitElement {
 
   @property({ type: Boolean }) public nested = false;
 
-  @property({ type: Boolean }) public reOrderMode = false;
+  @property({ type: Boolean }) public reOrderMode = true;
 
   @storage({
     key: "automationClipboard",
@@ -55,17 +53,7 @@ export default class HaAutomationCondition extends LitElement {
 
   private _conditionKeys = new WeakMap<Condition, string>();
 
-  private _sortable?: SortableInstance;
-
   protected updated(changedProperties: PropertyValues) {
-    if (changedProperties.has("reOrderMode")) {
-      if (this.reOrderMode) {
-        this._createSortable();
-      } else {
-        this._destroySortable();
-      }
-    }
-
     if (!changedProperties.has("conditions")) {
       return;
     }
@@ -126,55 +114,62 @@ export default class HaAutomationCondition extends LitElement {
             </ha-alert>
           `
         : null}
-      <div class="conditions">
-        ${repeat(
-          this.conditions.filter((c) => typeof c === "object"),
-          (condition) => this._getKey(condition),
-          (cond, idx) => html`
-            <ha-automation-condition-row
-              .index=${idx}
-              .totalConditions=${this.conditions.length}
-              .condition=${cond}
-              .hideMenu=${this.reOrderMode}
-              .reOrderMode=${this.reOrderMode}
-              .disabled=${this.disabled}
-              @duplicate=${this._duplicateCondition}
-              @move-condition=${this._move}
-              @value-changed=${this._conditionChanged}
-              @re-order=${this._enterReOrderMode}
-              .hass=${this.hass}
-            >
-              ${this.reOrderMode
-                ? html`
-                    <ha-icon-button
-                      .index=${idx}
-                      slot="icons"
-                      .label=${this.hass.localize(
-                        "ui.panel.config.automation.editor.move_up"
-                      )}
-                      .path=${mdiArrowUp}
-                      @click=${this._moveUp}
-                      .disabled=${idx === 0}
-                    ></ha-icon-button>
-                    <ha-icon-button
-                      .index=${idx}
-                      slot="icons"
-                      .label=${this.hass.localize(
-                        "ui.panel.config.automation.editor.move_down"
-                      )}
-                      .path=${mdiArrowDown}
-                      @click=${this._moveDown}
-                      .disabled=${idx === this.conditions.length - 1}
-                    ></ha-icon-button>
-                    <div class="handle" slot="icons">
-                      <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-                    </div>
-                  `
-                : ""}
-            </ha-automation-condition-row>
-          `
-        )}
-      </div>
+
+      <ha-sortable
+        .disabled=${!this.reOrderMode}
+        @item-moved=${this._conditionMoved}
+      >
+        <div class="conditions">
+          ${repeat(
+            this.conditions.filter((c) => typeof c === "object"),
+            (condition) => this._getKey(condition),
+            (cond, idx) => html`
+              <ha-automation-condition-row
+                data-sortable-item
+                .index=${idx}
+                .totalConditions=${this.conditions.length}
+                .condition=${cond}
+                .hideMenu=${this.reOrderMode}
+                .reOrderMode=${this.reOrderMode}
+                .disabled=${this.disabled}
+                @duplicate=${this._duplicateCondition}
+                @move-condition=${this._move}
+                @value-changed=${this._conditionChanged}
+                @re-order=${this._enterReOrderMode}
+                .hass=${this.hass}
+              >
+                ${this.reOrderMode
+                  ? html`
+                      <ha-icon-button
+                        .index=${idx}
+                        slot="icons"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.editor.move_up"
+                        )}
+                        .path=${mdiArrowUp}
+                        @click=${this._moveUp}
+                        .disabled=${idx === 0}
+                      ></ha-icon-button>
+                      <ha-icon-button
+                        .index=${idx}
+                        slot="icons"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.editor.move_down"
+                        )}
+                        .path=${mdiArrowDown}
+                        @click=${this._moveDown}
+                        .disabled=${idx === this.conditions.length - 1}
+                      ></ha-icon-button>
+                      <div class="handle" slot="icons">
+                        <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                      </div>
+                    `
+                  : ""}
+              </ha-automation-condition-row>
+            `
+          )}
+        </div>
+      </ha-sortable>
       <div class="buttons">
         <ha-button
           outlined
@@ -248,36 +243,6 @@ export default class HaAutomationCondition extends LitElement {
     this.reOrderMode = false;
   }
 
-  private async _createSortable() {
-    const Sortable = (await import("../../../../resources/sortable")).default;
-    this._sortable = new Sortable(
-      this.shadowRoot!.querySelector(".conditions")!,
-      {
-        animation: 150,
-        fallbackClass: "sortable-fallback",
-        handle: ".handle",
-        onChoose: (evt: SortableEvent) => {
-          (evt.item as any).placeholder =
-            document.createComment("sort-placeholder");
-          evt.item.after((evt.item as any).placeholder);
-        },
-        onEnd: (evt: SortableEvent) => {
-          // put back in original location
-          if ((evt.item as any).placeholder) {
-            (evt.item as any).placeholder.replaceWith(evt.item);
-            delete (evt.item as any).placeholder;
-          }
-          this._dragged(evt);
-        },
-      }
-    );
-  }
-
-  private _destroySortable() {
-    this._sortable?.destroy();
-    this._sortable = undefined;
-  }
-
   private _getKey(condition: Condition) {
     if (!this._conditionKeys.has(condition)) {
       this._conditionKeys.set(condition, Math.random().toString());
@@ -298,9 +263,10 @@ export default class HaAutomationCondition extends LitElement {
     this._move(index, newIndex);
   }
 
-  private _dragged(ev: SortableEvent): void {
-    if (ev.oldIndex === ev.newIndex) return;
-    this._move(ev.oldIndex!, ev.newIndex!);
+  private _conditionMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+    this._move(oldIndex, newIndex);
   }
 
   private _move(index: number, newIndex: number) {
@@ -341,7 +307,6 @@ export default class HaAutomationCondition extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      sortableStyles,
       css`
         ha-automation-condition-row {
           display: block;
@@ -358,8 +323,6 @@ export default class HaAutomationCondition extends LitElement {
           overflow: hidden;
         }
         .handle {
-          cursor: move; /* fallback if grab cursor is unsupported */
-          cursor: grab;
           padding: 12px;
         }
         .handle ha-svg-icon {
