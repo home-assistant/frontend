@@ -184,7 +184,12 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-sortable @item-moved=${this._colorMoved} item=".color" no-style>
+      <ha-sortable
+        @item-moved=${this._colorMoved}
+        item=".color"
+        no-style
+        .disabled=${!this.editMode}
+      >
         <div class="container">
           ${this._favoriteColors.map(
             (color, index) => html`
