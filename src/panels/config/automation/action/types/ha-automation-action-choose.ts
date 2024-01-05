@@ -97,7 +97,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
     return html`
       <ha-sortable
-        handle=".handle"
+        handle-selector=".handle"
         .disabled=${!this.reOrderMode}
         @item-moved=${this._optionMoved}
       >

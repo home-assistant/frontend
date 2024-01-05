@@ -18,16 +18,17 @@ declare global {
 export class HaSortable extends LitElement {
   private _sortable?: SortableInstance;
 
-  @property({ type: Boolean }) public disabled = false;
-
-  @property({ type: String }) public container?: string;
-
-  @property({ type: String }) public item?: string;
-
-  @property({ type: String }) public handle?: string;
+  @property({ type: Boolean })
+  public disabled = false;
 
   @property({ type: Boolean, attribute: "no-style" })
   public noStyle: boolean = false;
+
+  @property({ type: String, attribute: "draggable-selector" })
+  public draggableSelector?: string;
+
+  @property({ type: String, attribute: "handle-selector" })
+  public handleSelector?: string;
 
   protected updated(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("disabled")) {
@@ -78,11 +79,9 @@ export class HaSortable extends LitElement {
   private async _createSortable() {
     if (this._sortable) return;
 
-    const containerElement = (
-      this.container ? this.querySelector(this.container) : this.children[0]
-    ) as HTMLElement | undefined;
+    const container = this.children[0] as HTMLElement | undefined;
 
-    if (!containerElement) return;
+    if (!container) return;
 
     const Sortable = (await import("../resources/sortable")).default;
 
@@ -92,13 +91,13 @@ export class HaSortable extends LitElement {
       onEnd: this._handleEnd,
     };
 
-    if (this.item) {
-      options.draggable = this.item;
+    if (this.draggableSelector) {
+      options.draggable = this.draggableSelector;
     }
-    if (this.handle) {
-      options.handle = this.handle;
+    if (this.handleSelector) {
+      options.handle = this.handleSelector;
     }
-    this._sortable = new Sortable(containerElement, options);
+    this._sortable = new Sortable(container, options);
   }
 
   private _handleEnd = (evt: SortableEvent) => {

@@ -115,7 +115,7 @@ export default class HaAutomationCondition extends LitElement {
         : null}
 
       <ha-sortable
-        handle=".handle"
+        handle-selector=".handle"
         .disabled=${!this.reOrderMode}
         @item-moved=${this._conditionMoved}
       >

@@ -85,8 +85,8 @@ export class DialogAreaFilter
         this.hass.localize("ui.components.area-filter.title")}
       >
         <ha-sortable
-          item=".draggable"
-          handle=".handle"
+          draggable-selector=".draggable"
+          handle-selector=".handle"
           @item-moved=${this._areaMoved}
         >
           <mwc-list class="areas">

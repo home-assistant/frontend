@@ -259,7 +259,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                   : nothing}
               </div>
               <ha-sortable
-                handle="ha-svg-icon"
+                handle-selector="ha-svg-icon"
                 .disabled=${!this._reordering}
                 @item-moved=${this._itemMoved}
               >

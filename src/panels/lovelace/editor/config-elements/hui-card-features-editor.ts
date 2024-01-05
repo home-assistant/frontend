@@ -236,7 +236,10 @@ export class HuiCardFeaturesEditor extends LitElement {
                 </ha-alert>
               `
             : nothing}
-          <ha-sortable handle=".handle" @item-moved=${this._featureMoved}>
+          <ha-sortable
+            handle-selector=".handle"
+            @item-moved=${this._featureMoved}
+          >
             <div class="features">
               ${repeat(
                 this.features,

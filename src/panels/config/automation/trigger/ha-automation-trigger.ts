@@ -64,7 +64,7 @@ export default class HaAutomationTrigger extends LitElement {
           `
         : null}
       <ha-sortable
-        handle=".handle"
+        handle-selector=".handle"
         .disabled=${!this.reOrderMode}
         @item-moved=${this._triggerMoved}
       >
