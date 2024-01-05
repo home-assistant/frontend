@@ -34,6 +34,7 @@ import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { HassioNetworkDialogParams } from "./show-dialog-network";
+import type { HaTextField } from "../../../../src/components/ha-textfield";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 
