@@ -33,6 +33,7 @@ class HaInputSelectForm extends LitElement {
   @query("#option_input", true) private _optionInput?: HaTextField;
 
   private _optionMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
     const options = this._options.concat();
     const option = options.splice(oldIndex, 1)[0];

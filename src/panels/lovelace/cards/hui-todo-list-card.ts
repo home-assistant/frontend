@@ -556,6 +556,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   }
 
   private async _itemMoved(ev: CustomEvent) {
+    ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
     this._moveItem(oldIndex, newIndex);
   }

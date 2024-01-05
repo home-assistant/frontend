@@ -132,6 +132,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
   }
 
   private _rowMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
 
     const newEntities = this.entities!.concat();

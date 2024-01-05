@@ -91,6 +91,7 @@ export class HuiEntityEditor extends LitElement {
   }
 
   private _entityMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
 
     const newEntities = this.entities!.concat();

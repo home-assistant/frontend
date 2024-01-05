@@ -461,6 +461,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private _panelMoved(ev: CustomEvent) {
+    ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
 
     const [beforeSpacer] = computePanels(

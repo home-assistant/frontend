@@ -60,6 +60,7 @@ export class DialogAreaFilter
   }
 
   private _areaMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
 
     const areas = this._areas.concat();

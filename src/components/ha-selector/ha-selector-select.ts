@@ -41,6 +41,7 @@ export class HaSelectSelector extends LitElement {
   @query("ha-combo-box", true) private comboBox!: HaComboBox;
 
   private _itemMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
     this._move(oldIndex!, newIndex);
   }
