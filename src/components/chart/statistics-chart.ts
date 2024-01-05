@@ -73,6 +73,12 @@ export class StatisticsChart extends LitElement {
 
   @property({ type: Boolean }) public logarithmicScale = false;
 
+  @property({ type: Number }) public minYAxis? : number;
+
+  @property({ type: Number }) public maxYAxis? : number;
+
+  @property({ type: Boolean }) public fitYData = false;
+
   @property({ type: Boolean }) public isLoadingData = false;
 
   @property() public period?: string;
@@ -102,7 +108,10 @@ export class StatisticsChart extends LitElement {
       changedProps.has("period") ||
       changedProps.has("chartType") ||
       changedProps.has("logarithmicScale") ||
-      changedProps.has("hideLegend")
+      changedProps.has("hideLegend") || 
+      changedProps.has("minYAxis") ||
+      changedProps.has("maxYAxis") ||
+      changedProps.has("fitYData")
     ) {
       this._createOptions();
     }
@@ -195,6 +204,10 @@ export class StatisticsChart extends LitElement {
         },
         y: {
           beginAtZero: this.chartType === "bar",
+          suggestedMin: this.fitYData ? this.minYAxis : null,
+          suggestedMax: this.fitYData ? this.maxYAxis : null,
+          min: this.fitYData ? null : this.minYAxis,
+          max: this.fitYData ? null : this.maxYAxis,
           ticks: {
             maxTicksLimit: 7,
           },

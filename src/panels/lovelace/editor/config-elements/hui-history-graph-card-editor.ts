@@ -32,6 +32,9 @@ const cardConfigStruct = assign(
     refresh_interval: optional(number()), // deprecated
     show_names: optional(boolean()),
     logarithmic_scale: optional(boolean()),
+    min_y_axis: optional(number()),
+    max_y_axis: optional(number()),
+    fit_y_data: optional(boolean()),
   })
 );
 
@@ -50,6 +53,21 @@ const SCHEMA = [
   },
   {
     name: "logarithmic_scale",
+    required: false,
+    selector: { boolean: {} },
+  },
+  {
+    name: "min_y_axis",
+    required: false,
+    selector: { number: { mode: "box", step: "any" } },
+  },
+  {
+    name: "max_y_axis",
+    required: false,
+    selector: { number: { mode: "box", step: "any" } },
+  },
+  {
+    name: "fit_y_data",
     required: false,
     selector: { boolean: {} },
   },
@@ -109,6 +127,9 @@ export class HuiHistoryGraphCardEditor
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     switch (schema.name) {
       case "logarithmic_scale":
+      case "min_y_axis":
+      case "max_y_axis":
+      case "fit_y_data":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.history-graph.${schema.name}`
         );

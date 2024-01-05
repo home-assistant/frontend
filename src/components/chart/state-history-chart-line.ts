@@ -47,6 +47,12 @@ export class StateHistoryChartLine extends LitElement {
 
   @property({ type: Boolean }) public logarithmicScale = false;
 
+  @property({ type: Number }) public minYAxis? : number;
+
+  @property({ type: Number }) public maxYAxis? : number;
+
+  @property({ type: Boolean }) public fitYData = false;
+
   @state() private _chartData?: ChartData<"line">;
 
   @state() private _entityIds: string[] = [];
@@ -84,7 +90,10 @@ export class StateHistoryChartLine extends LitElement {
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
       changedProps.has("unit") ||
-      changedProps.has("logarithmicScale")
+      changedProps.has("logarithmicScale") ||
+      changedProps.has("minYAxis") ||
+      changedProps.has("maxYAxis") ||
+      changedProps.has("fitYData")
     ) {
       this._chartOptions = {
         parsing: false,
@@ -121,6 +130,10 @@ export class StateHistoryChartLine extends LitElement {
             },
           },
           y: {
+            suggestedMin: this.fitYData ? this.minYAxis : null,
+            suggestedMax: this.fitYData ? this.maxYAxis : null,
+            min: this.fitYData ? null : this.minYAxis,
+            max: this.fitYData ? null : this.maxYAxis,
             ticks: {
               maxTicksLimit: 7,
             },

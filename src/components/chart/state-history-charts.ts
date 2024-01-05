@@ -75,6 +75,12 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean }) public logarithmicScale = false;
 
+  @property({ type: Number }) public minYAxis? : number;
+
+  @property({ type: Number }) public maxYAxis? : number;
+
+  @property({ type: Boolean }) public fitYData = false;
+
   private _computedStartTime!: Date;
 
   private _computedEndTime!: Date;
@@ -162,6 +168,9 @@ export class StateHistoryCharts extends LitElement {
           .chartIndex=${index}
           .clickForMoreInfo=${this.clickForMoreInfo}
           .logarithmicScale=${this.logarithmicScale}
+          .minYAxis=${this.minYAxis}
+          .maxYAxis=${this.maxYAxis}
+          .fitYData=${this.fitYData}
           @y-width-changed=${this._yWidthChanged}
         ></state-history-chart-line>
       </div> `;
