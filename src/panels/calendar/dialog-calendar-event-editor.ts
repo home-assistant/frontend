@@ -577,7 +577,7 @@ class DialogCalendarEventEditor extends LitElement {
     return [
       haStyleDialog,
       css`
-        @media all and (min-width: 450px and min-height: 500px) {
+        @media all and (min-width: 450px) and (min-height: 500px) {
           ha-dialog {
             --mdc-dialog-min-width: min(600px, 95vw);
             --mdc-dialog-max-width: min(600px, 95vw);
