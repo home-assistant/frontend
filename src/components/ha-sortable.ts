@@ -36,6 +36,11 @@ export class HaSortable extends LitElement {
     }
   }
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._destroySortable();
+  }
+
   protected createRenderRoot() {
     return this;
   }
