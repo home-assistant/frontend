@@ -77,6 +77,8 @@ export class HaSortable extends LitElement {
   }
 
   private async _createSortable() {
+    if (this._sortable) return;
+
     const containerElement = (
       this.container ? this.querySelector(this.container) : this.children[0]
     ) as HTMLElement | undefined;
@@ -119,7 +121,8 @@ export class HaSortable extends LitElement {
   };
 
   private _destroySortable() {
-    this._sortable?.destroy();
+    if (!this._sortable) return;
+    this._sortable.destroy();
     this._sortable = undefined;
   }
 }
