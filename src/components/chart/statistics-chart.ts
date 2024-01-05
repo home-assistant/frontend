@@ -73,9 +73,9 @@ export class StatisticsChart extends LitElement {
 
   @property({ type: Boolean }) public logarithmicScale = false;
 
-  @property({ type: Number }) public minYAxis? : number;
+  @property({ type: Number }) public minYAxis?: number;
 
-  @property({ type: Number }) public maxYAxis? : number;
+  @property({ type: Number }) public maxYAxis?: number;
 
   @property({ type: Boolean }) public fitYData = false;
 
@@ -108,7 +108,7 @@ export class StatisticsChart extends LitElement {
       changedProps.has("period") ||
       changedProps.has("chartType") ||
       changedProps.has("logarithmicScale") ||
-      changedProps.has("hideLegend") || 
+      changedProps.has("hideLegend") ||
       changedProps.has("minYAxis") ||
       changedProps.has("maxYAxis") ||
       changedProps.has("fitYData")

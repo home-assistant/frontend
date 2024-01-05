@@ -47,9 +47,9 @@ export class StateHistoryChartLine extends LitElement {
 
   @property({ type: Boolean }) public logarithmicScale = false;
 
-  @property({ type: Number }) public minYAxis? : number;
+  @property({ type: Number }) public minYAxis?: number;
 
-  @property({ type: Number }) public maxYAxis? : number;
+  @property({ type: Number }) public maxYAxis?: number;
 
   @property({ type: Boolean }) public fitYData = false;
 
