@@ -1,9 +1,9 @@
 /* eslint-disable lit/prefer-static-styles */
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { SortableEvent } from "sortablejs";
-import type { SortableInstance } from "../resources/sortable";
 import { fireEvent } from "../common/dom/fire_event";
+import type { SortableInstance } from "../resources/sortable";
 
 declare global {
   interface HASSDomEvents {
@@ -24,7 +24,10 @@ export class HaSortable extends LitElement {
 
   @property({ type: String }) public item?: string;
 
-  @property({ type: String }) public handle?: string = ".handle";
+  @property({ type: String }) public handle?: string;
+
+  @property({ type: Boolean, attribute: "no-style" })
+  public noStyle: boolean = false;
 
   protected updated(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("disabled")) {
@@ -45,7 +48,8 @@ export class HaSortable extends LitElement {
     return this;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
+    if (this.noStyle) return nothing;
     return html`
       <style>
         .sortable-fallback {
@@ -66,11 +70,6 @@ export class HaSortable extends LitElement {
           background: var(--card-background-color);
           box-shadow: 0px 4px 8px 3px #00000026;
           cursor: grabbing;
-        }
-
-        .handle {
-          cursor: move; /* fallback if grab cursor is unsupported */
-          cursor: grab;
         }
       </style>
     `;

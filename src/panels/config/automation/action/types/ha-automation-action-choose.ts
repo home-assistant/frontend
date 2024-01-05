@@ -97,6 +97,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
     return html`
       <ha-sortable
+        handle=".handle"
         .disabled=${!this.reOrderMode}
         @item-moved=${this._optionMoved}
       >
@@ -512,6 +513,8 @@ export class HaChooseAction extends LitElement implements ActionElement {
         }
         .handle {
           padding: 12px;
+          cursor: move; /* fallback if grab cursor is unsupported */
+          cursor: grab;
         }
         .handle ha-svg-icon {
           pointer-events: none;

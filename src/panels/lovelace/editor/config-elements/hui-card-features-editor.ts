@@ -236,7 +236,7 @@ export class HuiCardFeaturesEditor extends LitElement {
                 </ha-alert>
               `
             : nothing}
-          <ha-sortable @item-moved=${this._featureMoved}>
+          <ha-sortable handle=".handle" @item-moved=${this._featureMoved}>
             <div class="features">
               ${repeat(
                 this.features,
@@ -416,6 +416,8 @@ export class HuiCardFeaturesEditor extends LitElement {
         align-items: center;
       }
       .feature .handle {
+        cursor: move; /* fallback if grab cursor is unsupported */
+        cursor: grab;
         padding-right: 8px;
         padding-inline-end: 8px;
         padding-inline-start: initial;

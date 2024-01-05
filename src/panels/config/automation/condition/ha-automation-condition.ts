@@ -115,6 +115,7 @@ export default class HaAutomationCondition extends LitElement {
         : null}
 
       <ha-sortable
+        handle=".handle"
         .disabled=${!this.reOrderMode}
         @item-moved=${this._conditionMoved}
       >
@@ -321,6 +322,8 @@ export default class HaAutomationCondition extends LitElement {
       }
       .handle {
         padding: 12px;
+        cursor: move; /* fallback if grab cursor is unsupported */
+        cursor: grab;
       }
       .handle ha-svg-icon {
         pointer-events: none;
