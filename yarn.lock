@@ -3430,18 +3430,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-autogrow-textarea@npm:^3.0.0-pre.26":
-  version: 3.0.3
-  resolution: "@polymer/iron-autogrow-textarea@npm:3.0.3"
-  dependencies:
-    "@polymer/iron-behaviors": "npm:^3.0.0-pre.26"
-    "@polymer/iron-flex-layout": "npm:^3.0.0-pre.26"
-    "@polymer/iron-validatable-behavior": "npm:^3.0.0-pre.26"
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: bf11bd05a40623f6609bb9156e299414b15c7bb8c170c4f542f6586cf9273940a19f0f329047c7adf941a90ddc0deefc06be42c8770c6ca3637debad67c9456b
-  languageName: node
-  linkType: hard
-
 "@polymer/iron-behaviors@npm:^3.0.0-pre.26":
   version: 3.0.1
   resolution: "@polymer/iron-behaviors@npm:3.0.1"
@@ -3508,17 +3496,6 @@ __metadata:
     "@polymer/iron-meta": "npm:^3.0.0-pre.26"
     "@polymer/polymer": "npm:^3.0.0"
   checksum: 22dbad29ef88f0087ee6b5aa95fe45f65190c9ee8274cd3558ee9527e04269b2736d2f0c6eb151b3eb39dc5275c63b3197fe50fbc56fd855295b1fe44114b6ed
-  languageName: node
-  linkType: hard
-
-"@polymer/iron-input@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/iron-input@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-a11y-announcer": "npm:^3.0.0-pre.26"
-    "@polymer/iron-validatable-behavior": "npm:^3.0.0-pre.26"
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: b607da1b2962038cb12d6c220b98e49a9e9552ae89c798167d39d7caffea8671ce8d6b62721f386e623ddd535694248459bf5505b6ef335c2fbb36cf6ca373a9
   languageName: node
   linkType: hard
 
@@ -3604,21 +3581,6 @@ __metadata:
     "@polymer/paper-styles": "npm:^3.0.0-pre.26"
     "@polymer/polymer": "npm:^3.0.0"
   checksum: f6e763186538b9adcace8941e2b8405ad1bb9b34059073cf05131f43c1ab3af02b6d9e168a07a645a6186b690ef9e0c4283e4df2521bdb3ea99bc6d23bd14e4d
-  languageName: node
-  linkType: hard
-
-"@polymer/paper-input@npm:3.2.1":
-  version: 3.2.1
-  resolution: "@polymer/paper-input@npm:3.2.1"
-  dependencies:
-    "@polymer/iron-a11y-keys-behavior": "npm:^3.0.0-pre.26"
-    "@polymer/iron-autogrow-textarea": "npm:^3.0.0-pre.26"
-    "@polymer/iron-behaviors": "npm:^3.0.0-pre.26"
-    "@polymer/iron-form-element-behavior": "npm:^3.0.0-pre.26"
-    "@polymer/iron-input": "npm:^3.0.0-pre.26"
-    "@polymer/paper-styles": "npm:^3.0.0-pre.26"
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: d337b8c74351080e224aaa53233cd372b5f5121ecee13a4d218e42e6e5be23b21dcdd03e5019978c422436a14762c7b373b5073bb1988b11021d2103c32e3efe
   languageName: node
   linkType: hard
 
@@ -9582,7 +9544,6 @@ __metadata:
     "@octokit/plugin-retry": "npm:6.0.1"
     "@octokit/rest": "npm:20.0.2"
     "@open-wc/dev-server-hmr": "npm:0.1.4"
-    "@polymer/paper-input": "npm:3.2.1"
     "@polymer/paper-item": "npm:3.0.1"
     "@polymer/paper-listbox": "npm:3.0.1"
     "@polymer/paper-tabs": "npm:3.1.0"
