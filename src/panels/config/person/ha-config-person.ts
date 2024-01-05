@@ -1,12 +1,12 @@
 import { mdiPlus } from "@mdi/js";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list/mwc-list";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-list-item";
 import "../../../components/user/ha-person-badge";
 import {
   createPerson,
@@ -89,17 +89,24 @@ class HaConfigPerson extends LitElement {
           </span>
 
           <ha-card outlined class="storage">
-            ${this._storageItems.map(
-              (entry) => html`
-                <paper-icon-item @click=${this._openEditEntry} .entry=${entry}>
-                  <ha-person-badge
-                    slot="item-icon"
-                    .person=${entry}
-                  ></ha-person-badge>
-                  <paper-item-body> ${entry.name} </paper-item-body>
-                </paper-icon-item>
-              `
-            )}
+            <mwc-list>
+              ${this._storageItems.map(
+                (entry) => html`
+                  <ha-list-item
+                    graphic="avatar"
+                    @click=${this._openEditEntry}
+                    .entry=${entry}
+                  >
+                    <ha-person-badge
+                      .hass=${this.hass}
+                      .person=${entry}
+                      slot="graphic"
+                    ></ha-person-badge>
+                    <span>${entry.name}</span>
+                  </ha-list-item>
+                `
+              )}
+            </mwc-list>
             ${this._storageItems.length === 0
               ? html`
                   <div class="empty">
@@ -120,18 +127,19 @@ class HaConfigPerson extends LitElement {
                 <ha-card outlined header="Configuration.yaml persons">
                   ${this._configItems.map(
                     (entry) => html`
-                      <paper-icon-item>
+                      <ha-list-item graphic="avatar">
                         <ha-person-badge
-                          slot="item-icon"
+                          .hass=${this.hass}
                           .person=${entry}
+                          slot="graphic"
                         ></ha-person-badge>
-                        <paper-item-body> ${entry.name} </paper-item-body>
-                      </paper-icon-item>
+                        <span>${entry.name}</span>
+                      </ha-list-item>
                     `
                   )}
                 </ha-card>
               `
-            : ""}
+            : nothing}
         </ha-config-section>
         <ha-fab
           slot="fab"
@@ -280,13 +288,6 @@ class HaConfigPerson extends LitElement {
         display: flex;
         align-items: center;
         justify-content: space-around;
-      }
-      paper-icon-item {
-        padding-top: 4px;
-        padding-bottom: 4px;
-      }
-      ha-card.storage paper-icon-item {
-        cursor: pointer;
       }
     `;
   }
