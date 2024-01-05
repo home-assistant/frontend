@@ -107,7 +107,15 @@ export class HaSortable extends LitElement {
       (evt.item as any).placeholder.replaceWith(evt.item);
       delete (evt.item as any).placeholder;
     }
-    if (evt.oldIndex === evt.newIndex) return;
+    // if item was not moved, ignore
+    if (
+      evt.oldIndex === undefined ||
+      evt.newIndex === undefined ||
+      evt.oldIndex === evt.newIndex
+    ) {
+      return;
+    }
+
     fireEvent(this, "item-moved", {
       oldIndex: evt.oldIndex!,
       newIndex: evt.newIndex!,
