@@ -361,6 +361,7 @@ class PanelTodo extends LitElement {
           flex-direction: row;
           justify-content: center;
           margin: 8px;
+          padding-bottom: 70px;
         }
         .column {
           flex: 1 0 0;
@@ -411,7 +412,7 @@ class PanelTodo extends LitElement {
           display: block;
         }
         ha-fab {
-          position: absolute;
+          position: fixed;
           right: 16px;
           bottom: 16px;
         }

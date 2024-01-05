@@ -1,4 +1,5 @@
 import "@material/mwc-list/mwc-list";
+import type { List } from "@material/mwc-list/mwc-list";
 import {
   mdiClock,
   mdiDelete,
@@ -56,6 +57,7 @@ import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { TodoListCardConfig } from "./types";
+import { sortableStyles } from "../../../resources/ha-sortable-style";
 
 @customElement("hui-todo-list-card")
 export class HuiTodoListCard extends LitElement implements LovelaceCard {
@@ -229,7 +231,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             : nothing}
         </div>
         ${uncheckedItems.length
-          ? html` <div class="header">
+          ? html`<div class="header">
                 <span>
                   ${this.hass!.localize(
                     "ui.panel.lovelace.cards.todo-list.unchecked_items"
@@ -248,7 +250,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                         graphic="icon"
                       >
                         ${this.hass!.localize(
-                          "ui.panel.lovelace.cards.todo-list.reorder_items"
+                          this._reordering
+                            ? "ui.panel.lovelace.cards.todo-list.exit_reorder_items"
+                            : "ui.panel.lovelace.cards.todo-list.reorder_items"
                         )}
                         <ha-svg-icon
                           slot="graphic"
@@ -331,7 +335,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           const due = item.due
             ? item.due.includes("T")
               ? new Date(item.due)
-              : endOfDay(new Date(item.due))
+              : endOfDay(new Date(`${item.due}T00:00:00`))
             : undefined;
           const today =
             due && !item.due!.includes("T") && isSameDay(new Date(), due);
@@ -466,18 +470,30 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private _completeItem(ev): void {
+  private async _completeItem(ev): Promise<void> {
     const item = this._getItem(ev.currentTarget.itemId);
     if (!item) {
       return;
     }
-    updateItem(this.hass!, this._entityId!, {
-      ...item,
+    await updateItem(this.hass!, this._entityId!, {
+      uid: item.uid,
+      summary: item.summary,
       status:
         item.status === TodoItemStatus.NeedsAction
           ? TodoItemStatus.Completed
           : TodoItemStatus.NeedsAction,
     });
+    await this.updateComplete;
+    const newList: List = this.shadowRoot!.querySelector(
+      item.status === TodoItemStatus.NeedsAction ? "#checked" : "#unchecked"
+    )!;
+    await newList.updateComplete;
+    const items =
+      item.status === TodoItemStatus.NeedsAction
+        ? this._getCheckedItems(this._items)
+        : this._getUncheckedItems(this._items);
+    const index = items.findIndex((itm) => itm.uid === item.uid);
+    newList.focusItemAtIndex(index);
   }
 
   private async _clearCompletedItems(): Promise<void> {
@@ -605,156 +621,165 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        height: 100%;
-        box-sizing: border-box;
-      }
+    return [
+      sortableStyles,
+      css`
+        ha-card {
+          height: 100%;
+          box-sizing: border-box;
+        }
 
-      .has-header {
-        padding-top: 0;
-      }
+        .has-header {
+          padding-top: 0;
+        }
 
-      .addRow {
-        padding: 16px;
-        padding-bottom: 0;
-        position: relative;
-      }
+        .addRow {
+          padding: 16px;
+          padding-bottom: 0;
+          position: relative;
+        }
 
-      .addRow ha-icon-button {
-        position: absolute;
-        right: 16px;
-      }
+        .addRow ha-icon-button {
+          position: absolute;
+          right: 16px;
+          inset-inline-start: initial;
+          inset-inline-end: 16px;
+        }
 
-      .addRow,
-      .header {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-      }
+        .addRow,
+        .header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+        }
 
-      .header {
-        padding-left: 30px;
-        padding-right: 16px;
-        margin-top: 8px;
-        justify-content: space-between;
-      }
+        .header {
+          padding-left: 30px;
+          padding-right: 16px;
+          padding-inline-start: 30px;
+          padding-inline-end: 16px;
+          margin-top: 8px;
+          justify-content: space-between;
+          direction: var(--direction);
+        }
 
-      .header span {
-        color: var(--primary-text-color);
-        font-weight: 500;
-      }
+        .header span {
+          color: var(--primary-text-color);
+          font-weight: 500;
+        }
 
-      .empty {
-        padding: 16px 32px;
-      }
+        .empty {
+          padding: 16px 32px;
+        }
 
-      .item {
-        margin-top: 8px;
-      }
+        .item {
+          margin-top: 8px;
+        }
 
-      ha-check-list-item {
-        --mdc-list-item-meta-size: 56px;
-        min-height: 56px;
-        height: auto;
-      }
+        ha-check-list-item {
+          --mdc-list-item-meta-size: 56px;
+          min-height: 56px;
+          height: auto;
+        }
 
-      ha-check-list-item.multiline {
-        align-items: flex-start;
-        --check-list-item-graphic-margin-top: 8px;
-      }
+        ha-check-list-item.multiline {
+          align-items: flex-start;
+          --check-list-item-graphic-margin-top: 8px;
+        }
 
-      .row {
-        display: flex;
-        justify-content: space-between;
-      }
+        .row {
+          display: flex;
+          justify-content: space-between;
+        }
 
-      .multiline .column {
-        display: flex;
-        flex-direction: column;
-        margin-top: 18px;
-        margin-bottom: 12px;
-      }
+        .multiline .column {
+          display: flex;
+          flex-direction: column;
+          margin-top: 18px;
+          margin-bottom: 12px;
+        }
 
-      .completed .summary {
-        text-decoration: line-through;
-      }
+        .completed .summary {
+          text-decoration: line-through;
+        }
 
-      .description,
-      .due {
-        font-size: 12px;
-        color: var(--secondary-text-color);
-      }
+        .description,
+        .due {
+          font-size: 12px;
+          color: var(--secondary-text-color);
+        }
 
-      .description {
-        white-space: initial;
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        line-clamp: 3;
-        -webkit-box-orient: vertical;
-      }
+        .description {
+          white-space: initial;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          line-clamp: 3;
+          -webkit-box-orient: vertical;
+        }
 
-      .description p {
-        margin: 0;
-      }
+        .description p {
+          margin: 0;
+        }
 
-      .description a {
-        color: var(--primary-color);
-      }
+        .description a {
+          color: var(--primary-color);
+        }
 
-      .due {
-        display: flex;
-        align-items: center;
-      }
+        .due {
+          display: flex;
+          align-items: center;
+        }
 
-      .due ha-svg-icon {
-        margin-right: 4px;
-        --mdc-icon-size: 14px;
-      }
+        .due ha-svg-icon {
+          margin-right: 4px;
+          --mdc-icon-size: 14px;
+        }
 
-      .due.overdue {
-        color: var(--warning-color);
-      }
+        .due.overdue {
+          color: var(--warning-color);
+        }
 
-      .completed .due.overdue {
-        color: var(--secondary-text-color);
-      }
+        .completed .due.overdue {
+          color: var(--secondary-text-color);
+        }
 
-      .handle {
-        cursor: move;
-        height: 24px;
-        padding: 16px 4px;
-      }
+        .handle {
+          cursor: move; /* fallback if grab cursor is unsupported */
+          cursor: grab;
+          height: 24px;
+          padding: 16px 4px;
+        }
 
-      .deleteItemButton {
-        position: relative;
-        left: 8px;
-      }
+        .deleteItemButton {
+          position: relative;
+          left: 8px;
+        }
 
-      ha-textfield {
-        flex-grow: 1;
-      }
+        ha-textfield {
+          flex-grow: 1;
+        }
 
-      .divider {
-        height: 1px;
-        background-color: var(--divider-color);
-        margin: 10px 0;
-      }
+        .divider {
+          height: 1px;
+          background-color: var(--divider-color);
+          margin: 10px 0;
+        }
 
-      .clearall {
-        cursor: pointer;
-      }
+        .clearall {
+          cursor: pointer;
+        }
 
-      .todoList {
-        display: block;
-        padding: 8px;
-      }
+        .todoList {
+          display: block;
+          padding: 8px;
+        }
 
-      .warning {
-        color: var(--error-color);
-      }
-    `;
+        .warning {
+          color: var(--error-color);
+        }
+      `,
+    ];
   }
 }
 

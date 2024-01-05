@@ -328,7 +328,7 @@ class HaAutomationPicker extends LitElement {
         >
         </ha-button-related-filter-menu>
         ${!this.automations.length
-          ? html` <div class="empty" slot="empty">
+          ? html`<div class="empty" slot="empty">
               <ha-svg-icon .path=${mdiRobotHappy}></ha-svg-icon>
               <h1>
                 ${this.hass.localize(
@@ -338,9 +338,12 @@ class HaAutomationPicker extends LitElement {
               <p>
                 ${this.hass.localize(
                   "ui.panel.config.automation.picker.empty_text_1"
-                )}<br />
+                )}
+              </p>
+              <p>
                 ${this.hass.localize(
-                  "ui.panel.config.automation.picker.empty_text_2"
+                  "ui.panel.config.automation.picker.empty_text_2",
+                  { user: this.hass.user?.name || "Alice" }
                 )}
               </p>
               <a
@@ -349,9 +352,7 @@ class HaAutomationPicker extends LitElement {
                 rel="noreferrer"
               >
                 <ha-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.picker.learn_more"
-                  )}
+                  ${this.hass.localize("ui.panel.config.common.learn_more")}
                 </ha-button>
               </a>
             </div>`
@@ -513,7 +514,9 @@ class HaAutomationPicker extends LitElement {
             target="_blank"
             rel="noreferrer"
           >
-            ${this.hass.localize("ui.panel.config.common.learn_more")}
+            ${this.hass.localize(
+              "ui.panel.config.automation.picker.learn_more"
+            )}
           </a>
         </p>
       `,

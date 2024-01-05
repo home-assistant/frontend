@@ -109,6 +109,11 @@ export interface LawnMowerCommandsCardFeatureConfig {
   commands?: LawnMowerCommand[];
 }
 
+export interface UpdateActionsCardFeatureConfig {
+  type: "update-actions";
+  backup?: "yes" | "no" | "ask";
+}
+
 export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
   | ClimateFanModesCardFeatureConfig
@@ -129,7 +134,8 @@ export type LovelaceCardFeatureConfig =
   | TargetTemperatureCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig
   | SelectOptionsCardFeatureConfig
-  | NumericInputCardFeatureConfig;
+  | NumericInputCardFeatureConfig
+  | UpdateActionsCardFeatureConfig;
 
 export type LovelaceCardFeatureContext = {
   entity_id?: string;

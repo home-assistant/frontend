@@ -67,6 +67,7 @@ export const ACTION_GROUPS: AutomationElementGroup = {
     icon: mdiDotsHorizontal,
     members: {
       event: {},
+      service: {},
     },
   },
 } as const;

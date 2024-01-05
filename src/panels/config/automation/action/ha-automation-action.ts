@@ -191,6 +191,7 @@ export default class HaAutomationAction extends LitElement {
     } else if (isService(action)) {
       actions = this.actions.concat({
         service: getService(action),
+        metadata: {},
       });
     } else {
       const elClass = customElements.get(
@@ -319,7 +320,8 @@ export default class HaAutomationAction extends LitElement {
           overflow: hidden;
         }
         .handle {
-          cursor: move;
+          cursor: move; /* fallback if grab cursor is unsupported */
+          cursor: grab;
           padding: 12px;
         }
         .handle ha-svg-icon {

@@ -10,9 +10,9 @@ class HaLabeledSlider extends LitElement {
 
   @property() public caption?: string;
 
-  @property() public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property() public required?: boolean;
+  @property({ type: Boolean }) public required = true;
 
   @property() public min: number = 0;
 

@@ -118,6 +118,8 @@ const OVERRIDE_DEVICE_CLASSES = {
       "carbon_monoxide",
       "moisture",
     ], // Alarm
+    ["connectivity"], // Connectivity
+    ["update"], // Update
   ],
 };
 
