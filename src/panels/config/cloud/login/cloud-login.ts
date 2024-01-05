@@ -293,9 +293,6 @@ export class CloudLogin extends LitElement {
         [slot="introduction"] a {
           color: var(--primary-color);
         }
-        paper-item {
-          cursor: pointer;
-        }
         ha-card {
           overflow: hidden;
         }
