@@ -170,7 +170,6 @@ export class StatisticsChart extends LitElement {
               config: this.hass.config,
             },
           },
-          bounds: this.chartType === "bar" ? "bounds" : undefined,
           ticks: {
             source: this.chartType === "bar" ? "data" : undefined,
             maxRotation: 0,
