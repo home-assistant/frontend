@@ -1190,6 +1190,7 @@
               "blind": "Blind",
               "curtain": "Curtain",
               "damper": "Damper",
+              "screen": "Screen",
               "shutter": "Shutter"
             },
             "switch": {
@@ -2498,7 +2499,9 @@
                   "label": "Time and location",
                   "description": "When someone enters or leaves a zone, or at a specific time."
                 },
-                "other": { "label": "Other triggers" }
+                "other": {
+                  "label": "Other triggers"
+                }
               },
               "type": {
                 "calendar": {
@@ -2734,7 +2737,9 @@
                   "label": "Time and location",
                   "description": "If someone is in a zone or if the current time is before or after a specified time."
                 },
-                "other": { "label": "Other conditions" },
+                "other": {
+                  "label": "Other conditions"
+                },
                 "building_blocks": {
                   "label": "Building blocks",
                   "description": "Build more complex conditions."
@@ -2898,8 +2903,12 @@
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "groups": {
-                "helpers": { "label": "Helpers" },
-                "other": { "label": "Other actions" },
+                "helpers": {
+                  "label": "Helpers"
+                },
+                "other": {
+                  "label": "Other actions"
+                },
                 "building_blocks": {
                   "label": "Building blocks",
                   "description": "Build more complex sequences of actions."

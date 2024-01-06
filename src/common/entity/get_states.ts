@@ -132,6 +132,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "door",
       "garage",
       "gate",
+      "screen",
       "shade",
       "shutter",
       "window",

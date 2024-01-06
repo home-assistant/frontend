@@ -97,6 +97,7 @@ const OVERRIDE_DEVICE_CLASSES = {
       "door",
       "garage",
       "gate",
+      "screen",
       "shade",
       "shutter",
       "window",

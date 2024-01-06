@@ -20,6 +20,9 @@ export const enum CoverEntityFeature {
 
 export function isFullyOpen(stateObj: CoverEntity) {
   if (stateObj.attributes.current_position !== undefined) {
+    if (stateObj.attributes.device_class === "screen") {
+      return stateObj.attributes.current_position === 0;
+    }
     return stateObj.attributes.current_position === 100;
   }
   return stateObj.state === "open";
@@ -27,6 +30,9 @@ export function isFullyOpen(stateObj: CoverEntity) {
 
 export function isFullyClosed(stateObj: CoverEntity) {
   if (stateObj.attributes.current_position !== undefined) {
+    if (stateObj.attributes.device_class === "screen") {
+      return stateObj.attributes.current_position === 100;
+    }
     return stateObj.attributes.current_position === 0;
   }
   return stateObj.state === "closed";

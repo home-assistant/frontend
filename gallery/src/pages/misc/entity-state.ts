@@ -162,6 +162,7 @@ const ENTITIES: HassEntity[] = [
   createEntity("cover.door", "open", "door"),
   createEntity("cover.garage", "open", "garage"),
   createEntity("cover.gate", "open", "gate"),
+  createEntity("cover.screen", "open", "screen"),
   createEntity("cover.shade", "open", "shade"),
   createEntity("cover.shutter", "open", "shutter"),
   createEntity("cover.window", "open", "window"),
