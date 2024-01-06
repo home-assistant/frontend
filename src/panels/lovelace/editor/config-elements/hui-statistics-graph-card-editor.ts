@@ -73,9 +73,6 @@ const cardConfigStruct = assign(
     unit: optional(string()),
     hide_legend: optional(boolean()),
     logarithmic_scale: optional(boolean()),
-    min_y_axis: optional(number()),
-    max_y_axis: optional(number()),
-    fit_y_data: optional(boolean()),
   })
 );
 
@@ -220,21 +217,6 @@ export class HuiStatisticsGraphCardEditor
               required: false,
               selector: { boolean: {} },
             },
-            {
-              name: "min_y_axis",
-              required: false,
-              selector: { number: { mode: "box", step: "any" } },
-            },
-            {
-              name: "max_y_axis",
-              required: false,
-              selector: { number: { mode: "box", step: "any" } },
-            },
-            {
-              name: "fit_y_data",
-              required: false,
-              selector: { boolean: {} },
-            },
           ],
         },
       ];
@@ -372,9 +354,6 @@ export class HuiStatisticsGraphCardEditor
       case "unit":
       case "hide_legend":
       case "logarithmic_scale":
-      case "min_y_axis":
-      case "max_y_axis":
-      case "fit_y_data":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.statistics-graph.${schema.name}`
         );

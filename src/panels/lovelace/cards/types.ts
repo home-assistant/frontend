@@ -340,9 +340,6 @@ export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   chart_type?: "line" | "bar";
   hide_legend?: boolean;
   logarithmic_scale?: boolean;
-  min_y_axis?: number;
-  max_y_axis?: number;
-  fit_y_data?: boolean;
 }
 
 export interface StatisticCardConfig extends LovelaceCardConfig {
