@@ -40,7 +40,7 @@ class AssistDevicesPage extends LitElement {
       const columns: DataTableColumnContainer<AssistDevice> = {
         name: {
           title: hass.localize(
-            "ui.panel.config.voice_assistants.assistants.pipeline.device_detail.device"
+            "ui.panel.config.voice_assistants.assistants.pipeline.devices.device"
           ),
           width: "50%",
           filterable: true,
@@ -50,7 +50,7 @@ class AssistDevicesPage extends LitElement {
         },
         pipeline: {
           title: hass.localize(
-            "ui.panel.config.voice_assistants.assistants.pipeline.device_detail.pipeline"
+            "ui.panel.config.voice_assistants.assistants.pipeline.devices.pipeline"
           ),
           width: "30%",
           filterable: true,
@@ -78,7 +78,7 @@ class AssistDevicesPage extends LitElement {
         },
         area: {
           title: hass.localize(
-            "ui.panel.config.voice_assistants.assistants.pipeline.device_detail.area"
+            "ui.panel.config.voice_assistants.assistants.pipeline.devices.area"
           ),
           width: "20%",
           template: (assistDevice) => {
@@ -118,7 +118,9 @@ class AssistDevicesPage extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        header="Assist devices"
+        .header=${this.hass.localize(
+          "ui.panel.config.voice_assistants.assistants.pipeline.devices.title"
+        )}
       >
         <ha-data-table
           clickable

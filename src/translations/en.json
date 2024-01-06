@@ -2260,7 +2260,8 @@
                 "confirm_title": "Delete {name}?",
                 "confirm_text": "{name} will be permanently deleted."
               },
-              "device_detail": {
+              "devices": {
+                "title": "Assist devices",
                 "device": "Device",
                 "pipeline": "Assistant",
                 "area": "Area"
