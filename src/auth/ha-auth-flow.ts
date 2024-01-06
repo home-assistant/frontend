@@ -227,6 +227,7 @@ export class HaAuthFlow extends LitElement {
           </h1>
           ${this._computeStepDescription(step)}
           <ha-auth-form
+            .localize=${this.localize}
             .data=${this._stepData}
             .schema=${autocompleteLoginFields(step.data_schema)}
             .error=${step.errors}

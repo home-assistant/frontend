@@ -19,13 +19,15 @@ import type {
   HaFormStringData,
   HaFormStringSchema,
 } from "./types";
-import { HomeAssistant } from "../../types";
+import { LocalizeFunc, LocalizeKeys } from "../../common/translations/localize";
 
 const MASKED_FIELDS = ["password", "secret", "token"];
 
 @customElement("ha-form-string")
 export class HaFormString extends LitElement implements HaFormElement {
-  @property() public hass?: HomeAssistant;
+  @property() public localize?: LocalizeFunc;
+
+  @property() public localizeBaseKey?: string;
 
   @property() public schema!: HaFormStringSchema;
 
@@ -81,10 +83,10 @@ export class HaFormString extends LitElement implements HaFormElement {
     return html`
       <ha-icon-button
         toggles
-        .label=${this.hass?.localize(
-          this.unmaskedPassword
-            ? "ui.components.selectors.text.hide_password"
-            : "ui.components.selectors.text.show_password"
+        .label=${this.localize?.(
+          `${this.localizeBaseKey || "ui.components.selectors.text"}.${
+            this.unmaskedPassword ? "hide_password" : "show_password"
+          }` as LocalizeKeys
         ) || (this.unmaskedPassword ? "Hide password" : "Show password")}
         @click=${this.toggleUnmaskedPassword}
         .path=${this.unmaskedPassword ? mdiEyeOff : mdiEye}

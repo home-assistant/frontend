@@ -6,6 +6,8 @@ import "./ha-auth-form-string";
 
 @customElement("ha-auth-form")
 export class HaAuthForm extends HaForm {
+  public localizeBaseKey = "ui.panel.page-authorize.form";
+
   protected fieldElementName(type: string): string {
     if (type === "string") {
       return `ha-auth-form-${type}`;
