@@ -175,7 +175,7 @@
     "@types/js-yaml": "4.0.9",
     "@types/leaflet": "1.9.8",
     "@types/leaflet-draw": "1.0.11",
-    "@types/luxon": "3.3.7",
+    "@types/luxon": "3.3.8",
     "@types/mocha": "10.0.6",
     "@types/qrcode": "1.5.5",
     "@types/serve-handler": "6.1.4",
