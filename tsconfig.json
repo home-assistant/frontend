@@ -41,7 +41,6 @@
           "no-invalid-directive-binding": "warning",
           // LitElement
           "no-incompatible-property-type": "warning",
-          "no-invalid-tag-name": "warning",
           "no-property-visibility-mismatch": "warning",
           // CSS
           "no-invalid-css": "off" // warning does not work
