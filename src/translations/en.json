@@ -6190,7 +6190,8 @@
               "statistic_id": "Statistic id",
               "statistics_unit": "Statistics unit",
               "source": "Source",
-              "issue": "Issue"
+              "issue": "Issue",
+              "no_statistics": "[%key:ui::components::statistics_charts::no_statistics_found%]"
             }
           },
           "yaml": {
