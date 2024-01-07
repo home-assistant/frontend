@@ -4271,10 +4271,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/luxon@npm:3.3.7":
-  version: 3.3.7
-  resolution: "@types/luxon@npm:3.3.7"
-  checksum: 282ac72fd55da0c9d57f376ba9061ce83506cf6239c32259dacde0800964089f6183d2e449ef2ddd89b079fb8bfdffd7e5dbf187eb5c9f106aeaeca2aa60ed09
+"@types/luxon@npm:3.3.8":
+  version: 3.3.8
+  resolution: "@types/luxon@npm:3.3.8"
+  checksum: 2176c394e7ee3b8580e9f30bedac29048fabe32589c6561a9654b242b9c2c08ff9b93206f0eca07e495f900a352ac1446236c310eacda574b3c2d6238a9173a7
   languageName: node
   linkType: hard
 
@@ -9563,7 +9563,7 @@ __metadata:
     "@types/js-yaml": "npm:4.0.9"
     "@types/leaflet": "npm:1.9.8"
     "@types/leaflet-draw": "npm:1.0.11"
-    "@types/luxon": "npm:3.3.7"
+    "@types/luxon": "npm:3.3.8"
     "@types/mocha": "npm:10.0.6"
     "@types/qrcode": "npm:1.5.5"
     "@types/serve-handler": "npm:6.1.4"
