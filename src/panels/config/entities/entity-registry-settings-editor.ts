@@ -51,6 +51,10 @@ import {
   createConfigFlow,
   handleConfigFlowStep,
 } from "../../../data/config_flow";
+import {
+  createOptionsFlow,
+  handleOptionsFlowStep,
+} from "../../../data/options_flow";
 import { DataEntryFlowStepCreateEntry } from "../../../data/data_entry_flow";
 import {
   DeviceRegistryEntry,
@@ -1194,20 +1198,18 @@ export class EntityRegistrySettingsEditor extends LitElement {
     ) {
       // Change invert setting
       const origEntityId = this.entry.options?.switch_as_x?.entity_id;
-      // remove current helper
-      await deleteConfigEntry(this.hass, this.helperConfigEntry.entry_id);
-
       if (!origEntityId) {
         // should not happen, guard for types
       } else {
-        const configFlow = await createConfigFlow(this.hass, "switch_as_x");
-        const configFlowResult = (await handleConfigFlowStep(
+        const configFlow = await createOptionsFlow(
+          this.hass,
+          this.helperConfigEntry.entry_id
+        );
+        const configFlowResult = (await handleOptionsFlowStep(
           this.hass,
           configFlow.flow_id,
           {
-            entity_id: origEntityId,
             invert: this._switchAsInvert,
-            target_domain: this._switchAsDomain,
           }
         )) as DataEntryFlowStepCreateEntry;
         if (configFlowResult.result?.entry_id) {
