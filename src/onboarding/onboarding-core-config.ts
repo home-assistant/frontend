@@ -9,6 +9,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { LOCAL_TIME_ZONE } from "../common/datetime/resolve-time-zone";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
@@ -33,8 +34,7 @@ class OnboardingCoreConfig extends LitElement {
 
   private _elevation = "0";
 
-  private _timeZone: ConfigUpdateValues["time_zone"] =
-    Intl.DateTimeFormat?.().resolvedOptions?.().timeZone;
+  private _timeZone: ConfigUpdateValues["time_zone"] = LOCAL_TIME_ZONE;
 
   private _language: ConfigUpdateValues["language"] = getLocalLanguage();
 

@@ -1,4 +1,5 @@
 import memoizeOne from "memoize-one";
+import "../../resources/intl-polyfill";
 
 export const localizeWeekdays = memoizeOne(
   (language: string, short: boolean): string[] => {
