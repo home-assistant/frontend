@@ -5,9 +5,12 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
+import "../../components/ha-alert";
+import "../../components/ha-checkbox";
 import "../../components/ha-date-input";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-textarea";
+import "../../components/ha-textfield";
 import "../../components/ha-time-input";
 import {
   TodoItemStatus,
