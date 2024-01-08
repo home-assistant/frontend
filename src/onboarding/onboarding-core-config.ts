@@ -12,6 +12,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
+import "../components/ha-circular-progress";
 import "../components/ha-country-picker";
 import { ConfigUpdateValues, saveCoreConfig } from "../data/core";
 import { countryCurrency } from "../data/currency";

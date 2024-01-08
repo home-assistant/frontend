@@ -16,9 +16,13 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { isDate } from "../../common/string/is_date";
 import "../../components/entity/ha-entity-picker";
+import "../../components/ha-alert";
 import "../../components/ha-date-input";
 import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-formfield";
+import "../../components/ha-switch";
 import "../../components/ha-textarea";
+import "../../components/ha-textfield";
 import "../../components/ha-time-input";
 import {
   CalendarEntityFeature,
@@ -577,7 +581,7 @@ class DialogCalendarEventEditor extends LitElement {
     return [
       haStyleDialog,
       css`
-        @media all and (min-width: 450px and min-height: 500px) {
+        @media all and (min-width: 450px) and (min-height: 500px) {
           ha-dialog {
             --mdc-dialog-min-width: min(600px, 95vw);
             --mdc-dialog-max-width: min(600px, 95vw);
