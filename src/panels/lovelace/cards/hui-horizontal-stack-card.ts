@@ -1,8 +1,10 @@
 import { css, CSSResultGroup } from "lit";
+import { customElement } from "lit/decorators";
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiStackCard } from "./hui-stack-card";
 
-class HuiHorizontalStackCard extends HuiStackCard {
+@customElement("hui-horizontal-stack-card")
+export class HuiHorizontalStackCard extends HuiStackCard {
   public async getCardSize(): Promise<number> {
     if (!this._cards) {
       return 0;
@@ -48,8 +50,6 @@ class HuiHorizontalStackCard extends HuiStackCard {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-horitzontal-stack-card": HuiHorizontalStackCard;
+    "hui-horizontal-stack-card": HuiHorizontalStackCard;
   }
 }
-
-customElements.define("hui-horizontal-stack-card", HuiHorizontalStackCard);

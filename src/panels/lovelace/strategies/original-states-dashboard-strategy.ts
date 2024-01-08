@@ -33,3 +33,9 @@ export class OriginalStatesDashboardStrategy extends ReactiveElement {
     );
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "original-states-dashboard-strategy": OriginalStatesDashboardStrategy;
+  }
+}

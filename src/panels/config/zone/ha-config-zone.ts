@@ -548,3 +548,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     `;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-zone": HaConfigZone;
+  }
+}
