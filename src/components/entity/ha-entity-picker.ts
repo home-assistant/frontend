@@ -19,14 +19,17 @@ import "../ha-svg-icon";
 import "./state-badge";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-helper-detail";
+import { domainToName } from "../../data/integration";
+import {
+  isHelperDomain,
+  HelperDomain,
+} from "../../panels/config/helpers/const";
 
 interface HassEntityWithCachedName extends HassEntity, ScorableTextItem {
   friendly_name: string;
 }
 
 export type HaEntityPickerEntityFilterFunc = (entity: HassEntity) => boolean;
-
-const NEW_ENTITY_ID = "__new_entity__";
 
 @customElement("ha-entity-picker")
 export class HaEntityPicker extends LitElement {
@@ -158,20 +161,37 @@ export class HaEntityPicker extends LitElement {
       }
       let entityIds = Object.keys(hass.states);
 
+      const newFriendlyName = hass.localize(
+        "ui.components.entity.entity-picker.create_helper",
+        {
+          domain:
+            createDomains?.length === 1
+              ? isHelperDomain(createDomains[0])
+                ? hass.localize(
+                    `ui.panel.config.helpers.types.${
+                      createDomains[0] as HelperDomain
+                    }`
+                  )
+                : domainToName(hass.localize, createDomains[0])
+              : undefined,
+        }
+      );
+
+      const newEntityId = hass.localize(
+        "ui.components.entity.entity-picker.new_entity"
+      );
+
       const newEntity = {
-        entity_id: NEW_ENTITY_ID,
+        entity_id: newEntityId,
         state: "on",
         last_changed: "",
         last_updated: "",
         context: { id: "", user_id: null, parent_id: null },
-        friendly_name: `Create a new ${
-          createDomains?.length === 1 ? `${createDomains[0]} ` : ""
-        }helper`,
+        friendly_name: newFriendlyName,
         attributes: {
-          friendly_name: "foo",
           icon: "mdi:plus",
         },
-        strings: ["create new"],
+        strings: [newEntityId, newFriendlyName],
       };
 
       if (!entityIds.length) {
@@ -382,7 +402,10 @@ export class HaEntityPicker extends LitElement {
     ev.stopPropagation();
     const newValue = ev.detail.value;
 
-    if (newValue === NEW_ENTITY_ID) {
+    if (
+      newValue ===
+      this.hass.localize("ui.components.entity.entity-picker.new_entity")
+    ) {
       showHelperDetailDialog(this, {
         domains: this.createDomains!,
         dialogClosedCallback: (item) => {
