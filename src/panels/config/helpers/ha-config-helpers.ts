@@ -312,7 +312,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     }
     if (isHelperDomain(domain)) {
       showHelperDetailDialog(this, {
-        domain,
+        domains: [domain],
       });
       return;
     }
