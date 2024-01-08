@@ -10,9 +10,9 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-control-slider";
+import "../../../../components/ha-sortable";
 import { UNAVAILABLE } from "../../../../data/entity";
 import {
   ExtEntityRegistryEntry,
@@ -24,7 +24,6 @@ import {
   computeDefaultFavoriteColors,
 } from "../../../../data/light";
 import { actionHandler } from "../../../../panels/lovelace/common/directives/action-handler-directive";
-import type { SortableInstance } from "../../../../resources/sortable";
 import { HomeAssistant } from "../../../../types";
 import { showConfirmationDialog } from "../../../generic/show-dialog-box";
 import "./ha-favorite-color-button";
@@ -48,16 +47,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   @state() private _favoriteColors: LightColor[] = [];
 
-  private _sortable?: SortableInstance;
-
   protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("editMode")) {
-      if (this.editMode) {
-        this._createSortable();
-      } else {
-        this._destroySortable();
-      }
-    }
     if (changedProps.has("entry")) {
       if (this.entry) {
         if (this.entry.options?.light?.favorite_colors) {
@@ -69,34 +59,10 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
     }
   }
 
-  private async _createSortable() {
-    const Sortable = (await import("../../../../resources/sortable")).default;
-    this._sortable = new Sortable(
-      this.shadowRoot!.querySelector(".container")!,
-      {
-        animation: 150,
-        fallbackClass: "sortable-fallback",
-        draggable: ".color",
-        onChoose: (evt: SortableEvent) => {
-          (evt.item as any).placeholder =
-            document.createComment("sort-placeholder");
-          evt.item.after((evt.item as any).placeholder);
-        },
-        onEnd: (evt: SortableEvent) => {
-          // put back in original location
-          if ((evt.item as any).placeholder) {
-            (evt.item as any).placeholder.replaceWith(evt.item);
-            delete (evt.item as any).placeholder;
-          }
-          this._dragged(evt);
-        },
-      }
-    );
-  }
-
-  private _dragged(ev: SortableEvent): void {
-    if (ev.oldIndex === ev.newIndex) return;
-    this._move(ev.oldIndex!, ev.newIndex!);
+  private _colorMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+    this._move(oldIndex, newIndex);
   }
 
   private _move(index: number, newIndex: number) {
@@ -105,11 +71,6 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
     favoriteColors.splice(newIndex, 0, action);
     this._favoriteColors = favoriteColors;
     this._save(favoriteColors);
-  }
-
-  private _destroySortable() {
-    this._sortable?.destroy();
-    this._sortable = undefined;
   }
 
   private _apply = (index: number) => {
@@ -223,72 +184,79 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="container">
-        ${this._favoriteColors.map(
-          (color, index) => html`
-            <div class="color">
-              <div
-                class="color-bubble ${classMap({
-                  shake: !!this.editMode,
-                })}"
-              >
-                <ha-favorite-color-button
-                  .label=${this.hass.localize(
-                    `ui.dialogs.more_info_control.light.favorite_color.${
-                      this.editMode ? "edit" : "set"
-                    }`,
-                    { number: index }
-                  )}
-                  .disabled=${this.stateObj!.state === UNAVAILABLE}
-                  .color=${color}
-                  .index=${index}
-                  .actionHandler=${actionHandler({
-                    hasHold: !this.editMode && this.hass.user?.is_admin,
-                    disabled: this.stateObj!.state === UNAVAILABLE,
-                  })}
-                  @action=${this._handleColorAction}
+      <ha-sortable
+        @item-moved=${this._colorMoved}
+        item=".color"
+        no-style
+        .disabled=${!this.editMode}
+      >
+        <div class="container">
+          ${this._favoriteColors.map(
+            (color, index) => html`
+              <div class="color">
+                <div
+                  class="color-bubble ${classMap({
+                    shake: !!this.editMode,
+                  })}"
                 >
-                </ha-favorite-color-button>
-                ${this.editMode
-                  ? html`
-                      <button
-                        @click=${this._handleDeleteButton}
-                        class="delete"
-                        .index=${index}
-                        aria-label=${this.hass.localize(
-                          `ui.dialogs.more_info_control.light.favorite_color.delete`,
-                          { number: index }
-                        )}
-                        .title=${this.hass.localize(
-                          `ui.dialogs.more_info_control.light.favorite_color.delete`,
-                          { number: index }
-                        )}
-                      >
-                        <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
-                      </button>
-                    `
-                  : nothing}
+                  <ha-favorite-color-button
+                    .label=${this.hass.localize(
+                      `ui.dialogs.more_info_control.light.favorite_color.${
+                        this.editMode ? "edit" : "set"
+                      }`,
+                      { number: index }
+                    )}
+                    .disabled=${this.stateObj!.state === UNAVAILABLE}
+                    .color=${color}
+                    .index=${index}
+                    .actionHandler=${actionHandler({
+                      hasHold: !this.editMode && this.hass.user?.is_admin,
+                      disabled: this.stateObj!.state === UNAVAILABLE,
+                    })}
+                    @action=${this._handleColorAction}
+                  >
+                  </ha-favorite-color-button>
+                  ${this.editMode
+                    ? html`
+                        <button
+                          @click=${this._handleDeleteButton}
+                          class="delete"
+                          .index=${index}
+                          aria-label=${this.hass.localize(
+                            `ui.dialogs.more_info_control.light.favorite_color.delete`,
+                            { number: index }
+                          )}
+                          .title=${this.hass.localize(
+                            `ui.dialogs.more_info_control.light.favorite_color.delete`,
+                            { number: index }
+                          )}
+                        >
+                          <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
+                        </button>
+                      `
+                    : nothing}
+                </div>
               </div>
-            </div>
-          `
-        )}
-        ${this.editMode
-          ? html`
-              <ha-outlined-icon-button
-                class="button"
-                @click=${this._handleAddButton}
-              >
-                <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-              </ha-outlined-icon-button>
-              <ha-outlined-icon-button
-                @click=${this._exitEditMode}
-                class="button"
-              >
-                <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
-              </ha-outlined-icon-button>
             `
-          : nothing}
-      </div>
+          )}
+          ${this.editMode
+            ? html`
+                <ha-outlined-icon-button
+                  class="button"
+                  @click=${this._handleAddButton}
+                >
+                  <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                </ha-outlined-icon-button>
+                <ha-outlined-icon-button
+                  @click=${this._exitEditMode}
+                  class="button"
+                >
+                  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
+                </ha-outlined-icon-button>
+              `
+            : nothing}
+        </div>
+      </ha-sortable>
     `;
   }
 
