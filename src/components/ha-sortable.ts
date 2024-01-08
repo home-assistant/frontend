@@ -40,6 +40,25 @@ export class HaSortable extends LitElement {
     }
   }
 
+  // Workaround for connectedCallback just after disconnectedCallback (when dragging sortable with sortable children)
+  private _shouldBeDestroy = false;
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._shouldBeDestroy = true;
+    setTimeout(() => {
+      if (this._shouldBeDestroy) {
+        this._destroySortable();
+        this._shouldBeDestroy = false;
+      }
+    }, 1);
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._shouldBeDestroy = false;
+  }
+
   protected createRenderRoot() {
     return this;
   }
@@ -73,7 +92,6 @@ export class HaSortable extends LitElement {
 
   private async _createSortable() {
     if (this._sortable) return;
-
     const container = this.children[0] as HTMLElement | undefined;
 
     if (!container) return;
