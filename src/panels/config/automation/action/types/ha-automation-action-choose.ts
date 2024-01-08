@@ -468,13 +468,16 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   private _defaultChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const value = ev.detail.value as Action[];
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.action,
-        default: value,
-      },
-    });
+    this._showDefault = true;
+    const defaultAction = ev.detail.value as Action[];
+    const newValue: ChooseAction = {
+      ...this.action,
+      default: defaultAction,
+    };
+    if (defaultAction.length === 0) {
+      delete newValue.default;
+    }
+    fireEvent(this, "value-changed", { value: newValue });
   }
 
   static get styles(): CSSResultGroup {
