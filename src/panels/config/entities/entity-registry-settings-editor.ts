@@ -1205,24 +1205,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
           this.hass,
           this.helperConfigEntry.entry_id
         );
-        const configFlowResult = (await handleOptionsFlowStep(
-          this.hass,
-          configFlow.flow_id,
-          {
-            invert: this._switchAsInvert,
-          }
-        )) as DataEntryFlowStepCreateEntry;
-        if (configFlowResult.result?.entry_id) {
-          try {
-            const entry = await this._waitForEntityRegistryUpdate(
-              configFlowResult.result.entry_id
-            );
-            showMoreInfoDialog(parent, { entityId: entry.entity_id });
-            close = false;
-          } catch (err) {
-            // ignore
-          }
-        }
+        await handleOptionsFlowStep(this.hass, configFlow.flow_id, {
+          invert: this._switchAsInvert,
+        });
       }
     }
 
