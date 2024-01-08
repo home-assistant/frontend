@@ -16,12 +16,21 @@ import {
   mdiShape,
   mdiStateMachine,
   mdiSwapHorizontal,
+  mdiTimerOutline,
   mdiWeatherSunny,
   mdiWebhook,
 } from "@mdi/js";
-
+import {
+  object,
+  optional,
+  string,
+  union,
+  literal,
+  boolean,
+  is,
+} from "superstruct";
 import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
-import { AutomationElementGroup } from "./automation";
+import { AutomationElementGroup, Trigger } from "./automation";
 
 export const TRIGGER_ICONS = {
   calendar: mdiCalendar,
@@ -37,6 +46,7 @@ export const TRIGGER_ICONS = {
   tag: mdiNfcVariant,
   template: mdiCodeBraces,
   time: mdiClockOutline,
+  timer: mdiTimerOutline,
   time_pattern: mdiAvTimer,
   webhook: mdiWebhook,
   persistent_notification: mdiMessageAlert,
@@ -59,9 +69,37 @@ export const TRIGGER_GROUPS: AutomationElementGroup = {
       mqtt: {},
       conversation: {},
       tag: {},
+      timer: {},
       template: {},
       webhook: {},
       persistent_notification: {},
     },
   },
 } as const;
+
+const timerEventTypeStruct = union([
+  literal("timer.cancelled"),
+  literal("timer.finished"),
+  literal("timer.started"),
+  literal("timer.restarted"),
+  literal("timer.paused"),
+]);
+
+const timerEventTriggerStruct = object({
+  alias: optional(string()),
+  id: optional(string()),
+  variables: optional(object()),
+  enabled: optional(boolean()),
+  platform: literal("event"),
+  metadata: object(),
+  event_type: optional(timerEventTypeStruct),
+  event_data: object({
+    entity_id: optional(string()),
+  }),
+});
+
+export const getTriggerType = (trigger: Trigger): string => {
+  if (is(trigger, timerEventTriggerStruct)) return "timer";
+
+  return trigger.platform;
+};

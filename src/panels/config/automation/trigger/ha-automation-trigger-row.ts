@@ -37,7 +37,7 @@ import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import { EntityRegistryEntry } from "../../../../data/entity_registry";
-import { TRIGGER_ICONS } from "../../../../data/trigger";
+import { TRIGGER_ICONS, getTriggerType } from "../../../../data/trigger";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -59,6 +59,7 @@ import "./types/ha-automation-trigger-sun";
 import "./types/ha-automation-trigger-tag";
 import "./types/ha-automation-trigger-template";
 import "./types/ha-automation-trigger-time";
+import "./types/ha-automation-trigger-timer";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
@@ -128,9 +129,10 @@ export default class HaAutomationTriggerRow extends LitElement {
   private _triggerUnsub?: Promise<UnsubscribeFunc>;
 
   protected render() {
+    const triggerType = getTriggerType(this.trigger);
+
     const supported =
-      customElements.get(`ha-automation-trigger-${this.trigger.platform}`) !==
-      undefined;
+      customElements.get(`ha-automation-trigger-${triggerType}`) !== undefined;
     const yamlMode = this._yamlMode || !supported;
     const showId = "id" in this.trigger || this._requestShowId;
 
@@ -150,7 +152,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           <h3 slot="header">
             <ha-svg-icon
               class="trigger-icon"
-              .path=${TRIGGER_ICONS[this.trigger.platform]}
+              .path=${TRIGGER_ICONS[triggerType]}
             ></ha-svg-icon>
             ${describeTrigger(this.trigger, this.hass, this._entityReg)}
           </h3>
@@ -351,14 +353,11 @@ export default class HaAutomationTriggerRow extends LitElement {
                     @ui-mode-not-available=${this._handleUiModeNotAvailable}
                     @value-changed=${this._onUiChanged}
                   >
-                    ${dynamicElement(
-                      `ha-automation-trigger-${this.trigger.platform}`,
-                      {
-                        hass: this.hass,
-                        trigger: this.trigger,
-                        disabled: this.disabled,
-                      }
-                    )}
+                    ${dynamicElement(`ha-automation-trigger-${triggerType}`, {
+                      hass: this.hass,
+                      trigger: this.trigger,
+                      disabled: this.disabled,
+                    })}
                   </div>
                 `}
           </div>
