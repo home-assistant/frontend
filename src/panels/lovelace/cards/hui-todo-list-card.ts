@@ -1,10 +1,15 @@
+import "@material/mwc-list/mwc-list";
+import type { List } from "@material/mwc-list/mwc-list";
 import {
+  mdiClock,
   mdiDelete,
+  mdiDeleteSweep,
+  mdiDotsVertical,
   mdiDrag,
-  mdiNotificationClearAll,
   mdiPlus,
   mdiSort,
 } from "@mdi/js";
+import { endOfDay, isSameDay } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
@@ -15,19 +20,21 @@ import {
   html,
   nothing,
 } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import type { SortableEvent } from "sortablejs";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../components/ha-card";
+import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
+import "../../../components/ha-markdown-element";
+import "../../../components/ha-relative-time";
 import "../../../components/ha-select";
+import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
@@ -42,8 +49,9 @@ import {
   subscribeItems,
   updateItem,
 } from "../../../data/todo";
-import type { SortableInstance } from "../../../resources/sortable";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
+import { showTodoItemEditDialog } from "../../todo/show-dialog-todo-item-editor";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -85,10 +93,6 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   @state() private _reordering = false;
 
   private _unsubItems?: Promise<UnsubscribeFunc>;
-
-  private _sortable?: SortableInstance;
-
-  @query("#unchecked") private _uncheckedContainer?: HTMLElement;
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -199,6 +203,14 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         <div class="addRow">
           ${this.todoListSupportsFeature(TodoListEntityFeature.CREATE_TODO_ITEM)
             ? html`
+                <ha-textfield
+                  class="addBox"
+                  .placeholder=${this.hass!.localize(
+                    "ui.panel.lovelace.cards.todo-list.add_item"
+                  )}
+                  @keydown=${this._addKeyPress}
+                  .disabled=${unavailable}
+                ></ha-textfield>
                 <ha-icon-button
                   class="addButton"
                   .path=${mdiPlus}
@@ -209,38 +221,61 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                   @click=${this._addItem}
                 >
                 </ha-icon-button>
-                <ha-textfield
-                  class="addBox"
-                  .placeholder=${this.hass!.localize(
-                    "ui.panel.lovelace.cards.todo-list.add_item"
-                  )}
-                  @keydown=${this._addKeyPress}
-                  .disabled=${unavailable}
-                ></ha-textfield>
-              `
-            : nothing}
-          ${this.todoListSupportsFeature(TodoListEntityFeature.MOVE_TODO_ITEM)
-            ? html`
-                <ha-icon-button
-                  class="reorderButton"
-                  .path=${mdiSort}
-                  .title=${this.hass!.localize(
-                    "ui.panel.lovelace.cards.todo-list.reorder_items"
-                  )}
-                  @click=${this._toggleReorder}
-                  .disabled=${unavailable}
-                >
-                </ha-icon-button>
               `
             : nothing}
         </div>
-        <div id="unchecked">
-          ${this._renderItems(uncheckedItems, unavailable)}
-        </div>
+        ${uncheckedItems.length
+          ? html`<div class="header">
+                <span>
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.cards.todo-list.unchecked_items"
+                  )}
+                </span>
+                ${this.todoListSupportsFeature(
+                  TodoListEntityFeature.MOVE_TODO_ITEM
+                )
+                  ? html`<ha-button-menu>
+                      <ha-icon-button
+                        slot="trigger"
+                        .path=${mdiDotsVertical}
+                      ></ha-icon-button>
+                      <ha-list-item
+                        @click=${this._toggleReorder}
+                        graphic="icon"
+                      >
+                        ${this.hass!.localize(
+                          this._reordering
+                            ? "ui.panel.lovelace.cards.todo-list.exit_reorder_items"
+                            : "ui.panel.lovelace.cards.todo-list.reorder_items"
+                        )}
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${mdiSort}
+                          .disabled=${unavailable}
+                        >
+                        </ha-svg-icon>
+                      </ha-list-item>
+                    </ha-button-menu>`
+                  : nothing}
+              </div>
+              <ha-sortable
+                handle-selector="ha-svg-icon"
+                .disabled=${!this._reordering}
+                @item-moved=${this._itemMoved}
+              >
+                <mwc-list id="unchecked">
+                  ${this._renderItems(uncheckedItems, unavailable)}
+                </mwc-list>
+              </ha-sortable>`
+          : html`<p class="empty">
+              ${this.hass.localize(
+                "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
+              )}
+            </p>`}
         ${checkedItems.length
           ? html`
               <div class="divider"></div>
-              <div class="checked">
+              <div class="header">
                 <span>
                   ${this.hass!.localize(
                     "ui.panel.lovelace.cards.todo-list.checked_items"
@@ -249,65 +284,33 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                 ${this.todoListSupportsFeature(
                   TodoListEntityFeature.DELETE_TODO_ITEM
                 )
-                  ? html`<ha-svg-icon
-                      class="clearall"
-                      tabindex="0"
-                      .path=${mdiNotificationClearAll}
-                      .title=${this.hass!.localize(
-                        "ui.panel.lovelace.cards.todo-list.clear_items"
-                      )}
-                      @click=${this._clearCompletedItems}
-                      .disabled=${unavailable}
-                    >
-                    </ha-svg-icon>`
+                  ? html`<ha-button-menu>
+                      <ha-icon-button
+                        slot="trigger"
+                        .path=${mdiDotsVertical}
+                      ></ha-icon-button>
+                      <ha-list-item
+                        @click=${this._clearCompletedItems}
+                        graphic="icon"
+                        class="warning"
+                      >
+                        ${this.hass!.localize(
+                          "ui.panel.lovelace.cards.todo-list.clear_items"
+                        )}
+                        <ha-svg-icon
+                          class="warning"
+                          slot="graphic"
+                          .path=${mdiDeleteSweep}
+                          .disabled=${unavailable}
+                        >
+                        </ha-svg-icon>
+                      </ha-list-item>
+                    </ha-button-menu>`
                   : nothing}
               </div>
-              ${repeat(
-                checkedItems,
-                (item) => item.uid,
-                (item) => html`
-                  <div class="editRow">
-                    ${this.todoListSupportsFeature(
-                      TodoListEntityFeature.UPDATE_TODO_ITEM
-                    )
-                      ? html`<ha-checkbox
-                          tabindex="0"
-                          .checked=${item.status === TodoItemStatus.Completed}
-                          .itemId=${item.uid}
-                          @change=${this._completeItem}
-                          .disabled=${unavailable}
-                        ></ha-checkbox>`
-                      : nothing}
-                    <ha-textfield
-                      class="item"
-                      .disabled=${unavailable ||
-                      !this.todoListSupportsFeature(
-                        TodoListEntityFeature.UPDATE_TODO_ITEM
-                      )}
-                      .value=${item.summary}
-                      .itemId=${item.uid}
-                      @change=${this._saveEdit}
-                    ></ha-textfield>
-                    ${this.todoListSupportsFeature(
-                      TodoListEntityFeature.DELETE_TODO_ITEM
-                    ) &&
-                    !this.todoListSupportsFeature(
-                      TodoListEntityFeature.UPDATE_TODO_ITEM
-                    )
-                      ? html`<ha-icon-button
-                          .title=${this.hass!.localize(
-                            "ui.panel.lovelace.cards.todo-list.delete_item"
-                          )}
-                          class="deleteItemButton"
-                          .path=${mdiDelete}
-                          .itemId=${item.uid}
-                          @click=${this._deleteItem}
-                        >
-                        </ha-icon-button>`
-                      : nothing}
-                  </div>
-                `
-              )}
+              <mwc-list multi id="checked">
+                ${this._renderItems(checkedItems, unavailable)}
+              </mwc-list>
             `
           : ""}
       </ha-card>
@@ -319,59 +322,93 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       ${repeat(
         items,
         (item) => item.uid,
-        (item) => html`
-          <div class="editRow" item-id=${item.uid}>
-            ${this.todoListSupportsFeature(
+        (item) => {
+          const showDelete =
+            this.todoListSupportsFeature(
+              TodoListEntityFeature.DELETE_TODO_ITEM
+            ) &&
+            !this.todoListSupportsFeature(
               TodoListEntityFeature.UPDATE_TODO_ITEM
-            )
-              ? html`<ha-checkbox
-                  tabindex="0"
-                  .checked=${item.status === TodoItemStatus.Completed}
-                  .itemId=${item.uid}
-                  .disabled=${unavailable}
-                  @change=${this._completeItem}
-                ></ha-checkbox>`
-              : nothing}
-            <ha-textfield
-              class="item"
+            );
+          const showReorder =
+            item.status !== TodoItemStatus.Completed && this._reordering;
+          const due = item.due
+            ? item.due.includes("T")
+              ? new Date(item.due)
+              : endOfDay(new Date(`${item.due}T00:00:00`))
+            : undefined;
+          const today =
+            due && !item.due!.includes("T") && isSameDay(new Date(), due);
+          return html`
+            <ha-check-list-item
+              left
+              .hasMeta=${showReorder || showDelete}
+              class="editRow ${classMap({
+                completed: item.status === TodoItemStatus.Completed,
+                multiline: Boolean(item.description || item.due),
+              })}"
+              .selected=${item.status === TodoItemStatus.Completed}
               .disabled=${unavailable ||
               !this.todoListSupportsFeature(
                 TodoListEntityFeature.UPDATE_TODO_ITEM
               )}
-              .value=${item.summary}
+              item-id=${item.uid}
               .itemId=${item.uid}
-              @change=${this._saveEdit}
-            ></ha-textfield>
-            ${this._reordering
-              ? html`
-                  <ha-svg-icon
-                    .title=${this.hass!.localize(
-                      "ui.panel.lovelace.cards.todo-list.drag_and_drop"
-                    )}
-                    class="reorderButton handle"
-                    .path=${mdiDrag}
-                  >
-                  </ha-svg-icon>
-                `
-              : this.todoListSupportsFeature(
-                    TodoListEntityFeature.DELETE_TODO_ITEM
-                  ) &&
-                  !this.todoListSupportsFeature(
-                    TodoListEntityFeature.UPDATE_TODO_ITEM
-                  )
-                ? html`<ha-icon-button
-                    .title=${this.hass!.localize(
-                      "ui.panel.lovelace.cards.todo-list.delete_item"
-                    )}
-                    class="deleteItemButton"
-                    .path=${mdiDelete}
-                    .itemId=${item.uid}
-                    @click=${this._deleteItem}
-                  >
-                  </ha-icon-button>`
-                : nothing}
-          </div>
-        `
+              @change=${this._completeItem}
+              @click=${this._openItem}
+              @request-selected=${this._requestSelected}
+              @keydown=${this._handleKeydown}
+            >
+              <div class="column">
+                <span class="summary">${item.summary}</span>
+                ${item.description
+                  ? html`<ha-markdown-element
+                      class="description"
+                      .content=${item.description}
+                    ></ha-markdown-element>`
+                  : nothing}
+                ${due
+                  ? html`<div class="due ${due < new Date() ? "overdue" : ""}">
+                      <ha-svg-icon .path=${mdiClock}></ha-svg-icon>${today
+                        ? this.hass!.localize(
+                            "ui.panel.lovelace.cards.todo-list.today"
+                          )
+                        : html`<ha-relative-time
+                            capitalize
+                            .hass=${this.hass}
+                            .datetime=${due}
+                          ></ha-relative-time>`}
+                    </div>`
+                  : nothing}
+              </div>
+              ${showReorder
+                ? html`
+                    <ha-svg-icon
+                      .title=${this.hass!.localize(
+                        "ui.panel.lovelace.cards.todo-list.drag_and_drop"
+                      )}
+                      class="reorderButton handle"
+                      .path=${mdiDrag}
+                      slot="meta"
+                    >
+                    </ha-svg-icon>
+                  `
+                : showDelete
+                  ? html`<ha-icon-button
+                      .title=${this.hass!.localize(
+                        "ui.panel.lovelace.cards.todo-list.delete_item"
+                      )}
+                      class="deleteItemButton"
+                      .path=${mdiDelete}
+                      .itemId=${item.uid}
+                      slot="meta"
+                      @click=${this._deleteItem}
+                    >
+                    </ha-icon-button>`
+                  : nothing}
+            </ha-check-list-item>
+          `;
+        }
       )}
     `;
   }
@@ -401,37 +438,62 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     return this._items?.find((item) => item.uid === itemId);
   }
 
-  private _completeItem(ev): void {
-    const item = this._getItem(ev.target.itemId);
-    if (!item) {
+  private _requestSelected(ev: Event): void {
+    ev.stopPropagation();
+  }
+
+  private _handleKeydown(ev) {
+    if (ev.key === " ") {
+      this._completeItem(ev);
       return;
     }
-    updateItem(this.hass!, this._entityId!, {
-      ...item,
-      status: ev.target.checked
-        ? TodoItemStatus.Completed
-        : TodoItemStatus.NeedsAction,
+    if (ev.key === "Enter") {
+      this._openItem(ev);
+    }
+  }
+
+  private _openItem(ev): void {
+    ev.stopPropagation();
+
+    if (
+      ev
+        .composedPath()
+        .find((el) => ["input", "a", "button"].includes(el.localName))
+    ) {
+      return;
+    }
+
+    const item = this._getItem(ev.currentTarget.itemId);
+    showTodoItemEditDialog(this, {
+      entity: this._config!.entity!,
+      item,
     });
   }
 
-  private _saveEdit(ev): void {
-    // If name is not empty, update the item otherwise remove it
-    if (ev.target.value) {
-      const item = this._getItem(ev.target.itemId);
-      if (!item) {
-        return;
-      }
-      updateItem(this.hass!, this._entityId!, {
-        ...item,
-        summary: ev.target.value,
-      });
-    } else if (
-      this.todoListSupportsFeature(TodoListEntityFeature.DELETE_TODO_ITEM)
-    ) {
-      deleteItems(this.hass!, this._entityId!, [ev.target.itemId]);
+  private async _completeItem(ev): Promise<void> {
+    const item = this._getItem(ev.currentTarget.itemId);
+    if (!item) {
+      return;
     }
-
-    ev.target.blur();
+    await updateItem(this.hass!, this._entityId!, {
+      uid: item.uid,
+      summary: item.summary,
+      status:
+        item.status === TodoItemStatus.NeedsAction
+          ? TodoItemStatus.Completed
+          : TodoItemStatus.NeedsAction,
+    });
+    await this.updateComplete;
+    const newList: List = this.shadowRoot!.querySelector(
+      item.status === TodoItemStatus.NeedsAction ? "#checked" : "#unchecked"
+    )!;
+    await newList.updateComplete;
+    const items =
+      item.status === TodoItemStatus.NeedsAction
+        ? this._getCheckedItems(this._items)
+        : this._getUncheckedItems(this._items);
+    const index = items.findIndex((itm) => itm.uid === item.uid);
+    newList.focusItemAtIndex(index);
   }
 
   private async _clearCompletedItems(): Promise<void> {
@@ -464,7 +526,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private _addItem(ev): void {
     const newItem = this._newItem;
     if (newItem.value!.length > 0) {
-      createItem(this.hass!, this._entityId!, newItem.value!);
+      createItem(this.hass!, this._entityId!, {
+        summary: newItem.value!,
+      });
     }
 
     newItem.value = "";
@@ -489,43 +553,12 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   private async _toggleReorder() {
     this._reordering = !this._reordering;
-    await this.updateComplete;
-    if (this._reordering) {
-      this._createSortable();
-    } else {
-      this._sortable?.destroy();
-      this._sortable = undefined;
-    }
   }
 
-  private async _createSortable() {
-    const Sortable = (await import("../../../resources/sortable")).default;
-    this._sortable = new Sortable(this._uncheckedContainer!, {
-      animation: 150,
-      fallbackClass: "sortable-fallback",
-      dataIdAttr: "item-id",
-      handle: "ha-svg-icon",
-      onChoose: (evt: SortableEvent) => {
-        (evt.item as any).placeholder =
-          document.createComment("sort-placeholder");
-        evt.item.after((evt.item as any).placeholder);
-      },
-      onEnd: (evt: SortableEvent) => {
-        // put back in original location
-        if ((evt.item as any).placeholder) {
-          (evt.item as any).placeholder.replaceWith(evt.item);
-          delete (evt.item as any).placeholder;
-        }
-        if (evt.newIndex === undefined || evt.oldIndex === undefined) {
-          return;
-        }
-        // Since this is `onEnd` event, it's possible that
-        // an item was dragged away and was put back to its original position.
-        if (evt.oldIndex !== evt.newIndex) {
-          this._moveItem(evt.oldIndex, evt.newIndex);
-        }
-      },
-    });
+  private async _itemMoved(ev: CustomEvent) {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+    this._moveItem(oldIndex, newIndex);
   }
 
   private async _moveItem(oldIndex: number, newIndex: number) {
@@ -559,7 +592,6 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResultGroup {
     return css`
       ha-card {
-        padding: 16px;
         height: 100%;
         box-sizing: border-box;
       }
@@ -568,58 +600,131 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         padding-top: 0;
       }
 
-      .editRow,
+      .addRow {
+        padding: 16px;
+        padding-bottom: 0;
+        position: relative;
+      }
+
+      .addRow ha-icon-button {
+        position: absolute;
+        right: 16px;
+        inset-inline-start: initial;
+        inset-inline-end: 16px;
+      }
+
       .addRow,
-      .checked {
+      .header {
         display: flex;
         flex-direction: row;
         align-items: center;
+      }
+
+      .header {
+        padding-left: 30px;
+        padding-right: 16px;
+        padding-inline-start: 30px;
+        padding-inline-end: 16px;
+        margin-top: 8px;
+        justify-content: space-between;
+        direction: var(--direction);
+      }
+
+      .header span {
+        color: var(--primary-text-color);
+        font-weight: 500;
+      }
+
+      .empty {
+        padding: 16px 32px;
       }
 
       .item {
         margin-top: 8px;
       }
 
-      .addButton {
-        margin-left: -12px;
-        margin-inline-start: -12px;
-        direction: var(--direction);
+      ha-check-list-item {
+        --mdc-list-item-meta-size: 56px;
+        min-height: 56px;
+        height: auto;
       }
 
-      .deleteItemButton {
-        margin-right: -12px;
-        margin-inline-end: -12px;
-        direction: var(--direction);
+      ha-check-list-item.multiline {
+        align-items: flex-start;
+        --check-list-item-graphic-margin-top: 8px;
       }
 
-      .reorderButton {
-        margin-right: -12px;
-        margin-inline-end: -12px;
-        direction: var(--direction);
+      .row {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .multiline .column {
+        display: flex;
+        flex-direction: column;
+        margin-top: 18px;
+        margin-bottom: 12px;
+      }
+
+      .completed .summary {
+        text-decoration: line-through;
+      }
+
+      .description,
+      .due {
+        font-size: 12px;
+        color: var(--secondary-text-color);
+      }
+
+      .description {
+        white-space: initial;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        -webkit-box-orient: vertical;
+      }
+
+      .description p {
+        margin: 0;
+      }
+
+      .description a {
+        color: var(--primary-color);
+      }
+
+      .due {
+        display: flex;
+        align-items: center;
+      }
+
+      .due ha-svg-icon {
+        margin-right: 4px;
+        --mdc-icon-size: 14px;
+      }
+
+      .due.overdue {
+        color: var(--warning-color);
+      }
+
+      .completed .due.overdue {
+        color: var(--secondary-text-color);
       }
 
       .handle {
-        cursor: move;
+        cursor: move; /* fallback if grab cursor is unsupported */
+        cursor: grab;
+        height: 24px;
+        padding: 16px 4px;
       }
 
-      ha-checkbox {
-        margin-left: -12px;
-        margin-inline-start: -12px;
-        direction: var(--direction);
+      .deleteItemButton {
+        position: relative;
+        left: 8px;
       }
 
       ha-textfield {
         flex-grow: 1;
-      }
-
-      .checked {
-        margin: 12px 0;
-        justify-content: space-between;
-      }
-
-      .checked span {
-        color: var(--primary-text-color);
-        font-weight: 500;
       }
 
       .divider {
@@ -635,6 +740,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       .todoList {
         display: block;
         padding: 8px;
+      }
+
+      .warning {
+        color: var(--error-color);
       }
     `;
   }

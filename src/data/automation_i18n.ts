@@ -64,23 +64,6 @@ const localizeTimeString = (
   }
 };
 
-const ordinalSuffix = (n: number) => {
-  n %= 100;
-  if ([11, 12, 13].includes(n)) {
-    return "th";
-  }
-  if (n % 10 === 1) {
-    return "st";
-  }
-  if (n % 10 === 2) {
-    return "nd";
-  }
-  if (n % 10 === 3) {
-    return "rd";
-  }
-  return "th";
-};
-
 export const describeTrigger = (
   trigger: Trigger,
   hass: HomeAssistant,
@@ -401,14 +384,37 @@ const tryDescribeTrigger = (
   // Time Pattern Trigger
   if (trigger.platform === "time_pattern") {
     if (!trigger.seconds && !trigger.minutes && !trigger.hours) {
-      return "When a time pattern matches";
+      return hass.localize(
+        `${triggerTranslationBaseKey}.time_pattern.description.initial`
+      );
     }
-    let result = "Trigger ";
+
+    const invalidParts: Array<"seconds" | "minutes" | "hours"> = [];
+
+    let secondsChoice: "every" | "every_interval" | "on_the_xth" | "other" =
+      "other";
+    let minutesChoice:
+      | "every"
+      | "every_interval"
+      | "on_the_xth"
+      | "other"
+      | "has_seconds" = "other";
+    let hoursChoice:
+      | "every"
+      | "every_interval"
+      | "on_the_xth"
+      | "other"
+      | "has_seconds_or_minutes" = "other";
+
+    let seconds = 0;
+    let minutes = 0;
+    let hours = 0;
+
     if (trigger.seconds !== undefined) {
       const seconds_all = trigger.seconds === "*";
       const seconds_interval =
         typeof trigger.seconds === "string" && trigger.seconds.startsWith("/");
-      const seconds = seconds_all
+      seconds = seconds_all
         ? 0
         : typeof trigger.seconds === "number"
           ? trigger.seconds
@@ -422,22 +428,22 @@ const tryDescribeTrigger = (
         seconds < 0 ||
         (seconds_interval && seconds === 0)
       ) {
-        return "Invalid Time Pattern Seconds";
+        invalidParts.push("seconds");
       }
 
       if (seconds_all || (seconds_interval && seconds === 1)) {
-        result += "every second of ";
+        secondsChoice = "every";
       } else if (seconds_interval) {
-        result += `every ${seconds} seconds of `;
+        secondsChoice = "every_interval";
       } else {
-        result += `on the ${seconds}${ordinalSuffix(seconds)} second of `;
+        secondsChoice = "on_the_xth";
       }
     }
     if (trigger.minutes !== undefined) {
       const minutes_all = trigger.minutes === "*";
       const minutes_interval =
         typeof trigger.minutes === "string" && trigger.minutes.startsWith("/");
-      const minutes = minutes_all
+      minutes = minutes_all
         ? 0
         : typeof trigger.minutes === "number"
           ? trigger.minutes
@@ -451,30 +457,30 @@ const tryDescribeTrigger = (
         minutes < 0 ||
         (minutes_interval && minutes === 0)
       ) {
-        return "Invalid Time Pattern Minutes";
+        invalidParts.push("minutes");
       }
 
       if (minutes_all || (minutes_interval && minutes === 1)) {
-        result += "every minute of ";
+        minutesChoice = "every";
       } else if (minutes_interval) {
-        result += `every ${minutes} minutes of `;
+        minutesChoice = "every_interval";
       } else {
-        result += `${
-          trigger.seconds !== undefined ? "" : "on"
-        } the ${minutes}${ordinalSuffix(minutes)} minute of `;
+        minutesChoice =
+          trigger.seconds !== undefined ? "has_seconds" : "on_the_xth";
       }
     } else if (trigger.seconds !== undefined) {
       if (trigger.hours !== undefined) {
-        result += `the 0${ordinalSuffix(0)} minute of `;
+        minutes = 0;
+        minutesChoice = "has_seconds";
       } else {
-        result += "every minute of ";
+        minutesChoice = "every";
       }
     }
     if (trigger.hours !== undefined) {
       const hours_all = trigger.hours === "*";
       const hours_interval =
         typeof trigger.hours === "string" && trigger.hours.startsWith("/");
-      const hours = hours_all
+      hours = hours_all
         ? 0
         : typeof trigger.hours === "number"
           ? trigger.hours
@@ -488,24 +494,68 @@ const tryDescribeTrigger = (
         hours < 0 ||
         (hours_interval && hours === 0)
       ) {
-        return "Invalid Time Pattern Hours";
+        invalidParts.push("hours");
       }
 
       if (hours_all || (hours_interval && hours === 1)) {
-        result += "every hour";
+        hoursChoice = "every";
       } else if (hours_interval) {
-        result += `every ${hours} hours`;
+        hoursChoice = "every_interval";
       } else {
-        result += `${
+        hoursChoice =
           trigger.seconds !== undefined || trigger.minutes !== undefined
-            ? ""
-            : "on"
-        } the ${hours}${ordinalSuffix(hours)} hour`;
+            ? "has_seconds_or_minutes"
+            : "on_the_xth";
       }
     } else {
-      result += "every hour";
+      hoursChoice = "every";
     }
-    return result;
+
+    if (invalidParts.length !== 0) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.time_pattern.description.invalid`,
+        {
+          parts: formatListWithAnds(
+            hass.locale,
+            invalidParts.map((invalidPart) =>
+              hass.localize(
+                `${triggerTranslationBaseKey}.time_pattern.${invalidPart}`
+              )
+            )
+          ),
+        }
+      );
+    }
+
+    return hass.localize(
+      `${triggerTranslationBaseKey}.time_pattern.description.full`,
+      {
+        secondsChoice: secondsChoice,
+        minutesChoice: minutesChoice,
+        hoursChoice: hoursChoice,
+        seconds: seconds,
+        minutes: minutes,
+        hours: hours,
+        secondsWithOrdinal: hass.localize(
+          `${triggerTranslationBaseKey}.time_pattern.description.ordinal`,
+          {
+            part: seconds,
+          }
+        ),
+        minutesWithOrdinal: hass.localize(
+          `${triggerTranslationBaseKey}.time_pattern.description.ordinal`,
+          {
+            part: minutes,
+          }
+        ),
+        hoursWithOrdinal: hass.localize(
+          `${triggerTranslationBaseKey}.time_pattern.description.ordinal`,
+          {
+            part: hours,
+          }
+        ),
+      }
+    );
   }
 
   // Zone Trigger

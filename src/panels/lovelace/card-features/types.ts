@@ -35,6 +35,12 @@ export interface AlarmModesCardFeatureConfig {
   modes?: AlarmMode[];
 }
 
+export interface ClimateFanModesCardFeatureConfig {
+  type: "climate-fan-modes";
+  style?: "dropdown" | "icons";
+  fan_modes?: string[];
+}
+
 export interface ClimateHvacModesCardFeatureConfig {
   type: "climate-hvac-modes";
   style?: "dropdown" | "icons";
@@ -103,8 +109,14 @@ export interface LawnMowerCommandsCardFeatureConfig {
   commands?: LawnMowerCommand[];
 }
 
+export interface UpdateActionsCardFeatureConfig {
+  type: "update-actions";
+  backup?: "yes" | "no" | "ask";
+}
+
 export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
+  | ClimateFanModesCardFeatureConfig
   | ClimateHvacModesCardFeatureConfig
   | ClimatePresetModesCardFeatureConfig
   | CoverOpenCloseCardFeatureConfig
@@ -122,7 +134,8 @@ export type LovelaceCardFeatureConfig =
   | TargetTemperatureCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig
   | SelectOptionsCardFeatureConfig
-  | NumericInputCardFeatureConfig;
+  | NumericInputCardFeatureConfig
+  | UpdateActionsCardFeatureConfig;
 
 export type LovelaceCardFeatureContext = {
   entity_id?: string;

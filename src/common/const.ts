@@ -29,6 +29,7 @@ import {
   mdiFlash,
   mdiFlower,
   mdiFormatListBulleted,
+  mdiFormatListCheckbox,
   mdiFormTextbox,
   mdiGauge,
   mdiGoogleAssistant,
@@ -64,6 +65,7 @@ import {
   mdiTransmissionTower,
   mdiWater,
   mdiWaterPercent,
+  mdiWeatherPartlyCloudy,
   mdiWeatherPouring,
   mdiWeatherRainy,
   mdiWeatherWindy,
@@ -128,6 +130,7 @@ export const FIXED_DOMAIN_ICONS = {
   updater: mdiCloudUpload,
   vacuum: mdiRobotVacuum,
   wake_word: mdiChatSleep,
+  weather: mdiWeatherPartlyCloudy,
   zone: mdiMapMarkerRadius,
 };
 
@@ -166,6 +169,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   precipitation_intensity: mdiWeatherPouring,
   pressure: mdiGauge,
   reactive_power: mdiFlash,
+  shopping_List: mdiFormatListCheckbox,
   signal_strength: mdiWifi,
   sound_pressure: mdiEarHearing,
   speed: mdiSpeedometer,
@@ -250,6 +254,7 @@ export const DOMAINS_INPUT_ROW = [
   "text",
   "time",
   "vacuum",
+  "valve",
 ];
 
 /** States that we consider "off". */
@@ -268,6 +273,7 @@ export const DOMAINS_TOGGLE = new Set([
   "group",
   "automation",
   "humidifier",
+  "valve",
 ]);
 
 /** Domains that have a dynamic entity image / picture. */

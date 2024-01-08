@@ -37,7 +37,7 @@ import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import { EntityRegistryEntry } from "../../../../data/entity_registry";
-import { TRIGGER_TYPES } from "../../../../data/trigger";
+import { TRIGGER_ICONS } from "../../../../data/trigger";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -150,7 +150,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           <h3 slot="header">
             <ha-svg-icon
               class="trigger-icon"
-              .path=${TRIGGER_TYPES[this.trigger.platform]}
+              .path=${TRIGGER_ICONS[this.trigger.platform]}
             ></ha-svg-icon>
             ${describeTrigger(this.trigger, this.hass, this._entityReg)}
           </h3>

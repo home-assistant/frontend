@@ -41,6 +41,9 @@ export const stateControlCircularSliderStyle = css`
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    line-height: 1.5;
+    min-height: 1.5em;
+    white-space: nowrap;
   }
   .label span {
     white-space: nowrap;
@@ -51,7 +54,6 @@ export const stateControlCircularSliderStyle = css`
   .label.disabled {
     color: var(--secondary-text-color);
   }
-
   .buttons {
     position: absolute;
     bottom: 10px;
@@ -64,6 +66,9 @@ export const stateControlCircularSliderStyle = css`
     align-items: center;
     justify-content: center;
   }
+  .primary-state {
+    font-size: 36px;
+  }
 
   .buttons ha-outlined-icon-button {
     --md-outlined-icon-button-container-width: 48px;
@@ -73,6 +78,9 @@ export const stateControlCircularSliderStyle = css`
 
   .container.md ha-big-number {
     font-size: 44px;
+  }
+  .container.md .state {
+    font-size: 30px;
   }
   .container.md .info {
     margin-top: 12px;
@@ -87,6 +95,9 @@ export const stateControlCircularSliderStyle = css`
 
   .container.sm ha-big-number {
     font-size: 32px;
+  }
+  .container.sm .state {
+    font-size: 26px;
   }
   .container.sm .info {
     margin-top: 12px;
@@ -103,6 +114,9 @@ export const stateControlCircularSliderStyle = css`
 
   .container.xs ha-big-number {
     font-size: 32px;
+  }
+  .container.xs .state {
+    font-size: 16px;
   }
   .container.xs .info {
     margin-top: 12px;

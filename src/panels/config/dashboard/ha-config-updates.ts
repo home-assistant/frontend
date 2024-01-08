@@ -109,9 +109,11 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               ${this.narrow && entity.attributes.in_progress
                 ? html`<ha-circular-progress
                     indeterminate
-                    size="small"
                     slot="graphic"
                     class="absolute"
+                    .ariaLabel=${this.hass.localize(
+                      "ui.panel.config.updates.update_in_progress"
+                    )}
                   ></ha-circular-progress>`
                 : ""}
               <span
@@ -131,6 +133,9 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                       indeterminate
                       size="small"
                       slot="meta"
+                      .ariaLabel=${this.hass.localize(
+                        "ui.panel.config.updates.update_in_progress"
+                      )}
                     ></ha-circular-progress>`
                   : html`<ha-icon-next slot="meta"></ha-icon-next>`
                 : ""}
@@ -191,6 +196,8 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
         }
         ha-circular-progress.absolute {
           position: absolute;
+          width: 40px;
+          height: 40px;
         }
         state-badge.updating {
           opacity: 0.5;

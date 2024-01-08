@@ -249,7 +249,7 @@ class HaSceneDashboard extends LitElement {
         >
         </ha-button-related-filter-menu>
         ${!this.scenes.length
-          ? html` <div class="empty" slot="empty">
+          ? html`<div class="empty" slot="empty">
               <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
               <h1>
                 ${this.hass.localize(
@@ -265,9 +265,7 @@ class HaSceneDashboard extends LitElement {
                 rel="noreferrer"
               >
                 <ha-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.scene.picker.learn_more"
-                  )}
+                  ${this.hass.localize("ui.panel.config.common.learn_more")}
                 </ha-button>
               </a>
             </div>`
@@ -387,6 +385,7 @@ class HaSceneDashboard extends LitElement {
         .empty {
           --paper-font-headline_-_font-size: 28px;
           --mdc-icon-size: 80px;
+          max-width: 500px;
         }
       `,
     ];

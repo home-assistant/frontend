@@ -133,7 +133,7 @@ export class HaTracePathDetails extends LitElement {
 
           if (result?.enabled === false) {
             return html`${this.hass!.localize(
-              "ui.panel.config.automation.trace.path.disabled_node"
+              "ui.panel.config.automation.trace.path.disabled_step"
             )}`;
           }
 
@@ -208,11 +208,19 @@ export class HaTracePathDetails extends LitElement {
     const paths = this.trace.trace;
     const data: ActionTraceStep[] = paths[this.selected.path];
 
+    if (data === undefined) {
+      return html`<div class="padded-box">
+        ${this.hass!.localize(
+          "ui.panel.config.automation.trace.path.step_not_executed"
+        )}
+      </div>`;
+    }
+
     return html`
       <div class="padded-box">
         ${data.map(
           (trace, idx) => html`
-            ${idx > 0
+            ${data.length > 1
               ? html`<p>
                   ${this.hass!.localize(
                     "ui.panel.config.automation.trace.path.iteration",
@@ -240,7 +248,7 @@ export class HaTracePathDetails extends LitElement {
     if (index === -1) {
       return html`<div class="padded-box">
         ${this.hass!.localize(
-          "ui.panel.config.automation.trace.path.node_not_tracked"
+          "ui.panel.config.automation.trace.path.step_not_executed"
         )}
       </div>`;
     }

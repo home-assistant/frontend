@@ -275,6 +275,10 @@ export interface ShorthandNotCondition extends ShorthandBaseCondition {
   not: Condition[];
 }
 
+export interface AutomationElementGroup {
+  [key: string]: { icon?: string; members?: AutomationElementGroup };
+}
+
 export type Condition =
   | StateCondition
   | NumericStateCondition

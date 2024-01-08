@@ -86,6 +86,7 @@ export class HaBigNumber extends LitElement {
         .value .decimal {
           font-size: 0.42em;
           line-height: 1.33;
+          min-height: 1.33em;
         }
         .value .unit {
           font-size: 0.33em;

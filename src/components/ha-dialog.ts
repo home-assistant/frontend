@@ -13,13 +13,15 @@ export const createCloseHeading = (
   hass: HomeAssistant | undefined,
   title: string | TemplateResult
 ) => html`
-  <div class="header_title">${title}</div>
-  <ha-icon-button
-    .label=${hass?.localize("ui.dialogs.generic.close") ?? "Close"}
-    .path=${mdiClose}
-    dialogAction="close"
-    class="header_button"
-  ></ha-icon-button>
+  <div class="header_title">
+    <span>${title}</span>
+    <ha-icon-button
+      .label=${hass?.localize("ui.dialogs.generic.close") ?? "Close"}
+      .path=${mdiClose}
+      dialogAction="close"
+      class="header_button"
+    ></ha-icon-button>
+  </div>
 `;
 
 @customElement("ha-dialog")
@@ -94,15 +96,12 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog__title {
         padding: 24px 24px 0 24px;
-        text-overflow: ellipsis;
-        overflow: hidden;
       }
       .mdc-dialog__actions {
         padding: 12px 24px 12px 24px;
       }
       .mdc-dialog__title::before {
-        display: block;
-        height: 0px;
+        content: unset;
       }
       .mdc-dialog .mdc-dialog__content {
         position: var(--dialog-content-position, relative);
@@ -126,19 +125,26 @@ export class HaDialog extends DialogBase {
         flex-direction: column;
       }
       .header_title {
-        margin-right: 32px;
-        margin-inline-end: 32px;
-        margin-inline-start: initial;
+        position: relative;
+        padding-right: 40px;
+        padding-inline-end: 40px;
+        padding-inline-start: initial;
         direction: var(--direction);
+      }
+      .header_title span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
       }
       .header_button {
         position: absolute;
-        right: 16px;
-        top: 14px;
+        right: -8px;
+        top: -8px;
         text-decoration: none;
         color: inherit;
         inset-inline-start: initial;
-        inset-inline-end: 16px;
+        inset-inline-end: -8px;
         direction: var(--direction);
       }
       .dialog-actions {

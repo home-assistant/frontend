@@ -250,7 +250,6 @@ class HaPanelProfile extends LitElement {
           max-width: 600px;
           margin: 0 auto;
           padding-bottom: env(safe-area-inset-bottom);
-          overflow: hidden;
         }
 
         .content > * {
