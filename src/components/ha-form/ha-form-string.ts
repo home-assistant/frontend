@@ -27,7 +27,7 @@ const MASKED_FIELDS = ["password", "secret", "token"];
 export class HaFormString extends LitElement implements HaFormElement {
   @property() public localize?: LocalizeFunc;
 
-  @property() public localizeBaseKey?: string;
+  @property() public localizeBaseKey = "ui.components.selectors.text";
 
   @property() public schema!: HaFormStringSchema;
 
@@ -84,10 +84,10 @@ export class HaFormString extends LitElement implements HaFormElement {
       <ha-icon-button
         toggles
         .label=${this.localize?.(
-          `${this.localizeBaseKey || "ui.components.selectors.text"}.${
+          `${this.localizeBaseKey}.${
             this.unmaskedPassword ? "hide_password" : "show_password"
           }` as LocalizeKeys
-        ) || (this.unmaskedPassword ? "Hide password" : "Show password")}
+        )}
         @click=${this.toggleUnmaskedPassword}
         .path=${this.unmaskedPassword ? mdiEyeOff : mdiEye}
       ></ha-icon-button>
