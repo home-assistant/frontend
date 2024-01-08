@@ -62,7 +62,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7.23.7, @babel/core@npm:^7.11.1, @babel/core@npm:^7.12.3":
+"@babel/core@npm:7.23.7, @babel/core@npm:^7.0.0, @babel/core@npm:^7.11.1, @babel/core@npm:^7.12.3":
   version: 7.23.7
   resolution: "@babel/core@npm:7.23.7"
   dependencies:
@@ -1267,7 +1267,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:7.23.7, @babel/preset-env@npm:^7.11.0":
+"@babel/preset-env@npm:7.23.7, @babel/preset-env@npm:^7.0.0, @babel/preset-env@npm:^7.11.0":
   version: 7.23.7
   resolution: "@babel/preset-env@npm:7.23.7"
   dependencies:
@@ -9665,6 +9665,7 @@ __metadata:
     tar: "npm:6.2.0"
     terser-webpack-plugin: "npm:5.3.10"
     tinykeys: "npm:2.1.0"
+    transform-async-modules-webpack-plugin: "npm:1.0.2"
     ts-lit-plugin: "npm:2.0.1"
     tsparticles-engine: "npm:2.12.0"
     tsparticles-preset-links: "npm:2.12.0"
@@ -15198,6 +15199,18 @@ __metadata:
   dependencies:
     punycode: "npm:^2.1.1"
   checksum: b09a15886cbfaee419a3469081223489051ce9dca3374dd9500d2378adedbee84a3c73f83bfdd6bb13d53657753fc0d4e20a46bfcd3f1b9057ef528426ad7ce4
+  languageName: node
+  linkType: hard
+
+"transform-async-modules-webpack-plugin@npm:1.0.2":
+  version: 1.0.2
+  resolution: "transform-async-modules-webpack-plugin@npm:1.0.2"
+  dependencies:
+    "@babel/core": "npm:^7.0.0"
+    "@babel/preset-env": "npm:^7.0.0"
+  peerDependencies:
+    webpack: ^5.0.0
+  checksum: 645df77c31e42f8ae57d86dfa023f67e4a3854f3b0848a9fd28392cb83d91fc05762150b909d01ad570e867b9e16e7e49c88a183d2dc7911d0e0154aaac21d52
   languageName: node
   linkType: hard
 
