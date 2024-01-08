@@ -48,6 +48,8 @@ jobs:
         run: yarn run lint:eslint --quiet
       - name: Run tsc
         run: yarn run lint:types
+      - name: Run lit-analyzer
+        run: yarn run lint:lit --quiet
       - name: Run prettier
         run: yarn run lint:prettier
   test:
