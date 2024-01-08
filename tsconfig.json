@@ -38,7 +38,6 @@
           "no-complex-attribute-binding": "warning",
           "no-nullable-attribute-binding": "warning",
           "no-incompatible-type-binding": "warning",
-          "no-invalid-directive-binding": "warning",
           // LitElement
           "no-incompatible-property-type": "warning",
           "no-property-visibility-mismatch": "warning",
