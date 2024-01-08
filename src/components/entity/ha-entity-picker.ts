@@ -19,7 +19,6 @@ import "../ha-svg-icon";
 import "./state-badge";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-helper-detail";
-import type { HelperDomain } from "../../panels/config/helpers/const";
 
 interface HassEntityWithCachedName extends HassEntity, ScorableTextItem {
   friendly_name: string;
@@ -385,9 +384,9 @@ export class HaEntityPicker extends LitElement {
 
     if (newValue === NEW_ENTITY_ID) {
       showHelperDetailDialog(this, {
-        domain: this.createDomains![0] as HelperDomain,
+        domains: this.createDomains!,
         dialogClosedCallback: (item) => {
-          if (item.entryId) this._setValue(item.entryId);
+          if (item.entityId) this._setValue(item.entityId);
         },
       });
       return;

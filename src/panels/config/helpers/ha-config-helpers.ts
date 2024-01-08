@@ -878,7 +878,7 @@ ${rejected
     }
     if (isHelperDomain(domain)) {
       showHelperDetailDialog(this, {
-        domain,
+        domains: [domain],
       });
       return;
     }
