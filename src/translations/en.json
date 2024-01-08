@@ -1150,6 +1150,9 @@
           "device_class": "Show as",
           "switch_as_x": "Show switch as",
           "invert": "Invert state",
+          "invert_switch_as_cover_description": "Show as open when the switch is off",
+          "invert_switch_as_lock_description": "Show as locked when the switch is off",
+          "invert_switch_as_valve_description": "[%key:ui::dialogs::entity_registry::editor::invert_switch_as_cover_description%]",
           "device_classes": {
             "binary_sensor": {
               "door": "Door",

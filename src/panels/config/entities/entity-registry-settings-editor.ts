@@ -477,6 +477,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
                           "ui.dialogs.entity_registry.editor.invert"
                         )}</span
                       >
+                      <span slot="description"
+                        >${this.hass.localize(
+                          `ui.dialogs.entity_registry.editor.invert_switch_as_${this._switchAsDomain}_description`
+                        )}</span
+                      >
                       <ha-switch
                         .checked=${this.entry.options?.switch_as_x?.invert}
                         @change=${this._switchAsInvertChanged}
