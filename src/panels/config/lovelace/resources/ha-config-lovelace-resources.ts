@@ -253,3 +253,9 @@ export class HaConfigLovelaceRescources extends LitElement {
     ];
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-lovelace-resources": HaConfigLovelaceRescources;
+  }
+}

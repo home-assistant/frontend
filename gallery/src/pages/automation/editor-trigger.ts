@@ -126,7 +126,7 @@ const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
 ];
 
 @customElement("demo-automation-editor-trigger")
-class DemoHaAutomationEditorTrigger extends LitElement {
+export class DemoAutomationEditorTrigger extends LitElement {
   @state() private hass!: HomeAssistant;
 
   @state() private _disabled = false;
@@ -201,6 +201,6 @@ class DemoHaAutomationEditorTrigger extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-ha-automation-editor-trigger": DemoHaAutomationEditorTrigger;
+    "demo-automation-editor-trigger": DemoAutomationEditorTrigger;
   }
 }

@@ -459,3 +459,9 @@ export class LovelacePanel extends LitElement {
     }
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-panel-lovelace": LovelacePanel;
+  }
+}

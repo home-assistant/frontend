@@ -407,3 +407,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
     });
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-lovelace-dashboards": HaConfigLovelaceDashboards;
+  }
+}

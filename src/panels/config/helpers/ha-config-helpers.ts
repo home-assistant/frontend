@@ -418,3 +418,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     showHelperDetailDialog(this, {});
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-helpers": HaConfigHelpers;
+  }
+}

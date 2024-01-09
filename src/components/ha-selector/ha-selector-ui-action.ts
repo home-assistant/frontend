@@ -39,6 +39,6 @@ export class HaSelectorUiAction extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-ui-action": HaSelectorUiAction;
+    "ha-selector-ui_action": HaSelectorUiAction;
   }
 }
