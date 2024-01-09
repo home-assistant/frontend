@@ -6,8 +6,8 @@ import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
-import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-sortable";
+import "../../../../components/ha-svg-icon";
 import { getService, isService } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
 import { Action } from "../../../../data/script";
@@ -31,7 +31,7 @@ export default class HaAutomationAction extends LitElement {
 
   @property() public actions!: Action[];
 
-  @property({ type: Boolean }) public reOrderMode = false;
+  @property({ type: Boolean }) public reOrderMode = true;
 
   @storage({
     key: "automationClipboard",
@@ -70,6 +70,9 @@ export default class HaAutomationAction extends LitElement {
         handle-selector=".handle"
         .disabled=${!this.reOrderMode}
         @item-moved=${this._actionMoved}
+        @item-added=${this._actionAdded}
+        @item-removed=${this._actionRemoved}
+        group="actions"
       >
         <div class="actions">
           ${repeat(
@@ -77,6 +80,7 @@ export default class HaAutomationAction extends LitElement {
             (action) => this._getKey(action),
             (action, idx) => html`
               <ha-automation-action-row
+                .sortableItemData=${action}
                 .index=${idx}
                 .action=${action}
                 .narrow=${this.narrow}
@@ -240,6 +244,26 @@ export default class HaAutomationAction extends LitElement {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
     this._move(oldIndex, newIndex);
+  }
+
+  private _actionRemoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { index } = ev.detail;
+    const actions = this.actions.concat();
+    const newActions = actions.filter((_a, i) => index !== i);
+    fireEvent(this, "value-changed", { value: newActions });
+  }
+
+  private _actionAdded(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { index, data } = ev.detail;
+    const actions = this.actions.concat();
+    const newActions = [
+      ...actions.slice(0, index),
+      data,
+      ...actions.slice(index),
+    ];
+    fireEvent(this, "value-changed", { value: newActions });
   }
 
   private _actionChanged(ev: CustomEvent) {

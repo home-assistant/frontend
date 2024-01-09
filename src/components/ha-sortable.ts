@@ -11,6 +11,13 @@ declare global {
       oldIndex: number;
       newIndex: number;
     };
+    "item-removed": {
+      index: number;
+    };
+    "item-added": {
+      index: number;
+      data: any;
+    };
   }
 }
 
@@ -29,6 +36,9 @@ export class HaSortable extends LitElement {
 
   @property({ type: String, attribute: "handle-selector" })
   public handleSelector?: string;
+
+  @property({ type: String, attribute: "group" })
+  public group?: string;
 
   protected updated(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("disabled")) {
@@ -100,8 +110,12 @@ export class HaSortable extends LitElement {
 
     const options: SortableInstance.Options = {
       animation: 150,
+      swapThreshold: 0.75,
+      fallbackOnBody: true,
       onChoose: this._handleChoose,
       onEnd: this._handleEnd,
+      onRemove: this._handleRemove,
+      onAdd: this._handleAdd,
     };
 
     if (this.draggableSelector) {
@@ -110,17 +124,22 @@ export class HaSortable extends LitElement {
     if (this.handleSelector) {
       options.handle = this.handleSelector;
     }
+    if (this.group) {
+      options.group = this.group;
+    }
+
     this._sortable = new Sortable(container, options);
   }
 
-  private _handleEnd = (evt: SortableEvent) => {
+  private _handleEnd = async (evt: SortableEvent) => {
     // put back in original location
     if ((evt.item as any).placeholder) {
       (evt.item as any).placeholder.replaceWith(evt.item);
       delete (evt.item as any).placeholder;
     }
-    // if item was not moved, ignore
+
     if (
+      evt.pullMode ||
       evt.oldIndex === undefined ||
       evt.newIndex === undefined ||
       evt.oldIndex === evt.newIndex
@@ -137,6 +156,35 @@ export class HaSortable extends LitElement {
   private _handleChoose = (evt: SortableEvent) => {
     (evt.item as any).placeholder = document.createComment("sort-placeholder");
     evt.item.after((evt.item as any).placeholder);
+  };
+
+  private _handleRemove = (evt: SortableEvent) => {
+    if (!evt.pullMode) return;
+    const index = evt.oldIndex;
+    const data = (evt.item as any).sortableItemData;
+    if (index === undefined || !data) {
+      return;
+    }
+
+    setTimeout(() => {
+      fireEvent(this, "item-removed", {
+        index,
+      });
+    }, 1);
+  };
+
+  private _handleAdd = (evt: SortableEvent) => {
+    if (!evt.pullMode) return;
+    const index = evt.newIndex;
+    const data = (evt.item as any).sortableItemData;
+    if (index === undefined || !data) {
+      return;
+    }
+
+    fireEvent(this, "item-added", {
+      index,
+      data,
+    });
   };
 
   private _destroySortable() {

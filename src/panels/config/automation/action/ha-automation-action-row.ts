@@ -176,6 +176,8 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   protected render() {
+    if (!this.action) return nothing;
+
     const type = getType(this.action);
     const yamlMode = this._yamlMode;
 
