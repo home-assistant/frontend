@@ -42,9 +42,9 @@ export class HuiEntityFilterCard
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public isPanel = false;
+  @property({ type: Boolean }) public isPanel = false;
 
-  @property() public editMode = false;
+  @property({ type: Boolean }) public editMode = false;
 
   @state() private _config?: EntityFilterCardConfig;
 

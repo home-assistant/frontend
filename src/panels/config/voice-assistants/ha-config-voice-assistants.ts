@@ -33,9 +33,9 @@ class HaConfigVoiceAssistants extends HassRouterPage {
 
   @property({ attribute: false }) public cloudStatus!: CloudStatus;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @state()
   @consume({ context: entitiesContext, subscribe: true })

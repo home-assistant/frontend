@@ -20,7 +20,7 @@ import type { HomeAssistant } from "../../../../types";
 class HaInputSelectForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public new?: boolean;
+  @property({ type: Boolean }) public new = false;
 
   private _item?: InputSelect;
 
