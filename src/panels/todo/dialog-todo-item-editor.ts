@@ -3,6 +3,7 @@ import { formatInTimeZone, toDate } from "date-fns-tz";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-alert";
@@ -19,7 +20,6 @@ import {
   deleteItems,
   updateItem,
 } from "../../data/todo";
-import { TimeZone } from "../../data/translation";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -54,10 +54,10 @@ class DialogTodoItemEditor extends LitElement {
   public showDialog(params: TodoItemEditDialogParams): void {
     this._error = undefined;
     this._params = params;
-    this._timeZone =
-      this.hass.locale.time_zone === TimeZone.local
-        ? Intl.DateTimeFormat().resolvedOptions().timeZone
-        : this.hass.config.time_zone;
+    this._timeZone = resolveTimeZone(
+      this.hass.locale.time_zone,
+      this.hass.config.time_zone
+    );
     if (params.item) {
       const entry = params.item;
       this._checked = entry.status === TodoItemStatus.Completed;

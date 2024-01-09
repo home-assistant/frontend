@@ -294,10 +294,7 @@ class HaConfigSectionGeneral extends LitElement {
     this._country = this.hass.config.country;
     this._language = this.hass.config.language;
     this._elevation = this.hass.config.elevation;
-    this._timeZone =
-      this.hass.config.time_zone ||
-      Intl.DateTimeFormat?.().resolvedOptions?.().timeZone ||
-      "Etc/GMT";
+    this._timeZone = this.hass.config.time_zone || "Etc/GMT";
     this._name = this.hass.config.location_name;
     this._updateUnits = true;
   }
