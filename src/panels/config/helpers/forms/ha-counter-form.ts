@@ -13,7 +13,7 @@ import { HomeAssistant } from "../../../../types";
 class HaCounterForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public new?: boolean;
+  @property({ type: Boolean }) public new = false;
 
   private _item?: Partial<Counter>;
 

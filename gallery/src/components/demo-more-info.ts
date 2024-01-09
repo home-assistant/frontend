@@ -12,7 +12,7 @@ class DemoMoreInfo extends LitElement {
 
   @property() public entityId!: string;
 
-  @property() public showConfig!: boolean;
+  @property({ type: Boolean }) public showConfig = false;
 
   render() {
     const state = this._getState(this.entityId, this.hass.states);

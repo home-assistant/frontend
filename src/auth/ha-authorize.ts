@@ -352,3 +352,9 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     }
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-authorize": HaAuthorize;
+  }
+}
