@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";

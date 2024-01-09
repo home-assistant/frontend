@@ -125,18 +125,20 @@ class HaConfigPerson extends LitElement {
           ${this._configItems.length > 0
             ? html`
                 <ha-card outlined header="Configuration.yaml persons">
-                  ${this._configItems.map(
-                    (entry) => html`
-                      <ha-list-item graphic="avatar">
-                        <ha-person-badge
-                          .hass=${this.hass}
-                          .person=${entry}
-                          slot="graphic"
-                        ></ha-person-badge>
-                        <span>${entry.name}</span>
-                      </ha-list-item>
-                    `
-                  )}
+                  <mwc-list>
+                    ${this._configItems.map(
+                      (entry) => html`
+                        <ha-list-item graphic="avatar">
+                          <ha-person-badge
+                            .hass=${this.hass}
+                            .person=${entry}
+                            slot="graphic"
+                          ></ha-person-badge>
+                          <span>${entry.name}</span>
+                        </ha-list-item>
+                      `
+                    )}
+                  </mwc-list>
                 </ha-card>
               `
             : nothing}
