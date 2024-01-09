@@ -129,6 +129,9 @@ export class HaEntityToggle extends LitElement {
     } else if (stateDomain === "cover") {
       serviceDomain = "cover";
       service = turnOn ? "open_cover" : "close_cover";
+    } else if (stateDomain === "valve") {
+      serviceDomain = "valve";
+      service = turnOn ? "open_valve" : "close_valve";
     } else if (stateDomain === "group") {
       serviceDomain = "homeassistant";
       service = turnOn ? "turn_on" : "turn_off";
