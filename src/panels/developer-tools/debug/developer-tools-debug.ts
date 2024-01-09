@@ -21,10 +21,11 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
           class="form"
         >
           <div class="card-content">
-                  <ha-debug-connection-row
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-debug-connection-row>
+            <ha-debug-connection-row
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+            ></ha-debug-connection-row>
+          </div>
         </ha-card>
       </div>
     `;
