@@ -6,7 +6,7 @@ import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("ha-labeled-slider")
 class HaLabeledSlider extends LitElement {
-  @property() public labeled? = false;
+  @property({ type: Boolean }) public labeled = false;
 
   @property() public caption?: string;
 
@@ -22,7 +22,7 @@ class HaLabeledSlider extends LitElement {
 
   @property() public helper?: string;
 
-  @property() public extra = false;
+  @property({ type: Boolean }) public extra = false;
 
   @property() public icon?: string;
 
@@ -38,7 +38,7 @@ class HaLabeledSlider extends LitElement {
           .min=${this.min}
           .max=${this.max}
           .step=${this.step}
-          labeled=${this.labeled}
+          .labeled=${this.labeled}
           .disabled=${this.disabled}
           .value=${this.value}
           @change=${this._inputChanged}

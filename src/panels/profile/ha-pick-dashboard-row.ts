@@ -14,7 +14,7 @@ import { HomeAssistant } from "../../types";
 class HaPickDashboardRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _dashboards?: LovelaceDashboard[];
 

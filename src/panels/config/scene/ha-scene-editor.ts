@@ -87,9 +87,9 @@ export class HaSceneEditor extends SubscribeMixin(
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property() public route!: Route;
 
@@ -97,7 +97,7 @@ export class HaSceneEditor extends SubscribeMixin(
 
   @property() public scenes!: SceneEntity[];
 
-  @property() public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   @state() private _dirty = false;
 
