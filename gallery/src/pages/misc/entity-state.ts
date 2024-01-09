@@ -53,6 +53,7 @@ const SENSOR_DEVICE_CLASSES = [
   "volatile_organic_compounds_parts",
   "voltage",
   "volume",
+  "volume_flow_rate",
   "water",
   "weight",
   "wind_speed",

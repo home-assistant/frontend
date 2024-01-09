@@ -211,6 +211,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "volatile_organic_compounds",
       "volatile_organic_compounds_parts",
       "voltage",
+      "volume_flow_rate",
     ],
     state_class: ["measurement", "total", "total_increasing"],
   },
