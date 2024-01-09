@@ -102,7 +102,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
         @item-moved=${this._optionMoved}
         @item-added=${this._optionAdded}
         @item-removed=${this._optionRemoved}
-        group="options"
+        group="choose-options"
       >
         <div class="options">
           ${repeat(
