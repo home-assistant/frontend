@@ -118,6 +118,9 @@ export default class HaAutomationCondition extends LitElement {
         handle-selector=".handle"
         .disabled=${!this.reOrderMode}
         @item-moved=${this._conditionMoved}
+        @item-added=${this._conditionAdded}
+        @item-removed=${this._conditionRemoved}
+        group="conditions"
       >
         <div class="conditions">
           ${repeat(
@@ -125,6 +128,7 @@ export default class HaAutomationCondition extends LitElement {
             (condition) => this._getKey(condition),
             (cond, idx) => html`
               <ha-automation-condition-row
+                .sortableItemData=${cond}
                 .index=${idx}
                 .totalConditions=${this.conditions.length}
                 .condition=${cond}
@@ -273,6 +277,26 @@ export default class HaAutomationCondition extends LitElement {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
     this._move(oldIndex, newIndex);
+  }
+
+  private _conditionRemoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { index } = ev.detail;
+    const conditions = this.conditions.concat();
+    const newConditions = conditions.filter((_a, i) => index !== i);
+    fireEvent(this, "value-changed", { value: newConditions });
+  }
+
+  private _conditionAdded(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { index, data } = ev.detail;
+    const conditions = this.conditions.concat();
+    const newConditions = [
+      ...conditions.slice(0, index),
+      data,
+      ...conditions.slice(index),
+    ];
+    fireEvent(this, "value-changed", { value: newConditions });
   }
 
   private _conditionChanged(ev: CustomEvent) {

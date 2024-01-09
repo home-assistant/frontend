@@ -67,6 +67,9 @@ export default class HaAutomationTrigger extends LitElement {
         handle-selector=".handle"
         .disabled=${!this.reOrderMode}
         @item-moved=${this._triggerMoved}
+        @item-added=${this._triggerAdded}
+        @item-removed=${this._triggerRemoved}
+        group="triggers"
       >
         <div class="triggers">
           ${repeat(
@@ -74,6 +77,7 @@ export default class HaAutomationTrigger extends LitElement {
             (trigger) => this._getKey(trigger),
             (trg, idx) => html`
               <ha-automation-trigger-row
+                .sortableItemData=${trg}
                 .index=${idx}
                 .trigger=${trg}
                 .hideMenu=${this.reOrderMode}
@@ -214,6 +218,26 @@ export default class HaAutomationTrigger extends LitElement {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
     this._move(oldIndex, newIndex);
+  }
+
+  private _triggerRemoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { index } = ev.detail;
+    const triggers = this.triggers.concat();
+    const newTriggers = triggers.filter((_a, i) => index !== i);
+    fireEvent(this, "value-changed", { value: newTriggers });
+  }
+
+  private _triggerAdded(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { index, data } = ev.detail;
+    const triggers = this.triggers.concat();
+    const newTriggers = [
+      ...triggers.slice(0, index),
+      data,
+      ...triggers.slice(index),
+    ];
+    fireEvent(this, "value-changed", { value: newTriggers });
   }
 
   private _triggerChanged(ev: CustomEvent) {
