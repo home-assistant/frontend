@@ -472,3 +472,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
     ];
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "zha-network-visualization-page": ZHANetworkVisualizationPage;
+  }
+}

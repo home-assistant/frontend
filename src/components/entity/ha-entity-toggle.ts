@@ -1,18 +1,18 @@
 import { mdiFlash, mdiFlashOff } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
 } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { isUnavailableState, UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { UNAVAILABLE, UNKNOWN, isUnavailableState } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
 import { HomeAssistant } from "../../types";
 import "../ha-formfield";
@@ -24,6 +24,7 @@ const isOn = (stateObj?: HassEntity) =>
   !STATES_OFF.includes(stateObj.state) &&
   !isUnavailableState(stateObj.state);
 
+@customElement("ha-entity-toggle")
 export class HaEntityToggle extends LitElement {
   // hass is not a property so that we only re-render on stateObj changes
   public hass?: HomeAssistant;
@@ -175,4 +176,8 @@ export class HaEntityToggle extends LitElement {
   }
 }
 
-customElements.define("ha-entity-toggle", HaEntityToggle);
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-entity-toggle": HaEntityToggle;
+  }
+}

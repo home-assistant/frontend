@@ -96,3 +96,9 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
     }
   `;
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-voice-assistants-assistants": HaConfigVoiceAssistantsAssistants;
+  }
+}

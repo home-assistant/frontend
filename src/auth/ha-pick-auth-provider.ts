@@ -8,6 +8,9 @@ import "../components/ha-list-item";
 import { AuthProvider } from "../data/auth";
 
 declare global {
+  interface HTMLElementTagNameMap {
+    "ha-pick-auth-provider": HaPickAuthProvider;
+  }
   interface HASSDomEvents {
     "pick-auth-provider": AuthProvider;
   }
