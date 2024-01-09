@@ -52,7 +52,7 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ attribute: false }) public historyData!: HistoryResult;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public names?: Record<string, string>;
 

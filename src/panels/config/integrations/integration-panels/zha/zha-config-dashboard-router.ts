@@ -10,9 +10,9 @@ import { HomeAssistant } from "../../../../../types";
 class ZHAConfigDashboardRouter extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   private _configEntry = new URLSearchParams(window.location.search).get(
     "config_entry"

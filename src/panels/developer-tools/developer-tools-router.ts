@@ -6,7 +6,7 @@ import { HomeAssistant } from "../../types";
 class DeveloperToolsRouter extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected routerOptions: RouterOptions = {
     // defaultPage: "info",
