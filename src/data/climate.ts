@@ -137,7 +137,7 @@ export const CLIMATE_HVAC_MODE_ICONS: Record<HvacMode, string> = {
 };
 
 export const computeHvacModeIcon = (mode: HvacMode) =>
-  CLIMATE_HVAC_MODE_ICONS[mode];
+  CLIMATE_HVAC_MODE_ICONS[String(mode ?? "").toLocaleLowerCase()];
 
 type ClimateBuiltInPresetMode =
   | "eco"
@@ -162,9 +162,8 @@ export const CLIMATE_PRESET_MODE_ICONS: Record<
 };
 
 export const computePresetModeIcon = (mode: string) =>
-  mode in CLIMATE_PRESET_MODE_ICONS
-    ? CLIMATE_PRESET_MODE_ICONS[mode]
-    : mdiCircleMedium;
+  CLIMATE_PRESET_MODE_ICONS[String(mode ?? "").toLocaleLowerCase()]
+  ?? mdiCircleMedium;
 
 type ClimateBuiltInFanMode =
   | "on"
@@ -190,9 +189,8 @@ export const CLIMATE_FAN_MODE_ICONS: Record<ClimateBuiltInFanMode, string> = {
 };
 
 export const computeFanModeIcon = (mode: string) =>
-  mode in CLIMATE_FAN_MODE_ICONS
-    ? CLIMATE_FAN_MODE_ICONS[mode]
-    : mdiCircleMedium;
+  CLIMATE_FAN_MODE_ICONS[String(mode ?? "").toLocaleLowerCase()]
+  ?? mdiCircleMedium;
 
 type ClimateBuiltInSwingMode =
   | "off"
@@ -211,6 +209,5 @@ export const CLIMATE_SWING_MODE_ICONS: Record<ClimateBuiltInSwingMode, string> =
   };
 
 export const computeSwingModeIcon = (mode: string) =>
-  mode in CLIMATE_SWING_MODE_ICONS
-    ? CLIMATE_SWING_MODE_ICONS[mode]
-    : mdiCircleMedium;
+  CLIMATE_SWING_MODE_ICONS[String(mode ?? "").toLocaleLowerCase()]
+  ?? mdiCircleMedium;
