@@ -41,6 +41,6 @@ export class HaBackupLocationSelector extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-backup-location": HaBackupLocationSelector;
+    "ha-selector-backup_location": HaBackupLocationSelector;
   }
 }

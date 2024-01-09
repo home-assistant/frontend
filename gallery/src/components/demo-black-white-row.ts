@@ -11,7 +11,7 @@ class DemoBlackWhiteRow extends LitElement {
 
   @property() value!: any;
 
-  @property() disabled = false;
+  @property({ type: Boolean }) public disabled = false;
 
   protected render(): TemplateResult {
     return html`

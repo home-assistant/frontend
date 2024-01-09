@@ -33,7 +33,7 @@ import "../../entity-registry-settings-editor";
 import type { EntityRegistrySettingsEditor } from "../../entity-registry-settings-editor";
 
 @customElement("entity-settings-helper-tab")
-export class EntityRegistrySettingsHelper extends LitElement {
+export class EntitySettingsHelperTab extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public entry!: ExtEntityRegistryEntry;
@@ -226,6 +226,6 @@ export class EntityRegistrySettingsHelper extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "entity-platform-helper-tab": EntityRegistrySettingsHelper;
+    "entity-settings-helper-tab": EntitySettingsHelperTab;
   }
 }

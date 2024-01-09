@@ -56,9 +56,9 @@ type DataTableItem = Pick<
 export class HaConfigLovelaceDashboards extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public route!: Route;
 
@@ -405,5 +405,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
         }
       },
     });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-lovelace-dashboards": HaConfigLovelaceDashboards;
   }
 }

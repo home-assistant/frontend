@@ -2,7 +2,7 @@ import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -31,12 +31,13 @@ import {
   showPersonDetailDialog,
 } from "./show-dialog-person-detail";
 
-class HaConfigPerson extends LitElement {
+@customElement("ha-config-person")
+export class HaConfigPerson extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public isWide?: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public route!: Route;
 
@@ -292,4 +293,8 @@ class HaConfigPerson extends LitElement {
   }
 }
 
-customElements.define("ha-config-person", HaConfigPerson);
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-person": HaConfigPerson;
+  }
+}
