@@ -3988,10 +3988,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chromecast-caf-receiver@npm:6.0.12":
-  version: 6.0.12
-  resolution: "@types/chromecast-caf-receiver@npm:6.0.12"
-  checksum: f4bef9d3106b19aa8a85a3d41d4eb7b4d86c334275d829bce7194f6c4afc0b23a5b056899d97c5bc639211a00bf4506259e85b9935545b8502218cde77296442
+"@types/chromecast-caf-receiver@npm:6.0.13":
+  version: 6.0.13
+  resolution: "@types/chromecast-caf-receiver@npm:6.0.13"
+  checksum: 4e2fb8628985cd61f206de5dfe6f3bcbcb2527024f03e36c6cad844fe7672ecd1c2b14cd2b91987f3ab0f67a8b6430008e2a567cfa6b5df8cb09b204e7b72094
   languageName: node
   linkType: hard
 
@@ -9556,7 +9556,7 @@ __metadata:
     "@rollup/plugin-replace": "npm:5.0.5"
     "@thomasloven/round-slider": "npm:0.6.0"
     "@types/babel__plugin-transform-runtime": "npm:7.9.5"
-    "@types/chromecast-caf-receiver": "npm:6.0.12"
+    "@types/chromecast-caf-receiver": "npm:6.0.13"
     "@types/chromecast-caf-sender": "npm:1.0.8"
     "@types/glob": "npm:8.1.0"
     "@types/html-minifier-terser": "npm:7.0.2"
