@@ -182,6 +182,7 @@ export class HaConfigLogs extends LitElement {
       ) {
         this._selectedLogProvider = providerKey;
       } else {
+        navigate("/config/logs", { replace: true });
         showAlertDialog(this, {
           title:
             this.hass.localize("ui.panel.config.logs.provider_not_found") ||
