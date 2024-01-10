@@ -5,10 +5,10 @@ function findNestedItem(
   path: ItemPath,
   createNonExistingPath?: boolean
 ): any {
-  return path.reduce((ac, p, index) => {
+  return path.reduce((ac, p, index, array) => {
     if (ac === undefined) return undefined;
     if (!ac[p] && createNonExistingPath) {
-      const nextP = p![index + 1];
+      const nextP = array[index + 1];
       // Create object or array depending on next path
       if (nextP === undefined || typeof nextP === "number") {
         ac[p] = [];
