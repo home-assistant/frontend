@@ -12,7 +12,7 @@ import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { nestedArrayMove } from "../../../../common/util/nested-array-move";
+import { nestedArrayMove } from "../../../../common/util/array-move";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
@@ -99,26 +99,6 @@ export default class HaAutomationCondition extends LitElement {
       return nothing;
     }
     return html`
-      ${this.reOrderMode && !this.nested
-        ? html`
-            <ha-alert
-              alert-type="info"
-              .title=${this.hass.localize(
-                "ui.panel.config.automation.editor.re_order_mode.title"
-              )}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.re_order_mode.description_conditions"
-              )}
-              <ha-button slot="action" @click=${this._exitReOrderMode}>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.re_order_mode.exit"
-                )}
-              </ha-button>
-            </ha-alert>
-          `
-        : null}
-
       <ha-sortable
         handle-selector=".handle"
         .disabled=${!this.reOrderMode}
@@ -142,7 +122,6 @@ export default class HaAutomationCondition extends LitElement {
                 @duplicate=${this._duplicateCondition}
                 @move-condition=${this._move}
                 @value-changed=${this._conditionChanged}
-                @re-order=${this._enterReOrderMode}
                 .hass=${this.hass}
               >
                 ${this.reOrderMode
@@ -239,16 +218,6 @@ export default class HaAutomationCondition extends LitElement {
     this._focusLastConditionOnChange = true;
     fireEvent(this, "value-changed", { value: conditions });
   };
-
-  private async _enterReOrderMode(ev: CustomEvent) {
-    if (this.nested) return;
-    ev.stopPropagation();
-    this.reOrderMode = true;
-  }
-
-  private async _exitReOrderMode() {
-    this.reOrderMode = false;
-  }
 
   private _getKey(condition: Condition) {
     if (!this._conditionKeys.has(condition)) {

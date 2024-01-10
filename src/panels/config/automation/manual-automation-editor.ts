@@ -2,9 +2,10 @@ import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { nestedArrayMove } from "../../../common/util/array-move";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
@@ -35,6 +36,8 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
+  @state() private _reOrderMode = false;
+
   protected render() {
     return html`
       ${this.disabled
@@ -44,7 +47,7 @@ export class HaManualAutomationEditor extends LitElement {
               ${this.hass.localize("ui.panel.config.automation.editor.migrate")}
             </mwc-button>
           </ha-alert>`
-        : ""}
+        : nothing}
       ${this.stateObj?.state === "off"
         ? html`
             <ha-alert alert-type="info">
@@ -92,12 +95,17 @@ export class HaManualAutomationEditor extends LitElement {
             )}
           </p>`
         : nothing}
+      ${this._renderReorderModeAlert()}
 
       <ha-automation-trigger
         role="region"
         aria-labelledby="triggers-heading"
         .triggers=${this.config.trigger}
+        .path=${["trigger"]}
         @value-changed=${this._triggerChanged}
+        @item-moved=${this._itemMoved}
+        @re-order=${this._enterReOrderMode}
+        .reOrderMode=${this._reOrderMode}
         .hass=${this.hass}
         .disabled=${this.disabled}
       ></ha-automation-trigger>
@@ -132,12 +140,17 @@ export class HaManualAutomationEditor extends LitElement {
             )}
           </p>`
         : nothing}
+      ${this._renderReorderModeAlert()}
 
       <ha-automation-condition
         role="region"
         aria-labelledby="conditions-heading"
         .conditions=${this.config.condition || []}
+        .path=${["condition"]}
         @value-changed=${this._conditionChanged}
+        @item-moved=${this._itemMoved}
+        @re-order=${this._enterReOrderMode}
+        .reOrderMode=${this._reOrderMode}
         .hass=${this.hass}
         .disabled=${this.disabled}
       ></ha-automation-condition>
@@ -170,17 +183,55 @@ export class HaManualAutomationEditor extends LitElement {
             )}
           </p>`
         : nothing}
+      ${this._renderReorderModeAlert()}
 
       <ha-automation-action
         role="region"
         aria-labelledby="actions-heading"
         .actions=${this.config.action}
+        .path=${["action"]}
         @value-changed=${this._actionChanged}
+        @item-moved=${this._itemMoved}
+        @re-order=${this._enterReOrderMode}
+        .reOrderMode=${this._reOrderMode}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
       ></ha-automation-action>
     `;
+  }
+
+  private _renderReorderModeAlert() {
+    if (!this._reOrderMode) {
+      return nothing;
+    }
+    return html`
+      <ha-alert
+        class="re-order"
+        alert-type="info"
+        .title=${this.hass.localize(
+          "ui.panel.config.automation.editor.re_order_mode.title"
+        )}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.re_order_mode.description_conditions"
+        )}
+        <ha-button slot="action" @click=${this._exitReOrderMode}>
+          ${this.hass.localize(
+            "ui.panel.config.automation.editor.re_order_mode.exit"
+          )}
+        </ha-button>
+      </ha-alert>
+    `;
+  }
+
+  private async _enterReOrderMode(ev: CustomEvent) {
+    ev.stopPropagation();
+    this._reOrderMode = true;
+  }
+
+  private async _exitReOrderMode() {
+    this._reOrderMode = false;
   }
 
   private _triggerChanged(ev: CustomEvent): void {
@@ -204,6 +255,21 @@ export class HaManualAutomationEditor extends LitElement {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.config!, action: ev.detail.value as Action[] },
+    });
+  }
+
+  private _itemMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    const updatedConfig = nestedArrayMove(
+      this.config,
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath
+    );
+    fireEvent(this, "value-changed", {
+      value: updatedConfig,
     });
   }
 
@@ -257,6 +323,12 @@ export class HaManualAutomationEditor extends LitElement {
           font-size: small;
           font-weight: normal;
           line-height: 0;
+        }
+        ha-alert.re-order {
+          display: block;
+          margin-bottom: 16px;
+          border-radius: var(--ha-card-border-radius, 12px);
+          overflow: hidden;
         }
       `,
     ];
