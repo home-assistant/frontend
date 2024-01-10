@@ -12,6 +12,7 @@ import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { nestedArrayMove } from "../../../../common/util/nested-array-move";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
@@ -20,7 +21,7 @@ import type {
   AutomationClipboard,
   Condition,
 } from "../../../../data/automation";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ItemPath } from "../../../../types";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -36,7 +37,7 @@ export default class HaAutomationCondition extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public path?: (number | string)[];
+  @property() public path?: ItemPath;
 
   @property({ type: Boolean }) public reOrderMode = false;
 
@@ -272,24 +273,16 @@ export default class HaAutomationCondition extends LitElement {
   private _move(
     oldIndex: number,
     newIndex: number,
-    fromPath?: (number | string)[],
-    toPath?: (number | string)[]
+    oldPath?: ItemPath,
+    newPath?: ItemPath
   ) {
-    const conditions = this.conditions.concat();
-
-    const fromConditions = fromPath
-      ? fromPath.reduce((ac, path) => ac[path], conditions)
-      : conditions;
-    const toConditions = toPath
-      ? toPath.reduce((ac, path) => ac[path], conditions)
-      : conditions;
-
-    if (!fromConditions || !toConditions) {
-      return;
-    }
-
-    const condition = fromConditions.splice(oldIndex, 1)[0];
-    toConditions.splice(newIndex, 0, condition);
+    const conditions = nestedArrayMove(
+      this.conditions,
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath
+    );
 
     fireEvent(this, "value-changed", { value: conditions });
   }
@@ -297,8 +290,8 @@ export default class HaAutomationCondition extends LitElement {
   private _conditionMoved(ev: CustomEvent): void {
     if (this.nested) return;
     ev.stopPropagation();
-    const { oldIndex, newIndex, fromPath, toPath } = ev.detail;
-    this._move(oldIndex, newIndex, fromPath, toPath);
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    this._move(oldIndex, newIndex, oldPath, newPath);
   }
 
   private _conditionChanged(ev: CustomEvent) {

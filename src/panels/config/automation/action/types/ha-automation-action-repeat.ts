@@ -5,7 +5,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
 import { RepeatAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, ItemPath } from "../../../../../types";
 import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
 
@@ -31,7 +31,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public reOrderMode = false;
 
-  @property() public path?: (number | string)[];
+  @property() public path?: ItemPath;
 
   public static get defaultConfig() {
     return { repeat: { count: 2, sequence: [] } };
@@ -43,7 +43,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
       type: string,
       reOrderMode: boolean,
       template: boolean,
-      path?: (number | string)[]
+      path?: ItemPath
     ) =>
       [
         {

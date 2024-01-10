@@ -4,14 +4,15 @@ import { customElement, property } from "lit/decorators";
 import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../common/dom/fire_event";
 import type { SortableInstance } from "../resources/sortable";
+import { ItemPath } from "../types";
 
 declare global {
   interface HASSDomEvents {
     "item-moved": {
       oldIndex: number;
       newIndex: number;
-      fromPath?: (number | string)[];
-      toPath?: (number | string)[];
+      oldPath?: ItemPath;
+      newPath?: ItemPath;
     };
   }
 }
@@ -24,7 +25,7 @@ export class HaSortable extends LitElement {
   public disabled = false;
 
   @property({ type: Boolean })
-  public path?: (number | string)[];
+  public path?: ItemPath;
 
   @property({ type: Boolean, attribute: "no-style" })
   public noStyle: boolean = false;
@@ -138,14 +139,14 @@ export class HaSortable extends LitElement {
     }
 
     const oldIndex = evt.oldIndex;
-    const fromPath = (evt.from.parentElement as HaSortable).path;
+    const oldPath = (evt.from.parentElement as HaSortable).path;
     const newIndex = evt.newIndex;
-    const toPath = (evt.to.parentElement as HaSortable).path;
+    const newPath = (evt.to.parentElement as HaSortable).path;
 
     if (
       oldIndex === undefined ||
       newIndex === undefined ||
-      (oldIndex === newIndex && fromPath?.join(".") === toPath?.join("."))
+      (oldIndex === newIndex && oldPath?.join(".") === newPath?.join("."))
     ) {
       return;
     }
@@ -153,8 +154,8 @@ export class HaSortable extends LitElement {
     fireEvent(this, "item-moved", {
       oldIndex,
       newIndex,
-      fromPath,
-      toPath,
+      oldPath,
+      newPath,
     });
   };
 

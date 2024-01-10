@@ -8,7 +8,7 @@ import "../../../../../components/ha-duration-input";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-textfield";
 import { WaitForTriggerAction } from "../../../../../data/script";
-import { HomeAssistant } from "../../../../../types";
+import { HomeAssistant, ItemPath } from "../../../../../types";
 import "../../trigger/ha-automation-trigger";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 
@@ -23,7 +23,7 @@ export class HaWaitForTriggerAction
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ attribute: false }) public path?: (number | string)[];
+  @property({ attribute: false }) public path?: ItemPath;
 
   @property({ type: Boolean }) public reOrderMode = false;
 

@@ -4,7 +4,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
 import { Action, ParallelAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, ItemPath } from "../../../../../types";
 import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
 
@@ -14,7 +14,7 @@ export class HaParallelAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ attribute: false }) public path?: (number | string)[];
+  @property({ attribute: false }) public path?: ItemPath;
 
   @property({ attribute: false }) public action!: ParallelAction;
 

@@ -294,3 +294,5 @@ export type AsyncReturnType<T extends (...args: any) => any> = T extends (
     : never;
 
 export type Entries<T> = [keyof T, T[keyof T]][];
+
+export type ItemPath = (number | string)[];

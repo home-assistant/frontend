@@ -5,13 +5,14 @@ import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { nestedArrayMove } from "../../../../common/util/nested-array-move";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import { getService, isService } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
 import { Action } from "../../../../data/script";
-import { HomeAssistant } from "../../../../types";
+import { HomeAssistant, ItemPath } from "../../../../types";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -27,7 +28,7 @@ export default class HaAutomationAction extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public path?: (number | string)[];
+  @property() public path?: ItemPath;
 
   @property() public actions!: Action[];
 
@@ -239,34 +240,16 @@ export default class HaAutomationAction extends LitElement {
   private _move(
     oldIndex: number,
     newIndex: number,
-    fromPath?: (number | string)[],
-    toPath?: (number | string)[]
+    oldPath?: ItemPath,
+    newPath?: ItemPath
   ) {
-    const actions = this.actions.concat();
-
-    const fromActions = fromPath
-      ? fromPath.reduce((ac, path) => ac[path], actions)
-      : actions;
-
-    const toActions = toPath
-      ? toPath.reduce((ac, path, index) => {
-          if (!ac[path]) {
-            const nextPath = toPath![index + 1];
-            if (nextPath === undefined || typeof nextPath === "number") {
-              ac[path] = [];
-            } else {
-              ac[path] = {};
-            }
-          }
-          return ac[path];
-        }, actions)
-      : actions;
-
-    if (!fromActions || !toActions) {
-      return;
-    }
-    const action = fromActions.splice(oldIndex, 1)[0];
-    toActions.splice(newIndex, 0, action);
+    const actions = nestedArrayMove(
+      this.actions,
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath
+    );
 
     fireEvent(this, "value-changed", { value: actions });
   }
@@ -274,8 +257,8 @@ export default class HaAutomationAction extends LitElement {
   private _actionMoved(ev: CustomEvent): void {
     if (this.nested) return;
     ev.stopPropagation();
-    const { oldIndex, newIndex, fromPath, toPath } = ev.detail;
-    this._move(oldIndex, newIndex, fromPath, toPath);
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    this._move(oldIndex, newIndex, oldPath, newPath);
   }
 
   private _actionChanged(ev: CustomEvent) {

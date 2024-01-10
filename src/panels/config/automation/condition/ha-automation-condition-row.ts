@@ -39,7 +39,7 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
+import { HomeAssistant, ItemPath } from "../../../../types";
 import "./ha-automation-condition-editor";
 
 export interface ConditionElement extends LitElement {
@@ -85,7 +85,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public path?: (number | string)[];
+  @property() public path?: ItemPath;
 
   @storage({
     key: "automationClipboard",

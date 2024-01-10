@@ -36,7 +36,7 @@ import {
   showPromptDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
+import { HomeAssistant, ItemPath } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
 
 const preventDefault = (ev) => ev.preventDefault();
@@ -47,7 +47,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ attribute: false }) public path?: (number | string)[];
+  @property({ attribute: false }) public path?: ItemPath;
 
   @property() public action!: ChooseAction;
 

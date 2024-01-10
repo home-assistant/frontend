@@ -57,7 +57,7 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ItemPath } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import "./types/ha-automation-action-activate_scene";
 import "./types/ha-automation-action-choose";
@@ -131,7 +131,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public reOrderMode = false;
 
-  @property() public path?: (number | string)[];
+  @property() public path?: ItemPath;
 
   @storage({
     key: "automationClipboard",

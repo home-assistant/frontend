@@ -5,12 +5,13 @@ import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { nestedArrayMove } from "../../../../common/util/nested-array-move";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import { AutomationClipboard, Trigger } from "../../../../data/automation";
-import { HomeAssistant } from "../../../../types";
+import { HomeAssistant, ItemPath } from "../../../../types";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -26,7 +27,7 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public path?: (number | string)[];
+  @property() public path?: ItemPath;
 
   @property({ type: Boolean }) public reOrderMode = false;
 
@@ -213,24 +214,16 @@ export default class HaAutomationTrigger extends LitElement {
   private _move(
     oldIndex: number,
     newIndex: number,
-    fromPath?: (number | string)[],
-    toPath?: (number | string)[]
+    oldPath?: ItemPath,
+    newPath?: ItemPath
   ) {
-    const triggers = this.triggers.concat();
-
-    const fromTriggers = fromPath
-      ? fromPath.reduce((ac, path) => ac[path], triggers)
-      : triggers;
-    const toTriggers = toPath
-      ? toPath.reduce((ac, path) => ac[path], triggers)
-      : triggers;
-
-    if (!fromTriggers || !toTriggers) {
-      return;
-    }
-
-    const trigger = fromTriggers.splice(oldIndex, 1)[0];
-    toTriggers.splice(newIndex, 0, trigger);
+    const triggers = nestedArrayMove(
+      this.triggers,
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath
+    );
 
     fireEvent(this, "value-changed", { value: triggers });
   }
@@ -238,8 +231,8 @@ export default class HaAutomationTrigger extends LitElement {
   private _triggerMoved(ev: CustomEvent): void {
     if (this.nested) return;
     ev.stopPropagation();
-    const { oldIndex, newIndex, fromPath, toPath } = ev.detail;
-    this._move(oldIndex, newIndex, fromPath, toPath);
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    this._move(oldIndex, newIndex, oldPath, newPath);
   }
 
   private _triggerChanged(ev: CustomEvent) {
