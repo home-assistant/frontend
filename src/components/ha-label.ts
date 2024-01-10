@@ -5,11 +5,11 @@ import { customElement } from "lit/decorators";
 class HaLabel extends LitElement {
   protected render(): TemplateResult {
     return html`
-        <span class="label">
-            <slot name="icon"></slot>
-            <slot></slot>
-        </div>
-      `;
+      <span class="label">
+        <slot name="icon"></slot>
+        <slot></slot>
+      </span>
+    `;
   }
 
   static get styles(): CSSResultGroup {
