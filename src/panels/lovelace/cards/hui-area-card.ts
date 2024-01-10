@@ -68,7 +68,7 @@ const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 
 const OTHER_DOMAINS = ["camera"];
 
-const DEVICE_CLASSES = {
+export const DEVICE_CLASSES = {
   sensor: ["temperature", "humidity"],
   binary_sensor: ["motion", "moisture"],
 };
@@ -574,6 +574,7 @@ export class HuiAreaCard
         background: var(--accent-color);
         color: var(--text-accent-color, var(--text-primary-color));
         padding: 8px;
+        margin-right: 8px;
         border-radius: 50%;
       }
 
