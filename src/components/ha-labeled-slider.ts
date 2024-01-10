@@ -14,11 +14,11 @@ class HaLabeledSlider extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
-  @property() public min: number = 0;
+  @property({ type: Number }) public min = 0;
 
-  @property() public max: number = 100;
+  @property({ type: Number }) public max = 100;
 
-  @property() public step: number = 1;
+  @property({ type: Number }) public step = 1;
 
   @property() public helper?: string;
 
@@ -26,7 +26,7 @@ class HaLabeledSlider extends LitElement {
 
   @property() public icon?: string;
 
-  @property() public value?: number;
+  @property({ type: Number }) public value?: number;
 
   protected render() {
     return html`
