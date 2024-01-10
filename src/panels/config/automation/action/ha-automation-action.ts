@@ -247,14 +247,24 @@ export default class HaAutomationAction extends LitElement {
     const fromActions = fromPath
       ? fromPath.reduce((ac, path) => ac[path], actions)
       : actions;
+
     const toActions = toPath
-      ? toPath.reduce((ac, path) => ac[path], actions)
+      ? toPath.reduce((ac, path, index) => {
+          if (!ac[path]) {
+            const nextPath = toPath![index + 1];
+            if (nextPath === undefined || typeof nextPath === "number") {
+              ac[path] = [];
+            } else {
+              ac[path] = {};
+            }
+          }
+          return ac[path];
+        }, actions)
       : actions;
 
     if (!fromActions || !toActions) {
       return;
     }
-
     const action = fromActions.splice(oldIndex, 1)[0];
     toActions.splice(newIndex, 0, action);
 
