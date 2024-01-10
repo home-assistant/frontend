@@ -18,7 +18,7 @@ import { configTabs } from "./zwave_js-config-router";
 class ZWaveJSProvisioned extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Object }) public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property({ type: Boolean }) public narrow!: boolean;
 
