@@ -14,6 +14,8 @@ export class HaLogicalCondition extends LitElement implements ConditionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ attribute: false }) public path?: (number | string)[];
+
   @property({ type: Boolean }) public reOrderMode = false;
 
   public static get defaultConfig() {
@@ -25,7 +27,7 @@ export class HaLogicalCondition extends LitElement implements ConditionElement {
   protected render() {
     return html`
       <ha-automation-condition
-        nested
+        .path=${[...(this.path ?? []), "conditions"]}
         .conditions=${this.condition.conditions || []}
         @value-changed=${this._valueChanged}
         .hass=${this.hass}

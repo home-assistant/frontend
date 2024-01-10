@@ -47,6 +47,8 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ attribute: false }) public path?: (number | string)[];
+
   @property() public action!: ChooseAction;
 
   @property({ type: Boolean }) public reOrderMode = false;
@@ -109,7 +111,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
             action.choose ? ensureArray(action.choose) : [],
             (option) => option,
             (option, idx) => html`
-              <div class="option" .sortableItemData=${option}>
+              <div class="option">
                 <ha-card>
                   <ha-expansion-panel
                     .index=${idx}
@@ -227,7 +229,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         )}:
                       </h4>
                       <ha-automation-condition
-                        nested
+                        .path=${[...(this.path ?? []), "conditions"]}
                         .conditions=${ensureArray<string | Condition>(
                           option.conditions
                         )}
@@ -243,7 +245,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         )}:
                       </h4>
                       <ha-automation-action
-                        nested
+                        .path=${[...(this.path ?? []), "sequence"]}
                         .actions=${ensureArray(option.sequence) || []}
                         .reOrderMode=${this.reOrderMode}
                         .disabled=${this.disabled}
@@ -277,7 +279,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
               )}:
             </h2>
             <ha-automation-action
-              nested
+              .path=${[...(this.path ?? []), "default"]}
               .actions=${ensureArray(action.default) || []}
               .reOrderMode=${this.reOrderMode}
               .disabled=${this.disabled}

@@ -27,11 +27,11 @@ export default class HaAutomationAction extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public nested = false;
+  @property() public path?: (number | string)[];
 
   @property() public actions!: Action[];
 
-  @property({ type: Boolean }) public reOrderMode = true;
+  @property({ type: Boolean }) public reOrderMode = false;
 
   @storage({
     key: "automationClipboard",
@@ -44,6 +44,10 @@ export default class HaAutomationAction extends LitElement {
   private _focusLastActionOnChange = false;
 
   private _actionKeys = new WeakMap<Action, string>();
+
+  private get nested() {
+    return this.path !== undefined;
+  }
 
   protected render() {
     return html`
@@ -70,9 +74,8 @@ export default class HaAutomationAction extends LitElement {
         handle-selector=".handle"
         .disabled=${!this.reOrderMode}
         @item-moved=${this._actionMoved}
-        @item-added=${this._actionAdded}
-        @item-removed=${this._actionRemoved}
         group="actions"
+        .path=${this.path}
       >
         <div class="actions">
           ${repeat(
@@ -80,7 +83,7 @@ export default class HaAutomationAction extends LitElement {
             (action) => this._getKey(action),
             (action, idx) => html`
               <ha-automation-action-row
-                .sortableItemData=${action}
+                .path=${[...(this.path ?? []), idx]}
                 .index=${idx}
                 .action=${action}
                 .narrow=${this.narrow}
@@ -233,37 +236,36 @@ export default class HaAutomationAction extends LitElement {
     this._move(index, newIndex);
   }
 
-  private _move(index: number, newIndex: number) {
+  private _move(
+    oldIndex: number,
+    newIndex: number,
+    fromPath?: (number | string)[],
+    toPath?: (number | string)[]
+  ) {
     const actions = this.actions.concat();
-    const action = actions.splice(index, 1)[0];
-    actions.splice(newIndex, 0, action);
+
+    const fromActions = fromPath
+      ? fromPath.reduce((ac, path) => ac[path], actions)
+      : actions;
+    const toActions = toPath
+      ? toPath.reduce((ac, path) => ac[path], actions)
+      : actions;
+
+    if (!fromActions || !toActions) {
+      return;
+    }
+
+    const action = fromActions.splice(oldIndex, 1)[0];
+    toActions.splice(newIndex, 0, action);
+
     fireEvent(this, "value-changed", { value: actions });
   }
 
   private _actionMoved(ev: CustomEvent): void {
+    if (this.nested) return;
     ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
-    this._move(oldIndex, newIndex);
-  }
-
-  private _actionRemoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { index } = ev.detail;
-    const actions = this.actions.concat();
-    const newActions = actions.filter((_a, i) => index !== i);
-    fireEvent(this, "value-changed", { value: newActions });
-  }
-
-  private _actionAdded(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { index, data } = ev.detail;
-    const actions = this.actions.concat();
-    const newActions = [
-      ...actions.slice(0, index),
-      data,
-      ...actions.slice(index),
-    ];
-    fireEvent(this, "value-changed", { value: newActions });
+    const { oldIndex, newIndex, fromPath, toPath } = ev.detail;
+    this._move(oldIndex, newIndex, fromPath, toPath);
   }
 
   private _actionChanged(ev: CustomEvent) {

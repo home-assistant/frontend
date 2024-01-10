@@ -12,7 +12,10 @@ import type { ActionElement } from "../ha-automation-action-row";
 import { isTemplate } from "../../../../../common/string/has-template";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../../components/ha-form/types";
 
 const OPTIONS = ["count", "while", "until", "for_each"] as const;
 
@@ -28,6 +31,8 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public reOrderMode = false;
 
+  @property() public path?: (number | string)[];
+
   public static get defaultConfig() {
     return { repeat: { count: 2, sequence: [] } };
   }
@@ -37,7 +42,8 @@ export class HaRepeatAction extends LitElement implements ActionElement {
       localize: LocalizeFunc,
       type: string,
       reOrderMode: boolean,
-      template: boolean
+      template: boolean,
+      path?: (number | string)[]
     ) =>
       [
         {
@@ -60,20 +66,23 @@ export class HaRepeatAction extends LitElement implements ActionElement {
                 name: "count",
                 required: true,
                 selector: template
-                  ? ({ template: {} } as const)
-                  : ({ number: { mode: "box", min: 1 } } as const),
+                  ? { template: {} }
+                  : { number: { mode: "box", min: 1 } },
               },
-            ] as const)
+            ] as const satisfies readonly HaFormSchema[])
           : []),
         ...(type === "until" || type === "while"
           ? ([
               {
                 name: type,
                 selector: {
-                  condition: { nested: true, reorder_mode: reOrderMode },
+                  condition: {
+                    path: [...(path ?? []), "repeat", type],
+                    reorder_mode: reOrderMode,
+                  },
                 },
               },
-            ] as const)
+            ] as const satisfies readonly HaFormSchema[])
           : []),
         ...(type === "for_each"
           ? ([
@@ -82,13 +91,18 @@ export class HaRepeatAction extends LitElement implements ActionElement {
                 required: true,
                 selector: { object: {} },
               },
-            ] as const)
+            ] as const satisfies readonly HaFormSchema[])
           : []),
         {
           name: "sequence",
-          selector: { action: { nested: true, reorder_mode: reOrderMode } },
+          selector: {
+            action: {
+              path: [...(path ?? []), "repeat", "sequence"],
+              reorder_mode: reOrderMode,
+            },
+          },
         },
-      ] as const
+      ] as const satisfies readonly HaFormSchema[]
   );
 
   protected render() {
@@ -100,8 +114,10 @@ export class HaRepeatAction extends LitElement implements ActionElement {
       this.reOrderMode,
       "count" in action && typeof action.count === "string"
         ? isTemplate(action.count)
-        : false
+        : false,
+      this.path
     );
+
     const data = { ...action, type };
     return html`<ha-form
       .hass=${this.hass}

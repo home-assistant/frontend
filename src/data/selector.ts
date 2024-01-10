@@ -60,7 +60,7 @@ export type Selector =
 export interface ActionSelector {
   action: {
     reorder_mode?: boolean;
-    nested?: boolean;
+    path?: (number | string)[];
   } | null;
 }
 
@@ -114,7 +114,7 @@ export interface ColorTempSelector {
 export interface ConditionSelector {
   condition: {
     reorder_mode?: boolean;
-    nested?: boolean;
+    path?: (number | string)[];
   } | null;
 }
 
@@ -393,7 +393,7 @@ export interface TimeSelector {
 export interface TriggerSelector {
   trigger: {
     reorder_mode?: boolean;
-    nested?: boolean;
+    path?: (number | string)[];
   } | null;
 }
 

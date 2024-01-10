@@ -10,13 +10,8 @@ declare global {
     "item-moved": {
       oldIndex: number;
       newIndex: number;
-    };
-    "item-removed": {
-      index: number;
-    };
-    "item-added": {
-      index: number;
-      data: any;
+      fromPath?: (number | string)[];
+      toPath?: (number | string)[];
     };
   }
 }
@@ -27,6 +22,9 @@ export class HaSortable extends LitElement {
 
   @property({ type: Boolean })
   public disabled = false;
+
+  @property({ type: Boolean })
+  public path?: (number | string)[];
 
   @property({ type: Boolean, attribute: "no-style" })
   public noStyle: boolean = false;
@@ -114,8 +112,6 @@ export class HaSortable extends LitElement {
       fallbackOnBody: true,
       onChoose: this._handleChoose,
       onEnd: this._handleEnd,
-      onRemove: this._handleRemove,
-      onAdd: this._handleAdd,
     };
 
     if (this.draggableSelector) {
@@ -123,6 +119,9 @@ export class HaSortable extends LitElement {
     }
     if (this.handleSelector) {
       options.handle = this.handleSelector;
+    }
+    if (this.draggableSelector) {
+      options.draggable = this.draggableSelector;
     }
     if (this.group) {
       options.group = this.group;
@@ -138,53 +137,30 @@ export class HaSortable extends LitElement {
       delete (evt.item as any).placeholder;
     }
 
+    const oldIndex = evt.oldIndex;
+    const fromPath = (evt.from.parentElement as HaSortable).path;
+    const newIndex = evt.newIndex;
+    const toPath = (evt.to.parentElement as HaSortable).path;
+
     if (
-      evt.pullMode ||
-      evt.oldIndex === undefined ||
-      evt.newIndex === undefined ||
-      evt.oldIndex === evt.newIndex
+      oldIndex === undefined ||
+      newIndex === undefined ||
+      (oldIndex === newIndex && fromPath?.join(".") === toPath?.join("."))
     ) {
       return;
     }
 
     fireEvent(this, "item-moved", {
-      oldIndex: evt.oldIndex!,
-      newIndex: evt.newIndex!,
+      oldIndex,
+      newIndex,
+      fromPath,
+      toPath,
     });
   };
 
   private _handleChoose = (evt: SortableEvent) => {
     (evt.item as any).placeholder = document.createComment("sort-placeholder");
     evt.item.after((evt.item as any).placeholder);
-  };
-
-  private _handleRemove = (evt: SortableEvent) => {
-    if (!evt.pullMode) return;
-    const index = evt.oldIndex;
-    const data = (evt.item as any).sortableItemData;
-    if (index === undefined || !data) {
-      return;
-    }
-
-    setTimeout(() => {
-      fireEvent(this, "item-removed", {
-        index,
-      });
-    }, 1);
-  };
-
-  private _handleAdd = (evt: SortableEvent) => {
-    if (!evt.pullMode) return;
-    const index = evt.newIndex;
-    const data = (evt.item as any).sortableItemData;
-    if (index === undefined || !data) {
-      return;
-    }
-
-    fireEvent(this, "item-added", {
-      index,
-      data,
-    });
   };
 
   private _destroySortable() {

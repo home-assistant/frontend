@@ -26,7 +26,7 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public nested = false;
+  @property() public path?: (number | string)[];
 
   @property({ type: Boolean }) public reOrderMode = false;
 
@@ -41,6 +41,10 @@ export default class HaAutomationTrigger extends LitElement {
   private _focusLastTriggerOnChange = false;
 
   private _triggerKeys = new WeakMap<Trigger, string>();
+
+  private get nested() {
+    return this.path !== undefined;
+  }
 
   protected render() {
     return html`
@@ -67,9 +71,8 @@ export default class HaAutomationTrigger extends LitElement {
         handle-selector=".handle"
         .disabled=${!this.reOrderMode}
         @item-moved=${this._triggerMoved}
-        @item-added=${this._triggerAdded}
-        @item-removed=${this._triggerRemoved}
         group="triggers"
+        .path=${this.path}
       >
         <div class="triggers">
           ${repeat(
@@ -77,7 +80,7 @@ export default class HaAutomationTrigger extends LitElement {
             (trigger) => this._getKey(trigger),
             (trg, idx) => html`
               <ha-automation-trigger-row
-                .sortableItemData=${trg}
+                .path=${[...(this.path ?? []), idx]}
                 .index=${idx}
                 .trigger=${trg}
                 .hideMenu=${this.reOrderMode}
@@ -207,37 +210,36 @@ export default class HaAutomationTrigger extends LitElement {
     this._move(index, newIndex);
   }
 
-  private _move(index: number, newIndex: number) {
+  private _move(
+    oldIndex: number,
+    newIndex: number,
+    fromPath?: (number | string)[],
+    toPath?: (number | string)[]
+  ) {
     const triggers = this.triggers.concat();
-    const trigger = triggers.splice(index, 1)[0];
-    triggers.splice(newIndex, 0, trigger);
+
+    const fromTriggers = fromPath
+      ? fromPath.reduce((ac, path) => ac[path], triggers)
+      : triggers;
+    const toTriggers = toPath
+      ? toPath.reduce((ac, path) => ac[path], triggers)
+      : triggers;
+
+    if (!fromTriggers || !toTriggers) {
+      return;
+    }
+
+    const trigger = fromTriggers.splice(oldIndex, 1)[0];
+    toTriggers.splice(newIndex, 0, trigger);
+
     fireEvent(this, "value-changed", { value: triggers });
   }
 
   private _triggerMoved(ev: CustomEvent): void {
+    if (this.nested) return;
     ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
-    this._move(oldIndex, newIndex);
-  }
-
-  private _triggerRemoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { index } = ev.detail;
-    const triggers = this.triggers.concat();
-    const newTriggers = triggers.filter((_a, i) => index !== i);
-    fireEvent(this, "value-changed", { value: newTriggers });
-  }
-
-  private _triggerAdded(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { index, data } = ev.detail;
-    const triggers = this.triggers.concat();
-    const newTriggers = [
-      ...triggers.slice(0, index),
-      data,
-      ...triggers.slice(index),
-    ];
-    fireEvent(this, "value-changed", { value: newTriggers });
+    const { oldIndex, newIndex, fromPath, toPath } = ev.detail;
+    this._move(oldIndex, newIndex, fromPath, toPath);
   }
 
   private _triggerChanged(ev: CustomEvent) {

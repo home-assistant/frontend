@@ -85,6 +85,8 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property() public path?: (number | string)[];
+
   @storage({
     key: "automationClipboard",
     state: false,
@@ -298,6 +300,7 @@ export default class HaAutomationConditionRow extends LitElement {
               .hass=${this.hass}
               .condition=${this.condition}
               .reOrderMode=${this.reOrderMode}
+              .path=${this.path}
             ></ha-automation-condition-editor>
           </div>
         </ha-expansion-panel>

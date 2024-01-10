@@ -24,7 +24,7 @@ export class HaActionSelector extends LitElement {
         .disabled=${this.disabled}
         .actions=${this.value || []}
         .hass=${this.hass}
-        .nested=${this.selector.action?.nested}
+        .path=${this.selector.action?.path}
         .reOrderMode=${this.selector.action?.reorder_mode}
       ></ha-automation-action>
     `;

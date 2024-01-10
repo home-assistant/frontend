@@ -15,7 +15,14 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
@@ -101,6 +108,8 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property() public path?: (number | string)[];
+
   @state() private _warnings?: string[];
 
   @state() private _yamlMode = false;
@@ -128,6 +137,8 @@ export default class HaAutomationTriggerRow extends LitElement {
   private _triggerUnsub?: Promise<UnsubscribeFunc>;
 
   protected render() {
+    if (!this.trigger) return nothing;
+
     const supported =
       customElements.get(`ha-automation-trigger-${this.trigger.platform}`) !==
       undefined;
@@ -357,6 +368,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                         hass: this.hass,
                         trigger: this.trigger,
                         disabled: this.disabled,
+                        path: this.path,
                       }
                     )}
                   </div>

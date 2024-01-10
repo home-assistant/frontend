@@ -23,6 +23,8 @@ export class HaWaitForTriggerAction
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ attribute: false }) public path?: (number | string)[];
+
   @property({ type: Boolean }) public reOrderMode = false;
 
   public static get defaultConfig() {
@@ -55,7 +57,7 @@ export class HaWaitForTriggerAction
         ></ha-switch>
       </ha-formfield>
       <ha-automation-trigger
-        nested
+        .path=${[...(this.path ?? []), "wait_for_trigger"]}
         .triggers=${ensureArray(this.action.wait_for_trigger)}
         .hass=${this.hass}
         .disabled=${this.disabled}

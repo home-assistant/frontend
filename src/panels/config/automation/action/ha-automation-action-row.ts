@@ -131,6 +131,8 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public reOrderMode = false;
 
+  @property() public path?: (number | string)[];
+
   @storage({
     key: "automationClipboard",
     state: false,
@@ -409,6 +411,7 @@ export default class HaAutomationActionRow extends LitElement {
                       narrow: this.narrow,
                       reOrderMode: this.reOrderMode,
                       disabled: this.disabled,
+                      path: this.path,
                     })}
                   </div>
                 `}

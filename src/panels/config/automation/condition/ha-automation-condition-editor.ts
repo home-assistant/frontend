@@ -32,6 +32,8 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ type: Boolean }) public reOrderMode = false;
 
+  @property() public path?: (number | string)[];
+
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
   );
@@ -69,6 +71,7 @@ export default class HaAutomationConditionEditor extends LitElement {
                   condition: condition,
                   reOrderMode: this.reOrderMode,
                   disabled: this.disabled,
+                  path: this.path,
                 }
               )}
             </div>

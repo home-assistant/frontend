@@ -36,7 +36,7 @@ export default class HaAutomationCondition extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public nested = false;
+  @property() public path?: (number | string)[];
 
   @property({ type: Boolean }) public reOrderMode = false;
 
@@ -89,6 +89,10 @@ export default class HaAutomationCondition extends LitElement {
     }
   }
 
+  private get nested() {
+    return this.path !== undefined;
+  }
+
   protected render() {
     if (!Array.isArray(this.conditions)) {
       return nothing;
@@ -118,9 +122,8 @@ export default class HaAutomationCondition extends LitElement {
         handle-selector=".handle"
         .disabled=${!this.reOrderMode}
         @item-moved=${this._conditionMoved}
-        @item-added=${this._conditionAdded}
-        @item-removed=${this._conditionRemoved}
         group="conditions"
+        .path=${this.path}
       >
         <div class="conditions">
           ${repeat(
@@ -128,7 +131,7 @@ export default class HaAutomationCondition extends LitElement {
             (condition) => this._getKey(condition),
             (cond, idx) => html`
               <ha-automation-condition-row
-                .sortableItemData=${cond}
+                .path=${[...(this.path ?? []), idx]}
                 .index=${idx}
                 .totalConditions=${this.conditions.length}
                 .condition=${cond}
@@ -266,37 +269,36 @@ export default class HaAutomationCondition extends LitElement {
     this._move(index, newIndex);
   }
 
-  private _move(index: number, newIndex: number) {
+  private _move(
+    oldIndex: number,
+    newIndex: number,
+    fromPath?: (number | string)[],
+    toPath?: (number | string)[]
+  ) {
     const conditions = this.conditions.concat();
-    const condition = conditions.splice(index, 1)[0];
-    conditions.splice(newIndex, 0, condition);
+
+    const fromConditions = fromPath
+      ? fromPath.reduce((ac, path) => ac[path], conditions)
+      : conditions;
+    const toConditions = toPath
+      ? toPath.reduce((ac, path) => ac[path], conditions)
+      : conditions;
+
+    if (!fromConditions || !toConditions) {
+      return;
+    }
+
+    const condition = fromConditions.splice(oldIndex, 1)[0];
+    toConditions.splice(newIndex, 0, condition);
+
     fireEvent(this, "value-changed", { value: conditions });
   }
 
   private _conditionMoved(ev: CustomEvent): void {
+    if (this.nested) return;
     ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
-    this._move(oldIndex, newIndex);
-  }
-
-  private _conditionRemoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { index } = ev.detail;
-    const conditions = this.conditions.concat();
-    const newConditions = conditions.filter((_a, i) => index !== i);
-    fireEvent(this, "value-changed", { value: newConditions });
-  }
-
-  private _conditionAdded(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { index, data } = ev.detail;
-    const conditions = this.conditions.concat();
-    const newConditions = [
-      ...conditions.slice(0, index),
-      data,
-      ...conditions.slice(index),
-    ];
-    fireEvent(this, "value-changed", { value: newConditions });
+    const { oldIndex, newIndex, fromPath, toPath } = ev.detail;
+    this._move(oldIndex, newIndex, fromPath, toPath);
   }
 
   private _conditionChanged(ev: CustomEvent) {
