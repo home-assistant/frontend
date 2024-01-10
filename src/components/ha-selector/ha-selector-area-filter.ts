@@ -6,7 +6,7 @@ import "../ha-area-filter";
 
 @customElement("ha-selector-area_filter")
 export class HaAreaFilterSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public selector!: AreaFilterSelector;
 

@@ -73,7 +73,7 @@ const rowRenderer: ComboBoxLitRenderer<IconItem | RankedIcon> = (item) =>
 
 @customElement("ha-icon-picker")
 export class HaIconPicker extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public value?: string;
 

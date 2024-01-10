@@ -59,7 +59,7 @@ const LEGACY_UI_SELECTORS = new Set(["ui-action", "ui-color"]);
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public name?: string;
 

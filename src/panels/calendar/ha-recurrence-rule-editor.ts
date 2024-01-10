@@ -33,7 +33,7 @@ import {
 
 @customElement("ha-recurrence-rule-editor")
 export class RecurrenceRuleEditor extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public disabled = false;
 

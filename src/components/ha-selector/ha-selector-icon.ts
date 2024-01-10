@@ -9,7 +9,7 @@ import "../ha-icon-picker";
 
 @customElement("ha-selector-icon")
 export class HaIconSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public selector!: IconSelector;
 

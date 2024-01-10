@@ -6,7 +6,7 @@ import "../ha-stt-picker";
 
 @customElement("ha-selector-stt")
 export class HaSTTSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public selector!: STTSelector;
 

@@ -10,7 +10,7 @@ import "../ha-textfield";
 
 @customElement("ha-selector-number")
 export class HaNumberSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public selector!: NumberSelector;
 

@@ -6,7 +6,7 @@ import "../entity/ha-statistics-picker";
 
 @customElement("ha-selector-statistic")
 export class HaStatisticSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public selector!: StatisticSelector;
 

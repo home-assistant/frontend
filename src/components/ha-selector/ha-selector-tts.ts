@@ -6,7 +6,7 @@ import "../ha-tts-picker";
 
 @customElement("ha-selector-tts")
 export class HaTTSSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public selector!: TTSSelector;
 

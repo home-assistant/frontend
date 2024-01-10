@@ -6,7 +6,7 @@ import "../ha-language-picker";
 
 @customElement("ha-selector-language")
 export class HaLanguageSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public selector!: LanguageSelector;
 
