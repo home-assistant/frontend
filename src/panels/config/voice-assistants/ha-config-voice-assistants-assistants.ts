@@ -31,7 +31,7 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   protected render() {
     if (!this.hass) {
