@@ -101,7 +101,7 @@ export const fetchDeviceRegistry = (conn: Connection) =>
     type: "config/device_registry/list",
   });
 
-const subscribeDeviceRegistryUpdates = (
+export const subscribeDeviceRegistryUpdates = (
   conn: Connection,
   store: Store<DeviceRegistryEntry[]>
 ) =>

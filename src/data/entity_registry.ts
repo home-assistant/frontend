@@ -130,11 +130,11 @@ export interface EntityRegistryEntryUpdateParams {
   aliases?: string[];
 }
 
-const batteryPriorities = ["sensor", "binary_sensor"];
 export const findBatteryEntity = <T extends { entity_id: string }>(
   hass: HomeAssistant,
   entities: T[]
 ): T | undefined => {
+  const batteryPriorities = ["sensor", "binary_sensor"];
   const batteryEntities = entities
     .filter(
       (entity) =>
@@ -227,7 +227,7 @@ export const fetchEntityRegistryDisplay = (conn: Connection) =>
     type: "config/entity_registry/list_for_display",
   });
 
-const subscribeEntityRegistryUpdates = (
+export const subscribeEntityRegistryUpdates = (
   conn: Connection,
   store: Store<EntityRegistryEntry[]>
 ) =>
@@ -255,7 +255,7 @@ export const subscribeEntityRegistry = (
     onChange
   );
 
-const subscribeEntityRegistryDisplayUpdates = (
+export const subscribeEntityRegistryDisplayUpdates = (
   conn: Connection,
   store: Store<EntityRegistryDisplayEntryResponse>
 ) =>

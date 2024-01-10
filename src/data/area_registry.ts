@@ -53,7 +53,7 @@ export const deleteAreaRegistryEntry = (hass: HomeAssistant, areaId: string) =>
     area_id: areaId,
   });
 
-const fetchAreaRegistry = (conn: Connection) =>
+export const fetchAreaRegistry = (conn: Connection) =>
   conn
     .sendMessagePromise({
       type: "config/area_registry/list",
@@ -64,7 +64,7 @@ const fetchAreaRegistry = (conn: Connection) =>
       )
     );
 
-const subscribeAreaRegistryUpdates = (
+export const subscribeAreaRegistryUpdates = (
   conn: Connection,
   store: Store<AreaRegistryEntry[]>
 ) =>
