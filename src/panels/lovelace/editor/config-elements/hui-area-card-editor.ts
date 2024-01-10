@@ -100,7 +100,14 @@ export class HuiAreaCardEditor
       .filter((c) => c);
 
     const classesUniq = [...new Set(classes)];
-    classesUniq.sort();
+    classesUniq.map(deviceClass => ({
+        value: deviceClass, 
+        label: this.hass.localize(`component.binary_sensor.entity_component.${deviceClass}.name`
+      })
+    );
+    classesUniq.sort((a, b) =>
+          caseInsensitiveStringCompare(a.label, b.label, language)
+        );
 
     return classesUniq;
   });
