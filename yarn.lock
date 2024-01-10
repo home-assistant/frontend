@@ -9642,7 +9642,7 @@ __metadata:
     mocha: "npm:10.2.0"
     node-vibrant: "npm:3.2.1-alpha.1"
     object-hash: "npm:3.0.0"
-    open: "npm:10.0.2"
+    open: "npm:10.0.3"
     pinst: "npm:3.0.0"
     prettier: "npm:3.1.1"
     proxy-polyfill: "npm:0.3.2"
@@ -12483,15 +12483,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"open@npm:10.0.2":
-  version: 10.0.2
-  resolution: "open@npm:10.0.2"
+"open@npm:10.0.3":
+  version: 10.0.3
+  resolution: "open@npm:10.0.3"
   dependencies:
     default-browser: "npm:^5.2.1"
     define-lazy-prop: "npm:^3.0.0"
     is-inside-container: "npm:^1.0.0"
     is-wsl: "npm:^3.1.0"
-  checksum: 6f7f9e08204af00930f2998690293df1a919a61c98b225ff9e3aa09a765254b8a98bec101644ffe991452c6aabea0c6f9e49670b559d48a44bfc5238f6b58351
+  checksum: 4dc757ad1d3d63490822f991e9cbe3a7c05b7249fca2eaa571cb7d191e5cec88bc37e15d8ef4fd740d8989a288b661d8da253caa8d98e8c97430ddbbb0ae4ed1
   languageName: node
   linkType: hard
 
