@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import deepFreeze from "deep-freeze";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
