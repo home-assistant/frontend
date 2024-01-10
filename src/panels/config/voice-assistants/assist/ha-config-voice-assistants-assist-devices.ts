@@ -15,6 +15,12 @@ import { computeDeviceName } from "../../../../data/device_registry";
 import "../../../../layouts/hass-subpage";
 import { HomeAssistant } from "../../../../types";
 
+interface AssistDeviceExtra extends AssistDevice {
+  name: string;
+  pipeline: string;
+  area: string;
+}
+
 @customElement("ha-config-voice-assistants-assist-devices")
 class AssistDevicesPage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -29,14 +35,14 @@ class AssistDevicesPage extends LitElement {
 
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer<AssistDevice> = {
+      const columns: DataTableColumnContainer<AssistDeviceExtra> = {
         name: {
           title: localize(
             "ui.panel.config.voice_assistants.assistants.pipeline.devices.device"
           ),
-          width: "50%",
           filterable: true,
           sortable: true,
+          grows: true,
         },
         pipeline: {
           title: localize(
@@ -52,7 +58,7 @@ class AssistDevicesPage extends LitElement {
           ),
           filterable: true,
           sortable: true,
-          width: "20%",
+          width: "30%",
         },
       };
 
@@ -69,7 +75,7 @@ class AssistDevicesPage extends LitElement {
       pipelines: Record<string, AssistPipeline>,
       preferred: string | null,
       assistDevices: AssistDevice[]
-    ) =>
+    ): AssistDeviceExtra[] =>
       assistDevices.map((assistDevice) => {
         const device = deviceReg[assistDevice.device_id];
         const selected = states[assistDevice.pipeline_entity]?.state;
@@ -79,12 +85,13 @@ class AssistDevicesPage extends LitElement {
           (pipeline && pipelines[pipeline]?.name) || pipeline;
 
         return {
+          ...assistDevice,
           name: device ? computeDeviceName(device, this.hass) : "",
           pipeline: isPreferred
             ? localize("ui.components.pipeline-picker.preferred", {
                 preferred: pipelineName,
               })
-            : pipelineName,
+            : pipelineName || "",
           area:
             (device && device.area_id && areaReg[device.area_id]?.name) || "",
         };
