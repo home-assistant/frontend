@@ -1,8 +1,9 @@
 import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { nestedArrayMove } from "../../../common/util/array-move";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { Action, Fields, ScriptConfig } from "../../../data/script";
@@ -24,6 +25,8 @@ export class HaManualScriptEditor extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ attribute: false }) public config!: ScriptConfig;
+
+  @state() private _reOrderMode = false;
 
   @query("ha-script-fields")
   private _scriptFields?: HaScriptFields;
@@ -118,16 +121,55 @@ export class HaManualScriptEditor extends LitElement {
         </a>
       </div>
 
+      ${this._renderReorderModeAlert()}
+
       <ha-automation-action
         role="region"
         aria-labelledby="sequence-heading"
         .actions=${this.config.sequence}
+        .path=${["sequence"]}
         @value-changed=${this._sequenceChanged}
+        @item-moved=${this._itemMoved}
+        @re-order=${this._enterReOrderMode}
+        .reOrderMode=${this._reOrderMode}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
       ></ha-automation-action>
     `;
+  }
+
+  private _renderReorderModeAlert() {
+    if (!this._reOrderMode) {
+      return nothing;
+    }
+    return html`
+      <ha-alert
+        class="re-order"
+        alert-type="info"
+        .title=${this.hass.localize(
+          "ui.panel.config.automation.editor.re_order_mode.title"
+        )}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.re_order_mode.description_conditions"
+        )}
+        <ha-button slot="action" @click=${this._exitReOrderMode}>
+          ${this.hass.localize(
+            "ui.panel.config.automation.editor.re_order_mode.exit"
+          )}
+        </ha-button>
+      </ha-alert>
+    `;
+  }
+
+  private async _enterReOrderMode(ev: CustomEvent) {
+    ev.stopPropagation();
+    this._reOrderMode = true;
+  }
+
+  private async _exitReOrderMode() {
+    this._reOrderMode = false;
   }
 
   private _fieldsChanged(ev: CustomEvent): void {
@@ -141,6 +183,21 @@ export class HaManualScriptEditor extends LitElement {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.config!, sequence: ev.detail.value as Action[] },
+    });
+  }
+
+  private _itemMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    const updatedConfig = nestedArrayMove(
+      this.config,
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath
+    );
+    fireEvent(this, "value-changed", {
+      value: updatedConfig,
     });
   }
 
@@ -178,6 +235,12 @@ export class HaManualScriptEditor extends LitElement {
         }
         .header a {
           color: var(--secondary-text-color);
+        }
+        ha-alert.re-order {
+          display: block;
+          margin-bottom: 16px;
+          border-radius: var(--ha-card-border-radius, 12px);
+          overflow: hidden;
         }
       `,
     ];
