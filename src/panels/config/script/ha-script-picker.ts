@@ -70,9 +70,9 @@ class HaScriptPicker extends LitElement {
 
   @property() public scripts!: ScriptEntity[];
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public route!: Route;
 
@@ -294,9 +294,7 @@ class HaScriptPicker extends LitElement {
                 rel="noreferrer"
               >
                 <ha-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.script.picker.learn_more"
-                  )}
+                  ${this.hass.localize("ui.panel.config.common.learn_more")}
                 </ha-button>
               </a>
             </div>`
@@ -420,7 +418,7 @@ class HaScriptPicker extends LitElement {
             target="_blank"
             rel="noreferrer"
           >
-            ${this.hass.localize("ui.panel.config.common.learn_more")}
+            ${this.hass.localize("ui.panel.config.script.picker.learn_more")}
           </a>
         </p>
       `,

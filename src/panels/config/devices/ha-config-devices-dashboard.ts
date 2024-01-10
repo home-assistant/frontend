@@ -62,9 +62,9 @@ interface DeviceRowData extends DeviceRegistryEntry {
 export class HaConfigDeviceDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow = false;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
   @property() public entries!: ConfigEntry[];
 
@@ -363,8 +363,8 @@ export class HaConfigDeviceDashboard extends LitElement {
         sortable: true,
         filterable: true,
         type: "numeric",
-        width: narrow ? "95px" : "15%",
-        maxWidth: "95px",
+        width: narrow ? "105px" : "15%",
+        maxWidth: "105px",
         valueColumn: "battery_level",
         template: (device) => {
           const batteryEntityPair = device.battery_entity;

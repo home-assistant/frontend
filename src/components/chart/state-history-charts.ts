@@ -52,7 +52,7 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ attribute: false }) public historyData!: HistoryResult;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public names?: Record<string, string>;
 
@@ -65,7 +65,7 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean, attribute: "up-to-now" }) public upToNow = false;
 
-  @property() public hoursToShow?: number;
+  @property({ type: Number }) public hoursToShow?: number;
 
   @property({ type: Boolean }) public showNames = true;
 

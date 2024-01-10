@@ -1,5 +1,5 @@
 import { PropertyValues, ReactiveElement } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 import { evaluateFilter } from "../common/evaluate-filter";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -8,7 +8,11 @@ import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceBadge } from "../types";
 import { EntityFilterBadgeConfig } from "./types";
 
-class EntityFilterBadge extends ReactiveElement implements LovelaceBadge {
+@customElement("hui-entity-filter-badge")
+export class HuiEntityFilterBadge
+  extends ReactiveElement
+  implements LovelaceBadge
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EntityFilterBadgeConfig;
@@ -153,4 +157,9 @@ class EntityFilterBadge extends ReactiveElement implements LovelaceBadge {
     return false;
   }
 }
-customElements.define("hui-entity-filter-badge", EntityFilterBadge);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-entity-filter-badge": HuiEntityFilterBadge;
+  }
+}

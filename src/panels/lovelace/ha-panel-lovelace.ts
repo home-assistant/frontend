@@ -56,7 +56,7 @@ export class LovelacePanel extends LitElement {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public route?: Route;
 
@@ -457,5 +457,11 @@ export class LovelacePanel extends LitElement {
         )
       );
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-panel-lovelace": LovelacePanel;
   }
 }

@@ -64,9 +64,9 @@ type SceneItem = SceneEntity & {
 class HaSceneDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property() public route!: Route;
 
@@ -265,9 +265,7 @@ class HaSceneDashboard extends LitElement {
                 rel="noreferrer"
               >
                 <ha-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.scene.picker.learn_more"
-                  )}
+                  ${this.hass.localize("ui.panel.config.common.learn_more")}
                 </ha-button>
               </a>
             </div>`
@@ -370,7 +368,7 @@ class HaSceneDashboard extends LitElement {
             target="_blank"
             rel="noreferrer"
           >
-            ${this.hass.localize("ui.panel.config.common.learn_more")}
+            ${this.hass.localize("ui.panel.config.scene.picker.learn_more")}
           </a>
         </p>
       `,

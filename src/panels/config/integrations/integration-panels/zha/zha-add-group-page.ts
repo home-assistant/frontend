@@ -198,3 +198,9 @@ export class ZHAAddGroupPage extends LitElement {
     ];
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "zha-add-group-page": ZHAAddGroupPage;
+  }
+}

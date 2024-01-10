@@ -117,14 +117,16 @@ export class HaIfAction extends LitElement implements ActionElement {
 
   private _elseChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const value = ev.detail.value as Action[];
-
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.action,
-        else: value,
-      },
-    });
+    this._showElse = true;
+    const elseAction = ev.detail.value as Action[];
+    const newValue: IfAction = {
+      ...this.action,
+      else: elseAction,
+    };
+    if (elseAction.length === 0) {
+      delete newValue.else;
+    }
+    fireEvent(this, "value-changed", { value: newValue });
   }
 
   static get styles(): CSSResultGroup {

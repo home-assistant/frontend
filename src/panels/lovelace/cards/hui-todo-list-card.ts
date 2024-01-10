@@ -1,4 +1,5 @@
 import "@material/mwc-list/mwc-list";
+import type { List } from "@material/mwc-list/mwc-list";
 import {
   mdiClock,
   mdiDelete,
@@ -19,11 +20,10 @@ import {
   html,
   nothing,
 } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import type { SortableEvent } from "sortablejs";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-card";
@@ -34,6 +34,7 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-markdown-element";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-select";
+import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
@@ -49,7 +50,6 @@ import {
   updateItem,
 } from "../../../data/todo";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import type { SortableInstance } from "../../../resources/sortable";
 import { HomeAssistant } from "../../../types";
 import { showTodoItemEditDialog } from "../../todo/show-dialog-todo-item-editor";
 import { findEntities } from "../common/find-entities";
@@ -93,10 +93,6 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   @state() private _reordering = false;
 
   private _unsubItems?: Promise<UnsubscribeFunc>;
-
-  private _sortable?: SortableInstance;
-
-  @query("#unchecked") private _uncheckedContainer?: HTMLElement;
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -229,7 +225,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             : nothing}
         </div>
         ${uncheckedItems.length
-          ? html` <div class="header">
+          ? html`<div class="header">
                 <span>
                   ${this.hass!.localize(
                     "ui.panel.lovelace.cards.todo-list.unchecked_items"
@@ -248,7 +244,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                         graphic="icon"
                       >
                         ${this.hass!.localize(
-                          "ui.panel.lovelace.cards.todo-list.reorder_items"
+                          this._reordering
+                            ? "ui.panel.lovelace.cards.todo-list.exit_reorder_items"
+                            : "ui.panel.lovelace.cards.todo-list.reorder_items"
                         )}
                         <ha-svg-icon
                           slot="graphic"
@@ -260,9 +258,15 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                     </ha-button-menu>`
                   : nothing}
               </div>
-              <mwc-list id="unchecked">
-                ${this._renderItems(uncheckedItems, unavailable)}
-              </mwc-list>`
+              <ha-sortable
+                handle-selector="ha-svg-icon"
+                .disabled=${!this._reordering}
+                @item-moved=${this._itemMoved}
+              >
+                <mwc-list id="unchecked">
+                  ${this._renderItems(uncheckedItems, unavailable)}
+                </mwc-list>
+              </ha-sortable>`
           : html`<p class="empty">
               ${this.hass.localize(
                 "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
@@ -331,7 +335,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           const due = item.due
             ? item.due.includes("T")
               ? new Date(item.due)
-              : endOfDay(new Date(item.due))
+              : endOfDay(new Date(`${item.due}T00:00:00`))
             : undefined;
           const today =
             due && !item.due!.includes("T") && isSameDay(new Date(), due);
@@ -466,18 +470,30 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private _completeItem(ev): void {
+  private async _completeItem(ev): Promise<void> {
     const item = this._getItem(ev.currentTarget.itemId);
     if (!item) {
       return;
     }
-    updateItem(this.hass!, this._entityId!, {
-      ...item,
+    await updateItem(this.hass!, this._entityId!, {
+      uid: item.uid,
+      summary: item.summary,
       status:
         item.status === TodoItemStatus.NeedsAction
           ? TodoItemStatus.Completed
           : TodoItemStatus.NeedsAction,
     });
+    await this.updateComplete;
+    const newList: List = this.shadowRoot!.querySelector(
+      item.status === TodoItemStatus.NeedsAction ? "#checked" : "#unchecked"
+    )!;
+    await newList.updateComplete;
+    const items =
+      item.status === TodoItemStatus.NeedsAction
+        ? this._getCheckedItems(this._items)
+        : this._getUncheckedItems(this._items);
+    const index = items.findIndex((itm) => itm.uid === item.uid);
+    newList.focusItemAtIndex(index);
   }
 
   private async _clearCompletedItems(): Promise<void> {
@@ -537,43 +553,12 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   private async _toggleReorder() {
     this._reordering = !this._reordering;
-    await this.updateComplete;
-    if (this._reordering) {
-      this._createSortable();
-    } else {
-      this._sortable?.destroy();
-      this._sortable = undefined;
-    }
   }
 
-  private async _createSortable() {
-    const Sortable = (await import("../../../resources/sortable")).default;
-    this._sortable = new Sortable(this._uncheckedContainer!, {
-      animation: 150,
-      fallbackClass: "sortable-fallback",
-      dataIdAttr: "item-id",
-      handle: "ha-svg-icon",
-      onChoose: (evt: SortableEvent) => {
-        (evt.item as any).placeholder =
-          document.createComment("sort-placeholder");
-        evt.item.after((evt.item as any).placeholder);
-      },
-      onEnd: (evt: SortableEvent) => {
-        // put back in original location
-        if ((evt.item as any).placeholder) {
-          (evt.item as any).placeholder.replaceWith(evt.item);
-          delete (evt.item as any).placeholder;
-        }
-        if (evt.newIndex === undefined || evt.oldIndex === undefined) {
-          return;
-        }
-        // Since this is `onEnd` event, it's possible that
-        // an item was dragged away and was put back to its original position.
-        if (evt.oldIndex !== evt.newIndex) {
-          this._moveItem(evt.oldIndex, evt.newIndex);
-        }
-      },
-    });
+  private async _itemMoved(ev: CustomEvent) {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+    this._moveItem(oldIndex, newIndex);
   }
 
   private async _moveItem(oldIndex: number, newIndex: number) {
@@ -624,6 +609,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       .addRow ha-icon-button {
         position: absolute;
         right: 16px;
+        inset-inline-start: initial;
+        inset-inline-end: 16px;
       }
 
       .addRow,
@@ -636,8 +623,11 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       .header {
         padding-left: 30px;
         padding-right: 16px;
+        padding-inline-start: 30px;
+        padding-inline-end: 16px;
         margin-top: 8px;
         justify-content: space-between;
+        direction: var(--direction);
       }
 
       .header span {
@@ -722,7 +712,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       }
 
       .handle {
-        cursor: move;
+        cursor: move; /* fallback if grab cursor is unsupported */
+        cursor: grab;
         height: 24px;
         padding: 16px 4px;
       }

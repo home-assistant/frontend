@@ -44,7 +44,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
 class HaScheduleForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public new?: boolean;
+  @property({ type: Boolean }) public new = false;
 
   @state() private _name!: string;
 

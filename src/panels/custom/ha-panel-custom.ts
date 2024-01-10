@@ -23,7 +23,7 @@ declare global {
 export class HaPanelCustom extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public route!: Route;
 

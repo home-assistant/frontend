@@ -47,6 +47,6 @@ export class HaTTSVoiceSelector extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-tts-voice": HaTTSVoiceSelector;
+    "ha-selector-tts_voice": HaTTSVoiceSelector;
   }
 }

@@ -54,3 +54,9 @@ export class StateCardUpdate extends LitElement {
     ];
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "state-card-update": StateCardUpdate;
+  }
+}

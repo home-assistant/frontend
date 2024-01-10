@@ -168,6 +168,18 @@ const tryDescribeAction = <T extends ActionType>(
       const service =
         hass.localize(`component.${domain}.services.${serviceName}.name`) ||
         hass.services[domain][serviceName]?.name;
+
+      if (config.metadata) {
+        return hass.localize(
+          `${actionTranslationBaseKey}.service.description.service_name`,
+          {
+            domain: domainToName(hass.localize, domain),
+            name: service || config.service,
+            targets: formatListWithAnds(hass.locale, targets),
+          }
+        );
+      }
+
       return hass.localize(
         `${actionTranslationBaseKey}.service.description.service_based_on_name`,
         {
@@ -404,7 +416,9 @@ const tryDescribeAction = <T extends ActionType>(
   if (actionType === "device_action") {
     const config = action as DeviceAction;
     if (!config.device_id) {
-      return "Device action";
+      return hass.localize(
+        `${actionTranslationBaseKey}.device_id.description.no_device`
+      );
     }
     const localized = localizeDeviceAutomationAction(
       hass,

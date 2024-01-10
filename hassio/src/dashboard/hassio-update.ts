@@ -151,3 +151,9 @@ export class HassioUpdate extends LitElement {
     ];
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hassio-update": HassioUpdate;
+  }
+}
