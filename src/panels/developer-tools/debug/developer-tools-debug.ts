@@ -20,12 +20,10 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
             "ui.panel.developer-tools.tabs.debug.title"
           )}
         >
-          <div class="card-content">
-            <ha-debug-connection-row
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-debug-connection-row>
-          </div>
+          <ha-debug-connection-row
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></ha-debug-connection-row>
         </ha-card>
       </div>
     `;
