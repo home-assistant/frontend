@@ -8,6 +8,8 @@ import { HomeAssistant } from "../types";
 import { LightColor } from "./light";
 import { computeDomain } from "../common/entity/compute_domain";
 
+export { subscribeEntityRegistryDisplay } from "./ws-entity_registry_display";
+
 type entityCategory = "config" | "diagnostic";
 
 export interface EntityRegistryDisplayEntry {
@@ -22,7 +24,7 @@ export interface EntityRegistryDisplayEntry {
   display_precision?: number;
 }
 
-interface EntityRegistryDisplayEntryResponse {
+export interface EntityRegistryDisplayEntryResponse {
   entities: {
     ei: string;
     di?: string;
@@ -130,11 +132,11 @@ export interface EntityRegistryEntryUpdateParams {
   aliases?: string[];
 }
 
+const batteryPriorities = ["sensor", "binary_sensor"];
 export const findBatteryEntity = <T extends { entity_id: string }>(
   hass: HomeAssistant,
   entities: T[]
 ): T | undefined => {
-  const batteryPriorities = ["sensor", "binary_sensor"];
   const batteryEntities = entities
     .filter(
       (entity) =>
@@ -227,7 +229,7 @@ export const fetchEntityRegistryDisplay = (conn: Connection) =>
     type: "config/entity_registry/list_for_display",
   });
 
-export const subscribeEntityRegistryUpdates = (
+const subscribeEntityRegistryUpdates = (
   conn: Connection,
   store: Store<EntityRegistryEntry[]>
 ) =>
@@ -251,34 +253,6 @@ export const subscribeEntityRegistry = (
     "_entityRegistry",
     fetchEntityRegistry,
     subscribeEntityRegistryUpdates,
-    conn,
-    onChange
-  );
-
-export const subscribeEntityRegistryDisplayUpdates = (
-  conn: Connection,
-  store: Store<EntityRegistryDisplayEntryResponse>
-) =>
-  conn.subscribeEvents(
-    debounce(
-      () =>
-        fetchEntityRegistryDisplay(conn).then((entities) =>
-          store.setState(entities, true)
-        ),
-      500,
-      true
-    ),
-    "entity_registry_updated"
-  );
-
-export const subscribeEntityRegistryDisplay = (
-  conn: Connection,
-  onChange: (entities: EntityRegistryDisplayEntryResponse) => void
-) =>
-  createCollection<EntityRegistryDisplayEntryResponse>(
-    "_entityRegistryDisplay",
-    fetchEntityRegistryDisplay,
-    subscribeEntityRegistryDisplayUpdates,
     conn,
     onChange
   );

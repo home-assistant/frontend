@@ -9,10 +9,7 @@ import {
   subscribeServices,
 } from "home-assistant-js-websocket";
 import { loadTokens, saveTokens } from "../common/auth/token_storage";
-import { subscribeAreaRegistry } from "../data/area_registry";
 import { hassUrl } from "../data/auth";
-import { subscribeDeviceRegistry } from "../data/device_registry";
-import { subscribeEntityRegistryDisplay } from "../data/entity_registry";
 import { isExternal } from "../data/external";
 import { subscribeFrontendUserData } from "../data/frontend";
 import { fetchConfig } from "../data/lovelace/config/types";
@@ -21,6 +18,9 @@ import { MAIN_WINDOW_NAME } from "../data/main_window";
 import { WindowWithPreloads } from "../data/preloads";
 import { getRecorderInfo } from "../data/recorder";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";
+import { subscribeAreaRegistry } from "../data/ws-area_registry";
+import { subscribeDeviceRegistry } from "../data/ws-device_registry";
+import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
 import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
