@@ -8,7 +8,7 @@ import "../ha-addon-picker";
 export class HaAddonSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: AddonSelector;
+  @property({ attribute: false }) public selector!: AddonSelector;
 
   @property() public value?: any;
 

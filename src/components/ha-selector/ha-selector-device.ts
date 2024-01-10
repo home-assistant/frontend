@@ -23,7 +23,7 @@ import "../device/ha-devices-picker";
 export class HaDeviceSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: DeviceSelector;
+  @property({ attribute: false }) public selector!: DeviceSelector;
 
   @state() private _entitySources?: EntitySources;
 

@@ -8,7 +8,7 @@ import "../ha-tts-voice-picker";
 export class HaTTSVoiceSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: TTSVoiceSelector;
+  @property({ attribute: false }) public selector!: TTSVoiceSelector;
 
   @property() public value?: any;
 

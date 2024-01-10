@@ -8,7 +8,7 @@ import "../ha-conversation-agent-picker";
 export class HaConversationAgentSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: ConversationAgentSelector;
+  @property({ attribute: false }) public selector!: ConversationAgentSelector;
 
   @property() public value?: any;
 

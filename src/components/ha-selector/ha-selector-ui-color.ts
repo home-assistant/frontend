@@ -9,7 +9,7 @@ import { HomeAssistant } from "../../types";
 export class HaSelectorUiColor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: UiColorSelector;
+  @property({ attribute: false }) public selector!: UiColorSelector;
 
   @property() public value?: string;
 

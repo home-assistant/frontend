@@ -8,7 +8,7 @@ import "../ha-area-filter";
 export class HaAreaFilterSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: AreaFilterSelector;
+  @property({ attribute: false }) public selector!: AreaFilterSelector;
 
   @property() public value?: any;
 

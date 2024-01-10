@@ -24,7 +24,7 @@ export class HaTextSelector extends LitElement {
 
   @property() public helper?: string;
 
-  @property() public selector!: StringSelector;
+  @property({ attribute: false }) public selector!: StringSelector;
 
   @property({ type: Boolean }) public disabled = false;
 

@@ -8,7 +8,7 @@ import "../ha-date-input";
 export class HaDateSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: DateSelector;
+  @property({ attribute: false }) public selector!: DateSelector;
 
   @property() public value?: string;
 

@@ -63,7 +63,7 @@ export class HaSelector extends LitElement {
 
   @property() public name?: string;
 
-  @property() public selector!: Selector;
+  @property({ attribute: false }) public selector!: Selector;
 
   @property() public value?: any;
 

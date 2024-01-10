@@ -8,7 +8,7 @@ import "../ha-country-picker";
 export class HaCountrySelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: CountrySelector;
+  @property({ attribute: false }) public selector!: CountrySelector;
 
   @property() public value?: any;
 

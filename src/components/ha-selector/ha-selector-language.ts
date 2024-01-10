@@ -8,7 +8,7 @@ import "../ha-language-picker";
 export class HaLanguageSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: LanguageSelector;
+  @property({ attribute: false }) public selector!: LanguageSelector;
 
   @property() public value?: any;
 

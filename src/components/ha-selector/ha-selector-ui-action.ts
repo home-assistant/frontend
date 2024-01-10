@@ -10,7 +10,7 @@ import { HomeAssistant } from "../../types";
 export class HaSelectorUiAction extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: UiActionSelector;
+  @property({ attribute: false }) public selector!: UiActionSelector;
 
   @property() public value?: ActionConfig;
 

@@ -8,7 +8,7 @@ import "../ha-assist-pipeline-picker";
 export class HaAssistPipelineSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: AssistPipelineSelector;
+  @property({ attribute: false }) public selector!: AssistPipelineSelector;
 
   @property() public value?: any;
 

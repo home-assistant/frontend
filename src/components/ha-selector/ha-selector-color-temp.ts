@@ -17,7 +17,7 @@ import {
 export class HaColorTempSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: ColorTempSelector;
+  @property({ attribute: false }) public selector!: ColorTempSelector;
 
   @property() public value?: string;
 

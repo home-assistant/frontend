@@ -30,7 +30,7 @@ import "../ha-target-picker";
 export class HaTargetSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: TargetSelector;
+  @property({ attribute: false }) public selector!: TargetSelector;
 
   @property() public value?: HassServiceTarget;
 

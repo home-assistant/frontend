@@ -17,7 +17,7 @@ import "../entity/ha-entity-picker";
 export class HaEntitySelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: EntitySelector;
+  @property({ attribute: false }) public selector!: EntitySelector;
 
   @state() private _entitySources?: EntitySources;
 

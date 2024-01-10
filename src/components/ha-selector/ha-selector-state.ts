@@ -9,7 +9,7 @@ import "../entity/ha-entity-state-picker";
 export class HaSelectorState extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: StateSelector;
+  @property({ attribute: false }) public selector!: StateSelector;
 
   @property() public value?: any;
 
