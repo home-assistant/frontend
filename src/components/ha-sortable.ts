@@ -110,7 +110,6 @@ export class HaSortable extends LitElement {
     const options: SortableInstance.Options = {
       animation: 150,
       swapThreshold: 0.75,
-      fallbackOnBody: true,
       onChoose: this._handleChoose,
       onEnd: this._handleEnd,
     };
