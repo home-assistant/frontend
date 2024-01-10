@@ -34,8 +34,6 @@
           "no-legacy-attribute": "error",
           // Binding types
           "no-boolean-in-attribute-binding": "warning",
-          "no-expressionless-property-binding": "warning",
-          "no-complex-attribute-binding": "warning",
           "no-nullable-attribute-binding": "warning",
           "no-incompatible-type-binding": "warning",
           // LitElement
