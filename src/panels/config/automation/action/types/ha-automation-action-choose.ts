@@ -101,10 +101,8 @@ export class HaChooseAction extends LitElement implements ActionElement {
       <ha-sortable
         handle-selector=".handle"
         .disabled=${!this.reOrderMode}
-        @item-moved=${this._optionMoved}
-        @item-added=${this._optionAdded}
-        @item-removed=${this._optionRemoved}
         group="choose-options"
+        .path=${[...(this.path ?? []), "choose"]}
       >
         <div class="options">
           ${repeat(
@@ -437,36 +435,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
     fireEvent(this, "value-changed", {
       value: { ...this.action, choose: options },
-    });
-  }
-
-  private _optionMoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
-    this._move(oldIndex, newIndex);
-  }
-
-  private _optionRemoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { index } = ev.detail;
-    const options = ensureArray(this.action.choose)!.concat();
-    const newOptions = options.filter((_a, i) => index !== i);
-    fireEvent(this, "value-changed", {
-      value: { ...this.action, choose: newOptions },
-    });
-  }
-
-  private _optionAdded(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { index, data } = ev.detail;
-    const options = ensureArray(this.action.choose)!.concat();
-    const newOptions = [
-      ...options.slice(0, index),
-      data,
-      ...options.slice(index),
-    ];
-    fireEvent(this, "value-changed", {
-      value: { ...this.action, choose: newOptions },
     });
   }
 
