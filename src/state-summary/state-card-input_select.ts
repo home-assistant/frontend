@@ -21,7 +21,7 @@ import type { HaSelect } from "../components/ha-select";
 class StateCardInputSelect extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj!: InputSelectEntity;
+  @property({ attribute: false }) public stateObj!: InputSelectEntity;
 
   @query("ha-select", true) private _haSelect!: HaSelect;
 
