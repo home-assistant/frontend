@@ -1,3 +1,4 @@
+import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list/mwc-radio-list-item";
@@ -5,10 +6,10 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import "../../../../components/ha-alert";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-select";
-import "../../../../components/ha-alert";
 import {
   fetchConfig,
   LovelaceConfig,
