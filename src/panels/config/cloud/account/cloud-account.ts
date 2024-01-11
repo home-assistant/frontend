@@ -64,32 +64,30 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               )}
             >
               <div class="account-row">
-                <mwc-list>
-                  <ha-list-item twoline>
-                    ${this.cloudStatus.email.replace(
-                      /(\w{3})[\w.-]+@([\w.]+\w)/,
-                      "$1***@$2"
-                    )}
-                    <span slot="secondary" class="wrap">
-                      ${this._subscription
-                        ? this._subscription.human_description.replace(
-                            "{periodEnd}",
-                            this._subscription.plan_renewal_date
-                              ? formatDateTime(
-                                  new Date(
-                                    this._subscription.plan_renewal_date * 1000
-                                  ),
-                                  this.hass.locale,
-                                  this.hass.config
-                                )
-                              : ""
-                          )
-                        : this.hass.localize(
-                            "ui.panel.config.cloud.account.fetching_subscription"
-                          )}
-                    </span>
-                  </ha-list-item>
-                </mwc-list>
+                <ha-list-item twoline>
+                  ${this.cloudStatus.email.replace(
+                    /(\w{3})[\w.-]+@([\w.]+\w)/,
+                    "$1***@$2"
+                  )}
+                  <span slot="secondary" class="wrap">
+                    ${this._subscription
+                      ? this._subscription.human_description.replace(
+                          "{periodEnd}",
+                          this._subscription.plan_renewal_date
+                            ? formatDateTime(
+                                new Date(
+                                  this._subscription.plan_renewal_date * 1000
+                                ),
+                                this.hass.locale,
+                                this.hass.config
+                              )
+                            : ""
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.cloud.account.fetching_subscription"
+                        )}
+                  </span>
+                </ha-list-item>
               </div>
 
               ${this.cloudStatus.cloud === "connecting" &&
@@ -104,24 +102,22 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                 : ""}
 
               <div class="account-row">
-                <mwc-list>
-                  <ha-list-item>
-                    ${this.hass.localize(
-                      "ui.panel.config.cloud.account.connection_status"
-                    )}:
-                    ${this.cloudStatus.cloud === "connected"
+                <ha-list-item>
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.connection_status"
+                  )}:
+                  ${this.cloudStatus.cloud === "connected"
+                    ? this.hass.localize(
+                        "ui.panel.config.cloud.account.connected"
+                      )
+                    : this.cloudStatus.cloud === "disconnected"
                       ? this.hass.localize(
-                          "ui.panel.config.cloud.account.connected"
+                          "ui.panel.config.cloud.account.not_connected"
                         )
-                      : this.cloudStatus.cloud === "disconnected"
-                        ? this.hass.localize(
-                            "ui.panel.config.cloud.account.not_connected"
-                          )
-                        : this.hass.localize(
-                            "ui.panel.config.cloud.account.connecting"
-                          )}
-                  </ha-list-item>
-                </mwc-list>
+                      : this.hass.localize(
+                          "ui.panel.config.cloud.account.connecting"
+                        )}
+                </ha-list-item>
               </div>
 
               <div class="card-actions">
