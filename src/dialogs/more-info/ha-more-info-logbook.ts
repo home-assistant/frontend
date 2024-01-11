@@ -1,4 +1,4 @@
-import { startOfYesterday } from "date-fns/esm";
+import { startOfYesterday } from "date-fns";
 import { css, html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";

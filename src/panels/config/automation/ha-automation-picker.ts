@@ -22,7 +22,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { differenceInDays } from "date-fns/esm";
+import { differenceInDays } from "date-fns";
 import { styleMap } from "lit/directives/style-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";

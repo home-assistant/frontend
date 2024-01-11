@@ -19,7 +19,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { differenceInDays } from "date-fns/esm";
+import { differenceInDays } from "date-fns";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";

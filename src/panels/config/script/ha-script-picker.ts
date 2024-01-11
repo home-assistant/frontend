@@ -8,7 +8,7 @@ import {
   mdiScriptText,
   mdiTransitConnection,
 } from "@mdi/js";
-import { differenceInDays } from "date-fns/esm";
+import { differenceInDays } from "date-fns";
 import {
   CSSResultGroup,
   LitElement,

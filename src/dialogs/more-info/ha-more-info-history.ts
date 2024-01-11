@@ -1,4 +1,4 @@
-import { startOfYesterday, subHours } from "date-fns/esm";
+import { startOfYesterday, subHours } from "date-fns";
 import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";

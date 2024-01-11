@@ -34,7 +34,7 @@ import {
   endOfMonth,
   endOfQuarter,
   endOfYear,
-} from "date-fns/esm";
+} from "date-fns";
 import {
   formatDate,
   formatDateMonth,

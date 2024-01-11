@@ -1,5 +1,5 @@
 import { mdiFilterRemove, mdiRefresh } from "@mdi/js";
-import { differenceInHours } from "date-fns/esm";
+import { differenceInHours } from "date-fns";
 import {
   HassServiceTarget,
   UnsubscribeFunc,

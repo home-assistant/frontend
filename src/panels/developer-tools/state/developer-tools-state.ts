@@ -3,7 +3,7 @@ import {
   mdiInformationOutline,
   mdiRefresh,
 } from "@mdi/js";
-import { addHours } from "date-fns/esm";
+import { addHours } from "date-fns";
 import {
   HassEntities,
   HassEntity,

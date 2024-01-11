@@ -1392,7 +1392,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.23.7, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
+"@babel/runtime@npm:7.23.7, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
   version: 7.23.7
   resolution: "@babel/runtime@npm:7.23.7"
   dependencies:
@@ -7065,12 +7065,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:2.30.0":
-  version: 2.30.0
-  resolution: "date-fns@npm:2.30.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.21.0"
-  checksum: 70b3e8ea7aaaaeaa2cd80bd889622a4bcb5d8028b4de9162cbcda359db06e16ff6e9309e54eead5341e71031818497f19aaf9839c87d1aba1e27bb4796e758a9
+"date-fns@npm:3.0.6":
+  version: 3.0.6
+  resolution: "date-fns@npm:3.0.6"
+  checksum: 4eb4c1f15257026593bd62ea366347be3940a83133fc84aa32e03bc9a19d6f8a919ef0475211200b16de7980e1d797c993713ed092a6f5c941474bce516f7d96
   languageName: node
   linkType: hard
 
@@ -9591,7 +9589,7 @@ __metadata:
     comlink: "npm:4.4.1"
     core-js: "npm:3.35.0"
     cropperjs: "npm:1.6.1"
-    date-fns: "npm:2.30.0"
+    date-fns: "npm:3.0.6"
     date-fns-tz: "npm:2.0.0"
     deep-clone-simple: "npm:1.1.1"
     deep-freeze: "npm:0.0.1"

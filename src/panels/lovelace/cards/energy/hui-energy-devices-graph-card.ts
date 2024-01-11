@@ -6,7 +6,7 @@ import {
   ScatterDataPoint,
 } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
-import { differenceInDays } from "date-fns/esm";
+import { differenceInDays } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,

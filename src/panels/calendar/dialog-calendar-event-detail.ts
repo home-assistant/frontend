@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import { mdiCalendarClock } from "@mdi/js";
 import { toDate } from "date-fns-tz";
-import { addDays, isSameDay } from "date-fns/esm";
+import { addDays, isSameDay } from "date-fns";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { formatDate } from "../../common/datetime/format_date";

@@ -20,7 +20,7 @@ import {
   startOfWeek,
   startOfYear,
   subDays,
-} from "date-fns/esm";
+} from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,

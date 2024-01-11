@@ -1,7 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiChevronRight } from "@mdi/js";
-import formatISO9075 from "date-fns/formatISO9075";
+import { formatISO9075 } from "date-fns";
 import {
   css,
   CSSResultGroup,

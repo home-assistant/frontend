@@ -4,7 +4,7 @@ import {
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
-import { endOfToday, isToday, startOfToday } from "date-fns/esm";
+import { endOfToday, isToday, startOfToday } from "date-fns";
 import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
