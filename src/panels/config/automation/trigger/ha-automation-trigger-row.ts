@@ -497,7 +497,7 @@ export default class HaAutomationTriggerRow extends LitElement {
         await this._renameTrigger();
         break;
       case 1:
-        this._reorderMode?.enable();
+        this._reorderMode?.enter();
         break;
       case 2:
         this._requestShowId = true;

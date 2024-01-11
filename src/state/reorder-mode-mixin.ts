@@ -4,8 +4,8 @@ import { Constructor } from "../types";
 
 export type ReorderMode = {
   active: boolean;
-  enable: () => void;
-  disable: () => void;
+  enter: () => void;
+  exit: () => void;
 };
 export const reorderModeContext = createContext<ReorderMode>("reorder-mode");
 
@@ -17,14 +17,14 @@ export const ReorderModeMixin = <T extends Constructor<LitElement>>(
       context: reorderModeContext,
       initialValue: {
         active: false,
-        enable: () => {
+        enter: () => {
           this._reorderModeProvider.setValue({
             ...this._reorderModeProvider.value,
             active: true,
           });
           this.requestUpdate("_reorderMode");
         },
-        disable: () => {
+        exit: () => {
           this._reorderModeProvider.setValue({
             ...this._reorderModeProvider.value,
             active: false,

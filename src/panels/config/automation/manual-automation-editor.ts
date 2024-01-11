@@ -219,7 +219,7 @@ export class HaManualAutomationEditor extends ReorderModeMixin(LitElement) {
   }
 
   private async _exitReOrderMode() {
-    this._reorderMode.disable();
+    this._reorderMode.exit();
   }
 
   private _triggerChanged(ev: CustomEvent): void {

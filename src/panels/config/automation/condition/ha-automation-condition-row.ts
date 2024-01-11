@@ -360,7 +360,7 @@ export default class HaAutomationConditionRow extends LitElement {
         await this._renameCondition();
         break;
       case 2:
-        this._reorderMode?.enable();
+        this._reorderMode?.enter();
         break;
       case 3:
         fireEvent(this, "duplicate");

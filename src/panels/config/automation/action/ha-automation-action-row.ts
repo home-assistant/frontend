@@ -452,7 +452,7 @@ export default class HaAutomationActionRow extends LitElement {
         await this._renameAction();
         break;
       case 2:
-        this._reorderMode?.enable();
+        this._reorderMode?.enter();
         break;
       case 3:
         fireEvent(this, "duplicate");

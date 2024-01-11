@@ -198,7 +198,7 @@ export class HaBlueprintAutomationEditor extends ReorderModeMixin(LitElement) {
   }
 
   private async _exitReOrderMode() {
-    this._reorderMode.disable();
+    this._reorderMode.exit();
   }
 
   private async _getBlueprints() {

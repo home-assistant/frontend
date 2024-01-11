@@ -547,7 +547,7 @@ export class HaServiceControl extends ReorderModeMixin(LitElement) {
   }
 
   private async _exitReOrderMode() {
-    this._reorderMode.disable();
+    this._reorderMode.exit();
   }
 
   private _localizeValueCallback = (key: string) => {
