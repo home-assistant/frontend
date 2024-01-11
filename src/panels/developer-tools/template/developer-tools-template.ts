@@ -41,7 +41,7 @@ For loop example getting entity values in the weather domain:
 class HaPanelDevTemplate extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _error?: string;
 

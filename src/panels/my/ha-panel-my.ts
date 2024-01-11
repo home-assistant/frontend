@@ -189,6 +189,9 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   },
   logs: {
     redirect: "/config/logs",
+    params: {
+      provider: "string?",
+    },
   },
   repairs: {
     component: "repairs",

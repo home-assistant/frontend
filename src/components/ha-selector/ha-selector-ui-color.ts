@@ -36,6 +36,6 @@ export class HaSelectorUiColor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-ui-color": HaSelectorUiColor;
+    "ha-selector-ui_color": HaSelectorUiColor;
   }
 }

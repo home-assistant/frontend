@@ -14,9 +14,9 @@ export class HaNumberSelector extends LitElement {
 
   @property() public selector!: NumberSelector;
 
-  @property() public value?: number;
+  @property({ type: Number }) public value?: number;
 
-  @property() public placeholder?: number;
+  @property({ type: Number }) public placeholder?: number;
 
   @property() public label?: string;
 

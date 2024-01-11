@@ -19,7 +19,7 @@ class PanelDeveloperTools extends LitElement {
 
   @property() public route!: Route;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);

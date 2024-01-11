@@ -16,11 +16,11 @@ import "./ha-config-devices-dashboard";
 class HaConfigDevices extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",

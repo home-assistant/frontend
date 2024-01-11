@@ -165,7 +165,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
                   ${this.hass.localize(
                     "ui.panel.developer-tools.tabs.assist.download_results"
                   )}
-                </button>
+                </ha-button>
               </div>
             `
           : ""}

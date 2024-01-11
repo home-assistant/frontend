@@ -75,3 +75,9 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
     return view;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "original-states-view-strategy": OriginalStatesViewStrategy;
+  }
+}
