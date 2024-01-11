@@ -31,7 +31,7 @@ export class HaAssistPipelinePicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @property() public includeLastUsed = false;
+  @property({ type: Boolean }) public includeLastUsed = false;
 
   @state() _pipelines?: AssistPipeline[];
 

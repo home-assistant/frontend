@@ -112,3 +112,9 @@ export class HaQrCode extends LitElement {
     }
   `;
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-qr-code": HaQrCode;
+  }
+}

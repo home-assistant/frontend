@@ -1,10 +1,9 @@
-import { Connection, createCollection } from "home-assistant-js-websocket";
-import { Store } from "home-assistant-js-websocket/dist/store";
 import { stringCompare } from "../common/string/compare";
-import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
 import { DeviceRegistryEntry } from "./device_registry";
 import { EntityRegistryEntry } from "./entity_registry";
+
+export { subscribeAreaRegistry } from "./ws-area_registry";
 
 export interface AreaRegistryEntry {
   area_id: string;
@@ -52,45 +51,6 @@ export const deleteAreaRegistryEntry = (hass: HomeAssistant, areaId: string) =>
     type: "config/area_registry/delete",
     area_id: areaId,
   });
-
-const fetchAreaRegistry = (conn: Connection) =>
-  conn
-    .sendMessagePromise({
-      type: "config/area_registry/list",
-    })
-    .then((areas) =>
-      (areas as AreaRegistryEntry[]).sort((ent1, ent2) =>
-        stringCompare(ent1.name, ent2.name)
-      )
-    );
-
-const subscribeAreaRegistryUpdates = (
-  conn: Connection,
-  store: Store<AreaRegistryEntry[]>
-) =>
-  conn.subscribeEvents(
-    debounce(
-      () =>
-        fetchAreaRegistry(conn).then((areas: AreaRegistryEntry[]) =>
-          store.setState(areas, true)
-        ),
-      500,
-      true
-    ),
-    "area_registry_updated"
-  );
-
-export const subscribeAreaRegistry = (
-  conn: Connection,
-  onChange: (areas: AreaRegistryEntry[]) => void
-) =>
-  createCollection<AreaRegistryEntry[]>(
-    "_areaRegistry",
-    fetchAreaRegistry,
-    subscribeAreaRegistryUpdates,
-    conn,
-    onChange
-  );
 
 export const getAreaEntityLookup = (
   entities: EntityRegistryEntry[]

@@ -274,3 +274,9 @@ export class HaPanelLogbook extends LitElement {
     ];
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-panel-logbook": HaPanelLogbook;
+  }
+}

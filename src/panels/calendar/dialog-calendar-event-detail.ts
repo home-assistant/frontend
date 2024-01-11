@@ -10,6 +10,7 @@ import { formatTime } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isDate } from "../../common/string/is_date";
 import "../../components/entity/state-info";
+import "../../components/ha-alert";
 import "../../components/ha-date-input";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-time-input";
@@ -24,6 +25,7 @@ import { renderRRuleAsText } from "./recurrence";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import { CalendarEventDetailDialogParams } from "./show-dialog-calendar-event-detail";
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
+import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 
 class DialogCalendarEventDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -137,8 +139,10 @@ class DialogCalendarEventDetail extends LitElement {
   }
 
   private _formatDateRange() {
-    // Parse a dates in the browser timezone
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const timeZone = resolveTimeZone(
+      this.hass.locale.time_zone,
+      this.hass.config.time_zone
+    );
     const start = toDate(this._data!.dtstart, { timeZone: timeZone });
     const endValue = toDate(this._data!.dtend, { timeZone: timeZone });
     // All day events should be displayed as a day earlier

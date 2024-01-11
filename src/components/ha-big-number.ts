@@ -7,15 +7,14 @@ import { HomeAssistant } from "../types";
 
 @customElement("ha-big-number")
 export class HaBigNumber extends LitElement {
-  @property() public value!: number;
+  @property({ type: Number }) public value!: number;
 
   @property() public unit?: string;
 
   @property({ attribute: "unit-position" })
   public unitPosition: "top" | "bottom" = "top";
 
-  @property({ attribute: false })
-  public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false })
   public formatOptions: Intl.NumberFormatOptions = {};

@@ -39,7 +39,7 @@ export class HaDeviceEntitiesCard extends LitElement {
 
   @property() public entities!: EntityRegistryStateEntry[];
 
-  @property() public showHidden = false;
+  @property({ type: Boolean }) public showHidden = false;
 
   @state() private _extDisabledEntityEntries?: Record<
     string,
