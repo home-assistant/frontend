@@ -152,7 +152,7 @@ export class HaManualScriptEditor extends LitElement {
         )}
       >
         ${this.hass.localize(
-          "ui.panel.config.automation.editor.re_order_mode.description_conditions"
+          "ui.panel.config.automation.editor.re_order_mode.description_all"
         )}
         <ha-button slot="action" @click=${this._exitReOrderMode}>
           ${this.hass.localize(

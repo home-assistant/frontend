@@ -40,6 +40,7 @@ import "./ha-service-picker";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
+import { nestedArrayMove } from "../common/util/array-move";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {
@@ -99,6 +100,8 @@ export class HaServiceControl extends LitElement {
   @state() private _manifest?: IntegrationManifest;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
+  @state() private _reOrderMode = false;
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (!this.hasUpdated) {
@@ -439,6 +442,7 @@ export class HaServiceControl extends LitElement {
               allow-custom-entity
             ></ha-entity-picker>`
           : ""}
+      ${this._renderReorderModeAlert()}
       ${shouldRenderServiceDataYaml
         ? html`<ha-yaml-editor
             .hass=${this.hass}
@@ -449,7 +453,24 @@ export class HaServiceControl extends LitElement {
             @value-changed=${this._dataChanged}
           ></ha-yaml-editor>`
         : filteredFields?.map((dataField) => {
+            const selector = dataField?.selector ?? { text: undefined };
+            const type = Object.keys(selector)[0];
+            const enhancedSelector = [
+              "action",
+              "condition",
+              "trigger",
+            ].includes(type)
+              ? {
+                  [type]: {
+                    ...selector[type],
+                    path: [dataField.key],
+                    reorder_mode: this._reOrderMode,
+                  },
+                }
+              : selector;
+
             const showOptional = showOptionalToggle(dataField);
+
             return dataField.selector &&
               (!dataField.advanced ||
                 this.showAdvanced ||
@@ -488,7 +509,7 @@ export class HaServiceControl extends LitElement {
                       (!this._value?.data ||
                         this._value.data[dataField.key] === undefined))}
                     .hass=${this.hass}
-                    .selector=${dataField.selector}
+                    .selector=${enhancedSelector}
                     .key=${dataField.key}
                     @value-changed=${this._serviceDataChanged}
                     .value=${this._value?.data
@@ -496,10 +517,45 @@ export class HaServiceControl extends LitElement {
                       : undefined}
                     .placeholder=${dataField.default}
                     .localizeValue=${this._localizeValueCallback}
+                    @item-moved=${this._itemMoved}
+                    @re-order=${this._enterReOrderMode}
                   ></ha-selector>
                 </ha-settings-row>`
               : "";
           })}`;
+  }
+
+  private _renderReorderModeAlert() {
+    if (!this._reOrderMode) {
+      return nothing;
+    }
+    return html`
+      <ha-alert
+        class="re-order"
+        alert-type="info"
+        .title=${this.hass.localize(
+          "ui.panel.config.automation.editor.re_order_mode.title"
+        )}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.re_order_mode.description_all"
+        )}
+        <ha-button slot="action" @click=${this._exitReOrderMode}>
+          ${this.hass.localize(
+            "ui.panel.config.automation.editor.re_order_mode.exit"
+          )}
+        </ha-button>
+      </ha-alert>
+    `;
+  }
+
+  private async _enterReOrderMode(ev: CustomEvent) {
+    ev.stopPropagation();
+    this._reOrderMode = true;
+  }
+
+  private async _exitReOrderMode() {
+    this._reOrderMode = false;
   }
 
   private _localizeValueCallback = (key: string) => {
@@ -693,6 +749,22 @@ export class HaServiceControl extends LitElement {
       value: {
         ...this._value,
         data,
+      },
+    });
+  }
+
+  private _itemMoved(ev) {
+    ev.stopPropagation();
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+
+    const data = this.value?.data ?? {};
+
+    const newData = nestedArrayMove(data, oldIndex, newIndex, oldPath, newPath);
+
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.value,
+        data: newData,
       },
     });
   }

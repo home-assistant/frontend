@@ -95,7 +95,7 @@ export class HaManualAutomationEditor extends LitElement {
             )}
           </p>`
         : nothing}
-      ${this._renderReorderModeAlert()}
+      ${this._renderReorderModeAlert("triggers")}
 
       <ha-automation-trigger
         role="region"
@@ -140,7 +140,7 @@ export class HaManualAutomationEditor extends LitElement {
             )}
           </p>`
         : nothing}
-      ${this._renderReorderModeAlert()}
+      ${this._renderReorderModeAlert("conditions")}
 
       <ha-automation-condition
         role="region"
@@ -183,7 +183,7 @@ export class HaManualAutomationEditor extends LitElement {
             )}
           </p>`
         : nothing}
-      ${this._renderReorderModeAlert()}
+      ${this._renderReorderModeAlert("actions")}
 
       <ha-automation-action
         role="region"
@@ -201,7 +201,7 @@ export class HaManualAutomationEditor extends LitElement {
     `;
   }
 
-  private _renderReorderModeAlert() {
+  private _renderReorderModeAlert(type: "conditions" | "actions" | "triggers") {
     if (!this._reOrderMode) {
       return nothing;
     }
@@ -214,7 +214,7 @@ export class HaManualAutomationEditor extends LitElement {
         )}
       >
         ${this.hass.localize(
-          "ui.panel.config.automation.editor.re_order_mode.description_conditions"
+          `ui.panel.config.automation.editor.re_order_mode.description_${type}`
         )}
         <ha-button slot="action" @click=${this._exitReOrderMode}>
           ${this.hass.localize(
