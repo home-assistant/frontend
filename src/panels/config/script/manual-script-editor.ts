@@ -1,13 +1,14 @@
 import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { nestedArrayMove } from "../../../common/util/array-move";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { Action, Fields, ScriptConfig } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
+import { ReorderModeMixin } from "../../../state/reorder-mode-mixin";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "../automation/action/ha-automation-action";
@@ -15,7 +16,7 @@ import "./ha-script-fields";
 import type HaScriptFields from "./ha-script-fields";
 
 @customElement("manual-script-editor")
-export class HaManualScriptEditor extends LitElement {
+export class HaManualScriptEditor extends ReorderModeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public isWide!: boolean;
@@ -25,8 +26,6 @@ export class HaManualScriptEditor extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ attribute: false }) public config!: ScriptConfig;
-
-  @state() private _reOrderMode = false;
 
   @query("ha-script-fields")
   private _scriptFields?: HaScriptFields;
@@ -130,8 +129,6 @@ export class HaManualScriptEditor extends LitElement {
         .path=${["sequence"]}
         @value-changed=${this._sequenceChanged}
         @item-moved=${this._itemMoved}
-        @re-order=${this._enterReOrderMode}
-        .reOrderMode=${this._reOrderMode}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
@@ -140,7 +137,7 @@ export class HaManualScriptEditor extends LitElement {
   }
 
   private _renderReorderModeAlert() {
-    if (!this._reOrderMode) {
+    if (!this._reorderMode.active) {
       return nothing;
     }
     return html`
@@ -163,13 +160,8 @@ export class HaManualScriptEditor extends LitElement {
     `;
   }
 
-  private async _enterReOrderMode(ev: CustomEvent) {
-    ev.stopPropagation();
-    this._reOrderMode = true;
-  }
-
   private async _exitReOrderMode() {
-    this._reOrderMode = false;
+    this._reorderMode.disable();
   }
 
   private _fieldsChanged(ev: CustomEvent): void {

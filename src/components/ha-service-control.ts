@@ -41,6 +41,7 @@ import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
 import { nestedArrayMove } from "../common/util/array-move";
+import { ReorderModeMixin } from "../state/reorder-mode-mixin";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {
@@ -76,7 +77,7 @@ interface ExtHassService extends Omit<HassService, "fields"> {
 }
 
 @customElement("ha-service-control")
-export class HaServiceControl extends LitElement {
+export class HaServiceControl extends ReorderModeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public value?: {
@@ -100,8 +101,6 @@ export class HaServiceControl extends LitElement {
   @state() private _manifest?: IntegrationManifest;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
-
-  @state() private _reOrderMode = false;
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (!this.hasUpdated) {
@@ -464,7 +463,6 @@ export class HaServiceControl extends LitElement {
                   [type]: {
                     ...selector[type],
                     path: [dataField.key],
-                    reorder_mode: this._reOrderMode,
                   },
                 }
               : selector;
@@ -518,7 +516,6 @@ export class HaServiceControl extends LitElement {
                     .placeholder=${dataField.default}
                     .localizeValue=${this._localizeValueCallback}
                     @item-moved=${this._itemMoved}
-                    @re-order=${this._enterReOrderMode}
                   ></ha-selector>
                 </ha-settings-row>`
               : "";
@@ -526,7 +523,7 @@ export class HaServiceControl extends LitElement {
   }
 
   private _renderReorderModeAlert() {
-    if (!this._reOrderMode) {
+    if (!this._reorderMode.active) {
       return nothing;
     }
     return html`
@@ -549,13 +546,8 @@ export class HaServiceControl extends LitElement {
     `;
   }
 
-  private async _enterReOrderMode(ev: CustomEvent) {
-    ev.stopPropagation();
-    this._reOrderMode = true;
-  }
-
   private async _exitReOrderMode() {
-    this._reOrderMode = false;
+    this._reorderMode.disable();
   }
 
   private _localizeValueCallback = (key: string) => {

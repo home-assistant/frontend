@@ -25,8 +25,6 @@ export class HaWaitForTriggerAction
 
   @property({ attribute: false }) public path?: ItemPath;
 
-  @property({ type: Boolean }) public reOrderMode = false;
-
   public static get defaultConfig() {
     return { wait_for_trigger: [] };
   }
@@ -62,7 +60,6 @@ export class HaWaitForTriggerAction
         .hass=${this.hass}
         .disabled=${this.disabled}
         .name=${"wait_for_trigger"}
-        .reOrderMode=${this.reOrderMode}
         @value-changed=${this._valueChanged}
       ></ha-automation-trigger>
     `;

@@ -18,11 +18,12 @@ import {
   fetchBlueprints,
 } from "../../../data/blueprint";
 import { haStyle } from "../../../resources/styles";
+import { ReorderModeMixin } from "../../../state/reorder-mode-mixin";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 
 @customElement("blueprint-automation-editor")
-export class HaBlueprintAutomationEditor extends LitElement {
+export class HaBlueprintAutomationEditor extends ReorderModeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public isWide = false;
@@ -36,8 +37,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   @state() private _blueprints?: Blueprints;
-
-  @state() private _reOrderMode = true;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -135,7 +134,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
                             [type]: {
                               ...selector[type],
                               path: [key],
-                              reorder_mode: this._reOrderMode,
                             },
                           }
                         : selector;
@@ -161,7 +159,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
                             : value?.default}
                           @value-changed=${this._inputChanged}
                           @item-moved=${this._itemMoved}
-                          @re-order=${this._enterReOrderMode}
                         ></ha-selector>`}
                       </ha-settings-row>`;
                     }
@@ -177,7 +174,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
   }
 
   private _renderReorderModeAlert() {
-    if (!this._reOrderMode) {
+    if (!this._reorderMode.active) {
       return nothing;
     }
     return html`
@@ -200,13 +197,8 @@ export class HaBlueprintAutomationEditor extends LitElement {
     `;
   }
 
-  private async _enterReOrderMode(ev: CustomEvent) {
-    ev.stopPropagation();
-    this._reOrderMode = true;
-  }
-
   private async _exitReOrderMode() {
-    this._reOrderMode = false;
+    this._reorderMode.disable();
   }
 
   private async _getBlueprints() {

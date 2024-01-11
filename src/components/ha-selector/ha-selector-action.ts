@@ -25,7 +25,6 @@ export class HaActionSelector extends LitElement {
         .actions=${this.value || []}
         .hass=${this.hass}
         .path=${this.selector.action?.path}
-        .reOrderMode=${this.selector.action?.reorder_mode}
       ></ha-automation-action>
     `;
   }

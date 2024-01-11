@@ -19,8 +19,6 @@ export class HaIfAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: IfAction;
 
-  @property({ type: Boolean }) public reOrderMode = false;
-
   @state() private _showElse = false;
 
   public static get defaultConfig() {
@@ -42,7 +40,6 @@ export class HaIfAction extends LitElement implements ActionElement {
       <ha-automation-condition
         .path=${[...(this.path ?? []), "if"]}
         .conditions=${action.if}
-        .reOrderMode=${this.reOrderMode}
         .disabled=${this.disabled}
         @value-changed=${this._ifChanged}
         .hass=${this.hass}
@@ -56,7 +53,6 @@ export class HaIfAction extends LitElement implements ActionElement {
       <ha-automation-action
         .path=${[...(this.path ?? []), "then"]}
         .actions=${action.then}
-        .reOrderMode=${this.reOrderMode}
         .disabled=${this.disabled}
         @value-changed=${this._thenChanged}
         .hass=${this.hass}
@@ -71,7 +67,6 @@ export class HaIfAction extends LitElement implements ActionElement {
             <ha-automation-action
               .path=${[...(this.path ?? []), "else"]}
               .actions=${action.else || []}
-              .reOrderMode=${this.reOrderMode}
               .disabled=${this.disabled}
               @value-changed=${this._elseChanged}
               .hass=${this.hass}

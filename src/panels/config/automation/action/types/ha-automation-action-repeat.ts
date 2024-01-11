@@ -29,8 +29,6 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: RepeatAction;
 
-  @property({ type: Boolean }) public reOrderMode = false;
-
   @property() public path?: ItemPath;
 
   public static get defaultConfig() {
@@ -41,7 +39,6 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     (
       localize: LocalizeFunc,
       type: string,
-      reOrderMode: boolean,
       template: boolean,
       path?: ItemPath
     ) =>
@@ -78,7 +75,6 @@ export class HaRepeatAction extends LitElement implements ActionElement {
                 selector: {
                   condition: {
                     path: [...(path ?? []), "repeat", type],
-                    reorder_mode: reOrderMode,
                   },
                 },
               },
@@ -98,7 +94,6 @@ export class HaRepeatAction extends LitElement implements ActionElement {
           selector: {
             action: {
               path: [...(path ?? []), "repeat", "sequence"],
-              reorder_mode: reOrderMode,
             },
           },
         },
@@ -111,7 +106,6 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     const schema = this._schema(
       this.hass.localize,
       type ?? "count",
-      this.reOrderMode,
       "count" in action && typeof action.count === "string"
         ? isTemplate(action.count)
         : false,

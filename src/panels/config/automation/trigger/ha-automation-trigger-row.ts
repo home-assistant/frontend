@@ -69,6 +69,10 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
+import {
+  ReorderMode,
+  reorderModeContext,
+} from "../../../../state/reorder-mode-mixin";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -134,10 +138,16 @@ export default class HaAutomationTriggerRow extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
+  @state()
+  @consume({ context: reorderModeContext, subscribe: true })
+  private _reorderMode?: ReorderMode;
+
   private _triggerUnsub?: Promise<UnsubscribeFunc>;
 
   protected render() {
     if (!this.trigger) return nothing;
+
+    const noReorderModeAvailable = this._reorderMode === undefined;
 
     const supported =
       customElements.get(`ha-automation-trigger-${this.trigger.platform}`) !==
@@ -192,7 +202,12 @@ export default class HaAutomationTriggerRow extends LitElement {
                     ></ha-svg-icon>
                   </mwc-list-item>
 
-                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                  <mwc-list-item
+                    graphic="icon"
+                    .disabled=${this.disabled}
+                    class=${classMap({ hidden: noReorderModeAvailable })}
+                    ?aria-hidden=${noReorderModeAvailable}
+                  >
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.triggers.re_order"
                     )}
@@ -482,7 +497,7 @@ export default class HaAutomationTriggerRow extends LitElement {
         await this._renameTrigger();
         break;
       case 1:
-        fireEvent(this, "re-order");
+        this._reorderMode?.enable();
         break;
       case 2:
         this._requestShowId = true;
@@ -713,6 +728,9 @@ export default class HaAutomationTriggerRow extends LitElement {
         }
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+        }
+        mwc-list-item.hidden {
+          display: none;
         }
         ha-textfield {
           display: block;

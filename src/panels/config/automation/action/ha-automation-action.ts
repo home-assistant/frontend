@@ -1,7 +1,8 @@
+import { consume } from "@lit-labs/context";
 import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -12,6 +13,10 @@ import "../../../../components/ha-svg-icon";
 import { getService, isService } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
 import { Action } from "../../../../data/script";
+import {
+  ReorderMode,
+  reorderModeContext,
+} from "../../../../state/reorder-mode-mixin";
 import { HomeAssistant, ItemPath } from "../../../../types";
 import {
   PASTE_VALUE,
@@ -32,7 +37,9 @@ export default class HaAutomationAction extends LitElement {
 
   @property() public actions!: Action[];
 
-  @property({ type: Boolean }) public reOrderMode = false;
+  @state()
+  @consume({ context: reorderModeContext, subscribe: true })
+  private _reorderMode?: ReorderMode;
 
   @storage({
     key: "automationClipboard",
@@ -54,7 +61,7 @@ export default class HaAutomationAction extends LitElement {
     return html`
       <ha-sortable
         handle-selector=".handle"
-        .disabled=${!this.reOrderMode}
+        .disabled=${!this._reorderMode?.active}
         @item-moved=${this._actionMoved}
         group="actions"
         .path=${this.path}
@@ -70,13 +77,12 @@ export default class HaAutomationAction extends LitElement {
                 .action=${action}
                 .narrow=${this.narrow}
                 .disabled=${this.disabled}
-                .hideMenu=${this.reOrderMode}
-                .reOrderMode=${this.reOrderMode}
+                .hideMenu=${this._reorderMode?.active}
                 @duplicate=${this._duplicateAction}
                 @value-changed=${this._actionChanged}
                 .hass=${this.hass}
               >
-                ${this.reOrderMode
+                ${this._reorderMode?.active
                   ? html`
                       <ha-icon-button
                         .index=${idx}

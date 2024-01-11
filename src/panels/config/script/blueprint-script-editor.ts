@@ -18,9 +18,10 @@ import { BlueprintScriptConfig } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
+import { ReorderModeMixin } from "../../../state/reorder-mode-mixin";
 
 @customElement("blueprint-script-editor")
-export class HaBlueprintScriptEditor extends LitElement {
+export class HaBlueprintScriptEditor extends ReorderModeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public isWide!: boolean;
@@ -32,8 +33,6 @@ export class HaBlueprintScriptEditor extends LitElement {
   @property({ attribute: false }) public config!: BlueprintScriptConfig;
 
   @state() private _blueprints?: Blueprints;
-
-  @state() private _reOrderMode = false;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -113,7 +112,6 @@ export class HaBlueprintScriptEditor extends LitElement {
                             [type]: {
                               ...selector[type],
                               path: [key],
-                              reorder_mode: this._reOrderMode,
                             },
                           }
                         : selector;
@@ -139,7 +137,6 @@ export class HaBlueprintScriptEditor extends LitElement {
                             : value?.default}
                           @value-changed=${this._inputChanged}
                           @item-moved=${this._itemMoved}
-                          @re-order=${this._enterReOrderMode}
                         ></ha-selector>`}
                       </ha-settings-row>`;
                     }
@@ -155,7 +152,7 @@ export class HaBlueprintScriptEditor extends LitElement {
   }
 
   private _renderReorderModeAlert() {
-    if (!this._reOrderMode) {
+    if (!this._reorderMode.active) {
       return nothing;
     }
     return html`
@@ -178,13 +175,8 @@ export class HaBlueprintScriptEditor extends LitElement {
     `;
   }
 
-  private async _enterReOrderMode(ev: CustomEvent) {
-    ev.stopPropagation();
-    this._reOrderMode = true;
-  }
-
   private async _exitReOrderMode() {
-    this._reOrderMode = false;
+    this._reorderMode.disable();
   }
 
   private async _getBlueprints() {

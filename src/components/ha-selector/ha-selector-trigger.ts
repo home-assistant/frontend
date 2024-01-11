@@ -25,7 +25,6 @@ export class HaTriggerSelector extends LitElement {
         .triggers=${this.value || []}
         .hass=${this.hass}
         .path=${this.selector.trigger?.path}
-        .reOrderMode=${this.selector.trigger?.reorder_mode}
       ></ha-automation-trigger>
     `;
   }

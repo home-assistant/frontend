@@ -57,6 +57,10 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
+import {
+  ReorderMode,
+  reorderModeContext,
+} from "../../../../state/reorder-mode-mixin";
 import type { HomeAssistant, ItemPath } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import "./types/ha-automation-action-activate_scene";
@@ -129,8 +133,6 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public hideMenu = false;
 
-  @property({ type: Boolean }) public reOrderMode = false;
-
   @property() public path?: ItemPath;
 
   @storage({
@@ -144,6 +146,10 @@ export default class HaAutomationActionRow extends LitElement {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
+
+  @state()
+  @consume({ context: reorderModeContext, subscribe: true })
+  private _reorderMode?: ReorderMode;
 
   @state() private _warnings?: string[];
 
@@ -182,6 +188,8 @@ export default class HaAutomationActionRow extends LitElement {
 
     const type = getType(this.action);
     const yamlMode = this._yamlMode;
+
+    const noReorderModeAvailable = this._reorderMode === undefined;
 
     return html`
       <ha-card outlined>
@@ -251,7 +259,12 @@ export default class HaAutomationActionRow extends LitElement {
                       .path=${mdiRenameBox}
                     ></ha-svg-icon>
                   </mwc-list-item>
-                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                  <mwc-list-item
+                    graphic="icon"
+                    .disabled=${this.disabled}
+                    class=${classMap({ hidden: noReorderModeAvailable })}
+                    ?aria-hidden=${noReorderModeAvailable}
+                  >
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.actions.re_order"
                     )}
@@ -409,7 +422,6 @@ export default class HaAutomationActionRow extends LitElement {
                       hass: this.hass,
                       action: this.action,
                       narrow: this.narrow,
-                      reOrderMode: this.reOrderMode,
                       disabled: this.disabled,
                       path: this.path,
                     })}
@@ -440,7 +452,7 @@ export default class HaAutomationActionRow extends LitElement {
         await this._renameAction();
         break;
       case 2:
-        fireEvent(this, "re-order");
+        this._reorderMode?.enable();
         break;
       case 3:
         fireEvent(this, "duplicate");
@@ -644,6 +656,9 @@ export default class HaAutomationActionRow extends LitElement {
 
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+        }
+        mwc-list-item.hidden {
+          display: none;
         }
         .warning ul {
           margin: 4px 0;

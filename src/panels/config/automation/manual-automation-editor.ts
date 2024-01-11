@@ -2,7 +2,7 @@ import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { nestedArrayMove } from "../../../common/util/array-move";
@@ -16,6 +16,7 @@ import {
 } from "../../../data/automation";
 import { Action } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
+import { ReorderModeMixin } from "../../../state/reorder-mode-mixin";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./action/ha-automation-action";
@@ -23,7 +24,7 @@ import "./condition/ha-automation-condition";
 import "./trigger/ha-automation-trigger";
 
 @customElement("manual-automation-editor")
-export class HaManualAutomationEditor extends LitElement {
+export class HaManualAutomationEditor extends ReorderModeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public isWide!: boolean;
@@ -35,8 +36,6 @@ export class HaManualAutomationEditor extends LitElement {
   @property({ attribute: false }) public config!: ManualAutomationConfig;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
-
-  @state() private _reOrderMode = false;
 
   protected render() {
     return html`
@@ -104,8 +103,6 @@ export class HaManualAutomationEditor extends LitElement {
         .path=${["trigger"]}
         @value-changed=${this._triggerChanged}
         @item-moved=${this._itemMoved}
-        @re-order=${this._enterReOrderMode}
-        .reOrderMode=${this._reOrderMode}
         .hass=${this.hass}
         .disabled=${this.disabled}
       ></ha-automation-trigger>
@@ -149,8 +146,6 @@ export class HaManualAutomationEditor extends LitElement {
         .path=${["condition"]}
         @value-changed=${this._conditionChanged}
         @item-moved=${this._itemMoved}
-        @re-order=${this._enterReOrderMode}
-        .reOrderMode=${this._reOrderMode}
         .hass=${this.hass}
         .disabled=${this.disabled}
       ></ha-automation-condition>
@@ -192,8 +187,6 @@ export class HaManualAutomationEditor extends LitElement {
         .path=${["action"]}
         @value-changed=${this._actionChanged}
         @item-moved=${this._itemMoved}
-        @re-order=${this._enterReOrderMode}
-        .reOrderMode=${this._reOrderMode}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
@@ -202,7 +195,7 @@ export class HaManualAutomationEditor extends LitElement {
   }
 
   private _renderReorderModeAlert(type: "conditions" | "actions" | "triggers") {
-    if (!this._reOrderMode) {
+    if (!this._reorderMode.active) {
       return nothing;
     }
     return html`
@@ -225,13 +218,8 @@ export class HaManualAutomationEditor extends LitElement {
     `;
   }
 
-  private async _enterReOrderMode(ev: CustomEvent) {
-    ev.stopPropagation();
-    this._reOrderMode = true;
-  }
-
   private async _exitReOrderMode() {
-    this._reOrderMode = false;
+    this._reorderMode.disable();
   }
 
   private _triggerChanged(ev: CustomEvent): void {

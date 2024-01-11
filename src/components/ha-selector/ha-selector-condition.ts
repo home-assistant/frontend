@@ -25,7 +25,6 @@ export class HaConditionSelector extends LitElement {
         .conditions=${this.value || []}
         .hass=${this.hass}
         .path=${this.selector.condition?.path}
-        .reOrderMode=${this.selector.condition?.reorder_mode}
       ></ha-automation-condition>
     `;
   }

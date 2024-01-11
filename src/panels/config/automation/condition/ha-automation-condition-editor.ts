@@ -30,8 +30,6 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ type: Boolean }) public yamlMode = false;
 
-  @property({ type: Boolean }) public reOrderMode = false;
-
   @property() public path?: ItemPath;
 
   private _processedCondition = memoizeOne((condition) =>
@@ -69,7 +67,6 @@ export default class HaAutomationConditionEditor extends LitElement {
                 {
                   hass: this.hass,
                   condition: condition,
-                  reOrderMode: this.reOrderMode,
                   disabled: this.disabled,
                   path: this.path,
                 }
