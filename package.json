@@ -216,7 +216,7 @@
     "instant-mocha": "1.5.2",
     "jszip": "3.10.1",
     "lint-staged": "15.2.0",
-    "lit-analyzer": "2.0.2",
+    "lit-analyzer": "2.0.3",
     "lodash.template": "4.5.0",
     "magic-string": "0.30.5",
     "map-stream": "0.0.7",
