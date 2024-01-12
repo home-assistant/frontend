@@ -43,12 +43,15 @@ export class MoreInfoInfo extends LitElement {
 
     return html`
       <div class="container" data-domain=${domain}>
-        ${!stateObj ?         
-          html`<ha-alert alert-type="warning">              
-              ${this.entry?.disabled_by ?
-                this.hass.localize("ui.dialogs.entity_registry.editor.entity_disabled") : 
-                this.hass.localize("ui.dialogs.entity_registry.editor.unavailable")
-              }
+        ${!stateObj
+          ? html`<ha-alert alert-type="warning">
+              ${this.entry?.disabled_by
+                ? this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.entity_disabled"
+                  )
+                : this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.unavailable"
+                  )}
             </ha-alert>`
           : nothing}
         ${stateObj?.attributes.restored && entityRegObj
