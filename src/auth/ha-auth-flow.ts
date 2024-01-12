@@ -38,7 +38,7 @@ export class HaAuthFlow extends LitElement {
 
   @property({ attribute: false }) public step?: DataEntryFlowStep;
 
-  @property({ type: Boolean }) private initStoreToken = false;
+  @property({ type: Boolean }) public initStoreToken = false;
 
   @state() private _storeToken = false;
 
