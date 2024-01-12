@@ -9665,7 +9665,7 @@ __metadata:
     terser-webpack-plugin: "npm:5.3.10"
     tinykeys: "npm:2.1.0"
     transform-async-modules-webpack-plugin: "npm:1.0.2"
-    ts-lit-plugin: "npm:2.0.1"
+    ts-lit-plugin: "npm:2.0.2"
     tsparticles-engine: "npm:2.12.0"
     tsparticles-preset-links: "npm:2.12.0"
     typescript: "npm:5.3.3"
@@ -15222,13 +15222,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-lit-plugin@npm:2.0.1":
-  version: 2.0.1
-  resolution: "ts-lit-plugin@npm:2.0.1"
+"ts-lit-plugin@npm:2.0.2":
+  version: 2.0.2
+  resolution: "ts-lit-plugin@npm:2.0.2"
   dependencies:
     lit-analyzer: "npm:^2.0.1"
     web-component-analyzer: "npm:^2.0.0"
-  checksum: c447865b13afdcdef103c939706498051190ca9d377f7c64038f22a8c2fbf2f805bf7b9ccb1824b09289b5dc8c9072538446f18a4369bee35e94813396e5816f
+  checksum: f355a5dc1a0c2fc3bb0e4b104596ee49a94d456a96b00b2195c0983b93027a2b2bad967e633bbe3373362d94a5edfd3c7cb101e09e4756735d16c8705b88df78
   languageName: node
   linkType: hard
 
