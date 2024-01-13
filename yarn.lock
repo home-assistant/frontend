@@ -2158,12 +2158,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lrnwebcomponents/simple-tooltip@npm:7.0.18":
-  version: 7.0.18
-  resolution: "@lrnwebcomponents/simple-tooltip@npm:7.0.18"
+"@lrnwebcomponents/simple-tooltip@npm:8.0.0":
+  version: 8.0.0
+  resolution: "@lrnwebcomponents/simple-tooltip@npm:8.0.0"
   dependencies:
-    lit: "npm:^2.8.0"
-  checksum: f875ddf21751ab47a22cc872e97350a7e61b52694e99f77a00464d6d458cc2ff0638fb95696964a5e5259e777a6fc8b8765415c45a2da4f16de6c7b0cc8b5d85
+    lit: "npm:^3.1.0"
+  checksum: d70ab59f32f9b3461b3dc24a41f2d18f8c3b48def9a53b040ff5f2161875a6ee40544982488fef826865758d2055d5286dff5d99ff6a9e6b9952ffb7eb0cba3a
   languageName: node
   linkType: hard
 
@@ -9510,7 +9510,7 @@ __metadata:
     "@lit-labs/observers": "npm:2.0.2"
     "@lit-labs/virtualizer": "npm:2.0.12"
     "@lokalise/node-api": "npm:12.1.0"
-    "@lrnwebcomponents/simple-tooltip": "npm:7.0.18"
+    "@lrnwebcomponents/simple-tooltip": "npm:8.0.0"
     "@material/chips": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/data-table": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/mwc-base": "npm:0.27.0"
