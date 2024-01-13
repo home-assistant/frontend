@@ -42,7 +42,7 @@ jobs:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
 
       - name: Bump version
-        run: script/version_bump.cjs nightly
+        run: script/version_bump.js nightly
 
       - name: Build nightly Python wheels
         run: |
