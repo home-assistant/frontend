@@ -2132,13 +2132,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/virtualizer@npm:2.0.11":
-  version: 2.0.11
-  resolution: "@lit-labs/virtualizer@npm:2.0.11"
+"@lit-labs/virtualizer@npm:2.0.12":
+  version: 2.0.12
+  resolution: "@lit-labs/virtualizer@npm:2.0.12"
   dependencies:
     lit: "npm:^3.1.0"
     tslib: "npm:^2.0.3"
-  checksum: 9b44ef579c35f2063a67ec80db60813ffc9f84a3e66b4c7def46bdc6dad0507c4a8a867637233899d3671a34643bcf31f12801136946f62203e34de41810a53d
+  checksum: e3568ea6ef5d9362959ea2da873aaa2af27ef28c511189f38555aadbbf79919d5840f97926c62c56dd62aa8f1fd220eab88106802411cffce1121233c602cf73
   languageName: node
   linkType: hard
 
@@ -9508,7 +9508,7 @@ __metadata:
     "@lit-labs/context": "npm:0.4.1"
     "@lit-labs/motion": "npm:1.0.6"
     "@lit-labs/observers": "npm:2.0.2"
-    "@lit-labs/virtualizer": "npm:2.0.11"
+    "@lit-labs/virtualizer": "npm:2.0.12"
     "@lokalise/node-api": "npm:12.1.0"
     "@lrnwebcomponents/simple-tooltip": "npm:7.0.18"
     "@material/chips": "npm:=14.0.0-canary.53b3cad2f.0"
