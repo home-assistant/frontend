@@ -261,7 +261,7 @@ export class HaStateControlClimateTemperature extends LitElement {
       this.hass.locale,
       formatOptions
     );
-    return html`${formatted}${blankBeforeUnit(unit)}${unit}`;
+    return html`${formatted}${blankBeforeUnit(unit, this.hass.locale)}${unit}`;
   }
 
   private _renderCurrent(temperature: number, style: "normal" | "big") {
