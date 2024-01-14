@@ -136,7 +136,9 @@ export class HaControlNumberButton extends LitElement {
       this.value != null
         ? formatNumber(this.value, this.locale, this.formatOptions)
         : "";
-    const unit = this.unit ? `${blankBeforeUnit(this.unit)}${this.unit}` : "";
+    const unit = this.unit
+      ? `${blankBeforeUnit(this.unit, this.locale)}${this.unit}`
+      : "";
 
     return html`
       <div class="container">

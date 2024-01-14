@@ -113,7 +113,7 @@ export const computeStateDisplayFromEntityAttributes = (
     const unit = attributes.unit_of_measurement;
 
     if (unit) {
-      return `${value}${blankBeforeUnit(unit)}${unit}`;
+      return `${value}${blankBeforeUnit(unit, locale)}${unit}`;
     }
 
     return value;
