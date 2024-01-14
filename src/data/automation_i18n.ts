@@ -1016,60 +1016,40 @@ const tryDescribeCondition = (
   }
 
   // Sun condition
-  if (
-    condition.condition === "sun" &&
-    ("before" in condition || "after" in condition)
-  ) {
-    let base = "Confirm";
-
-    if (!condition.after && !condition.before) {
-      base += " sun";
-      return base;
-    }
-
-    base += " sun";
-
-    if (condition.after) {
-      let after_duration = "";
-
-      if (condition.after_offset) {
-        if (typeof condition.after_offset === "number") {
-          after_duration = ` offset by ${secondsToDuration(
-            condition.after_offset
-          )!}`;
-        } else if (typeof condition.after_offset === "string") {
-          after_duration = ` offset by ${condition.after_offset}`;
-        } else {
-          after_duration = ` offset by ${JSON.stringify(
-            condition.after_offset
-          )}`;
-        }
+  if (condition.condition === "sun" && (condition.before || condition.after)) {
+    let afterDuration = "";
+    if (condition.after && condition.after_offset) {
+      if (typeof condition.after_offset === "number") {
+        afterDuration = secondsToDuration(condition.after_offset)!;
+      } else if (typeof condition.after_offset === "string") {
+        afterDuration = condition.after_offset;
+      } else {
+        afterDuration = JSON.stringify(condition.after_offset);
       }
-
-      base += ` after ${condition.after}${after_duration}`;
     }
 
-    if (condition.before) {
-      let before_duration = "";
-
-      if (condition.before_offset) {
-        if (typeof condition.before_offset === "number") {
-          before_duration = ` offset by ${secondsToDuration(
-            condition.before_offset
-          )!}`;
-        } else if (typeof condition.before_offset === "string") {
-          before_duration = ` offset by ${condition.before_offset}`;
-        } else {
-          before_duration = ` offset by ${JSON.stringify(
-            condition.before_offset
-          )}`;
-        }
+    let beforeDuration = "";
+    if (condition.before && condition.before_offset) {
+      if (typeof condition.before_offset === "number") {
+        beforeDuration = secondsToDuration(condition.before_offset)!;
+      } else if (typeof condition.before_offset === "string") {
+        beforeDuration = condition.before_offset;
+      } else {
+        beforeDuration = JSON.stringify(condition.before_offset);
       }
-
-      base += ` before ${condition.before}${before_duration}`;
     }
 
-    return base;
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.sun.description.full`,
+      {
+        afterChoice: condition.after ?? "other",
+        afterOffsetChoice: afterDuration !== "" ? "offset" : "other",
+        afterOffset: afterDuration,
+        beforeChoice: condition.before ?? "other",
+        beforeOffsetChoice: beforeDuration !== "" ? "offset" : "other",
+        beforeOffset: beforeDuration,
+      }
+    );
   }
 
   // Zone condition
