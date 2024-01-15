@@ -28,7 +28,6 @@
         "strict": true,
         "rules": {
           // Custom elements
-          "no-unclosed-tag": "warning",
           "no-missing-element-type-definition": "error",
           // Binding names
           "no-legacy-attribute": "error",

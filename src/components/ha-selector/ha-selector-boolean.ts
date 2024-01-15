@@ -10,7 +10,7 @@ import "../ha-input-helper-text";
 export class HaBooleanSelector extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property() public value?: number;
+  @property({ type: Boolean }) public value = false;
 
   @property() public label?: string;
 

@@ -2157,7 +2157,9 @@
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This error originated from a custom integration.",
           "show_full_logs": "Show full logs",
-          "download_full_log": "Download full log"
+          "download_full_log": "Download full log",
+          "provider_not_found": "Log provider not found",
+          "provider_not_available": "Logs for ''{provider}'' are not available on your system."
         },
         "lovelace": {
           "caption": "Dashboards",
@@ -2255,9 +2257,16 @@
             "pipeline": {
               "add_assistant": "Add assistant",
               "exposed_entities": "[%key:ui::panel::config::cloud::account::google::exposed_entities%]",
+              "assist_devices": "{number} Assist {number, plural,\n  one {device}\n  other {devices}\n}",
               "delete": {
                 "confirm_title": "Delete {name}?",
                 "confirm_text": "{name} will be permanently deleted."
+              },
+              "devices": {
+                "title": "Assist devices",
+                "device": "Device",
+                "pipeline": "Assistant",
+                "area": "Area"
               },
               "detail": {
                 "update_assistant_action": "Update",
@@ -2267,7 +2276,7 @@
                 "debug": "Debug",
                 "set_as_preferred": "Set as preferred",
                 "form": {
-                  "name": "Name",
+                  "name": "[%key:ui::common::name%]",
                   "conversation_engine": "Conversation agent",
                   "conversation_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "language": "Language",
