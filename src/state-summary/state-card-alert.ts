@@ -3,6 +3,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stateActive } from "../common/entity/state_active";
 import { computeRTL } from "../common/util/compute_rtl";
+import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
