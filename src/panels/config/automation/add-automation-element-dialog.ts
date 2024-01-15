@@ -434,7 +434,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   protected _opened(): void {
     // Store the width and height so that when we search, box doesn't jump
     const boundingRect =
-      this.shadowRoot!.querySelector("mwc-list")?.getBoundingClientRect();
+      this.shadowRoot!.querySelector("ha-list-new")?.getBoundingClientRect();
     this._width = boundingRect?.width;
     this._height = boundingRect?.height;
   }
@@ -648,6 +648,11 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         ha-list-new {
           max-height: 468px;
           max-width: 100vw;
+          --md-list-item-leading-space: 24px;
+          --md-list-item-trailing-space: 24px;
+        }
+        ha-list-item-new img {
+          width: 24px;
         }
         search-input {
           display: block;
