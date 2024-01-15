@@ -10,6 +10,9 @@
     "resolveJsonModule": true,
     // Babel handles transpiling and no need for declaration files
     "noEmit": true,
+    // Caching
+    "incremental": true,
+    "tsBuildInfoFile": "node_modules/.cache/typescript/.tsbuildinfo",
     // Type checking options
     "noUnusedLocals": true,
     "noUnusedParameters": true,
