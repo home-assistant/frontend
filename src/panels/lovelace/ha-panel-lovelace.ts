@@ -58,7 +58,7 @@ export class LovelacePanel extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public route?: Route;
+  @property({ attribute: false }) public route?: Route;
 
   @property()
   private _panelState?: "loading" | "loaded" | "error" | "yaml-editor" =

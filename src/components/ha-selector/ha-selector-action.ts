@@ -7,9 +7,9 @@ import { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-action")
 export class HaActionSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: ActionSelector;
+  @property({ attribute: false }) public selector!: ActionSelector;
 
   @property() public value?: Action;
 

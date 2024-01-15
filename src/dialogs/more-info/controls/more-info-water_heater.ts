@@ -21,7 +21,7 @@ import { moreInfoControlStyle } from "../components/more-info-control-style";
 class MoreInfoWaterHeater extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: WaterHeaterEntity;
+  @property({ attribute: false }) public stateObj?: WaterHeaterEntity;
 
   protected render() {
     if (!this.stateObj) {

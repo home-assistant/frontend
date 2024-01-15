@@ -362,7 +362,7 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   private _entitiesContext = new ContextProvider(this, {
     context: fullEntitiesContext,

@@ -21,7 +21,7 @@ import "./ha-logbook";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
-  @property() hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ reflect: true, type: Boolean }) narrow!: boolean;
 

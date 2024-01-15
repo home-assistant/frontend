@@ -74,7 +74,7 @@ class HaScriptPicker extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
 

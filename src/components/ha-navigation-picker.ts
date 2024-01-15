@@ -50,7 +50,7 @@ const createPanelNavigationItem = (hass: HomeAssistant, panel: PanelInfo) => ({
 
 @customElement("ha-navigation-picker")
 export class HaNavigationPicker extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public label?: string;
 
