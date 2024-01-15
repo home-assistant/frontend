@@ -77,7 +77,7 @@ export default class HaAutomationAction extends LitElement {
                 .action=${action}
                 .narrow=${this.narrow}
                 .disabled=${this.disabled}
-                .hideMenu=${this._reorderMode?.active}
+                .hideMenu=${Boolean(this._reorderMode?.active)}
                 @duplicate=${this._duplicateAction}
                 @value-changed=${this._actionChanged}
                 .hass=${this.hass}

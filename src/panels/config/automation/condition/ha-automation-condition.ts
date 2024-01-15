@@ -123,7 +123,7 @@ export default class HaAutomationCondition extends LitElement {
                 .index=${idx}
                 .totalConditions=${this.conditions.length}
                 .condition=${cond}
-                .hideMenu=${this._reorderMode?.active}
+                .hideMenu=${Boolean(this._reorderMode?.active)}
                 .disabled=${this.disabled}
                 @duplicate=${this._duplicateCondition}
                 @move-condition=${this._move}

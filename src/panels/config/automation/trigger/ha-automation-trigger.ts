@@ -72,7 +72,7 @@ export default class HaAutomationTrigger extends LitElement {
                 .path=${[...(this.path ?? []), idx]}
                 .index=${idx}
                 .trigger=${trg}
-                .hideMenu=${this._reorderMode?.active}
+                .hideMenu=${Boolean(this._reorderMode?.active)}
                 @duplicate=${this._duplicateTrigger}
                 @value-changed=${this._triggerChanged}
                 .hass=${this.hass}
