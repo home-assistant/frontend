@@ -2,6 +2,8 @@ import {
   mdiAccountArrowRight,
   mdiArrowAll,
   mdiArrowLeftRight,
+  mdiArrowOscillating,
+  mdiArrowOscillatingOff,
   mdiArrowUpDown,
   mdiBed,
   mdiCircleMedium,
@@ -31,8 +33,6 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { haOscillatingOff } from "./icons/haOscillatingOff";
-import { haOscillating } from "./icons/haOscillating";
 
 export const HVAC_MODES = [
   "auto",
@@ -203,8 +203,8 @@ type ClimateBuiltInSwingMode =
 
 export const CLIMATE_SWING_MODE_ICONS: Record<ClimateBuiltInSwingMode, string> =
   {
-    on: haOscillating,
-    off: haOscillatingOff,
+    on: mdiArrowOscillating,
+    off: mdiArrowOscillatingOff,
     vertical: mdiArrowUpDown,
     horizontal: mdiArrowLeftRight,
     both: mdiArrowAll,
