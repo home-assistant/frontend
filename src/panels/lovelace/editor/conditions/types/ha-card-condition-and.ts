@@ -9,6 +9,7 @@ import {
   Condition,
   StateCondition,
 } from "../../../common/validate-condition";
+import "../ha-card-conditions-editor";
 
 const andConditionStruct = object({
   condition: literal("and"),

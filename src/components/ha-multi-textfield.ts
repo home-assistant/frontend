@@ -5,6 +5,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-button";
+import "./ha-icon-button";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 

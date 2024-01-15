@@ -1,6 +1,8 @@
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-checkbox";
+import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
 import { DurationDict, Timer } from "../../../../data/timer";
