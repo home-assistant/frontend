@@ -68,7 +68,7 @@ class HaSceneDashboard extends LitElement {
 
   @property({ type: Boolean }) public isWide = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property() public scenes!: SceneEntity[];
 

@@ -6,9 +6,9 @@ import "../ha-mount-picker";
 
 @customElement("ha-selector-backup_location")
 export class HaBackupLocationSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: BackupLocationSelector;
+  @property({ attribute: false }) public selector!: BackupLocationSelector;
 
   @property() public value?: any;
 

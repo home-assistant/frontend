@@ -54,7 +54,7 @@ const LAWN_MOWER_COMMANDS: LawnMowerCommand[] = [
 class MoreInfoLawnMower extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: LawnMowerEntity;
+  @property({ attribute: false }) public stateObj?: LawnMowerEntity;
 
   protected render() {
     if (!this.hass || !this.stateObj) {

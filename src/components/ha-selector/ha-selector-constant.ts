@@ -4,7 +4,7 @@ import { ConstantSelector } from "../../data/selector";
 
 @customElement("ha-selector-constant")
 export class HaSelectorConstant extends LitElement {
-  @property() public selector!: ConstantSelector;
+  @property({ attribute: false }) public selector!: ConstantSelector;
 
   @property({ type: Boolean }) public disabled = false;
 

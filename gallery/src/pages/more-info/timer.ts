@@ -18,7 +18,7 @@ const ENTITIES = [
 
 @customElement("demo-more-info-timer")
 class DemoMoreInfoTimer extends LitElement {
-  @property() public hass!: MockHomeAssistant;
+  @property({ attribute: false }) public hass!: MockHomeAssistant;
 
   @query("demo-more-infos") private _demoRoot!: HTMLElement;
 

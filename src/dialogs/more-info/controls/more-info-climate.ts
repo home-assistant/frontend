@@ -38,7 +38,7 @@ type MainControl = "temperature" | "humidity";
 class MoreInfoClimate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: ClimateEntity;
+  @property({ attribute: false }) public stateObj?: ClimateEntity;
 
   @state() private _mainControl: MainControl = "temperature";
 

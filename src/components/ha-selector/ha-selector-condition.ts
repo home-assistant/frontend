@@ -7,9 +7,9 @@ import { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-condition")
 export class HaConditionSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: ConditionSelector;
+  @property({ attribute: false }) public selector!: ConditionSelector;
 
   @property() public value?: Condition;
 

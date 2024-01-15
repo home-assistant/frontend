@@ -74,7 +74,7 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @property() public manifests!: IntegrationManifest[];
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 

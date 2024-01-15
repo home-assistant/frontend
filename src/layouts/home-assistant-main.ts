@@ -38,7 +38,7 @@ interface EditSideBarEvent {
 export class HomeAssistantMain extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public route?: Route;
+  @property({ attribute: false }) public route?: Route;
 
   @property({ type: Boolean }) public narrow!: boolean;
 

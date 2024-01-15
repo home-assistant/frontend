@@ -26,7 +26,7 @@ import { moreInfoControlStyle } from "../components/more-info-control-style";
 class MoreInfoHumidifier extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: HumidifierEntity;
+  @property({ attribute: false }) public stateObj?: HumidifierEntity;
 
   @state() public _mode?: string;
 
