@@ -64,7 +64,7 @@ class DialogZWaveJSHardResetController extends LitElement {
         <div>
           <ha-svg-icon
             .path=${iconMap[this._resetStatus]}
-            .class="icon"
+            class="icon"
           ></ha-svg-icon>
         </div>
         <p>
