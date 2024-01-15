@@ -252,11 +252,10 @@ export class HuiStatisticsGraphCardEditor
     );
     const configured_stat_types = this._config!.stat_types
       ? ensureArray(this._config.stat_types)
-      : stat_types.filter(
-          (stat_type) =>
-            this._metaDatas?.some((metaData) =>
-              statisticsMetaHasType(metaData, stat_type)
-            )
+      : stat_types.filter((stat_type) =>
+          this._metaDatas?.some((metaData) =>
+            statisticsMetaHasType(metaData, stat_type)
+          )
         );
     const data = {
       chart_type: "line",
