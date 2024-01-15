@@ -33,16 +33,16 @@ export class HaFileUpload extends LitElement {
 
   @property() public value?: File | File[] | FileList | string;
 
-  @property({ type: Boolean }) private multiple = false;
+  @property({ type: Boolean }) public multiple = false;
 
   @property({ type: Boolean, reflect: true }) public disabled: boolean = false;
 
-  @property({ type: Boolean }) private uploading = false;
+  @property({ type: Boolean }) public uploading = false;
 
-  @property({ type: Number }) private progress?: number;
+  @property({ type: Number }) public progress?: number;
 
   @property({ type: Boolean, attribute: "auto-open-file-dialog" })
-  private autoOpenFileDialog = false;
+  public autoOpenFileDialog = false;
 
   @state() private _drag = false;
 

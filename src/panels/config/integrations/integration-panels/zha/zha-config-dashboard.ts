@@ -78,9 +78,9 @@ class ZHAConfigDashboard extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @property() private _configuration?: ZHAConfiguration;
+  @state() private _configuration?: ZHAConfiguration;
 
-  @property() private _networkSettings?: ZHANetworkSettings;
+  @state() private _networkSettings?: ZHANetworkSettings;
 
   @state() private _generatingBackup = false;
 

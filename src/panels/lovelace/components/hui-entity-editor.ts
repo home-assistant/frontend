@@ -15,13 +15,13 @@ import { EntityConfig } from "../entity-rows/types";
 
 @customElement("hui-entity-editor")
 export class HuiEntityEditor extends LitElement {
-  @property({ attribute: false }) protected hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) protected entities?: EntityConfig[];
+  @property({ attribute: false }) public entities?: EntityConfig[];
 
-  @property() protected entityFilter?: HaEntityPickerEntityFilterFunc;
+  @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
 
-  @property() protected label?: string;
+  @property() public label?: string;
 
   private _entityKeys = new WeakMap<EntityConfig, string>();
 

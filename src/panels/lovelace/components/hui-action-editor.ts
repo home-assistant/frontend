@@ -82,7 +82,7 @@ export class HuiActionEditor extends LitElement {
 
   @property() public tooltipText?: string;
 
-  @property() protected hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @query("ha-select") private _select!: HaSelect;
 
