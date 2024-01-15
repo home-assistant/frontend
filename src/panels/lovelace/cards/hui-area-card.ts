@@ -26,6 +26,7 @@ import memoizeOne from "memoize-one";
 import { STATES_OFF } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { binarySensorIcon } from "../../../common/entity/binary_sensor_icon";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { navigate } from "../../../common/navigate";
 import { formatNumber } from "../../../common/number/format_number";
@@ -67,7 +68,7 @@ const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 
 const OTHER_DOMAINS = ["camera"];
 
-const DEVICE_CLASSES = {
+export const DEVICE_CLASSES = {
   sensor: ["temperature", "humidity"],
   binary_sensor: ["motion", "moisture"],
 };
@@ -113,6 +114,8 @@ export class HuiAreaCard
 
   @state() private _areas?: AreaRegistryEntry[];
 
+  private _deviceClasses: { [key: string]: string[] } = DEVICE_CLASSES;
+
   private _ratio: {
     w: number;
     h: number;
@@ -123,6 +126,7 @@ export class HuiAreaCard
       areaId: string,
       devicesInArea: Set<string>,
       registryEntities: EntityRegistryEntry[],
+      deviceClasses: { [key: string]: string[] },
       states: HomeAssistant["states"]
     ) => {
       const entitiesInArea = registryEntities
@@ -156,7 +160,7 @@ export class HuiAreaCard
 
         if (
           (SENSOR_DOMAINS.includes(domain) || ALERT_DOMAINS.includes(domain)) &&
-          !DEVICE_CLASSES[domain].includes(
+          !deviceClasses[domain].includes(
             stateObj.attributes.device_class || ""
           )
         ) {
@@ -173,11 +177,12 @@ export class HuiAreaCard
     }
   );
 
-  private _isOn(domain: string, deviceClass?: string): boolean | undefined {
+  private _isOn(domain: string, deviceClass?: string): HassEntity | undefined {
     const entities = this._entitiesByDomain(
       this._config!.area,
       this._devicesInArea(this._config!.area, this._devices!),
       this._entities!,
+      this._deviceClasses,
       this.hass.states
     )[domain];
     if (!entities) {
@@ -189,7 +194,7 @@ export class HuiAreaCard
             (entity) => entity.attributes.device_class === deviceClass
           )
         : entities
-    ).some(
+    ).find(
       (entity) =>
         !isUnavailableState(entity.state) && !STATES_OFF.includes(entity.state)
     );
@@ -200,6 +205,7 @@ export class HuiAreaCard
       this._config!.area,
       this._devicesInArea(this._config!.area, this._devices!),
       this._entities!,
+      this._deviceClasses,
       this.hass.states
     )[domain].filter((entity) =>
       deviceClass ? entity.attributes.device_class === deviceClass : true
@@ -273,6 +279,11 @@ export class HuiAreaCard
     }
 
     this._config = config;
+
+    this._deviceClasses = { ...DEVICE_CLASSES };
+    if (config.alert_classes) {
+      this._deviceClasses.binary_sensor = config.alert_classes;
+    }
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -314,6 +325,7 @@ export class HuiAreaCard
       this._config.area,
       this._devicesInArea(this._config.area, this._devices),
       this._entities,
+      this._deviceClasses,
       this.hass.states
     );
 
@@ -355,6 +367,7 @@ export class HuiAreaCard
       this._config.area,
       this._devicesInArea(this._config.area, this._devices),
       this._entities,
+      this._deviceClasses,
       this.hass.states
     );
     const area = this._area(this._config.area, this._areas);
@@ -427,17 +440,16 @@ export class HuiAreaCard
               if (!(domain in entitiesByDomain)) {
                 return "";
               }
-              return DEVICE_CLASSES[domain].map((deviceClass) =>
-                this._isOn(domain, deviceClass)
-                  ? html`
-                      ${DOMAIN_ICONS[domain][deviceClass]
-                        ? html`<ha-svg-icon
-                            .path=${DOMAIN_ICONS[domain][deviceClass]}
-                          ></ha-svg-icon>`
-                        : ""}
-                    `
-                  : ""
-              );
+              return this._deviceClasses[domain].map((deviceClass) => {
+                const entity = this._isOn(domain, deviceClass);
+                return entity
+                  ? html`<ha-svg-icon
+                      class="alert"
+                      .path=${DOMAIN_ICONS[domain][deviceClass] ||
+                      binarySensorIcon(entity.state, entity)}
+                    ></ha-svg-icon>`
+                  : nothing;
+              });
             })}
           </div>
           <div class="bottom">
@@ -562,6 +574,7 @@ export class HuiAreaCard
         background: var(--accent-color);
         color: var(--text-accent-color, var(--text-primary-color));
         padding: 8px;
+        margin-right: 8px;
         border-radius: 50%;
       }
 
