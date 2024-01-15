@@ -42,6 +42,7 @@ jobs:
           path: |
             node_modules/.cache/prettier
             node_modules/.cache/eslint
+            node_modules/.cache/typescript
           key: lint-${{ github.sha }}
           restore-keys: lint-
       - name: Run eslint
