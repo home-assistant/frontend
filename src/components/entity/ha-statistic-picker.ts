@@ -105,6 +105,7 @@ export class HaStatisticPicker extends LitElement {
         ? html`<state-badge
             slot="graphic"
             .stateObj=${item.state}
+            .hass=${this.hass}
           ></state-badge>`
         : ""}
       <span>${item.name}</span>

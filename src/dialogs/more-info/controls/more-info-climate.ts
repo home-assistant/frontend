@@ -17,14 +17,11 @@ import "../../../components/ha-icon-button-toggle";
 import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import "../../../components/ha-switch";
+import "../../../components/ha-attribute-icon";
 import {
   ClimateEntity,
   ClimateEntityFeature,
   compareClimateHvacModes,
-  computeFanModeIcon,
-  computeHvacModeIcon,
-  computePresetModeIcon,
-  computeSwingModeIcon,
 } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
 import "../../../state-control/climate/ha-state-control-climate-humidity";
@@ -171,10 +168,13 @@ class MoreInfoClimate extends LitElement {
             .map(
               (mode) => html`
                 <ha-list-item .value=${mode} graphic="icon">
-                  <ha-svg-icon
+                  <ha-attribute-icon
                     slot="graphic"
-                    .path=${computeHvacModeIcon(mode)}
-                  ></ha-svg-icon>
+                    .hass=${this.hass}
+                    .stateObj=${stateObj}
+                    attribute="hvac_mode"
+                    .attributeValue=${mode}
+                  ></ha-attribute-icon>
                   ${this.hass.formatEntityState(stateObj, mode)}
                 </ha-list-item>
               `
@@ -198,10 +198,13 @@ class MoreInfoClimate extends LitElement {
                 ${stateObj.attributes.preset_modes!.map(
                   (mode) => html`
                     <ha-list-item .value=${mode} graphic="icon">
-                      <ha-svg-icon
+                      <ha-attribute-icon
                         slot="graphic"
-                        .path=${computePresetModeIcon(mode)}
-                      ></ha-svg-icon>
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="preset_mode"
+                        .attributeValue=${mode}
+                      ></ha-attribute-icon>
                       ${this.hass.formatEntityAttributeValue(
                         stateObj,
                         "preset_mode",
@@ -231,10 +234,13 @@ class MoreInfoClimate extends LitElement {
                 ${stateObj.attributes.fan_modes!.map(
                   (mode) => html`
                     <ha-list-item .value=${mode} graphic="icon">
-                      <ha-svg-icon
+                      <ha-attribute-icon
                         slot="graphic"
-                        .path=${computeFanModeIcon(mode)}
-                      ></ha-svg-icon>
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="fan_mode"
+                        .attributeValue=${mode}
+                      ></ha-attribute-icon>
                       ${this.hass.formatEntityAttributeValue(
                         stateObj,
                         "fan_mode",
@@ -267,10 +273,13 @@ class MoreInfoClimate extends LitElement {
                 ${stateObj.attributes.swing_modes!.map(
                   (mode) => html`
                     <ha-list-item .value=${mode} graphic="icon">
-                      <ha-svg-icon
+                      <ha-attribute-icon
                         slot="graphic"
-                        .path=${computeSwingModeIcon(mode)}
-                      ></ha-svg-icon>
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="swing_mode"
+                        .attributeValue=${mode}
+                      ></ha-attribute-icon>
                       ${this.hass.formatEntityAttributeValue(
                         stateObj,
                         "swing_mode",

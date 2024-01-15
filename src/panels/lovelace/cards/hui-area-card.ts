@@ -33,10 +33,8 @@ import {
 } from "../../../common/number/format_number";
 import { subscribeOne } from "../../../common/util/subscribe-one";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
-import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import {
   AreaRegistryEntry,

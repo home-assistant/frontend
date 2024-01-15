@@ -119,7 +119,8 @@ class HaScriptPicker extends LitElement {
           type: "icon",
           template: (script) =>
             html`<ha-state-icon
-              .state=${script}
+              .hass=${this.hass}
+              .stateObj=${script}
               style=${styleMap({
                 color:
                   script.state === UNAVAILABLE ? "var(--error-color)" : "unset",

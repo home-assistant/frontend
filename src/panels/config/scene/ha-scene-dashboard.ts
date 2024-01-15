@@ -104,7 +104,10 @@ class HaSceneDashboard extends LitElement {
           ),
           type: "icon",
           template: (scene) => html`
-            <ha-state-icon .state=${scene}></ha-state-icon>
+            <ha-state-icon
+              .hass=${this.hass}
+              .stateObj=${scene}
+            ></ha-state-icon>
           `,
         },
         name: {

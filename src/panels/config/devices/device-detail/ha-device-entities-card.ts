@@ -12,7 +12,6 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { domainIcon } from "../../../../common/entity/domain_icon";
 import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
-import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-list-item";

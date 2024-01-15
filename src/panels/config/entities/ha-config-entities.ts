@@ -205,7 +205,8 @@ export class HaConfigEntities extends LitElement {
           <ha-state-icon
             title=${ifDefined(entry.entity?.state)}
             slot="item-icon"
-            .state=${entry.entity}
+            .hass=${this.hass}
+            .stateObj=${entry.entity}
           ></ha-state-icon>
         `,
       },
