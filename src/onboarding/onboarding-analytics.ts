@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-analytics";
+import "../components/ha-svg-icon";
 import { Analytics, setAnalyticsPreferences } from "../data/analytics";
 import { onboardAnalyticsStep } from "../data/onboarding";
 import type { HomeAssistant } from "../types";

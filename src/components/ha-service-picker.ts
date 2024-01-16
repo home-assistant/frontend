@@ -1,5 +1,6 @@
-import { html, LitElement } from "lit";
+import "@material/mwc-list/mwc-list-item";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
