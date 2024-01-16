@@ -240,7 +240,12 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         )}:
                       </h4>
                       <ha-automation-condition
-                        .path=${[...(this.path ?? []), "conditions"]}
+                        .path=${[
+                          ...(this.path ?? []),
+                          "choose",
+                          idx,
+                          "conditions",
+                        ]}
                         .conditions=${ensureArray<string | Condition>(
                           option.conditions
                         )}
@@ -255,7 +260,12 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         )}:
                       </h4>
                       <ha-automation-action
-                        .path=${[...(this.path ?? []), "sequence"]}
+                        .path=${[
+                          ...(this.path ?? []),
+                          "choose",
+                          idx,
+                          "sequence",
+                        ]}
                         .actions=${ensureArray(option.sequence) || []}
                         .disabled=${this.disabled}
                         .hass=${this.hass}
@@ -288,7 +298,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
               )}:
             </h2>
             <ha-automation-action
-              .path=${[...(this.path ?? []), "default"]}
+              .path=${[...(this.path ?? []), "choose", "default"]}
               .actions=${ensureArray(action.default) || []}
               .disabled=${this.disabled}
               @value-changed=${this._defaultChanged}
@@ -315,7 +325,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
         await this._renameAction(ev);
         break;
       case 1:
-        fireEvent(this, "re-order");
+        this._reorderMode?.enter();
         break;
       case 2:
         this._duplicateOption(ev);
