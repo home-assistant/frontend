@@ -1,11 +1,23 @@
 /* eslint-disable lit/prefer-static-styles */
 import { html } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { HaForm } from "../components/ha-form/ha-form";
 import "./ha-auth-form-string";
+import { LocalizeFunc } from "../common/translations/localize";
+
+const localizeBaseKey = "ui.panel.page-authorize.form";
 
 @customElement("ha-auth-form")
 export class HaAuthForm extends HaForm {
+  @property({ attribute: false }) public localize?: LocalizeFunc;
+
+  protected getFormProperties(): Record<string, any> {
+    return {
+      localize: this.localize,
+      localizeBaseKey,
+    };
+  }
+
   protected fieldElementName(type: string): string {
     if (type === "string") {
       return `ha-auth-form-${type}`;
