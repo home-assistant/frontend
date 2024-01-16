@@ -33,22 +33,23 @@ import "../../../components/ha-card";
 import "../../../components/tile/ha-tile-badge";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-image";
+import type { TileImageStyle } from "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import { isUnavailableState } from "../../../data/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
+import { UpdateEntity, computeUpdateStateDisplay } from "../../../data/update";
 import { HomeAssistant } from "../../../types";
+import "../card-features/hui-card-features";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import "../components/hui-timestamp-display";
-import "../card-features/hui-card-features";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import { computeTileBadge } from "./tile/badges/tile-badge";
 import type { ThermostatCardConfig, TileCardConfig } from "./types";
-import { UpdateEntity, computeUpdateStateDisplay } from "../../../data/update";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
@@ -59,6 +60,11 @@ export const getEntityDefaultTileIconAction = (entityId: string) => {
     ["button", "input_button", "scene"].includes(domain);
 
   return supportsIconAction ? "toggle" : "more-info";
+};
+
+const DOMAIN_IMAGE_STYLE: Record<string, TileImageStyle> = {
+  update: "square",
+  media_player: "rounded-square",
 };
 
 @customElement("hui-tile-card")
@@ -413,6 +419,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             ${imageUrl
               ? html`
                   <ha-tile-image
+                    .imageStyle=${DOMAIN_IMAGE_STYLE[domain] || "circle"}
                     class="icon"
                     .imageUrl=${imageUrl}
                   ></ha-tile-image>
