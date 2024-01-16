@@ -5133,6 +5133,7 @@
             "area": {
               "name": "Area",
               "alert_classes": "Alert Classes",
+              "sensor_classes": "Sensor Classes",
               "description": "The Area card automatically displays entities of a specific area.",
               "show_camera": "Show camera feed instead of area picture"
             },
