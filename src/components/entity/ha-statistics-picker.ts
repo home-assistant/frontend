@@ -1,5 +1,6 @@
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { ValueChangedEvent, HomeAssistant } from "../../types";
 import "./ha-statistic-picker";
@@ -81,7 +82,9 @@ class HaStatisticsPicker extends LitElement {
       : this.statisticTypes;
 
     return html`
-      ${this._currentStatistics.map(
+      ${repeat(
+        this._currentStatistics,
+        (statisticId) => statisticId,
         (statisticId) => html`
           <div>
             <ha-statistic-picker
