@@ -215,18 +215,13 @@ const tryDescribeTrigger = (
       )} of`;
     }
 
-    if (Array.isArray(trigger.entity_id)) {
-      for (const entity of trigger.entity_id.values()) {
-        if (states[entity]) {
-          entities.push(computeStateName(states[entity]) || entity);
-        }
+    if (!Array.isArray(trigger.entity_id)) {
+      trigger.entity_id = [trigger.entity_id];
+    }
+    for (const entity of trigger.entity_id.values()) {
+      if (states[entity]) {
+        entities.push(computeStateName(states[entity]) || entity);
       }
-    } else if (trigger.entity_id) {
-      entities.push(
-        states[trigger.entity_id]
-          ? computeStateName(states[trigger.entity_id])
-          : trigger.entity_id
-      );
     }
 
     if (entities.length === 0) {
@@ -236,18 +231,16 @@ const tryDescribeTrigger = (
 
     base += ` ${entities} changes`;
 
-    const stateObj =
-      hass.states[
-        Array.isArray(trigger.entity_id)
-          ? trigger.entity_id[0]
-          : trigger.entity_id
-      ];
+    const stateObj = hass.states[trigger.entity_id[0]];
+
     if (trigger.from !== undefined) {
       if (trigger.from === null) {
         if (!trigger.attribute) {
           base += " from any state";
         }
-      } else if (Array.isArray(trigger.from)) {
+      } else if (!Array.isArray(trigger.from)) {
+        trigger.from = [trigger.from];
+      } else {
         const from: string[] = [];
         for (const state of trigger.from.values()) {
           from.push(
@@ -266,20 +259,6 @@ const tryDescribeTrigger = (
           const fromString = formatListWithOrs(hass.locale, from);
           base += ` from ${fromString}`;
         }
-      } else {
-        base += ` from ${
-          trigger.attribute
-            ? hass
-                .formatEntityAttributeValue(
-                  stateObj,
-                  trigger.attribute,
-                  trigger.from
-                )
-                .toString()
-            : hass
-                .formatEntityState(stateObj, trigger.from.toString())
-                .toString()
-        }`;
       }
     }
 
@@ -288,7 +267,9 @@ const tryDescribeTrigger = (
         if (!trigger.attribute) {
           base += " to any state";
         }
-      } else if (Array.isArray(trigger.to)) {
+      } else if (!Array.isArray(trigger.to)) {
+        trigger.to = [trigger.to];
+      } else {
         const to: string[] = [];
         for (const state of trigger.to.values()) {
           to.push(
@@ -307,18 +288,6 @@ const tryDescribeTrigger = (
           const toString = formatListWithOrs(hass.locale, to);
           base += ` to ${toString}`;
         }
-      } else {
-        base += ` to ${
-          trigger.attribute
-            ? hass
-                .formatEntityAttributeValue(
-                  stateObj,
-                  trigger.attribute,
-                  trigger.to
-                )
-                .toString()
-            : hass.formatEntityState(stateObj, trigger.to.toString())
-        }`;
       }
     }
 
