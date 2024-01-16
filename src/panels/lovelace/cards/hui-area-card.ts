@@ -3,11 +3,9 @@ import {
   mdiLightbulbMultiple,
   mdiLightbulbMultipleOff,
   mdiRun,
-  mdiThermometer,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
   mdiWaterAlert,
-  mdiWaterPercent,
 } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -81,10 +79,6 @@ const DOMAIN_ICONS = {
   light: { on: mdiLightbulbMultiple, off: mdiLightbulbMultipleOff },
   switch: { on: mdiToggleSwitch, off: mdiToggleSwitchOff },
   fan: { on: domainIcon("fan"), off: domainIcon("fan") },
-  sensor: {
-    temperature: mdiThermometer,
-    humidity: mdiWaterPercent,
-  },
   binary_sensor: {
     motion: mdiRun,
     moisture: mdiWaterAlert,
@@ -395,9 +389,7 @@ export class HuiAreaCard
             (entity) => entity.attributes.device_class === deviceClass
           )
         ) {
-          const icon =
-            DOMAIN_ICONS[domain][deviceClass] ||
-            FIXED_DEVICE_CLASS_ICONS[deviceClass];
+          const icon = FIXED_DEVICE_CLASS_ICONS[deviceClass];
           sensors.push(
             html`<div class="sensor">
               ${icon ? html`<ha-svg-icon .path=${icon}></ha-svg-icon>` : ""}
