@@ -1,5 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import {
+  mdiArrowOscillating,
   mdiFan,
   mdiThermometer,
   mdiThermostat,
@@ -26,7 +27,6 @@ import {
   computeSwingModeIcon,
 } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
-import { haOscillating } from "../../../data/icons/haOscillating";
 import "../../../state-control/climate/ha-state-control-climate-humidity";
 import "../../../state-control/climate/ha-state-control-climate-temperature";
 import { HomeAssistant } from "../../../types";
@@ -260,7 +260,10 @@ class MoreInfoClimate extends LitElement {
                 @selected=${this._handleSwingmodeChanged}
                 @closed=${stopPropagation}
               >
-                <ha-svg-icon slot="icon" .path=${haOscillating}></ha-svg-icon>
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiArrowOscillating}
+                ></ha-svg-icon>
                 ${stateObj.attributes.swing_modes!.map(
                   (mode) => html`
                     <ha-list-item .value=${mode} graphic="icon">
