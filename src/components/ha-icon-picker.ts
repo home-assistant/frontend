@@ -1,14 +1,15 @@
+import "@material/mwc-list/mwc-list-item";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import {
   ComboBoxDataProviderCallback,
   ComboBoxDataProviderParams,
 } from "@vaadin/combo-box/vaadin-combo-box-light";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { customIcons } from "../data/custom_icons";
-import { ValueChangedEvent, HomeAssistant } from "../types";
+import { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-combo-box";
 import "./ha-icon";
 
@@ -73,7 +74,7 @@ const rowRenderer: ComboBoxLitRenderer<IconItem | RankedIcon> = (item) =>
 
 @customElement("ha-icon-picker")
 export class HaIconPicker extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public value?: string;
 

@@ -26,7 +26,7 @@ import "../ha-state-icon";
 export class StateBadge extends LitElement {
   public hass?: HomeAssistant;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property() public overrideIcon?: string;
 

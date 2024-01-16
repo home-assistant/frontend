@@ -25,7 +25,7 @@ const MASKED_FIELDS = ["password", "secret", "token"];
 
 @customElement("ha-form-string")
 export class HaFormString extends LitElement implements HaFormElement {
-  @property() public localize?: LocalizeFunc;
+  @property({ attribute: false }) public localize?: LocalizeFunc;
 
   @property() public localizeBaseKey = "ui.components.selectors.text";
 

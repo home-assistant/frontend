@@ -19,9 +19,9 @@ export const lovelaceTabs = [
 class HaConfigLovelace extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboards",

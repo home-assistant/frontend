@@ -1,14 +1,14 @@
-import { mdiMenu } from "@mdi/js";
 import "@material/mwc-drawer";
 import "@material/mwc-top-app-bar-fixed";
-import { html, css, LitElement, PropertyValues } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { mdiMenu } from "@mdi/js";
+import { LitElement, PropertyValues, css, html } from "lit";
+import { customElement, query, state } from "lit/decorators";
+import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
+import { HaExpansionPanel } from "../../src/components/ha-expansion-panel";
 import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
-import { HaExpansionPanel } from "../../src/components/ha-expansion-panel";
 import { haStyle } from "../../src/resources/styles";
 import { PAGES, SIDEBAR } from "../build/import-pages";
-import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
 import "./components/page-description";
 
 const GITHUB_DEMO_URL =
@@ -24,7 +24,7 @@ const FAKE_HASS = {
 
 @customElement("ha-gallery")
 class HaGallery extends LitElement {
-  @property() private _page =
+  @state() private _page =
     document.location.hash.substring(1) ||
     `${SIDEBAR[0].category}/${SIDEBAR[0].pages![0]}`;
 

@@ -68,9 +68,9 @@ export const zhaTabs: PageNavigation[] = [
 
 @customElement("zha-config-dashboard")
 class ZHAConfigDashboard extends LitElement {
-  @property({ type: Object }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Object }) public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property({ type: Boolean }) public narrow!: boolean;
 
@@ -78,9 +78,9 @@ class ZHAConfigDashboard extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @property() private _configuration?: ZHAConfiguration;
+  @state() private _configuration?: ZHAConfiguration;
 
-  @property() private _networkSettings?: ZHANetworkSettings;
+  @state() private _networkSettings?: ZHANetworkSettings;
 
   @state() private _generatingBackup = false;
 

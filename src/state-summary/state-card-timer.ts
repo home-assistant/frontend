@@ -21,7 +21,7 @@ class StateCardTimer extends LitElement {
 
   @property({ type: Boolean }) public inDialog = false;
 
-  @property() public timeRemaining?: number;
+  @property({ type: Number }) public timeRemaining?: number;
 
   private _updateRemaining: any;
 
