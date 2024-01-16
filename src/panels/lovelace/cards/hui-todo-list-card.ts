@@ -637,6 +637,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
       .empty {
         padding: 16px 32px;
+        display: inline-block;
       }
 
       .item {
