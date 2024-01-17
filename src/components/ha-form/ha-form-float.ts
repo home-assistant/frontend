@@ -4,6 +4,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import type { HaTextField } from "../ha-textfield";
 import "../ha-textfield";
 import { HaFormElement, HaFormFloatData, HaFormFloatSchema } from "./types";
+import { LocalizeFunc } from "../../common/translations/localize";
 
 @customElement("ha-form-float")
 export class HaFormFloat extends LitElement implements HaFormElement {

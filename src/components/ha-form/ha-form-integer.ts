@@ -12,6 +12,7 @@ import { HaCheckbox } from "../ha-checkbox";
 import "../ha-slider";
 import { HaTextField } from "../ha-textfield";
 import { HaFormElement, HaFormIntegerData, HaFormIntegerSchema } from "./types";
+import { LocalizeFunc } from "../../common/translations/localize";
 
 @customElement("ha-form-integer")
 export class HaFormInteger extends LitElement implements HaFormElement {
