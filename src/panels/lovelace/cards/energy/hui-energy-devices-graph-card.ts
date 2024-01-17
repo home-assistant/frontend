@@ -83,38 +83,6 @@ export class HuiEnergyDevicesGraphCard
 
   @state() private _hiddenStats = new Set<string>();
 
-  private detailPlugins = [
-    {
-      id: "click",
-      afterEvent: (chart, args, _pluginOpts) => {
-        if (args.event.type === "click") {
-          const { x, y } = args.event;
-          if (
-            x < chart.scales.x.left &&
-            y > chart.scales.y.top &&
-            y < chart.scales.y.bottom
-          ) {
-            const labelId = chart.scales.y.getValueForPixel(y);
-            const value = chart.scales.y.getLabelForValue(labelId);
-            this._labelClicked(value);
-          }
-        }
-        if (args.event.type === "mousemove") {
-          const { x, y } = args.event;
-          if (
-            x < chart.scales.x.left &&
-            y > chart.scales.y.top &&
-            y < chart.scales.y.bottom
-          ) {
-            args.event.chart.canvas.style.cursor = "pointer";
-          } else {
-            args.event.chart.canvas.style.cursor = "";
-          }
-        }
-      },
-    },
-  ];
-
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -162,15 +130,6 @@ export class HuiEnergyDevicesGraphCard
         this._processSummaryStatistics();
       }
     }
-  }
-
-  private _labelClicked(label: string) {
-    if (this._hiddenStats.has(label)) {
-      this._hiddenStats.delete(label);
-    } else {
-      this._hiddenStats.add(label);
-    }
-    this.requestUpdate("_hiddenStats");
   }
 
   protected render() {
@@ -222,7 +181,6 @@ export class HuiEnergyDevicesGraphCard
               ? undefined
               : (this._chartSummaryData?.datasets[0]?.data.length || 0) * 28 +
                 50}
-            .plugins=${this._detailMode ? undefined : this.detailPlugins}
             chart-type="bar"
             @dataset-hidden=${this._datasetHidden}
             @dataset-unhidden=${this._datasetUnhidden}
@@ -266,15 +224,10 @@ export class HuiEnergyDevicesGraphCard
                   index
                 ] as ScatterDataPoint
               ).y as unknown as string;
-              const spacer = this._hiddenStats.has(statisticId) ? "~~" : "";
-              return (
-                spacer +
-                getStatisticLabel(
-                  this.hass,
-                  statisticId,
-                  this._data?.statsMetadata[statisticId]
-                ) +
-                spacer
+              return getStatisticLabel(
+                this.hass,
+                statisticId,
+                this._data?.statsMetadata[statisticId]
               );
             },
           },
@@ -327,6 +280,7 @@ export class HuiEnergyDevicesGraphCard
 
   private _handleToggle() {
     this._detailMode = !this._detailMode;
+    this._hiddenStats = new Set<string>();
   }
 
   private _createDetailOptions = memoizeOne(
@@ -489,9 +443,6 @@ export class HuiEnergyDevicesGraphCard
     chartData.length = this._config?.max_devices || chartData.length;
 
     chartData.forEach((d: any) => {
-      if (this._hiddenStats.has(d.y)) {
-        d.x = 0;
-      }
       const color = getColorByIndex(d.idx);
 
       borderColor.push(color);
@@ -499,9 +450,6 @@ export class HuiEnergyDevicesGraphCard
     });
 
     chartDataCompare.forEach((d: any) => {
-      if (this._hiddenStats.has(d.y)) {
-        d.x = 0;
-      }
       const color = getColorByIndex(d.idx);
 
       borderColorCompare.push(color + "7F");
