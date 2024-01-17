@@ -68,7 +68,7 @@ export class HuiPictureHeaderFooter
 
     return html`
       <img
-        alt=${this._config!.alt_text}
+        alt=${ifDefined(this._config?.alt_text)}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),

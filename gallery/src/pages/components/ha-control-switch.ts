@@ -63,8 +63,8 @@ export class DemoHaControlSwitch extends LitElement {
                 .pathOn=${mdiLightbulb}
                 .pathOff=${mdiLightbulbOff}
                 aria-labelledby=${id}
-                disabled=${ifDefined(config.disabled)}
-                reversed=${ifDefined(config.reversed)}
+                ?disabled=${config.disabled}
+                ?reversed=${config.reversed}
               >
               </ha-control-switch>
             </div>
@@ -86,8 +86,8 @@ export class DemoHaControlSwitch extends LitElement {
                   aria-label=${label}
                   .pathOn=${mdiGarageOpen}
                   .pathOff=${mdiGarage}
-                  disabled=${ifDefined(config.disabled)}
-                  reversed=${ifDefined(config.reversed)}
+                  ?disabled=${config.disabled}
+                  ?reversed=${config.reversed}
                 >
                 </ha-control-switch>
               `;

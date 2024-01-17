@@ -135,7 +135,7 @@ export class DemoHaControlSelect extends LitElement {
                 class=${ifDefined(config.class)}
                 @value-changed=${this.handleValueChanged}
                 aria-labelledby=${id}
-                disabled=${ifDefined(config.disabled)}
+                ?disabled=${config.disabled}
               >
               </ha-control-select>
             </div>
@@ -156,7 +156,7 @@ export class DemoHaControlSelect extends LitElement {
                   class=${ifDefined(config.class)}
                   @value-changed=${this.handleValueChanged}
                   aria-labelledby=${id}
-                  disabled=${ifDefined(config.disabled)}
+                  ?disabled=${config.disabled}
                 >
                 </ha-control-select>
               `;

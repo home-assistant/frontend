@@ -36,8 +36,6 @@
           // Binding names
           "no-legacy-attribute": "error",
           // Binding types
-          "no-boolean-in-attribute-binding": "warning",
-          "no-nullable-attribute-binding": "warning",
           "no-incompatible-type-binding": "warning",
           // LitElement
           "no-incompatible-property-type": "warning",
