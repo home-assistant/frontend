@@ -70,7 +70,9 @@ export class HaFormString extends LitElement implements HaFormElement {
           ? // reserve some space for the icon.
             html`<div style="width: 24px"></div>`
           : this.schema.description?.suffix}
-        .validationMessage=${this.schema.required ? "Required" : undefined}
+        .validationMessage=${this.schema.required
+          ? this.localize?.("ui.common.error_required")
+          : undefined}
         @input=${this._valueChanged}
         @change=${this._valueChanged}
       ></ha-textfield>
