@@ -3099,12 +3099,17 @@
                 },
                 "parallel": {
                   "label": "Run in parallel",
-                  "add_sequence": "Add parallel actions",
-                  "remove_sequence": "Remove actions",
-                  "sequence": "Actions",
+                  "add_sequence": "Add parallel sequence",
+                  "remove_sequence": "Remove sequence",
+                  "sequence": "Sequence {number}",
+                  "change_alias": "Rename sequence",
+                  "alias": "Sequence name",
+                  "delete_confirm_title": "Remove sequence?",
+                  "actions": "Run {number} {number, plural,\n one {action}\n other {actions}\n}",
+                  "no_actions": "No actions",
                   "description": {
-                    "picker": "Perform a sequence of actions in parallel.",
-                    "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in parallel"
+                    "picker": "Perform sequences of actions in parallel.",
+                    "full": "Run {number} {number, plural,\n one {sequence}\n other {sequences}\n} in parallel"
                   }
                 },
                 "variables": {
