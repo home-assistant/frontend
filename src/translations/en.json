@@ -5892,6 +5892,7 @@
           "previous": "Previous",
           "start_over": "Start over",
           "error": "Error: {error}",
+          "error_required": "[%key:ui::common::error_required%]",
           "hide_password": "Hide password",
           "show_password": "Show password",
           "providers": {

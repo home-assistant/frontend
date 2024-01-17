@@ -15,6 +15,8 @@ import { HaFormElement, HaFormIntegerData, HaFormIntegerSchema } from "./types";
 
 @customElement("ha-form-integer")
 export class HaFormInteger extends LitElement implements HaFormElement {
+  @property({ attribute: false }) public localize?: LocalizeFunc;
+
   @property({ attribute: false }) public schema!: HaFormIntegerSchema;
 
   @property({ attribute: false }) public data?: HaFormIntegerData;
@@ -85,7 +87,9 @@ export class HaFormInteger extends LitElement implements HaFormElement {
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
         .suffix=${this.schema.description?.suffix}
-        .validationMessage=${this.schema.required ? "Required" : undefined}
+        .validationMessage=${this.schema.required
+          ? this.localize?.("ui.common.error_required")
+          : undefined}
         @input=${this._valueChanged}
       ></ha-textfield>
     `;
