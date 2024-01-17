@@ -580,7 +580,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                   : html`<img
                       alt=""
                       slot="start"
-                      src=${item.image}
+                      src=${item.image!}
                       crossorigin="anonymous"
                       referrerpolicy="no-referrer"
                     />`}
