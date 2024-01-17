@@ -35,7 +35,6 @@ const SCHEMA = [
     schema: [
       {
         name: "title",
-        default: undefined,
         selector: { text: {} },
       },
       {
