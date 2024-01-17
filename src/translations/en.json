@@ -5224,6 +5224,7 @@
             "grid": {
               "name": "Grid",
               "description": "The Grid card allows you to show multiple cards in a grid.",
+              "title": "Title",
               "columns": "Columns",
               "square": "Render cards as squares"
             },
