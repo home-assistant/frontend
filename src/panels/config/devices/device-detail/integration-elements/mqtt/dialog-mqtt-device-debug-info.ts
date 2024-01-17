@@ -181,7 +181,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                         { n: topic.messages.length }
                       )}
                     >
-                    </mqtt-rx-messages>
+                    </mqtt-messages>
                   </li>
                 `
               )}
@@ -204,7 +204,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                         { n: topic.messages.length }
                       )}
                     >
-                    </mqtt-tx-messages>
+                    </mqtt-messages>
                   </li>
                 `
               )}

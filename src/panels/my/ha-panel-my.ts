@@ -189,6 +189,9 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   },
   logs: {
     redirect: "/config/logs",
+    params: {
+      provider: "string?",
+    },
   },
   repairs: {
     component: "repairs",
@@ -297,7 +300,7 @@ export interface Redirect {
 class HaPanelMy extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() public _error?: string;
 

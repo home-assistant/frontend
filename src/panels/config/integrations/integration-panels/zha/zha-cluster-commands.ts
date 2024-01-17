@@ -28,7 +28,7 @@ import { IssueCommandServiceData } from "./types";
 export class ZHAClusterCommands extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public isWide?: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property() public device?: ZHADevice;
 

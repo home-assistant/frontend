@@ -7,9 +7,9 @@ import "../ha-navigation-picker";
 
 @customElement("ha-selector-navigation")
 export class HaNavigationSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: NavigationSelector;
+  @property({ attribute: false }) public selector!: NavigationSelector;
 
   @property() public value?: string;
 

@@ -40,7 +40,7 @@ const tabs = ["attributes", "commands"] as const;
 export class ZHAManageClusters extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide?: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property() public device?: ZHADevice;
 

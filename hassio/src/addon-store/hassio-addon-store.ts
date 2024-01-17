@@ -248,3 +248,9 @@ export class HassioAddonStore extends LitElement {
     `;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hassio-addon-store": HassioAddonStore;
+  }
+}

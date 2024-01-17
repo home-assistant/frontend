@@ -130,7 +130,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    */
   @property({ type: Boolean }) public empty = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   /**
    * Array of tabs to show on the page.

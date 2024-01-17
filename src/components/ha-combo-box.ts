@@ -145,6 +145,7 @@ export class HaComboBox extends LitElement {
 
   protected render(): TemplateResult {
     return html`
+      <!-- @ts-ignore Tag definition is not included in theme folder -->
       <vaadin-combo-box-light
         .itemValuePath=${this.itemValuePath}
         .itemIdPath=${this.itemIdPath}

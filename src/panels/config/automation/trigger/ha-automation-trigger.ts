@@ -1,25 +1,22 @@
-import "@material/mwc-button";
 import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import type { SortableEvent } from "sortablejs";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
+import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import { AutomationClipboard, Trigger } from "../../../../data/automation";
-import { sortableStyles } from "../../../../resources/ha-sortable-style";
-import type { SortableInstance } from "../../../../resources/sortable";
 import { HomeAssistant } from "../../../../types";
-import "./ha-automation-trigger-row";
-import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
+import "./ha-automation-trigger-row";
+import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
 
 @customElement("ha-automation-trigger")
 export default class HaAutomationTrigger extends LitElement {
@@ -45,8 +42,6 @@ export default class HaAutomationTrigger extends LitElement {
 
   private _triggerKeys = new WeakMap<Trigger, string>();
 
-  private _sortable?: SortableInstance;
-
   protected render() {
     return html`
       ${this.reOrderMode && !this.nested
@@ -60,70 +55,76 @@ export default class HaAutomationTrigger extends LitElement {
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.re_order_mode.description_triggers"
               )}
-              <mwc-button slot="action" @click=${this._exitReOrderMode}>
+              <ha-button slot="action" @click=${this._exitReOrderMode}>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.re_order_mode.exit"
                 )}
-              </mwc-button>
+              </ha-button>
             </ha-alert>
           `
         : null}
-      <div class="triggers">
-        ${repeat(
-          this.triggers,
-          (trigger) => this._getKey(trigger),
-          (trg, idx) => html`
-            <ha-automation-trigger-row
-              .index=${idx}
-              .trigger=${trg}
-              .hideMenu=${this.reOrderMode}
-              @duplicate=${this._duplicateTrigger}
-              @value-changed=${this._triggerChanged}
-              .hass=${this.hass}
-              .disabled=${this.disabled}
-              @re-order=${this._enterReOrderMode}
-            >
-              ${this.reOrderMode
-                ? html`
-                    <ha-icon-button
-                      .index=${idx}
-                      slot="icons"
-                      .label=${this.hass.localize(
-                        "ui.panel.config.automation.editor.move_up"
-                      )}
-                      .path=${mdiArrowUp}
-                      @click=${this._moveUp}
-                      .disabled=${idx === 0}
-                    ></ha-icon-button>
-                    <ha-icon-button
-                      .index=${idx}
-                      slot="icons"
-                      .label=${this.hass.localize(
-                        "ui.panel.config.automation.editor.move_down"
-                      )}
-                      .path=${mdiArrowDown}
-                      @click=${this._moveDown}
-                      .disabled=${idx === this.triggers.length - 1}
-                    ></ha-icon-button>
-                    <div class="handle" slot="icons">
-                      <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-                    </div>
-                  `
-                : ""}
-            </ha-automation-trigger-row>
-          `
-        )}
-        <ha-button
-          outlined
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.add"
+      <ha-sortable
+        handle-selector=".handle"
+        .disabled=${!this.reOrderMode}
+        @item-moved=${this._triggerMoved}
+      >
+        <div class="triggers">
+          ${repeat(
+            this.triggers,
+            (trigger) => this._getKey(trigger),
+            (trg, idx) => html`
+              <ha-automation-trigger-row
+                .index=${idx}
+                .trigger=${trg}
+                .hideMenu=${this.reOrderMode}
+                @duplicate=${this._duplicateTrigger}
+                @value-changed=${this._triggerChanged}
+                .hass=${this.hass}
+                .disabled=${this.disabled}
+                @re-order=${this._enterReOrderMode}
+              >
+                ${this.reOrderMode
+                  ? html`
+                      <ha-icon-button
+                        .index=${idx}
+                        slot="icons"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.editor.move_up"
+                        )}
+                        .path=${mdiArrowUp}
+                        @click=${this._moveUp}
+                        .disabled=${idx === 0}
+                      ></ha-icon-button>
+                      <ha-icon-button
+                        .index=${idx}
+                        slot="icons"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.editor.move_down"
+                        )}
+                        .path=${mdiArrowDown}
+                        @click=${this._moveDown}
+                        .disabled=${idx === this.triggers.length - 1}
+                      ></ha-icon-button>
+                      <div class="handle" slot="icons">
+                        <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                      </div>
+                    `
+                  : ""}
+              </ha-automation-trigger-row>
+            `
           )}
-          .disabled=${this.disabled}
-          @click=${this._addTriggerDialog}
-        >
-          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </ha-button>
-      </div>
+        </div>
+      </ha-sortable>
+      <ha-button
+        outlined
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.add"
+        )}
+        .disabled=${this.disabled}
+        @click=${this._addTriggerDialog}
+      >
+        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+      </ha-button>
     `;
   }
 
@@ -158,14 +159,6 @@ export default class HaAutomationTrigger extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    if (changedProps.has("reOrderMode")) {
-      if (this.reOrderMode) {
-        this._createSortable();
-      } else {
-        this._destroySortable();
-      }
-    }
-
     if (changedProps.has("triggers") && this._focusLastTriggerOnChange) {
       this._focusLastTriggerOnChange = false;
 
@@ -190,36 +183,6 @@ export default class HaAutomationTrigger extends LitElement {
     this.reOrderMode = false;
   }
 
-  private async _createSortable() {
-    const Sortable = (await import("../../../../resources/sortable")).default;
-    this._sortable = new Sortable(
-      this.shadowRoot!.querySelector(".triggers")!,
-      {
-        animation: 150,
-        fallbackClass: "sortable-fallback",
-        handle: ".handle",
-        onChoose: (evt: SortableEvent) => {
-          (evt.item as any).placeholder =
-            document.createComment("sort-placeholder");
-          evt.item.after((evt.item as any).placeholder);
-        },
-        onEnd: (evt: SortableEvent) => {
-          // put back in original location
-          if ((evt.item as any).placeholder) {
-            (evt.item as any).placeholder.replaceWith(evt.item);
-            delete (evt.item as any).placeholder;
-          }
-          this._dragged(evt);
-        },
-      }
-    );
-  }
-
-  private _destroySortable() {
-    this._sortable?.destroy();
-    this._sortable = undefined;
-  }
-
   private _getKey(action: Trigger) {
     if (!this._triggerKeys.has(action)) {
       this._triggerKeys.set(action, Math.random().toString());
@@ -240,16 +203,17 @@ export default class HaAutomationTrigger extends LitElement {
     this._move(index, newIndex);
   }
 
-  private _dragged(ev: SortableEvent): void {
-    if (ev.oldIndex === ev.newIndex) return;
-    this._move(ev.oldIndex!, ev.newIndex!);
-  }
-
   private _move(index: number, newIndex: number) {
     const triggers = this.triggers.concat();
     const trigger = triggers.splice(index, 1)[0];
     triggers.splice(newIndex, 0, trigger);
     fireEvent(this, "value-changed", { value: triggers });
+  }
+
+  private _triggerMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+    this._move(oldIndex, newIndex);
   }
 
   private _triggerChanged(ev: CustomEvent) {
@@ -280,34 +244,31 @@ export default class HaAutomationTrigger extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      sortableStyles,
-      css`
-        ha-automation-trigger-row {
-          display: block;
-          margin-bottom: 16px;
-          scroll-margin-top: 48px;
-        }
-        ha-svg-icon {
-          height: 20px;
-        }
-        ha-alert {
-          display: block;
-          margin-bottom: 16px;
-          border-radius: var(--ha-card-border-radius, 16px);
-          overflow: hidden;
-        }
-        .handle {
-          cursor: move; /* fallback if grab cursor is unsupported */
-          cursor: grab;
-          padding: 12px;
-        }
-        .handle ha-svg-icon {
-          pointer-events: none;
-          height: 24px;
-        }
-      `,
-    ];
+    return css`
+      ha-automation-trigger-row {
+        display: block;
+        margin-bottom: 16px;
+        scroll-margin-top: 48px;
+      }
+      ha-svg-icon {
+        height: 20px;
+      }
+      ha-alert {
+        display: block;
+        margin-bottom: 16px;
+        border-radius: var(--ha-card-border-radius, 16px);
+        overflow: hidden;
+      }
+      .handle {
+        padding: 12px;
+        cursor: move; /* fallback if grab cursor is unsupported */
+        cursor: grab;
+      }
+      .handle ha-svg-icon {
+        pointer-events: none;
+        height: 24px;
+      }
+    `;
   }
 }
 

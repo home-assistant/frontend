@@ -3,11 +3,9 @@ import {
   mdiLightbulbMultiple,
   mdiLightbulbMultipleOff,
   mdiRun,
-  mdiThermometer,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
   mdiWaterAlert,
-  mdiWaterPercent,
 } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -23,12 +21,16 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { STATES_OFF } from "../../../common/const";
+import { STATES_OFF, FIXED_DEVICE_CLASS_ICONS } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { binarySensorIcon } from "../../../common/entity/binary_sensor_icon";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { navigate } from "../../../common/navigate";
-import { formatNumber } from "../../../common/number/format_number";
+import {
+  formatNumber,
+  isNumericState,
+} from "../../../common/number/format_number";
 import { subscribeOne } from "../../../common/util/subscribe-one";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/entity/state-badge";
@@ -56,6 +58,7 @@ import "../components/hui-image";
 import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { AreaCardConfig } from "./types";
+import { blankBeforeUnit } from "../../../common/translations/blank_before_unit";
 
 export const DEFAULT_ASPECT_RATIO = "16:9";
 
@@ -67,7 +70,7 @@ const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 
 const OTHER_DOMAINS = ["camera"];
 
-const DEVICE_CLASSES = {
+export const DEVICE_CLASSES = {
   sensor: ["temperature", "humidity"],
   binary_sensor: ["motion", "moisture"],
 };
@@ -76,10 +79,6 @@ const DOMAIN_ICONS = {
   light: { on: mdiLightbulbMultiple, off: mdiLightbulbMultipleOff },
   switch: { on: mdiToggleSwitch, off: mdiToggleSwitchOff },
   fan: { on: domainIcon("fan"), off: domainIcon("fan") },
-  sensor: {
-    temperature: mdiThermometer,
-    humidity: mdiWaterPercent,
-  },
   binary_sensor: {
     motion: mdiRun,
     moisture: mdiWaterAlert,
@@ -113,6 +112,8 @@ export class HuiAreaCard
 
   @state() private _areas?: AreaRegistryEntry[];
 
+  private _deviceClasses: { [key: string]: string[] } = DEVICE_CLASSES;
+
   private _ratio: {
     w: number;
     h: number;
@@ -123,6 +124,7 @@ export class HuiAreaCard
       areaId: string,
       devicesInArea: Set<string>,
       registryEntities: EntityRegistryEntry[],
+      deviceClasses: { [key: string]: string[] },
       states: HomeAssistant["states"]
     ) => {
       const entitiesInArea = registryEntities
@@ -156,7 +158,7 @@ export class HuiAreaCard
 
         if (
           (SENSOR_DOMAINS.includes(domain) || ALERT_DOMAINS.includes(domain)) &&
-          !DEVICE_CLASSES[domain].includes(
+          !deviceClasses[domain].includes(
             stateObj.attributes.device_class || ""
           )
         ) {
@@ -173,11 +175,12 @@ export class HuiAreaCard
     }
   );
 
-  private _isOn(domain: string, deviceClass?: string): boolean | undefined {
+  private _isOn(domain: string, deviceClass?: string): HassEntity | undefined {
     const entities = this._entitiesByDomain(
       this._config!.area,
       this._devicesInArea(this._config!.area, this._devices!),
       this._entities!,
+      this._deviceClasses,
       this.hass.states
     )[domain];
     if (!entities) {
@@ -189,7 +192,7 @@ export class HuiAreaCard
             (entity) => entity.attributes.device_class === deviceClass
           )
         : entities
-    ).some(
+    ).find(
       (entity) =>
         !isUnavailableState(entity.state) && !STATES_OFF.includes(entity.state)
     );
@@ -200,6 +203,7 @@ export class HuiAreaCard
       this._config!.area,
       this._devicesInArea(this._config!.area, this._devices!),
       this._entities!,
+      this._deviceClasses,
       this.hass.states
     )[domain].filter((entity) =>
       deviceClass ? entity.attributes.device_class === deviceClass : true
@@ -209,10 +213,7 @@ export class HuiAreaCard
     }
     let uom;
     const values = entities.filter((entity) => {
-      if (
-        !entity.attributes.unit_of_measurement ||
-        isNaN(Number(entity.state))
-      ) {
+      if (!isNumericState(entity) || isNaN(Number(entity.state))) {
         return false;
       }
       if (!uom) {
@@ -230,7 +231,7 @@ export class HuiAreaCard
     );
     return `${formatNumber(sum / values.length, this.hass!.locale, {
       maximumFractionDigits: 1,
-    })} ${uom}`;
+    })}${uom ? blankBeforeUnit(uom, this.hass!.locale) : ""}${uom || ""}`;
   }
 
   private _area = memoizeOne(
@@ -273,6 +274,14 @@ export class HuiAreaCard
     }
 
     this._config = config;
+
+    this._deviceClasses = { ...DEVICE_CLASSES };
+    if (config.sensor_classes) {
+      this._deviceClasses.sensor = config.sensor_classes;
+    }
+    if (config.alert_classes) {
+      this._deviceClasses.binary_sensor = config.alert_classes;
+    }
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -314,6 +323,7 @@ export class HuiAreaCard
       this._config.area,
       this._devicesInArea(this._config.area, this._devices),
       this._entities,
+      this._deviceClasses,
       this.hass.states
     );
 
@@ -355,6 +365,7 @@ export class HuiAreaCard
       this._config.area,
       this._devicesInArea(this._config.area, this._devices),
       this._entities,
+      this._deviceClasses,
       this.hass.states
     );
     const area = this._area(this._config.area, this._areas);
@@ -372,20 +383,19 @@ export class HuiAreaCard
       if (!(domain in entitiesByDomain)) {
         return;
       }
-      DEVICE_CLASSES[domain].forEach((deviceClass) => {
+      this._deviceClasses[domain].forEach((deviceClass) => {
         if (
           entitiesByDomain[domain].some(
             (entity) => entity.attributes.device_class === deviceClass
           )
         ) {
-          sensors.push(html`
-            ${DOMAIN_ICONS[domain][deviceClass]
-              ? html`<ha-svg-icon
-                  .path=${DOMAIN_ICONS[domain][deviceClass]}
-                ></ha-svg-icon>`
-              : ""}
-            ${this._average(domain, deviceClass)}
-          `);
+          const icon = FIXED_DEVICE_CLASS_ICONS[deviceClass];
+          sensors.push(
+            html`<div class="sensor">
+              ${icon ? html`<ha-svg-icon .path=${icon}></ha-svg-icon>` : ""}
+              ${this._average(domain, deviceClass)}
+            </div> `
+          );
         }
       });
     });
@@ -427,17 +437,16 @@ export class HuiAreaCard
               if (!(domain in entitiesByDomain)) {
                 return "";
               }
-              return DEVICE_CLASSES[domain].map((deviceClass) =>
-                this._isOn(domain, deviceClass)
-                  ? html`
-                      ${DOMAIN_ICONS[domain][deviceClass]
-                        ? html`<ha-svg-icon
-                            .path=${DOMAIN_ICONS[domain][deviceClass]}
-                          ></ha-svg-icon>`
-                        : ""}
-                    `
-                  : ""
-              );
+              return this._deviceClasses[domain].map((deviceClass) => {
+                const entity = this._isOn(domain, deviceClass);
+                return entity
+                  ? html`<ha-svg-icon
+                      class="alert"
+                      .path=${DOMAIN_ICONS[domain][deviceClass] ||
+                      binarySensorIcon(entity.state, entity)}
+                    ></ha-svg-icon>`
+                  : nothing;
+              });
             })}
           </div>
           <div class="bottom">
@@ -554,6 +563,12 @@ export class HuiAreaCard
         margin-top: 8px;
       }
 
+      .sensor {
+        white-space: nowrap;
+        float: left;
+        margin-right: 4px;
+      }
+
       .alerts {
         padding: 16px;
       }
@@ -562,6 +577,7 @@ export class HuiAreaCard
         background: var(--accent-color);
         color: var(--text-accent-color, var(--text-primary-color));
         padding: 8px;
+        margin-right: 8px;
         border-radius: 50%;
       }
 

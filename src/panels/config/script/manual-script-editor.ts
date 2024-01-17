@@ -50,8 +50,8 @@ export class HaManualScriptEditor extends LitElement {
   protected updated(changedProps) {
     if (this._openFields && changedProps.has("config")) {
       this._openFields = false;
-      this._scriptFields?.updateComplete.then(
-        () => this._scriptFields?.focusLastField()
+      this._scriptFields?.updateComplete.then(() =>
+        this._scriptFields?.focusLastField()
       );
     }
   }

@@ -13,7 +13,7 @@ import type { HomeAssistant } from "../types";
 class StateCardSelect extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj!: SelectEntity;
+  @property({ attribute: false }) public stateObj!: SelectEntity;
 
   protected render(): TemplateResult {
     return html`

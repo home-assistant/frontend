@@ -147,11 +147,18 @@ class PanelCalendar extends LitElement {
                 ></ha-svg-icon>
               </ha-button>
               ${calendarItems}
-              <li divider role="separator"></li>
-              <ha-list-item graphic="icon" @click=${this._addCalendar}>
-                <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
-                ${this.hass.localize("ui.components.calendar.create_calendar")}
-              </ha-list-item>
+              ${this.hass.user?.is_admin
+                ? html` <li divider role="separator"></li>
+                    <ha-list-item graphic="icon" @click=${this._addCalendar}>
+                      <ha-svg-icon
+                        .path=${mdiPlus}
+                        slot="graphic"
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        "ui.components.calendar.create_calendar"
+                      )}
+                    </ha-list-item>`
+                : nothing}
             </ha-button-menu>`
           : html`<div slot="title">
               ${this.hass.localize("ui.components.calendar.my_calendars")}
@@ -162,7 +169,7 @@ class PanelCalendar extends LitElement {
           .label=${this.hass.localize("ui.common.refresh")}
           @click=${this._handleRefresh}
         ></ha-icon-button>
-        ${showPane
+        ${showPane && this.hass.user?.is_admin
           ? html`<mwc-list slot="pane" multi}>${calendarItems}</mwc-list>
               <ha-list-item
                 graphic="icon"

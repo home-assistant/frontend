@@ -1,4 +1,6 @@
 import {
+  mdiArrowOscillating,
+  mdiArrowOscillatingOff,
   mdiFan,
   mdiFanOff,
   mdiPower,
@@ -23,8 +25,6 @@ import {
   computeFanSpeedStateDisplay,
 } from "../../../data/fan";
 import { forwardHaptic } from "../../../data/haptics";
-import { haOscillating } from "../../../data/icons/haOscillating";
-import { haOscillatingOff } from "../../../data/icons/haOscillatingOff";
 import "../../../state-control/fan/ha-state-control-fan-speed";
 import "../../../state-control/ha-state-control-toggle";
 import type { HomeAssistant } from "../../../types";
@@ -260,12 +260,12 @@ class MoreInfoFan extends LitElement {
               >
                 <ha-svg-icon
                   slot="icon"
-                  .path=${haOscillatingOff}
+                  .path=${mdiArrowOscillatingOff}
                 ></ha-svg-icon>
                 <ha-list-item value="true" graphic="icon">
                   <ha-svg-icon
                     slot="graphic"
-                    .path=${haOscillating}
+                    .path=${mdiArrowOscillating}
                   ></ha-svg-icon>
                   ${this.hass.formatEntityAttributeValue(
                     this.stateObj,
@@ -276,7 +276,7 @@ class MoreInfoFan extends LitElement {
                 <ha-list-item value="false" graphic="icon">
                   <ha-svg-icon
                     slot="graphic"
-                    .path=${haOscillatingOff}
+                    .path=${mdiArrowOscillatingOff}
                   ></ha-svg-icon>
                   ${this.hass.formatEntityAttributeValue(
                     this.stateObj,

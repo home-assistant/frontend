@@ -10,6 +10,7 @@ import {
   state,
 } from "lit/decorators";
 import "../components/ha-card";
+import "../components/ha-svg-icon";
 
 @customElement("onboarding-welcome-link")
 class OnboardingWelcomeLink extends LitElement {

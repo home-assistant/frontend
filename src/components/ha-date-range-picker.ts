@@ -8,24 +8,25 @@ import {
   addMonths,
   addYears,
   endOfDay,
-  endOfWeek,
   endOfMonth,
+  endOfWeek,
   endOfYear,
   startOfDay,
-  startOfWeek,
   startOfMonth,
+  startOfWeek,
   startOfYear,
 } from "date-fns";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { calcDate } from "../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import { formatDate } from "../common/datetime/format_date";
@@ -34,9 +35,9 @@ import { useAmPm } from "../common/datetime/use_am_pm";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import { HomeAssistant } from "../types";
 import "./date-range-picker";
+import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./ha-textfield";
-import "./ha-icon-button";
 
 export interface DateRangePickerRanges {
   [key: string]: [Date, Date];
@@ -54,9 +55,9 @@ export class HaDateRangePicker extends LitElement {
 
   @state() private _ranges?: DateRangePickerRanges;
 
-  @property() public autoApply = false;
+  @property({ type: Boolean }) public autoApply = false;
 
-  @property() public timePicker = true;
+  @property({ type: Boolean }) public timePicker = true;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -247,11 +248,12 @@ export class HaDateRangePicker extends LitElement {
         ?auto-apply=${this.autoApply}
         time-picker=${this.timePicker}
         twentyfour-hours=${this._hour24format}
-        start-date=${this.startDate}
-        end-date=${this.endDate}
+        start-date=${this.startDate.toISOString()}
+        end-date=${this.endDate.toISOString()}
         ?ranges=${this.ranges !== false}
-        opening-direction=${this.openingDirection ||
-        this._calcedOpeningDirection}
+        opening-direction=${ifDefined(
+          this.openingDirection || this._calcedOpeningDirection
+        )}
         first-day=${firstWeekdayIndex(this.hass.locale)}
         language=${this.hass.locale.language}
       >

@@ -9,7 +9,7 @@ import { HomeAssistant } from "../types";
 class HaAttributeValue extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property() public attribute!: string;
 

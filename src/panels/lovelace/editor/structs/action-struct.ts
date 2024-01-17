@@ -58,10 +58,6 @@ const actionConfigStructAssist = type({
   start_listening: optional(boolean()),
 });
 
-const actionConfigStructCustom = type({
-  action: literal("fire-dom-event"),
-});
-
 export const actionConfigStructType = object({
   action: enums([
     "none",
@@ -80,9 +76,6 @@ export const actionConfigStruct = dynamic<any>((value) => {
     switch ((value as BaseActionConfig).action!) {
       case "call-service": {
         return actionConfigStructService;
-      }
-      case "fire-dom-event": {
-        return actionConfigStructCustom;
       }
       case "navigate": {
         return actionConfigStructNavigate;

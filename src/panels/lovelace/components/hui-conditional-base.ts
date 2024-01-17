@@ -31,7 +31,7 @@ function extractMediaQueries(
 export class HuiConditionalBase extends ReactiveElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public editMode?: boolean;
+  @property({ type: Boolean }) public editMode = false;
 
   @property() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
 

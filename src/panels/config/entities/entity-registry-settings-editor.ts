@@ -118,6 +118,8 @@ const OVERRIDE_DEVICE_CLASSES = {
       "carbon_monoxide",
       "moisture",
     ], // Alarm
+    ["connectivity"], // Connectivity
+    ["update"], // Update
   ],
 };
 
@@ -915,9 +917,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   "ui.dialogs.entity_registry.editor.use_device_area"
                 )}
                 ${this.hass.devices[this.entry.device_id].area_id
-                  ? `(${this.hass.areas[
-                      this.hass.devices[this.entry.device_id].area_id!
-                    ]?.name})`
+                  ? `(${
+                      this.hass.areas[
+                        this.hass.devices[this.entry.device_id].area_id!
+                      ]?.name
+                    })`
                   : ""}</span
               >
               <span slot="description"

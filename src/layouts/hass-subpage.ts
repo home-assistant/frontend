@@ -119,7 +119,6 @@ class HassSubpage extends LitElement {
           font-size: 20px;
           height: var(--header-height);
           padding: 8px 12px;
-          pointer-events: none;
           background-color: var(--app-header-background-color);
           font-weight: 400;
           color: var(--app-header-text-color, white);

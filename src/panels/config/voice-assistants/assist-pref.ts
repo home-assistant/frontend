@@ -12,9 +12,11 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import {
+  AssistDevice,
   AssistPipeline,
   createAssistPipeline,
   deleteAssistPipeline,
+  listAssistDevices,
   listAssistPipelines,
   setAssistPipelinePreferred,
   updateAssistPipeline,
@@ -39,6 +41,8 @@ export class AssistPref extends LitElement {
 
   @state() private _preferred: string | null = null;
 
+  @state() private _devices: AssistDevice[] = [];
+
   @property() public cloudStatus?: CloudStatus;
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -47,6 +51,9 @@ export class AssistPref extends LitElement {
     listAssistPipelines(this.hass).then((pipelines) => {
       this._pipelines = pipelines.pipelines;
       this._preferred = pipelines.preferred_pipeline;
+    });
+    listAssistDevices(this.hass).then((devices) => {
+      this._devices = devices;
     });
   }
 
@@ -132,6 +139,18 @@ export class AssistPref extends LitElement {
               )}
             </ha-button>
           </a>
+          ${this._devices?.length
+            ? html`
+                <a href="/config/voice-assistants/assist/devices">
+                  <ha-button>
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.pipeline.assist_devices",
+                      { number: this._devices.length }
+                    )}
+                  </ha-button>
+                </a>
+              `
+            : ""}
         </div>
       </ha-card>
     `;

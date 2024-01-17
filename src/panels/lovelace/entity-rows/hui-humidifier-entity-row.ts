@@ -18,7 +18,7 @@ import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-humidifier-entity-row")
 class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() private _config?: EntityConfig;
 

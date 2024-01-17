@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import deepFreeze from "deep-freeze";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -56,9 +56,9 @@ export class LovelacePanel extends LitElement {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route?: Route;
+  @property({ attribute: false }) public route?: Route;
 
   @property()
   private _panelState?: "loading" | "loaded" | "error" | "yaml-editor" =
@@ -161,10 +161,15 @@ export class LovelacePanel extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (!this.lovelace && this._panelState !== "error") {
+      this._fetchConfig(false);
+    }
+  }
 
-    this._fetchConfig(false);
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
     if (!this._unsubUpdates) {
       this._subscribeUpdates();
     }
@@ -267,6 +272,10 @@ export class LovelacePanel extends LitElement {
 
       // If strategy defined, apply it here.
       if (isStrategyDashboard(rawConf)) {
+        if (!this.hass?.entities || !this.hass.devices || !this.hass.areas) {
+          // We need these to generate a dashboard, wait for them
+          return;
+        }
         conf = await generateLovelaceDashboardStrategy(
           rawConf.strategy,
           this.hass!
@@ -280,6 +289,10 @@ export class LovelacePanel extends LitElement {
         console.log(err);
         this._panelState = "error";
         this._errorMsg = err.message;
+        return;
+      }
+      if (!this.hass?.entities || !this.hass.devices || !this.hass.areas) {
+        // We need these to generate a dashboard, wait for them
         return;
       }
       conf = await generateLovelaceDashboardStrategy(
@@ -457,5 +470,11 @@ export class LovelacePanel extends LitElement {
         )
       );
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-panel-lovelace": LovelacePanel;
   }
 }

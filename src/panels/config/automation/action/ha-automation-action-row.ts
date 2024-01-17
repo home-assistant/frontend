@@ -29,6 +29,8 @@ import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { domainIconWithoutDefault } from "../../../../common/entity/domain_icon";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-alert";
@@ -190,7 +192,13 @@ export default class HaAutomationActionRow extends LitElement {
           <h3 slot="header">
             <ha-svg-icon
               class="action-icon"
-              .path=${ACTION_ICONS[type!]}
+              .path=${type === "service" &&
+              "service" in this.action &&
+              this.action.service
+                ? domainIconWithoutDefault(
+                    computeDomain(this.action.service as string)
+                  ) || ACTION_ICONS[type!]
+                : ACTION_ICONS[type!]}
             ></ha-svg-icon>
             ${capitalizeFirstLetter(
               describeAction(this.hass, this._entityReg, this.action)

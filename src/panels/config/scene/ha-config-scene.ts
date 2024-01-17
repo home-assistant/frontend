@@ -24,11 +24,11 @@ const equal = (a: SceneEntity[], b: SceneEntity[]): boolean => {
 class HaConfigScene extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   @property() public scenes: SceneEntity[] = [];
 

@@ -61,7 +61,7 @@ export class HaStateLabelBadge extends LitElement {
 
   @property() public image?: string;
 
-  @property() public showName?: boolean;
+  @property({ type: Boolean }) public showName = false;
 
   @state() private _timerTimeRemaining?: number;
 

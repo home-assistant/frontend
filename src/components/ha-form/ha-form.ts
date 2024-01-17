@@ -39,7 +39,7 @@ const getWarning = (obj, item) => (obj && item.name ? obj[item.name] : null);
 
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public data!: HaFormDataContainer;
 
@@ -63,6 +63,10 @@ export class HaForm extends LitElement implements HaFormElement {
   @property() public computeHelper?: (schema: any) => string | undefined;
 
   @property() public localizeValue?: (key: string) => string;
+
+  protected getFormProperties(): Record<string, any> {
+    return {};
+  }
 
   public async focus() {
     await this.updateComplete;
@@ -143,9 +147,11 @@ export class HaForm extends LitElement implements HaFormElement {
                   helper: this._computeHelper(item),
                   disabled: this.disabled || item.disabled || false,
                   hass: this.hass,
+                  localize: this.hass?.localize,
                   computeLabel: this.computeLabel,
                   computeHelper: this.computeHelper,
                   context: this._generateContext(item),
+                  ...this.getFormProperties(),
                 })}
           `;
         })}

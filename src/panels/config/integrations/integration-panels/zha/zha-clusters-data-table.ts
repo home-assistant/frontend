@@ -20,7 +20,7 @@ export interface ClusterRowData extends Cluster {
 export class ZHAClustersDataTable extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow = false;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public clusters: Cluster[] = [];
 

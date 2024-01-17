@@ -2,7 +2,7 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -30,37 +30,33 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @property({ attribute: false })
-  public updateEntities?: UpdateEntity[];
+  @property({ attribute: false }) public updateEntities?: UpdateEntity[];
 
-  @property({ attribute: false, type: Array })
-  private devices?: DeviceRegistryEntry[];
+  @property({ type: Number }) public total?: number;
 
-  @property({ attribute: false, type: Array })
-  private entities?: EntityRegistryEntry[];
+  @state() private _devices?: DeviceRegistryEntry[];
 
-  @property({ type: Number })
-  public total?: number;
+  @state() private _entities?: EntityRegistryEntry[];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeDeviceRegistry(this.hass.connection, (entries) => {
-        this.devices = entries;
+        this._devices = entries;
       }),
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this.entities = entities.filter((entity) => entity.device_id !== null);
+        this._entities = entities.filter((entity) => entity.device_id !== null);
       }),
     ];
   }
 
   private getDeviceEntry = memoizeOne(
     (deviceId: string): DeviceRegistryEntry | undefined =>
-      this.devices?.find((device) => device.id === deviceId)
+      this._devices?.find((device) => device.id === deviceId)
   );
 
   private getEntityEntry = memoizeOne(
     (entityId: string): EntityRegistryEntry | undefined =>
-      this.entities?.find((entity) => entity.entity_id === entityId)
+      this._entities?.find((entity) => entity.entity_id === entityId)
   );
 
   protected render() {

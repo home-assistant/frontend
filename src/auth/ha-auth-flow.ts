@@ -21,7 +21,6 @@ import {
   DataEntryFlowStepForm,
 } from "../data/data_entry_flow";
 import "./ha-auth-form";
-import { fireEvent } from "../common/dom/fire_event";
 
 type State = "loading" | "error" | "step";
 
@@ -39,7 +38,9 @@ export class HaAuthFlow extends LitElement {
 
   @property({ attribute: false }) public step?: DataEntryFlowStep;
 
-  @property({ type: Boolean }) private storeToken = false;
+  @property({ type: Boolean }) public initStoreToken = false;
+
+  @state() private _storeToken = false;
 
   @state() private _state: State = "loading";
 
@@ -55,6 +56,10 @@ export class HaAuthFlow extends LitElement {
 
   willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._storeToken = this.initStoreToken;
+    }
 
     if (!changedProps.has("step")) {
       return;
@@ -155,11 +160,6 @@ export class HaAuthFlow extends LitElement {
   }
 
   private _renderForm() {
-    const showBack =
-      this.step?.type === "form" &&
-      this.authProvider?.users &&
-      !["select_mfa_module", "mfa"].includes(this.step.step_id);
-
     switch (this._state) {
       case "step":
         if (this.step == null) {
@@ -168,12 +168,7 @@ export class HaAuthFlow extends LitElement {
 
         return html`
           ${this._renderStep(this.step)}
-          <div class="action ${showBack ? "space-between" : ""}">
-            ${showBack
-              ? html`<mwc-button @click=${this._localFlow}>
-                  ${this.localize("ui.panel.page-authorize.form.previous")}
-                </mwc-button>`
-              : nothing}
+          <div class="action">
             <mwc-button
               raised
               @click=${this._handleSubmit}
@@ -227,7 +222,8 @@ export class HaAuthFlow extends LitElement {
           </h1>
           ${this._computeStepDescription(step)}
           <ha-auth-form
-            .data=${this._stepData}
+            .localize=${this.localize}
+            .data=${this._stepData!}
             .schema=${autocompleteLoginFields(step.data_schema)}
             .error=${step.errors}
             .disabled=${this._submitting}
@@ -246,7 +242,7 @@ export class HaAuthFlow extends LitElement {
                     )}
                   >
                     <ha-checkbox
-                      .checked=${this.storeToken}
+                      .checked=${this._storeToken}
                       @change=${this._storeTokenChanged}
                     ></ha-checkbox>
                   </ha-formfield>
@@ -269,7 +265,7 @@ export class HaAuthFlow extends LitElement {
   }
 
   private _storeTokenChanged(e: CustomEvent<HTMLInputElement>) {
-    this.storeToken = (e.currentTarget as HTMLInputElement).checked;
+    this._storeToken = (e.currentTarget as HTMLInputElement).checked;
   }
 
   private async _providerChanged(newProvider?: AuthProvider) {
@@ -303,7 +299,7 @@ export class HaAuthFlow extends LitElement {
             this.redirectUri!,
             data.result,
             this.oauth2State,
-            this.storeToken
+            this._storeToken
           );
           return;
         }
@@ -385,7 +381,7 @@ export class HaAuthFlow extends LitElement {
           this.redirectUri!,
           newStep.result,
           this.oauth2State,
-          this.storeToken
+          this._storeToken
         );
         return;
       }
@@ -399,10 +395,6 @@ export class HaAuthFlow extends LitElement {
     } finally {
       this._submitting = false;
     }
-  }
-
-  private _localFlow() {
-    fireEvent(this, "default-login-flow", { value: false });
   }
 }
 

@@ -15,7 +15,7 @@ import { HomeAssistant } from "../../../../../../types";
 import { formatAsPaddedHex } from "../../../../integrations/integration-panels/zha/functions";
 
 @customElement("ha-device-info-zha")
-export class HaDeviceActionsZha extends LitElement {
+export class HaDeviceInfoZha extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public device!: DeviceRegistryEntry;
@@ -96,5 +96,11 @@ export class HaDeviceActionsZha extends LitElement {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-device-info-zha": HaDeviceInfoZha;
   }
 }

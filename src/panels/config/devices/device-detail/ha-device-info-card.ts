@@ -15,7 +15,7 @@ export class HaDeviceCard extends LitElement {
 
   @property() public device!: DeviceRegistryEntry;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected render(): TemplateResult {
     return html`

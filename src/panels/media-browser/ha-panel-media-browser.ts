@@ -68,7 +68,7 @@ class PanelMediaBrowser extends LitElement {
   @property({ type: Boolean, reflect: true })
   public narrow!: boolean;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() _currentItem?: MediaPlayerItem;
 

@@ -10,6 +10,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { componentsWithService } from "../../../common/config/components_with_service";
 import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import { CheckConfigResult, checkCoreConfig } from "../../../data/core";

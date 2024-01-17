@@ -24,7 +24,7 @@ import "../ha-config-section";
 export class HaBlueprintAutomationEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -32,7 +32,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
 
   @property() public config!: BlueprintAutomationConfig;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   @state() private _blueprints?: Blueprints;
 

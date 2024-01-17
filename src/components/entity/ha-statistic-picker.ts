@@ -129,7 +129,8 @@ export class HaStatisticPicker extends LitElement {
       includeUnitClass?: string | string[],
       includeDeviceClass?: string | string[],
       entitiesOnly?: boolean,
-      excludeStatistics?: string[]
+      excludeStatistics?: string[],
+      value?: string
     ): StatisticItem[] => {
       if (!statisticIds.length) {
         return [
@@ -176,6 +177,7 @@ export class HaStatisticPicker extends LitElement {
       statisticIds.forEach((meta) => {
         if (
           excludeStatistics &&
+          meta.statistic_id !== value &&
           excludeStatistics.includes(meta.statistic_id)
         ) {
           return;
@@ -258,7 +260,8 @@ export class HaStatisticPicker extends LitElement {
           this.includeUnitClass,
           this.includeDeviceClass,
           this.entitiesOnly,
-          this.excludeStatistics
+          this.excludeStatistics,
+          this.value
         );
       } else {
         this.updateComplete.then(() => {
@@ -268,7 +271,8 @@ export class HaStatisticPicker extends LitElement {
             this.includeUnitClass,
             this.includeDeviceClass,
             this.entitiesOnly,
-            this.excludeStatistics
+            this.excludeStatistics,
+            this.value
           );
         });
       }

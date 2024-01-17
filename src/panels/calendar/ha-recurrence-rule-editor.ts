@@ -33,15 +33,15 @@ import {
 
 @customElement("ha-recurrence-rule-editor")
 export class RecurrenceRuleEditor extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public disabled = false;
+  @property({ type: Boolean }) public disabled = false;
 
   @property() public value = "";
 
   @property() public dtstart?: Date;
 
-  @property() public allDay?: boolean;
+  @property({ type: Boolean }) public allDay = false;
 
   @property({ attribute: false }) public locale!: HomeAssistant["locale"];
 

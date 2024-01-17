@@ -1,7 +1,10 @@
 #!/usr/bin/env node
-const fs = require("fs");
-const util = require("util");
-const exec = util.promisify(require("child_process").exec);
+/* eslint-disable no-console */
+import fs from "fs";
+import util from "util";
+import child_process from "child_process";
+
+const exec = util.promisify(child_process.exec);
 
 function patch(version) {
   const parts = version.split(".");
@@ -18,7 +21,7 @@ function today() {
 
 function auto(version) {
   const todayVersion = today();
-  if (todayVersion !== version) {
+  if (todayVersion.split(".")[0] !== version.split(".")[0]) {
     return todayVersion;
   }
   return patch(version);
@@ -44,7 +47,7 @@ async function main(args) {
     commit = true;
   } else {
     method = args.length > 0 && methods[args[0]];
-    commit = args.length > 1 && args[1] == "--commit";
+    commit = args.length > 1 && args[1] === "--commit";
   }
 
   if (!method) {

@@ -1,6 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list/mwc-list";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -9,6 +8,7 @@ import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
+import "../../../../components/ha-list-item";
 import type { HaTextField } from "../../../../components/ha-textfield";
 import "../../../../components/ha-textfield";
 import { cloudLogin } from "../../../../data/cloud";
@@ -166,19 +166,19 @@ export class CloudLogin extends LitElement {
             </ha-card>
 
             <ha-card outlined>
-              <paper-item @click=${this._handleRegister}>
-                <paper-item-body two-line>
+              <mwc-list>
+                <ha-list-item @click=${this._handleRegister} twoline hasMeta>
                   ${this.hass.localize(
                     "ui.panel.config.cloud.login.start_trial"
                   )}
-                  <div secondary>
+                  <span slot="secondary">
                     ${this.hass.localize(
                       "ui.panel.config.cloud.login.trial_info"
                     )}
-                  </div>
-                </paper-item-body>
-                <ha-icon-next></ha-icon-next>
-              </paper-item>
+                  </span>
+                  <ha-icon-next slot="meta"></ha-icon-next>
+                </ha-list-item>
+              </mwc-list>
             </ha-card>
           </ha-config-section>
         </div>
@@ -292,9 +292,6 @@ export class CloudLogin extends LitElement {
         }
         [slot="introduction"] a {
           color: var(--primary-color);
-        }
-        paper-item {
-          cursor: pointer;
         }
         ha-card {
           overflow: hidden;

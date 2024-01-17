@@ -8,6 +8,8 @@ import { HomeAssistant } from "../types";
 import { LightColor } from "./light";
 import { computeDomain } from "../common/entity/compute_domain";
 
+export { subscribeEntityRegistryDisplay } from "./ws-entity_registry_display";
+
 type entityCategory = "config" | "diagnostic";
 
 export interface EntityRegistryDisplayEntry {
@@ -22,7 +24,7 @@ export interface EntityRegistryDisplayEntry {
   display_precision?: number;
 }
 
-interface EntityRegistryDisplayEntryResponse {
+export interface EntityRegistryDisplayEntryResponse {
   entities: {
     ei: string;
     di?: string;
@@ -251,34 +253,6 @@ export const subscribeEntityRegistry = (
     "_entityRegistry",
     fetchEntityRegistry,
     subscribeEntityRegistryUpdates,
-    conn,
-    onChange
-  );
-
-const subscribeEntityRegistryDisplayUpdates = (
-  conn: Connection,
-  store: Store<EntityRegistryDisplayEntryResponse>
-) =>
-  conn.subscribeEvents(
-    debounce(
-      () =>
-        fetchEntityRegistryDisplay(conn).then((entities) =>
-          store.setState(entities, true)
-        ),
-      500,
-      true
-    ),
-    "entity_registry_updated"
-  );
-
-export const subscribeEntityRegistryDisplay = (
-  conn: Connection,
-  onChange: (entities: EntityRegistryDisplayEntryResponse) => void
-) =>
-  createCollection<EntityRegistryDisplayEntryResponse>(
-    "_entityRegistryDisplay",
-    fetchEntityRegistryDisplay,
-    subscribeEntityRegistryDisplayUpdates,
     conn,
     onChange
   );

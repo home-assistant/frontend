@@ -52,6 +52,7 @@ export const serviceActionStruct: Describe<ServiceAction> = assign(
     target: optional(targetStruct),
     data: optional(object()),
     response_variable: optional(string()),
+    metadata: optional(object()),
   })
 );
 
@@ -133,6 +134,7 @@ export interface ServiceAction extends BaseAction {
   target?: HassServiceTarget;
   data?: Record<string, unknown>;
   response_variable?: string;
+  metadata?: Record<string, unknown>;
 }
 
 export interface DeviceAction extends BaseAction {

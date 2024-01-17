@@ -10,7 +10,7 @@ import "../../../../components/ha-svg-icon";
 
 @customElement("voice-assistants-expose-assistant-icon")
 export class VoiceAssistantExposeAssistantIcon extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public unsupported!: boolean;
 
