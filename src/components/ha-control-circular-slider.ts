@@ -736,8 +736,9 @@ export class HaControlCircularSlider extends LitElement {
         outline: none;
       }
       [data-interaction] {
+        fill: none;
         cursor: pointer;
-        pointer-events: stroke;
+        pointer-events: auto;
         stroke: transparent;
         /* Uncomment this for interaction debug */
         /* stroke: rgba(255, 0, 0, 0.3); */
