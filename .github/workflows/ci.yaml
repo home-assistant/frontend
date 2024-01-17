@@ -37,11 +37,12 @@ jobs:
       - name: Build resources
         run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data gather-gallery-pages
       - name: Setup lint cache
-        uses: actions/cache@v3.3.2
+        uses: actions/cache@v3.3.3
         with:
           path: |
             node_modules/.cache/prettier
             node_modules/.cache/eslint
+            node_modules/.cache/typescript
           key: lint-${{ github.sha }}
           restore-keys: lint-
       - name: Run eslint
@@ -88,7 +89,7 @@ jobs:
         env:
           IS_TEST: "true"
       - name: Upload bundle stats
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.1.0
         with:
           name: frontend-bundle-stats
           path: build/stats/*.json
@@ -112,7 +113,7 @@ jobs:
         env:
           IS_TEST: "true"
       - name: Upload bundle stats
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.1.0
         with:
           name: supervisor-bundle-stats
           path: build/stats/*.json

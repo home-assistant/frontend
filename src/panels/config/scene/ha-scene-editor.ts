@@ -91,7 +91,7 @@ export class HaSceneEditor extends SubscribeMixin(
 
   @property({ type: Boolean }) public isWide = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property() public sceneId: string | null = null;
 

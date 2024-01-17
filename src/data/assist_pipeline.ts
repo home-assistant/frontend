@@ -18,6 +18,11 @@ export interface AssistPipeline {
   wake_word_id: string | null;
 }
 
+export interface AssistDevice {
+  device_id: string;
+  pipeline_entity: string;
+}
+
 export interface AssistPipelineMutableParams {
   name: string;
   language: string;
@@ -365,4 +370,9 @@ export const deleteAssistPipeline = (hass: HomeAssistant, pipelineId: string) =>
 export const fetchAssistPipelineLanguages = (hass: HomeAssistant) =>
   hass.callWS<{ languages: string[] }>({
     type: "assist_pipeline/language/list",
+  });
+
+export const listAssistDevices = (hass: HomeAssistant) =>
+  hass.callWS<AssistDevice[]>({
+    type: "assist_pipeline/device/list",
   });

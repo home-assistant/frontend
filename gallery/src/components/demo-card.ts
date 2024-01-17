@@ -11,7 +11,7 @@ export interface DemoCardConfig {
 
 @customElement("demo-card")
 class DemoCard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public config!: DemoCardConfig;
 

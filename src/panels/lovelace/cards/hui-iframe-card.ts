@@ -27,7 +27,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() protected _config?: IframeCardConfig;
 

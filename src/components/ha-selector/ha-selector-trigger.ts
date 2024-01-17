@@ -7,9 +7,9 @@ import { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-trigger")
 export class HaTriggerSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: TriggerSelector;
+  @property({ attribute: false }) public selector!: TriggerSelector;
 
   @property() public value?: Trigger;
 

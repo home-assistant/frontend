@@ -32,7 +32,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
 
   @property() public config!: BlueprintAutomationConfig;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   @state() private _blueprints?: Blueprints;
 

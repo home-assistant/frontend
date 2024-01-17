@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list";
 import {
   mdiCrosshairsGps,
   mdiMagnify,
@@ -6,18 +7,21 @@ import {
   mdiMapSearchOutline,
 } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
+import "../components/ha-circular-progress";
 import "../components/ha-formfield";
+import "../components/ha-list-item";
 import "../components/ha-radio";
 import "../components/ha-textfield";
 import type { HaTextField } from "../components/ha-textfield";
@@ -27,14 +31,13 @@ import type {
   MarkerLocation,
 } from "../components/map/ha-locations-editor";
 import { ConfigUpdateValues, detectCoreConfig } from "../data/core";
-import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../types";
-import { fireEvent } from "../common/dom/fire_event";
 import {
   OpenStreetMapPlace,
   reverseGeocode,
   searchPlaces,
 } from "../data/openstreetmap";
+import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
+import type { HomeAssistant } from "../types";
 import { onBoardingStyles } from "./styles";
 
 const AMSTERDAM: [number, number] = [52.3731339, 4.8903147];
