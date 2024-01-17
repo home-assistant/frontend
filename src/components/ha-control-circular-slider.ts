@@ -270,12 +270,12 @@ export class HaControlCircularSlider extends LitElement {
 
         const pressToActivate = this.preventInteractionOnScroll && isTouch;
 
-        // If press to activate is true, a 60ms press is required to activate the slider
+        // If press to activate is true, a 50ms press is required to activate the slider
         mc.add(
           new Press({
             enable: pressToActivate,
             pointers: 1,
-            time: 60,
+            time: 50,
           })
         );
 
@@ -518,6 +518,9 @@ export class HaControlCircularSlider extends LitElement {
       r: RADIUS,
     });
 
+    const angle =
+      value != null ? this._valueToPercentage(value) * MAX_ANGLE : undefined;
+
     const limit = mode === "end" ? this.max : this.min;
 
     const current = this.current ?? limit;
@@ -618,8 +621,14 @@ export class HaControlCircularSlider extends LitElement {
         ${
           targetCircle
             ? svg`
+              <!-- Use circle instead of path for interaction (Safari doesn't support well pointer-events with stroke-dasharray) -->
+              <circle 
+                transform="rotate(${angle} 0 0)" 
+                ?data-interaction=${onlyDotInteraction} 
+                cx=${RADIUS}
+                cy="0" 
+                />
               <path
-                ?data-interaction=${onlyDotInteraction}
                 d=${path}
                 stroke-dasharray=${targetCircle[0]}
                 stroke-dashoffset=${targetCircle[1]}
@@ -678,13 +687,10 @@ export class HaControlCircularSlider extends LitElement {
           id="container"
           transform="translate(160 160) rotate(${ROTATE_ANGLE})"
         >
-          <g ?data-interaction=${!onlyDotInteraction}>
-            <path d=${trackPath} />
-          </g>
-          <g id="display">
-            <path class="background" d=${trackPath} />
-            ${currentStroke
-              ? svg`
+          <path d=${trackPath} ?data-interaction=${!onlyDotInteraction} />
+          <path class="background" d=${trackPath} />
+          ${currentStroke
+            ? svg`
                   <path
                     class="current"
                     d=${trackPath}
@@ -692,18 +698,17 @@ export class HaControlCircularSlider extends LitElement {
                     stroke-dashoffset=${currentStroke[1]}
                   />
                 `
-              : nothing}
-            ${lowValue != null || this.mode === "full"
-              ? this.renderArc(
-                  this.dual ? "low" : "value",
-                  lowValue,
-                  (!this.dual && this.mode) || "start"
-                )
-              : nothing}
-            ${this.dual && highValue != null
-              ? this.renderArc("high", highValue, "end")
-              : nothing}
-          </g>
+            : nothing}
+          ${lowValue != null || this.mode === "full"
+            ? this.renderArc(
+                this.dual ? "low" : "value",
+                lowValue,
+                (!this.dual && this.mode) || "start"
+              )
+            : nothing}
+          ${this.dual && highValue != null
+            ? this.renderArc("high", highValue, "end")
+            : nothing}
         </g>
       </svg>
     `;
@@ -728,6 +733,7 @@ export class HaControlCircularSlider extends LitElement {
       svg {
         width: 100%;
         display: block;
+        pointer-events: none;
       }
       g {
         fill: none;
@@ -735,20 +741,21 @@ export class HaControlCircularSlider extends LitElement {
       #slider {
         outline: none;
       }
-      [data-interaction] {
+      path[data-interaction] {
         fill: none;
         cursor: pointer;
         pointer-events: auto;
         stroke: transparent;
-        /* Uncomment this for interaction debug */
-        /* stroke: rgba(255, 0, 0, 0.3); */
         stroke-linecap: round;
         stroke-width: calc(
           24px + 2 * var(--control-circular-slider-interaction-margin)
         );
       }
-      #display {
-        pointer-events: none;
+      circle[data-interaction] {
+        r: calc(12px + var(--control-circular-slider-interaction-margin));
+        fill: transparent;
+        cursor: pointer;
+        pointer-events: auto;
       }
       :host([disabled]) [data-interaction],
       :host([readonly]) [data-interaction] {
