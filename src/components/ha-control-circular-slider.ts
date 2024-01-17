@@ -183,7 +183,8 @@ export class HaControlCircularSlider extends LitElement {
         changedProps.get("_localHigh") == null) ||
       changedProps.has("preventInteractionOnScroll")
     ) {
-      this.updateListeners();
+      this._destroyListeners();
+      this._setupListeners();
     }
   }
 
@@ -259,7 +260,7 @@ export class HaControlCircularSlider extends LitElement {
     return undefined;
   }
 
-  _setupListeners() {
+  private _setupListeners() {
     if (this._interactions && this._managers.length === 0) {
       this._interactions.forEach((interaction) => {
         const mc = new Manager(interaction, {
@@ -474,16 +475,11 @@ export class HaControlCircularSlider extends LitElement {
     this._activeSlider = undefined;
   }
 
-  destroyListeners() {
+  private _destroyListeners() {
     if (this._managers.length > 0) {
       this._managers.forEach((manager) => manager.destroy());
       this._managers = [];
     }
-  }
-
-  updateListeners() {
-    this.destroyListeners();
-    this._setupListeners();
   }
 
   private _strokeCircleDashArc(value: number): [string, string] {
