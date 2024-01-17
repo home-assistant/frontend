@@ -16,7 +16,6 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { domainIconWithoutDefault } from "../../../common/entity/domain_icon";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { stringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-dialog";
@@ -25,8 +24,8 @@ import "../../../components/ha-dialog-header";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
-import "../../../components/search-input";
+import "../../../components/ha-list-new";
+import "../../../components/ha-list-item-new";
 import {
   ACTION_GROUPS,
   ACTION_ICONS,
@@ -52,6 +51,8 @@ import {
 } from "./show-add-automation-element-dialog";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { deepEqual } from "../../../common/util/deep-equal";
+import "../../../components/search-input";
+import "@material/web/divider/divider";
 
 const TYPES = {
   trigger: { groups: TRIGGER_GROUPS, icons: TRIGGER_ICONS },
@@ -122,6 +123,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
       this._fetchManifests();
+      this._calculateUsedDomains();
     }
     this._fullScreen = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
@@ -141,6 +143,16 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this._manifests = undefined;
     this._domains = undefined;
   }
+
+  private _getGroups = (
+    type: AddAutomationElementDialogParams["type"],
+    group: string | undefined
+  ): AutomationElementGroup =>
+    group
+      ? isService(group)
+        ? {}
+        : TYPES[type].groups[group].members!
+      : TYPES[type].groups;
 
   private _convertToItem = (
     key: string,
@@ -168,22 +180,13 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   private _getFilteredItems = memoizeOne(
     (
       type: AddAutomationElementDialogParams["type"],
-      root: AddAutomationElementDialogParams["root"],
       group: string | undefined,
       filter: string,
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup
     ): ListItem[] => {
-      const groups: AutomationElementGroup = group
-        ? isService(group)
-          ? {}
-          : TYPES[type].groups[group].members!
-        : TYPES[type].groups;
-
-      if (type === "condition" && group === "other" && !root) {
-        groups.trigger = {};
-      }
+      const groups = this._getGroups(type, group);
 
       const flattenGroups = (grp: AutomationElementGroup) =>
         Object.entries(grp).map(([key, options]) =>
@@ -212,7 +215,6 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   private _getGroupItems = memoizeOne(
     (
       type: AddAutomationElementDialogParams["type"],
-      root: AddAutomationElementDialogParams["root"],
       group: string | undefined,
       domains: Set<string> | undefined,
       localize: LocalizeFunc,
@@ -220,20 +222,17 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       manifests?: DomainManifestLookup
     ): ListItem[] => {
       if (type === "action" && isService(group)) {
-        const result = this._services(localize, services, manifests, group);
+        let result = this._services(localize, services, manifests, group);
         if (group === `${SERVICE_PREFIX}media_player`) {
-          result.unshift(this._convertToItem("play_media", {}, type, localize));
+          result = [
+            this._convertToItem("play_media", {}, type, localize),
+            ...result,
+          ];
         }
         return result;
       }
 
-      const groups: AutomationElementGroup = group
-        ? TYPES[type].groups[group].members!
-        : TYPES[type].groups;
-
-      if (type === "condition" && group === "other" && !root) {
-        groups.trigger = {};
-      }
+      const groups = this._getGroups(type, group);
 
       const result = Object.entries(groups).map(([key, options]) =>
         this._convertToItem(key, options, type, localize)
@@ -425,10 +424,17 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this._manifests = manifests;
   }
 
+  private _calculateUsedDomains() {
+    const domains = new Set(Object.keys(this.hass.states).map(computeDomain));
+    if (!deepEqual(domains, this._domains)) {
+      this._domains = domains;
+    }
+  }
+
   protected _opened(): void {
     // Store the width and height so that when we search, box doesn't jump
     const boundingRect =
-      this.shadowRoot!.querySelector("mwc-list")?.getBoundingClientRect();
+      this.shadowRoot!.querySelector("ha-list-new")?.getBoundingClientRect();
     this._width = boundingRect?.width;
     this._height = boundingRect?.height;
   }
@@ -439,10 +445,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       changedProperties.has("hass") &&
       changedProperties.get("hass")?.states !== this.hass.states
     ) {
-      const domains = new Set(Object.keys(this.hass.states).map(computeDomain));
-      if (!deepEqual(domains, this._domains)) {
-        this._domains = domains;
-      }
+      this._calculateUsedDomains();
     }
   }
 
@@ -454,7 +457,6 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     const items = this._filter
       ? this._getFilteredItems(
           this._params.type,
-          this._params.root,
           this._group,
           this._filter,
           this.hass.localize,
@@ -463,7 +465,6 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         )
       : this._getGroupItems(
           this._params.type,
-          this._params.root,
           this._group,
           this._domains,
           this.hass.localize,
@@ -525,27 +526,21 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                 )}
           ></search-input>
         </div>
-        <mwc-list
+        <ha-list-new
           dialogInitialFocus=${ifDefined(this._fullScreen ? "" : undefined)}
-          innerRole="listbox"
-          itemRoles="option"
-          rootTabbable
           style=${styleMap({
             width: this._width ? `${this._width}px` : "auto",
-            height: this._height ? `${Math.min(670, this._height)}px` : "auto",
+            height: this._height ? `${Math.min(468, this._height)}px` : "auto",
           })}
         >
           ${this._params.clipboardItem &&
           !this._filter &&
           (!this._group ||
             items.find((item) => item.key === this._params!.clipboardItem))
-            ? html`<ha-list-item
-                  twoline
+            ? html`<ha-list-item-new
                   class="paste"
                   .value=${PASTE_VALUE}
-                  graphic="icon"
-                  hasMeta
-                  @request-selected=${this._selected}
+                  @click=${this._selected}
                 >
                   ${this.hass.localize(
                     `ui.panel.config.automation.editor.${this._params.type}s.paste`
@@ -557,49 +552,48 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                     )}</span
                   >
                   <ha-svg-icon
-                    slot="graphic"
+                    slot="start"
                     .path=${mdiContentPaste}
                   ></ha-svg-icon
-                  ><ha-svg-icon slot="meta" .path=${mdiPlus}></ha-svg-icon>
-                </ha-list-item>
-                <li divider role="separator"></li>`
+                  ><ha-svg-icon slot="end" .path=${mdiPlus}></ha-svg-icon>
+                </ha-list-item-new>
+                <md-divider></md-divider>`
             : ""}
           ${repeat(
             items,
             (item) => item.key,
             (item) => html`
-              <ha-list-item
-                .twoline=${Boolean(item.description)}
+              <ha-list-item-new
+                interactive
+                type="button"
                 .value=${item.key}
                 .group=${item.group}
-                graphic="icon"
-                hasMeta
-                @request-selected=${this._selected}
+                @click=${this._selected}
               >
-                ${item.name}
-                <span slot="secondary">${item.description}</span>
+                <div slot="headline">${item.name}</div>
+                <div slot="supporting-text">${item.description}</div>
                 ${item.icon
                   ? html`<ha-svg-icon
-                      slot="graphic"
+                      slot="start"
                       .path=${item.icon}
                     ></ha-svg-icon>`
                   : html`<img
                       alt=""
-                      slot="graphic"
+                      slot="start"
                       src=${item.image}
                       crossorigin="anonymous"
                       referrerpolicy="no-referrer"
                     />`}
                 ${item.group
-                  ? html`<ha-icon-next slot="meta"></ha-icon-next>`
+                  ? html`<ha-icon-next slot="end"></ha-icon-next>`
                   : html`<ha-svg-icon
-                      slot="meta"
+                      slot="end"
                       .path=${mdiPlus}
                     ></ha-svg-icon>`}
-              </ha-list-item>
+              </ha-list-item-new>
             `
           )}
-        </mwc-list>
+        </ha-list-new>
       </ha-dialog>
     `;
   }
@@ -619,9 +613,6 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   }
 
   private _selected(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
     this._dialog!.scrollToPos(0, 0);
     const item = ev.currentTarget;
     if (item.group) {
@@ -654,9 +645,14 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         ha-icon-next {
           width: 24px;
         }
-        mwc-list {
-          max-height: 670px;
+        ha-list-new {
+          max-height: 468px;
           max-width: 100vw;
+          --md-list-item-leading-space: 24px;
+          --md-list-item-trailing-space: 24px;
+        }
+        ha-list-item-new img {
+          width: 24px;
         }
         search-input {
           display: block;

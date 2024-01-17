@@ -1,5 +1,3 @@
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -27,11 +25,11 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
     ExposeEntitySettings
   >;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   protected render() {
     if (!this.hass) {
@@ -95,4 +93,10 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
       color: inherit;
     }
   `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-voice-assistants-assistants": HaConfigVoiceAssistantsAssistants;
+  }
 }

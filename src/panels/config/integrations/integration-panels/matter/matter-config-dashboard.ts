@@ -210,3 +210,9 @@ export class MatterConfigDashboard extends LitElement {
     `,
   ];
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "matter-config-dashboard": MatterConfigDashboard;
+  }
+}

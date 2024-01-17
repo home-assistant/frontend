@@ -1,7 +1,5 @@
 import "@material/mwc-button/mwc-button";
 import { mdiDelete, mdiDeleteOff } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
@@ -27,12 +25,14 @@ import {
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
+import type { HaTextField } from "../../../../src/components/ha-textfield";
+import "../../../../src/components/ha-textfield";
 
 @customElement("dialog-hassio-repositories")
 class HassioRepositoriesDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @query("#repository_input", true) private _optionInput?: PaperInputElement;
+  @query("#repository_input", true) private _optionInput?: HaTextField;
 
   @state() private _repositories?: HassioAddonRepository[];
 
@@ -145,7 +145,7 @@ class HassioRepositoriesDialog extends LitElement {
               )
             : html`<paper-item> No repositories </paper-item>`}
           <div class="layout horizontal bottom">
-            <paper-input
+            <ha-textfield
               class="flex-auto"
               id="repository_input"
               .value=${this._dialogParams!.url || ""}
@@ -154,7 +154,7 @@ class HassioRepositoriesDialog extends LitElement {
               )}
               @keydown=${this._handleKeyAdd}
               dialogInitialFocus
-            ></paper-input>
+            ></ha-textfield>
             <mwc-button @click=${this._addRepository}>
               ${this._processing
                 ? html`<ha-circular-progress
@@ -209,11 +209,10 @@ class HassioRepositoriesDialog extends LitElement {
   }
 
   public focus() {
-    this.updateComplete.then(
-      () =>
-        (
-          this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
-        )?.focus()
+    this.updateComplete.then(() =>
+      (
+        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
+      )?.focus()
     );
   }
 

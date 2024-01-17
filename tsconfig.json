@@ -10,6 +10,9 @@
     "resolveJsonModule": true,
     // Babel handles transpiling and no need for declaration files
     "noEmit": true,
+    // Caching
+    "incremental": true,
+    "tsBuildInfoFile": "node_modules/.cache/typescript/.tsbuildinfo",
     // Type checking options
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -25,15 +28,22 @@
     "plugins": [
       {
         "name": "ts-lit-plugin",
-        "strict": false,
+        "strict": true,
         "rules": {
-          "no-unknown-tag-name": "error",
+          // Custom elements
           "no-missing-import": "error",
-          "no-unclosed-tag": "error",
+          "no-missing-element-type-definition": "error",
+          // Binding names
+          "no-legacy-attribute": "error",
+          // Binding types
+          "no-boolean-in-attribute-binding": "warning",
+          "no-nullable-attribute-binding": "warning",
           "no-incompatible-type-binding": "warning",
-          "no-invalid-css": "warning",
-          "no-missing-element-type-definition": "warning",
-          "no-property-visibility-mismatch": "error"
+          // LitElement
+          "no-incompatible-property-type": "warning",
+          "no-property-visibility-mismatch": "warning",
+          // CSS
+          "no-invalid-css": "off" // warning does not work
         }
       }
     ]

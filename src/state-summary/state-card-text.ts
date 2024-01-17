@@ -12,7 +12,7 @@ import type { HomeAssistant } from "../types";
 class StateCardText extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj!: TextEntity;
+  @property({ attribute: false }) public stateObj!: TextEntity;
 
   protected render(): TemplateResult {
     return html`

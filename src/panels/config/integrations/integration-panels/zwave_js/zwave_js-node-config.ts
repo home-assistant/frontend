@@ -79,8 +79,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   @property() public deviceId!: string;
 
-  @property({ type: Array })
-  private _deviceRegistryEntries?: DeviceRegistryEntry[];
+  @state() private _deviceRegistryEntries?: DeviceRegistryEntry[];
 
   @state() private _nodeMetadata?: ZwaveJSNodeMetadata;
 

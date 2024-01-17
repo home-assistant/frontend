@@ -13,7 +13,6 @@ import {
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./ha-auth-flow";
-import "./ha-local-auth-flow";
 
 import("./ha-pick-auth-provider");
 
@@ -36,11 +35,11 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
   @state() private _authProviders?: AuthProvider[];
 
+  @state() private _preselectStoreToken = false;
+
   @state() private _ownInstance = false;
 
   @state() private _error?: string;
-
-  @state() private _forceDefaultLogin = false;
 
   constructor() {
     super();
@@ -84,8 +83,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           display: block;
           margin-top: 24px;
         }
-        ha-auth-flow,
-        ha-local-auth-flow {
+        ha-auth-flow {
           display: flex;
           justify-content: center;
           flex-direction: column;
@@ -176,44 +174,29 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           </ha-alert>`
         : nothing}
 
-      <div
-        class="card-content"
-        @default-login-flow=${this._handleDefaultLoginFlow}
-      >
+      <div class="card-content">
         ${!this._authProvider
           ? html`<p>
               ${this.localize("ui.panel.page-authorize.initializing")}
             </p> `
-          : !this._forceDefaultLogin &&
-              this._authProvider!.users &&
-              this.clientId != null &&
-              this.redirectUri != null
-            ? html`<ha-local-auth-flow
+          : html`<ha-auth-flow
                 .clientId=${this.clientId}
                 .redirectUri=${this.redirectUri}
                 .oauth2State=${this.oauth2State}
                 .authProvider=${this._authProvider}
-                .authProviders=${this._authProviders}
                 .localize=${this.localize}
-                .ownInstance=${this._ownInstance}
-              ></ha-local-auth-flow>`
-            : html`<ha-auth-flow
-                  .clientId=${this.clientId}
-                  .redirectUri=${this.redirectUri}
-                  .oauth2State=${this.oauth2State}
-                  .authProvider=${this._authProvider}
-                  .localize=${this.localize}
-                ></ha-auth-flow>
-                ${inactiveProviders!.length > 0
-                  ? html`
-                      <ha-pick-auth-provider
-                        .localize=${this.localize}
-                        .clientId=${this.clientId}
-                        .authProviders=${inactiveProviders}
-                        @pick-auth-provider=${this._handleAuthProviderPick}
-                      ></ha-pick-auth-provider>
-                    `
-                  : ""}`}
+                .initStoreToken=${this._preselectStoreToken}
+              ></ha-auth-flow>
+              ${inactiveProviders!.length > 0
+                ? html`
+                    <ha-pick-auth-provider
+                      .localize=${this.localize}
+                      .clientId=${this.clientId}
+                      .authProviders=${inactiveProviders!}
+                      @pick-auth-provider=${this._handleAuthProviderPick}
+                    ></ha-pick-auth-provider>
+                  `
+                : ""}`}
       </div>
       <div class="footer">
         <ha-language-picker
@@ -319,22 +302,19 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         return;
       }
 
-      if (authProviders.length === 0) {
+      if (authProviders.providers.length === 0) {
         this._error = "No auth providers returned. Unable to finish login.";
         return;
       }
 
-      this._authProviders = authProviders;
-      this._authProvider = authProviders[0];
+      this._authProviders = authProviders.providers;
+      this._authProvider = authProviders.providers[0];
+      this._preselectStoreToken = authProviders.preselect_remember_me;
     } catch (err: any) {
       this._error = "Unable to fetch auth providers.";
       // eslint-disable-next-line
       console.error("Error loading auth providers", err);
     }
-  }
-
-  private _handleDefaultLoginFlow(ev) {
-    this._forceDefaultLogin = ev.detail.value;
   }
 
   private async _handleAuthProviderPick(ev) {
@@ -350,5 +330,11 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     } catch (err: any) {
       // Ignore
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-authorize": HaAuthorize;
   }
 }

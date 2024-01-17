@@ -37,7 +37,7 @@ import { HomeAssistant } from "../../../types";
 class MoreInfoWeather extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: WeatherEntity;
+  @property({ attribute: false }) public stateObj?: WeatherEntity;
 
   @state() private _forecastEvent?: ForecastEvent;
 

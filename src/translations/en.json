@@ -2157,7 +2157,9 @@
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This error originated from a custom integration.",
           "show_full_logs": "Show full logs",
-          "download_full_log": "Download full log"
+          "download_full_log": "Download full log",
+          "provider_not_found": "Log provider not found",
+          "provider_not_available": "Logs for ''{provider}'' are not available on your system."
         },
         "lovelace": {
           "caption": "Dashboards",
@@ -2255,9 +2257,16 @@
             "pipeline": {
               "add_assistant": "Add assistant",
               "exposed_entities": "[%key:ui::panel::config::cloud::account::google::exposed_entities%]",
+              "assist_devices": "{number} Assist {number, plural,\n  one {device}\n  other {devices}\n}",
               "delete": {
                 "confirm_title": "Delete {name}?",
                 "confirm_text": "{name} will be permanently deleted."
+              },
+              "devices": {
+                "title": "Assist devices",
+                "device": "Device",
+                "pipeline": "Assistant",
+                "area": "Area"
               },
               "detail": {
                 "update_assistant_action": "Update",
@@ -2267,7 +2276,7 @@
                 "debug": "Debug",
                 "set_as_preferred": "Set as preferred",
                 "form": {
-                  "name": "Name",
+                  "name": "[%key:ui::common::name%]",
                   "conversation_engine": "Conversation agent",
                   "conversation_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "language": "Language",
@@ -2669,7 +2678,11 @@
                   "minutes": "Minutes",
                   "seconds": "Seconds",
                   "description": {
-                    "picker": "Periodically, at a defined interval."
+                    "picker": "Periodically, at a defined interval.",
+                    "initial": "When a time pattern matches",
+                    "invalid": "Invalid Time Pattern for {parts}",
+                    "full": "Trigger {secondsChoice, select, \n every {every second of }\n every_interval {every {seconds} seconds of }\n on_the_xth {on the {secondsWithOrdinal} second of }\n other {}\n} {minutesChoice, select, \n every {every minute of }\n every_interval {every {minutes} minutes of }\n has_seconds {the {minutesWithOrdinal} minute of }\n on_the_xth {on the {minutesWithOrdinal} minute of }\n other {}\n} {hoursChoice, select, \n every {every hour}\n every_interval {every {hours} hours}\n has_seconds_or_minutes {the {hoursWithOrdinal} hour}\n on_the_xth {on the {hoursWithOrdinal} hour}\n other {}\n}",
+                    "ordinal": "{part, selectordinal, \none {#st}\ntwo {#nd}\nfew {#rd}\nother {#th}\n}"
                   }
                 },
                 "webhook": {
@@ -5022,7 +5035,9 @@
           "select_view": {
             "header": "Choose a view",
             "dashboard_label": "Dashboard",
-            "views_label": "View"
+            "views_label": "View",
+            "no_config": "No config found.",
+            "no_views": "No views in this dashboard."
           },
           "suggest_card": {
             "header": "We created a suggestion for you",
@@ -5119,6 +5134,7 @@
             },
             "area": {
               "name": "Area",
+              "alert_classes": "Alert Classes",
               "description": "The Area card automatically displays entities of a specific area.",
               "show_camera": "Show camera feed instead of area picture"
             },
@@ -6190,7 +6206,8 @@
               "statistic_id": "Statistic id",
               "statistics_unit": "Statistics unit",
               "source": "Source",
-              "issue": "Issue"
+              "issue": "Issue",
+              "no_statistics": "[%key:ui::components::statistics_charts::no_statistics_found%]"
             }
           },
           "yaml": {
@@ -6397,7 +6414,8 @@
       "history": {
         "start_search": "Start by selecting an area, device or entity above",
         "add_all": "Add all entities",
-        "remove_all": "Remove all selections"
+        "remove_all": "Remove all selections",
+        "download_data": "Download data"
       }
     },
     "tips": {

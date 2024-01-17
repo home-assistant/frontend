@@ -15,6 +15,7 @@ import { conditionalClamp } from "../common/number/clamp";
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
 import { FrontendLocaleData } from "../data/translation";
+import "./ha-svg-icon";
 
 const A11Y_KEY_CODES = new Set([
   "ArrowRight",
@@ -136,7 +137,9 @@ export class HaControlNumberButton extends LitElement {
       this.value != null
         ? formatNumber(this.value, this.locale, this.formatOptions)
         : "";
-    const unit = this.unit ? `${blankBeforeUnit(this.unit)}${this.unit}` : "";
+    const unit = this.unit
+      ? `${blankBeforeUnit(this.unit, this.locale)}${this.unit}`
+      : "";
 
     return html`
       <div class="container">

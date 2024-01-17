@@ -46,6 +46,7 @@ export const CONDITION_GROUPS: AutomationElementGroup = {
     icon: mdiDotsHorizontal,
     members: {
       template: {},
+      trigger: {},
     },
   },
 } as const;

@@ -9,7 +9,7 @@ import { HomeAssistant } from "../../../src/types";
 
 @customElement("demo-more-infos")
 class DemoMoreInfos extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public entities!: [];
 

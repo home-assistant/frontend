@@ -54,9 +54,9 @@ export class HaDateRangePicker extends LitElement {
 
   @state() private _ranges?: DateRangePickerRanges;
 
-  @property() public autoApply = false;
+  @property({ type: Boolean }) public autoApply = false;
 
-  @property() public timePicker = true;
+  @property({ type: Boolean }) public timePicker = true;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -247,8 +247,8 @@ export class HaDateRangePicker extends LitElement {
         ?auto-apply=${this.autoApply}
         time-picker=${this.timePicker}
         twentyfour-hours=${this._hour24format}
-        start-date=${this.startDate}
-        end-date=${this.endDate}
+        start-date=${this.startDate.toISOString()}
+        end-date=${this.endDate.toISOString()}
         ?ranges=${this.ranges !== false}
         opening-direction=${this.openingDirection ||
         this._calcedOpeningDirection}

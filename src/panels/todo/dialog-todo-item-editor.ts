@@ -3,11 +3,15 @@ import { formatInTimeZone, toDate } from "date-fns-tz";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
+import "../../components/ha-alert";
+import "../../components/ha-checkbox";
 import "../../components/ha-date-input";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-textarea";
+import "../../components/ha-textfield";
 import "../../components/ha-time-input";
 import {
   TodoItemStatus,
@@ -16,7 +20,6 @@ import {
   deleteItems,
   updateItem,
 } from "../../data/todo";
-import { TimeZone } from "../../data/translation";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -51,17 +54,19 @@ class DialogTodoItemEditor extends LitElement {
   public showDialog(params: TodoItemEditDialogParams): void {
     this._error = undefined;
     this._params = params;
-    this._timeZone =
-      this.hass.locale.time_zone === TimeZone.local
-        ? Intl.DateTimeFormat().resolvedOptions().timeZone
-        : this.hass.config.time_zone;
+    this._timeZone = resolveTimeZone(
+      this.hass.locale.time_zone,
+      this.hass.config.time_zone
+    );
     if (params.item) {
       const entry = params.item;
       this._checked = entry.status === TodoItemStatus.Completed;
       this._summary = entry.summary;
       this._description = entry.description || "";
-      this._due = entry.due ? new Date(entry.due) : undefined;
       this._hasTime = entry.due?.includes("T") || false;
+      this._due = entry.due
+        ? new Date(this._hasTime ? entry.due : `${entry.due}T00:00:00`)
+        : undefined;
     } else {
       this._hasTime = false;
       this._checked = false;
@@ -324,14 +329,20 @@ class DialogTodoItemEditor extends LitElement {
           (this._todoListSupportsFeature(
             TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
           )
-            ? // backend should accept null to clear the field, but it doesn't now
-              null
+            ? null
             : undefined),
         due: this._due
           ? this._hasTime
             ? this._due.toISOString()
             : this._formatDate(this._due)
-          : null,
+          : this._todoListSupportsFeature(
+                TodoListEntityFeature.SET_DUE_DATETIME_ON_ITEM
+              ) ||
+              this._todoListSupportsFeature(
+                TodoListEntityFeature.SET_DUE_DATE_ON_ITEM
+              )
+            ? null
+            : undefined,
         status: this._checked
           ? TodoItemStatus.Completed
           : TodoItemStatus.NeedsAction,
@@ -374,7 +385,7 @@ class DialogTodoItemEditor extends LitElement {
     return [
       haStyleDialog,
       css`
-        @media all and (min-width: 450px and min-height: 500px) {
+        @media all and (min-width: 450px) and (min-height: 500px) {
           ha-dialog {
             --mdc-dialog-min-width: min(600px, 95vw);
             --mdc-dialog-max-width: min(600px, 95vw);

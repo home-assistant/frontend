@@ -7,6 +7,9 @@ const TerserPlugin = require("terser-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const log = require("fancy-log");
 const WebpackBar = require("webpackbar");
+const {
+  TransformAsyncModulesPlugin,
+} = require("transform-async-modules-webpack-plugin");
 const paths = require("./paths.cjs");
 const bundle = require("./bundle.cjs");
 
@@ -142,17 +145,6 @@ const createWebpackConfig = ({
         ),
         path.resolve(paths.polymer_dir, "src/util/empty.js")
       ),
-      // See `src/resources/intl-polyfill-legacy.ts` for explanation
-      !latestBuild &&
-        new webpack.NormalModuleReplacementPlugin(
-          new RegExp(
-            path.resolve(paths.polymer_dir, "src/resources/intl-polyfill.ts")
-          ),
-          path.resolve(
-            paths.polymer_dir,
-            "src/resources/intl-polyfill-legacy.ts"
-          )
-        ),
       !isProdBuild && new LogStartCompilePlugin(),
       isProdBuild &&
         new StatsWriterPlugin({
@@ -163,6 +155,8 @@ const createWebpackConfig = ({
           stats: { assets: true, chunks: true, modules: true },
           transform: (stats) => JSON.stringify(filterStats(stats)),
         }),
+      !latestBuild &&
+        new TransformAsyncModulesPlugin({ browserslistEnv: "legacy" }),
     ].filter(Boolean),
     resolve: {
       extensions: [".ts", ".js", ".json"],

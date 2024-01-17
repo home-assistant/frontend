@@ -360,9 +360,9 @@ export const configSections: { [name: string]: PageNavigation[] } = {
 class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   private _entitiesContext = new ContextProvider(this, {
     context: fullEntitiesContext,

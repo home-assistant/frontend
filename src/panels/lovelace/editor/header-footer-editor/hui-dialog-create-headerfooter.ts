@@ -16,7 +16,7 @@ export class HuiCreateDialogHeaderFooter
   extends LitElement
   implements HassDialog<CreateHeaderFooterDialogParams>
 {
-  @property({ attribute: false }) protected hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: CreateHeaderFooterDialogParams;
 

@@ -152,8 +152,9 @@ export class HuiDialogEditCard
     if (this._cardConfig && this._cardConfig.type) {
       let cardName: string | undefined;
       if (isCustomType(this._cardConfig.type)) {
-        cardName = getCustomCardEntry(stripCustomPrefix(this._cardConfig.type))
-          ?.name;
+        cardName = getCustomCardEntry(
+          stripCustomPrefix(this._cardConfig.type)
+        )?.name;
         // Trim names that end in " Card" so as not to redundantly duplicate it
         if (cardName?.toLowerCase().endsWith(" card")) {
           cardName = cardName.substring(0, cardName.length - 5);

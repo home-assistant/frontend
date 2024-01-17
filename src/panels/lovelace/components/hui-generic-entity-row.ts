@@ -6,7 +6,7 @@ import {
   html,
   nothing,
 } from "lit";
-import { property } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_INPUT_ROW } from "../../../common/const";
@@ -24,7 +24,8 @@ import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "./hui-warning";
 
-class HuiGenericEntityRow extends LitElement {
+@customElement("hui-generic-entity-row")
+export class HuiGenericEntityRow extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public config?: EntitiesCardEntityConfig;
@@ -249,4 +250,9 @@ class HuiGenericEntityRow extends LitElement {
     `;
   }
 }
-customElements.define("hui-generic-entity-row", HuiGenericEntityRow);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-generic-entity-row": HuiGenericEntityRow;
+  }
+}

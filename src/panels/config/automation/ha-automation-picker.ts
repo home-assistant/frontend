@@ -77,7 +77,7 @@ class HaAutomationPicker extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property() public automations!: AutomationEntity[];
 
