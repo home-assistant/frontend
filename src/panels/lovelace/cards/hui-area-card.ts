@@ -3,11 +3,9 @@ import {
   mdiLightbulbMultiple,
   mdiLightbulbMultipleOff,
   mdiRun,
-  mdiThermometer,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
   mdiWaterAlert,
-  mdiWaterPercent,
 } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -23,13 +21,16 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { STATES_OFF } from "../../../common/const";
+import { STATES_OFF, FIXED_DEVICE_CLASS_ICONS } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { binarySensorIcon } from "../../../common/entity/binary_sensor_icon";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { navigate } from "../../../common/navigate";
-import { formatNumber } from "../../../common/number/format_number";
+import {
+  formatNumber,
+  isNumericState,
+} from "../../../common/number/format_number";
 import { subscribeOne } from "../../../common/util/subscribe-one";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/entity/state-badge";
@@ -57,6 +58,7 @@ import "../components/hui-image";
 import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { AreaCardConfig } from "./types";
+import { blankBeforeUnit } from "../../../common/translations/blank_before_unit";
 
 export const DEFAULT_ASPECT_RATIO = "16:9";
 
@@ -77,10 +79,6 @@ const DOMAIN_ICONS = {
   light: { on: mdiLightbulbMultiple, off: mdiLightbulbMultipleOff },
   switch: { on: mdiToggleSwitch, off: mdiToggleSwitchOff },
   fan: { on: domainIcon("fan"), off: domainIcon("fan") },
-  sensor: {
-    temperature: mdiThermometer,
-    humidity: mdiWaterPercent,
-  },
   binary_sensor: {
     motion: mdiRun,
     moisture: mdiWaterAlert,
@@ -215,10 +213,7 @@ export class HuiAreaCard
     }
     let uom;
     const values = entities.filter((entity) => {
-      if (
-        !entity.attributes.unit_of_measurement ||
-        isNaN(Number(entity.state))
-      ) {
+      if (!isNumericState(entity) || isNaN(Number(entity.state))) {
         return false;
       }
       if (!uom) {
@@ -236,7 +231,7 @@ export class HuiAreaCard
     );
     return `${formatNumber(sum / values.length, this.hass!.locale, {
       maximumFractionDigits: 1,
-    })} ${uom}`;
+    })}${uom ? blankBeforeUnit(uom, this.hass!.locale) : ""}${uom || ""}`;
   }
 
   private _area = memoizeOne(
@@ -281,6 +276,9 @@ export class HuiAreaCard
     this._config = config;
 
     this._deviceClasses = { ...DEVICE_CLASSES };
+    if (config.sensor_classes) {
+      this._deviceClasses.sensor = config.sensor_classes;
+    }
     if (config.alert_classes) {
       this._deviceClasses.binary_sensor = config.alert_classes;
     }
@@ -385,20 +383,19 @@ export class HuiAreaCard
       if (!(domain in entitiesByDomain)) {
         return;
       }
-      DEVICE_CLASSES[domain].forEach((deviceClass) => {
+      this._deviceClasses[domain].forEach((deviceClass) => {
         if (
           entitiesByDomain[domain].some(
             (entity) => entity.attributes.device_class === deviceClass
           )
         ) {
-          sensors.push(html`
-            ${DOMAIN_ICONS[domain][deviceClass]
-              ? html`<ha-svg-icon
-                  .path=${DOMAIN_ICONS[domain][deviceClass]}
-                ></ha-svg-icon>`
-              : ""}
-            ${this._average(domain, deviceClass)}
-          `);
+          const icon = FIXED_DEVICE_CLASS_ICONS[deviceClass];
+          sensors.push(
+            html`<div class="sensor">
+              ${icon ? html`<ha-svg-icon .path=${icon}></ha-svg-icon>` : ""}
+              ${this._average(domain, deviceClass)}
+            </div> `
+          );
         }
       });
     });
@@ -564,6 +561,12 @@ export class HuiAreaCard
         --mdc-icon-size: 24px;
         opacity: 0.6;
         margin-top: 8px;
+      }
+
+      .sensor {
+        white-space: nowrap;
+        float: left;
+        margin-right: 4px;
       }
 
       .alerts {
