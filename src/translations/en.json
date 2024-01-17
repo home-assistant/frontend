@@ -6412,7 +6412,8 @@
       "history": {
         "start_search": "Start by selecting an area, device or entity above",
         "add_all": "Add all entities",
-        "remove_all": "Remove all selections"
+        "remove_all": "Remove all selections",
+        "download_data": "Download data"
       }
     },
     "tips": {

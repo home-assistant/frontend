@@ -1,4 +1,4 @@
-import { mdiFilterRemove, mdiRefresh } from "@mdi/js";
+import { mdiDownload, mdiFilterRemove, mdiRefresh } from "@mdi/js";
 import { differenceInHours } from "date-fns/esm";
 import {
   HassServiceTarget,
@@ -53,6 +53,7 @@ import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
+import { fileDownload } from "../../util/file_download";
 
 class HaPanelHistory extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) hass!: HomeAssistant;
@@ -171,6 +172,13 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           .disabled=${this._isLoading || !this._targetPickerValue}
           .path=${mdiRefresh}
           .label=${this.hass.localize("ui.common.refresh")}
+        ></ha-icon-button>
+        <ha-icon-button
+          slot="actionItems"
+          @click=${this._downloadHistory}
+          .disabled=${this._isLoading || !this._targetPickerValue}
+          .path=${mdiDownload}
+          .label=${this.hass.localize("ui.panel.history.download_data")}
         ></ha-icon-button>
 
         <div class="flex content">
@@ -628,6 +636,36 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     }
 
     navigate(`/history?${createSearchParam(params)}`, { replace: true });
+  }
+
+  private _downloadHistory() {
+    const csv: string[] = ["entity_id,state,last_changed\n"];
+    const formatDate = (number) => new Date(number).toISOString();
+
+    for (const line of this._mungedStateHistory!.line) {
+      for (const entity of line.data) {
+        const entityId = entity.entity_id;
+        for (const data of [entity.states, entity.statistics]) {
+          if (!data) {
+            continue;
+          }
+          for (const s of data) {
+            csv.push(`${entityId},${s.state},${formatDate(s.last_changed)}\n`);
+          }
+        }
+      }
+    }
+    for (const timeline of this._mungedStateHistory!.timeline) {
+      const entityId = timeline.entity_id;
+      for (const s of timeline.data) {
+        csv.push(`${entityId},${s.state},${formatDate(s.last_changed)}\n`);
+      }
+    }
+    const blob = new Blob(csv, {
+      type: "text/csv",
+    });
+    const url = window.URL.createObjectURL(blob);
+    fileDownload(url, "history.csv");
   }
 
   static get styles() {
