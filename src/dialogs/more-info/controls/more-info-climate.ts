@@ -161,7 +161,18 @@ class MoreInfoClimate extends LitElement {
           @selected=${this._handleOperationModeChanged}
           @closed=${stopPropagation}
         >
-          <ha-svg-icon slot="icon" .path=${mdiThermostat}></ha-svg-icon>
+          ${stateObj.state
+            ? html`<ha-attribute-icon
+                slot="icon"
+                .hass=${this.hass}
+                .stateObj=${stateObj}
+                attribute="hvac_mode"
+                .attributeValue=${stateObj.state}
+              ></ha-attribute-icon>`
+            : html`<ha-svg-icon
+                slot="icon"
+                .path=${mdiThermostat}
+              ></ha-svg-icon>`}
           ${stateObj.attributes.hvac_modes
             .concat()
             .sort(compareClimateHvacModes)
@@ -194,7 +205,20 @@ class MoreInfoClimate extends LitElement {
                 @selected=${this._handlePresetmodeChanged}
                 @closed=${stopPropagation}
               >
-                <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
+                ${stateObj.attributes.preset_mode
+                  ? html`<ha-attribute-icon
+                      slot="icon"
+                      .hass=${this.hass}
+                      .stateObj=${stateObj}
+                      attribute="preset_mode"
+                      .attributeValue=${stateObj.attributes.preset_mode}
+                    ></ha-attribute-icon>`
+                  : html`
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiTuneVariant}
+                      ></ha-svg-icon>
+                    `}
                 ${stateObj.attributes.preset_modes!.map(
                   (mode) => html`
                     <ha-list-item .value=${mode} graphic="icon">
@@ -230,7 +254,17 @@ class MoreInfoClimate extends LitElement {
                 @selected=${this._handleFanModeChanged}
                 @closed=${stopPropagation}
               >
-                <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
+                ${stateObj.attributes.fan_mode
+                  ? html`<ha-attribute-icon
+                      slot="icon"
+                      .hass=${this.hass}
+                      .stateObj=${stateObj}
+                      attribute="fan_mode"
+                      .attributeValue=${stateObj.attributes.fan_mode}
+                    ></ha-attribute-icon>`
+                  : html`
+                      <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
+                    `}
                 ${stateObj.attributes.fan_modes!.map(
                   (mode) => html`
                     <ha-list-item .value=${mode} graphic="icon">
@@ -266,10 +300,20 @@ class MoreInfoClimate extends LitElement {
                 @selected=${this._handleSwingmodeChanged}
                 @closed=${stopPropagation}
               >
-                <ha-svg-icon
-                  slot="icon"
-                  .path=${mdiArrowOscillating}
-                ></ha-svg-icon>
+                ${stateObj.attributes.swing_mode
+                  ? html`<ha-attribute-icon
+                      slot="icon"
+                      .hass=${this.hass}
+                      .stateObj=${stateObj}
+                      attribute="swing_mode"
+                      .attributeValue=${stateObj.attributes.swing_mode}
+                    ></ha-attribute-icon>`
+                  : html`
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiArrowOscillating}
+                      ></ha-svg-icon>
+                    `}
                 ${stateObj.attributes.swing_modes!.map(
                   (mode) => html`
                     <ha-list-item .value=${mode} graphic="icon">

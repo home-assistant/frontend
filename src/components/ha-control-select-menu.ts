@@ -15,8 +15,6 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { debounce } from "../common/util/debounce";
 import { nextRender } from "../common/util/render-status";
-import "./ha-attribute-icon";
-import type { HaAttributeIcon } from "./ha-attribute-icon";
 import "./ha-icon";
 import type { HaIcon } from "./ha-icon";
 import "./ha-svg-icon";
@@ -120,7 +118,6 @@ export class HaControlSelectMenu extends SelectBase {
     const icon = (item?.querySelector("[slot='graphic']") ?? null) as
       | HaSvgIcon
       | HaIcon
-      | HaAttributeIcon
       | null;
 
     if (!defaultIcon && !icon) {
@@ -129,18 +126,11 @@ export class HaControlSelectMenu extends SelectBase {
 
     return html`
       <div class="icon">
-        ${icon && "path" in icon
+        ${icon && icon.localName === "ha-svg-icon" && "path" in icon
           ? html`<ha-svg-icon .path=${icon.path}></ha-svg-icon>`
-          : icon && "attribute" in icon
-            ? html`<ha-attribute-icon
-                .hass=${icon.hass}
-                .stateObj=${icon.stateObj}
-                .attribute=${icon.attribute}
-                .attributeValue=${icon.attributeValue}
-              ></ha-attribute-icon>`
-            : icon && "icon" in icon
-              ? html`<ha-icon .path=${icon.icon}></ha-icon>`
-              : html`<slot name="icon"></slot>`}
+          : icon && icon.localName === "ha-icon" && "icon" in icon
+            ? html`<ha-icon .path=${icon.icon}></ha-icon>`
+            : html`<slot name="icon"></slot>`}
       </div>
     `;
   }
