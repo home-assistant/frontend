@@ -5096,7 +5096,8 @@
             "types": {
               "masonry": "Masonry (default)",
               "sidebar": "Sidebar",
-              "panel": "Panel (1 card)"
+              "panel": "Panel (1 card)",
+              "grid": "Grid"
             },
             "subview": "Subview",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
