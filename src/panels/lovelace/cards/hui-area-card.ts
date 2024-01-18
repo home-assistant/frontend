@@ -27,6 +27,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { binarySensorIcon } from "../../../common/entity/binary_sensor_icon";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { navigate } from "../../../common/navigate";
+import { createSearchParam } from "../../../common/url/search-params";
 import {
   formatNumber,
   isNumericState,
@@ -391,7 +392,12 @@ export class HuiAreaCard
         ) {
           const icon = FIXED_DEVICE_CLASS_ICONS[deviceClass];
           sensors.push(
-            html`<div class="sensor">
+            html`<div
+              class="sensor"
+              .domain=${"sensor"}
+              .deviceClass=${deviceClass}
+              @click=${this._sensorClicked}
+            >
               ${icon ? html`<ha-svg-icon .path=${icon}></ha-svg-icon>` : ""}
               ${this._average(domain, deviceClass)}
             </div> `
@@ -442,6 +448,9 @@ export class HuiAreaCard
                 return entity
                   ? html`<ha-svg-icon
                       class="alert"
+                      .domain=${"binary_sensor"}
+                      .deviceClass=${deviceClass}
+                      @click=${this._sensorClicked}
                       .path=${DOMAIN_ICONS[domain][deviceClass] ||
                       binarySensorIcon(entity.state, entity)}
                     ></ha-svg-icon>`
@@ -506,6 +515,29 @@ export class HuiAreaCard
     }
   }
 
+  private _sensorClicked(ev: Event) {
+    ev.stopPropagation();
+    const domain = (ev.currentTarget as any).domain;
+    const deviceClass = (ev.currentTarget as any).deviceClass;
+
+    const entities = this._entitiesByDomain(
+      this._config!.area,
+      this._devicesInArea(this._config!.area, this._devices!),
+      this._entities!,
+      this._deviceClasses,
+      this.hass.states
+    )[domain].filter(
+      (entity) => entity.attributes.device_class === deviceClass
+    );
+
+    const params = {
+      entity_id: entities.map((e) => e.entity_id).join(","),
+      back: "1",
+    };
+
+    navigate(`/history?${createSearchParam(params)}`);
+  }
+
   private _toggle(ev: Event) {
     ev.stopPropagation();
     const domain = (ev.currentTarget as any).domain as string;
@@ -567,10 +599,12 @@ export class HuiAreaCard
         white-space: nowrap;
         float: left;
         margin-right: 4px;
+        cursor: pointer;
       }
 
       .alerts {
         padding: 16px;
+        cursor: pointer;
       }
 
       .alerts ha-svg-icon {
