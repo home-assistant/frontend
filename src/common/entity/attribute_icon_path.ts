@@ -1,6 +1,5 @@
 /** Return an icon representing a attribute. */
 import { HassEntity } from "home-assistant-js-websocket";
-import { nothing } from "lit";
 import {
   computeFanModeIcon,
   computeHvacModeIcon,
@@ -9,7 +8,7 @@ import {
 } from "../../data/climate";
 import { computeDomain } from "./compute_domain";
 
-const iconGenerators = {
+const iconGenerators: Record<string, Record<string, (value: any) => string>> = {
   climate: {
     fan_mode: computeFanModeIcon,
     hvac_mode: computeHvacModeIcon,
@@ -24,7 +23,7 @@ export const attributeIconPath = (
   attributeValue?: string
 ) => {
   if (!state) {
-    return nothing;
+    return undefined;
   }
   const domain = computeDomain(state.entity_id);
   if (iconGenerators[domain]?.[attribute]) {
@@ -32,5 +31,5 @@ export const attributeIconPath = (
       attributeValue || state.attributes[attribute]
     );
   }
-  return nothing;
+  return undefined;
 };

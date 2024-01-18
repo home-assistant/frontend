@@ -25,25 +25,25 @@ export class HaStateIcon extends LitElement {
     if (!this.stateObj) {
       return nothing;
     }
-    let icon = this.hass
-      ? entityIcon(this.hass, this.stateObj).then((icn) => {
-          if (icn) {
-            return html`<ha-icon .icon=${icn}></ha-icon>`;
-          }
-          icon = undefined;
-          return new Promise(() => {});
-        })
-      : undefined;
-    return icon
-      ? html`${until(
-          icon,
-          html`<ha-svg-icon
-            .path=${stateIconPath(this.stateObj)}
-          ></ha-svg-icon>`
-        )}`
-      : html`<ha-svg-icon .path=${stateIconPath(this.stateObj)}></ha-svg-icon>`;
+    if (!this.hass) {
+      return this._renderFallback();
+    }
+    const icon = entityIcon(this.hass, this.stateObj).then((icn) => {
+      if (icn) {
+        return html`<ha-icon .icon=${icn}></ha-icon>`;
+      }
+      return this._renderFallback();
+    });
+    return html`${until(icon)}`;
+  }
+
+  private _renderFallback() {
+    return html`<ha-svg-icon
+      .path=${stateIconPath(this.stateObj)}
+    ></ha-svg-icon>`;
   }
 }
+
 declare global {
   interface HTMLElementTagNameMap {
     "ha-state-icon": HaStateIcon;

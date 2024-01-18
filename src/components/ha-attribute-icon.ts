@@ -24,43 +24,43 @@ export class HaAttributeIcon extends LitElement {
     if (this.icon) {
       return html`<ha-icon .icon=${this.icon}></ha-icon>`;
     }
+
     if (!this.stateObj || !this.attribute) {
       return nothing;
     }
-    let icon = this.hass
-      ? attributeIcon(
-          this.hass,
-          this.stateObj,
-          this.attribute,
-          this.attributeValue
-        ).then((icn) => {
-          if (icn) {
-            return html`<ha-icon .icon=${icn}></ha-icon>`;
-          }
-          icon = undefined;
-          return new Promise(() => {});
-        })
-      : undefined;
-    return icon
-      ? html`${until(
-          icon,
-          html`<ha-svg-icon
-            .path=${attributeIconPath(
-              this.stateObj,
-              this.attribute,
-              this.attributeValue
-            )}
-          ></ha-svg-icon>`
-        )}`
-      : html`<ha-svg-icon
-          .path=${attributeIconPath(
-            this.stateObj,
-            this.attribute,
-            this.attributeValue
-          )}
-        ></ha-svg-icon>`;
+
+    if (!this.hass) {
+      return this._renderFallback();
+    }
+
+    const icon = attributeIcon(
+      this.hass,
+      this.stateObj,
+      this.attribute,
+      this.attributeValue
+    ).then((icn) => {
+      if (icn) {
+        return html`<ha-icon .icon=${icn}></ha-icon>`;
+      }
+      return this._renderFallback();
+    });
+
+    return html`${until(icon)}`;
+  }
+
+  private _renderFallback() {
+    return html`
+      <ha-svg-icon
+        .path=${attributeIconPath(
+          this.stateObj!,
+          this.attribute!,
+          this.attributeValue!
+        )}
+      ></ha-svg-icon>
+    `;
   }
 }
+
 declare global {
   interface HTMLElementTagNameMap {
     "ha-attribute-icon": HaAttributeIcon;

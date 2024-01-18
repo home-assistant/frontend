@@ -11,6 +11,24 @@ interface IconResources {
   resources: Record<string, string | Record<string, string>>;
 }
 
+interface PlatformIcons {
+  [domain: string]: {
+    [translation_key: string]: {
+      state: Record<string, string>;
+      state_attributes: Record<string, { state: Record<string, string> }>;
+      default: string;
+    };
+  };
+}
+
+interface ComponentIcons {
+  [device_class: string]: {
+    state: Record<string, string>;
+    state_attributes: Record<string, { state: Record<string, string> }>;
+    default: string;
+  };
+}
+
 export type IconCategory = "entity" | "entity_component";
 
 export const getHassIcons = async (
@@ -28,7 +46,7 @@ export const getPlatformIcons = async (
   hass: HomeAssistant,
   integration: string,
   force = false
-): Promise<any> => {
+): Promise<PlatformIcons> => {
   if (!force && integration && integration in resources.entity) {
     return resources.entity[integration];
   }
@@ -43,7 +61,7 @@ export const getComponentIcons = async (
   hass: HomeAssistant,
   domain: string,
   force = false
-): Promise<any> => {
+): Promise<ComponentIcons> => {
   if (!force && resources.entity_component) {
     return resources.entity_component.then((res) => res[domain]);
   }
