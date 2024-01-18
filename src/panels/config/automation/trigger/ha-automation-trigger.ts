@@ -1,16 +1,22 @@
+import { consume } from "@lit-labs/context";
 import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { nestedArrayMove } from "../../../../common/util/array-move";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import { AutomationClipboard, Trigger } from "../../../../data/automation";
-import { HomeAssistant } from "../../../../types";
+import {
+  ReorderMode,
+  reorderModeContext,
+} from "../../../../state/reorder-mode-mixin";
+import { HomeAssistant, ItemPath } from "../../../../types";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -26,9 +32,11 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public nested = false;
+  @property() public path?: ItemPath;
 
-  @property({ type: Boolean }) public reOrderMode = false;
+  @state()
+  @consume({ context: reorderModeContext, subscribe: true })
+  private _reorderMode?: ReorderMode;
 
   @storage({
     key: "automationClipboard",
@@ -42,31 +50,18 @@ export default class HaAutomationTrigger extends LitElement {
 
   private _triggerKeys = new WeakMap<Trigger, string>();
 
+  private get nested() {
+    return this.path !== undefined;
+  }
+
   protected render() {
     return html`
-      ${this.reOrderMode && !this.nested
-        ? html`
-            <ha-alert
-              alert-type="info"
-              .title=${this.hass.localize(
-                "ui.panel.config.automation.editor.re_order_mode.title"
-              )}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.re_order_mode.description_triggers"
-              )}
-              <ha-button slot="action" @click=${this._exitReOrderMode}>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.re_order_mode.exit"
-                )}
-              </ha-button>
-            </ha-alert>
-          `
-        : null}
       <ha-sortable
         handle-selector=".handle"
-        .disabled=${!this.reOrderMode}
+        .disabled=${!this._reorderMode?.active}
         @item-moved=${this._triggerMoved}
+        group="triggers"
+        .path=${this.path}
       >
         <div class="triggers">
           ${repeat(
@@ -74,16 +69,16 @@ export default class HaAutomationTrigger extends LitElement {
             (trigger) => this._getKey(trigger),
             (trg, idx) => html`
               <ha-automation-trigger-row
+                .path=${[...(this.path ?? []), idx]}
                 .index=${idx}
                 .trigger=${trg}
-                .hideMenu=${this.reOrderMode}
+                .hideMenu=${Boolean(this._reorderMode?.active)}
                 @duplicate=${this._duplicateTrigger}
                 @value-changed=${this._triggerChanged}
                 .hass=${this.hass}
                 .disabled=${this.disabled}
-                @re-order=${this._enterReOrderMode}
               >
-                ${this.reOrderMode
+                ${this._reorderMode?.active
                   ? html`
                       <ha-icon-button
                         .index=${idx}
@@ -173,16 +168,6 @@ export default class HaAutomationTrigger extends LitElement {
     }
   }
 
-  private async _enterReOrderMode(ev: CustomEvent) {
-    if (this.nested) return;
-    ev.stopPropagation();
-    this.reOrderMode = true;
-  }
-
-  private async _exitReOrderMode() {
-    this.reOrderMode = false;
-  }
-
   private _getKey(action: Trigger) {
     if (!this._triggerKeys.has(action)) {
       this._triggerKeys.set(action, Math.random().toString());
@@ -203,17 +188,28 @@ export default class HaAutomationTrigger extends LitElement {
     this._move(index, newIndex);
   }
 
-  private _move(index: number, newIndex: number) {
-    const triggers = this.triggers.concat();
-    const trigger = triggers.splice(index, 1)[0];
-    triggers.splice(newIndex, 0, trigger);
+  private _move(
+    oldIndex: number,
+    newIndex: number,
+    oldPath?: ItemPath,
+    newPath?: ItemPath
+  ) {
+    const triggers = nestedArrayMove(
+      this.triggers,
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath
+    );
+
     fireEvent(this, "value-changed", { value: triggers });
   }
 
   private _triggerMoved(ev: CustomEvent): void {
+    if (this.nested) return;
     ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
-    this._move(oldIndex, newIndex);
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    this._move(oldIndex, newIndex, oldPath, newPath);
   }
 
   private _triggerChanged(ev: CustomEvent) {

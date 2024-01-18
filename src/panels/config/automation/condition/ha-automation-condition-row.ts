@@ -39,8 +39,12 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
+import { HomeAssistant, ItemPath } from "../../../../types";
 import "./ha-automation-condition-editor";
+import {
+  ReorderMode,
+  reorderModeContext,
+} from "../../../../state/reorder-mode-mixin";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -81,9 +85,9 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property({ type: Boolean }) public hideMenu = false;
 
-  @property({ type: Boolean }) public reOrderMode = false;
-
   @property({ type: Boolean }) public disabled = false;
+
+  @property() public path?: ItemPath;
 
   @storage({
     key: "automationClipboard",
@@ -105,10 +109,17 @@ export default class HaAutomationConditionRow extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
+  @state()
+  @consume({ context: reorderModeContext, subscribe: true })
+  private _reorderMode?: ReorderMode;
+
   protected render() {
     if (!this.condition) {
       return nothing;
     }
+
+    const noReorderModeAvailable = this._reorderMode === undefined;
+
     return html`
       <ha-card outlined>
         ${this.condition.enabled === false
@@ -163,7 +174,12 @@ export default class HaAutomationConditionRow extends LitElement {
                     ></ha-svg-icon>
                   </mwc-list-item>
 
-                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                  <mwc-list-item
+                    graphic="icon"
+                    .disabled=${this.disabled}
+                    class=${classMap({ hidden: noReorderModeAvailable })}
+                    ?aria-hidden=${noReorderModeAvailable}
+                  >
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.conditions.re_order"
                     )}
@@ -297,7 +313,7 @@ export default class HaAutomationConditionRow extends LitElement {
               .disabled=${this.disabled}
               .hass=${this.hass}
               .condition=${this.condition}
-              .reOrderMode=${this.reOrderMode}
+              .path=${this.path}
             ></ha-automation-condition-editor>
           </div>
         </ha-expansion-panel>
@@ -344,7 +360,7 @@ export default class HaAutomationConditionRow extends LitElement {
         await this._renameCondition();
         break;
       case 2:
-        fireEvent(this, "re-order");
+        this._reorderMode?.enter();
         break;
       case 3:
         fireEvent(this, "duplicate");
@@ -546,6 +562,9 @@ export default class HaAutomationConditionRow extends LitElement {
         }
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+        }
+        mwc-list-item.hidden {
+          display: none;
         }
         .testing {
           position: absolute;
