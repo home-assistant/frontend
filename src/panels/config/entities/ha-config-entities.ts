@@ -13,7 +13,14 @@ import {
   mdiUndo,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -91,7 +98,7 @@ export class HaConfigEntities extends LitElement {
 
   @state() private _stateEntities: StateEntity[] = [];
 
-  @property() public _entries?: ConfigEntry[];
+  @state() private _entries?: ConfigEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -681,7 +688,7 @@ export class HaConfigEntities extends LitElement {
     `;
   }
 
-  public willUpdate(changedProps): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     const oldHass = changedProps.get("hass");
     let changed = false;
