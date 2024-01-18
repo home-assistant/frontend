@@ -14,6 +14,7 @@ import {
 import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -36,7 +37,11 @@ import {
   showPromptDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
+import {
+  ReorderMode,
+  reorderModeContext,
+} from "../../../../../state/reorder-mode-mixin";
+import { HomeAssistant, ItemPath } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
 
 const preventDefault = (ev) => ev.preventDefault();
@@ -47,9 +52,9 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public action!: ChooseAction;
+  @property({ attribute: false }) public path?: ItemPath;
 
-  @property({ type: Boolean }) public reOrderMode = false;
+  @property() public action!: ChooseAction;
 
   @state() private _showDefault = false;
 
@@ -58,6 +63,10 @@ export class HaChooseAction extends LitElement implements ActionElement {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
+
+  @state()
+  @consume({ context: reorderModeContext, subscribe: true })
+  private _reorderMode?: ReorderMode;
 
   private _expandLast = false;
 
@@ -95,11 +104,14 @@ export class HaChooseAction extends LitElement implements ActionElement {
   protected render() {
     const action = this.action;
 
+    const noReorderModeAvailable = this._reorderMode === undefined;
+
     return html`
       <ha-sortable
         handle-selector=".handle"
-        .disabled=${!this.reOrderMode}
-        @item-moved=${this._optionMoved}
+        .disabled=${!this._reorderMode?.active}
+        group="choose-options"
+        .path=${[...(this.path ?? []), "choose"]}
       >
         <div class="options">
           ${repeat(
@@ -123,7 +135,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         ? ""
                         : this._getDescription(option))}
                     </h3>
-                    ${this.reOrderMode
+                    ${this._reorderMode?.active
                       ? html`
                           <ha-icon-button
                             .index=${idx}
@@ -178,6 +190,10 @@ export class HaChooseAction extends LitElement implements ActionElement {
                             <mwc-list-item
                               graphic="icon"
                               .disabled=${this.disabled}
+                              class=${classMap({
+                                hidden: noReorderModeAvailable,
+                              })}
+                              ?aria-hidden=${noReorderModeAvailable}
                             >
                               ${this.hass.localize(
                                 "ui.panel.config.automation.editor.actions.re_order"
@@ -224,11 +240,15 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         )}:
                       </h4>
                       <ha-automation-condition
-                        nested
+                        .path=${[
+                          ...(this.path ?? []),
+                          "choose",
+                          idx,
+                          "conditions",
+                        ]}
                         .conditions=${ensureArray<string | Condition>(
                           option.conditions
                         )}
-                        .reOrderMode=${this.reOrderMode}
                         .disabled=${this.disabled}
                         .hass=${this.hass}
                         .idx=${idx}
@@ -240,9 +260,13 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         )}:
                       </h4>
                       <ha-automation-action
-                        nested
+                        .path=${[
+                          ...(this.path ?? []),
+                          "choose",
+                          idx,
+                          "sequence",
+                        ]}
                         .actions=${ensureArray(option.sequence) || []}
-                        .reOrderMode=${this.reOrderMode}
                         .disabled=${this.disabled}
                         .hass=${this.hass}
                         .idx=${idx}
@@ -274,9 +298,8 @@ export class HaChooseAction extends LitElement implements ActionElement {
               )}:
             </h2>
             <ha-automation-action
-              nested
+              .path=${[...(this.path ?? []), "choose", "default"]}
               .actions=${ensureArray(action.default) || []}
-              .reOrderMode=${this.reOrderMode}
               .disabled=${this.disabled}
               @value-changed=${this._defaultChanged}
               .hass=${this.hass}
@@ -302,7 +325,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
         await this._renameAction(ev);
         break;
       case 1:
-        fireEvent(this, "re-order");
+        this._reorderMode?.enter();
         break;
       case 2:
         this._duplicateOption(ev);
@@ -435,12 +458,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
     });
   }
 
-  private _optionMoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
-    this._move(oldIndex, newIndex);
-  }
-
   private _removeOption(ev: CustomEvent) {
     const index = (ev.target as any).idx;
     showConfirmationDialog(this, {
@@ -494,6 +511,12 @@ export class HaChooseAction extends LitElement implements ActionElement {
         ha-expansion-panel {
           --expansion-panel-summary-padding: 0 0 0 8px;
           --expansion-panel-content-padding: 0;
+        }
+        mwc-list-item[disabled] {
+          --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+        }
+        mwc-list-item.hidden {
+          display: none;
         }
         h3 {
           margin: 0;
