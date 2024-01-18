@@ -61,7 +61,7 @@ export class HaLocationsEditor extends LitElement {
 
   @property({ type: Number }) public zoom = 16;
 
-  @property({ type: Boolean }) public darkMode?: boolean;
+  @property({ type: Boolean }) public darkMode = false;
 
   @state() private _locationMarkers?: Record<string, Marker | Circle>;
 

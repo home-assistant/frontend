@@ -34,7 +34,7 @@ const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {
 class PanelEnergy extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() private _viewIndex = 0;
 

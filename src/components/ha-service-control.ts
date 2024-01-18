@@ -90,9 +90,9 @@ export class HaServiceControl extends ReorderModeMixin(LitElement) {
 
   @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 
-  @property({ type: Boolean }) public showAdvanced?: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
-  @property({ type: Boolean, reflect: true }) public hidePicker?: boolean;
+  @property({ type: Boolean, reflect: true }) public hidePicker = false;
 
   @state() private _value!: this["value"];
 
