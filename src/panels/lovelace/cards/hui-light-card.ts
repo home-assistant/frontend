@@ -114,6 +114,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         <div class="content">
           <div id="controls">
             <div id="slider">
+              <!-- @ts-ignore Round-slider has no tag definition or exported type -->
               <round-slider
                 min="1"
                 max="100"
