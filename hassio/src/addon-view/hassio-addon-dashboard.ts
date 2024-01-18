@@ -51,7 +51,7 @@ class HassioAddonDashboard extends LitElement {
     | HassioAddonDetails
     | StoreAddonDetails;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _error?: string;
 

@@ -38,7 +38,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ type: Boolean }) public editMode?: boolean;
+  @property({ type: Boolean }) public editMode = false;
 
   @state() private _config?: MarkdownCardConfig;
 

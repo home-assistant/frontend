@@ -27,9 +27,9 @@ import "./trigger/ha-automation-trigger";
 export class HaManualAutomationEditor extends ReorderModeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean }) public disabled = false;
 

@@ -25,7 +25,7 @@ interface AssistDeviceExtra extends AssistDevice {
 class AssistDevicesPage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _pipelines: Record<string, AssistPipeline> = {};
 

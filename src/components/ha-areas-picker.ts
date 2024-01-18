@@ -56,9 +56,9 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: "pick-area-label" })
   public pickAreaLabel?: string;
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   protected render() {
     if (!this.hass) {

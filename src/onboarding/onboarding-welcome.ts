@@ -19,7 +19,7 @@ class OnboardingWelcome extends LitElement {
 
   @property() public localize!: LocalizeFunc;
 
-  @property({ type: Boolean }) public supervisor?: boolean;
+  @property({ type: Boolean }) public supervisor = false;
 
   protected render(): TemplateResult {
     return html`

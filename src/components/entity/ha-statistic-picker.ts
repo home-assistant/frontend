@@ -44,7 +44,7 @@ export class HaStatisticPicker extends LitElement {
 
   @property({ type: Array }) public statisticIds?: StatisticsMetaData[];
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
   /**
    * Show only statistics natively stored with these units of measurements.

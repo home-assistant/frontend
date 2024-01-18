@@ -19,7 +19,7 @@ interface BranchConfig {
 export class HatGraphBranch extends LitElement {
   @property({ reflect: true, type: Boolean }) disabled?: boolean;
 
-  @property({ type: Boolean }) selected?: boolean;
+  @property({ type: Boolean }) selected = false;
 
   @property({ type: Boolean }) start = false;
 
