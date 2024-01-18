@@ -36,8 +36,8 @@ export class HaSortable extends LitElement {
   @property({ type: String, attribute: "handle-selector" })
   public handleSelector?: string;
 
-  @property({ type: String, attribute: "group" })
-  public group?: string;
+  @property({ type: String })
+  public group?: string | SortableInstance.GroupOptions;
 
   @property({ type: Number, attribute: "swap-threshold" })
   public swapThreshold?: number;

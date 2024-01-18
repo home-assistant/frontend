@@ -1,8 +1,9 @@
 import { mdiArrowAll, mdiDelete, mdiPencil, mdiPlus } from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
 import { classMap } from "lit/directives/class-map";
+import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { nestedArrayMove } from "../../../common/util/array_move";
 import "../../../components/ha-icon-button";
@@ -55,7 +56,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
       <ha-sortable
         .disabled=${!editMode}
         @item-moved=${this._cardMoved}
-        group="card"
+        group="section"
         handle-selector=".handle"
         draggable-selector=".card"
         .rollback=${false}
@@ -111,7 +112,22 @@ export class GridView extends LitElement implements LovelaceViewElement {
   }
 
   private _addCard(): void {
-    fireEvent(this, "ll-create-card");
+    const cards = [
+      ...(this._config!.cards ?? []),
+      { type: "section", cards: [] },
+    ];
+
+    const config = this._config!;
+    const newConfig = {
+      ...config,
+      cards,
+    };
+    this.lovelace?.saveConfig({
+      ...this.lovelace.config,
+      views: this.lovelace.config.views.map((view, i) =>
+        i === this.index ? newConfig : view
+      ),
+    });
   }
 
   private _editCard(ev): void {
@@ -129,7 +145,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
 
   private _cardMoved(ev: CustomEvent) {
     const cards = nestedArrayMove(
-      this._config!.cards,
+      deepClone(this._config!.cards),
       ev.detail.oldIndex,
       ev.detail.newIndex,
       ev.detail.oldPath,
@@ -159,10 +175,6 @@ export class GridView extends LitElement implements LovelaceViewElement {
 
       .card {
         position: relative;
-        height: fit-content;
-      }
-
-      .card-wrapper {
       }
 
       .container {
