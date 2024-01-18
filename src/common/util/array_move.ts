@@ -1,3 +1,4 @@
+import deepClone from "deep-clone-simple";
 import { ItemPath } from "../../types";
 
 function findNestedItem(
@@ -27,7 +28,7 @@ export function nestedArrayMove<A>(
   oldPath?: ItemPath,
   newPath?: ItemPath
 ): A {
-  const newObj = (Array.isArray(obj) ? [...obj] : { ...obj }) as A;
+  const newObj = deepClone(obj);
   const from = oldPath ? findNestedItem(newObj, oldPath) : newObj;
   const to = newPath ? findNestedItem(newObj, newPath, true) : newObj;
 

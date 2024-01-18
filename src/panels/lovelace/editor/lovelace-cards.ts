@@ -2,6 +2,10 @@ import { Card } from "./types";
 
 export const coreCards: Card[] = [
   {
+    type: "section",
+    showElement: true,
+  },
+  {
     type: "alarm-panel",
     showElement: true,
   },
