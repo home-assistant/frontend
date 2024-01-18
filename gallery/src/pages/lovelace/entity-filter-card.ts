@@ -169,6 +169,46 @@ const CONFIGS = [
       value: sensor.gas_station_lowest_price
     `,
   },
+  {
+    heading: "Filtered entities with condition operator",
+    config: `
+- type: entity-filter
+  entities:
+    - sensor.gas_station_auchan_saint_priest_e10
+    - sensor.gas_station_carrefour_venissieux_e10
+    - sensor.gas_station_relais_lyon_mermoz_e10
+  state_filter:
+    - condition: operator
+      operator: in
+      value: sensor.gas_station_lowest_price
+    `,
+  },
+  {
+    heading: "Filtered entities with condition state_not",
+    config: `
+- type: entity-filter
+  entities:
+    - sensor.gas_station_auchan_saint_priest_e10
+    - sensor.gas_station_carrefour_venissieux_e10
+    - sensor.gas_station_relais_lyon_mermoz_e10
+  state_filter:
+    - condition: state
+      state_not: sensor.gas_station_lowest_price
+    `,
+  },
+  {
+    heading: "Filtered entities with condition above",
+    config: `
+- type: entity-filter
+  entities:
+    - sensor.gas_station_auchan_saint_priest_e10
+    - sensor.gas_station_carrefour_venissieux_e10
+    - sensor.gas_station_relais_lyon_mermoz_e10
+  state_filter:
+    - condition: numeric_state
+      above: sensor.gas_station_lowest_price
+    `,
+  },
 ];
 
 @customElement("demo-lovelace-entity-filter-card")

@@ -14,6 +14,7 @@ import {
 } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import { LovelaceCardFeatureConfig } from "../card-features/types";
+import { Filter } from "../common/evaluate-filter";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -193,7 +194,7 @@ export interface EnergyCarbonGaugeCardConfig extends LovelaceCardConfig {
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: Array<EntityFilterEntityConfig | string>;
-  state_filter: Array<{ key: string } | string>;
+  state_filter: Array<Filter | string | number>;
   card?: Partial<LovelaceCardConfig>;
   show_empty?: boolean;
 }

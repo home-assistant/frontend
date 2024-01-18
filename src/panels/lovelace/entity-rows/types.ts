@@ -1,5 +1,6 @@
 import { ActionConfig } from "../../../data/lovelace/config/action";
 import { HomeAssistant } from "../../../types";
+import { Filter } from "../common/evaluate-filter";
 import { Condition } from "../common/validate-condition";
 import { TimestampRenderingFormat } from "../components/types";
 
@@ -14,7 +15,7 @@ export interface ActionRowConfig extends EntityConfig {
   action_name?: string;
 }
 export interface EntityFilterEntityConfig extends EntityConfig {
-  state_filter?: Array<{ key: string } | string>;
+  state_filter?: Array<Filter | string | number>;
 }
 export interface DividerConfig {
   type: "divider";

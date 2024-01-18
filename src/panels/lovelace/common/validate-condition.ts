@@ -10,45 +10,49 @@ export type Condition =
   | OrCondition
   | AndCondition;
 
-export type LegacyCondition = {
+export interface LegacyCondition {
   entity?: string;
   state?: string | string[];
   state_not?: string | string[];
-};
+}
 
-export type NumericStateCondition = {
+interface BaseCondition {
+  condition: string;
+}
+
+export interface NumericStateCondition extends BaseCondition {
   condition: "numeric_state";
   entity?: string;
   below?: number;
   above?: number;
-};
+}
 
-export type StateCondition = {
+export interface StateCondition extends BaseCondition {
   condition: "state";
   entity?: string;
   state?: string | string[];
   state_not?: string | string[];
-};
+}
 
-export type ScreenCondition = {
+export interface ScreenCondition extends BaseCondition {
   condition: "screen";
   media_query?: string;
-};
+}
 
-export type UserCondition = {
+export interface UserCondition extends BaseCondition {
   condition: "user";
   users?: string[];
-};
+}
 
-export type OrCondition = {
+export interface OrCondition extends BaseCondition {
   condition: "or";
   conditions?: Condition[];
-};
+}
 
-export type AndCondition = {
+export interface AndCondition extends BaseCondition {
   condition: "and";
   conditions?: Condition[];
-};
+}
 
 function checkStateCondition(
   condition: StateCondition | LegacyCondition,
