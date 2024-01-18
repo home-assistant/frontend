@@ -23,7 +23,7 @@ import {
   ClimateEntityFeature,
   compareClimateHvacModes,
 } from "../../../data/climate";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE, isUnavailableState } from "../../../data/entity";
 import "../../../state-control/climate/ha-state-control-climate-humidity";
 import "../../../state-control/climate/ha-state-control-climate-temperature";
 import { HomeAssistant } from "../../../types";
@@ -161,7 +161,7 @@ class MoreInfoClimate extends LitElement {
           @selected=${this._handleOperationModeChanged}
           @closed=${stopPropagation}
         >
-          ${stateObj.state
+          ${!isUnavailableState(this.stateObj.state)
             ? html`<ha-attribute-icon
                 slot="icon"
                 .hass=${this.hass}
