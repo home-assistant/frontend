@@ -32,7 +32,7 @@ export class StateBadge extends LitElement {
 
   @property() public overrideImage?: string;
 
-  @property({ type: Boolean }) public stateColor?: boolean;
+  @property({ type: Boolean }) public stateColor = false;
 
   @property() public color?: string;
 

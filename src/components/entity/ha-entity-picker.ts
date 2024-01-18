@@ -41,9 +41,9 @@ export class HaEntityPicker extends LitElement {
 
   @property({ type: Boolean }) public autofocus = false;
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   @property({ type: Boolean, attribute: "allow-custom-entity" })
   public allowCustomEntity;

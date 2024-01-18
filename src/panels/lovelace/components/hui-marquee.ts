@@ -12,7 +12,7 @@ import { customElement, property } from "lit/decorators";
 class HuiMarquee extends LitElement {
   @property() public text?: string;
 
-  @property({ type: Boolean }) public active?: boolean;
+  @property({ type: Boolean }) public active = false;
 
   @property({ reflect: true, type: Boolean, attribute: "animating" })
   private _animating = false;

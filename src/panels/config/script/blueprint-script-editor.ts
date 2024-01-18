@@ -24,7 +24,7 @@ import { ReorderModeMixin } from "../../../state/reorder-mode-mixin";
 export class HaBlueprintScriptEditor extends ReorderModeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 

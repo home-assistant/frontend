@@ -31,7 +31,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
 
   @property() public device?: ZHADevice;
 
-  @property({ type: Boolean }) public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _entities: EntityRegistryEntry[] = [];
 

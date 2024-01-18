@@ -88,9 +88,9 @@ export class HaDevicePicker extends LitElement {
 
   @property() public entityFilter?: HaDevicePickerEntityFilterFunc;
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   @state() private _opened?: boolean;
 

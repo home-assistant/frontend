@@ -24,7 +24,7 @@ export interface DeviceRowData extends DataTableRowData {
 class ZHADeviceNeighbors extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public device: ZHADevice | undefined;
 

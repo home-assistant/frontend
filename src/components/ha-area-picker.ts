@@ -92,9 +92,9 @@ export class HaAreaPicker extends LitElement {
 
   @property() public entityFilter?: (entity: HassEntity) => boolean;
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   @state() private _opened?: boolean;
 

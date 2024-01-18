@@ -33,7 +33,7 @@ export class HaGauge extends LitElement {
 
   @property() public locale!: FrontendLocaleData;
 
-  @property({ type: Boolean }) public needle?: boolean;
+  @property({ type: Boolean }) public needle = false;
 
   @property() public levels?: LevelDefinition[];
 
