@@ -46,7 +46,7 @@ export class HuiClimateHvacModesCardFeatureEditor
               options: ["dropdown", "icons"].map((mode) => ({
                 value: mode,
                 label: localize(
-                  `ui.panel.lovelace.editor.features.types.climate-preset-modes.style_list.${mode}`
+                  `ui.panel.lovelace.editor.features.types.preset-modes.style_list.${mode}`
                 ),
               })),
             },

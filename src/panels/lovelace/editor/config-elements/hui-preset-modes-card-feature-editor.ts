@@ -12,13 +12,13 @@ import type {
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import {
-  ClimatePresetModesCardFeatureConfig,
+  PresetModesCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
 
-@customElement("hui-climate-preset-modes-card-feature-editor")
-export class HuiClimatePresetModesCardFeatureEditor
+@customElement("hui-preset-modes-card-feature-editor")
+export class HuiPresetModesCardFeatureEditor
   extends LitElement
   implements LovelaceCardFeatureEditor
 {
@@ -26,9 +26,9 @@ export class HuiClimatePresetModesCardFeatureEditor
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: ClimatePresetModesCardFeatureConfig;
+  @state() private _config?: PresetModesCardFeatureConfig;
 
-  public setConfig(config: ClimatePresetModesCardFeatureConfig): void {
+  public setConfig(config: PresetModesCardFeatureConfig): void {
     this._config = config;
   }
 
@@ -48,7 +48,7 @@ export class HuiClimatePresetModesCardFeatureEditor
               options: ["dropdown", "icons"].map((mode) => ({
                 value: mode,
                 label: localize(
-                  `ui.panel.lovelace.editor.features.types.climate-preset-modes.style_list.${mode}`
+                  `ui.panel.lovelace.editor.features.types.preset-modes.style_list.${mode}`
                 ),
               })),
             },
@@ -84,7 +84,7 @@ export class HuiClimatePresetModesCardFeatureEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const data: ClimatePresetModesCardFeatureConfig = {
+    const data: PresetModesCardFeatureConfig = {
       style: "dropdown",
       preset_modes: [],
       ...this._config,
@@ -118,7 +118,7 @@ export class HuiClimatePresetModesCardFeatureEditor
       case "style":
       case "preset_modes":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.features.types.climate-preset-modes.${schema.name}`
+          `ui.panel.lovelace.editor.features.types.preset-modes.${schema.name}`
         );
       default:
         return "";
@@ -128,6 +128,6 @@ export class HuiClimatePresetModesCardFeatureEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-climate-preset-modes-card-feature-editor": HuiClimatePresetModesCardFeatureEditor;
+    "hui-preset-modes-card-feature-editor": HuiPresetModesCardFeatureEditor;
   }
 }

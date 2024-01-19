@@ -47,8 +47,8 @@ export interface ClimateHvacModesCardFeatureConfig {
   hvac_modes?: HvacMode[];
 }
 
-export interface ClimatePresetModesCardFeatureConfig {
-  type: "climate-preset-modes";
+export interface PresetModesCardFeatureConfig {
+  type: "preset-modes";
   style?: "dropdown" | "icons";
   preset_modes?: string[];
 }
@@ -118,7 +118,6 @@ export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
   | ClimateFanModesCardFeatureConfig
   | ClimateHvacModesCardFeatureConfig
-  | ClimatePresetModesCardFeatureConfig
   | CoverOpenCloseCardFeatureConfig
   | CoverPositionCardFeatureConfig
   | CoverTiltPositionCardFeatureConfig
@@ -129,13 +128,14 @@ export type LovelaceCardFeatureConfig =
   | LawnMowerCommandsCardFeatureConfig
   | LightBrightnessCardFeatureConfig
   | LightColorTempCardFeatureConfig
-  | VacuumCommandsCardFeatureConfig
+  | NumericInputCardFeatureConfig
+  | PresetModesCardFeatureConfig
+  | SelectOptionsCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
-  | WaterHeaterOperationModesCardFeatureConfig
-  | SelectOptionsCardFeatureConfig
-  | NumericInputCardFeatureConfig
-  | UpdateActionsCardFeatureConfig;
+  | UpdateActionsCardFeatureConfig
+  | VacuumCommandsCardFeatureConfig
+  | WaterHeaterOperationModesCardFeatureConfig;
 
 export type LovelaceCardFeatureContext = {
   entity_id?: string;
