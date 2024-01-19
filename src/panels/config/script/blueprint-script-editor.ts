@@ -26,7 +26,7 @@ export class HaBlueprintScriptEditor extends ReorderModeMixin(LitElement) {
 
   @property({ type: Boolean }) public isWide = false;
 
-  @property({ reflect: true, type: Boolean }) public narrow!: boolean;
+  @property({ reflect: true, type: Boolean }) public narrow = false;
 
   @property({ type: Boolean }) public disabled = false;
 

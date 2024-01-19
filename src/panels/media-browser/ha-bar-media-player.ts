@@ -70,8 +70,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public entityId!: string;
 
-  @property({ type: Boolean, reflect: true })
-  public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @query("mwc-linear-progress") private _progressBar?: LinearProgress;
 

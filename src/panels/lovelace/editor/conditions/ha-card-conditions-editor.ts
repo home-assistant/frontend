@@ -46,7 +46,7 @@ export class HaCardConditionsEditor extends LitElement {
     | LegacyCondition
   )[];
 
-  @property({ attribute: true, type: Boolean }) public nested?: boolean;
+  @property({ type: Boolean }) public nested = false;
 
   private _focusLastConditionOnChange = false;
 

@@ -42,8 +42,7 @@ import "./ha-full-calendar";
 class PanelCalendar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true })
-  public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public mobile = false;
 
