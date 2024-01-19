@@ -114,8 +114,7 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
 class HaConfigDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true })
-  public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Boolean }) public isWide = false;
 

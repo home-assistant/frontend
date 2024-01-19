@@ -8,7 +8,7 @@ import { SPACING, NODE_SIZE } from "./hat-graph-const";
  */
 @customElement("hat-graph-spacer")
 export class HatGraphSpacer extends LitElement {
-  @property({ reflect: true, type: Boolean }) disabled?: boolean;
+  @property({ reflect: true, type: Boolean }) public disabled = false;
 
   render() {
     return html`

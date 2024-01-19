@@ -30,7 +30,7 @@ export class HaBlueprintAutomationEditor extends ReorderModeMixin(LitElement) {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ reflect: true, type: Boolean }) public narrow!: boolean;
+  @property({ reflect: true, type: Boolean }) public narrow = false;
 
   @property() public config!: BlueprintAutomationConfig;
 
