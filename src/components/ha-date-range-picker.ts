@@ -61,11 +61,11 @@ export class HaDateRangePicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) private _hour24format = false;
+  @property({ type: Boolean }) public minimal = false;
 
-  @property({ type: String }) private _rtlDirection = "ltr";
+  @state() private _hour24format = false;
 
-  @property({ type: Boolean }) private minimal = false;
+  @state() private _rtlDirection = "ltr";
 
   @property({ type: Boolean }) public extendedPresets = false;
 

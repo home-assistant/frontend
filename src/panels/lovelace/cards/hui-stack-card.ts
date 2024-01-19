@@ -30,7 +30,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   @property({ type: Boolean }) public editMode = false;
 
-  @property() protected _cards?: LovelaceCard[];
+  @state() protected _cards?: LovelaceCard[];
 
   @state() protected _config?: T;
 

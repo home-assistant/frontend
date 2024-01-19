@@ -72,8 +72,7 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
 
   @state() private _configEntries?: ConfigEntryExtended[];
 
-  @property()
-  private _configEntriesInProgress?: DataEntryFlowProgressExtended[];
+  @state() private _configEntriesInProgress?: DataEntryFlowProgressExtended[];
 
   private _loadTranslationsPromise?: Promise<LocalizeFunc>;
 

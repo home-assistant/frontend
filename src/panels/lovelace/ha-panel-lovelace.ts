@@ -60,8 +60,7 @@ export class LovelacePanel extends LitElement {
 
   @property({ attribute: false }) public route?: Route;
 
-  @property()
-  private _panelState?: "loading" | "loaded" | "error" | "yaml-editor" =
+  @state() private _panelState: "loading" | "loaded" | "error" | "yaml-editor" =
     "loading";
 
   @state() private _errorMsg?: string;
@@ -114,7 +113,7 @@ export class LovelacePanel extends LitElement {
   }
 
   protected render(): TemplateResult | void {
-    const panelState = this._panelState!;
+    const panelState = this._panelState;
 
     if (panelState === "loaded") {
       return html`
