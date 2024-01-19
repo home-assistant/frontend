@@ -263,7 +263,6 @@ export default class HaAutomationActionRow extends LitElement {
                     graphic="icon"
                     .disabled=${this.disabled}
                     class=${classMap({ hidden: noReorderModeAvailable })}
-                    ?aria-hidden=${noReorderModeAvailable}
                   >
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.actions.re_order"

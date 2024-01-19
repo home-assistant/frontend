@@ -193,7 +193,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
                               class=${classMap({
                                 hidden: noReorderModeAvailable,
                               })}
-                              ?aria-hidden=${noReorderModeAvailable}
                             >
                               ${this.hass.localize(
                                 "ui.panel.config.automation.editor.actions.re_order"
