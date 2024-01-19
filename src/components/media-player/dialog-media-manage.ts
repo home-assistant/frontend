@@ -25,7 +25,6 @@ import "../ha-dialog";
 import "../ha-dialog-header";
 import "../ha-svg-icon";
 import "../ha-tip";
-import "./ha-media-player-browse";
 import "./ha-media-upload-button";
 import type { MediaManageDialogParams } from "./show-media-manage-dialog";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";

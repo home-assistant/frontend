@@ -212,6 +212,7 @@ export class HuiCreateDialogCard
 
     showEditCardDialog(this, {
       lovelaceConfig: this._params!.lovelaceConfig,
+      preSaveConfig: this._params!.preSaveConfig,
       saveConfig: this._params!.saveConfig,
       path: this._params!.path,
       cardConfig: config,

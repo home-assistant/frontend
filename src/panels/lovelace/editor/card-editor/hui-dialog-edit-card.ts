@@ -367,17 +367,20 @@ export class HuiDialogEditCard
       return;
     }
     this._saving = true;
+    const cardConfig = this._params?.preSaveConfig
+      ? await this._params.preSaveConfig(this._cardConfig!)
+      : this._cardConfig!;
     await this._params!.saveConfig(
       this._params!.path.length === 1
         ? addCard(
             this._params!.lovelaceConfig,
             this._params!.path as [number],
-            this._cardConfig!
+            cardConfig
           )
         : replaceCard(
             this._params!.lovelaceConfig,
             this._params!.path as [number, number],
-            this._cardConfig!
+            cardConfig
           )
     );
     this._saving = false;

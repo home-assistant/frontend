@@ -35,7 +35,13 @@ import {
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "ll-create-card": undefined;
+    "ll-create-card":
+      | {
+          preSaveConfig?: (
+            config: LovelaceCardConfig
+          ) => LovelaceCardConfig | Promise<LovelaceCardConfig>;
+        }
+      | undefined;
     "ll-edit-card": { path: [number] | [number, number] };
     "ll-delete-card": { path: [number] | [number, number]; confirm: boolean };
   }
@@ -236,9 +242,10 @@ export class HUIView extends ReactiveElement {
   private _createLayoutElement(config: LovelaceViewConfig): void {
     this._layoutElement = createViewElement(config) as LovelaceViewElement;
     this._layoutElementType = config.type;
-    this._layoutElement.addEventListener("ll-create-card", () => {
+    this._layoutElement.addEventListener("ll-create-card", (ev) => {
       showCreateCardDialog(this, {
         lovelaceConfig: this.lovelace.config,
+        preSaveConfig: ev.detail.preSaveConfig,
         saveConfig: this.lovelace.saveConfig,
         path: [this.index],
       });

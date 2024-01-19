@@ -9235,6 +9235,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"gridstack@npm:10.0.1":
+  version: 10.0.1
+  resolution: "gridstack@npm:10.0.1"
+  checksum: 5310d1e299f01bba68162d1cf69725248a3a4baee2088276927597f74894da6a432981d2e1879464faee91f0011fc4f6cd8b71dceb812a175bb7cbcf4ab7ea8b
+  languageName: node
+  linkType: hard
+
 "gulp-cli@npm:^2.2.0":
   version: 2.3.0
   resolution: "gulp-cli@npm:2.3.0"
@@ -9613,6 +9620,7 @@ __metadata:
     fuse.js: "npm:7.0.0"
     glob: "npm:10.3.10"
     google-timezones-json: "npm:1.2.0"
+    gridstack: "npm:10.0.1"
     gulp: "npm:4.0.2"
     gulp-flatmap: "npm:1.0.2"
     gulp-json-transform: "npm:0.4.8"

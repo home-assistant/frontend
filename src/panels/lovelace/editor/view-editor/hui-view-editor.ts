@@ -9,6 +9,7 @@ import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import {
   DEFAULT_VIEW_LAYOUT,
+  MANUAL_VIEW_LAYOUT,
   PANEL_VIEW_LAYOUT,
   SIDEBAR_VIEW_LAYOUT,
 } from "../../views/const";
@@ -53,6 +54,7 @@ export class HuiViewEditor extends LitElement {
                   DEFAULT_VIEW_LAYOUT,
                   SIDEBAR_VIEW_LAYOUT,
                   PANEL_VIEW_LAYOUT,
+                  MANUAL_VIEW_LAYOUT,
                 ] as const
               ).map((type) => ({
                 value: type,

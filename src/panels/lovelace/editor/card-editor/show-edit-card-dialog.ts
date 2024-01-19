@@ -4,6 +4,9 @@ import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 
 export interface EditCardDialogParams {
   lovelaceConfig: LovelaceConfig;
+  preSaveConfig?: (
+    config: LovelaceCardConfig
+  ) => LovelaceCardConfig | Promise<LovelaceCardConfig>;
   saveConfig: (config: LovelaceConfig) => void;
   path: [number] | [number, number];
   cardConfig?: LovelaceCardConfig;
