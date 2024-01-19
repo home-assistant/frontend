@@ -91,6 +91,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
                     <state-badge
                       @click=${this._openMoreInfo}
                       .title=${entity.stateName!}
+                      .hass=${this.hass}
                       .stateObj=${this.hass!.states[entity.entity_id]}
                       slot="item-icon"
                     ></state-badge>

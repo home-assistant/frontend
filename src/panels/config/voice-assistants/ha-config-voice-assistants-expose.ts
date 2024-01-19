@@ -137,7 +137,8 @@ export class VoiceAssistantsExpose extends LitElement {
         template: (entry) => html`
           <ha-state-icon
             title=${ifDefined(entry.entity?.state)}
-            .state=${entry.entity}
+            .stateObj=${entry.entity}
+            .hass=${this.hass}
           ></ha-state-icon>
         `,
       },

@@ -126,9 +126,9 @@ export class HaControlSelectMenu extends SelectBase {
 
     return html`
       <div class="icon">
-        ${icon && "path" in icon
+        ${icon && icon.localName === "ha-svg-icon" && "path" in icon
           ? html`<ha-svg-icon .path=${icon.path}></ha-svg-icon>`
-          : icon && "icon" in icon
+          : icon && icon.localName === "ha-icon" && "icon" in icon
             ? html`<ha-icon .path=${icon.icon}></ha-icon>`
             : html`<slot name="icon"></slot>`}
       </div>

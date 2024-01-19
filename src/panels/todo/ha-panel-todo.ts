@@ -167,7 +167,11 @@ class PanelTodo extends LitElement {
           .entityId=${list.entity_id}
           .activated=${list.entity_id === this._entityId}
         >
-          <ha-state-icon .state=${list} slot="graphic"></ha-state-icon
+          <ha-state-icon
+            .stateObj=${list}
+            .hass=${this.hass}
+            slot="graphic"
+          ></ha-state-icon
           >${list.name}
         </ha-list-item> `
     );

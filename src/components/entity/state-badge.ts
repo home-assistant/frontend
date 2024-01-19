@@ -1,11 +1,11 @@
 import { mdiAlert } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
@@ -14,8 +14,8 @@ import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import {
-  stateColorCss,
   stateColorBrightness,
+  stateColorCss,
 } from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
@@ -90,11 +90,12 @@ export class StateBadge extends LitElement {
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
 
     return html`<ha-state-icon
+      .hass=${this.hass}
       style=${styleMap(this._iconStyle)}
       data-domain=${ifDefined(domain)}
       data-state=${ifDefined(stateObj?.state)}
       .icon=${this.overrideIcon}
-      .state=${stateObj}
+      .stateObj=${stateObj}
     ></ha-state-icon>`;
   }
 

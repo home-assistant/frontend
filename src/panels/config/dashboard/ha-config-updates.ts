@@ -95,6 +95,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                 slot="graphic"
                 .title=${entity.attributes.title ||
                 entity.attributes.friendly_name}
+                .hass=${this.hass}
                 .stateObj=${entity}
                 class=${ifDefined(
                   this.narrow && entity.attributes.in_progress

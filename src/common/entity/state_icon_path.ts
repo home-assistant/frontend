@@ -4,7 +4,7 @@ import { DEFAULT_DOMAIN_ICON } from "../const";
 import { computeDomain } from "./compute_domain";
 import { domainIcon } from "./domain_icon";
 
-export const stateIconPath = (state?: HassEntity) => {
+export const stateIconPath = (state: HassEntity | undefined) => {
   if (!state) {
     return DEFAULT_DOMAIN_ICON;
   }
