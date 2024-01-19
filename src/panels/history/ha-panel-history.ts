@@ -58,7 +58,7 @@ import { fileDownload } from "../../util/file_download";
 class HaPanelHistory extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) hass!: HomeAssistant;
 
-  @property({ reflect: true, type: Boolean }) narrow!: boolean;
+  @property({ reflect: true, type: Boolean }) public narrow = false;
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 

@@ -71,68 +71,49 @@ export type ControlCircularSliderMode = "start" | "end" | "full";
 
 @customElement("ha-control-circular-slider")
 export class HaControlCircularSlider extends LitElement {
-  @property({ type: Boolean, reflect: true })
-  public disabled = false;
+  @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @property({ type: Boolean, reflect: true })
-  public readonly = false;
+  @property({ type: Boolean, reflect: true }) public readonly = false;
 
-  @property({ type: Boolean })
-  public dual?: boolean;
+  @property({ type: Boolean }) public dual = false;
 
-  @property({ type: String })
-  public mode?: ControlCircularSliderMode;
+  @property({ type: String }) public mode?: ControlCircularSliderMode;
 
-  @property({ type: Boolean })
-  public inactive?: boolean;
+  @property({ type: Boolean }) public inactive = false;
 
-  @property({ type: String })
-  public label?: string;
+  @property({ type: String }) public label?: string;
 
-  @property({ type: String, attribute: "low-label" })
-  public lowLabel?: string;
+  @property({ type: String, attribute: "low-label" }) public lowLabel?: string;
 
   @property({ type: String, attribute: "high-label" })
   public highLabel?: string;
 
-  @property({ type: Number })
-  public value?: number;
+  @property({ type: Number }) public value?: number;
 
-  @property({ type: Number })
-  public low?: number;
+  @property({ type: Number }) public low?: number;
 
-  @property({ type: Number })
-  public high?: number;
+  @property({ type: Number }) public high?: number;
 
-  @property({ type: Number })
-  public current?: number;
+  @property({ type: Number }) public current?: number;
 
-  @property({ type: Number })
-  public step = 1;
+  @property({ type: Number }) public step = 1;
 
-  @property({ type: Number })
-  public min = 0;
+  @property({ type: Number }) public min = 0;
 
-  @property({ type: Number })
-  public max = 100;
+  @property({ type: Number }) public max = 100;
 
   @property({ type: Boolean, attribute: "prevent-interaction-on-scroll" })
-  public preventInteractionOnScroll?: boolean;
+  public preventInteractionOnScroll = false;
 
-  @state()
-  public _localValue?: number = this.value;
+  @state() public _localValue?: number = this.value;
 
-  @state()
-  public _localLow?: number = this.low;
+  @state() public _localLow?: number = this.low;
 
-  @state()
-  public _localHigh?: number = this.high;
+  @state() public _localHigh?: number = this.high;
 
-  @state()
-  public _activeSlider?: ActiveSlider;
+  @state() public _activeSlider?: ActiveSlider;
 
-  @state()
-  public _lastSlider?: ActiveSlider;
+  @state() public _lastSlider?: ActiveSlider;
 
   private _valueToPercentage(value: number) {
     return (
@@ -618,11 +599,11 @@ export class HaControlCircularSlider extends LitElement {
           targetCircle
             ? svg`
               <!-- Use circle instead of path for interaction (Safari doesn't support well pointer-events with stroke-dasharray) -->
-              <circle 
-                transform="rotate(${angle} 0 0)" 
-                ?data-interaction=${onlyDotInteraction} 
+              <circle
+                transform="rotate(${angle} 0 0)"
+                ?data-interaction=${onlyDotInteraction}
                 cx=${RADIUS}
-                cy="0" 
+                cy="0"
                 />
               <path
                 d=${path}

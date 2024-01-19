@@ -27,10 +27,10 @@ export class HaControlSelectMenu extends SelectBase {
   @query(".select-anchor") protected anchorElement!: HTMLDivElement | null;
 
   @property({ type: Boolean, attribute: "show-arrow" })
-  public showArrow?: boolean;
+  public showArrow = false;
 
   @property({ type: Boolean, attribute: "hide-label" })
-  public hideLabel?: boolean;
+  public hideLabel = false;
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
