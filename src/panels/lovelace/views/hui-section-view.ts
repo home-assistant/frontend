@@ -16,8 +16,8 @@ import type { HomeAssistant } from "../../../types";
 import { HuiErrorCard } from "../cards/hui-error-card";
 import type { Lovelace, LovelaceCard } from "../types";
 
-@customElement("hui-grid-view")
-export class GridView extends LitElement implements LovelaceViewElement {
+@customElement("hui-section-view")
+export class SectionView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: Lovelace;
@@ -241,6 +241,6 @@ export class GridView extends LitElement implements LovelaceViewElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-grid-view": GridView;
+    "hui-section-view": SectionView;
   }
 }
