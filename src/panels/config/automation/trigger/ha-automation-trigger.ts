@@ -28,11 +28,11 @@ import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
 export default class HaAutomationTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public triggers!: Trigger[];
+  @property({ attribute: false }) public triggers!: Trigger[];
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public path?: ItemPath;
+  @property({ type: Array }) public path?: ItemPath;
 
   @state()
   @consume({ context: reorderModeContext, subscribe: true })

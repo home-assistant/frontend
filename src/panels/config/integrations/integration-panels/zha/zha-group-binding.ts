@@ -31,7 +31,7 @@ import "@material/mwc-list/mwc-list-item";
 export class ZHAGroupBindingControl extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public device?: ZHADevice;
+  @property({ attribute: false }) public device?: ZHADevice;
 
   @state() private _bindTargetIndex = -1;
 

@@ -112,7 +112,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public path?: ItemPath;
+  @property({ type: Array }) public path?: ItemPath;
 
   @state() private _warnings?: string[];
 
