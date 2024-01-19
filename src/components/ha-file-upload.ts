@@ -31,11 +31,11 @@ export class HaFileUpload extends LitElement {
 
   @property() public supports?: string;
 
-  @property() public value?: File | File[] | FileList | string;
+  @property({ type: Object }) public value?: File | File[] | FileList | string;
 
   @property({ type: Boolean }) public multiple = false;
 
-  @property({ type: Boolean, reflect: true }) public disabled: boolean = false;
+  @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public uploading = false;
 

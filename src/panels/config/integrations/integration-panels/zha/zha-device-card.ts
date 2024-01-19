@@ -29,7 +29,7 @@ import { getIeeeTail } from "./functions";
 class ZHADeviceCard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public device?: ZHADevice;
+  @property({ attribute: false }) public device?: ZHADevice;
 
   @property({ type: Boolean }) public narrow = false;
 

@@ -30,9 +30,9 @@ export class ZHAClusterCommands extends LitElement {
 
   @property({ type: Boolean }) public isWide = false;
 
-  @property() public device?: ZHADevice;
+  @property({ attribute: false }) public device?: ZHADevice;
 
-  @property() public selectedCluster?: Cluster;
+  @property({ type: Object }) public selectedCluster?: Cluster;
 
   @state() private _commands: Command[] | undefined;
 

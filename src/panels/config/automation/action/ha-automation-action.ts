@@ -33,9 +33,9 @@ export default class HaAutomationAction extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public path?: ItemPath;
+  @property({ type: Array }) public path?: ItemPath;
 
-  @property() public actions!: Action[];
+  @property({ attribute: false }) public actions!: Action[];
 
   @state()
   @consume({ context: reorderModeContext, subscribe: true })

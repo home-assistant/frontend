@@ -125,7 +125,7 @@ const preventDefault = (ev) => ev.preventDefault();
 export default class HaAutomationActionRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public action!: Action;
+  @property({ attribute: false }) public action!: Action;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -133,7 +133,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public hideMenu = false;
 
-  @property() public path?: ItemPath;
+  @property({ type: Array }) public path?: ItemPath;
 
   @storage({
     key: "automationClipboard",

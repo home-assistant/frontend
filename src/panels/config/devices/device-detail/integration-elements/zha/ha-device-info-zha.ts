@@ -18,7 +18,7 @@ import { formatAsPaddedHex } from "../../../../integrations/integration-panels/z
 export class HaDeviceInfoZha extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public device!: DeviceRegistryEntry;
+  @property({ attribute: false }) public device!: DeviceRegistryEntry;
 
   @state() private _zhaDevice?: ZHADevice;
 

@@ -11,7 +11,7 @@ export class HaTriggerSelector extends LitElement {
 
   @property({ attribute: false }) public selector!: TriggerSelector;
 
-  @property() public value?: Trigger;
+  @property({ attribute: false }) public value?: Trigger;
 
   @property() public label?: string;
 

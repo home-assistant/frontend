@@ -81,13 +81,13 @@ export const handleChangeEvent = (
 export default class HaAutomationConditionRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public condition!: Condition;
+  @property({ attribute: false }) public condition!: Condition;
 
   @property({ type: Boolean }) public hideMenu = false;
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public path?: ItemPath;
+  @property({ type: Array }) public path?: ItemPath;
 
   @storage({
     key: "automationClipboard",
