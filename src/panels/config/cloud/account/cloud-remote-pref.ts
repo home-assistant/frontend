@@ -22,7 +22,7 @@ import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dia
 export class CloudRemotePref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public cloudStatus?: CloudStatusLoggedIn;
+  @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
   protected render() {
     if (!this.cloudStatus) {

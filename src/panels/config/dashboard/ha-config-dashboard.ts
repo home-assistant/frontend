@@ -118,7 +118,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public isWide = false;
 
-  @property() public cloudStatus?: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ type: Boolean }) public showAdvanced = false;
 

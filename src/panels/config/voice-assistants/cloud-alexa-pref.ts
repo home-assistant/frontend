@@ -27,7 +27,7 @@ export class CloudAlexaPref extends LitElement {
     ExposeEntitySettings
   >;
 
-  @property() public cloudStatus?: CloudStatusLoggedIn;
+  @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
   @state() private _exposeNew?: boolean;
 

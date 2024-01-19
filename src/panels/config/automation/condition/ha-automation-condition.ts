@@ -38,11 +38,11 @@ import type HaAutomationConditionRow from "./ha-automation-condition-row";
 export default class HaAutomationCondition extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public conditions!: Condition[];
+  @property({ attribute: false }) public conditions!: Condition[];
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public path?: ItemPath;
+  @property({ type: Array }) public path?: ItemPath;
 
   @state()
   @consume({ context: reorderModeContext, subscribe: true })

@@ -11,7 +11,7 @@ export class HaConditionSelector extends LitElement {
 
   @property({ attribute: false }) public selector!: ConditionSelector;
 
-  @property() public value?: Condition;
+  @property({ attribute: false }) public value?: Condition;
 
   @property() public label?: string;
 
