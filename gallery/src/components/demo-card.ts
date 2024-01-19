@@ -13,7 +13,7 @@ export interface DemoCardConfig {
 class DemoCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public config!: DemoCardConfig;
+  @property({ attribute: false }) public config!: DemoCardConfig;
 
   @property({ type: Boolean }) public showConfig = false;
 

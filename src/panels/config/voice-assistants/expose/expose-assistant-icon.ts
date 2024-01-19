@@ -12,9 +12,9 @@ import "../../../../components/ha-svg-icon";
 export class VoiceAssistantExposeAssistantIcon extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public unsupported!: boolean;
+  @property({ type: Boolean }) public unsupported = false;
 
-  @property({ type: Boolean }) public manual?: boolean;
+  @property({ type: Boolean }) public manual = false;
 
   @property() public assistant?:
     | "conversation"

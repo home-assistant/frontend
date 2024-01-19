@@ -14,9 +14,9 @@ class HaEntitiesPickerLight extends LitElement {
 
   @property({ type: Array }) public value?: string[];
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   @property() public helper?: string;
 

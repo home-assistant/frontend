@@ -24,7 +24,7 @@ import { showTryTtsDialog } from "./show-dialog-cloud-tts-try";
 export class CloudTTSPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public cloudStatus?: CloudStatusLoggedIn;
+  @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
   @state() private savingPreferences = false;
 

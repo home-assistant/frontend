@@ -14,12 +14,7 @@ import {
   ActionHandlerDetail,
   ActionHandlerOptions,
 } from "../../../../data/lovelace/action_handler";
-
-const isTouch =
-  "ontouchstart" in window ||
-  navigator.maxTouchPoints > 0 ||
-  // @ts-ignore
-  navigator.msMaxTouchPoints > 0;
+import { isTouch } from "../../../../util/is_touch";
 
 interface ActionHandlerType extends HTMLElement {
   holdTime: number;

@@ -23,7 +23,7 @@ import "./ha-logbook";
 export class HaPanelLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ reflect: true, type: Boolean }) narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() _time: { range: [Date, Date] };
 

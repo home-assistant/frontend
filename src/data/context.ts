@@ -3,6 +3,8 @@ import { HassConfig } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 import { EntityRegistryEntry } from "./entity_registry";
 
+export const connectionContext =
+  createContext<HomeAssistant["connection"]>("connection");
 export const statesContext = createContext<HomeAssistant["states"]>("states");
 export const entitiesContext =
   createContext<HomeAssistant["entities"]>("entities");

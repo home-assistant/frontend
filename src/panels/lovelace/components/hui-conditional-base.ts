@@ -1,5 +1,5 @@
 import { PropertyValues, ReactiveElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { listenMediaQuery } from "../../../common/dom/media_query";
 import { deepEqual } from "../../../common/util/deep-equal";
 import { HomeAssistant } from "../../../types";
@@ -33,9 +33,9 @@ export class HuiConditionalBase extends ReactiveElement {
 
   @property({ type: Boolean }) public editMode = false;
 
-  @property() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
-
   @property({ type: Boolean, reflect: true }) public hidden = false;
+
+  @state() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
 
   protected _element?: LovelaceCard | LovelaceRow;
 

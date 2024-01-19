@@ -20,7 +20,7 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
   @property() public placeholder?: string;
 
   @property({ type: Boolean, attribute: "no-add" })
-  public noAdd?: boolean;
+  public noAdd = false;
 
   /**
    * Show only areas with entities from specific domains.
@@ -56,9 +56,9 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: "pick-area-label" })
   public pickAreaLabel?: string;
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   protected render() {
     if (!this.hass) {

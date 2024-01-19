@@ -28,7 +28,7 @@ import { createEntityNotFoundWarning } from "./hui-warning";
 export class HuiGenericEntityRow extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public config?: EntitiesCardEntityConfig;
+  @property({ attribute: false }) public config?: EntitiesCardEntityConfig;
 
   @property() public secondaryText?: string;
 

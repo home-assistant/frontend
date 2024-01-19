@@ -2444,6 +2444,7 @@
               "description_triggers": "You are in re-order mode, you can re-order your triggers.",
               "description_conditions": "You are in re-order mode, you can re-order your conditions.",
               "description_actions": "You are in re-order mode, you can re-order your actions.",
+              "description_all": "You are in re-order mode, you can re-order your triggers, conditions and actions.",
               "exit": "Exit"
             },
             "description": {
