@@ -164,6 +164,28 @@ export class HaLocationsEditor extends LitElement {
     }
 
     if (changedProps.has("locations")) {
+      const oldLocations = changedProps.get("locations");
+      const movedLocations = this.locations?.filter(
+        (loc, idx) =>
+          !oldLocations[idx] ||
+          ((loc.latitude !== oldLocations[idx].latitude ||
+            loc.longitude !== oldLocations[idx].longitude) &&
+            this.map.leafletMap?.getBounds().contains({
+              lat: oldLocations[idx].latitude,
+              lng: oldLocations[idx].longitude,
+            }) &&
+            !this.map.leafletMap
+              ?.getBounds()
+              .contains({ lat: loc.latitude, lng: loc.longitude }))
+      );
+      if (movedLocations?.length === 1) {
+        this.updateComplete.then(() =>
+          this.map.leafletMap?.panTo({
+            lat: movedLocations[0].latitude,
+            lng: movedLocations[0].longitude,
+          })
+        );
+      }
       this._updateMarkers();
     }
   }
