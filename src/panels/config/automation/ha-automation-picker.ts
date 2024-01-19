@@ -81,7 +81,7 @@ class HaAutomationPicker extends LitElement {
 
   @property() public automations!: AutomationEntity[];
 
-  @property() private _activeFilters?: string[];
+  @state() private _activeFilters?: string[];
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 

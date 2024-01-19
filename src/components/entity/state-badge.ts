@@ -36,8 +36,8 @@ export class StateBadge extends LitElement {
 
   @property() public color?: string;
 
-  @property({ type: Boolean, reflect: true, attribute: "icon" })
-  private _showIcon = true;
+  // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
+  @property({ type: Boolean, reflect: true }) public icon = true;
 
   @state() private _iconStyle: { [name: string]: string | undefined } = {};
 
@@ -83,7 +83,7 @@ export class StateBadge extends LitElement {
       </div>`;
     }
 
-    if (!this._showIcon) {
+    if (!this.icon) {
       return nothing;
     }
 
@@ -98,7 +98,7 @@ export class StateBadge extends LitElement {
     ></ha-state-icon>`;
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (
       !changedProps.has("stateObj") &&
@@ -114,7 +114,7 @@ export class StateBadge extends LitElement {
     const iconStyle: { [name: string]: string } = {};
     let backgroundImage = "";
 
-    this._showIcon = true;
+    this.icon = true;
 
     if (stateObj && this.overrideImage === undefined) {
       // hide icon if we have entity picture
@@ -134,7 +134,7 @@ export class StateBadge extends LitElement {
           imageUrl = cameraUrlWithWidthHeight(imageUrl, 80, 80);
         }
         backgroundImage = `url(${imageUrl})`;
-        this._showIcon = false;
+        this.icon = false;
         if (domain === "update") {
           this.style.borderRadius = "0";
         } else if (domain === "media_player") {
@@ -180,7 +180,7 @@ export class StateBadge extends LitElement {
         imageUrl = this.hass.hassUrl(imageUrl);
       }
       backgroundImage = `url(${imageUrl})`;
-      this._showIcon = false;
+      this.icon = false;
     }
 
     this._iconStyle = iconStyle;

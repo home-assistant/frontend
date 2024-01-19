@@ -72,7 +72,7 @@ class HaSceneDashboard extends LitElement {
 
   @property() public scenes!: SceneEntity[];
 
-  @property() private _activeFilters?: string[];
+  @state() private _activeFilters?: string[];
 
   @state() private _filteredScenes?: string[] | null;
 
