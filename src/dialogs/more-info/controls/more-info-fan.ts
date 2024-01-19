@@ -14,6 +14,7 @@ import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select-menu";
+import "../../../components/ha-attribute-icon";
 import "../../../components/ha-list-item";
 import "../../../components/ha-outlined-icon-button";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -187,10 +188,30 @@ class MoreInfoFan extends LitElement {
                 @selected=${this._handlePresetMode}
                 @closed=${stopPropagation}
               >
-                <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
+                ${this.stateObj.attributes.preset_mode
+                  ? html`<ha-attribute-icon
+                      slot="icon"
+                      .hass=${this.hass}
+                      .stateObj=${this.stateObj}
+                      attribute="preset_mode"
+                      .attributeValue=${this.stateObj.attributes.preset_mode}
+                    ></ha-attribute-icon>`
+                  : html`
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiTuneVariant}
+                      ></ha-svg-icon>
+                    `}
                 ${this.stateObj.attributes.preset_modes?.map(
                   (mode) => html`
-                    <ha-list-item .value=${mode}>
+                    <ha-list-item .value=${mode} graphic="icon">
+                      <ha-attribute-icon
+                        slot="graphic"
+                        .hass=${this.hass}
+                        .stateObj=${this.stateObj}
+                        attribute="preset_mode"
+                        .attributeValue=${mode}
+                      ></ha-attribute-icon>
                       ${this.hass.formatEntityAttributeValue(
                         this.stateObj!,
                         "preset_mode",
