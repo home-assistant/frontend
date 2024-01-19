@@ -75,6 +75,9 @@ export const entityIcon = async (hass: HomeAssistant, state: HassEntity) => {
   let icon: string | undefined;
   const domain = computeStateDomain(state);
   const entity = hass.entities?.[state.entity_id];
+  if (entity?.icon) {
+    return entity.icon;
+  }
   if (entity?.translation_key && entity.platform) {
     const platformIcons = await getPlatformIcons(hass, entity.platform);
     if (platformIcons) {

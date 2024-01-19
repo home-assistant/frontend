@@ -239,6 +239,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
                 ? entityReg.entity_categories[entity.ec]
                 : undefined,
             name: entity.en,
+            icon: entity.ic,
             hidden: entity.hb,
             display_precision: entity.dp,
           };
