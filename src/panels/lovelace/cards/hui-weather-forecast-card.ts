@@ -256,7 +256,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                   html`
                     <ha-state-icon
                       class="weather-icon"
-                      .state=${stateObj}
+                      .stateObj=${stateObj}
+                      .hass=${this.hass}
                     ></ha-state-icon>
                   `}
                 </div>

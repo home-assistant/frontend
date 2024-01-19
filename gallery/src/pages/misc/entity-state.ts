@@ -344,6 +344,7 @@ export class DemoEntityState extends LitElement {
           title: "Icon",
           template: (entry) => html`
             <state-badge
+              .hass=${hass}
               .stateObj=${entry.stateObj}
               .stateColor=${true}
             ></state-badge>

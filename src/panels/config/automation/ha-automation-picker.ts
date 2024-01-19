@@ -123,7 +123,8 @@ class HaAutomationPicker extends LitElement {
           type: "icon",
           template: (automation) =>
             html`<ha-state-icon
-              .state=${automation}
+              .hass=${this.hass}
+              .stateObj=${automation}
               style=${styleMap({
                 color:
                   automation.state === UNAVAILABLE
