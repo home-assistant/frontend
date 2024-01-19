@@ -230,15 +230,15 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           .disabled=${!this._reordering}
           @item-moved=${this._itemMoved}
         >
-          <mwc-list multi>
+          <mwc-list wrapFocus multi>
             ${uncheckedItems.length
               ? html`
-                  <div class="header">
-                    <span>
+                  <div class="header" role="seperator">
+                    <h2>
                       ${this.hass!.localize(
                         "ui.panel.lovelace.cards.todo-list.unchecked_items"
                       )}
-                    </span>
+                    </h2>
                     ${this.todoListSupportsFeature(
                       TodoListEntityFeature.MOVE_TODO_ITEM
                     )
@@ -275,39 +275,41 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                 </p>`}
             ${checkedItems.length
               ? html`
-                  <div class="divider"></div>
-                  <div class="header">
-                    <span>
-                      ${this.hass!.localize(
-                        "ui.panel.lovelace.cards.todo-list.checked_items"
-                      )}
-                    </span>
-                    ${this.todoListSupportsFeature(
-                      TodoListEntityFeature.DELETE_TODO_ITEM
-                    )
-                      ? html`<ha-button-menu>
-                          <ha-icon-button
-                            slot="trigger"
-                            .path=${mdiDotsVertical}
-                          ></ha-icon-button>
-                          <ha-list-item
-                            @click=${this._clearCompletedItems}
-                            graphic="icon"
-                            class="warning"
-                          >
-                            ${this.hass!.localize(
-                              "ui.panel.lovelace.cards.todo-list.clear_items"
-                            )}
-                            <ha-svg-icon
+                  <div role="separator">
+                    <div class="divider"></div>
+                    <div class="header">
+                      <h2>
+                        ${this.hass!.localize(
+                          "ui.panel.lovelace.cards.todo-list.checked_items"
+                        )}
+                      </h2>
+                      ${this.todoListSupportsFeature(
+                        TodoListEntityFeature.DELETE_TODO_ITEM
+                      )
+                        ? html`<ha-button-menu>
+                            <ha-icon-button
+                              slot="trigger"
+                              .path=${mdiDotsVertical}
+                            ></ha-icon-button>
+                            <ha-list-item
+                              @click=${this._clearCompletedItems}
+                              graphic="icon"
                               class="warning"
-                              slot="graphic"
-                              .path=${mdiDeleteSweep}
-                              .disabled=${unavailable}
                             >
-                            </ha-svg-icon>
-                          </ha-list-item>
-                        </ha-button-menu>`
-                      : nothing}
+                              ${this.hass!.localize(
+                                "ui.panel.lovelace.cards.todo-list.clear_items"
+                              )}
+                              <ha-svg-icon
+                                class="warning"
+                                slot="graphic"
+                                .path=${mdiDeleteSweep}
+                                .disabled=${unavailable}
+                              >
+                              </ha-svg-icon>
+                            </ha-list-item>
+                          </ha-button-menu>`
+                        : nothing}
+                    </div>
                   </div>
                   ${this._renderItems(checkedItems, unavailable)}
                 `
@@ -635,8 +637,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         direction: var(--direction);
       }
 
-      .header span {
+      .header h2 {
         color: var(--primary-text-color);
+        font-size: inherit;
         font-weight: 500;
       }
 
