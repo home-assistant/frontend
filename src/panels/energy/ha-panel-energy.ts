@@ -189,7 +189,9 @@ class PanelEnergy extends LitElement {
           }
         }
         .main-title {
-          margin: 0 0 0 24px;
+          margin-left: 24px;
+          margin-inline-start: 24px;
+          margin-inline-end: initial;
           line-height: 20px;
           flex-grow: 1;
         }
