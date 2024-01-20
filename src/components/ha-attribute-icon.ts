@@ -10,7 +10,7 @@ import { attributeIconPath } from "../common/entity/attribute_icon_path";
 
 @customElement("ha-attribute-icon")
 export class HaAttributeIcon extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 

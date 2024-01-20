@@ -88,9 +88,11 @@ export class HaAreaPicker extends LitElement {
   @property({ type: Array, attribute: "exclude-areas" })
   public excludeAreas?: string[];
 
-  @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityFilter?: (entity: HassEntity) => boolean;
+  @property({ attribute: false })
+  public entityFilter?: (entity: HassEntity) => boolean;
 
   @property({ type: Boolean }) public disabled = false;
 

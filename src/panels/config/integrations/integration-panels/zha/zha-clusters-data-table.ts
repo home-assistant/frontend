@@ -22,7 +22,7 @@ export class ZHAClustersDataTable extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public clusters: Cluster[] = [];
+  @property({ attribute: false }) public clusters: Cluster[] = [];
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 

@@ -12,7 +12,7 @@ import type {
 class HaDevicesPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public value?: string[];
+  @property({ type: Array }) public value?: string[];
 
   @property() public helper?: string;
 
@@ -36,17 +36,19 @@ class HaDevicesPicker extends LitElement {
   @property({ type: Array, attribute: "exclude-domains" })
   public excludeDomains?: string[];
 
-  @property({ attribute: "picked-device-label" })
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
+  @property({ attribute: "picked-device-label" })
   public pickedDeviceLabel?: string;
 
   @property({ attribute: "pick-device-label" }) public pickDeviceLabel?: string;
 
-  @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityFilter?: HaDevicePickerEntityFilterFunc;
+  @property({ attribute: false })
+  public entityFilter?: HaDevicePickerEntityFilterFunc;
 
   protected render() {
     if (!this.hass) {

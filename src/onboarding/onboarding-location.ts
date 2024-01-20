@@ -48,7 +48,7 @@ const LOCATION_MARKER_ID = "location";
 class OnboardingLocation extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public onboardingLocalize!: LocalizeFunc;
+  @property({ attribute: false }) public onboardingLocalize!: LocalizeFunc;
 
   @state() private _working = false;
 

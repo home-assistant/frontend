@@ -27,9 +27,9 @@ export default class HaScriptFieldRow extends LitElement {
 
   @property() public key!: string;
 
-  @property() public excludeKeys: string[] = [];
+  @property({ type: Array }) public excludeKeys: string[] = [];
 
-  @property() public field!: Field;
+  @property({ attribute: false }) public field!: Field;
 
   @property({ type: Boolean }) public disabled = false;
 

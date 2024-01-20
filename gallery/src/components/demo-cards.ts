@@ -10,7 +10,7 @@ import "../ha-demo-options";
 
 @customElement("demo-cards")
 class DemoCards extends LitElement {
-  @property() public configs!: DemoCardConfig[];
+  @property({ attribute: false }) public configs!: DemoCardConfig[];
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
