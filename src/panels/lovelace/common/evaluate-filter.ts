@@ -53,9 +53,8 @@ export const evaluateFilter = (
   let filter: Filter;
   if (typeof filterInput === "string" || typeof filterInput === "number") {
     filter = {
-      condition: "operator",
-      operator: "==",
-      value: filterInput,
+      condition: "state",
+      state: filterInput,
     };
   } else {
     filter = filterInput;
