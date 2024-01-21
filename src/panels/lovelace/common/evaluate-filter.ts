@@ -92,11 +92,7 @@ export const evaluateFilter = (
 
       if (Array.isArray(filterValue)) {
         filterValue = filterValue.map((v) => {
-          if (
-            typeof v === "string" &&
-            isValidEntityId(v) &&
-            hass.states[v] !== undefined
-          ) {
+          if (typeof v === "string" && isValidEntityId(v) && hass.states[v]) {
             v = hass.states[v]?.state;
           }
           return `${v}`;
@@ -119,7 +115,7 @@ export const evaluateFilter = (
   if (
     typeof filterValue === "string" &&
     isValidEntityId(filterValue) &&
-    hass.states[filterValue] !== undefined
+    hass.states[filterValue]
   ) {
     filterValue = hass.states[filterValue]?.state;
   }
