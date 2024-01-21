@@ -320,6 +320,10 @@ export class TopAppBarBaseBase extends BaseElement {
         height: 100%;
         overflow: auto;
       }
+      .mdc-top-app-bar__title {
+        padding-inline-start: 20px;
+        padding-inline-end: initial;
+      }
     `,
   ];
 }
