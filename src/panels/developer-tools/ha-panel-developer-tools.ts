@@ -147,9 +147,7 @@ class PanelDeveloperTools extends LitElement {
           }
         }
         .main-title {
-          margin-left: 24px;
-          margin-inline-start: 24px;
-          margin-inline-end: initial;
+          margin: var(--margin-title);
           line-height: 20px;
           flex-grow: 1;
         }
