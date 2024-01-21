@@ -164,6 +164,17 @@ export class HaLocationsEditor extends LitElement {
     }
 
     if (changedProps.has("locations")) {
+      this._updateMarkers();
+    }
+  }
+
+  public updated(changedProps: PropertyValues): void {
+    // Still loading.
+    if (!this.Leaflet) {
+      return;
+    }
+
+    if (changedProps.has("locations")) {
       const oldLocations = changedProps.get("locations");
       const movedLocations = this.locations?.filter(
         (loc, idx) =>
@@ -179,14 +190,11 @@ export class HaLocationsEditor extends LitElement {
               .contains({ lat: loc.latitude, lng: loc.longitude }))
       );
       if (movedLocations?.length === 1) {
-        this.updateComplete.then(() =>
-          this.map.leafletMap?.panTo({
-            lat: movedLocations[0].latitude,
-            lng: movedLocations[0].longitude,
-          })
-        );
+        this.map.leafletMap?.panTo({
+          lat: movedLocations[0].latitude,
+          lng: movedLocations[0].longitude,
+        });
       }
-      this._updateMarkers();
     }
   }
 
