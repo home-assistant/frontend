@@ -3,10 +3,12 @@ import { mdiHelpCircle } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { nestedArrayMove } from "../../../common/util/array-move";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { Action, Fields, ScriptConfig } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
+import { ReorderModeMixin } from "../../../state/reorder-mode-mixin";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "../automation/action/ha-automation-action";
@@ -14,12 +16,12 @@ import "./ha-script-fields";
 import type HaScriptFields from "./ha-script-fields";
 
 @customElement("manual-script-editor")
-export class HaManualScriptEditor extends LitElement {
+export class HaManualScriptEditor extends ReorderModeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -50,8 +52,8 @@ export class HaManualScriptEditor extends LitElement {
   protected updated(changedProps) {
     if (this._openFields && changedProps.has("config")) {
       this._openFields = false;
-      this._scriptFields?.updateComplete.then(
-        () => this._scriptFields?.focusLastField()
+      this._scriptFields?.updateComplete.then(() =>
+        this._scriptFields?.focusLastField()
       );
     }
   }
@@ -118,16 +120,48 @@ export class HaManualScriptEditor extends LitElement {
         </a>
       </div>
 
+      ${this._renderReorderModeAlert()}
+
       <ha-automation-action
         role="region"
         aria-labelledby="sequence-heading"
         .actions=${this.config.sequence}
+        .path=${["sequence"]}
         @value-changed=${this._sequenceChanged}
+        @item-moved=${this._itemMoved}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
       ></ha-automation-action>
     `;
+  }
+
+  private _renderReorderModeAlert() {
+    if (!this._reorderMode.active) {
+      return nothing;
+    }
+    return html`
+      <ha-alert
+        class="re-order"
+        alert-type="info"
+        .title=${this.hass.localize(
+          "ui.panel.config.automation.editor.re_order_mode.title"
+        )}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.re_order_mode.description_all"
+        )}
+        <ha-button slot="action" @click=${this._exitReOrderMode}>
+          ${this.hass.localize(
+            "ui.panel.config.automation.editor.re_order_mode.exit"
+          )}
+        </ha-button>
+      </ha-alert>
+    `;
+  }
+
+  private async _exitReOrderMode() {
+    this._reorderMode.exit();
   }
 
   private _fieldsChanged(ev: CustomEvent): void {
@@ -141,6 +175,21 @@ export class HaManualScriptEditor extends LitElement {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.config!, sequence: ev.detail.value as Action[] },
+    });
+  }
+
+  private _itemMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    const updatedConfig = nestedArrayMove(
+      this.config,
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath
+    );
+    fireEvent(this, "value-changed", {
+      value: updatedConfig,
     });
   }
 
@@ -178,6 +227,12 @@ export class HaManualScriptEditor extends LitElement {
         }
         .header a {
           color: var(--secondary-text-color);
+        }
+        ha-alert.re-order {
+          display: block;
+          margin-bottom: 16px;
+          border-radius: var(--ha-card-border-radius, 12px);
+          overflow: hidden;
         }
       `,
     ];

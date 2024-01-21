@@ -55,13 +55,13 @@ export class HaStateControlClimateTemperature extends LitElement {
   @property({ attribute: false }) public stateObj!: ClimateEntity;
 
   @property({ attribute: "show-secondary", type: Boolean })
-  public showSecondary?: boolean;
+  public showSecondary = false;
 
   @property({ attribute: "use-current-as-primary", type: Boolean })
-  public showCurrentAsPrimary?: boolean;
+  public showCurrentAsPrimary = false;
 
   @property({ type: Boolean, attribute: "prevent-interaction-on-scroll" })
-  public preventInteractionOnScroll?: boolean;
+  public preventInteractionOnScroll = false;
 
   @state() private _targetTemperature: Partial<Record<Target, number>> = {};
 
@@ -261,7 +261,7 @@ export class HaStateControlClimateTemperature extends LitElement {
       this.hass.locale,
       formatOptions
     );
-    return html`${formatted}${blankBeforeUnit(unit)}${unit}`;
+    return html`${formatted}${blankBeforeUnit(unit, this.hass.locale)}${unit}`;
   }
 
   private _renderCurrent(temperature: number, style: "normal" | "big") {

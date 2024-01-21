@@ -8,6 +8,7 @@ import { isEmptyFilter } from "../../../common/entity/entity_filter";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";

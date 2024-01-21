@@ -71,16 +71,15 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property() public configEntryId?: string;
 
   @property() public deviceId!: string;
 
-  @property({ type: Array })
-  private _deviceRegistryEntries?: DeviceRegistryEntry[];
+  @state() private _deviceRegistryEntries?: DeviceRegistryEntry[];
 
   @state() private _nodeMetadata?: ZwaveJSNodeMetadata;
 

@@ -101,8 +101,7 @@ export class HaComboBox extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @property({ type: Boolean, reflect: true, attribute: "opened" })
-  public opened?: boolean;
+  @property({ type: Boolean, reflect: true }) public opened = false;
 
   @query("vaadin-combo-box-light", true) private _comboBox!: ComboBoxLight;
 
@@ -145,6 +144,7 @@ export class HaComboBox extends LitElement {
 
   protected render(): TemplateResult {
     return html`
+      <!-- @ts-ignore Tag definition is not included in theme folder -->
       <vaadin-combo-box-light
         .itemValuePath=${this.itemValuePath}
         .itemIdPath=${this.itemIdPath}

@@ -189,9 +189,9 @@ const computePanels = memoizeOne(
 class HaSidebar extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property({ type: Boolean }) public alwaysExpand = false;
 

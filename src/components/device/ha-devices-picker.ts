@@ -16,9 +16,9 @@ class HaDevicesPicker extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   /**
    * Show entities from specific domains.

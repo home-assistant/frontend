@@ -220,7 +220,7 @@ export class HassioNetwork extends LitElement {
                               .label=${this.hass.localize(
                                 "ui.panel.config.network.supervisor.wifi_password"
                               )}
-                              .version="wifi"
+                              .version=${"wifi"}
                               @change=${this._handleInputValueChangedWifi}
                             >
                             </ha-textfield>

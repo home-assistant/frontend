@@ -38,7 +38,7 @@ export class HaAuthFlow extends LitElement {
 
   @property({ attribute: false }) public step?: DataEntryFlowStep;
 
-  @property({ type: Boolean }) private initStoreToken = false;
+  @property({ type: Boolean }) public initStoreToken = false;
 
   @state() private _storeToken = false;
 
@@ -224,6 +224,7 @@ export class HaAuthFlow extends LitElement {
           </h1>
           ${this._computeStepDescription(step)}
           <ha-auth-form
+            .localize=${this.localize}
             .data=${this._stepData!}
             .schema=${autocompleteLoginFields(step.data_schema)}
             .error=${step.errors}

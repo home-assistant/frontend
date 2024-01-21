@@ -17,7 +17,7 @@ let instance = 0;
 
 @customElement("ha-mfa-module-setup-flow")
 class HaMfaModuleSetupFlow extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _dialogClosedCallback?: (params: {
     flowFinished: boolean;

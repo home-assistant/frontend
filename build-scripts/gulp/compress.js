@@ -8,7 +8,10 @@ const zopfliOptions = { threshold: 150 };
 
 const compressDist = (rootDir) =>
   gulp
-    .src([`${rootDir}/**/*.{js,json,css,svg}`])
+    .src([
+      `${rootDir}/**/*.{js,json,css,svg,xml}`,
+      `${rootDir}/{authorize,onboarding}.html`,
+    ])
     .pipe(zopfli(zopfliOptions))
     .pipe(gulp.dest(rootDir));
 

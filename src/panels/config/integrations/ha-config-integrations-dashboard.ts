@@ -92,13 +92,13 @@ const groupByIntegration = (
 class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public showAdvanced = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property({ attribute: false }) public configEntries?: ConfigEntryExtended[];
 

@@ -59,11 +59,11 @@ export class HassioBackups extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property({ type: Object }) public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @state() private _selectedBackups: string[] = [];
 

@@ -1,6 +1,6 @@
 import { LitElement, PropertyValues, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-valve-controls";
+import "../../../components/entity/ha-entity-toggle";
 import { isUnavailableState } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";

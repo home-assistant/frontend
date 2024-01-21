@@ -2444,6 +2444,7 @@
               "description_triggers": "You are in re-order mode, you can re-order your triggers.",
               "description_conditions": "You are in re-order mode, you can re-order your conditions.",
               "description_actions": "You are in re-order mode, you can re-order your actions.",
+              "description_all": "You are in re-order mode, you can re-order your triggers, conditions and actions.",
               "exit": "Exit"
             },
             "description": {
@@ -5132,6 +5133,8 @@
             },
             "area": {
               "name": "Area",
+              "alert_classes": "Alert Classes",
+              "sensor_classes": "Sensor Classes",
               "description": "The Area card automatically displays entities of a specific area.",
               "show_camera": "Show camera feed instead of area picture"
             },
@@ -5223,6 +5226,7 @@
             "grid": {
               "name": "Grid",
               "description": "The Grid card allows you to show multiple cards in a grid.",
+              "title": "Title",
               "columns": "Columns",
               "square": "Render cards as squares"
             },
@@ -5891,6 +5895,7 @@
           "previous": "Previous",
           "start_over": "Start over",
           "error": "Error: {error}",
+          "error_required": "[%key:ui::common::error_required%]",
           "hide_password": "Hide password",
           "show_password": "Show password",
           "providers": {
@@ -6411,7 +6416,8 @@
       "history": {
         "start_search": "Start by selecting an area, device or entity above",
         "add_all": "Add all entities",
-        "remove_all": "Remove all selections"
+        "remove_all": "Remove all selections",
+        "download_data": "Download data"
       }
     },
     "tips": {

@@ -29,7 +29,7 @@ export class HaEntityToggle extends LitElement {
   // hass is not a property so that we only re-render on stateObj changes
   public hass?: HomeAssistant;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property() public label?: string;
 

@@ -7,6 +7,7 @@ import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { AreaFilterValue } from "../../components/ha-area-filter";
 import "../../components/ha-button";
+import "../../components/ha-dialog";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
 import "../../components/ha-sortable";

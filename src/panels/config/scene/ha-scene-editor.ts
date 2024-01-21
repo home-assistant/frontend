@@ -91,7 +91,7 @@ export class HaSceneEditor extends SubscribeMixin(
 
   @property({ type: Boolean }) public isWide = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property() public sceneId: string | null = null;
 
@@ -349,6 +349,7 @@ export class HaSceneEditor extends SubscribeMixin(
                                 @click=${this._showMoreInfo}
                               >
                                 <state-badge
+                                  .hass=${this.hass}
                                   .stateObj=${entityStateObj}
                                   slot="graphic"
                                 ></state-badge>
@@ -416,6 +417,7 @@ export class HaSceneEditor extends SubscribeMixin(
                                         @click=${this._showMoreInfo}
                                       >
                                         <state-badge
+                                          .hass=${this.hass}
                                           .stateObj=${entityStateObj}
                                           slot="graphic"
                                         ></state-badge>

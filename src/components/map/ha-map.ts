@@ -58,9 +58,9 @@ export class HaMap extends ReactiveElement {
 
   @property({ type: Boolean }) public interactiveZones = false;
 
-  @property({ type: Boolean }) public fitZones?: boolean;
+  @property({ type: Boolean }) public fitZones = false;
 
-  @property({ type: Boolean }) public darkMode?: boolean;
+  @property({ type: Boolean }) public darkMode = false;
 
   @property({ type: Number }) public zoom = 14;
 

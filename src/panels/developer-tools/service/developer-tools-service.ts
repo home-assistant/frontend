@@ -34,7 +34,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 class HaPanelDevService extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _uiAvailable = true;
 
@@ -73,8 +73,8 @@ class HaPanelDevService extends LitElement {
         data: {},
       };
       if (this._yamlMode) {
-        this.updateComplete.then(
-          () => this._yamlEditor?.setValue(this._serviceData)
+        this.updateComplete.then(() =>
+          this._yamlEditor?.setValue(this._serviceData)
         );
       }
     } else if (!this._serviceData?.service) {
@@ -86,8 +86,8 @@ class HaPanelDevService extends LitElement {
         data: {},
       };
       if (this._yamlMode) {
-        this.updateComplete.then(
-          () => this._yamlEditor?.setValue(this._serviceData)
+        this.updateComplete.then(() =>
+          this._yamlEditor?.setValue(this._serviceData)
         );
       }
     }

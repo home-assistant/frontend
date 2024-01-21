@@ -144,7 +144,8 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
           <div class="icon">
             <ha-state-icon
               .icon=${this._config.icon}
-              .state=${stateObj}
+              .stateObj=${stateObj}
+              .hass=${this.hass}
             ></ha-state-icon>
           </div>
         </div>

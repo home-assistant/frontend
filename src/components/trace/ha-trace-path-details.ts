@@ -35,7 +35,7 @@ const TRACE_PATH_TABS = [
 export class HaTracePathDetails extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: false }) public trace!: TraceExtended;
 

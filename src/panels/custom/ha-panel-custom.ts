@@ -25,7 +25,7 @@ export class HaPanelCustom extends ReactiveElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property() public panel!: CustomPanelInfo;
 

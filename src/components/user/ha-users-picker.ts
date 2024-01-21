@@ -40,40 +40,38 @@ class HaUsersPickerLight extends LitElement {
 
     const notSelectedUsers = this._notSelectedUsers(this.users, this.value);
     return html`
-      ${guard(
-        [notSelectedUsers],
-        () =>
-          this.value?.map(
-            (user_id, idx) => html`
-              <div>
-                <ha-user-picker
-                  .label=${this.pickedUserLabel}
-                  .noUserLabel=${this.hass!.localize(
-                    "ui.components.user-picker.remove_user"
-                  )}
-                  .index=${idx}
-                  .hass=${this.hass}
-                  .value=${user_id}
-                  .users=${this._notSelectedUsersAndSelected(
-                    user_id,
-                    this.users,
-                    notSelectedUsers
-                  )}
-                  @value-changed=${this._userChanged}
-                ></ha-user-picker>
-                <ha-icon-button
-                  .userId=${user_id}
-                  .label=${this.hass!.localize(
-                    "ui.components.user-picker.remove_user"
-                  )}
-                  .path=${mdiClose}
-                  @click=${this._removeUser}
-                >
-                  ></ha-icon-button
-                >
-              </div>
-            `
-          )
+      ${guard([notSelectedUsers], () =>
+        this.value?.map(
+          (user_id, idx) => html`
+            <div>
+              <ha-user-picker
+                .label=${this.pickedUserLabel}
+                .noUserLabel=${this.hass!.localize(
+                  "ui.components.user-picker.remove_user"
+                )}
+                .index=${idx}
+                .hass=${this.hass}
+                .value=${user_id}
+                .users=${this._notSelectedUsersAndSelected(
+                  user_id,
+                  this.users,
+                  notSelectedUsers
+                )}
+                @value-changed=${this._userChanged}
+              ></ha-user-picker>
+              <ha-icon-button
+                .userId=${user_id}
+                .label=${this.hass!.localize(
+                  "ui.components.user-picker.remove_user"
+                )}
+                .path=${mdiClose}
+                @click=${this._removeUser}
+              >
+                ></ha-icon-button
+              >
+            </div>
+          `
+        )
       )}
       <ha-user-picker
         .label=${this.pickUserLabel ||

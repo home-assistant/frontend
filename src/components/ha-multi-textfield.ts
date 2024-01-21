@@ -5,6 +5,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-button";
+import "./ha-icon-button";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
@@ -31,7 +32,7 @@ class HaMultiTextField extends LitElement {
   @property() public removeLabel?: string;
 
   @property({ attribute: "item-index", type: Boolean })
-  public itemIndex?: boolean;
+  public itemIndex = false;
 
   protected render() {
     return html`

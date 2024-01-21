@@ -11,6 +11,7 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -65,6 +66,7 @@ import {
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { entityIcon } from "../../../data/icons";
 import { domainToName } from "../../../data/integration";
 import { getNumberDeviceClassConvertibleUnits } from "../../../data/number";
 import {
@@ -379,7 +381,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
               "ui.dialogs.entity_registry.editor.icon"
             )}
             .placeholder=${this.entry.original_icon ||
-            stateObj?.attributes.icon}
+            stateObj?.attributes.icon ||
+            (stateObj && until(entityIcon(this.hass, stateObj)))}
             .fallbackPath=${!this._icon &&
             !stateObj?.attributes.icon &&
             stateObj
@@ -917,9 +920,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   "ui.dialogs.entity_registry.editor.use_device_area"
                 )}
                 ${this.hass.devices[this.entry.device_id].area_id
-                  ? `(${this.hass.areas[
-                      this.hass.devices[this.entry.device_id].area_id!
-                    ]?.name})`
+                  ? `(${
+                      this.hass.areas[
+                        this.hass.devices[this.entry.device_id].area_id!
+                      ]?.name
+                    })`
                   : ""}</span
               >
               <span slot="description"

@@ -8,7 +8,7 @@ import "../ha-input-helper-text";
 
 @customElement("ha-selector-boolean")
 export class HaBooleanSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public value = false;
 

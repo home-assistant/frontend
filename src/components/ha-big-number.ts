@@ -32,7 +32,9 @@ export class HaBigNumber extends LitElement {
     const temperatureDecimal = formatted.replace(integer, "");
 
     const formattedValue = `${this.value}${
-      this.unit ? `${blankBeforeUnit(this.unit)}${this.unit}` : ""
+      this.unit
+        ? `${blankBeforeUnit(this.unit, this.hass?.locale)}${this.unit}`
+        : ""
     }`;
 
     const unitBottom = this.unitPosition === "bottom";

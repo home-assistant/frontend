@@ -60,7 +60,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _dashboards: LovelaceDashboard[] = [];
 

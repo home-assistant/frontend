@@ -7,9 +7,9 @@ import { HomeAssistant, PanelInfo } from "../../types";
 
 @customElement("ha-panel-iframe")
 class HaPanelIframe extends LitElement {
-  @property() hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() panel!: PanelInfo<{ url: string }>;
 

@@ -44,7 +44,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Number }) public index?: number;
 

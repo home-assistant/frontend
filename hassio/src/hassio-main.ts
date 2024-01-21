@@ -21,7 +21,7 @@ export class HassioMain extends SupervisorBaseElement {
 
   @property({ attribute: false }) public panel!: HassioPanelInfo;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);

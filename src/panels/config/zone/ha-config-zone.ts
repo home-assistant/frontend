@@ -56,7 +56,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _storageItems?: Zone[];
 

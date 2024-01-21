@@ -20,9 +20,9 @@ class HaConfigCloud extends HassRouterPage {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public cloudStatus!: CloudStatus;
+  @property({ attribute: false }) public cloudStatus!: CloudStatus;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "login",
