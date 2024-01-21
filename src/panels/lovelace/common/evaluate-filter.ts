@@ -89,6 +89,19 @@ export const evaluateFilter = (
         filterValue = filter.state_not;
         filterOperator = Array.isArray(filterValue) ? "not in" : "!=";
       }
+
+      if (Array.isArray(filterValue)) {
+        filterValue = filterValue.map((v) => {
+          if (
+            typeof v === "string" &&
+            isValidEntityId(v) &&
+            hass.states[v] !== undefined
+          ) {
+            v = hass.states[v]?.state;
+          }
+          return `${v}`;
+        });
+      }
       break;
 
     // NumericStateCondition

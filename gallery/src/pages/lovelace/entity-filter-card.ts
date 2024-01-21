@@ -197,6 +197,21 @@ const CONFIGS = [
     `,
   },
   {
+    heading: "Filtered entities with condition state_not array",
+    config: `
+- type: entity-filter
+  entities:
+    - sensor.gas_station_auchan_saint_priest_e10
+    - sensor.gas_station_carrefour_venissieux_e10
+    - sensor.gas_station_relais_lyon_mermoz_e10
+  state_filter:
+    - condition: state
+      state_not:
+        - 1.724
+        - sensor.gas_station_lowest_price
+    `,
+  },
+  {
     heading: "Filtered entities with condition above",
     config: `
 - type: entity-filter
