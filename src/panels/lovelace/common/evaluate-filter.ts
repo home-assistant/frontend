@@ -16,7 +16,6 @@ type ConditionOperator =
 interface BaseCondition {
   condition: string;
   attribute?: string;
-  enabled?: boolean;
 }
 
 export interface OperatorCondition extends BaseCondition {
