@@ -139,14 +139,13 @@ export class HaDialog extends DialogBase {
       }
       .header_button {
         position: absolute;
-        right: 0;
+        right: -8px;
         top: -8px;
         text-decoration: none;
         color: inherit;
         inset-inline-start: initial;
-        inset-inline-end: 0;
+        inset-inline-end: -8px;
         direction: var(--direction);
-        padding-top: 24px;
       }
       .dialog-actions {
         inset-inline-start: initial !important;
