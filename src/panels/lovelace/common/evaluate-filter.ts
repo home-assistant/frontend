@@ -2,7 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../../../types";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 
-type FilterOperator =
+type ConditionOperator =
   | "=="
   | "<="
   | "<"
@@ -13,36 +13,39 @@ type FilterOperator =
   | "not in"
   | "regex";
 
-interface BaseFilter {
+interface BaseCondition {
   condition: string;
   attribute?: string;
   enabled?: boolean;
 }
 
-export interface OperatorFilter extends BaseFilter {
+export interface OperatorCondition extends BaseCondition {
   condition: "operator";
-  operator: FilterOperator;
+  operator: ConditionOperator;
   value: string | number;
 }
 
-export interface StateFilter extends BaseFilter {
+export interface StateCondition extends BaseCondition {
   condition: "state";
   state?: string | number | string[];
   state_not?: string | number | string[];
 }
 
-export interface NumericStateFilter extends BaseFilter {
+export interface NumericStateCondition extends BaseCondition {
   condition: "numeric_state";
   above?: number;
   below?: number;
 }
 
-export type Filter = OperatorFilter | StateFilter | NumericStateFilter;
+export type Condition =
+  | OperatorCondition
+  | StateCondition
+  | NumericStateCondition;
 
 export const evaluateFilter = (
   hass: HomeAssistant,
   current_entity_id: string,
-  filterInput: Filter | string | number
+  filterInput: Condition | string | number
 ): boolean => {
   const currentEntity: HassEntity = hass.states[current_entity_id];
 
@@ -50,7 +53,7 @@ export const evaluateFilter = (
     return false;
   }
 
-  let filter: Filter;
+  let filter: Condition;
   if (typeof filterInput === "string" || typeof filterInput === "number") {
     filter = {
       condition: "state",
@@ -61,7 +64,7 @@ export const evaluateFilter = (
   }
 
   let filterValue: string | number | string[] | undefined; // value that will be compare to the entity state
-  let filterOperator: FilterOperator = "=="; // operation that the filter will apply to the state against the value
+  let filterOperator: ConditionOperator = "=="; // operation that the filter will apply to the state against the value
   let currentEntityState: string | number = filter.attribute // state of the entity to filter on
     ? currentEntity.attributes[filter.attribute]
     : currentEntity.state;
@@ -72,13 +75,13 @@ export const evaluateFilter = (
   }
 
   switch (filter.condition) {
-    // OperatorFilter
+    // OperatorCondition
     case "operator":
       filterOperator = filter.operator || "==";
       filterValue = filter.value ?? filter;
       break;
 
-    // StateFilter
+    // StateCondition
     case "state":
       if (filter.state) {
         filterValue = filter.state;
@@ -89,7 +92,7 @@ export const evaluateFilter = (
       }
       break;
 
-    // NumericStateFilter
+    // NumericStateCondition
     case "numeric_state":
       if (filter.above) {
         filterValue = filter.above;

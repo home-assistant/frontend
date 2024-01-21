@@ -4,7 +4,11 @@ import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { Statistic, StatisticType } from "../../../data/recorder";
 import { ForecastType } from "../../../data/weather";
 import { FullCalendarView, TranslationDict } from "../../../types";
-import { Condition, LegacyCondition } from "../common/validate-condition";
+import {
+  Condition as CardCondition,
+  LegacyCondition,
+} from "../common/validate-condition";
+import { Condition as EntityCondition } from "../common/evaluate-filter";
 import { HuiImage } from "../components/hui-image";
 import { LovelaceElementConfig } from "../elements/types";
 import {
@@ -14,7 +18,6 @@ import {
 } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import { LovelaceCardFeatureConfig } from "../card-features/types";
-import { Filter } from "../common/evaluate-filter";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -39,7 +42,7 @@ export interface CalendarCardConfig extends LovelaceCardConfig {
 
 export interface ConditionalCardConfig extends LovelaceCardConfig {
   card: LovelaceCardConfig;
-  conditions: (Condition | LegacyCondition)[];
+  conditions: (CardCondition | LegacyCondition)[];
 }
 
 export interface EmptyStateCardConfig extends LovelaceCardConfig {
@@ -194,7 +197,8 @@ export interface EnergyCarbonGaugeCardConfig extends LovelaceCardConfig {
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: Array<EntityFilterEntityConfig | string>;
-  state_filter: Array<Filter | string | number>;
+  state_filter?: Array<EntityCondition | string | number>;
+  conditions: Array<EntityCondition | string | number>;
   card?: Partial<LovelaceCardConfig>;
   show_empty?: boolean;
 }

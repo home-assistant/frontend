@@ -1,12 +1,13 @@
 import { ActionConfig } from "../../../data/lovelace/config/action";
 import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
-import { Filter } from "../common/evaluate-filter";
+import { Condition } from "../common/evaluate-filter";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
 
 export interface EntityFilterBadgeConfig extends LovelaceBadgeConfig {
   type: "entity-filter";
   entities: Array<EntityFilterEntityConfig | string>;
-  state_filter: Array<Filter | string | number>;
+  state_filter?: Array<Condition | string | number>;
+  conditions: Array<Condition | string | number>;
 }
 
 export interface ErrorBadgeConfig extends LovelaceBadgeConfig {

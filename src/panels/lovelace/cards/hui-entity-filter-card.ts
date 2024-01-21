@@ -33,8 +33,13 @@ export class HuiEntityFilterCard
     return {
       type: "entity-filter",
       entities: foundEntities,
-      state_filter: [
-        foundEntities[0] ? hass.states[foundEntities[0]].state : "",
+      conditions: [
+        foundEntities[0]
+          ? {
+              condition: "state",
+              state: hass.states[foundEntities[0]].state,
+            }
+          : "",
       ],
       card: { type: "entities" },
     };
@@ -66,7 +71,10 @@ export class HuiEntityFilterCard
     }
 
     if (
-      !(config.state_filter && Array.isArray(config.state_filter)) &&
+      !(
+        (config.state_filter && Array.isArray(config.state_filter)) ||
+        (config.conditions && Array.isArray(config.conditions))
+      ) &&
       !config.entities.every(
         (entity) =>
           typeof entity === "object" &&
@@ -126,10 +134,13 @@ export class HuiEntityFilterCard
     }
 
     const entitiesList = this._configEntities.filter((entityConf) => {
-      const state_filters =
-        entityConf.state_filter ?? this._config!.state_filter;
-      for (const filter of state_filters) {
-        if (evaluateFilter(this.hass!, entityConf.entity, filter)) {
+      const conditions =
+        entityConf.state_filter ??
+        this._config!.state_filter ??
+        entityConf.conditions ??
+        this._config!.conditions;
+      for (const condition of conditions) {
+        if (evaluateFilter(this.hass!, entityConf.entity, condition)) {
           return true;
         }
       }

@@ -29,7 +29,10 @@ export class HuiEntityFilterBadge
     }
 
     if (
-      !(config.state_filter && Array.isArray(config.state_filter)) &&
+      !(
+        (config.state_filter && Array.isArray(config.state_filter)) ||
+        (config.conditions && Array.isArray(config.conditions))
+      ) &&
       !config.entities.every(
         (entity) =>
           typeof entity === "object" &&
@@ -80,10 +83,13 @@ export class HuiEntityFilterBadge
     }
 
     const entitiesList = this._configEntities.filter((entityConf) => {
-      const state_filters =
-        entityConf.state_filter ?? this._config!.state_filter;
-      for (const filter of state_filters) {
-        if (evaluateFilter(this.hass, entityConf.entity, filter)) {
+      const conditions =
+        entityConf.state_filter ??
+        this._config!.state_filter ??
+        entityConf.conditions ??
+        this._config!.conditions;
+      for (const condition of conditions) {
+        if (evaluateFilter(this.hass!, entityConf.entity, condition)) {
           return true;
         }
       }

@@ -209,6 +209,19 @@ const CONFIGS = [
       above: sensor.gas_station_lowest_price
     `,
   },
+  {
+    heading: "Filtered entities with condition in conditions",
+    config: `
+- type: entity-filter
+  entities:
+    - sensor.gas_station_auchan_saint_priest_e10
+    - sensor.gas_station_carrefour_venissieux_e10
+    - sensor.gas_station_relais_lyon_mermoz_e10
+  conditions:
+    - condition: numeric_state
+      above: sensor.gas_station_lowest_price
+    `,
+  },
 ];
 
 @customElement("demo-lovelace-entity-filter-card")
