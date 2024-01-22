@@ -25,7 +25,7 @@ export class HaIconSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
-  @property() public context?: {
+  @property({ attribute: false }) public context?: {
     icon_entity?: string;
   };
 

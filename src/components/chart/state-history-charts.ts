@@ -54,10 +54,9 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public names?: Record<string, string>;
+  @property({ attribute: false }) public names?: Record<string, string>;
 
-  @property({ type: Boolean, attribute: "virtualize", reflect: true })
-  public virtualize = false;
+  @property({ type: Boolean, reflect: true }) public virtualize = false;
 
   @property({ attribute: false }) public endTime?: Date;
 
