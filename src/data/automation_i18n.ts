@@ -215,10 +215,13 @@ const tryDescribeTrigger = (
       );
     }
 
+    let entityArray: string[] = [];
     if (!Array.isArray(trigger.entity_id)) {
-      trigger.entity_id = [trigger.entity_id];
+      entityArray = [trigger.entity_id];
+    } else {
+      entityArray = trigger.entity_id;
     }
-    for (const entity of trigger.entity_id.values()) {
+    for (const entity of entityArray.values()) {
       if (states[entity]) {
         entities.push(computeStateName(states[entity]) || entity);
       }
@@ -229,62 +232,58 @@ const tryDescribeTrigger = (
     let fromChoice = "other";
     let fromString = "";
     if (trigger.from !== undefined) {
+      let fromArray: string[] = [];
       if (trigger.from === null) {
         if (!trigger.attribute) {
           fromChoice = "null";
         }
       } else if (!Array.isArray(trigger.from)) {
-        trigger.from = [trigger.from];
+        fromArray = [trigger.from];
       } else {
-        const from: string[] = [];
-        for (const state of trigger.from.values()) {
-          from.push(
-            trigger.attribute
-              ? hass
-                  .formatEntityAttributeValue(
-                    stateObj,
-                    trigger.attribute,
-                    state
-                  )
-                  .toString()
-              : hass.formatEntityState(stateObj, state)
-          );
-        }
-        if (from.length !== 0) {
-          fromString = formatListWithOrs(hass.locale, from);
-          fromChoice = "fromUsed";
-        }
+        fromArray = trigger.from;
+      }
+      const from: string[] = [];
+      for (const state of fromArray.values()) {
+        from.push(
+          trigger.attribute
+            ? hass
+                .formatEntityAttributeValue(stateObj, trigger.attribute, state)
+                .toString()
+            : hass.formatEntityState(stateObj, state)
+        );
+      }
+      if (from.length !== 0) {
+        fromString = formatListWithOrs(hass.locale, from);
+        fromChoice = "fromUsed";
       }
     }
 
     let toChoice = "other";
     let toString = "";
     if (trigger.to !== undefined) {
+      let toArray: string[] = [];
       if (trigger.to === null) {
         if (!trigger.attribute) {
           toChoice = "null";
         }
       } else if (!Array.isArray(trigger.to)) {
-        trigger.to = [trigger.to];
+        toArray = [trigger.to];
       } else {
-        const to: string[] = [];
-        for (const state of trigger.to.values()) {
-          to.push(
-            trigger.attribute
-              ? hass
-                  .formatEntityAttributeValue(
-                    stateObj,
-                    trigger.attribute,
-                    state
-                  )
-                  .toString()
-              : hass.formatEntityState(stateObj, state).toString()
-          );
-        }
-        if (to.length !== 0) {
-          toString = formatListWithOrs(hass.locale, to);
-          toChoice = "toUsed";
-        }
+        toArray = trigger.to;
+      }
+      const to: string[] = [];
+      for (const state of toArray.values()) {
+        to.push(
+          trigger.attribute
+            ? hass
+                .formatEntityAttributeValue(stateObj, trigger.attribute, state)
+                .toString()
+            : hass.formatEntityState(stateObj, state).toString()
+        );
+      }
+      if (to.length !== 0) {
+        toString = formatListWithOrs(hass.locale, to);
+        toChoice = "toUsed";
       }
     }
 
