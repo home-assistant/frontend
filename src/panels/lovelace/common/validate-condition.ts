@@ -258,12 +258,11 @@ export function buildConditionForFilter(
 
   // Set the entity to filter on
   if (
-    "condition" in newCondition &&
-    (newCondition.condition === "numeric_state" ||
-      newCondition.condition === "state")
+    ("condition" in newCondition &&
+      (newCondition.condition === "numeric_state" ||
+        newCondition.condition === "state")) ||
+    "operator" in newCondition
   ) {
-    newCondition.entity = entityId;
-  } else if ("operator" in newCondition) {
     newCondition.entity = entityId;
   }
 
