@@ -93,6 +93,7 @@ export const entityIcon = async (
   }
   if (!icon) {
     const entityComponentIcons = await getComponentIcons(hass, domain);
+
     if (entityComponentIcons) {
       icon =
         entityComponentIcons[state.attributes.device_class || "_"]?.state?.[
