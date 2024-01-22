@@ -71,10 +71,15 @@ export const getComponentIcons = async (
   return resources.entity_component.then((res) => res[domain]);
 };
 
-export const entityIcon = async (hass: HomeAssistant, state: HassEntity) => {
+export const entityIcon = async (
+  hass: HomeAssistant,
+  state: HassEntity,
+  stateValue?: string
+) => {
   let icon: string | undefined;
   const domain = computeStateDomain(state);
   const entity = hass.entities?.[state.entity_id];
+  const value = stateValue ?? state.state;
   if (entity?.icon) {
     return entity.icon;
   }
@@ -82,7 +87,7 @@ export const entityIcon = async (hass: HomeAssistant, state: HassEntity) => {
     const platformIcons = await getPlatformIcons(hass, entity.platform);
     if (platformIcons) {
       icon =
-        platformIcons[domain]?.[entity.translation_key]?.state?.[state.state] ||
+        platformIcons[domain]?.[entity.translation_key]?.state?.[value] ||
         platformIcons[domain]?.[entity.translation_key]?.default;
     }
   }
@@ -91,9 +96,9 @@ export const entityIcon = async (hass: HomeAssistant, state: HassEntity) => {
     if (entityComponentIcons) {
       icon =
         entityComponentIcons[state.attributes.device_class || "_"]?.state?.[
-          state.state
+          value
         ] ||
-        entityComponentIcons._?.state?.[state.state] ||
+        entityComponentIcons._?.state?.[value] ||
         entityComponentIcons[state.attributes.device_class || "_"]?.default ||
         entityComponentIcons._?.default;
     }
@@ -110,13 +115,14 @@ export const attributeIcon = async (
   let icon: string | undefined;
   const domain = computeStateDomain(state);
   const entity = hass.entities?.[state.entity_id];
+  const value = attributeValue ?? state.attributes[attribute];
   if (entity?.translation_key && entity.platform) {
     const platformIcons = await getPlatformIcons(hass, entity.platform);
     if (platformIcons) {
       icon =
         platformIcons[domain]?.[entity.translation_key]?.state_attributes?.[
           attribute
-        ]?.state?.[attributeValue || state.attributes[attribute]];
+        ]?.state?.[value];
     }
   }
   if (!icon) {
@@ -124,12 +130,8 @@ export const attributeIcon = async (
     if (entityComponentIcons) {
       icon =
         entityComponentIcons[state.attributes.device_class || "_"]
-          .state_attributes?.[attribute]?.state?.[
-          attributeValue || state.attributes[attribute]
-        ] ||
-        entityComponentIcons._.state_attributes?.[attribute]?.state?.[
-          attributeValue || state.attributes[attribute]
-        ];
+          .state_attributes?.[attribute]?.state?.[value] ||
+        entityComponentIcons._.state_attributes?.[attribute]?.state?.[value];
     }
   }
   return icon;
