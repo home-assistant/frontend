@@ -98,21 +98,16 @@ class HaMarkdownElement extends ReactiveElement {
                 firstElementChild!.childNodes[1].textContent?.trimStart()) ||
               "";
 
-          const childNodes = Array.from(node.children)
+          const childNodes = Array.from(node.childNodes)
             .map((child) => Array.from(child.childNodes))
-            .reduce((acc, val) => acc.concat(val), []);
-          for (const child of childNodes
-            .slice(
-              childNodes.findIndex(
-                // There is always a line break between the title and the content, we want to skip that
-                (childNode) => childNode instanceof HTMLBRElement
-              ) + 1
-            )
+            .reduce((acc, val) => acc.concat(val), [])
             .filter(
               (childNode) =>
                 childNode.textContent &&
-                !(childNode.textContent in _gitHubBlockQuoteToAlert)
-            )) {
+                !(childNode.textContent in _gitHubBlockQuoteToAlert) &&
+                !(childNode.textContent in _legacyGitHubBlockQuoteToAlert)
+            );
+          for (const child of childNodes) {
             alertNote.appendChild(child);
           }
           node.firstElementChild!.replaceWith(alertNote);
