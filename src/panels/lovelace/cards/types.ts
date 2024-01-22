@@ -5,10 +5,10 @@ import { Statistic, StatisticType } from "../../../data/recorder";
 import { ForecastType } from "../../../data/weather";
 import { FullCalendarView, TranslationDict } from "../../../types";
 import {
-  Condition as CardCondition,
+  Condition,
   LegacyCondition,
+  LegacyFilterCondition,
 } from "../common/validate-condition";
-import { Condition as EntityCondition } from "../common/evaluate-filter";
 import { HuiImage } from "../components/hui-image";
 import { LovelaceElementConfig } from "../elements/types";
 import {
@@ -42,7 +42,7 @@ export interface CalendarCardConfig extends LovelaceCardConfig {
 
 export interface ConditionalCardConfig extends LovelaceCardConfig {
   card: LovelaceCardConfig;
-  conditions: (CardCondition | LegacyCondition)[];
+  conditions: (Condition | LegacyCondition)[];
 }
 
 export interface EmptyStateCardConfig extends LovelaceCardConfig {
@@ -197,8 +197,8 @@ export interface EnergyCarbonGaugeCardConfig extends LovelaceCardConfig {
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: Array<EntityFilterEntityConfig | string>;
-  state_filter?: Array<EntityCondition | string | number>;
-  conditions: Array<EntityCondition | string | number>;
+  state_filter?: Array<Condition | LegacyFilterCondition | string | number>;
+  conditions: Array<Condition | LegacyFilterCondition | string | number>;
   card?: Partial<LovelaceCardConfig>;
   show_empty?: boolean;
 }

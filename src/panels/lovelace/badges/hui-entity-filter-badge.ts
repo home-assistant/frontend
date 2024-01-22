@@ -1,12 +1,15 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
-import { evaluateFilter } from "../common/evaluate-filter";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceBadge } from "../types";
 import { EntityFilterBadgeConfig } from "./types";
+import {
+  buildConditionForFilter,
+  checkConditionsMet,
+} from "../common/validate-condition";
 
 @customElement("hui-entity-filter-badge")
 export class HuiEntityFilterBadge
@@ -88,13 +91,15 @@ export class HuiEntityFilterBadge
         this._config!.state_filter ??
         entityConf.conditions ??
         this._config!.conditions;
-      for (const condition of conditions) {
-        if (evaluateFilter(this.hass!, entityConf.entity, condition)) {
-          return true;
-        }
-      }
 
-      return false;
+      return (
+        conditions
+          .map((condition) =>
+            buildConditionForFilter(condition, entityConf.entity)
+          )
+          .filter((condition) => checkConditionsMet([condition], this.hass!))
+          .length > 0
+      );
     });
 
     if (entitiesList.length === 0) {

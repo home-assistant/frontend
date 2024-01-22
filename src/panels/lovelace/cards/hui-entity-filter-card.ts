@@ -3,13 +3,16 @@ import { customElement, property, state } from "lit/decorators";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
-import { evaluateFilter } from "../common/evaluate-filter";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createCardElement } from "../create-element/create-card-element";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { EntityFilterCardConfig } from "./types";
+import {
+  buildConditionForFilter,
+  checkConditionsMet,
+} from "../common/validate-condition";
 
 @customElement("hui-entity-filter-card")
 export class HuiEntityFilterCard
@@ -139,13 +142,15 @@ export class HuiEntityFilterCard
         this._config!.state_filter ??
         entityConf.conditions ??
         this._config!.conditions;
-      for (const condition of conditions) {
-        if (evaluateFilter(this.hass!, entityConf.entity, condition)) {
-          return true;
-        }
-      }
 
-      return false;
+      return (
+        conditions
+          .map((condition) =>
+            buildConditionForFilter(condition, entityConf.entity)
+          )
+          .filter((condition) => checkConditionsMet([condition], this.hass!))
+          .length > 0
+      );
     });
 
     if (entitiesList.length === 0 && this._config.show_empty === false) {

@@ -1,19 +1,41 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 
 export type Condition =
   | NumericStateCondition
-  | ScreenCondition
   | StateCondition
+  | ScreenCondition
   | UserCondition
   | OrCondition
   | AndCondition;
 
+// Legacy conditional card condition
 export interface LegacyCondition {
   entity?: string;
   state?: string | string[];
   state_not?: string | string[];
+}
+
+type FilterOperator =
+  | "=="
+  | "<="
+  | "<"
+  | ">="
+  | ">"
+  | "!="
+  | "in"
+  | "not in"
+  | "regex";
+
+// Legacy entity-filter badge & card condition
+export interface LegacyFilterCondition {
+  operator: FilterOperator;
+  entity?: string | number;
+  attribute?: string;
+  value: string | number | string[];
 }
 
 interface BaseCondition {
@@ -23,15 +45,15 @@ interface BaseCondition {
 export interface NumericStateCondition extends BaseCondition {
   condition: "numeric_state";
   entity?: string;
-  below?: number;
-  above?: number;
+  below?: string | number;
+  above?: string | number;
 }
 
 export interface StateCondition extends BaseCondition {
   condition: "state";
   entity?: string;
-  state?: string | string[];
-  state_not?: string | string[];
+  state?: string | number | string[];
+  state_not?: string | number | string[];
 }
 
 export interface ScreenCondition extends BaseCondition {
@@ -54,6 +76,82 @@ export interface AndCondition extends BaseCondition {
   conditions?: Condition[];
 }
 
+function checkLegacyFilterCondition(
+  condition: LegacyFilterCondition,
+  hass: HomeAssistant
+) {
+  const entity: HassEntity = hass.states[condition.entity!];
+
+  if (!entity) {
+    return false;
+  }
+  let value = condition.value;
+  let state = condition.attribute
+    ? entity.attributes[condition.attribute]
+    : entity.state;
+
+  if (Array.isArray(value)) {
+    value = value.map((v) => {
+      if (typeof v === "string" && isValidEntityId(v) && hass.states[v]) {
+        v = hass.states[v]?.state;
+      }
+      return `${v}`;
+    });
+  } else if (
+    typeof value === "string" &&
+    isValidEntityId(value) &&
+    hass.states[value]
+  ) {
+    value = hass.states[value]?.state;
+  }
+
+  if (condition.operator === "==" || condition.operator === "!=") {
+    const valueIsNumeric =
+      typeof value === "number" ||
+      (typeof value === "string" && value.trim() && !isNaN(Number(value)));
+    const stateIsNumeric =
+      typeof state === "number" ||
+      (typeof state === "string" && state.trim() && !isNaN(Number(state)));
+    if (valueIsNumeric && stateIsNumeric) {
+      value = Number(value);
+      state = Number(state);
+    }
+  }
+
+  switch (condition.operator) {
+    case "==":
+      return state === value;
+    case "<=":
+      return state <= value;
+    case "<":
+      return state < value;
+    case ">=":
+      return state >= value;
+    case ">":
+      return state > value;
+    case "!=":
+      return state !== value;
+    case "in":
+      if (Array.isArray(value) || typeof value === "string") {
+        return value.includes(`${state}`);
+      }
+      return false;
+    case "not in":
+      if (Array.isArray(value) || typeof value === "string") {
+        return !value.includes(`${state}`);
+      }
+      return false;
+    case "regex": {
+      if (state !== null && typeof state === "object") {
+        return RegExp(`${value}`).test(JSON.stringify(state));
+      }
+      return RegExp(`${value}`).test(`${state}`);
+    }
+    default:
+      return false;
+  }
+}
+
 function checkStateCondition(
   condition: StateCondition | LegacyCondition,
   hass: HomeAssistant
@@ -62,32 +160,56 @@ function checkStateCondition(
     condition.entity && hass.states[condition.entity]
       ? hass.states[condition.entity].state
       : UNAVAILABLE;
+  let value = condition.state ?? condition.state_not;
+
+  // Handle entity_id, UI should be updated for conditionnal card (filters does not have UI for now)
+  if (Array.isArray(value)) {
+    value = value.map((v) => {
+      if (typeof v === "string" && isValidEntityId(v) && hass.states[v]) {
+        v = hass.states[v]?.state;
+      }
+      return `${v}`;
+    });
+  } else if (
+    typeof value === "string" &&
+    isValidEntityId(value) &&
+    hass.states[value]
+  ) {
+    value = hass.states[value]?.state;
+  }
 
   return condition.state != null
-    ? ensureArray(condition.state).includes(state)
-    : !ensureArray(condition.state_not).includes(state);
+    ? ensureArray(value).includes(state)
+    : !ensureArray(value).includes(state);
 }
 
 function checkStateNumericCondition(
   condition: NumericStateCondition,
   hass: HomeAssistant
 ) {
-  const entity =
-    (condition.entity ? hass.states[condition.entity] : undefined) ?? undefined;
+  const state = (condition.entity ? hass.states[condition.entity] : undefined)
+    ?.state;
+  let value = condition.above ?? condition.below;
 
-  if (!entity) {
-    return false;
+  // Handle entity_id, UI should be updated for conditionnal card (filters does not have UI for now)
+  if (
+    typeof value === "string" &&
+    isValidEntityId(value) &&
+    hass.states[value]
+  ) {
+    value = hass.states[value]?.state;
   }
 
-  const numericState = Number(entity.state);
+  const numericState = Number(state);
+  const numericValue = Number(value);
 
-  if (isNaN(numericState)) {
+  if (isNaN(numericState) || isNaN(numericValue)) {
     return false;
   }
 
   return (
-    (condition.above == null || condition.above < numericState) &&
-    (condition.below == null || condition.below > numericState)
+    (condition.above && numericValue < numericState) ||
+    (condition.below && numericValue > numericState)
   );
 }
 
@@ -113,8 +235,49 @@ function checkOrCondition(condition: OrCondition, hass: HomeAssistant) {
   return condition.conditions.some((c) => checkConditionsMet([c], hass));
 }
 
+/**
+ * Build a condition for filters
+ * @param condition condition to apply
+ * @param entityId base the condition on that entity (current entity to filter)
+ * @returns a new condition that handled legacy filter conditions
+ */
+export function buildConditionForFilter(
+  condition: Condition | LegacyFilterCondition | string | number,
+  entityId: string
+): Condition | LegacyFilterCondition {
+  let newCondition: Condition | LegacyFilterCondition;
+
+  if (typeof condition === "string" || typeof condition === "number") {
+    newCondition = {
+      condition: "state",
+      state: condition,
+    } as StateCondition;
+  } else {
+    newCondition = condition;
+  }
+
+  // Set the entity to filter on
+  if (
+    "condition" in newCondition &&
+    (newCondition.condition === "numeric_state" ||
+      newCondition.condition === "state")
+  ) {
+    newCondition.entity = entityId;
+  } else if ("operator" in newCondition) {
+    newCondition.entity = entityId;
+  }
+
+  return newCondition;
+}
+
+/**
+ * Return the result of applying conditions
+ * @param conditions conditions to apply
+ * @param hass Home Assistant object
+ * @returns true if conditions are respected
+ */
 export function checkConditionsMet(
-  conditions: (Condition | LegacyCondition)[],
+  conditions: (Condition | LegacyCondition | LegacyFilterCondition)[],
   hass: HomeAssistant
 ): boolean {
   return conditions.every((c) => {
@@ -133,6 +296,8 @@ export function checkConditionsMet(
         default:
           return checkStateCondition(c, hass);
       }
+    } else if ("operator" in c) {
+      return checkLegacyFilterCondition(c, hass);
     }
     return checkStateCondition(c, hass);
   });
@@ -167,7 +332,11 @@ function validateNumericStateCondition(condition: NumericStateCondition) {
     (condition.above != null || condition.below != null)
   );
 }
-
+/**
+ * Validate the conditions config for the UI
+ * @param conditions conditions to apply
+ * @returns true if conditions are validated
+ */
 export function validateConditionalConfig(
   conditions: (Condition | LegacyCondition)[]
 ): boolean {

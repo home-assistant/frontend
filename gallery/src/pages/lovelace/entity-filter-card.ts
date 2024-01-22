@@ -10,7 +10,7 @@ const ENTITIES = [
     latitude: 32.877105,
     longitude: 117.232185,
     gps_accuracy: 91,
-    battery: 71,
+    battery: 25,
     friendly_name: "Paulus",
   }),
   getEntity("device_tracker", "demo_anne_therese", "school", {
@@ -18,7 +18,7 @@ const ENTITIES = [
     latitude: 32.877105,
     longitude: 117.232185,
     gps_accuracy: 91,
-    battery: 71,
+    battery: 50,
     friendly_name: "Anne Therese",
   }),
   getEntity("device_tracker", "demo_home_boy", "home", {
@@ -26,7 +26,7 @@ const ENTITIES = [
     latitude: 32.877105,
     longitude: 117.232185,
     gps_accuracy: 91,
-    battery: 71,
+    battery: 75,
     friendly_name: "Home Boy",
   }),
   getEntity("light", "bed_light", "on", {
@@ -71,13 +71,16 @@ const CONFIGS = [
     config: `
 - type: entities
   entities:
-  - light.bed_light
-  - light.ceiling_lights
-  - light.kitchen_lights
+    - device_tracker.demo_anne_therese
+    - device_tracker.demo_home_boy
+    - device_tracker.demo_paulus
+    - light.bed_light
+    - light.ceiling_lights
+    - light.kitchen_lights
     `,
   },
   {
-    heading: "Filtered entities",
+    heading: "Filtered entities (== on || home)",
     config: `
 - type: entity-filter
   entities:
@@ -87,13 +90,26 @@ const CONFIGS = [
     - light.bed_light
     - light.ceiling_lights
     - light.kitchen_lights
-  state_filter:
+  conditions:
     - "on"
     - home
     `,
   },
   {
-    heading: 'With "entities" card config',
+    heading: "Filtered entities (contained in 'homework')",
+    config: `
+- type: entity-filter
+  entities:
+    - device_tracker.demo_anne_therese
+    - device_tracker.demo_home_boy
+    - device_tracker.demo_paulus
+  conditions:
+    - operator: in
+      value: "homework"
+    `,
+  },
+  {
+    heading: 'With "entities" card config (== on || not_home)',
     config: `
 - type: entity-filter
   entities:
@@ -103,7 +119,7 @@ const CONFIGS = [
     - light.bed_light
     - light.ceiling_lights
     - light.kitchen_lights
-  state_filter:
+  conditions:
     - "on"
     - not_home
   card:
@@ -113,7 +129,7 @@ const CONFIGS = [
     `,
   },
   {
-    heading: 'With "glance" card config',
+    heading: 'With "glance" card config (== on || not_home)',
     config: `
 - type: entity-filter
   entities:
@@ -123,7 +139,7 @@ const CONFIGS = [
     - light.bed_light
     - light.ceiling_lights
     - light.kitchen_lights
-  state_filter:
+  conditions:
     - "on"
     - not_home
   card:
@@ -133,78 +149,94 @@ const CONFIGS = [
     `,
   },
   {
+    heading: "Filtered entities by attribute (< '30')",
+    config: `
+- type: entity-filter
+  entities:
+    - device_tracker.demo_anne_therese
+    - device_tracker.demo_home_boy
+    - device_tracker.demo_paulus
+  conditions:
+    - operator: <
+      attribute: battery
+      value: "30"
+    `,
+  },
+  {
     heading: "Unfiltered number entities",
     config: `
 - type: entities
   entities:
+    - sensor.gas_station_lowest_price
     - sensor.gas_station_auchan_saint_priest_e10
     - sensor.gas_station_carrefour_venissieux_e10
     - sensor.gas_station_relais_lyon_mermoz_e10
-    - sensor.gas_station_lowest_price
     `,
   },
   {
-    heading: "Filtered entities with operator & number value",
+    heading: "Filtered entities by operator & number (<= 1.73)",
     config: `
 - type: entity-filter
   entities:
     - sensor.gas_station_auchan_saint_priest_e10
     - sensor.gas_station_carrefour_venissieux_e10
     - sensor.gas_station_relais_lyon_mermoz_e10
-  state_filter:
+  conditions:
     - operator: <=
       value: 1.73
     `,
   },
   {
-    heading: "Filtered entities with operator & entity_id value",
+    heading: "Filtered entities by operator & entity_id (== lowest_price)",
     config: `
 - type: entity-filter
   entities:
     - sensor.gas_station_auchan_saint_priest_e10
     - sensor.gas_station_carrefour_venissieux_e10
     - sensor.gas_station_relais_lyon_mermoz_e10
-  state_filter:
+  conditions:
     - operator: ==
       value: sensor.gas_station_lowest_price
     `,
   },
   {
-    heading: "Filtered entities with condition operator",
+    heading: "Filtered entities by operator in (== 1.724 || lowest_price)",
     config: `
 - type: entity-filter
   entities:
     - sensor.gas_station_auchan_saint_priest_e10
     - sensor.gas_station_carrefour_venissieux_e10
     - sensor.gas_station_relais_lyon_mermoz_e10
-  state_filter:
-    - condition: operator
-      operator: in
-      value: sensor.gas_station_lowest_price
+  conditions:
+    - operator: in
+      value:
+        - 1.724
+        - sensor.gas_station_lowest_price
     `,
   },
   {
-    heading: "Filtered entities with condition state_not",
+    heading: "Filtered entities by condition state (== lowest_price)",
     config: `
 - type: entity-filter
   entities:
     - sensor.gas_station_auchan_saint_priest_e10
     - sensor.gas_station_carrefour_venissieux_e10
     - sensor.gas_station_relais_lyon_mermoz_e10
-  state_filter:
+  conditions:
     - condition: state
-      state_not: sensor.gas_station_lowest_price
+      state: sensor.gas_station_lowest_price
     `,
   },
   {
-    heading: "Filtered entities with condition state_not array",
+    heading:
+      "Filtered entities by condition state_not array (!= 1.724 & lowest_price)",
     config: `
 - type: entity-filter
   entities:
     - sensor.gas_station_auchan_saint_priest_e10
     - sensor.gas_station_carrefour_venissieux_e10
     - sensor.gas_station_relais_lyon_mermoz_e10
-  state_filter:
+  conditions:
     - condition: state
       state_not:
         - 1.724
@@ -212,20 +244,8 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Filtered entities with condition above",
-    config: `
-- type: entity-filter
-  entities:
-    - sensor.gas_station_auchan_saint_priest_e10
-    - sensor.gas_station_carrefour_venissieux_e10
-    - sensor.gas_station_relais_lyon_mermoz_e10
-  state_filter:
-    - condition: numeric_state
-      above: sensor.gas_station_lowest_price
-    `,
-  },
-  {
-    heading: "Filtered entities with condition in conditions",
+    heading:
+      "Filtered entities by condition above (> lowest_price) [new syntax]",
     config: `
 - type: entity-filter
   entities:
@@ -235,6 +255,20 @@ const CONFIGS = [
   conditions:
     - condition: numeric_state
       above: sensor.gas_station_lowest_price
+    `,
+  },
+  {
+    heading:
+      "Filtered entities by condition above (> lowest_price) [old syntax]",
+    config: `
+- type: entity-filter
+  entities:
+    - sensor.gas_station_auchan_saint_priest_e10
+    - sensor.gas_station_carrefour_venissieux_e10
+    - sensor.gas_station_relais_lyon_mermoz_e10
+  state_filter:
+    - operator: ">"
+      value: sensor.gas_station_lowest_price
     `,
   },
 ];
