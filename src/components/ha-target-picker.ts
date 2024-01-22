@@ -62,9 +62,11 @@ export class HaTargetPicker extends LitElement {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
-  @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
+  @property({ attribute: false })
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 

@@ -33,7 +33,7 @@ class HaConfigScript extends HassRouterPage {
 
   @property({ type: Boolean }) public showAdvanced = false;
 
-  @property() public scripts: ScriptEntity[] = [];
+  @property({ attribute: false }) public scripts: ScriptEntity[] = [];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })

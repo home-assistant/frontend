@@ -17,7 +17,8 @@ import { haStyleScrollbar } from "../../../resources/styles";
 export class HuiButtonsBase extends LitElement {
   @state() public hass!: HomeAssistant;
 
-  @property() public configEntities?: EntitiesCardEntityConfig[];
+  @property({ attribute: false })
+  public configEntities?: EntitiesCardEntityConfig[];
 
   protected render(): TemplateResult {
     return html`

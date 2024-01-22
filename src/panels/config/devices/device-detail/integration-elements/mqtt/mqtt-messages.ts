@@ -10,7 +10,7 @@ import { HomeAssistant } from "../../../../../../types";
 class MQTTMessages extends LitElement {
   public hass!: HomeAssistant;
 
-  @property() public messages!: MQTTMessage[];
+  @property({ attribute: false }) public messages!: MQTTMessage[];
 
   @property() public direction!: string;
 
