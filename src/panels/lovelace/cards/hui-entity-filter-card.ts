@@ -69,14 +69,18 @@ export class HuiEntityFilterCard
   }
 
   public setConfig(config: EntityFilterCardConfig): void {
-    if (!config.entities.length || !Array.isArray(config.entities)) {
+    if (
+      !config.entities ||
+      !config.entities.length ||
+      !Array.isArray(config.entities)
+    ) {
       throw new Error("Entities must be specified");
     }
 
     if (
       !(
-        (config.state_filter && Array.isArray(config.state_filter)) ||
-        (config.conditions && Array.isArray(config.conditions))
+        (config.conditions && Array.isArray(config.conditions)) ||
+        (config.state_filter && Array.isArray(config.state_filter))
       ) &&
       !config.entities.every(
         (entity) =>
@@ -138,10 +142,10 @@ export class HuiEntityFilterCard
 
     const entitiesList = this._configEntities.filter((entityConf) => {
       const conditions =
-        entityConf.state_filter ??
-        this._config!.state_filter ??
         entityConf.conditions ??
-        this._config!.conditions;
+        this._config!.conditions ??
+        entityConf.state_filter ??
+        this._config!.state_filter;
 
       return (
         conditions

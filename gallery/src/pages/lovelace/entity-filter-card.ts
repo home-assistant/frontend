@@ -271,6 +271,20 @@ const CONFIGS = [
       value: sensor.gas_station_lowest_price
     `,
   },
+  {
+    heading: "Error: Entities must be specified",
+    config: `
+- type: entity-filter
+    `,
+  },
+  {
+    heading: "Error: Incorrect filter config",
+    config: `
+- type: entity-filter
+  entities:
+    - sensor.gas_station_lowest_price
+    `,
+  },
 ];
 
 @customElement("demo-lovelace-entity-filter-card")
