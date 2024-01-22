@@ -28,7 +28,7 @@ export const renderClimateBadge: RenderBadgeFunction = (stateObj, hass) => {
       <ha-attribute-icon
         .hass=${hass}
         .stateObj=${stateObj}
-        .attribute=${"hvac_action"}
+        attribute="hvac_action"
       >
       </ha-attribute-icon>
     </ha-tile-badge>

@@ -25,11 +25,7 @@ export const renderHumidifierBadge: RenderBadgeFunction = (stateObj, hass) => {
         ),
       })}
     >
-      <ha-attribute-icon
-        .hass=${hass}
-        .stateObj=${stateObj}
-        .attribute=${"action"}
-      >
+      <ha-attribute-icon .hass=${hass} .stateObj=${stateObj} attribute="action">
       </ha-attribute-icon>
     </ha-tile-badge>
   `;
