@@ -36,7 +36,7 @@ export class HaDeviceEntitiesCard extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entities!: EntityRegistryStateEntry[];
+  @property({ attribute: false }) public entities!: EntityRegistryStateEntry[];
 
   @property({ type: Boolean }) public showHidden = false;
 

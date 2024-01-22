@@ -22,7 +22,7 @@ export class HaIntegrationActionCard extends LitElement {
 
   @property() public label!: string;
 
-  @property() public manifest?: IntegrationManifest;
+  @property({ attribute: false }) public manifest?: IntegrationManifest;
 
   protected render(): TemplateResult {
     return html`

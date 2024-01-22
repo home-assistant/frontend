@@ -45,24 +45,34 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property({ attribute: false }) public schema!: readonly HaFormSchema[];
 
-  @property() public error?: Record<string, string>;
+  @property({ attribute: false }) public error?: Record<string, string>;
 
-  @property() public warning?: Record<string, string>;
+  @property({ attribute: false }) public warning?: Record<string, string>;
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public computeError?: (schema: any, error) => string;
+  @property({ attribute: false }) public computeError?: (
+    schema: any,
+    error
+  ) => string;
 
-  @property() public computeWarning?: (schema: any, warning) => string;
+  @property({ attribute: false }) public computeWarning?: (
+    schema: any,
+    warning
+  ) => string;
 
-  @property() public computeLabel?: (
+  @property({ attribute: false }) public computeLabel?: (
     schema: any,
     data: HaFormDataContainer
   ) => string;
 
-  @property() public computeHelper?: (schema: any) => string | undefined;
+  @property({ attribute: false }) public computeHelper?: (
+    schema: any
+  ) => string | undefined;
 
-  @property() public localizeValue?: (key: string) => string;
+  @property({ attribute: false }) public localizeValue?: (
+    key: string
+  ) => string;
 
   protected getFormProperties(): Record<string, any> {
     return {};

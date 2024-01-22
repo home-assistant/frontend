@@ -24,7 +24,7 @@ export class HaSortable extends LitElement {
   @property({ type: Boolean })
   public disabled = false;
 
-  @property({ type: Boolean })
+  @property({ type: Array })
   public path?: ItemPath;
 
   @property({ type: Boolean, attribute: "no-style" })
