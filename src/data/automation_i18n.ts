@@ -199,20 +199,20 @@ const tryDescribeTrigger = (
 
   // State Trigger
   if (trigger.platform === "state") {
-    let base = "When";
     const entities: string[] = [];
     const states = hass.states;
 
+    let attribute = "";
     if (trigger.attribute) {
       const stateObj = Array.isArray(trigger.entity_id)
         ? hass.states[trigger.entity_id[0]]
         : hass.states[trigger.entity_id];
-      base += ` ${computeAttributeNameDisplay(
+      attribute = computeAttributeNameDisplay(
         hass.localize,
         stateObj,
         hass.entities,
         trigger.attribute
-      )} of`;
+      );
     }
 
     if (!Array.isArray(trigger.entity_id)) {
@@ -224,19 +224,14 @@ const tryDescribeTrigger = (
       }
     }
 
-    if (entities.length === 0) {
-      // no entity_id or empty array
-      entities.push("something");
-    }
-
-    base += ` ${entities} changes`;
-
     const stateObj = hass.states[trigger.entity_id[0]];
 
+    let fromChoice = "other";
+    let fromString = "";
     if (trigger.from !== undefined) {
       if (trigger.from === null) {
         if (!trigger.attribute) {
-          base += " from any state";
+          fromChoice = "null";
         }
       } else if (!Array.isArray(trigger.from)) {
         trigger.from = [trigger.from];
@@ -256,16 +251,18 @@ const tryDescribeTrigger = (
           );
         }
         if (from.length !== 0) {
-          const fromString = formatListWithOrs(hass.locale, from);
-          base += ` from ${fromString}`;
+          fromString = formatListWithOrs(hass.locale, from);
+          fromChoice = "fromUsed";
         }
       }
     }
 
+    let toChoice = "other";
+    let toString = "";
     if (trigger.to !== undefined) {
       if (trigger.to === null) {
         if (!trigger.attribute) {
-          base += " to any state";
+          toChoice = "null";
         }
       } else if (!Array.isArray(trigger.to)) {
         trigger.to = [trigger.to];
@@ -285,8 +282,8 @@ const tryDescribeTrigger = (
           );
         }
         if (to.length !== 0) {
-          const toString = formatListWithOrs(hass.locale, to);
-          base += ` to ${toString}`;
+          toString = formatListWithOrs(hass.locale, to);
+          toChoice = "toUsed";
         }
       }
     }
@@ -296,17 +293,29 @@ const tryDescribeTrigger = (
       trigger.from === undefined &&
       trigger.to === undefined
     ) {
-      base += " state or any attributes";
+      toChoice = "special";
     }
 
+    let duration = "";
     if (trigger.for) {
-      const duration = describeDuration(hass.locale, trigger.for);
-      if (duration) {
-        base += ` for ${duration}`;
-      }
+      duration = describeDuration(hass.locale, trigger.for) ?? "";
     }
 
-    return base;
+    return hass.localize(
+      `${triggerTranslationBaseKey}.state.description.full`,
+      {
+        hasAttribute: attribute !== "" ? "true" : "false",
+        attribute: attribute,
+        hasEntity: entities.length !== 0 ? "true" : "false",
+        entity: formatListWithOrs(hass.locale, entities),
+        fromChoice: fromChoice,
+        fromString: fromString,
+        toChoice: toChoice,
+        toString: toString,
+        hasDuration: duration !== "" ? "true" : "false",
+        duration: duration,
+      }
+    );
   }
 
   // Sun Trigger
