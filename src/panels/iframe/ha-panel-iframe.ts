@@ -11,7 +11,7 @@ class HaPanelIframe extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() panel!: PanelInfo<{ url: string }>;
+  @property({ attribute: false }) panel!: PanelInfo<{ url: string }>;
 
   render() {
     if (

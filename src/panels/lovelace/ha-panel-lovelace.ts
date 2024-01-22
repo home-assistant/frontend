@@ -52,7 +52,7 @@ let resourcesLoaded = false;
 
 @customElement("ha-panel-lovelace")
 export class LovelacePanel extends LitElement {
-  @property() public panel?: PanelInfo<LovelacePanelConfig>;
+  @property({ attribute: false }) public panel?: PanelInfo<LovelacePanelConfig>;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 

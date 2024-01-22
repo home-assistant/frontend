@@ -13,7 +13,7 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
 
   @property() public label?: string;
 
-  @property() public value?: string[];
+  @property({ type: Array }) public value?: string[];
 
   @property() public helper?: string;
 
@@ -46,9 +46,11 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
-  @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityFilter?: (entity: HassEntity) => boolean;
+  @property({ attribute: false })
+  public entityFilter?: (entity: HassEntity) => boolean;
 
   @property({ attribute: "picked-area-label" })
   public pickedAreaLabel?: string;

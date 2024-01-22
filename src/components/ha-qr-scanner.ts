@@ -14,7 +14,7 @@ import type { HaTextField } from "./ha-textfield";
 
 @customElement("ha-qr-scanner")
 class HaQrScanner extends LitElement {
-  @property() localize!: LocalizeFunc;
+  @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @state() private _cameras?: QrScanner.Camera[];
 
