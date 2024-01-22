@@ -101,8 +101,7 @@ export class HaComboBox extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @property({ type: Boolean, reflect: true, attribute: "opened" })
-  public opened?: boolean;
+  @property({ type: Boolean, reflect: true }) public opened = false;
 
   @query("vaadin-combo-box-light", true) private _comboBox!: ComboBoxLight;
 

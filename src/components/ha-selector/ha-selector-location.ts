@@ -16,7 +16,7 @@ export class HaLocationSelector extends LitElement {
 
   @property({ attribute: false }) public selector!: LocationSelector;
 
-  @property() public value?: LocationSelectorValue;
+  @property({ type: Object }) public value?: LocationSelectorValue;
 
   @property() public label?: string;
 

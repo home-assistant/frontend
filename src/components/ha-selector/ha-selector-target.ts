@@ -32,7 +32,7 @@ export class HaTargetSelector extends LitElement {
 
   @property({ attribute: false }) public selector!: TargetSelector;
 
-  @property() public value?: HassServiceTarget;
+  @property({ type: Object }) public value?: HassServiceTarget;
 
   @property() public label?: string;
 

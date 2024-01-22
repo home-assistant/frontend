@@ -234,7 +234,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         >
           <div class="top-info">
             <div class="icon-name">
-              <ha-state-icon class="icon" .state=${stateObj}></ha-state-icon>
+              <ha-state-icon
+                class="icon"
+                .stateObj=${stateObj}
+                .hass=${this.hass}
+              ></ha-state-icon>
               <div>
                 ${this._config!.name ||
                 computeStateName(this.hass!.states[this._config!.entity])}

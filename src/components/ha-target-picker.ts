@@ -224,7 +224,8 @@ export class HaTargetPicker extends LitElement {
         ${entityState
           ? html`<ha-state-icon
               class="mdc-chip__icon mdc-chip__icon--leading"
-              .state=${entityState}
+              .hass=${this.hass}
+              .stateObj=${entityState}
             ></ha-state-icon>`
           : ""}
         <span role="gridcell">

@@ -28,7 +28,7 @@ import type { HomeAssistant } from "../../../types";
 class HaConfigUpdates extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public updateEntities?: UpdateEntity[];
 
@@ -95,6 +95,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                 slot="graphic"
                 .title=${entity.attributes.title ||
                 entity.attributes.friendly_name}
+                .hass=${this.hass}
                 .stateObj=${entity}
                 class=${ifDefined(
                   this.narrow && entity.attributes.in_progress

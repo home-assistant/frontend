@@ -10,7 +10,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/entity/state-badge";
 import { isUnavailableState } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import {
@@ -145,7 +144,8 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         html`
           <ha-state-icon
             class="weather-icon"
-            .state=${stateObj}
+            .stateObj=${stateObj}
+            .hass=${this.hass}
           ></ha-state-icon>
         `}
       </div>

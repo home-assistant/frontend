@@ -33,9 +33,9 @@ import { ItemSelectedEvent, SetAttributeServiceData } from "./types";
 export class ZHAClusterAttributes extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public device?: ZHADevice;
+  @property({ attribute: false }) public device?: ZHADevice;
 
-  @property() public selectedCluster?: Cluster;
+  @property({ type: Object }) public selectedCluster?: Cluster;
 
   @state() private _attributes: Attribute[] | undefined;
 

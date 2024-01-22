@@ -19,6 +19,7 @@ import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
+import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
@@ -271,10 +272,28 @@ class MoreInfoLight extends LitElement {
                   @selected=${this._handleEffect}
                   @closed=${stopPropagation}
                 >
-                  <ha-svg-icon slot="icon" .path=${mdiCreation}></ha-svg-icon>
+                  ${this.stateObj.attributes.effect
+                    ? html`<ha-attribute-icon
+                        slot="icon"
+                        .hass=${this.hass}
+                        .stateObj=${this.stateObj}
+                        attribute="effect"
+                        .attributeValue=${this.stateObj.attributes.effect}
+                      ></ha-attribute-icon>`
+                    : html`<ha-svg-icon
+                        slot="icon"
+                        .path=${mdiCreation}
+                      ></ha-svg-icon>`}
                   ${this.stateObj.attributes.effect_list?.map(
                     (mode) => html`
-                      <ha-list-item .value=${mode}>
+                      <ha-list-item .value=${mode} graphic="icon">
+                        <ha-attribute-icon
+                          slot="graphic"
+                          .hass=${this.hass}
+                          .stateObj=${this.stateObj}
+                          attribute="effect"
+                          .attributeValue=${mode}
+                        ></ha-attribute-icon>
                         ${this.hass.formatEntityAttributeValue(
                           this.stateObj!,
                           "effect",

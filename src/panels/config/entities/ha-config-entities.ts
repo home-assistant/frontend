@@ -13,7 +13,14 @@ import {
   mdiUndo,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -83,15 +90,15 @@ export interface EntityRow extends StateEntity {
 export class HaConfigEntities extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
   @state() private _stateEntities: StateEntity[] = [];
 
-  @property() public _entries?: ConfigEntry[];
+  @state() private _entries?: ConfigEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -205,7 +212,8 @@ export class HaConfigEntities extends LitElement {
           <ha-state-icon
             title=${ifDefined(entry.entity?.state)}
             slot="item-icon"
-            .state=${entry.entity}
+            .hass=${this.hass}
+            .stateObj=${entry.entity}
           ></ha-state-icon>
         `,
       },
@@ -681,7 +689,7 @@ export class HaConfigEntities extends LitElement {
     `;
   }
 
-  public willUpdate(changedProps): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     const oldHass = changedProps.get("hass");
     let changed = false;

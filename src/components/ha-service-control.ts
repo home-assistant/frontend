@@ -40,6 +40,8 @@ import "./ha-service-picker";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
+import { nestedArrayMove } from "../common/util/array-move";
+import { ReorderModeMixin } from "../state/reorder-mode-mixin";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {
@@ -75,7 +77,7 @@ interface ExtHassService extends Omit<HassService, "fields"> {
 }
 
 @customElement("ha-service-control")
-export class HaServiceControl extends LitElement {
+export class HaServiceControl extends ReorderModeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public value?: {
@@ -86,11 +88,11 @@ export class HaServiceControl extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ reflect: true, type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public showAdvanced?: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
-  @property({ type: Boolean, reflect: true }) public hidePicker?: boolean;
+  @property({ type: Boolean, reflect: true }) public hidePicker = false;
 
   @state() private _value!: this["value"];
 
@@ -439,6 +441,7 @@ export class HaServiceControl extends LitElement {
               allow-custom-entity
             ></ha-entity-picker>`
           : ""}
+      ${this._renderReorderModeAlert()}
       ${shouldRenderServiceDataYaml
         ? html`<ha-yaml-editor
             .hass=${this.hass}
@@ -449,7 +452,23 @@ export class HaServiceControl extends LitElement {
             @value-changed=${this._dataChanged}
           ></ha-yaml-editor>`
         : filteredFields?.map((dataField) => {
+            const selector = dataField?.selector ?? { text: undefined };
+            const type = Object.keys(selector)[0];
+            const enhancedSelector = [
+              "action",
+              "condition",
+              "trigger",
+            ].includes(type)
+              ? {
+                  [type]: {
+                    ...selector[type],
+                    path: [dataField.key],
+                  },
+                }
+              : selector;
+
             const showOptional = showOptionalToggle(dataField);
+
             return dataField.selector &&
               (!dataField.advanced ||
                 this.showAdvanced ||
@@ -488,7 +507,7 @@ export class HaServiceControl extends LitElement {
                       (!this._value?.data ||
                         this._value.data[dataField.key] === undefined))}
                     .hass=${this.hass}
-                    .selector=${dataField.selector}
+                    .selector=${enhancedSelector}
                     .key=${dataField.key}
                     @value-changed=${this._serviceDataChanged}
                     .value=${this._value?.data
@@ -496,10 +515,39 @@ export class HaServiceControl extends LitElement {
                       : undefined}
                     .placeholder=${dataField.default}
                     .localizeValue=${this._localizeValueCallback}
+                    @item-moved=${this._itemMoved}
                   ></ha-selector>
                 </ha-settings-row>`
               : "";
           })}`;
+  }
+
+  private _renderReorderModeAlert() {
+    if (!this._reorderMode.active) {
+      return nothing;
+    }
+    return html`
+      <ha-alert
+        class="re-order"
+        alert-type="info"
+        .title=${this.hass.localize(
+          "ui.panel.config.automation.editor.re_order_mode.title"
+        )}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.re_order_mode.description_all"
+        )}
+        <ha-button slot="action" @click=${this._exitReOrderMode}>
+          ${this.hass.localize(
+            "ui.panel.config.automation.editor.re_order_mode.exit"
+          )}
+        </ha-button>
+      </ha-alert>
+    `;
+  }
+
+  private async _exitReOrderMode() {
+    this._reorderMode.exit();
   }
 
   private _localizeValueCallback = (key: string) => {
@@ -693,6 +741,22 @@ export class HaServiceControl extends LitElement {
       value: {
         ...this._value,
         data,
+      },
+    });
+  }
+
+  private _itemMoved(ev) {
+    ev.stopPropagation();
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+
+    const data = this.value?.data ?? {};
+
+    const newData = nestedArrayMove(data, oldIndex, newIndex, oldPath, newPath);
+
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.value,
+        data: newData,
       },
     });
   }

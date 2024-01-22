@@ -349,6 +349,7 @@ export class HaSceneEditor extends SubscribeMixin(
                                 @click=${this._showMoreInfo}
                               >
                                 <state-badge
+                                  .hass=${this.hass}
                                   .stateObj=${entityStateObj}
                                   slot="graphic"
                                 ></state-badge>
@@ -416,6 +417,7 @@ export class HaSceneEditor extends SubscribeMixin(
                                         @click=${this._showMoreInfo}
                                       >
                                         <state-badge
+                                          .hass=${this.hass}
                                           .stateObj=${entityStateObj}
                                           slot="graphic"
                                         ></state-badge>

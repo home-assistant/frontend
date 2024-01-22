@@ -21,7 +21,7 @@ import { ItemSelectedEvent } from "./types";
 export class ZHADeviceBindingControl extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public device?: ZHADevice;
+  @property({ attribute: false }) public device?: ZHADevice;
 
   @state() private _bindTargetIndex = -1;
 

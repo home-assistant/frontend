@@ -17,11 +17,11 @@ import { NODE_SIZE, SPACING } from "./hat-graph-const";
 export class HatGraphNode extends LitElement {
   @property() iconPath?: string;
 
-  @property({ reflect: true, type: Boolean }) disabled?: boolean;
+  @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ reflect: true, type: Boolean }) notEnabled = false;
 
-  @property({ reflect: true, type: Boolean }) graphStart?: boolean;
+  @property({ reflect: true, type: Boolean }) graphStart = false;
 
   @property({ type: Boolean, attribute: "nofocus" }) noFocus = false;
 

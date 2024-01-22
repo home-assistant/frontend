@@ -30,13 +30,13 @@ export class HaStateControlHumidifierHumidity extends LitElement {
   @property({ attribute: false }) public stateObj!: HumidifierEntity;
 
   @property({ attribute: "show-secondary", type: Boolean })
-  public showSecondary?: boolean;
+  public showSecondary = false;
 
   @property({ attribute: "use-current-as-primary", type: Boolean })
-  public showCurrentAsPrimary?: boolean;
+  public showCurrentAsPrimary = false;
 
   @property({ type: Boolean, attribute: "prevent-interaction-on-scroll" })
-  public preventInteractionOnScroll?: boolean;
+  public preventInteractionOnScroll = false;
 
   @state() private _targetHumidity?: number;
 

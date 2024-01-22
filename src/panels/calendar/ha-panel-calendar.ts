@@ -42,8 +42,7 @@ import "./ha-full-calendar";
 class PanelCalendar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true })
-  public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public mobile = false;
 
@@ -113,7 +112,11 @@ class PanelCalendar extends LitElement {
           .value=${selCal.entity_id}
           .selected=${!this._deSelectedCalendars.includes(selCal.entity_id)}
         >
-          <ha-state-icon slot="graphic" .state=${selCal}></ha-state-icon>
+          <ha-state-icon
+            slot="graphic"
+            .hass=${this.hass}
+            .stateObj=${selCal}
+          ></ha-state-icon>
           ${selCal.name}
         </ha-check-list-item>
       `

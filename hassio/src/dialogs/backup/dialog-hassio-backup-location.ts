@@ -27,8 +27,7 @@ const SCHEMA = memoizeOne(
 class HassioBackupLocationDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false })
-  public _dialogParams?: HassioBackupLocationDialogParams;
+  @state() private _dialogParams?: HassioBackupLocationDialogParams;
 
   @state() private _data?: { default_backup_mount: string | null };
 

@@ -54,7 +54,7 @@ export class HaAreaPicker extends LitElement {
   @property() public placeholder?: string;
 
   @property({ type: Boolean, attribute: "no-add" })
-  public noAdd?: boolean;
+  public noAdd = false;
 
   /**
    * Show only areas with entities from specific domains.
@@ -92,9 +92,9 @@ export class HaAreaPicker extends LitElement {
 
   @property() public entityFilter?: (entity: HassEntity) => boolean;
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   @state() private _opened?: boolean;
 
