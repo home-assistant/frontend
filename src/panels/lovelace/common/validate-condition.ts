@@ -76,6 +76,25 @@ export interface AndCondition extends BaseCondition {
   conditions?: Condition[];
 }
 
+function getValueFromEntityId(
+  hass: HomeAssistant,
+  value: string | string[]
+): string | string[] {
+  let returned: string | string[];
+  if (
+    typeof value === "string" &&
+    isValidEntityId(value) &&
+    hass.states[value]
+  ) {
+    returned = hass.states[value]?.state;
+  } else if (Array.isArray(value)) {
+    returned = value.map((v) => getValueFromEntityId(hass, v) as string);
+  } else {
+    returned = value;
+  }
+  return returned;
+}
+
 function checkLegacyFilterCondition(
   condition: LegacyFilterCondition,
   hass: HomeAssistant
@@ -90,19 +109,8 @@ function checkLegacyFilterCondition(
     ? entity.attributes[condition.attribute]
     : entity.state;
 
-  if (Array.isArray(value)) {
-    value = value.map((v) => {
-      if (typeof v === "string" && isValidEntityId(v) && hass.states[v]) {
-        v = hass.states[v]?.state;
-      }
-      return `${v}`;
-    });
-  } else if (
-    typeof value === "string" &&
-    isValidEntityId(value) &&
-    hass.states[value]
-  ) {
-    value = hass.states[value]?.state;
+  if (Array.isArray(value) || typeof value === "string") {
+    value = getValueFromEntityId(hass, value);
   }
 
   if (condition.operator === "==" || condition.operator === "!=") {
@@ -163,19 +171,8 @@ function checkStateCondition(
   let value = condition.state ?? condition.state_not;
 
   // Handle entity_id, UI should be updated for conditionnal card (filters does not have UI for now)
-  if (Array.isArray(value)) {
-    value = value.map((v) => {
-      if (typeof v === "string" && isValidEntityId(v) && hass.states[v]) {
-        v = hass.states[v]?.state;
-      }
-      return `${v}`;
-    });
-  } else if (
-    typeof value === "string" &&
-    isValidEntityId(value) &&
-    hass.states[value]
-  ) {
-    value = hass.states[value]?.state;
+  if (Array.isArray(value) || typeof value === "string") {
+    value = getValueFromEntityId(hass, value);
   }
 
   return condition.state != null
@@ -189,27 +186,32 @@ function checkStateNumericCondition(
 ) {
   const state = (condition.entity ? hass.states[condition.entity] : undefined)
     ?.state;
-  let value = condition.above ?? condition.below;
+  let above = condition.above;
+  let below = condition.below;
 
   // Handle entity_id, UI should be updated for conditionnal card (filters does not have UI for now)
-  if (
-    typeof value === "string" &&
-    isValidEntityId(value) &&
-    hass.states[value]
-  ) {
-    value = hass.states[value]?.state;
+  if (typeof above === "string") {
+    above = getValueFromEntityId(hass, above) as string;
+  }
+  if (typeof below === "string") {
+    below = getValueFromEntityId(hass, below) as string;
   }
 
   const numericState = Number(state);
-  const numericValue = Number(value);
+  const numericAbove = Number(above);
+  const numericBelow = Number(below);
 
-  if (isNaN(numericState) || isNaN(numericValue)) {
+  if (isNaN(numericState)) {
     return false;
   }
 
   return (
-    (condition.above && numericValue < numericState) ||
-    (condition.below && numericValue > numericState)
+    (condition.above == null ||
+      isNaN(numericAbove) ||
+      numericAbove < numericState) &&
+    (condition.below == null ||
+      isNaN(numericBelow) ||
+      numericBelow > numericState)
   );
 }
 

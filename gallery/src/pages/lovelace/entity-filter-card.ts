@@ -245,7 +245,7 @@ const CONFIGS = [
   },
   {
     heading:
-      "Filtered entities by condition above (> lowest_price) [new syntax]",
+      "Filtered entities by condition above (between 1.73 and lowest_price) [new syntax]",
     config: `
 - type: entity-filter
   entities:
@@ -255,6 +255,7 @@ const CONFIGS = [
   conditions:
     - condition: numeric_state
       above: sensor.gas_station_lowest_price
+      below: 1.73
     `,
   },
   {
