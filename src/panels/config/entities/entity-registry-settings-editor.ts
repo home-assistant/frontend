@@ -141,7 +141,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public helperConfigEntry?: ConfigEntry;
+  @property({ attribute: false }) public helperConfigEntry?: ConfigEntry;
 
   @state() private _name!: string;
 

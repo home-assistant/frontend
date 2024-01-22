@@ -54,7 +54,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public path?: ItemPath;
 
-  @property() public action!: ChooseAction;
+  @property({ attribute: false }) public action!: ChooseAction;
 
   @state() private _showDefault = false;
 

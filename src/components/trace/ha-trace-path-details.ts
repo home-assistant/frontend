@@ -43,9 +43,10 @@ export class HaTracePathDetails extends LitElement {
 
   @property({ attribute: false }) public selected!: NodeInfo;
 
-  @property() public renderedNodes: Record<string, any> = {};
+  @property({ attribute: false })
+  public renderedNodes: Record<string, any> = {};
 
-  @property() public trackedNodes!: Record<string, any>;
+  @property({ attribute: false }) public trackedNodes!: Record<string, any>;
 
   @state() private _view: (typeof TRACE_PATH_TABS)[number] = "step_config";
 

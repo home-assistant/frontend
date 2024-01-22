@@ -52,7 +52,7 @@ export class HaIntegrationCard extends LitElement {
 
   @property({ type: Boolean }) public supportsDiagnostics = false;
 
-  @property() public logInfo?: IntegrationLogInfo;
+  @property({ attribute: false }) public logInfo?: IntegrationLogInfo;
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 

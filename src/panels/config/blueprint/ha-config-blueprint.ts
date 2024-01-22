@@ -25,7 +25,8 @@ class HaConfigBlueprint extends HassRouterPage {
 
   @property({ type: Boolean }) public showAdvanced = false;
 
-  @property() public blueprints: Record<string, Blueprints> = {};
+  @property({ attribute: false })
+  public blueprints: Record<string, Blueprints> = {};
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
