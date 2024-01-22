@@ -14,6 +14,8 @@ export class HaStateIcon extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
+  @property({ attribute: false }) public stateValue?: string;
+
   @property() public icon?: string;
 
   protected render() {
@@ -30,12 +32,14 @@ export class HaStateIcon extends LitElement {
     if (!this.hass) {
       return this._renderFallback();
     }
-    const icon = entityIcon(this.hass, this.stateObj).then((icn) => {
-      if (icn) {
-        return html`<ha-icon .icon=${icn}></ha-icon>`;
+    const icon = entityIcon(this.hass, this.stateObj, this.stateValue).then(
+      (icn) => {
+        if (icn) {
+          return html`<ha-icon .icon=${icn}></ha-icon>`;
+        }
+        return this._renderFallback();
       }
-      return this._renderFallback();
-    });
+    );
     return html`${until(icon)}`;
   }
 

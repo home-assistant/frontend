@@ -3,10 +3,10 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { domainIcon } from "../../common/entity/domain_icon";
 import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-button";
 import "../../components/ha-control-switch";
+import "../../components/ha-state-icon";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
 import { HomeAssistant } from "../../types";
@@ -77,9 +77,11 @@ export class HaStateControlCoverToggle extends LitElement {
               "--color": onColor,
             })}
           >
-            <ha-svg-icon
-              .path=${domainIcon("cover", this.stateObj, "open")}
-            ></ha-svg-icon>
+            <ha-state-icon
+              .hass=${this.hass}
+              .stateObj=${this.stateObj}
+              stateValue="open"
+            ></ha-state-icon>
           </ha-control-button>
           <ha-control-button
             .label=${this.hass.localize("ui.card.cover.close_cover")}
@@ -92,9 +94,11 @@ export class HaStateControlCoverToggle extends LitElement {
               "--color": offColor,
             })}
           >
-            <ha-svg-icon
-              .path=${domainIcon("cover", this.stateObj, "closed")}
-            ></ha-svg-icon>
+            <ha-state-icon
+              .hass=${this.hass}
+              .stateObj=${this.stateObj}
+              stateValue="closed"
+            ></ha-state-icon>
           </ha-control-button>
         </div>
       `;
@@ -102,8 +106,6 @@ export class HaStateControlCoverToggle extends LitElement {
 
     return html`
       <ha-control-switch
-        .pathOn=${domainIcon("cover", this.stateObj, "open")}
-        .pathOff=${domainIcon("cover", this.stateObj, "closed")}
         vertical
         reversed
         .checked=${isOn}
@@ -117,6 +119,18 @@ export class HaStateControlCoverToggle extends LitElement {
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
       >
+        <ha-state-icon
+          slot="icon-on"
+          .hass=${this.hass}
+          .stateObj=${this.stateObj}
+          stateValue="open"
+        ></ha-state-icon>
+        <ha-state-icon
+          slot="icon-off"
+          .hass=${this.hass}
+          .stateObj=${this.stateObj}
+          stateValue="closed"
+        ></ha-state-icon>
       </ha-control-switch>
     `;
   }
