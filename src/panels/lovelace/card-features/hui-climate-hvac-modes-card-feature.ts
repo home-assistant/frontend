@@ -132,7 +132,7 @@ class HuiClimateHvacModesCardFeature
         label: this.hass!.formatEntityState(this.stateObj!, mode),
         icon: html`
           <ha-svg-icon
-            .slot=${"graphic"}
+            slot="graphic"
             .path=${climateHvacModeIcon(mode)}
           ></ha-svg-icon>
         `,
