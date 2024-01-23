@@ -1,5 +1,5 @@
 /** Return an icon representing a attribute. */
-import { mdiCircleMedium, mdiCreation } from "@mdi/js";
+import { mdiCircleMedium } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   computeFanModeIcon,
@@ -19,9 +19,6 @@ const iconGenerators: Record<string, Record<string, (value: any) => string>> = {
   },
   humidifier: {
     mode: computeHumidiferModeIcon,
-  },
-  light: {
-    effect: () => mdiCreation,
   },
   fan: {
     preset_mode: () => mdiCircleMedium,
