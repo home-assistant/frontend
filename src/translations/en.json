@@ -3117,6 +3117,13 @@
                     "full": "Test {condition}"
                   }
                 },
+                "set_conversation_response": {
+                  "label": "Set conversation response",
+                  "description": {
+                    "picker": "Set response of conversation when automation was triggered by conversation trigger.",
+                    "full": "Set response of conversation to {response}"
+                  }
+                },
                 "unknown": {
                   "label": "Unknown"
                 }

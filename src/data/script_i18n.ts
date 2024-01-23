@@ -27,6 +27,7 @@ import {
   PlayMediaAction,
   RepeatAction,
   SceneAction,
+  SetConversationResponseAction,
   StopAction,
   VariablesAction,
   WaitForTriggerAction,
@@ -440,6 +441,14 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(
       `${actionTranslationBaseKey}.parallel.description.full`,
       { number: numActions }
+    );
+  }
+
+  if (actionType === "set_conversation_response") {
+    const config = action as SetConversationResponseAction;
+    return hass.localize(
+      `${actionTranslationBaseKey}.set_conversation_response.description.full`,
+      { response: config.set_conversation_response }
     );
   }
 
