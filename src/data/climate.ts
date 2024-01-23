@@ -25,6 +25,7 @@ import {
   mdiSpeedometerSlow,
   mdiSunSnowflakeVariant,
   mdiTarget,
+  mdiThermostat,
   mdiThermostatAuto,
   mdiWaterPercent,
   mdiWeatherWindy,
@@ -136,8 +137,8 @@ export const CLIMATE_HVAC_MODE_ICONS: Record<HvacMode, string> = {
   heat_cool: mdiSunSnowflakeVariant,
 };
 
-export const computeHvacModeIcon = (mode: HvacMode) =>
-  CLIMATE_HVAC_MODE_ICONS[mode];
+export const climateHvacModeIcon = (mode: string) =>
+  CLIMATE_HVAC_MODE_ICONS[mode] || mdiThermostat;
 
 type ClimateBuiltInPresetMode =
   | "eco"

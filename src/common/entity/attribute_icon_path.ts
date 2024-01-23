@@ -3,7 +3,6 @@ import { mdiCircleMedium } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   computeFanModeIcon,
-  computeHvacModeIcon,
   computePresetModeIcon,
   computeSwingModeIcon,
 } from "../../data/climate";
@@ -13,7 +12,6 @@ import { computeDomain } from "./compute_domain";
 const iconGenerators: Record<string, Record<string, (value: any) => string>> = {
   climate: {
     fan_mode: computeFanModeIcon,
-    hvac_mode: computeHvacModeIcon,
     preset_mode: computePresetModeIcon,
     swing_mode: computeSwingModeIcon,
   },

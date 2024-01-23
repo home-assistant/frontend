@@ -10,9 +10,9 @@ import {
 import { RenderBadgeFunction } from "./tile-badge";
 
 export const renderHumidifierBadge: RenderBadgeFunction = (stateObj, hass) => {
-  const hvacAction = (stateObj as HumidifierEntity).attributes.action;
+  const action = (stateObj as HumidifierEntity).attributes.action;
 
-  if (!hvacAction || hvacAction === "off") {
+  if (!action || action === "off") {
     return nothing;
   }
 
@@ -21,7 +21,7 @@ export const renderHumidifierBadge: RenderBadgeFunction = (stateObj, hass) => {
       style=${styleMap({
         "--tile-badge-background-color": stateColorCss(
           stateObj,
-          HUMIDIFIER_ACTION_MODE[hvacAction]
+          HUMIDIFIER_ACTION_MODE[action]
         ),
       })}
     >
