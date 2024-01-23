@@ -77,6 +77,7 @@ import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
+import "./types/ha-automation-action-set_conversation_response";
 
 export const getType = (action: Action | undefined) => {
   if (!action) {
