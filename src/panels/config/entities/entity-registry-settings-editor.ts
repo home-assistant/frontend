@@ -809,7 +809,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
             </ha-settings-row>
           `
         : ""}
-      ${this.helperConfigEntry && this.helperConfigEntry.supports_options
+      ${this.helperConfigEntry &&
+      this.helperConfigEntry.supports_options &&
+      this.helperConfigEntry.domain !== "switch_as_x"
         ? html`
             <ha-list-item
               class="menu-item"
