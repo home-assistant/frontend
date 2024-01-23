@@ -474,12 +474,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
                     <ha-settings-row>
                       <span slot="heading"
                         >${this.hass.localize(
-                          "ui.dialogs.entity_registry.editor.invert"
+                          "ui.dialogs.entity_registry.editor.invert.label"
                         )}</span
                       >
                       <span slot="description"
                         >${this.hass.localize(
-                          `ui.dialogs.entity_registry.editor.invert_switch_as_${this._switchAsDomain}_description`
+                          `ui.dialogs.entity_registry.editor.invert.descriptions.${this._switchAsDomain}`
                         )}</span
                       >
                       <ha-switch
