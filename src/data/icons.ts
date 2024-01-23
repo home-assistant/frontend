@@ -150,7 +150,9 @@ const getEntityIcon = async (
   if (!icon) {
     const entityComponentIcons = await getComponentIcons(hass, domain);
     if (entityComponentIcons) {
-      const translations = entityComponentIcons[deviceClass || "_"];
+      const translations =
+        (deviceClass && entityComponentIcons[deviceClass]) ||
+        entityComponentIcons._;
       icon = (value && translations?.state?.[value]) || translations?.default;
     }
   }
@@ -187,7 +189,9 @@ export const attributeIcon = async (
     const entityComponentIcons = await getComponentIcons(hass, domain);
     if (entityComponentIcons) {
       const translations =
-        entityComponentIcons[deviceClass || "_"].state_attributes?.[attribute];
+        (deviceClass &&
+          entityComponentIcons[deviceClass]?.state_attributes?.[attribute]) ||
+        entityComponentIcons._?.state_attributes?.[attribute];
       icon = (value && translations?.state?.[value]) || translations?.default;
     }
   }
