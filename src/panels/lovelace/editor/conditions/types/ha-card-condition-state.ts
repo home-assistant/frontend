@@ -21,7 +21,7 @@ type StateConditionData = {
   condition: "state";
   entity?: string;
   invert: "true" | "false";
-  state?: string | number | string[];
+  state?: string | string[];
 };
 
 @customElement("ha-card-condition-state")

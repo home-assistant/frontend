@@ -52,8 +52,8 @@ export interface NumericStateCondition extends BaseCondition {
 export interface StateCondition extends BaseCondition {
   condition: "state";
   entity?: string;
-  state?: string | number | string[];
-  state_not?: string | number | string[];
+  state?: string | string[];
+  state_not?: string | string[];
 }
 
 export interface ScreenCondition extends BaseCondition {
@@ -101,8 +101,9 @@ function checkLegacyFilterCondition(
   if (!entity) {
     return false;
   }
+
   let value = condition.value;
-  let state = condition.attribute
+  let state: string | number = condition.attribute
     ? entity.attributes[condition.attribute]
     : entity.state;
 
@@ -113,10 +114,10 @@ function checkLegacyFilterCondition(
   if (condition.operator === "==" || condition.operator === "!=") {
     const valueIsNumeric =
       typeof value === "number" ||
-      (typeof value === "string" && value.trim() && !isNaN(Number(value)));
+      (typeof value === "string" && !isNaN(Number(value.trim())));
     const stateIsNumeric =
       typeof state === "number" ||
-      (typeof state === "string" && state.trim() && !isNaN(Number(state)));
+      (typeof state === "string" && !isNaN(Number(state.trim())));
     if (valueIsNumeric && stateIsNumeric) {
       value = Number(value);
       state = Number(state);
@@ -249,8 +250,8 @@ export function buildConditionForFilter(
   if (typeof condition === "string" || typeof condition === "number") {
     newCondition = {
       condition: "state",
-      state: condition,
-    } as StateCondition;
+      state: `${condition}`,
+    };
   } else {
     newCondition = condition;
   }
