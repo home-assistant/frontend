@@ -77,8 +77,7 @@ export class HaSortable extends LitElement {
     return html`
       <style>
         .sortable-fallback {
-          display: none;
-          opacity: 0;
+          display: none !important;
         }
 
         .sortable-ghost {
