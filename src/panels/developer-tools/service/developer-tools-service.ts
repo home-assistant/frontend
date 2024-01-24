@@ -73,7 +73,7 @@ class HaPanelDevService extends LitElement {
         data: {},
       };
       if (this._yamlMode) {
-        this.updateComplete.then(() => 
+        this.updateComplete.then(() =>
           this._yamlEditor?.setValue(this._serviceData)
         );
       }
@@ -86,7 +86,7 @@ class HaPanelDevService extends LitElement {
         data: {},
       };
       if (this._yamlMode) {
-        this.updateComplete.then(() => 
+        this.updateComplete.then(() =>
           this._yamlEditor?.setValue(this._serviceData)
         );
       }
