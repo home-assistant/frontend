@@ -11,7 +11,7 @@ import "./ha-svg-icon";
 
 @customElement("ha-service-icon")
 export class HaServiceIcon extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public service?: string;
 
