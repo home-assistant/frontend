@@ -52,6 +52,10 @@ import {
   createConfigFlow,
   handleConfigFlowStep,
 } from "../../../data/config_flow";
+import {
+  createOptionsFlow,
+  handleOptionsFlowStep,
+} from "../../../data/options_flow";
 import { DataEntryFlowStepCreateEntry } from "../../../data/data_entry_flow";
 import {
   DeviceRegistryEntry,
@@ -126,6 +130,7 @@ const OVERRIDE_DEVICE_CLASSES = {
 };
 
 const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren", "valve"];
+const SWITCH_AS_DOMAINS_INVERT = ["cover", "lock", "valve"];
 
 const PRECISIONS = [0, 1, 2, 3, 4, 5, 6];
 
@@ -151,7 +156,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _deviceClass?: string;
 
-  @state() private _switchAs = "switch";
+  @state() private _switchAsDomain = "switch";
+
+  @state() private _switchAsInvert = false;
 
   @state() private _areaId?: string | null;
 
@@ -214,6 +221,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._device = this.entry.device_id
       ? this.hass.devices[this.entry.device_id]
       : undefined;
+    this._switchAsInvert = this.entry.options?.switch_as_x?.invert === true;
 
     const domain = computeDomain(this.entry.entity_id);
 
@@ -333,9 +341,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
     if (changedProps.has("helperConfigEntry")) {
       if (this.helperConfigEntry?.domain === "switch_as_x") {
-        this._switchAs = computeDomain(this.entry.entity_id);
+        this._switchAsDomain = computeDomain(this.entry.entity_id);
       } else {
-        this._switchAs = "switch";
+        this._switchAsDomain = "switch";
+        this._switchAsInvert = false;
       }
     }
   }
@@ -404,7 +413,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
             )}
             naturalMenuWidth
             fixedMenuPosition
-            @selected=${this._switchAsChanged}
+            @selected=${this._switchAsDomainChanged}
             @closed=${stopPropagation}
           >
             <ha-list-item
@@ -435,35 +444,55 @@ export class EntityRegistrySettingsEditor extends LitElement {
           </ha-select>`
         : this.helperConfigEntry?.domain === "switch_as_x"
           ? html`<ha-select
-              .label=${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.switch_as_x"
-              )}
-              .value=${this._switchAs}
-              naturalMenuWidth
-              fixedMenuPosition
-              @selected=${this._switchAsChanged}
-              @closed=${stopPropagation}
-            >
-              <ha-list-item value="switch">
-                ${domainToName(this.hass.localize, "switch")}
-              </ha-list-item>
-              <ha-list-item .value=${domain}>
-                ${domainToName(this.hass.localize, domain)}
-              </ha-list-item>
-              <li divider role="separator"></li>
-              ${this._switchAsDomainsSorted(
-                SWITCH_AS_DOMAINS,
-                this.hass.localize
-              ).map((entry) =>
-                domain === entry.domain
-                  ? nothing
-                  : html`
-                      <ha-list-item .value=${entry.domain}>
-                        ${entry.label}
-                      </ha-list-item>
-                    `
-              )}
-            </ha-select>`
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.switch_as_x"
+                )}
+                .value=${this._switchAsDomain}
+                naturalMenuWidth
+                fixedMenuPosition
+                @selected=${this._switchAsDomainChanged}
+                @closed=${stopPropagation}
+              >
+                <ha-list-item value="switch">
+                  ${domainToName(this.hass.localize, "switch")}
+                </ha-list-item>
+                <ha-list-item .value=${domain}>
+                  ${domainToName(this.hass.localize, domain)}
+                </ha-list-item>
+                <li divider role="separator"></li>
+                ${this._switchAsDomainsSorted(
+                  SWITCH_AS_DOMAINS,
+                  this.hass.localize
+                ).map((entry) =>
+                  domain === entry.domain
+                    ? nothing
+                    : html`
+                        <ha-list-item .value=${entry.domain}>
+                          ${entry.label}
+                        </ha-list-item>
+                      `
+                )}
+              </ha-select>
+              ${SWITCH_AS_DOMAINS_INVERT.includes(this._switchAsDomain)
+                ? html`
+                    <ha-settings-row>
+                      <span slot="heading"
+                        >${this.hass.localize(
+                          "ui.dialogs.entity_registry.editor.invert.label"
+                        )}</span
+                      >
+                      <span slot="description"
+                        >${this.hass.localize(
+                          `ui.dialogs.entity_registry.editor.invert.descriptions.${this._switchAsDomain}`
+                        )}</span
+                      >
+                      <ha-switch
+                        .checked=${this.entry.options?.switch_as_x?.invert}
+                        @change=${this._switchAsInvertChanged}
+                      ></ha-switch>
+                    </ha-settings-row>
+                  `
+                : nothing} `
           : nothing}
       ${this._deviceClassOptions
         ? html`
@@ -784,7 +813,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
             </ha-settings-row>
           `
         : ""}
-      ${this.helperConfigEntry && this.helperConfigEntry.supports_options
+      ${this.helperConfigEntry &&
+      this.helperConfigEntry.supports_options &&
+      this.helperConfigEntry.domain !== "switch_as_x"
         ? html`
             <ha-list-item
               class="menu-item"
@@ -1069,7 +1100,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       });
     }
 
-    if (domain === "switch" && this._switchAs !== "switch") {
+    if (domain === "switch" && this._switchAsDomain !== "switch") {
       // generate config flow for switch_as_x
       if (
         await showConfirmationDialog(this, {
@@ -1078,7 +1109,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
             {
               domain: domainToName(
                 this.hass.localize,
-                this._switchAs
+                this._switchAsDomain
               ).toLowerCase(),
             }
           ),
@@ -1090,7 +1121,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
           configFlow.flow_id,
           {
             entity_id: this._entityId.trim(),
-            target_domain: this._switchAs,
+            invert: this._switchAsInvert,
+            target_domain: this._switchAsDomain,
           }
         )) as DataEntryFlowStepCreateEntry;
         if (configFlowResult.result?.entry_id) {
@@ -1107,13 +1139,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
       }
     } else if (
       this.helperConfigEntry?.domain === "switch_as_x" &&
-      this._switchAs !== domain
+      this._switchAsDomain !== domain
     ) {
       // change a current switch as x to something else
       if (
         await showConfirmationDialog(this, {
           text:
-            this._switchAs === "switch"
+            this._switchAsDomain === "switch"
               ? this.hass!.localize(
                   "ui.dialogs.entity_registry.editor.switch_as_x_remove_confirm",
                   {
@@ -1132,7 +1164,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                     ).toLowerCase(),
                     domain_2: domainToName(
                       this.hass.localize,
-                      this._switchAs
+                      this._switchAsDomain
                     ).toLowerCase(),
                   }
                 ),
@@ -1144,7 +1176,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
         if (!origEntityId) {
           // should not happen, guard for types
-        } else if (this._switchAs === "switch") {
+        } else if (this._switchAsDomain === "switch") {
           // done, original switch is back
           showMoreInfoDialog(parent, { entityId: origEntityId });
           close = false;
@@ -1155,7 +1187,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
             configFlow.flow_id,
             {
               entity_id: origEntityId,
-              target_domain: this._switchAs,
+              invert: this._switchAsInvert,
+              target_domain: this._switchAsDomain,
             }
           )) as DataEntryFlowStepCreateEntry;
           if (configFlowResult.result?.entry_id) {
@@ -1170,6 +1203,24 @@ export class EntityRegistrySettingsEditor extends LitElement {
             }
           }
         }
+      }
+    } else if (
+      this.helperConfigEntry?.domain === "switch_as_x" &&
+      this._switchAsDomain === domain &&
+      this._switchAsInvert !== this.entry.options?.switch_as_x?.invert
+    ) {
+      // Change invert setting
+      const origEntityId = this.entry.options?.switch_as_x?.entity_id;
+      if (!origEntityId) {
+        // should not happen, guard for types
+      } else {
+        const configFlow = await createOptionsFlow(
+          this.hass,
+          this.helperConfigEntry.entry_id
+        );
+        await handleOptionsFlowStep(this.hass, configFlow.flow_id, {
+          invert: this._switchAsInvert,
+        });
       }
     }
 
@@ -1265,7 +1316,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._wind_speed_unit = ev.target.value;
   }
 
-  private _switchAsChanged(ev): void {
+  private _switchAsDomainChanged(ev): void {
     if (ev.target.value === "") {
       return;
     }
@@ -1273,7 +1324,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     // If value is "outlet" that means the user kept the "switch" domain, but actually changed
     // the device_class of the switch to "outlet".
     const switchAs = ev.target.value === "outlet" ? "switch" : ev.target.value;
-    this._switchAs = switchAs;
+    this._switchAsDomain = switchAs;
 
     if (
       (computeDomain(this.entry.entity_id) === "switch" &&
@@ -1282,6 +1333,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
     ) {
       this._deviceClass = ev.target.value;
     }
+  }
+
+  private _switchAsInvertChanged(ev): void {
+    this._switchAsInvert = ev.target.checked;
   }
 
   private _useDeviceAreaChanged(ev): void {
