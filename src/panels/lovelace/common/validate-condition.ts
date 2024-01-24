@@ -80,19 +80,16 @@ function getValueFromEntityId(
   hass: HomeAssistant,
   value: string | string[]
 ): string | string[] {
-  let returned: string | string[];
   if (
     typeof value === "string" &&
     isValidEntityId(value) &&
     hass.states[value]
   ) {
-    returned = hass.states[value]?.state;
+    value = hass.states[value]?.state;
   } else if (Array.isArray(value)) {
-    returned = value.map((v) => getValueFromEntityId(hass, v) as string);
-  } else {
-    returned = value;
+    value = value.map((v) => getValueFromEntityId(hass, v) as string);
   }
-  return returned;
+  return value;
 }
 
 function checkLegacyFilterCondition(
