@@ -1,6 +1,11 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { HomeAssistant } from "../types";
+import {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+} from "./entity_registry";
+import { computeDomain } from "../common/entity/compute_domain";
 
 const resources: Record<IconCategory, any> = {
   entity: {},
@@ -15,7 +20,13 @@ interface PlatformIcons {
   [domain: string]: {
     [translation_key: string]: {
       state: Record<string, string>;
-      state_attributes: Record<string, { state: Record<string, string> }>;
+      state_attributes: Record<
+        string,
+        {
+          state: Record<string, string>;
+          default: string;
+        }
+      >;
       default: string;
     };
   };
@@ -24,7 +35,13 @@ interface PlatformIcons {
 interface ComponentIcons {
   [device_class: string]: {
     state: Record<string, string>;
-    state_attributes: Record<string, { state: Record<string, string> }>;
+    state_attributes: Record<
+      string,
+      {
+        state: Record<string, string>;
+        default: string;
+      }
+    >;
     default: string;
   };
 }
@@ -76,32 +93,67 @@ export const entityIcon = async (
   state: HassEntity,
   stateValue?: string
 ) => {
-  let icon: string | undefined;
-  const domain = computeStateDomain(state);
-  const entity = hass.entities?.[state.entity_id];
-  const value = stateValue ?? state.state;
+  const entity = hass.entities?.[state.entity_id] as
+    | EntityRegistryDisplayEntry
+    | undefined;
+
   if (entity?.icon) {
     return entity.icon;
   }
-  if (entity?.translation_key && entity.platform) {
-    const platformIcons = await getPlatformIcons(hass, entity.platform);
+  const domain = computeStateDomain(state);
+  const deviceClass = state.attributes.device_class;
+
+  return getEntityIcon(
+    hass,
+    domain,
+    deviceClass,
+    stateValue ?? state.state,
+    entity?.platform,
+    entity?.translation_key
+  );
+};
+
+export const entryIcon = async (
+  hass: HomeAssistant,
+  entry: EntityRegistryEntry | EntityRegistryDisplayEntry
+) => {
+  if (entry.icon) {
+    return entry.icon;
+  }
+  const domain = computeDomain(entry.entity_id);
+  return getEntityIcon(
+    hass,
+    domain,
+    undefined,
+    undefined,
+    entry.platform,
+    entry.translation_key
+  );
+};
+
+const getEntityIcon = async (
+  hass: HomeAssistant,
+  domain: string,
+  deviceClass?: string,
+  value?: string,
+  platform?: string,
+  translation_key?: string
+) => {
+  let icon: string | undefined;
+  if (translation_key && platform) {
+    const platformIcons = await getPlatformIcons(hass, platform);
     if (platformIcons) {
-      icon =
-        platformIcons[domain]?.[entity.translation_key]?.state?.[value] ||
-        platformIcons[domain]?.[entity.translation_key]?.default;
+      const translations = platformIcons[domain]?.[translation_key];
+      icon = (value && translations?.state?.[value]) || translations?.default;
     }
   }
   if (!icon) {
     const entityComponentIcons = await getComponentIcons(hass, domain);
-
     if (entityComponentIcons) {
-      icon =
-        entityComponentIcons[state.attributes.device_class || "_"]?.state?.[
-          value
-        ] ||
-        entityComponentIcons._?.state?.[value] ||
-        entityComponentIcons[state.attributes.device_class || "_"]?.default ||
-        entityComponentIcons._?.default;
+      const translations =
+        (deviceClass && entityComponentIcons[deviceClass]) ||
+        entityComponentIcons._;
+      icon = (value && translations?.state?.[value]) || translations?.default;
     }
   }
   return icon;
@@ -115,24 +167,32 @@ export const attributeIcon = async (
 ) => {
   let icon: string | undefined;
   const domain = computeStateDomain(state);
-  const entity = hass.entities?.[state.entity_id];
-  const value = attributeValue ?? state.attributes[attribute];
-  if (entity?.translation_key && entity.platform) {
-    const platformIcons = await getPlatformIcons(hass, entity.platform);
+  const deviceClass = state.attributes.device_class;
+  const entity = hass.entities?.[state.entity_id] as
+    | EntityRegistryDisplayEntry
+    | undefined;
+  const platform = entity?.platform;
+  const translation_key = entity?.translation_key;
+  const value =
+    attributeValue ??
+    (state.attributes[attribute] as string | number | undefined);
+
+  if (translation_key && platform) {
+    const platformIcons = await getPlatformIcons(hass, platform);
     if (platformIcons) {
-      icon =
-        platformIcons[domain]?.[entity.translation_key]?.state_attributes?.[
-          attribute
-        ]?.state?.[value];
+      const translations =
+        platformIcons[domain]?.[translation_key]?.state_attributes?.[attribute];
+      icon = (value && translations?.state?.[value]) || translations?.default;
     }
   }
   if (!icon) {
     const entityComponentIcons = await getComponentIcons(hass, domain);
     if (entityComponentIcons) {
-      icon =
-        entityComponentIcons[state.attributes.device_class || "_"]
-          .state_attributes?.[attribute]?.state?.[value] ||
-        entityComponentIcons._.state_attributes?.[attribute]?.state?.[value];
+      const translations =
+        (deviceClass &&
+          entityComponentIcons[deviceClass]?.state_attributes?.[attribute]) ||
+        entityComponentIcons._?.state_attributes?.[attribute];
+      icon = (value && translations?.state?.[value]) || translations?.default;
     }
   }
   return icon;

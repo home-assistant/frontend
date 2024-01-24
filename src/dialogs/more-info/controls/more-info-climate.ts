@@ -3,7 +3,6 @@ import {
   mdiArrowOscillating,
   mdiFan,
   mdiThermometer,
-  mdiThermostat,
   mdiTuneVariant,
   mdiWaterPercent,
 } from "@mdi/js";
@@ -11,19 +10,20 @@ import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
 import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import "../../../components/ha-switch";
-import "../../../components/ha-attribute-icon";
 import {
   ClimateEntity,
   ClimateEntityFeature,
+  climateHvacModeIcon,
   compareClimateHvacModes,
 } from "../../../data/climate";
-import { UNAVAILABLE, isUnavailableState } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity";
 import "../../../state-control/climate/ha-state-control-climate-humidity";
 import "../../../state-control/climate/ha-state-control-climate-temperature";
 import { HomeAssistant } from "../../../types";
@@ -161,31 +161,22 @@ class MoreInfoClimate extends LitElement {
           @selected=${this._handleOperationModeChanged}
           @closed=${stopPropagation}
         >
-          ${!isUnavailableState(this.stateObj.state)
-            ? html`<ha-attribute-icon
-                slot="icon"
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-                attribute="hvac_mode"
-                .attributeValue=${stateObj.state}
-              ></ha-attribute-icon>`
-            : html`<ha-svg-icon
-                slot="icon"
-                .path=${mdiThermostat}
-              ></ha-svg-icon>`}
+          ${html`
+            <ha-svg-icon
+              slot="icon"
+              .path=${climateHvacModeIcon(stateObj.state)}
+            ></ha-svg-icon>
+          `}
           ${stateObj.attributes.hvac_modes
             .concat()
             .sort(compareClimateHvacModes)
             .map(
               (mode) => html`
                 <ha-list-item .value=${mode} graphic="icon">
-                  <ha-attribute-icon
+                  <ha-svg-icon
                     slot="graphic"
-                    .hass=${this.hass}
-                    .stateObj=${stateObj}
-                    attribute="hvac_mode"
-                    .attributeValue=${mode}
-                  ></ha-attribute-icon>
+                    .path=${climateHvacModeIcon(mode)}
+                  ></ha-svg-icon>
                   ${this.hass.formatEntityState(stateObj, mode)}
                 </ha-list-item>
               `
@@ -206,13 +197,15 @@ class MoreInfoClimate extends LitElement {
                 @closed=${stopPropagation}
               >
                 ${stateObj.attributes.preset_mode
-                  ? html`<ha-attribute-icon
-                      slot="icon"
-                      .hass=${this.hass}
-                      .stateObj=${stateObj}
-                      attribute="preset_mode"
-                      .attributeValue=${stateObj.attributes.preset_mode}
-                    ></ha-attribute-icon>`
+                  ? html`
+                      <ha-attribute-icon
+                        slot="icon"
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="preset_mode"
+                        .attributeValue=${stateObj.attributes.preset_mode}
+                      ></ha-attribute-icon>
+                    `
                   : html`
                       <ha-svg-icon
                         slot="icon"
@@ -255,13 +248,15 @@ class MoreInfoClimate extends LitElement {
                 @closed=${stopPropagation}
               >
                 ${stateObj.attributes.fan_mode
-                  ? html`<ha-attribute-icon
-                      slot="icon"
-                      .hass=${this.hass}
-                      .stateObj=${stateObj}
-                      attribute="fan_mode"
-                      .attributeValue=${stateObj.attributes.fan_mode}
-                    ></ha-attribute-icon>`
+                  ? html`
+                      <ha-attribute-icon
+                        slot="icon"
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="fan_mode"
+                        .attributeValue=${stateObj.attributes.fan_mode}
+                      ></ha-attribute-icon>
+                    `
                   : html`
                       <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
                     `}
@@ -301,13 +296,15 @@ class MoreInfoClimate extends LitElement {
                 @closed=${stopPropagation}
               >
                 ${stateObj.attributes.swing_mode
-                  ? html`<ha-attribute-icon
-                      slot="icon"
-                      .hass=${this.hass}
-                      .stateObj=${stateObj}
-                      attribute="swing_mode"
-                      .attributeValue=${stateObj.attributes.swing_mode}
-                    ></ha-attribute-icon>`
+                  ? html`
+                      <ha-attribute-icon
+                        slot="icon"
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="swing_mode"
+                        .attributeValue=${stateObj.attributes.swing_mode}
+                      ></ha-attribute-icon>
+                    `
                   : html`
                       <ha-svg-icon
                         slot="icon"
