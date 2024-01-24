@@ -102,6 +102,8 @@ export class HuiButtonsBase extends LitElement {
           width: 26px;
           height: 26px;
           margin-left: -3px;
+          margin-inline-start: -3px;
+          margin-inline-end: initial;
           margin-top: -3px;
         }
         ha-assist-chip state-badge {

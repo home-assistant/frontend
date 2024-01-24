@@ -600,6 +600,8 @@ export class HuiAreaCard
         background-color: var(--area-button-color, #727272b2);
         border-radius: 50%;
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
         --mdc-icon-button-size: 44px;
       }
       .on {

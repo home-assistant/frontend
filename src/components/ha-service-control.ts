@@ -832,6 +832,9 @@ export class HaServiceControl extends ReorderModeMixin(LitElement) {
         padding-inline-end: 2px;
         padding-inline-start: initial;
       }
+      .description p {
+        direction: ltr;
+      }
     `;
   }
 }
