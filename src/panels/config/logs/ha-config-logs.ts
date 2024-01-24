@@ -239,6 +239,8 @@ export class HaConfigLogs extends LitElement {
         search-input.header {
           --mdc-ripple-color: transparant;
           margin-left: -16px;
+          margin-inline-start: -16px;
+          margin-inline-end: initial;
         }
         .content {
           direction: ltr;

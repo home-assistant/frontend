@@ -254,6 +254,8 @@ class ZHAAddDevicesPage extends LitElement {
         .search-button {
           margin-top: 16px;
           margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
         .help-text {
           color: grey;

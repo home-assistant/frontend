@@ -341,6 +341,8 @@ export class HaIntegrationCard extends LitElement {
           color: var(--text-primary-color);
           padding: 4px;
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         .icon.cloud {
           background: var(--info-color);
