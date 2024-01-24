@@ -124,6 +124,18 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
   }
 
+  public getSize(): [number, number] {
+    const width = 2;
+    let height = 1;
+    if (this._config?.features?.length) {
+      height += Math.ceil((this._config.features.length * 2) / 3);
+    }
+    if (this._config?.vertical) {
+      height++;
+    }
+    return [width, height];
+  }
+
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
@@ -469,6 +481,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         transition:
           box-shadow 180ms ease-in-out,
           border-color 180ms ease-in-out;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
       ha-card.active {
         --tile-color: var(--state-icon-color);

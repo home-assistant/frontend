@@ -147,6 +147,13 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     );
   }
 
+  public getSize(): [number, number] {
+    if (this._config?.show_icon && this._config?.show_name) {
+      return [1, 2];
+    }
+    return [1, 1];
+  }
+
   public setConfig(config: ButtonCardConfig): void {
     if (config.entity && !isValidEntityId(config.entity)) {
       throw new Error("Invalid entity");

@@ -1,7 +1,8 @@
-import { mdiArrowAll, mdiDotsVertical, mdiPlus } from "@mdi/js";
+import { mdiArrowAll, mdiPlus } from "@mdi/js";
 import { CSSResultGroup, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { styleMap } from "lit/directives/style-map";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -20,7 +21,7 @@ class HuiSectionCard extends HuiStackCard<GridCardConfig> {
     return this._cardConfigKeys.get(cardConfig)!;
   }
 
-  @property() public itemPath?: ItemPath;
+  @property({ attribute: false }) public itemPath?: ItemPath;
 
   render() {
     if (!this._cards) return nothing;
@@ -48,8 +49,15 @@ class HuiSectionCard extends HuiStackCard<GridCardConfig> {
               (card as any).editMode = editMode;
               (card as any).inert = editMode && cardConfig.type !== "section";
               (card as any).itemPath = [idx];
+              const size = card && card.getSize?.();
               return html`
-                <div class="card">
+                <div
+                  class="card"
+                  style=${styleMap({
+                    "--column-size": size?.[0],
+                    "--row-size": size?.[1],
+                  })}
+                >
                   <div class="card-wrapper">${card}</div>
                   ${editMode
                     ? html`
@@ -59,10 +67,6 @@ class HuiSectionCard extends HuiStackCard<GridCardConfig> {
                               class="handle"
                               .path=${mdiArrowAll}
                             ></ha-svg-icon>
-                            <ha-icon-button
-                              .index=${idx}
-                              .path=${mdiDotsVertical}
-                            ></ha-icon-button>
                           </div>
                         </div>
                       `
@@ -87,9 +91,10 @@ class HuiSectionCard extends HuiStackCard<GridCardConfig> {
     return [
       css`
         .container {
-          --column-count: 2;
+          --column-count: 4;
           display: grid;
           grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
+          grid-auto-rows: minmax(60px, auto);
           gap: 10px;
           padding: 0;
           margin: 0 auto;
@@ -110,11 +115,16 @@ class HuiSectionCard extends HuiStackCard<GridCardConfig> {
 
         .card {
           position: relative;
-          height: fit-content;
+          grid-row: span var(--row-size, 1);
+          grid-column: span var(--column-size, 4);
+        }
+        .add {
+          grid-row: span var(--row-size, 1);
+          grid-column: span var(--column-size, 2);
         }
 
         .card-wrapper {
-          height: fit-content;
+          height: 100%;
         }
 
         .card-overlay {
