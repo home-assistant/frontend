@@ -234,7 +234,7 @@ export class HaForm extends LitElement implements HaFormElement {
   private _computeError(
     error: string | string[],
     schema: HaFormSchema | readonly HaFormSchema[]
-  ): string {
+  ): string | TemplateResult {
     if (Array.isArray(error)) {
       return html`<ul>
         ${error.map(
