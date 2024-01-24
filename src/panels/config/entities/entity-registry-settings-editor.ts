@@ -18,7 +18,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
-import { domainIcon } from "../../../common/entity/domain_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
 import { stringCompare } from "../../../common/string/compare";
@@ -32,6 +31,7 @@ import "../../../components/ha-area-picker";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-picker";
+import "../../../components/ha-state-icon";
 import "../../../components/ha-list-item";
 import "../../../components/ha-radio";
 import "../../../components/ha-select";
@@ -373,29 +373,30 @@ export class EntityRegistrySettingsEditor extends LitElement {
           ></ha-textfield>`}
       ${this.hideIcon
         ? nothing
-        : html`<ha-icon-picker
-            .hass=${this.hass}
-            .value=${this._icon}
-            @value-changed=${this._iconChanged}
-            .label=${this.hass.localize(
-              "ui.dialogs.entity_registry.editor.icon"
-            )}
-            .placeholder=${this.entry.original_icon ||
-            stateObj?.attributes.icon ||
-            (stateObj && until(entityIcon(this.hass, stateObj)))}
-            .fallbackPath=${!this._icon &&
-            !stateObj?.attributes.icon &&
-            stateObj
-              ? domainIcon(computeDomain(stateObj.entity_id), {
-                  ...stateObj,
-                  attributes: {
-                    ...stateObj.attributes,
-                    device_class: this._deviceClass,
-                  },
-                })
-              : undefined}
-            .disabled=${this.disabled}
-          ></ha-icon-picker>`}
+        : html`
+            <ha-icon-picker
+              .hass=${this.hass}
+              .value=${this._icon}
+              @value-changed=${this._iconChanged}
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.icon"
+              )}
+              .placeholder=${this.entry.original_icon ||
+              stateObj?.attributes.icon ||
+              (stateObj && until(entityIcon(this.hass, stateObj)))}
+              .disabled=${this.disabled}
+            >
+              ${!this._icon && !stateObj?.attributes.icon && stateObj
+                ? html`
+                    <ha-state-icon
+                      slot="fallback"
+                      .hass=${this.hass}
+                      .stateObj=${stateObj}
+                    ></ha-state-icon>
+                  `
+                : nothing}
+            </ha-icon-picker>
+          `}
       ${domain === "switch"
         ? html`<ha-select
             .label=${this.hass.localize(

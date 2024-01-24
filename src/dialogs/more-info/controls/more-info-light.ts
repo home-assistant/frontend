@@ -285,19 +285,19 @@ class MoreInfoLight extends LitElement {
                         .path=${mdiCreation}
                       ></ha-svg-icon>`}
                   ${this.stateObj.attributes.effect_list?.map(
-                    (mode) => html`
-                      <ha-list-item .value=${mode} graphic="icon">
+                    (effect) => html`
+                      <ha-list-item .value=${effect} graphic="icon">
                         <ha-attribute-icon
                           slot="graphic"
                           .hass=${this.hass}
                           .stateObj=${this.stateObj}
                           attribute="effect"
-                          .attributeValue=${mode}
+                          .attributeValue=${effect}
                         ></ha-attribute-icon>
                         ${this.hass.formatEntityAttributeValue(
                           this.stateObj!,
                           "effect",
-                          mode
+                          effect
                         )}
                       </ha-list-item>
                     `
