@@ -205,7 +205,6 @@ export class HcMain extends HassElement {
           expires_in: 0,
         }),
       });
-      this._hassUUID = msg.hassUUID;
     } catch (err: any) {
       const errorMessage = this._getErrorMessage(err);
       this._error = errorMessage;
@@ -225,6 +224,17 @@ export class HcMain extends HassElement {
       this.hass.connection.close();
     }
     this.initializeHass(auth, connection);
+    if (this._hassUUID !== msg.hassUUID) {
+      this._hassUUID = msg.hassUUID;
+      this._lovelacePath = null;
+      this._urlPath = undefined;
+      this._lovelaceConfig = undefined;
+      if (this._unsubLovelace) {
+        this._unsubLovelace();
+        this._unsubLovelace = undefined;
+      }
+      resourcesLoaded = false;
+    }
     this._error = undefined;
     this._sendStatus();
   }
@@ -233,7 +243,7 @@ export class HcMain extends HassElement {
     this._showDemo = false;
     // We should not get this command before we are connected.
     // Means a client got out of sync. Let's send status to them.
-    if (!this.hass) {
+    if (!this.hass?.connected) {
       this._sendStatus(msg.senderId!);
       this._error = "Cannot show Lovelace because we're not connected.";
       this._sendError(
@@ -284,6 +294,7 @@ export class HcMain extends HassElement {
       this._lovelaceConfig = undefined;
       if (this._unsubLovelace) {
         this._unsubLovelace();
+        this._unsubLovelace = undefined;
       }
       const llColl = atLeastVersion(this.hass.connection.haVersion, 0, 107)
         ? getLovelaceCollection(this.hass.connection, msg.urlPath)
