@@ -157,7 +157,7 @@ class HaAlert extends LitElement {
     }
     :host ::slotted(ul) {
       margin: 0;
-      padding-inline-start: 24px;
+      padding-inline-start: 20px;
     }
   `;
 }
