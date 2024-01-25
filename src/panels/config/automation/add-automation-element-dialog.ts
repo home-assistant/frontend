@@ -1,4 +1,5 @@
 import "@material/mwc-list/mwc-list";
+import "@material/web/divider/divider";
 import { mdiClose, mdiContentPaste, mdiPlus } from "@mdi/js";
 import Fuse, { IFuseOptions } from "fuse.js";
 import {
@@ -16,17 +17,21 @@ import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { domainIconWithoutDefault } from "../../../common/entity/domain_icon";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { stringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-dialog";
 import type { HaDialog } from "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
+import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-new";
 import "../../../components/ha-list-item-new";
+import "../../../components/ha-list-new";
+import "../../../components/ha-service-icon";
+import "../../../components/search-input";
 import {
   ACTION_GROUPS,
   ACTION_ICONS,
@@ -36,6 +41,7 @@ import {
 } from "../../../data/action";
 import { AutomationElementGroup } from "../../../data/automation";
 import { CONDITION_GROUPS, CONDITION_ICONS } from "../../../data/condition";
+import { getServiceIcons } from "../../../data/icons";
 import {
   IntegrationManifest,
   domainToName,
@@ -45,16 +51,10 @@ import { TRIGGER_GROUPS, TRIGGER_ICONS } from "../../../data/trigger";
 import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
 import {
   AddAutomationElementDialogParams,
   PASTE_VALUE,
 } from "./show-add-automation-element-dialog";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { deepEqual } from "../../../common/util/deep-equal";
-import "../../../components/search-input";
-import "@material/web/divider/divider";
-import { getServiceIcons } from "../../../data/icons";
 
 const TYPES = {
   trigger: { groups: TRIGGER_GROUPS, icons: TRIGGER_ICONS },
@@ -74,7 +74,6 @@ interface ListItem {
   description: string;
   iconPath?: string;
   icon?: TemplateResult;
-  image?: string;
   group: boolean;
 }
 
@@ -318,17 +317,15 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
             (!domainUsed && manifest?.integration_type === "entity") ||
             !["helper", "entity"].includes(manifest?.integration_type || "")))
       ) {
-        const icon = domainIconWithoutDefault(domain);
         result.push({
           group: true,
-          iconPath: icon,
-          image: !icon
-            ? brandsUrl({
-                domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              })
-            : undefined,
+          icon: html`
+            <ha-domain-icon
+              .hass=${this.hass}
+              .domain=${domain}
+              brandFallback
+            ></ha-domain-icon>
+          `,
           key: `${SERVICE_PREFIX}${domain}`,
           name: domainToName(localize, domain, manifest),
           description: "",
@@ -364,10 +361,12 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         for (const service of services_keys) {
           result.push({
             group: false,
-            icon: html`<ha-service-icon
-              .hass=${this.hass}
-              .service=${`${dmn}.${service}`}
-            ></ha-service-icon>`,
+            icon: html`
+              <ha-service-icon
+                .hass=${this.hass}
+                .service=${`${dmn}.${service}`}
+              ></ha-service-icon>
+            `,
             key: `${SERVICE_PREFIX}${dmn}.${service}`,
             name: `${domain ? "" : `${domainToName(localize, dmn)}: `}${
               this.hass.localize(`component.${dmn}.services.${service}.name`) ||
@@ -578,13 +577,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                         slot="start"
                         .path=${item.iconPath}
                       ></ha-svg-icon>`
-                    : html`<img
-                        alt=""
-                        slot="start"
-                        src=${item.image!}
-                        crossorigin="anonymous"
-                        referrerpolicy="no-referrer"
-                      />`}
+                    : nothing}
                 ${item.group
                   ? html`<ha-icon-next slot="end"></ha-icon-next>`
                   : html`<ha-svg-icon
