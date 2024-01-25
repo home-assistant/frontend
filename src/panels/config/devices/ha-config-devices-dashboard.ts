@@ -605,6 +605,8 @@ export class HaConfigDeviceDashboard extends LitElement {
       css`
         ha-button-menu {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         .clear {
           color: var(--primary-color);

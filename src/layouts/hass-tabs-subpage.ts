@@ -312,6 +312,8 @@ class HassTabsSubpage extends LitElement {
           );
           margin-left: env(safe-area-inset-left);
           margin-right: env(safe-area-inset-right);
+          margin-inline-start: env(safe-area-inset-left);
+          margin-inline-end: env(safe-area-inset-right);
           height: calc(100% - 1px - var(--header-height));
           height: calc(
             100% - 1px - var(--header-height) - env(safe-area-inset-bottom)
