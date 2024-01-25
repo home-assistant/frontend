@@ -27,6 +27,7 @@ import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities
 import type { LovelaceRowConfig } from "../../../lovelace/entity-rows/types";
 import { LovelaceRow } from "../../../lovelace/entity-rows/types";
 import { EntityRegistryStateEntry } from "../ha-config-device-page";
+import { computeCards } from "../../../lovelace/common/generate-lovelace-config";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
@@ -224,13 +225,17 @@ export class HaDeviceEntitiesCard extends LitElement {
   }
 
   private _addToLovelaceView(): void {
+    const entities = this.entities
+      .filter((entity) => !entity.disabled_by)
+      .map((entity) => entity.entity_id);
+
     addEntitiesToLovelaceView(
       this,
       this.hass,
-      this.entities
-        .filter((entity) => !entity.disabled_by)
-        .map((entity) => entity.entity_id),
-      this.deviceName
+      computeCards(this.hass.states, entities, {
+        title: this.deviceName,
+      }),
+      entities
     );
   }
 
