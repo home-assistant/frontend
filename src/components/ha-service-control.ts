@@ -9,8 +9,8 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -19,6 +19,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { nestedArrayMove } from "../common/util/array-move";
 import {
   fetchIntegrationManifest,
   IntegrationManifest,
@@ -31,6 +32,7 @@ import {
   expandDeviceTarget,
   Selector,
 } from "../data/selector";
+import { ReorderModeMixin } from "../state/reorder-mode-mixin";
 import { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
@@ -40,8 +42,6 @@ import "./ha-service-picker";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
-import { nestedArrayMove } from "../common/util/array-move";
-import { ReorderModeMixin } from "../state/reorder-mode-mixin";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {

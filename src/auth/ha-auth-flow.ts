@@ -34,7 +34,7 @@ export class HaAuthFlow extends LitElement {
 
   @property() public oauth2State?: string;
 
-  @property() public localize!: LocalizeFunc;
+  @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property({ attribute: false }) public step?: DataEntryFlowStep;
 

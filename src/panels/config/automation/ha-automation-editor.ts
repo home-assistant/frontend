@@ -87,7 +87,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @property() public entityId: string | null = null;
 
-  @property() public automations!: AutomationEntity[];
+  @property({ attribute: false }) public automations!: AutomationEntity[];
 
   @property({ type: Boolean }) public isWide = false;
 

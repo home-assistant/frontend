@@ -5,6 +5,7 @@ import {
   CSSResultGroup,
   LitElement,
   PropertyValues,
+  TemplateResult,
   css,
   html,
   nothing,
@@ -53,6 +54,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/search-input";
 import "@material/web/divider/divider";
+import { getServiceIcons } from "../../../data/icons";
 
 const TYPES = {
   trigger: { groups: TRIGGER_GROUPS, icons: TRIGGER_ICONS },
@@ -70,7 +72,8 @@ interface ListItem {
   key: string;
   name: string;
   description: string;
-  icon?: string;
+  iconPath?: string;
+  icon?: TemplateResult;
   image?: string;
   group: boolean;
 }
@@ -124,6 +127,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       this.hass.loadBackendTranslation("services");
       this._fetchManifests();
       this._calculateUsedDomains();
+      getServiceIcons(this.hass);
     }
     this._fullScreen = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
@@ -174,7 +178,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         options.members ? "groups" : "type"
       }.${key}.description${options.members ? "" : ".picker"}`
     ),
-    icon: options.icon || TYPES[type].icons[key],
+    iconPath: options.icon || TYPES[type].icons[key],
   });
 
   private _getFilteredItems = memoizeOne(
@@ -317,7 +321,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         const icon = domainIconWithoutDefault(domain);
         result.push({
           group: true,
-          icon,
+          iconPath: icon,
           image: !icon
             ? brandsUrl({
                 domain,
@@ -358,17 +362,12 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         const services_keys = Object.keys(services[dmn]);
 
         for (const service of services_keys) {
-          const icon = domainIconWithoutDefault(dmn);
           result.push({
             group: false,
-            icon,
-            image: !icon
-              ? brandsUrl({
-                  domain: dmn,
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                })
-              : undefined,
+            icon: html`<ha-service-icon
+              .hass=${this.hass}
+              .service=${`${dmn}.${service}`}
+            ></ha-service-icon>`,
             key: `${SERVICE_PREFIX}${dmn}.${service}`,
             name: `${domain ? "" : `${domainToName(localize, dmn)}: `}${
               this.hass.localize(`component.${dmn}.services.${service}.name`) ||
@@ -573,17 +572,19 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                 <div slot="headline">${item.name}</div>
                 <div slot="supporting-text">${item.description}</div>
                 ${item.icon
-                  ? html`<ha-svg-icon
-                      slot="start"
-                      .path=${item.icon}
-                    ></ha-svg-icon>`
-                  : html`<img
-                      alt=""
-                      slot="start"
-                      src=${item.image!}
-                      crossorigin="anonymous"
-                      referrerpolicy="no-referrer"
-                    />`}
+                  ? html`<span slot="start">${item.icon}</span>`
+                  : item.iconPath
+                    ? html`<ha-svg-icon
+                        slot="start"
+                        .path=${item.iconPath}
+                      ></ha-svg-icon>`
+                    : html`<img
+                        alt=""
+                        slot="start"
+                        src=${item.image!}
+                        crossorigin="anonymous"
+                        referrerpolicy="no-referrer"
+                      />`}
                 ${item.group
                   ? html`<ha-icon-next slot="end"></ha-icon-next>`
                   : html`<ha-svg-icon

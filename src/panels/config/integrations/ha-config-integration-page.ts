@@ -116,7 +116,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public showAdvanced = false;
 
-  @property() public configEntries?: ConfigEntry[];
+  @property({ attribute: false }) public configEntries?: ConfigEntry[];
 
   @property({ attribute: false })
   public configEntriesInProgress: DataEntryFlowProgressExtended[] = [];

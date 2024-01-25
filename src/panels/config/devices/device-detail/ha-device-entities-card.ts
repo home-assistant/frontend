@@ -8,9 +8,8 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeDomain } from "../../../../common/entity/compute_domain";
+import { until } from "lit/directives/until";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { domainIcon } from "../../../../common/entity/domain_icon";
 import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
@@ -19,6 +18,7 @@ import {
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntry,
 } from "../../../../data/entity_registry";
+import { entryIcon } from "../../../../data/icons";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { HomeAssistant } from "../../../../types";
 import type { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
@@ -36,7 +36,7 @@ export class HaDeviceEntitiesCard extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entities!: EntityRegistryStateEntry[];
+  @property({ attribute: false }) public entities!: EntityRegistryStateEntry[];
 
   @property({ type: Boolean }) public showHidden = false;
 
@@ -198,6 +198,8 @@ export class HaDeviceEntitiesCard extends LitElement {
       entry.name ||
       (entry as ExtEntityRegistryEntry).original_name;
 
+    const icon = until(entryIcon(this.hass, entry));
+
     return html`
       <ha-list-item
         graphic="icon"
@@ -205,10 +207,7 @@ export class HaDeviceEntitiesCard extends LitElement {
         .entry=${entry}
         @click=${this._openEditEntry}
       >
-        <ha-svg-icon
-          slot="graphic"
-          .path=${domainIcon(computeDomain(entry.entity_id))}
-        ></ha-svg-icon>
+        <ha-icon slot="graphic" .icon=${icon}></ha-icon>
         <div class="name">
           ${name
             ? stripPrefixFromEntityName(name, this.deviceName.toLowerCase()) ||

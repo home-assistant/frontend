@@ -1,5 +1,7 @@
 import "@material/mwc-ripple";
 import {
+  mdiFan,
+  mdiFanOff,
   mdiLightbulbMultiple,
   mdiLightbulbMultipleOff,
   mdiRun,
@@ -9,30 +11,30 @@ import {
 } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { STATES_OFF, FIXED_DEVICE_CLASS_ICONS } from "../../../common/const";
+import { FIXED_DEVICE_CLASS_ICONS, STATES_OFF } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import { binarySensorIcon } from "../../../common/entity/binary_sensor_icon";
-import { domainIcon } from "../../../common/entity/domain_icon";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { navigate } from "../../../common/navigate";
 import {
   formatNumber,
   isNumericState,
 } from "../../../common/number/format_number";
-import { subscribeOne } from "../../../common/util/subscribe-one";
+import { blankBeforeUnit } from "../../../common/translations/blank_before_unit";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
+import { subscribeOne } from "../../../common/util/subscribe-one";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -56,7 +58,6 @@ import "../components/hui-image";
 import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { AreaCardConfig } from "./types";
-import { blankBeforeUnit } from "../../../common/translations/blank_before_unit";
 
 export const DEFAULT_ASPECT_RATIO = "16:9";
 
@@ -76,7 +77,7 @@ export const DEVICE_CLASSES = {
 const DOMAIN_ICONS = {
   light: { on: mdiLightbulbMultiple, off: mdiLightbulbMultipleOff },
   switch: { on: mdiToggleSwitch, off: mdiToggleSwitchOff },
-  fan: { on: domainIcon("fan"), off: domainIcon("fan") },
+  fan: { on: mdiFan, off: mdiFanOff },
   binary_sensor: {
     motion: mdiRun,
     moisture: mdiWaterAlert,

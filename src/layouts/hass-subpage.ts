@@ -25,7 +25,7 @@ class HassSubpage extends LitElement {
 
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
 
-  @property() public backCallback?: () => void;
+  @property({ attribute: false }) public backCallback?: () => void;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 

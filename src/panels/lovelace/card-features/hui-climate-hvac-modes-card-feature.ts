@@ -6,13 +6,13 @@ import { styleMap } from "lit/directives/style-map";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-select-menu";
 import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
 import {
   ClimateEntity,
+  climateHvacModeIcon,
   compareClimateHvacModes,
   HvacMode,
 } from "../../../data/climate";
@@ -130,13 +130,12 @@ class HuiClimateHvacModesCardFeature
       .map<ControlSelectOption>((mode) => ({
         value: mode,
         label: this.hass!.formatEntityState(this.stateObj!, mode),
-        icon: html`<ha-attribute-icon
-          slot="graphic"
-          .hass=${this.hass}
-          .stateObj=${this.stateObj}
-          attribute="hvac_mode"
-          .attributeValue=${mode}
-        ></ha-attribute-icon>`,
+        icon: html`
+          <ha-svg-icon
+            slot="graphic"
+            .path=${climateHvacModeIcon(mode)}
+          ></ha-svg-icon>
+        `,
       }));
 
     if (this._config.style === "dropdown") {
@@ -154,17 +153,15 @@ class HuiClimateHvacModesCardFeature
             @closed=${stopPropagation}
           >
             ${this._currentHvacMode
-              ? html`<ha-attribute-icon
-                  slot="icon"
-                  .hass=${this.hass}
-                  .stateObj=${this.stateObj}
-                  attribute="hvac_mode"
-                  .attributeValue=${this._currentHvacMode}
-                ></ha-attribute-icon>`
-              : html`<ha-svg-icon
-                  slot="icon"
-                  .path=${mdiThermostat}
-                ></ha-svg-icon>`}
+              ? html`
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${climateHvacModeIcon(this._currentHvacMode)}
+                  ></ha-svg-icon>
+                `
+              : html`
+                  <ha-svg-icon slot="icon" .path=${mdiThermostat}></ha-svg-icon>
+                `}
             ${options.map(
               (option) => html`
                 <ha-list-item .value=${option.value} graphic="icon">

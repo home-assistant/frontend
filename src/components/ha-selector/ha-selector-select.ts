@@ -32,7 +32,8 @@ export class HaSelectSelector extends LitElement {
 
   @property() public helper?: string;
 
-  @property() public localizeValue?: (key: string) => string;
+  @property({ attribute: false })
+  public localizeValue?: (key: string) => string;
 
   @property({ type: Boolean }) public disabled = false;
 

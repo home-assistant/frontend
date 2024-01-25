@@ -68,7 +68,7 @@ type ScriptItem = ScriptEntity & {
 class HaScriptPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public scripts!: ScriptEntity[];
+  @property({ attribute: false }) public scripts!: ScriptEntity[];
 
   @property({ type: Boolean }) public isWide = false;
 

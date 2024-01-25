@@ -13,7 +13,7 @@ import "./assist-render-pipeline-run";
 export class AssistPipelineEvents extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public events!: PipelineRunEvent[];
+  @property({ attribute: false }) public events!: PipelineRunEvent[];
 
   private _processEvents = memoizeOne(
     (events: PipelineRunEvent[]): PipelineRun | undefined => {

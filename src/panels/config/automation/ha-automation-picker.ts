@@ -79,7 +79,7 @@ class HaAutomationPicker extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property() public automations!: AutomationEntity[];
+  @property({ attribute: false }) public automations!: AutomationEntity[];
 
   @state() private _activeFilters?: string[];
 

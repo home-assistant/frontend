@@ -16,7 +16,7 @@ import { onBoardingStyles } from "./styles";
 class OnboardingAnalytics extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public localize!: LocalizeFunc;
+  @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @state() private _error?: string;
 

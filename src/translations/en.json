@@ -1149,6 +1149,14 @@
           "wind_speed_unit": "Wind speed unit",
           "device_class": "Show as",
           "switch_as_x": "Show switch as",
+          "invert": {
+            "label": "Invert state",
+            "descriptions": {
+              "cover": "Show as open when the switch is off",
+              "lock": "Show as locked when the switch is off",
+              "valve": "[%key:ui::dialogs::entity_registry::editor::invert::descriptions::cover%]"
+            }
+          },
           "device_classes": {
             "binary_sensor": {
               "door": "Door",
@@ -2508,7 +2516,9 @@
                   "label": "Time and location",
                   "description": "When someone enters or leaves a zone, or at a specific time."
                 },
-                "other": { "label": "Other triggers" }
+                "other": {
+                  "label": "Other triggers"
+                }
               },
               "type": {
                 "calendar": {
@@ -2748,7 +2758,9 @@
                   "label": "Time and location",
                   "description": "If someone is in a zone or if the current time is before or after a specified time."
                 },
-                "other": { "label": "Other conditions" },
+                "other": {
+                  "label": "Other conditions"
+                },
                 "building_blocks": {
                   "label": "Building blocks",
                   "description": "Build more complex conditions."
@@ -2828,7 +2840,8 @@
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
                   "description": {
-                    "picker": "If the sun is above or below the horizon."
+                    "picker": "If the sun is above or below the horizon.",
+                    "full": "Confirm sun{afterChoice, select, \n sunrise { after sunrise}\n sunset { after sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { offset by {afterOffset}}\n other {}\n}{beforeChoice, select, \n sunrise { before sunrise}\n sunset { before sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { offset by {beforeOffset}}\n other {}\n}"
                   }
                 },
                 "template": {
@@ -2912,8 +2925,12 @@
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "groups": {
-                "helpers": { "label": "Helpers" },
-                "other": { "label": "Other actions" },
+                "helpers": {
+                  "label": "Helpers"
+                },
+                "other": {
+                  "label": "Other actions"
+                },
                 "building_blocks": {
                   "label": "Building blocks",
                   "description": "Build more complex sequences of actions."
@@ -3106,6 +3123,13 @@
                 "check_condition": {
                   "description": {
                     "full": "Test {condition}"
+                  }
+                },
+                "set_conversation_response": {
+                  "label": "Set conversation response",
+                  "description": {
+                    "picker": "Set response of conversation when automation was triggered by conversation trigger.",
+                    "full": "Set response of conversation to {response}"
                   }
                 },
                 "unknown": {
@@ -5843,8 +5867,6 @@
           "last_used": "Last used {date} from {location}",
           "not_used": "Has never been used",
           "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
-          "delete_all_tokens": "Delete all tokens",
-          "confirm_delete_all": "Are you sure you want to delete all refresh tokens? You will be logged out as part of this operation.",
           "delete_failed": "Failed to delete the refresh token.",
           "current_token_tooltip": "Unable to delete current refresh token"
         },

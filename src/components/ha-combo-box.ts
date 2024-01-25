@@ -95,7 +95,7 @@ export class HaComboBox extends LitElement {
 
   @property({ attribute: "item-id-path" }) public itemIdPath?: string;
 
-  @property() public renderer?: ComboBoxLitRenderer<any>;
+  @property({ attribute: false }) public renderer?: ComboBoxLitRenderer<any>;
 
   @property({ type: Boolean }) public disabled = false;
 

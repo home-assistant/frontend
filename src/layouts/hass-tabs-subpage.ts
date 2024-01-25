@@ -45,7 +45,7 @@ class HassTabsSubpage extends LitElement {
 
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
 
-  @property() public backCallback?: () => void;
+  @property({ attribute: false }) public backCallback?: () => void;
 
   @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 

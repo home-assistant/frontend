@@ -66,13 +66,13 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @property({ type: Boolean }) public isWide = false;
 
-  @property() public entries!: ConfigEntry[];
+  @property({ attribute: false }) public entries!: ConfigEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   entities!: EntityRegistryEntry[];
 
-  @property() public manifests!: IntegrationManifest[];
+  @property({ attribute: false }) public manifests!: IntegrationManifest[];
 
   @property({ attribute: false }) public route!: Route;
 

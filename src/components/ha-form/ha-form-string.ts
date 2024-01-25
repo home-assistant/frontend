@@ -29,7 +29,7 @@ export class HaFormString extends LitElement implements HaFormElement {
 
   @property() public localizeBaseKey = "ui.components.selectors.text";
 
-  @property() public schema!: HaFormStringSchema;
+  @property({ attribute: false }) public schema!: HaFormStringSchema;
 
   @property() public data!: HaFormStringData;
 

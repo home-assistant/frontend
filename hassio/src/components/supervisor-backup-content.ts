@@ -72,7 +72,7 @@ const _computeAddons = (addons): AddonCheckboxItem[] =>
 export class SupervisorBackupContent extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public localize?: LocalizeFunc;
+  @property({ attribute: false }) public localize?: LocalizeFunc;
 
   @property({ attribute: false }) public supervisor?: Supervisor;
 

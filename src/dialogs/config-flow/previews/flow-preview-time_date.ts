@@ -2,13 +2,16 @@ import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { FlowType } from "../../../data/data_entry_flow";
-import { GroupPreview, subscribePreviewGroup } from "../../../data/group";
+import {
+  TimeDatePreview,
+  subscribePreviewTimeDate,
+} from "../../../data/time_date";
 import { HomeAssistant } from "../../../types";
 import "./entity-preview-row";
 import { debounce } from "../../../common/util/debounce";
 
-@customElement("flow-preview-group")
-class FlowPreviewGroup extends LitElement {
+@customElement("flow-preview-time_date")
+class FlowPreviewTimeDate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public flowType!: FlowType;
@@ -19,7 +22,7 @@ class FlowPreviewGroup extends LitElement {
 
   @property() public flowId!: string;
 
-  @property({ attribute: false }) public stepData!: Record<string, any>;
+  @property() public stepData!: Record<string, any>;
 
   @state() private _preview?: HassEntity;
 
@@ -46,7 +49,7 @@ class FlowPreviewGroup extends LitElement {
     ></entity-preview-row>`;
   }
 
-  private _setPreview = (preview: GroupPreview) => {
+  private _setPreview = (preview: TimeDatePreview) => {
     const now = new Date().toISOString();
     this._preview = {
       entity_id: `${this.stepId}.___flow_preview___`,
@@ -70,13 +73,14 @@ class FlowPreviewGroup extends LitElement {
       return;
     }
     try {
-      this._unsub = subscribePreviewGroup(
+      this._unsub = subscribePreviewTimeDate(
         this.hass,
         this.flowId,
         this.flowType,
         this.stepData,
         this._setPreview
       );
+      await this._unsub;
     } catch (err) {
       this._preview = undefined;
     }
@@ -85,6 +89,6 @@ class FlowPreviewGroup extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "flow-preview-group": FlowPreviewGroup;
+    "flow-preview-time_date": FlowPreviewTimeDate;
   }
 }
