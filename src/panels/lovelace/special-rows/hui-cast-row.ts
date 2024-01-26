@@ -138,6 +138,8 @@ class HuiCastRow extends LitElement implements LovelaceRow {
       .flex {
         flex: 1;
         margin-left: 16px;
+        margin-inline-start: 16px;
+        margin-inline-end: initial;
         display: flex;
         justify-content: space-between;
         align-items: center;

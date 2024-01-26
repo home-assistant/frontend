@@ -330,6 +330,8 @@ class MoreInfoWeather extends LitElement {
       ha-svg-icon {
         color: var(--paper-item-icon-color);
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
 
       mwc-tab-bar {
@@ -346,10 +348,15 @@ class MoreInfoWeather extends LitElement {
         height: 32px;
         align-items: center;
       }
+      .flex > div:last-child {
+        direction: ltr;
+      }
 
       .main {
         flex: 1;
         margin-left: 24px;
+        margin-inline-start: 24px;
+        margin-inline-end: initial;
       }
 
       .temp,

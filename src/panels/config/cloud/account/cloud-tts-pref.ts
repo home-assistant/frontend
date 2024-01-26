@@ -191,9 +191,13 @@ export class CloudTTSPref extends LitElement {
       }
       .row > *:first-child {
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
       }
       .row > *:last-child {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
       .card-actions {
         display: flex;

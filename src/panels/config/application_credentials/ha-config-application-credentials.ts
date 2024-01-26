@@ -275,6 +275,8 @@ export class HaConfigApplicationCredentials extends LitElement {
       }
       ha-button-menu {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
     `;
   }

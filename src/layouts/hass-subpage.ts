@@ -143,7 +143,7 @@ class HassSubpage extends LitElement {
         }
 
         .main-title {
-          margin: 0 0 0 24px;
+          margin: var(--margin-title);
           line-height: 20px;
           flex-grow: 1;
         }

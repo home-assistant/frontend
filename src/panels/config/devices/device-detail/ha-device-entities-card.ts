@@ -246,6 +246,8 @@ export class HaDeviceEntitiesCard extends LitElement {
       }
       ha-icon {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
       .entity-id {
         color: var(--secondary-text-color);
