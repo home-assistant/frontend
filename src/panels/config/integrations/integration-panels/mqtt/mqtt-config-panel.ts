@@ -227,6 +227,8 @@ export class MQTTConfigPanel extends LitElement {
         @media screen and (max-width: 600px) {
           ha-select {
             margin-left: 0px;
+            margin-inline-start: 0px;
+            margin-inline-end: initial;
             margin-top: 8px;
           }
           ha-textfield {

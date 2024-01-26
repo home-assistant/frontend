@@ -818,6 +818,8 @@ export class HaServiceControl extends ReorderModeMixin(LitElement) {
       }
       ha-checkbox {
         margin-left: -16px;
+        margin-inline-start: -16px;
+        margin-inline-end: initial;
       }
       .help-icon {
         color: var(--secondary-text-color);
@@ -827,6 +829,11 @@ export class HaServiceControl extends ReorderModeMixin(LitElement) {
         display: flex;
         align-items: center;
         padding-right: 2px;
+        padding-inline-end: 2px;
+        padding-inline-start: initial;
+      }
+      .description p {
+        direction: ltr;
       }
     `;
   }

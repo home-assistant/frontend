@@ -42,6 +42,8 @@ class HaLabel extends LitElement {
         ::slotted([slot="icon"]) {
           margin-right: 8px;
           margin-left: -8px;
+          margin-inline-start: -8px;
+          margin-inline-end: 8px;
           display: flex;
           color: var(--ha-label-icon-color);
         }

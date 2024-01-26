@@ -580,6 +580,8 @@ class HaPanelDevService extends LitElement {
         }
         .switch-mode-container .error {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         .attributes {
           width: 100%;

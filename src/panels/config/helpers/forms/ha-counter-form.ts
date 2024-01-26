@@ -192,6 +192,8 @@ class HaCounterForm extends LitElement {
         }
         .row div {
           margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
         ha-textfield {
           display: block;

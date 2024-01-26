@@ -429,6 +429,8 @@ const mainStyles = css`
     --direction: ltr;
     --float-start: left;
     --float-end: right;
+    --margin-title-ltr: 0 0 0 24px;
+    --margin-title-rtl: 0 24px 0 0;
 
     ${unsafeCSS(
       Object.entries(derivedStyles)

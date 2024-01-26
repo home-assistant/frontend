@@ -988,6 +988,7 @@ export class HaConfigEntities extends LitElement {
           font-weight: bold;
           padding-left: 16px;
           padding-inline-start: 16px;
+          padding-inline-end: initial;
           direction: var(--direction);
         }
         .table-header .selected-txt {
@@ -999,6 +1000,7 @@ export class HaConfigEntities extends LitElement {
         .header-toolbar .header-btns {
           margin-right: -12px;
           margin-inline-end: -12px;
+          margin-inline-start: initial;
           direction: var(--direction);
         }
         .header-btns {
@@ -1010,11 +1012,14 @@ export class HaConfigEntities extends LitElement {
         }
         ha-button-menu {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         .clear {
           color: var(--primary-color);
           padding-left: 8px;
           padding-inline-start: 8px;
+          padding-inline-end: initial;
           text-transform: uppercase;
           direction: var(--direction);
         }

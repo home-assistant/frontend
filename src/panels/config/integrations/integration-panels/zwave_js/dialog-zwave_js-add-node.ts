@@ -851,6 +851,8 @@ class DialogZWaveJSAddNode extends LitElement {
 
         .select-inclusion .outline:nth-child(2) {
           margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
 
         .select-inclusion .outline {
@@ -869,6 +871,8 @@ class DialogZWaveJSAddNode extends LitElement {
 
           .select-inclusion .outline:nth-child(2) {
             margin-left: 0;
+            margin-inline-start: 0;
+            margin-inline-end: initial;
             margin-top: 16px;
           }
         }

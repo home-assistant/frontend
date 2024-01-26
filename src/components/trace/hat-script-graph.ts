@@ -667,6 +667,8 @@ export class HatScriptGraph extends LitElement {
       }
       .parent {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
         margin-top: 16px;
       }
       .error {
