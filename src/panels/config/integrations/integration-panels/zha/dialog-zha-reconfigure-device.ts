@@ -57,6 +57,7 @@ class DialogZHAReconfigureDevice extends LitElement {
     this._stages = undefined;
     this._clusterConfigurationStatuses = undefined;
     this._showDetails = false;
+    this._allSuccessful = true;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
