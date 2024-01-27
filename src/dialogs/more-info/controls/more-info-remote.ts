@@ -55,7 +55,7 @@ class MoreInfoRemote extends LitElement {
 
   private handleActivityChanged(ev) {
     const oldVal = this.stateObj!.attributes.current_activity;
-    const newVal = ev.target.value;
+    const newVal = ev.target.items[ev.detail.index].value;
 
     if (!newVal || oldVal === newVal) {
       return;
